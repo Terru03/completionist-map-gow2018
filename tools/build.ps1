@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory=$true)]
-    [ValidateSet('v0.1-test','v0.2-diagnostic','v0.3-diagnostic','v0.3.1-diagnostic')]
+    [ValidateSet('v0.1-test','v0.2-diagnostic','v0.3-diagnostic','v0.3.1-diagnostic','v0.4-diagnostic')]
     [string]$Version,
 
     [string]$GameRoot = 'G:\SteamLibrary\steamapps\common\GodOfWar'
@@ -22,7 +22,8 @@ Copy-Item $source $out
 
 Push-Location $buildRoot
 try {
-    git apply --unsafe-paths $patch
+    # The loader-provided source may use CRLF while repository patches use LF.
+    git apply --unsafe-paths --ignore-whitespace $patch
 }
 finally {
     Pop-Location
