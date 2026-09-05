@@ -1,11 +1,20 @@
 # Changelog
 
+## v0.4-diagnostic
+
+- Correlates Midgard's native region/realm completion summaries with hidden marker records.
+- Dumps `Map.GetRegionSummaryInfo(regionId)` and `Map.GetRealmSummary(...)` scalar fields.
+- Safely probes candidate collectible marker flags including artefacts, lore, ravens, runic/Nornir chests, legendary chests and pocket rifts.
+- Logs hidden marker IDs with known infrastructure flags and any candidate collectible flags.
+- Remains read-only: no icon creation, marker-state changes or save/progression changes.
+
 ## v0.3.1-diagnostic
 
 - Expands detailed probing to both Midgard and Alfheim.
 - Midgard is the active test realm because the current save still has missing collectibles there.
 - Alfheim is used as a 100%-complete control realm.
 - Logs marker state, LAMS IDs, offsets, quest association, known stock map/compass flags and scalar marker metadata.
+- Midgard result: 318 marker records, 312 unique IDs, 74 discovered and 244 undiscovered. Hidden records are dominated by quest, dock, fight and travel infrastructure, proving `kUndiscovered` is not a collectible filter.
 - Remains read-only: no icon creation, no marker-state changes and no save/progression changes.
 
 ## v0.3-diagnostic
