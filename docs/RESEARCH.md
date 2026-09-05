@@ -39,25 +39,51 @@ For Alfheim, `Map.GetMarkersInfoTable(regionId)` returned:
 
 At least one marker ID appears in more than one region. Midgard and Helheim also returned substantial numbers of `kUndiscovered` marker records.
 
-This confirms that hidden marker records are already exposed to Lua. The project should prefer resolving those native records rather than maintaining a separate hand-authored coordinate database.
+This confirmed that hidden marker records are exposed to Lua, but later testing showed that hidden markers are not equivalent to remaining collectibles.
 
-## v0.3 strategy
+## v0.3.1 Midgard result
 
-Keep the probe read-only and restrict detailed logging to Alfheim. For each marker, collect:
+The current save is 100% in every realm except Midgard, making Midgard the active test realm and the completed realms useful controls.
 
-1. ID and token state.
-2. `LamsNameId` / `LamsDescriptionId`.
-3. `OffsetX` / `OffsetY`.
-4. Quest association from `questUtil.FindQuestForMarker`.
-5. Known stock map/compass flags.
-6. Scalar fields exposed directly by the marker info table.
-7. Scalar fields returned by `Map.GetMarkerInfo(id)`.
+Midgard exposed:
 
-The aim is to find a stable discriminator for collectible-like hidden markers and identify any position/waypoint-relevant metadata before attempting rendering again.
+- 318 marker records
+- 312 unique marker IDs
+- 74 `kDiscovered`
+- 244 `kUndiscovered`
+- 28 regions containing marker records
+
+The 244 hidden records are mostly infrastructure rather than collectibles. Major groups include:
+
+- 99 `PrimaryQuest`
+- 11 `PrimaryQuest,RadiusType`
+- 36 `SecondaryQuest`
+- 19 `SecondaryQuest,RadiusType`
+- 26 `DockPoint`
+- 15 `FightLocation`
+- 9 `FastTravel`
+- 9 records with no currently-known marker flag
+- 8 `InfoOnly`
+
+Therefore `kUndiscovered` cannot be used as a direct completionist filter.
+
+## v0.4 strategy
+
+Correlate the map-summary system with marker data rather than guessing from token state.
+
+For Midgard:
+
+1. Dump `Map.GetRealmSummary(...)`.
+2. Dump every `Map.GetRegionSummaryInfo(regionId)` row, especially `CategoryStr`, `Progress`, `Goal` and `Discovered`.
+3. Probe hidden markers with `Map.MarkerHasAnyFlag` for candidate collectible strings such as `Artifacts`, `LoreMarker`, `Ravens`, `RunicChest`, `LegendaryChest` and `PocketRift`.
+4. If collectible flags exist, use them to isolate only relevant native records.
+5. If they do not exist, pivot away from the map-marker table and enumerate collectible gameplay objects/pickups directly, then feed their positions into the map/compass UI.
+
+The decompiled gameplay scripts already show that collectible interactions increment region-summary quests, for example `LegendaryChest`, `RunicChest`, artefact region-summary quests and lore-marker summary quests. That gives us a second path if the native marker table does not contain collectible positions.
 
 ## Safety rule
 
-Until we understand the hidden marker schema, do not:
+Until we understand the collectible schema, do not:
 
 - pass `kUndiscovered` records to `Map.CreateMarkerIcon()`
 - call `Map.ChangeMarkerState()` for testing
