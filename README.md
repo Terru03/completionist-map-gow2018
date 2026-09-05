@@ -22,7 +22,8 @@ Preferred final behaviour:
 ## Current status
 
 - `v0.1-test`: attempted to expose undiscovered marker records directly. Opening the map crashed the game. This build is retained only as a failed experiment/reference.
-- `v0.2-diagnostic`: safe diagnostic approach. It does not create additional icons. It logs marker records returned by `Map.GetMarkersInfoTable(regionId)` so we can determine what the game exposes for undiscovered collectibles before touching icon creation again.
+- `v0.2-diagnostic`: succeeded. Alfheim exposed 27 marker records on the current save, including 23 `kUndiscovered` records and 4 `kDiscovered` records, proving that hidden marker records are already available to Lua.
+- `v0.3-diagnostic`: current development build. It probes Alfheim marker metadata, known flags, quest associations and scalar fields without creating icons or changing progression.
 
 ## Repository policy
 
@@ -36,12 +37,22 @@ G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\
 G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\
 ```
 
-## Next step
+## Current hypothesis
 
-Run `v0.2-diagnostic`, open Alfheim on the map, then inspect `mods/loader_log.txt` for lines beginning with:
+The game already gives the map layer stable hidden marker IDs. The preferred implementation path is therefore:
 
 ```text
-[CompletionistMap v0.2]
+native hidden marker -> identify collectible/type -> safely expose/select -> native compass navigation
 ```
 
-The important question is whether Alfheim's marker table contains useful `kUndiscovered` records and whether those records contain stable IDs that can be resolved to positions or native waypoint objects without calling the normal discovered-marker icon path.
+rather than maintaining our own list of collectible coordinates.
+
+## Next step
+
+Run `v0.3-diagnostic`, open Alfheim once, then inspect `mods/loader_log.txt` for lines beginning with:
+
+```text
+[CompletionistMap v0.3]
+```
+
+We are specifically looking for marker metadata that lets us distinguish collectible-like hidden records and determine whether their native IDs can be fed into the existing waypoint/compass pipeline without changing their discovery state.
