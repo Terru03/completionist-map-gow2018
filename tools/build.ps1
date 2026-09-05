@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory=$true)]
-    [ValidateSet('v0.1-test','v0.2-diagnostic')]
+    [ValidateSet('v0.1-test','v0.2-diagnostic','v0.3-diagnostic')]
     [string]$Version,
 
     [string]$GameRoot = 'G:\SteamLibrary\steamapps\common\GodOfWar'
