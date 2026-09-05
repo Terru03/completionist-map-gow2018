@@ -1,0 +1,70 @@
+--- a/gameart/ui/scripts/inworldmenu/mapmenu.lua
++++ b/gameart/ui/scripts/inworldmenu/mapmenu.lua
+@@ -37,6 +37,20 @@
+   tweaks.eTokenState.kDiscovered,
+   tweaks.eTokenState.kDiscoveredButLocked
+ }
++
++-- Completionist Map v0.2 diagnostic.
++-- This build does NOT reveal or create any extra map icons.
++-- It only logs the marker records that the stock game exposes to the map UI.
++local function CompletionistMap_StateName(state)
++  if state == tweaks.eTokenState.kDiscovered then
++    return "kDiscovered"
++  elseif state == tweaks.eTokenState.kDiscoveredButLocked then
++    return "kDiscoveredButLocked"
++  elseif state == tweaks.eTokenState.kUndiscovered then
++    return "kUndiscovered"
++  end
++  return tostring(state)
++end
+ local alwaysOnMarkerFlags = {
+   "PrimaryQuest",
+   "SecondaryQuest"
+@@ -1255,11 +1269,33 @@
+   if self.currRealmName == nil then
+     return
+   end
++
++  self.completionistMapDumpedRealms = self.completionistMapDumpedRealms or {}
++  local completionistMapShouldDump = not self.completionistMapDumpedRealms[self.currRealmName]
++
++  if completionistMapShouldDump then
++    print("[CompletionistMap v0.2] BEGIN realm=" .. tostring(self.currRealmName))
++  end
++
+   local regionInfoTable = mapUtil.GetAllRegionInfoInRealm(self.currRealmName)
+   for _, regionInfo in ipairs(regionInfoTable) do
+     local regionMarkerInfoTable = Map.GetMarkersInfoTable(regionInfo.Id)
++
++    if completionistMapShouldDump then
++      print("[CompletionistMap v0.2] REGION id=" .. tostring(regionInfo.Id) ..
++        " markerCount=" .. tostring(#regionMarkerInfoTable))
++    end
++
+     for i = 1, #regionMarkerInfoTable do
+       local markerInfo = regionMarkerInfoTable[i]
++
++      if completionistMapShouldDump then
++        print("[CompletionistMap v0.2] MARKER realm=" .. tostring(self.currRealmName) ..
++          " region=" .. tostring(regionInfo.Id) ..
++          " id=" .. tostring(markerInfo.Id) ..
++          " state=" .. CompletionistMap_StateName(markerInfo.State))
++      end
++
+       local hasQuest, questName = questUtil.FindQuestForMarker(markerInfo.Id)
+       if not hasQuest or game.QuestManager.GetQuestState(questName) ~= questConsts.QUEST_STATE_COMPLETE then
+         markerInfo.regionId = regionInfo.Id
+@@ -1267,6 +1303,12 @@
+       end
+     end
+   end
++
++  if completionistMapShouldDump then
++    print("[CompletionistMap v0.2] END realm=" .. tostring(self.currRealmName))
++    self.completionistMapDumpedRealms[self.currRealmName] = true
++  end
++
+   self:UpdateFilterButtonMapping()
+ end
+ function MapOn:GetAlwaysOnMarkers()
