@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.1-diagnostic
+
+- Expands detailed probing to both Midgard and Alfheim.
+- Midgard is the active test realm because the current save still has missing collectibles there.
+- Alfheim is used as a 100%-complete control realm.
+- Logs marker state, LAMS IDs, offsets, quest association, known stock map/compass flags and scalar marker metadata.
+- Remains read-only: no icon creation, no marker-state changes and no save/progression changes.
+
 ## v0.3-diagnostic
 
 - Restricts detailed probing to Alfheim to keep logs manageable.
