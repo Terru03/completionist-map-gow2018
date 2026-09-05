@@ -1,0 +1,35 @@
+--- a/gameart/ui/scripts/inworldmenu/mapmenu.lua
++++ b/gameart/ui/scripts/inworldmenu/mapmenu.lua
+@@ -33,9 +33,14 @@
+   consts.COMPASS_MARKER_TYPE_DOCK_POINT,
+   consts.COMPASS_MARKER_TYPE_VALKYRIE
+ }
++-- Completionist Map v0.1 test:
++-- Also expose native map markers that the game keeps in the Undiscovered state.
++-- This is deliberately conservative: we still use the game's own marker records,
++-- positions, icons and region mapping.
+ local markerStates = {
+   tweaks.eTokenState.kDiscovered,
+-  tweaks.eTokenState.kDiscoveredButLocked
++  tweaks.eTokenState.kDiscoveredButLocked,
++  tweaks.eTokenState.kUndiscovered
+ }
+ local alwaysOnMarkerFlags = {
+   "PrimaryQuest",
+@@ -60,7 +65,15 @@
+       consts.COMPASS_MARKER_TYPE_FIGHT_LOCATION,
+       consts.COMPASS_MARKER_TYPE_FIGHT_LOCATION_NO_TRACK,
+       consts.COMPASS_MARKER_TYPE_INFO_ONLY,
+-      consts.COMPASS_MARKER_TYPE_VALKYRIE
++      consts.COMPASS_MARKER_TYPE_VALKYRIE,
++      -- Completionist Map candidate native marker flags. These names mirror
++      -- the categories exposed by the game's own region/realm summary UI.
++      "Artifacts",
++      "LoreMarker",
++      "Ravens",
++      "RunicChest",
++      "LegendaryChest",
++      "PocketRift"
+     }
+   },
+   {
