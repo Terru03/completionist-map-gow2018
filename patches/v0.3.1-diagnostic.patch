@@ -1,0 +1,152 @@
+--- a/gameart/ui/scripts/inworldmenu/mapmenu.lua
++++ b/gameart/ui/scripts/inworldmenu/mapmenu.lua
+@@ -37,6 +37,70 @@
+   tweaks.eTokenState.kDiscovered,
+   tweaks.eTokenState.kDiscoveredButLocked
+ }
++
++-- Completionist Map v0.3.1 diagnostic.
++-- Read-only probe for Midgard and Alfheim marker metadata. No icons are created
++-- and no marker/progression state is changed.
++local function CompletionistMap_StateName(state)
++  if state == tweaks.eTokenState.kDiscovered then
++    return "kDiscovered"
++  elseif state == tweaks.eTokenState.kDiscoveredButLocked then
++    return "kDiscoveredButLocked"
++  elseif state == tweaks.eTokenState.kUndiscovered then
++    return "kUndiscovered"
++  end
++  return tostring(state)
++end
++
++local completionistMapKnownFlags = {
++  consts.COMPASS_MARKER_TYPE_VENDOR,
++  consts.COMPASS_MARKER_TYPE_VENDOR_NO_TRACK,
++  consts.COMPASS_MARKER_TYPE_FAST_TRAVEL,
++  consts.COMPASS_MARKER_TYPE_FAST_TRAVEL_NO_TRACK,
++  consts.COMPASS_MARKER_TYPE_DOCK_POINT,
++  consts.COMPASS_MARKER_TYPE_AREA_ENTRANCE,
++  consts.COMPASS_MARKER_TYPE_CHISEL_ENTRANCE,
++  consts.COMPASS_MARKER_TYPE_CHISEL_ENTRANCE_NO_TRACK,
++  consts.COMPASS_MARKER_TYPE_FIGHT_LOCATION,
++  consts.COMPASS_MARKER_TYPE_FIGHT_LOCATION_NO_TRACK,
++  consts.COMPASS_MARKER_TYPE_INFO_ONLY,
++  consts.COMPASS_MARKER_TYPE_VALKYRIE,
++  "PrimaryQuest",
++  "SecondaryQuest",
++  "RadiusType"
++}
++
++local function CompletionistMap_JoinKnownFlags(markerID)
++  local result = {}
++  for _, flag in pairs(completionistMapKnownFlags) do
++    if flag ~= nil then
++      local ok, hasFlag = pcall(function()
++        return Map.MarkerHasAnyFlag(markerID, {flag})
++      end)
++      if ok and hasFlag then
++        result[#result + 1] = tostring(flag)
++      end
++    end
++  end
++  if #result == 0 then
++    return "<none>"
++  end
++  return table.concat(result, ",")
++end
++
++local function CompletionistMap_DumpScalarFields(prefix, value)
++  local ok, err = pcall(function()
++    for key, fieldValue in pairs(value) do
++      local fieldType = type(fieldValue)
++      if fieldType == "string" or fieldType == "number" or fieldType == "boolean" then
++        print(prefix .. " key=" .. tostring(key) .. " type=" .. fieldType .. " value=" .. tostring(fieldValue))
++      end
++    end
++  end)
++  if not ok then
++    print(prefix .. " scalarDumpError=" .. tostring(err))
++  end
++end
+ local alwaysOnMarkerFlags = {
+   "PrimaryQuest",
+   "SecondaryQuest"
+@@ -1255,18 +1319,78 @@
+   if self.currRealmName == nil then
+     return
+   end
++
++  self.completionistMapV031DumpedRealms = self.completionistMapV031DumpedRealms or {}
++  local completionistMapTargetRealm = self.currRealmName == "Midgard" or self.currRealmName == "Alfheim"
++  local completionistMapShouldDump = completionistMapTargetRealm and not self.completionistMapV031DumpedRealms[self.currRealmName]
++
++  if completionistMapShouldDump then
++    print("[CompletionistMap v0.3.1] BEGIN realm=" .. tostring(self.currRealmName))
++  end
++
+   local regionInfoTable = mapUtil.GetAllRegionInfoInRealm(self.currRealmName)
+   for _, regionInfo in ipairs(regionInfoTable) do
+     local regionMarkerInfoTable = Map.GetMarkersInfoTable(regionInfo.Id)
++
++    if completionistMapShouldDump then
++      print("[CompletionistMap v0.3.1] REGION realm=" .. tostring(self.currRealmName) ..
++        " id=" .. tostring(regionInfo.Id) ..
++        " markerCount=" .. tostring(#regionMarkerInfoTable))
++    end
++
+     for i = 1, #regionMarkerInfoTable do
+       local markerInfo = regionMarkerInfoTable[i]
+       local hasQuest, questName = questUtil.FindQuestForMarker(markerInfo.Id)
++
++      if completionistMapShouldDump then
++        print("[CompletionistMap v0.3.1] MARKER" ..
++          " realm=" .. tostring(self.currRealmName) ..
++          " region=" .. tostring(regionInfo.Id) ..
++          " index=" .. tostring(i) ..
++          " id=" .. tostring(markerInfo.Id) ..
++          " state=" .. CompletionistMap_StateName(markerInfo.State) ..
++          " lamsName=" .. tostring(markerInfo.LamsNameId) ..
++          " lamsDesc=" .. tostring(markerInfo.LamsDescriptionId) ..
++          " offsetX=" .. tostring(markerInfo.OffsetX) ..
++          " offsetY=" .. tostring(markerInfo.OffsetY) ..
++          " hasQuest=" .. tostring(hasQuest) ..
++          " quest=" .. tostring(questName) ..
++          " flags=" .. CompletionistMap_JoinKnownFlags(markerInfo.Id))
++
++        CompletionistMap_DumpScalarFields(
++          "[CompletionistMap v0.3.1] FIELD realm=" .. tostring(self.currRealmName) ..
++            " id=" .. tostring(markerInfo.Id),
++          markerInfo
++        )
++
++        local getInfoOK, fullMarkerInfo = pcall(function()
++          return Map.GetMarkerInfo(markerInfo.Id)
++        end)
++        if getInfoOK and fullMarkerInfo ~= nil then
++          CompletionistMap_DumpScalarFields(
++            "[CompletionistMap v0.3.1] GETINFO realm=" .. tostring(self.currRealmName) ..
++              " id=" .. tostring(markerInfo.Id),
++            fullMarkerInfo
++          )
++        else
++          print("[CompletionistMap v0.3.1] GETINFO realm=" .. tostring(self.currRealmName) ..
++            " id=" .. tostring(markerInfo.Id) ..
++            " error=" .. tostring(fullMarkerInfo))
++        end
++      end
++
+       if not hasQuest or game.QuestManager.GetQuestState(questName) ~= questConsts.QUEST_STATE_COMPLETE then
+         markerInfo.regionId = regionInfo.Id
+         self.realmMarkerInfo[#self.realmMarkerInfo + 1] = regionMarkerInfoTable[i]
+       end
+     end
+   end
++
++  if completionistMapShouldDump then
++    print("[CompletionistMap v0.3.1] END realm=" .. tostring(self.currRealmName))
++    self.completionistMapV031DumpedRealms[self.currRealmName] = true
++  end
++
+   self:UpdateFilterButtonMapping()
+ end
+ function MapOn:GetAlwaysOnMarkers()
