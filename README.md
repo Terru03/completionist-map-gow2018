@@ -21,9 +21,10 @@ Preferred final behaviour:
 
 ## Current status
 
-- `v0.1-test`: attempted to expose undiscovered marker records directly. Opening the map crashed the game. This build is retained only as a failed experiment/reference.
-- `v0.2-diagnostic`: succeeded. Alfheim exposed 27 marker records on the current save, including 23 `kUndiscovered` records and 4 `kDiscovered` records, proving that hidden marker records are already available to Lua.
-- `v0.3-diagnostic`: current development build. It probes Alfheim marker metadata, known flags, quest associations and scalar fields without creating icons or changing progression.
+- `v0.1-test`: attempted to expose undiscovered marker records directly. Opening the map crashed the game. Retained only as a failed experiment/reference.
+- `v0.2-diagnostic`: proved hidden native marker records are exposed to Lua.
+- `v0.3.1-diagnostic`: proved `kUndiscovered` is not a collectible filter. Midgard exposed 318 marker records, including 244 hidden records dominated by quest, dock, fight and travel infrastructure.
+- `v0.4-diagnostic`: current development build. Correlates Midgard's realm/region completion summaries with hidden marker records and safely tests collectible-category flag names without rendering anything.
 
 ## Repository policy
 
@@ -39,20 +40,27 @@ G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\
 
 ## Current hypothesis
 
-The game already gives the map layer stable hidden marker IDs. The preferred implementation path is therefore:
+The map-marker table contains useful native POI/navigation records, but collectible progression appears to be tracked separately through region-summary categories and gameplay-object state.
+
+The preferred implementation path is now conditional:
 
 ```text
-native hidden marker -> identify collectible/type -> safely expose/select -> native compass navigation
+if collectible-specific native marker exists:
+    native collectible marker -> reveal safely -> stock compass
+else:
+    remaining collectible gameplay object -> world position -> custom/native-compatible map marker -> stock compass
 ```
-
-rather than maintaining our own list of collectible coordinates.
 
 ## Next step
 
-Run `v0.3-diagnostic`, open Alfheim once, then inspect `mods/loader_log.txt` for lines beginning with:
+Run `v0.4-diagnostic`, open Midgard once, then inspect `mods/loader_log.txt` for lines beginning with:
 
 ```text
-[CompletionistMap v0.3]
+[CompletionistMap v0.4]
 ```
 
-We are specifically looking for marker metadata that lets us distinguish collectible-like hidden records and determine whether their native IDs can be fed into the existing waypoint/compass pipeline without changing their discovery state.
+The decisive questions are:
+
+1. Which Midgard regions/categories are actually incomplete on the current save?
+2. Do any hidden marker records carry collectible flags such as `LoreMarker`, `Ravens`, `RunicChest` or `LegendaryChest`?
+3. If not, which gameplay-object/pickup path should be used to obtain exact world positions for remaining collectibles?
