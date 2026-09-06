@@ -20,7 +20,7 @@ Preferred final behaviour:
 5. Hide completed objects immediately and correctly restore their state after reload.
 6. Ship dedicated God of War-style artwork for Completionist markers.
 
-## Current status: v0.9.3.1 hotfix
+## Current status: v0.9.4 test build
 
 The project has progressed beyond the original hidden-native-marker approach. Collectibles are tracked by their gameplay scripts/state, converted from world XYZ into Midgard map coordinates, and represented by synthetic native-compatible UI pins.
 
@@ -44,41 +44,42 @@ Confirmed working milestones:
 - Seal Add-to-Compass works through the custom arbitrary-XYZ HUD target.
 - Kratos's map marker has a session-local Hide/Show toggle when the stock Go-to-Journal action is not using that button.
 - Map zoom is extended from stock `MaxIn=6` to `MaxIn=2.5`.
+- Distinct discovered DockPoint backing IDs are used for Raven, Nornir parents and Nornir puzzle actors, with field-confirmed `ALIAS_CHECK sameGO=false`.
 
-### v0.9.2 result
+### v0.9.3.1 field result
 
-The distinct-backing architecture was introduced successfully, but marker creation called `CompletionistMapV092_ApplyZoomAdaptiveIconScale` from functions defined before that helper's later local declaration. Those earlier closures resolved the helper as a nil global. Raven survived visually because its GameObject had already been stored/moved before the protected call failed, while Nornir parent/child creation recycled their failed GameObjects.
+`Completionist-Map-v0.9.3.1-MAP-LOAD-HOTFIX.zip` successfully restored the full map-side stack after the v0.9.3 regression. The test confirmed:
 
-### v0.9.3 field regression
+- `MAP_SCRIPT_LOADED` and 11-entry filter mapping;
+- Raven, Nornir parent and only-remaining seal pins;
+- custom chest/seal compass tracking;
+- Hide/Show Kratos;
+- real chest-open removal;
+- distinct synthetic GameObjects.
 
-v0.9.3 attempted to remove the adaptive-scale experiment and tune snapping, but its map-side patch did not initialise at all. The field log contained Raven/Nornir gameplay instrumentation and the MainHUD hook but no `MAP_SCRIPT_LOADED`, `FILTER_MAPPING`, custom marker creation or Kratos toggle. The build is therefore superseded.
+It also exposed two remaining UX bugs:
 
-### v0.9.3.1
+1. Raven placement still read the single shared `_G.CompletionistMap...Target.mapX/mapZ`. Tracking a Nornir chest therefore moved the Raven map pin onto the Nornir position until the active target changed again.
+2. Synthetic DockPoint roots remained too large/sticky for the newly extended close zoom. The field log showed `SNAP_TUNING cursorScale=1 customIconScale=1`, so the intended adaptive shrink never occurred.
 
-Current hotfix build:
+### v0.9.4
 
-`Completionist-Map-v0.9.3.1-MAP-LOAD-HOTFIX.zip`
+Current test build:
 
-It is intentionally rebuilt from the field-proven compile-good v0.9.2 map patch. The only marker-code correction is the safe lexical-scope fix:
+`Completionist-Map-v0.9.4-RAVEN-SNAP-FIX.zip`
 
-```lua
-local CompletionistMapV0931_ApplyZoomAdaptiveIconScale
+Changes:
 
--- earlier marker functions capture that local
+- Raven map coordinates are immutable and no longer derived from the active compass target.
+- Nornir chest/seal tracking can no longer move or hide the Raven pin.
+- Temporary synthetic marker roots use fixed scale `0.28` to shrink their visible/clickable footprint.
+- Nornir child collision latch is reduced from `120` to `12` frames.
+- Deep zoom remains `MaxIn=2.5`.
+- Snap tuning is reduced further:
+  - `CursorScale_Min = 0.05`
+  - `CursorSnap_Strength = 0.18`
 
-CompletionistMapV0931_ApplyZoomAdaptiveIconScale = function(go)
-  ...
-end
-```
-
-No Raven/Nornir marker loop structure is rewritten in this hotfix.
-
-It also keeps deep zoom at `MaxIn=2.5` and reduces close-zoom snapping much more aggressively:
-
-- `CursorScale_Min = 0.12`
-- `CursorSnap_Strength = 0.55`
-
-Distinct DockPoint backing slots remain enabled for Raven, Nornir parents and Nornir puzzle actors.
+The next field test should specifically verify Raven remains in place while Nornir is tracked and that close-zoom snapping is materially less aggressive.
 
 ## Version history
 
