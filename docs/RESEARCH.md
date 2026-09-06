@@ -14,13 +14,19 @@ The stock UI recognises marker/token states including:
 - `tweaks.eTokenState.kDiscoveredButLocked`
 - `tweaks.eTokenState.kUndiscovered`
 
-The stock map's rendering path creates icons with a call resembling:
+The stock map's rendering path creates icons with:
 
 ```lua
 Map.CreateMarkerIcon(markerId, regionId, "")
 ```
 
-The completion/region summary data also contains categories corresponding to collectible classes such as artefacts, lore markers, ravens, runic chests and legendary chests.
+The stock waypoint flow ultimately uses:
+
+```lua
+game.Compass.ShowMarker(markerID, markerType)
+```
+
+but only for marker IDs carrying supported compass-marker flags.
 
 ## v0.1 lesson
 
@@ -28,22 +34,9 @@ Do not assume an undiscovered marker record is accepted by the same icon constru
 
 ## v0.2 result
 
-The read-only diagnostic succeeded on the user's current save.
-
-For Alfheim, `Map.GetMarkersInfoTable(regionId)` returned:
-
-- 27 marker records in total
-- 23 `kUndiscovered`
-- 4 `kDiscovered`
-- 26 unique marker IDs
-
-At least one marker ID appears in more than one region. Midgard and Helheim also returned substantial numbers of `kUndiscovered` marker records.
-
-This confirmed that hidden marker records are exposed to Lua, but later testing showed that hidden markers are not equivalent to remaining collectibles.
+For Alfheim, `Map.GetMarkersInfoTable(regionId)` returned 27 records, including 23 `kUndiscovered`. This proved hidden marker records are visible to Lua.
 
 ## v0.3.1 Midgard result
-
-The current save is 100% in every realm except Midgard, making Midgard the active test realm and the completed realms useful controls.
 
 Midgard exposed:
 
@@ -51,40 +44,115 @@ Midgard exposed:
 - 312 unique marker IDs
 - 74 `kDiscovered`
 - 244 `kUndiscovered`
-- 28 regions containing marker records
 
-The 244 hidden records are mostly infrastructure rather than collectibles. Major groups include:
+The 244 hidden records are mostly infrastructure rather than collectibles. Major groups include quest objectives, docks, fights, fast travel, area entrances and info-only markers. Therefore `kUndiscovered` cannot be used as a direct completionist filter.
 
-- 99 `PrimaryQuest`
-- 11 `PrimaryQuest,RadiusType`
-- 36 `SecondaryQuest`
-- 19 `SecondaryQuest,RadiusType`
-- 26 `DockPoint`
-- 15 `FightLocation`
-- 9 `FastTravel`
-- 9 records with no currently-known marker flag
-- 8 `InfoOnly`
+## v0.4 result: native marker-table path rejected for collectibles
 
-Therefore `kUndiscovered` cannot be used as a direct completionist filter.
+Midgard's realm summary is currently:
 
-## v0.4 strategy
+- total progress: `148 / 225`
+- SideQuests: `8 / 12`
+- Artifacts: `26 / 34`
+- FastTravelLocation: `23 / 30`
+- VendorLocation: `11 / 13`
+- LoreMarker: `32 / 37`
+- Ravens: `19 / 43`
+- Valkyrie: `0 / 4`
+- ValkyrieQueen: `0 / 1`
+- RunicChest: `9 / 17`
+- LegendaryChest: `15 / 25`
+- PocketRift: `5 / 9`
 
-Correlate the map-summary system with marker data rather than guessing from token state.
+Every one of the 244 hidden marker records returned `candidateFlags=<none>` for the tested collectible strings.
 
-For Midgard:
+The strongest evidence is region-level mismatch. For example:
 
-1. Dump `Map.GetRealmSummary(...)`.
-2. Dump every `Map.GetRegionSummaryInfo(regionId)` row, especially `CategoryStr`, `Progress`, `Goal` and `Discovered`.
-3. Probe hidden markers with `Map.MarkerHasAnyFlag` for candidate collectible strings such as `Artifacts`, `LoreMarker`, `Ravens`, `RunicChest`, `LegendaryChest` and `PocketRift`.
-4. If collectible flags exist, use them to isolate only relevant native records.
-5. If they do not exist, pivot away from the map-marker table and enumerate collectible gameplay objects/pickups directly, then feed their positions into the map/compass UI.
+- Foothills reports Ravens `0 / 2`, yet its hidden map records are ordinary quest/fast-travel records.
+- Forest reports Artifacts `2 / 4`, Ravens `0 / 1`, PocketRift `0 / 1`, RunicChest `0 / 1`, but its hidden records are quest/fight/travel records.
+- The central Lake of Nine region reports LoreMarker `5 / 7`, PocketRift `3 / 4`, LegendaryChest `0 / 1`, again with no collectible-typed hidden map records.
+- Peakspass reports missing artefacts, ravens, legendary chests and runic chests, but none of its hidden native map markers carry those collectible categories.
 
-The decompiled gameplay scripts already show that collectible interactions increment region-summary quests, for example `LegendaryChest`, `RunicChest`, artefact region-summary quests and lore-marker summary quests. That gives us a second path if the native marker table does not contain collectible positions.
+Conclusion: collectible completion data and collectible world objects are tracked separately from the native POI marker table.
+
+## Gameplay-object path
+
+A public decompiled-script mirror (`MorseTheCode/GoWLUA`) confirms that the actual collectible scripts retain live object references, exact completion state and region-summary linkage.
+
+### Odin's Ravens
+
+`gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua` contains:
+
+- `thisObj`
+- `ravenKilled`
+- `regionSummaryQuest`
+- `thisObj:GetWorldPosition()`
+- checkpoint save/restore for `ravenKilled`
+
+This is ideal for a runtime registry if enough raven objects instantiate globally.
+
+### Artefacts
+
+`interact_loot_artifact.lua` contains:
+
+- `thisObj`
+- acquisition `state` (`ENABLED`, `DISABLED`, `ACQUIRED`)
+- `regionSummaryQuest`
+- artefact subtype / unique resource
+- checkpoint save/restore
+
+### Lore markers / rune reads
+
+`langcheckruneread.lua` contains:
+
+- `thisObj`
+- `regionSummaryQuest`
+- `mapSummaryComplete`
+- journal resource identifiers
+- checkpoint save/restore for `mapSummaryComplete`
+
+### Pocket rifts
+
+`interact_loot_pocketrift.lua` contains:
+
+- `thisObj`
+- `hasOpened`
+- `regionSummaryQuest`
+- WAD name
+- checkpoint save/restore for `hasOpened`
+
+### Legendary / Runic chests
+
+`interact_chest_standard.lua` contains:
+
+- `thisObj`
+- `state` including `OPENED`
+- `ChestType`
+- `WADName`
+- code that increments region-summary categories `LegendaryChest` and `RunicChest`
+
+## v0.5 strategy
+
+Patch only `precisionchallenge.lua` from the user's own `mods/lua_source` copy and log each raven in `OnStart`, after checkpoint restoration should have populated `ravenKilled` and before the script early-returns for already-killed birds.
+
+Log:
+
+- level/WAD name
+- object name and runtime ID
+- `regionSummaryQuest`
+- `ravenKilled`
+- world X/Y/Z
+
+This answers the object-lifetime question without mutating gameplay.
+
+If all or most of Midgard's 43 raven objects appear on loading a save, build a global runtime collectible registry. If only a local subset appears, runtime enumeration is insufficient for whole-realm reveal and we should extract positions from unloaded game assets/WADs into a generated cache.
 
 ## Safety rule
 
-Until we understand the collectible schema, do not:
+Do not:
 
 - pass `kUndiscovered` records to `Map.CreateMarkerIcon()`
 - call `Map.ChangeMarkerState()` for testing
-- modify collectible/save progression
+- increment region-summary quests
+- mutate collectible completion state
+- write synthetic save data
