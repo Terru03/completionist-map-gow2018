@@ -1,14 +1,20 @@
 # Icon assets
 
-This folder contains original Completionist Map UI artwork. It should be compatible with the visual language of God of War (2018) without reproducing official icon art 1:1.
+This folder contains original Completionist Map UI artwork. It should fit the visual language of God of War (2018) without reproducing official icon art 1:1.
+
+## Layout
+
+- `source/` contains canonical 64-unit SVG glyph masters used for production work.
+- `concepts/` contains approved high-resolution PNG concept masters and any retained alternate SVG studies.
+- `incoming/` is only a temporary upload handoff and should normally remain absent/empty.
 
 ## Source policy
 
-- `source/` contains canonical 64-unit SVG glyph masters.
 - Source glyphs use a transparent background.
 - Surface shells and state treatments should be layered separately where technically possible.
-- Raster targets are 24, 32, 48 and 64 px.
-- 24/32 px exports require visual inspection for optical simplification.
+- Production raster targets are 24, 32, 48 and 64 px.
+- 24/32 px exports require visual inspection and optical simplification.
+- PNG concept masters are visual references for the final SVG/production assets, not direct in-game exports.
 
 ## Source colours
 
@@ -17,8 +23,19 @@ This folder contains original Completionist Map UI artwork. It should be compati
 
 Runtime tinting may replace the bone colour for hover, selected, tracked, completed or unavailable states.
 
-## Initial acceptance set
+## Approved concept families
 
-The first four source glyphs are Raven, Nornir Chest, Nornir Seal and Nornir Bell. They are intentionally more geometric than illustrative so they survive compass-size rendering.
+- Raven
+- Nornir Chest
+- Nornir Seal
+- Nornir Bell
+- Nornir Mechanism
+- Lore Marker
+- Artefact
+- Legendary Chest
+- Remaining Collectible
+- Player Marker
+
+The spread-wing Raven direction (concept C) is the canonical Raven source.
 
 See `docs/ICON-DESIGN-SYSTEM.md` for the full inventory, state matrix, naming rules and visual rationale.
