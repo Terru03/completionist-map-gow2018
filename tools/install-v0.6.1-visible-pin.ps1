@@ -35,7 +35,8 @@ if ($text.Contains('[CompletionistMap v0.6.1]')) {
 
 $helper = @'
 -- Completionist Map v0.6.1 visible-pin prototype.
--- Uses a known safe discovered native marker only as an icon template.
+-- Temporarily borrows one already-rendered discovered DockPoint icon.
+-- The original icon position is restored when leaving the map.
 -- No map-marker state, quest state, or collectible state is changed.
 local completionistMapV061Target = {
   Type = "Raven",
@@ -128,16 +129,21 @@ local function CompletionistMapV061_FindBackingMarker(self)
   return nil
 end
 
-local function CompletionistMapV061_DestroyPin(self)
-  if self.completionistMapV061IconGO ~= nil then
+local function CompletionistMapV061_RestorePin(self)
+  if self.completionistMapV061IconGO ~= nil and
+      self.completionistMapV061OriginalPosition ~= nil then
     local ok, err = pcall(function()
-      Map.RecycleIcon(self.completionistMapV061IconGO)
+      self.completionistMapV061IconGO:SetWorldPosition(
+        self.completionistMapV061OriginalPosition
+      )
     end)
-    print("[CompletionistMap v0.6.1] PIN_DESTROY" ..
+    print("[CompletionistMap v0.6.1] PIN_RESTORE" ..
       " ok=" .. tostring(ok) ..
       " error=" .. tostring(err))
-    self.completionistMapV061IconGO = nil
   end
+
+  self.completionistMapV061IconGO = nil
+  self.completionistMapV061OriginalPosition = nil
   self.completionistMapV061Selected = false
 end
 
@@ -170,27 +176,29 @@ local function CompletionistMapV061_CreatePin(self)
     " state=" .. tostring(backing.State) ..
     " region=" .. tostring(backing.regionId) ..
     " wad=" .. tostring(backing.WadName) ..
-    " isDock=" .. tostring(isDock))
+    " isDock=" .. tostring(isDock) ..
+    " hasIcon=" .. tostring(backing.iconGO ~= nil))
 
-  if backing.State ~= tweaks.eTokenState.kDiscovered or not isDock then
+  if backing.State ~= tweaks.eTokenState.kDiscovered or
+      not isDock or backing.iconGO == nil then
     print("[CompletionistMap v0.6.1] PIN_CREATE ok=false reason=backing_marker_not_safe")
     return
   end
 
-  local createOK, iconOrErr = pcall(function()
-    return Map.CreateMarkerIcon(backing.Id, backing.regionId, "")
+  local originalOK, original = pcall(function()
+    return backing.iconGO:GetWorldPosition()
   end)
 
-  if not createOK or iconOrErr == nil then
-    print("[CompletionistMap v0.6.1] PIN_CREATE ok=false reason=create_failed error=" ..
-      tostring(iconOrErr))
+  if not originalOK or original == nil then
+    print("[CompletionistMap v0.6.1] PIN_CREATE ok=false reason=original_position_unavailable")
     return
   end
 
-  local iconGO = iconOrErr
-  self.completionistMapV061IconGO = iconGO
+  self.completionistMapV061IconGO = backing.iconGO
+  self.completionistMapV061OriginalPosition =
+    engine.Vector.New(original.x, original.y, original.z)
 
-  local mapY = -0.2
+  local mapY = original.y
   local yOK, playerIconPos = pcall(function()
     return self.playerIconGO:GetWorldPosition()
   end)
@@ -199,28 +207,29 @@ local function CompletionistMapV061_CreatePin(self)
   end
 
   local setOK, setErr = pcall(function()
-    iconGO:SetWorldPosition(engine.Vector.New(
+    self.completionistMapV061IconGO:SetWorldPosition(engine.Vector.New(
       completionistMapV061Target.MapX,
       mapY,
       completionistMapV061Target.MapZ
     ))
-    iconGO:Show()
-    UI.SetIsClickable(iconGO)
+    self.completionistMapV061IconGO:Show()
+    UI.SetIsClickable(self.completionistMapV061IconGO)
   end)
 
   if not setOK then
     print("[CompletionistMap v0.6.1] PIN_CREATE ok=false reason=position_failed error=" ..
       tostring(setErr))
-    CompletionistMapV061_DestroyPin(self)
+    CompletionistMapV061_RestorePin(self)
     return
   end
 
   local actualOK, actual = pcall(function()
-    return iconGO:GetWorldPosition()
+    return self.completionistMapV061IconGO:GetWorldPosition()
   end)
 
   print("[CompletionistMap v0.6.1] PIN_CREATE" ..
     " ok=true" ..
+    " mode=borrowed_discovered_dock_icon" ..
     " type=" .. completionistMapV061Target.Type ..
     " worldX=" .. tostring(completionistMapV061Target.WorldX) ..
     " worldY=" .. tostring(completionistMapV061Target.WorldY) ..
@@ -228,12 +237,15 @@ local function CompletionistMapV061_CreatePin(self)
     " mapX=" .. tostring(completionistMapV061Target.MapX) ..
     " mapY=" .. tostring(mapY) ..
     " mapZ=" .. tostring(completionistMapV061Target.MapZ) ..
+    " originalX=" .. tostring(original.x) ..
+    " originalY=" .. tostring(original.y) ..
+    " originalZ=" .. tostring(original.z) ..
     " actual=" .. (actualOK and
       ("x=" .. tostring(actual.x) .. ",y=" .. tostring(actual.y) .. ",z=" .. tostring(actual.z))
       or "<error>"))
 
   local cameraOK, cameraErr = pcall(function()
-    Camera.PointAtGO(iconGO, true)
+    Camera.PointAtGO(self.completionistMapV061IconGO, true)
   end)
 
   print("[CompletionistMap v0.6.1] PIN_CAMERA" ..
@@ -261,7 +273,7 @@ if (-not $submenuExitRegex.IsMatch($text)) {
 }
 $text = $submenuExitRegex.Replace(
     $text,
-    "function MapOn:SubmenuExit(currState)`r`n  CompletionistMapV061_DestroyPin(self)`r`n",
+    "function MapOn:SubmenuExit(currState)`r`n  CompletionistMapV061_RestorePin(self)`r`n",
     1
 )
 
@@ -271,7 +283,7 @@ if (-not $exitRegex.IsMatch($text)) {
 }
 $text = $exitRegex.Replace(
     $text,
-    "function MapOn:Exit()`r`n  CompletionistMapV061_DestroyPin(self)`r`n",
+    "function MapOn:Exit()`r`n  CompletionistMapV061_RestorePin(self)`r`n",
     1
 )
 
@@ -321,6 +333,7 @@ Write-Host ''
 Write-Host 'Completionist Map v0.6.1 VISIBLE PIN prototype installed.'
 Write-Host "Override: $dest"
 Write-Host ''
-Write-Host 'Open the Midgard map. It should centre on a duplicated native dock-style icon'
-Write-Host 'placed at the predicted map position of the remaining Veithurgard Raven.'
-Write-Host 'This build does not alter collectible, quest, or map-marker progression.'
+Write-Host 'Open the Midgard map. The prototype temporarily moves one already-rendered'
+Write-Host 'discovered dock icon to the calculated map position of the remaining Raven.'
+Write-Host 'The dock icon is restored when you leave the map.'
+Write-Host 'No save/progression state is changed.'
