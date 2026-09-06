@@ -1,12 +1,22 @@
 # Changelog
 
+## v0.5-raven-registry
+
+- Pivots from the native map-marker table to actual collectible gameplay objects.
+- Adds a read-only raven diagnostic against `precisionchallenge.lua`.
+- Logs each loaded raven's level/WAD, object name/ID, `regionSummaryQuest`, restored `ravenKilled` state and exact world X/Y/Z.
+- Installer patches the user's own `mods/lua_source` copy at install time, avoiding bundled decompiled game source and ensuring the override matches the user's game build.
+- Purpose: determine whether Midgard's raven objects instantiate realm-wide or only in currently loaded WADs.
+
 ## v0.4-diagnostic
 
-- Correlates Midgard's native region/realm completion summaries with hidden marker records.
-- Dumps `Map.GetRegionSummaryInfo(regionId)` and `Map.GetRealmSummary(...)` scalar fields.
-- Safely probes candidate collectible marker flags including artefacts, lore, ravens, runic/Nornir chests, legendary chests and pocket rifts.
-- Logs hidden marker IDs with known infrastructure flags and any candidate collectible flags.
-- Remains read-only: no icon creation, marker-state changes or save/progression changes.
+- Correlated Midgard's native region/realm completion summaries with hidden marker records.
+- Midgard result: `148 / 225` realm-summary progress.
+- Tested all 244 hidden marker records against candidate collectible flags.
+- Result: every hidden record returned `candidateFlags=<none>` for the tested collectible categories.
+- Region-level mismatches prove missing collectible summary entries are not represented as collectible-typed native POI marker records.
+- Conclusion: reject the direct hidden-marker path for collectibles and pivot to gameplay-object state/positions.
+- Remained read-only: no icon creation, marker-state changes or save/progression changes.
 
 ## v0.3.1-diagnostic
 
