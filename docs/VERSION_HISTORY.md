@@ -47,7 +47,7 @@ This file records every numbered Completionist Map test build produced so far. T
 | --- | --- | --- |
 | v0.8.0 | `Completionist-Map-v0.8.0-NORNIR-POSITION-DIAGNOSTIC.zip` | Resolved a Breakable Nornir chest and `sealBreakable01..03` to exact world XYZ. |
 | v0.8.1 | `Completionist-Map-v0.8.1-NORNIR-SEAL-STATE.zip` | Added exact rune index and individual visual-state diagnostics; established how to identify a persisted broken Breakable seal. A calibration-labelled variant was also produced during this step. |
-| v0.8.2 | `Completionist-Map-v0.8.2-NORNIR-MAP-HUD.zip` | First visible Nornir seal map/HUD prototype; gameplay and map contexts did not share the expected `_G` registry. |
+| v0.8.2 | `Completionist-Map-v0.8.2-NORNIR-MAP-HUD.zip` | First visible synthetic Nornir seal map/HUD prototype; gameplay and map contexts did not share the expected `_G` registry. |
 | v0.8.3 | `Completionist-Map-v0.8.3-NORNIR-REGISTRY-FIX.zip` | Added cross-context bridge/fallback. Verified chest/seal map coordinates can be rendered independently of native collectible markers. |
 | v0.8.4 | `Completionist-Map-v0.8.4-NORNIR-COMPASS-ZOOM.zip` | Fixed a MainHUD cross-context registry crash and added extended map zoom (`MaxIn 6 -> 3.5`). |
 | v0.8.5 | `Completionist-Map-v0.8.5-NORNIR-HIERARCHY-FILTERS.zip` | Added Nornir parent/child hierarchy and Completionist filter modes; map-side `MapOn:Update` injection had an extra `end` and prevented the map override from initialising. |
@@ -63,7 +63,8 @@ This file records every numbered Completionist Map test build produced so far. T
 | v0.9.1 | `Completionist-Map-v0.9.1-SEAL-COMPASS-ZOOM-PLAYER.zip` | Seal Add-to-Compass confirmed. Deep zoom increased to `MaxIn=2.5`. Added session-local Hide/Show Kratos map-marker toggle. Remaining visual issue: multiple synthetic types reused the same DockPoint backing ID. |
 | v0.9.2 | `Completionist-Map-v0.9.2-DISTINCT-BACKINGS-SNAP.zip` | Introduced distinct discovered DockPoint backing IDs and attempted tighter snap/adaptive scaling. Field regression: Raven survived, but Nornir parent/children were recycled because `CompletionistMapV092_ApplyZoomAdaptiveIconScale` was referenced before declaration and resolved as nil. |
 | v0.9.3 | `Completionist-Map-v0.9.3-NORNIR-SNAP-FIX.zip` | Attempted to remove the v0.9.2 adaptive-scale regression. **Field regression:** map-side Completionist code did not initialise at all; no custom markers, filters or Kratos toggle. Superseded. |
-| v0.9.3.1 | `Completionist-Map-v0.9.3.1-MAP-LOAD-HOTFIX.zip` | **Current test build.** Rebuilt from compile-good v0.9.2, forward-declares the adaptive-scale helper instead of rewriting marker loops, retains distinct backings and `MaxIn=2.5`, and reduces close-zoom snapping to `CursorScale_Min=0.12`, `CursorSnap_Strength=0.55`. |
+| v0.9.3.1 | `Completionist-Map-v0.9.3.1-MAP-LOAD-HOTFIX.zip` | Successful recovery build. Map, filters, Kratos toggle, Raven, Nornir parent/seals and custom compass all loaded. Field result exposed two UX bugs: Raven placement still read the single shared compass target (so tracking Nornir moved the Raven to the Nornir position), and synthetic marker snapping remained too aggressive. |
+| v0.9.4 | `Completionist-Map-v0.9.4-RAVEN-SNAP-FIX.zip` | **Current test build.** Separates Raven map coordinates from the active compass target, fixes Raven/Nornir target interference, fixes synthetic root scale at `0.28`, reduces Nornir child latch `120 -> 12` frames, keeps `MaxIn=2.5`, and tightens snap to `CursorScale_Min=0.05`, `CursorSnap_Strength=0.18`. |
 
 ## Current invariants
 
