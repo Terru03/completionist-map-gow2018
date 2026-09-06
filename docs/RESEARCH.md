@@ -89,8 +89,6 @@ A public decompiled-script mirror (`MorseTheCode/GoWLUA`) confirms that the actu
 - `thisObj:GetWorldPosition()`
 - checkpoint save/restore for `ravenKilled`
 
-This is ideal for a runtime registry if enough raven objects instantiate globally.
-
 ### Artefacts
 
 `interact_loot_artifact.lua` contains:
@@ -131,28 +129,86 @@ This is ideal for a runtime registry if enough raven objects instantiate globall
 - `WADName`
 - code that increments region-summary categories `LegendaryChest` and `RunicChest`
 
-## v0.5 strategy
+## v0.5 / v0.5.1 result: local WAD streaming confirmed
 
-Patch only `precisionchallenge.lua` from the user's own `mods/lua_source` copy and log each raven in `OnStart`, after checkpoint restoration should have populated `ravenKilled` and before the script early-returns for already-killed birds.
+The first v0.5.1 test loaded a Midgard save outside the target Raven area. The override existed and compiled, but the loader never loaded `precisionchallenge.lua` and no Raven instrumentation ran.
 
-Log:
+A targeted test then entered Veithurgard. The loader loaded `precisionchallenge.lua`, and `WAD_Xpl200_Funeral` instantiated exactly three Raven gameplay objects:
 
-- level/WAD name
-- object name and runtime ID
-- `regionSummaryQuest`
-- `ravenKilled`
-- world X/Y/Z
+```text
+1. precision_challenge_raven_perch
+   regionQuest=RegionSummary_VF_Raven_Parent
+   killed=false
+   x=-64.850898742676
+   y=12.987384796143
+   z=787.30694580078
 
-This answers the object-lifetime question without mutating gameplay.
+2. precision_challenge_raven_perch
+   regionQuest=RegionSummary_VF_Raven_Parent
+   killed=true
+   x=-127.96075439453
+   y=15.577629089355
+   z=690.07580566406
 
-If all or most of Midgard's 43 raven objects appear on loading a save, build a global runtime collectible registry. If only a local subset appears, runtime enumeration is insufficient for whole-realm reveal and we should extract positions from unloaded game assets/WADs into a generated cache.
+3. precisionchallenge_ravenhover
+   regionQuest=RegionSummary_VF_Raven_Parent
+   killed=true
+   x=122.60485076904
+   y=17.374271392822
+   z=679.21160888672
+```
+
+The region summary independently reported Ravens `2 / 3`. Therefore the object-level restored state matches the completion summary exactly: two completed and one remaining.
+
+### What this proves
+
+1. Collectible gameplay objects expose exact world coordinates.
+2. Their restored per-object completion state can distinguish completed from remaining collectibles.
+3. `regionSummaryQuest` gives a stable link to the map-summary region/category accounting.
+4. Collectible objects are not instantiated realm-wide. Their scripts appear when the corresponding WAD is streamed.
+5. Runtime enumeration alone cannot reveal every remaining collectible immediately after opening the map.
+
+## Architecture consequence
+
+The practical architecture is now hybrid:
+
+```text
+static/generated catalogue from game assets
+    -> collectible identity + WAD + region + world position
+
+live save/progression/object state
+    -> completed vs remaining
+
+remaining catalogue entries
+    -> map representation
+    -> waypoint/compass target
+```
+
+Runtime instrumentation is still valuable as a validator for the catalogue and for learning each collectible type's completion-state semantics, but the final mod should not require the user to visit every WAD before markers become available.
+
+## v0.6 research target
+
+Use the known remaining Veithurgard Raven as a deterministic first map/compass test target:
+
+```text
+WAD_Xpl200_Funeral
+RegionSummary_VF_Raven_Parent
+(-64.850898742676, 12.987384796143, 787.30694580078)
+```
+
+Questions to answer:
+
+1. How does the map convert an arbitrary world position into map-space?
+2. Can Lua construct a synthetic native marker record accepted by `Map.CreateMarkerIcon()` and `game.Compass.ShowMarker()`?
+3. If no native creation API exists, can we create a UI-only map icon at the converted map position and drive a separate compass target toward the world coordinate?
+4. How should collectible catalogue entries be keyed so they can be reconciled against save/progression state without depending on unstable runtime object IDs?
 
 ## Safety rule
 
 Do not:
 
-- pass `kUndiscovered` records to `Map.CreateMarkerIcon()`
-- call `Map.ChangeMarkerState()` for testing
+- pass arbitrary `kUndiscovered` stock records to `Map.CreateMarkerIcon()`
+- call `Map.ChangeMarkerState()` on unrelated stock markers
 - increment region-summary quests
 - mutate collectible completion state
 - write synthetic save data
