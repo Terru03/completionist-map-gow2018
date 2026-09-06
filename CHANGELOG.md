@@ -3,8 +3,8 @@
 ## v0.6.1-visible-pin-prototype
 
 - Uses the world-to-map transform solved by v0.6 to place the known remaining Veithurgard Raven at `mapX=3.21177116`, `mapZ=0.86959973`.
-- Uses a known **discovered** Veithurgard DockPoint marker only as a safe native icon template.
-- Creates one extra pooled native icon and moves only that UI GameObject to the calculated Raven location.
+- Temporarily borrows one already-rendered **discovered** Veithurgard DockPoint icon rather than creating a second native marker.
+- Saves the borrowed icon's exact original map position, moves only that UI GameObject to the calculated Raven location, and restores it on map exit.
 - Centres the map camera on the prototype pin and makes it clickable with Raven-specific reticle text.
 - Directly probes likely dynamic `game.Map` and `game.Compass` API names because generic `pairs(...)` enumeration does not expose bound engine methods.
 - Does not call `Map.ChangeMarkerState()`, does not create an icon from any hidden marker ID, and does not modify save/progression state.
