@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.6.3-radius-template-prototype
+
+- Replaces the failed DockPoint-child approach with an automatic scan for **discovered `RadiusType` markers**.
+- Uses only `kDiscovered` candidates and safely recycles any duplicate icon whose class does not expose the stock `untracked` child.
+- Keeps the first safe duplicate whose icon class exposes `untracked`, then moves only that child visual toward the solved Raven map position.
+- Adds click interception and Raven-specific reticle text for the moved child.
+- No hidden marker IDs are rendered and no save/progression state is modified.
+
+## v0.6.2-child-transform-prototype
+
+- Confirmed the Veithurgard DockPoint duplicate itself can be created safely, but its icon class exposes no `untracked` child (`PIN_CREATE ok=false reason=untracked_child_missing`).
+- Therefore no Raven pin was created and the dock/compass marker observed in gameplay was a normal stock marker, not Completionist Map output.
+- This rules out DockPoint as a useful child-transform template and motivates using a `RadiusType` icon, because stock `mapmenu.lua` explicitly moves its `untracked` child with `SetLocalPosition()`.
+
 ## v0.6.1-visible-pin-prototype
 
 - Uses the world-to-map transform solved by v0.6 to place the known remaining Veithurgard Raven at `mapX=3.21177116`, `mapZ=0.86959973`.
