@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "source": "Completionist Map v0.5.1 targeted runtime diagnostic",
+  "realm": "Midgard",
+  "wad": "WAD_Xpl200_Funeral",
+  "region_summary_quest": "RegionSummary_VF_Raven_Parent",
+  "summary_on_test_save": {
+    "progress": 2,
+    "goal": 3
+  },
+  "observations": [
+    {
+      "object_name": "precision_challenge_raven_perch",
+      "runtime_id": null,
+      "world_position": {
+        "x": -64.850898742676,
+        "y": 12.987384796143,
+        "z": 787.30694580078
+      },
+      "observed_killed_on_test_save": false
+    },
+    {
+      "object_name": "precision_challenge_raven_perch",
+      "runtime_id": null,
+      "world_position": {
+        "x": -127.96075439453,
+        "y": 15.577629089355,
+        "z": 690.07580566406
+      },
+      "observed_killed_on_test_save": true
+    },
+    {
+      "object_name": "precisionchallenge_ravenhover",
+      "runtime_id": null,
+      "world_position": {
+        "x": 122.60485076904,
+        "y": 17.374271392822,
+        "z": 679.21160888672
+      },
+      "observed_killed_on_test_save": true
+    }
+  ],
+  "notes": [
+    "The three runtime objects exactly reconcile with the region summary of 2/3 Ravens.",
+    "The object script loaded only after entering the local WAD, confirming local streaming.",
+    "Observed completion state is save-specific and must not be treated as static catalogue data."
+  ]
+}
