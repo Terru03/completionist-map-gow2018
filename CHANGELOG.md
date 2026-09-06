@@ -7,6 +7,10 @@
 - If absent, downloads a pinned `MorseTheCode/GoWLUA` copy from commit `1958cf514d56e1278f02570c876ad127462b3551`.
 - Validates raven-script structural signatures before patching.
 - Instruments only `precisionchallenge.lua::OnStart` to log raven object identity, region-summary quest, restored completion state and world coordinates.
+- Targeted Veithurgard test succeeded: `WAD_Xpl200_Funeral` instantiated exactly three Raven objects, two with `killed=true` and one with `killed=false`, matching the region summary of `2 / 3` Ravens.
+- Confirmed remaining Raven world position: `(-64.850898742676, 12.987384796143, 787.30694580078)`.
+- Confirms collectible gameplay objects are streamed by local WAD rather than instantiated realm-wide.
+- Establishes the hybrid architecture: asset-derived coordinate catalogue plus live save/progression state.
 - Remains read-only with respect to collectible, quest and map progression.
 
 ## v0.5-raven-registry-diagnostic
