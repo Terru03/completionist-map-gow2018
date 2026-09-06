@@ -1,0 +1,30 @@
+--- a/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua
++++ b/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua
+@@ -13,6 +13,26 @@
+ end
+ function OnStart(level, obj)
++  local completionistMapV05OK, completionistMapV05Err = pcall(function()
++    local completionistMapV05Pos = thisObj:GetWorldPosition()
++    local completionistMapV05ID = "<unavailable>"
++    local completionistMapV05IDOK, completionistMapV05IDValue = pcall(function()
++      return thisObj:GetID()
++    end)
++    if completionistMapV05IDOK then
++      completionistMapV05ID = tostring(completionistMapV05IDValue)
++    end
++    print("[CompletionistMap v0.5] RAVEN" ..
++      " level=" .. tostring(level and level.Name or "") ..
++      " object=" .. tostring(thisObj:GetName()) ..
++      " id=" .. completionistMapV05ID ..
++      " regionQuest=" .. tostring(regionSummaryQuest) ..
++      " killed=" .. tostring(ravenKilled) ..
++      " x=" .. tostring(completionistMapV05Pos.x) ..
++      " y=" .. tostring(completionistMapV05Pos.y) ..
++      " z=" .. tostring(completionistMapV05Pos.z))
++  end)
++  if not completionistMapV05OK then
++    print("[CompletionistMap v0.5] RAVEN_ERROR error=" .. tostring(completionistMapV05Err))
++  end
+   if ravenKilled == true then
+     HideBird()
+     return
