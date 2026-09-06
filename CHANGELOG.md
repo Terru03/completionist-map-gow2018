@@ -2,6 +2,18 @@
 
 For the exhaustive numbered prototype list, including superseded and failed test builds, see [`docs/VERSION_HISTORY.md`](docs/VERSION_HISTORY.md).
 
+## v0.9.5-no-magnet-hover
+
+- Field result from v0.9.4 confirmed Raven/Nornir target separation is fixed: Raven stayed at its immutable map coordinates while a Nornir chest was the active compass target.
+- Field result also confirmed custom filters, Raven/Nornir positions, Hide/Show Kratos, seal/chest compass tracking and Nornir lifecycle remain healthy.
+- Fixes hidden-Kratos reopening. Hiding `MapIconPlayer` no longer forces stock `SubmenuEnter()` to centre on `CALDERA_MAP_POSITION`; the hidden transformed player GO remains the opening camera focus.
+- Restores synthetic marker visuals from temporary scale `0.28` to native backing scale `1.0`.
+- Removes `UI.SetIsClickable()` from synthetic Completionist pins so the native `tMapCamera` cannot magnetically pull the cursor toward them from a large distance.
+- Adds manual nearest-target hover for custom Raven/Nornir pins with a `0.018` map-unit radius.
+- Preserves the selected-cursor animation and Add-to-Compass prompt inside the manual hover radius.
+- Leaves stock/native map marker collision handling intact.
+- Keeps deep zoom `MaxIn=2.5` and the already-softened native camera parameters `CursorScale_Min=0.05`, `CursorSnap_Strength=0.18`.
+
 ## v0.9.4-raven-snap-fix
 
 - Field result from v0.9.3.1 confirmed the full map-side stack was healthy again: filters, Raven/Nornir pins, custom compass, Kratos toggle and real Nornir chest-open removal all worked.
@@ -13,6 +25,7 @@ For the exhaustive numbered prototype list, including superseded and failed test
   - `CursorScale_Min: 0.12 -> 0.05`
   - `CursorSnap_Strength: 0.55 -> 0.18`
 - Retains deep zoom `MaxIn=2.5`, distinct backing IDs, custom filters, seal Add-to-Compass and Hide/Show Kratos.
+- Field result: Raven/Nornir target interference was fixed, but hidden Kratos caused fallback map centring and synthetic pins remained too magnetic at deep zoom. Scale `0.28` also made custom artwork visibly smaller than native markers.
 
 ## v0.9.3.1-map-load-hotfix
 
