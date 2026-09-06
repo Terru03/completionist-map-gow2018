@@ -20,7 +20,7 @@ Preferred final behaviour:
 5. Hide completed objects immediately and correctly restore their state after reload.
 6. Ship dedicated God of War-style artwork for Completionist markers.
 
-## Current status: v0.9.4 test build
+## Current status: v0.9.5 test build
 
 The project has progressed beyond the original hidden-native-marker approach. Collectibles are tracked by their gameplay scripts/state, converted from world XYZ into Midgard map coordinates, and represented by synthetic native-compatible UI pins.
 
@@ -46,40 +46,39 @@ Confirmed working milestones:
 - Map zoom is extended from stock `MaxIn=6` to `MaxIn=2.5`.
 - Distinct discovered DockPoint backing IDs are used for Raven, Nornir parents and Nornir puzzle actors, with field-confirmed `ALIAS_CHECK sameGO=false`.
 
-### v0.9.3.1 field result
+### v0.9.4 field result
 
-`Completionist-Map-v0.9.3.1-MAP-LOAD-HOTFIX.zip` successfully restored the full map-side stack after the v0.9.3 regression. The test confirmed:
+`Completionist-Map-v0.9.4-RAVEN-SNAP-FIX.zip` successfully fixed Raven/Nornir target interference. Field testing confirmed:
 
-- `MAP_SCRIPT_LOADED` and 11-entry filter mapping;
-- Raven, Nornir parent and only-remaining seal pins;
-- custom chest/seal compass tracking;
-- Hide/Show Kratos;
-- real chest-open removal;
-- distinct synthetic GameObjects.
+- Raven remained at the correct map coordinate while a Nornir chest was the active compass target (`RAVEN_PIN_INDEPENDENT`).
+- Raven, Nornir parent and remaining seal pins were all correct.
+- Custom filters worked.
+- Hide/Show Kratos worked.
+- Nornir chest/seal compass tracking and real completion removal worked.
 
-It also exposed two remaining UX bugs:
+Two UX issues remained:
 
-1. Raven placement still read the single shared `_G.CompletionistMap...Target.mapX/mapZ`. Tracking a Nornir chest therefore moved the Raven map pin onto the Nornir position until the active target changed again.
-2. Synthetic DockPoint roots remained too large/sticky for the newly extended close zoom. The field log showed `SNAP_TUNING cursorScale=1 customIconScale=1`, so the intended adaptive shrink never occurred.
+1. Hiding Kratos also made `ShouldShowPlayerMarker()` false, so stock `SubmenuEnter()` opened the next map view at `CALDERA_MAP_POSITION` instead of Kratos's real position.
+2. Synthetic pins still produced an uncomfortably strong long-range cursor magnet at deep zoom. Shrinking them to `0.28` also made the marker artwork visibly smaller than native markers.
 
-### v0.9.4
+### v0.9.5
 
 Current test build:
 
-`Completionist-Map-v0.9.4-RAVEN-SNAP-FIX.zip`
+`Completionist-Map-v0.9.5-NO-MAGNET-HOVER.zip`
 
 Changes:
 
-- Raven map coordinates are immutable and no longer derived from the active compass target.
-- Nornir chest/seal tracking can no longer move or hide the Raven pin.
-- Temporary synthetic marker roots use fixed scale `0.28` to shrink their visible/clickable footprint.
-- Nornir child collision latch is reduced from `120` to `12` frames.
+- Hidden Kratos remains visually hidden, but the map still centres on the transformed hidden `MapIconPlayer` when reopening the current realm.
+- Synthetic marker visuals return to native backing scale `1.0`.
+- Synthetic Completionist pins are no longer registered with `UI.SetIsClickable()`, so the native `tMapCamera` cannot magnetically pull the cursor toward them from a large distance.
+- Custom Raven/Nornir hover now uses a manual nearest-target test with a `0.018` map-unit radius.
+- The normal selected-cursor animation and Add-to-Compass prompt are preserved when inside that small radius.
+- Stock/native map markers continue through the original native collision handler.
+- Existing softened native camera settings remain `CursorScale_Min=0.05`, `CursorSnap_Strength=0.18`.
 - Deep zoom remains `MaxIn=2.5`.
-- Snap tuning is reduced further:
-  - `CursorScale_Min = 0.05`
-  - `CursorSnap_Strength = 0.18`
 
-The next field test should specifically verify Raven remains in place while Nornir is tracked and that close-zoom snapping is materially less aggressive.
+The next field test should verify hidden-Kratos reopening, no-magnet custom hover, native-sized custom pins, and unchanged compass/filter/lifecycle behaviour.
 
 ## Version history
 
