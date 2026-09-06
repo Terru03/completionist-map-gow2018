@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.6.1-visible-pin-prototype
+
+- Uses the world-to-map transform solved by v0.6 to place the known remaining Veithurgard Raven at `mapX=3.21177116`, `mapZ=0.86959973`.
+- Uses a known **discovered** Veithurgard DockPoint marker only as a safe native icon template.
+- Creates one extra pooled native icon and moves only that UI GameObject to the calculated Raven location.
+- Centres the map camera on the prototype pin and makes it clickable with Raven-specific reticle text.
+- Directly probes likely dynamic `game.Map` and `game.Compass` API names because generic `pairs(...)` enumeration does not expose bound engine methods.
+- Does not call `Map.ChangeMarkerState()`, does not create an icon from any hidden marker ID, and does not modify save/progression state.
+
+## v0.6-api-transform-prototype
+
+- Confirmed native marker records expose a `Coordinates` userdata vector containing world-space X/Y/Z.
+- Correlated three native marker world coordinates with rendered map-icon positions and the live player world position with `MapIconPlayer`.
+- Solved Midgard's world-to-map X/Z transform:
+  - `mapX = 0.004 * worldZ + 0.0625431`
+  - `mapZ = -0.004 * worldX + 0.6101961`
+- Maximum residual across four independent samples was approximately `1.2e-7` map units.
+- Remaining Veithurgard Raven projects to approximately `(3.21177116, 0.86959973)` in map X/Z.
+- Generic Map/Compass/UI/Camera enumeration via `pairs(...)` yielded no bound functions; protected metatables prevented method enumeration.
+- Remained read-only with respect to save/progression state.
+
 ## v0.5.1-raven-registry-diagnostic
 
 - Fixes the v0.5 installer assumption that `mods/lua_source` contains `precisionchallenge.lua`.
