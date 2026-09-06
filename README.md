@@ -26,7 +26,7 @@ Preferred final behaviour:
 - `v0.3.1-diagnostic`: proved `kUndiscovered` is not a collectible filter. Midgard exposed 318 marker records, including 244 hidden records dominated by quest, dock, fight and travel infrastructure.
 - `v0.4-diagnostic`: decisive negative for collectible-specific native map markers. Midgard is at 148/225 realm-summary progress, yet all 244 hidden native marker records returned `candidateFlags=<none>` for the collectible categories we tested.
 - `v0.5.1-raven-registry`: successful gameplay-object correlation. A targeted Veithurgard test loaded exactly three Raven objects from `WAD_Xpl200_Funeral`: two restored as killed and one alive, exactly matching the region summary of 2/3 Ravens. Exact world coordinates were available for every object.
-- `v0.6`: current development direction. Build an asset-derived collectible coordinate catalogue, then prove that an arbitrary collectible world position can be represented as a selectable map marker and compass/navigation target.
+- `v0.6-api-transform-prototype`: current test build. Instruments the native map to enumerate runtime Map/Compass APIs, Veithurgard marker vector fields, native icon positions, and player world-to-map transform data. It is read-only and uses the known remaining Veithurgard Raven as the target point.
 
 ## Repository policy
 
@@ -89,12 +89,12 @@ game assets / collectible objects
 
 Runtime object instrumentation remains useful for validating catalogue coordinates and state semantics, but it cannot discover the entire realm immediately because unloaded WADs do not instantiate their collectible scripts.
 
-## Next step
+## v0.6 prototype
 
-Issue #5 tracks `v0.6`:
+The current `dev` build adds:
 
-1. determine how the map converts world coordinates into map-space;
-2. determine whether Lua can create a synthetic native marker/compass target;
-3. if not, prototype a UI-only map marker plus separate compass target;
-4. use the known remaining Veithurgard Raven as the first end-to-end test point;
-5. begin extracting/recording coordinates for Ravens, Artifacts, Lore Markers, Runic Chests, Legendary Chests and Pocket Rifts.
+- `tools/install-v0.6-api-transform.ps1`
+- `tools/uninstall-v0.6-api-transform.ps1`
+- `catalogue/veithurgard-ravens.json`
+
+The prototype opens no new save-state path and does not call `Map.ChangeMarkerState()`. It logs the exported `game.Map` and `game.Compass` methods, target-WAD marker fields, native icon map-space positions, and player world position versus player-icon map position. The result determines whether we can create a true native dynamic marker or need to emulate one in the UI layer.
