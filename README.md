@@ -24,11 +24,12 @@ Preferred final behaviour:
 - `v0.1-test`: attempted to expose undiscovered marker records directly. Opening the map crashed the game. Retained only as a failed experiment/reference.
 - `v0.2-diagnostic`: proved hidden native marker records are exposed to Lua.
 - `v0.3.1-diagnostic`: proved `kUndiscovered` is not a collectible filter. Midgard exposed 318 marker records, including 244 hidden records dominated by quest, dock, fight and travel infrastructure.
-- `v0.4-diagnostic`: current development build. Correlates Midgard's realm/region completion summaries with hidden marker records and safely tests collectible-category flag names without rendering anything.
+- `v0.4-diagnostic`: decisive negative for collectible-specific native map markers. Midgard is at 148/225 realm-summary progress, yet all 244 hidden native marker records returned `candidateFlags=<none>` for the collectible categories we tested.
+- `v0.5-raven-registry`: current development build. It patches the user's exact local `precisionchallenge.lua` and logs live Odin's Raven objects, restored killed state, region-summary quest and world X/Y/Z. The key question is whether all/most Midgard ravens instantiate at load time or only ravens in currently loaded WADs.
 
 ## Repository policy
 
-The repository tracks our own patches, tooling, notes and diagnostic logic. Decompiled game source is intentionally not committed. Local builds should be generated from the player's own `mods/lua_source` files supplied by GoW Script Loader.
+The repository tracks our own patches, tooling, notes and diagnostic logic. Decompiled game source is intentionally not committed. Local builds are generated from the player's own `mods/lua_source` files supplied by GoW Script Loader.
 
 ## Local paths used during testing
 
@@ -38,29 +39,39 @@ G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\
 G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\
 ```
 
-## Current hypothesis
+## Architecture finding
 
-The map-marker table contains useful native POI/navigation records, but collectible progression appears to be tracked separately through region-summary categories and gameplay-object state.
+The native map marker table is useful for ordinary POIs and stock compass navigation, but collectible completion is tracked separately.
 
-The preferred implementation path is now conditional:
+The actual gameplay scripts retain the data we need:
+
+- Ravens: `thisObj`, `ravenKilled`, `regionSummaryQuest`, `thisObj:GetWorldPosition()`
+- Artefacts: `thisObj`, acquisition `state`, `regionSummaryQuest`
+- Lore markers/rune reads: `thisObj`, `mapSummaryComplete`, `regionSummaryQuest`
+- Pocket rifts: `thisObj`, `hasOpened`, `regionSummaryQuest`
+- Standard chests: `thisObj`, `state`, `ChestType`, `WADName`, region-summary updates for `LegendaryChest` and `RunicChest`
+
+The stock map also exposes `game.Compass.ShowMarker(markerID, markerType)` for normal map POIs. Once collectible positions and remaining-state detection are solved, the next UI problem is creating a native-compatible selectable marker/compass target without touching completion state.
+
+## Current implementation path
 
 ```text
-if collectible-specific native marker exists:
-    native collectible marker -> reveal safely -> stock compass
-else:
-    remaining collectible gameplay object -> world position -> custom/native-compatible map marker -> stock compass
+actual collectible object
+    -> exact remaining/completed state
+    -> exact world position
+    -> Completionist Map registry
+    -> custom/native-compatible map icon
+    -> compass/navigation target
 ```
+
+The current uncertainty is object lifetime. If the game instantiates collectibles across the whole realm, the registry can be built entirely at runtime. If it only instantiates objects from loaded WADs, we will need an asset-derived coordinate cache or another way to enumerate unloaded world objects.
 
 ## Next step
 
-Run `v0.4-diagnostic`, open Midgard once, then inspect `mods/loader_log.txt` for lines beginning with:
+Run `v0.5-raven-registry` on a Midgard save and capture lines beginning with:
 
 ```text
-[CompletionistMap v0.4]
+[CompletionistMap v0.5] RAVEN
 ```
 
-The decisive questions are:
-
-1. Which Midgard regions/categories are actually incomplete on the current save?
-2. Do any hidden marker records carry collectible flags such as `LoreMarker`, `Ravens`, `RunicChest` or `LegendaryChest`?
-3. If not, which gameplay-object/pickup path should be used to obtain exact world positions for remaining collectibles?
+If the count approaches Midgard's 43 raven objects, runtime registration is viable. If only a small local subset appears, pivot to offline WAD/object extraction while still deriving positions from the game's own assets.
