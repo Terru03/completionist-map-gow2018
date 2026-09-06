@@ -2,6 +2,18 @@
 
 For the exhaustive numbered prototype list, including superseded and failed test builds, see [`docs/VERSION_HISTORY.md`](docs/VERSION_HISTORY.md).
 
+## v0.9.4-raven-snap-fix
+
+- Field result from v0.9.3.1 confirmed the full map-side stack was healthy again: filters, Raven/Nornir pins, custom compass, Kratos toggle and real Nornir chest-open removal all worked.
+- Fixes Raven/Nornir target interference. Raven map placement no longer reads the single shared active compass target's `mapX/mapZ`; it uses immutable Raven map coordinates instead.
+- Adds `RAVEN_PIN_INDEPENDENT` diagnostic to prove Raven stays at its own map coordinate while a Nornir chest/seal is tracked.
+- Replaces ineffective adaptive root scaling (`cursorScale=1`, `customIconScale=1` in field logs) with fixed synthetic root scale `0.28`.
+- Reduces Nornir child selection latch from `120` to `12` frames.
+- Tightens close-zoom snap further:
+  - `CursorScale_Min: 0.12 -> 0.05`
+  - `CursorSnap_Strength: 0.55 -> 0.18`
+- Retains deep zoom `MaxIn=2.5`, distinct backing IDs, custom filters, seal Add-to-Compass and Hide/Show Kratos.
+
 ## v0.9.3.1-map-load-hotfix
 
 - Field result from v0.9.3 showed **no map-side Completionist startup at all**: `MAP_SCRIPT_LOADED`, `FILTER_MAPPING`, custom marker creation and `PLAYER_MARKER_TOGGLE` were all absent.
@@ -10,10 +22,11 @@ For the exhaustive numbered prototype list, including superseded and failed test
 - Leaves the v0.9.2 Raven/Nornir marker loops structurally unchanged.
 - Retains distinct discovered DockPoint backing IDs for Raven, Nornir parent and Nornir puzzle pins.
 - Keeps deep map zoom at `MaxIn=2.5`.
-- Reduces close-zoom snapping much more aggressively:
+- Reduces close-zoom snapping:
   - `CursorScale_Min: 0.50 -> 0.12`
   - `CursorSnap_Strength: 2.4 -> 0.55`
 - Retains custom filters, seal Add-to-Compass and Hide/Show Kratos.
+- Field result: successful recovery. `ALIAS_CHECK` reported distinct GameObjects, but Raven still moved to a Nornir target because its reinforcement used the shared compass-target coordinates. Snapping also remained too aggressive.
 
 ## v0.9.3-nornir-snap-fix
 
