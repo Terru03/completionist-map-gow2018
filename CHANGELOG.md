@@ -1,94 +1,126 @@
 # Changelog
 
-## v0.6.3-radius-template-prototype
+For the exhaustive numbered prototype list, including superseded and failed test builds, see [`docs/VERSION_HISTORY.md`](docs/VERSION_HISTORY.md).
 
-- Replaces the failed DockPoint-child approach with an automatic scan for **discovered `RadiusType` markers**.
-- Uses only `kDiscovered` candidates and safely recycles any duplicate icon whose class does not expose the stock `untracked` child.
-- Keeps the first safe duplicate whose icon class exposes `untracked`, then moves only that child visual toward the solved Raven map position.
-- Adds click interception and Raven-specific reticle text for the moved child.
-- No hidden marker IDs are rendered and no save/progression state is modified.
+## v0.9.3-nornir-snap-fix
 
-## v0.6.2-child-transform-prototype
+- Fixes the v0.9.2 marker-creation regression caused by calling `CompletionistMapV092_ApplyZoomAdaptiveIconScale` before its declaration.
+- Removes that experimental adaptive-scale path entirely.
+- Retains distinct discovered DockPoint backing IDs for Raven, Nornir parent and Nornir puzzle pins.
+- Restores Nornir parent/child marker creation.
+- Keeps deep map zoom at `MaxIn=2.5`.
+- Tightens close-zoom snapping through stock camera parameters:
+  - `CursorScale_Min: 0.50 -> 0.18`
+  - `CursorSnap_Strength: 2.4 -> 0.9`
+- Retains filters, seal Add-to-Compass and Hide/Show Kratos.
 
-- Confirmed the Veithurgard DockPoint duplicate itself can be created safely, but its icon class exposes no `untracked` child (`PIN_CREATE ok=false reason=untracked_child_missing`).
-- Therefore no Raven pin was created and the dock/compass marker observed in gameplay was a normal stock marker, not Completionist Map output.
-- This rules out DockPoint as a useful child-transform template and motivates using a `RadiusType` icon, because stock `mapmenu.lua` explicitly moves its `untracked` child with `SetLocalPosition()`.
+## v0.9.2-distinct-backings-snap
 
-## v0.6.1-visible-pin-prototype
+- Introduced a pool of distinct discovered Midgard DockPoint backing IDs rather than reusing one marker ID for all synthetic pins.
+- Added `BACKING_POOL`, `BACKING_ASSIGN` and `ALIAS_CHECK` diagnostics.
+- Attempted zoom-adaptive synthetic marker scaling.
+- Field result: Raven remained visible, but Nornir parent/children disappeared because the scale helper resolved as a nil global during creation.
 
-- Uses the world-to-map transform solved by v0.6 to place the known remaining Veithurgard Raven at `mapX=3.21177116`, `mapZ=0.86959973`.
-- Temporarily borrows one already-rendered **discovered** Veithurgard DockPoint icon rather than creating a second native marker.
-- Saves the borrowed icon's exact original map position, moves only that UI GameObject to the calculated Raven location, and restores it on map exit.
-- Centres the map camera on the prototype pin and makes it clickable with Raven-specific reticle text.
-- Directly probes likely dynamic `game.Map` and `game.Compass` API names because generic `pairs(...)` enumeration does not expose bound engine methods.
-- Does not call `Map.ChangeMarkerState()`, does not create an icon from any hidden marker ID, and does not modify save/progression state.
+## v0.9.1-seal-compass-zoom-player
+
+- Confirmed Nornir seal Add-to-Compass: `NORNIR_PROMPT -> NORNIR_COMPASS -> HUD_NORNIR_TRACK`.
+- Gives puzzle children collision priority over their parent chest and keeps a short selection latch.
+- Extends map zoom to `MaxIn=2.5`.
+- Adds session-local Hide/Show Kratos map-marker toggle while preserving stock Go-to-Journal behaviour.
+
+## v0.9.0.1-installer-fix
+
+- Fixes v0.9.0 installer validation ordering. The milestone logic was valid, but the installer checked for the injected native-hover path before applying that injection.
+
+## v0.9.0-nornir-lifecycle-native-hover
+
+- Removes custom `Camera.PointAt()` marker hover recentering so custom hover preserves zoom.
+- Uses the stock selected-cursor animation path.
+- Reveals remaining Nornir puzzle siblings after the locked chest is attempted/restored as locked.
+- Observes `interact_chest_standard.lua::OnOpened()` as the authoritative Runic chest-open event.
+- Clears/removes the Nornir parent only after the real loot chest is opened.
+
+## v0.8.7-nornir-compass-fix
+
+- Fixes Lua lexical scope for `CompletionistMap...GetNornirRegistry` by forward-declaring the local helper before `IsTargetCollected()` captures it.
+
+## v0.8.6-map-filter-fix
+
+- Fixes the premature `end` in the v0.8.5 `MapOn:Update()` injection.
+- Restores map-side Completionist loading, Raven/Nornir pins and custom filter mapping.
+- Correctly omits persisted broken Breakable seals.
+
+## v0.8.5-nornir-hierarchy-filters
+
+- Introduces top-level Nornir chest parents versus child puzzle actors.
+- Adds Completionist-specific logical filters into the existing bottom-left filter cycle.
+- Field result: map-side injection failed because `MapOn:Update()` was closed early.
+
+## v0.8.4-nornir-compass-zoom
+
+- Removes a MainHUD call to a map-only Nornir registry helper.
+- Tracks selected Nornir targets directly by copied world XYZ.
+- Adds extended map zoom (`MaxIn 6 -> 3.5`).
+
+## v0.8.3-nornir-registry-fix
+
+- Fixes map/gameplay context isolation by adding a cross-context bridge and a verified-coordinate fallback for the known Breakable chest.
+- Makes synthetic Nornir map pins independent of shared `_G` state for the tested chest.
+
+## v0.8.2-nornir-map-hud
+
+- First visible synthetic Nornir map/HUD prototype.
+- Field result exposed that gameplay and map scripts did not share the assumed plain `_G` registry.
+
+## v0.8.1-nornir-seal-state
+
+- Adds exact `runeIndex` and individual rune visual-state diagnostics.
+- Establishes persisted Breakable seal suppression semantics.
+
+## v0.8.0-nornir-position-diagnostic
+
+- Resolves `sealBreakable01..03` GameObjects to exact world XYZ for a real Breakable Nornir chest.
+
+## v0.7.8-raven-lifecycle
+
+- Raven milestone: map target led to a real remaining Raven.
+- Killing the Raven cleared the custom HUD target and suppressed its later map marker.
+
+## v0.7.x custom-HUD research
+
+- Iterated away from unsafe synthetic native compass markers.
+- Proved a HUD-native visual can be repositioned along the compass according to an arbitrary stored world XYZ bearing.
+- See `docs/VERSION_HISTORY.md` for v0.7 through v0.7.7 individually.
 
 ## v0.6-api-transform-prototype
 
-- Confirmed native marker records expose a `Coordinates` userdata vector containing world-space X/Y/Z.
-- Correlated three native marker world coordinates with rendered map-icon positions and the live player world position with `MapIconPlayer`.
-- Solved Midgard's world-to-map X/Z transform:
+- Confirmed native marker records expose world-space `Coordinates`.
+- Solved Midgard world-to-map transform:
   - `mapX = 0.004 * worldZ + 0.0625431`
   - `mapZ = -0.004 * worldX + 0.6101961`
-- Maximum residual across four independent samples was approximately `1.2e-7` map units.
-- Remaining Veithurgard Raven projects to approximately `(3.21177116, 0.86959973)` in map X/Z.
-- Generic Map/Compass/UI/Camera enumeration via `pairs(...)` yielded no bound functions; protected metatables prevented method enumeration.
-- Remained read-only with respect to save/progression state.
+- Maximum observed residual was approximately `1.2e-7` map units.
 
 ## v0.5.1-raven-registry-diagnostic
 
-- Fixes the v0.5 installer assumption that `mods/lua_source` contains `precisionchallenge.lua`.
-- Searches local loader source/override paths first.
-- If absent, downloads a pinned `MorseTheCode/GoWLUA` copy from commit `1958cf514d56e1278f02570c876ad127462b3551`.
-- Validates raven-script structural signatures before patching.
-- Instruments only `precisionchallenge.lua::OnStart` to log raven object identity, region-summary quest, restored completion state and world coordinates.
-- Targeted Veithurgard test succeeded: `WAD_Xpl200_Funeral` instantiated exactly three Raven objects, two with `killed=true` and one with `killed=false`, matching the region summary of `2 / 3` Ravens.
-- Confirmed remaining Raven world position: `(-64.850898742676, 12.987384796143, 787.30694580078)`.
-- Confirms collectible gameplay objects are streamed by local WAD rather than instantiated realm-wide.
-- Establishes the hybrid architecture: asset-derived coordinate catalogue plus live save/progression state.
-- Remains read-only with respect to collectible, quest and map progression.
-
-## v0.5-raven-registry-diagnostic
-
-- First gameplay-object registry probe, focused on Odin's Ravens.
-- Intended to instrument `precisionchallenge.lua` and determine whether raven objects are instantiated realm-wide or only for loaded WADs.
-- Initial installer failed safely because the user's `mods/lua_source` set does not contain that gameplay script. No override was written.
+- Validates/deploys a pinned Raven gameplay-script reference when local source is missing.
+- Confirms three Veithurgard Raven objects: two killed and one alive, matching the region summary.
+- Captures exact remaining Raven world XYZ.
 
 ## v0.4-diagnostic
 
-- Correlates Midgard's native region/realm completion summaries with hidden marker records.
-- Dumps `Map.GetRegionSummaryInfo(regionId)` and `Map.GetRealmSummary(...)` scalar fields.
-- Safely probes candidate collectible marker flags including artefacts, lore, ravens, runic/Nornir chests, legendary chests and pocket rifts.
-- Logs hidden marker IDs with known infrastructure flags and any candidate collectible flags.
-- Remains read-only: no icon creation, marker-state changes or save/progression changes.
+- Correlates realm/region completion summaries with hidden marker records.
+- Rejects the native hidden-marker table as the direct collectible source.
 
 ## v0.3.1-diagnostic
 
-- Expands detailed probing to both Midgard and Alfheim.
-- Midgard is the active test realm because the current save still has missing collectibles there.
-- Alfheim is used as a 100%-complete control realm.
-- Logs marker state, LAMS IDs, offsets, quest association, known stock map/compass flags and scalar marker metadata.
-- Midgard result: 318 marker records, 312 unique IDs, 74 discovered and 244 undiscovered. Hidden records are dominated by quest, dock, fight and travel infrastructure, proving `kUndiscovered` is not a collectible filter.
-- Remains read-only: no icon creation, no marker-state changes and no save/progression changes.
-
-## v0.3-diagnostic
-
-- Restricts detailed probing to Alfheim to keep logs manageable.
-- Logs marker state, LAMS IDs, offsets, quest association and known stock map/compass flags.
-- Dumps scalar fields exposed by the marker info table and by `Map.GetMarkerInfo(id)`.
-- Remains read-only: no icon creation, no marker-state changes and no save/progression changes.
+- Uses incomplete Midgard against 100%-complete Alfheim as control.
+- Proves `kUndiscovered` is dominated by infrastructure and is not a collectible state.
 
 ## v0.2-diagnostic
 
-- Removed all attempts to create icons for undiscovered markers.
-- Added diagnostic logging around `Map.GetMarkersInfoTable(regionId)`.
-- Logs realm, region, marker ID and marker state.
-- Confirmed on the user's save that Alfheim exposes 27 records, including 23 `kUndiscovered` records and 4 `kDiscovered` records.
-- Does not modify collectible progress or save data.
+- Proves hidden marker records are exposed to Lua without rendering them.
 
 ## v0.1-test
 
-- First prototype attempting to expose hidden/undiscovered map markers.
-- Opening the map caused a game crash.
-- Likely failure points include passing `kUndiscovered` records into `Map.CreateMarkerIcon()` and treating completion categories as marker flags.
-- Removed from the user's installation immediately after testing.
+- First hidden-marker rendering experiment.
+- Opening the map crashed; direct rendering of arbitrary undiscovered native records was abandoned.
