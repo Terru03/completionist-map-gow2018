@@ -2,17 +2,24 @@
 
 For the exhaustive numbered prototype list, including superseded and failed test builds, see [`docs/VERSION_HISTORY.md`](docs/VERSION_HISTORY.md).
 
+## v0.9.3.1-map-load-hotfix
+
+- Field result from v0.9.3 showed **no map-side Completionist startup at all**: `MAP_SCRIPT_LOADED`, `FILTER_MAPPING`, custom marker creation and `PLAYER_MARKER_TOGGLE` were all absent.
+- Rebuilds from the field-proven compile-good v0.9.2 map patch instead of stacking more structural edits onto v0.9.3.
+- Fixes the v0.9.2 adaptive-scale nil helper with the safe Lua pattern already used elsewhere: forward-declare `CompletionistMapV0931_ApplyZoomAdaptiveIconScale`, then assign its implementation later.
+- Leaves the v0.9.2 Raven/Nornir marker loops structurally unchanged.
+- Retains distinct discovered DockPoint backing IDs for Raven, Nornir parent and Nornir puzzle pins.
+- Keeps deep map zoom at `MaxIn=2.5`.
+- Reduces close-zoom snapping much more aggressively:
+  - `CursorScale_Min: 0.50 -> 0.12`
+  - `CursorSnap_Strength: 2.4 -> 0.55`
+- Retains custom filters, seal Add-to-Compass and Hide/Show Kratos.
+
 ## v0.9.3-nornir-snap-fix
 
-- Fixes the v0.9.2 marker-creation regression caused by calling `CompletionistMapV092_ApplyZoomAdaptiveIconScale` before its declaration.
-- Removes that experimental adaptive-scale path entirely.
-- Retains distinct discovered DockPoint backing IDs for Raven, Nornir parent and Nornir puzzle pins.
-- Restores Nornir parent/child marker creation.
-- Keeps deep map zoom at `MaxIn=2.5`.
-- Tightens close-zoom snapping through stock camera parameters:
-  - `CursorScale_Min: 0.50 -> 0.18`
-  - `CursorSnap_Strength: 2.4 -> 0.9`
-- Retains filters, seal Add-to-Compass and Hide/Show Kratos.
+- Intended to fix the v0.9.2 marker-creation regression and tighten snapping.
+- **Field regression:** map-side Completionist code did not initialise at all. The log contained gameplay/HUD instrumentation but no `MAP_SCRIPT_LOADED`, `FILTER_MAPPING`, custom markers or Kratos toggle.
+- Superseded by v0.9.3.1, which is rebuilt from v0.9.2 rather than modifying the broken v0.9.3 map structure.
 
 ## v0.9.2-distinct-backings-snap
 
