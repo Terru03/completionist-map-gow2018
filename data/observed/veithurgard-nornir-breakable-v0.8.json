@@ -1,0 +1,54 @@
+{
+  "source": "Completionist Map v0.8.0 runtime diagnostic",
+  "realm": "Midgard",
+  "region": "Veithurgard",
+  "chest": {
+    "name": "chest_locked_parent",
+    "keyType": "Breakable",
+    "challengeCompleteAtFirstObservation": false,
+    "keysUsedAtFirstObservation": 1,
+    "world": {
+      "x": -43.904609680176,
+      "y": 14.5,
+      "z": 748.57946777344
+    },
+    "keys": [
+      {
+        "index": 1,
+        "ref": "RunicLock01",
+        "name": "runiclock01",
+        "world": {
+          "x": -40.486217498779,
+          "y": 16.5,
+          "z": 743.48889160156
+        }
+      },
+      {
+        "index": 2,
+        "ref": "RunicLock02",
+        "name": "runiclock02",
+        "world": {
+          "x": -27.675853729248,
+          "y": 16.294486999512,
+          "z": 763.55865478516
+        }
+      },
+      {
+        "index": 3,
+        "ref": "RunicLock03",
+        "name": "runiclock03",
+        "world": {
+          "x": -15.035886764526,
+          "y": 11.5,
+          "z": 721.61047363281
+        }
+      }
+    ]
+  },
+  "observations": [
+    "The three seal objects have no native map markers.",
+    "One seal was already broken when the v0.8.0 diagnostic first observed the chest (keysUsed=1).",
+    "Two subsequent OnKeyBroken-before callbacks reported keysUsed=1 and keysUsed=2, corresponding to the remaining two seals being broken during the test.",
+    "Parent-level keysUsed is therefore not sufficient to identify the exact surviving seal after reload; v0.8.1 adds runeIndex and runeVisual.IsEnabled diagnostics."
+  ]
+}
