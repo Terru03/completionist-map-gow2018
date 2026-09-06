@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory=$true)]
-    [ValidateSet('v0.1-test','v0.2-diagnostic','v0.3-diagnostic','v0.3.1-diagnostic','v0.4-diagnostic')]
+    [ValidateSet('v0.1-test','v0.2-diagnostic','v0.3-diagnostic','v0.3.1-diagnostic','v0.4-diagnostic','v0.5-raven-registry')]
     [string]$Version,
 
     [string]$GameRoot = 'G:\SteamLibrary\steamapps\common\GodOfWar'
@@ -8,8 +8,14 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
-$source = Join-Path $GameRoot 'mods\lua_source\gameart\ui\scripts\inworldmenu\mapmenu.lua'
-$out = Join-Path $repoRoot 'build\gameart\ui\scripts\inworldmenu\mapmenu.lua'
+
+$relativeSource = switch ($Version) {
+    'v0.5-raven-registry' { 'gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua' }
+    default { 'gameart\ui\scripts\inworldmenu\mapmenu.lua' }
+}
+
+$source = Join-Path $GameRoot ('mods\lua_source\' + $relativeSource)
+$out = Join-Path $repoRoot ('build\' + $relativeSource)
 $patch = Join-Path $repoRoot "patches\$Version.patch"
 
 if (-not (Test-Path $source)) { throw "Missing source file: $source" }
@@ -22,7 +28,7 @@ Copy-Item $source $out
 
 Push-Location $buildRoot
 try {
-    # The loader-provided source may use CRLF while repository patches use LF.
+    # Loader-provided source may use CRLF while repository patches use LF.
     git apply --unsafe-paths --ignore-whitespace $patch
 }
 finally {
