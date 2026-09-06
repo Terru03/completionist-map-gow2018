@@ -27,7 +27,7 @@ Preferred final behaviour:
 - `v0.4-diagnostic`: decisive negative for collectible-specific native map markers. Midgard is at 148/225 realm-summary progress, yet all 244 hidden native marker records returned `candidateFlags=<none>` for the collectible categories we tested.
 - `v0.5.1-raven-registry`: successful gameplay-object correlation. A targeted Veithurgard test loaded exactly three Raven objects from `WAD_Xpl200_Funeral`: two restored as killed and one alive, exactly matching the region summary of 2/3 Ravens. Exact world coordinates were available for every object.
 - `v0.6-api-transform-prototype`: exposed each native marker's `Coordinates` world vector and enough native icon/player correspondences to solve Midgard's world-to-map transform with approximately `1.2e-7` maximum residual.
-- `v0.6.1-visible-pin-prototype`: current dev build. It creates one extra icon from a known safe discovered DockPoint marker, moves only the duplicate UI icon to the calculated position of the remaining Veithurgard Raven, centres the map camera on it, and probes candidate dynamic Map/Compass APIs by name.
+- `v0.6.1-visible-pin-prototype`: current dev build. It temporarily borrows one already-rendered **discovered DockPoint icon**, moves only that UI GameObject to the calculated position of the remaining Veithurgard Raven, centres the map camera on it, and restores the icon's exact original position when leaving the map. It also probes candidate dynamic Map/Compass APIs by name.
 
 ## Repository policy
 
@@ -120,4 +120,4 @@ Current `dev` tooling adds:
 - `data/observed/midgard-world-map-transform-v0.6.json`
 - `catalogue/veithurgard-ravens.json`
 
-The visible-pin prototype deliberately reuses a **discovered** DockPoint marker only as a safe icon template. It does not call `Map.ChangeMarkerState()`, does not render any hidden marker ID, and does not modify save/progression data. If the pin renders at the Raven's calculated location, arbitrary collectible placement on the native map is proven and the next step is the compass target.
+The visible-pin prototype deliberately borrows an **already-rendered discovered DockPoint icon** instead of creating a second native marker or touching a hidden marker. Its original map position is saved and restored on map exit. It does not call `Map.ChangeMarkerState()` and does not modify save/progression data. If the borrowed icon renders at the Raven's calculated location, arbitrary collectible placement on the native map is proven and the next step is the compass target.
