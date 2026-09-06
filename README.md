@@ -1,6 +1,6 @@
 # Completionist Map for God of War (2018)
 
-Private development repository for a PC mod that exposes remaining collectible locations on the native God of War map and, where possible, allows the stock waypoint/compass navigation to guide the player to them.
+Private development repository for a PC mod that exposes remaining collectible locations on the native God of War map and provides a custom HUD-compass bearing to arbitrary collectible world positions.
 
 ## Target
 
@@ -14,24 +14,71 @@ Private development repository for a PC mod that exposes remaining collectible l
 Preferred final behaviour:
 
 1. Show only remaining collectibles.
-2. Use native map markers rather than an external overlay.
-3. Allow selecting a revealed collectible as a normal waypoint.
-4. Use the existing compass/navigation system to guide the player to it.
-5. Add filters/toggles so the feature can be disabled or limited by collectible type.
+2. Use the native map UI rather than an external overlay.
+3. Allow selecting a collectible and tracking it on the HUD compass.
+4. Add native-feeling filter modes for collectible families.
+5. Hide completed objects immediately and correctly restore their state after reload.
+6. Ship dedicated God of War-style artwork for Completionist markers.
 
-## Current status
+## Current status: v0.9.3 test build
 
-- `v0.1-test`: attempted to expose undiscovered marker records directly. Opening the map crashed the game. Retained only as a failed experiment/reference.
-- `v0.2-diagnostic`: proved hidden native marker records are exposed to Lua.
-- `v0.3.1-diagnostic`: proved `kUndiscovered` is not a collectible filter. Midgard exposed 318 marker records, including 244 hidden records dominated by quest, dock, fight and travel infrastructure.
-- `v0.4-diagnostic`: decisive negative for collectible-specific native map markers. Midgard is at 148/225 realm-summary progress, yet all 244 hidden native marker records returned `candidateFlags=<none>` for the collectible categories we tested.
-- `v0.5.1-raven-registry`: successful gameplay-object correlation. A targeted Veithurgard test loaded exactly three Raven objects from `WAD_Xpl200_Funeral`: two restored as killed and one alive, exactly matching the region summary of 2/3 Ravens. Exact world coordinates were available for every object.
-- `v0.6-api-transform-prototype`: exposed each native marker's `Coordinates` world vector and enough native icon/player correspondences to solve Midgard's world-to-map transform with approximately `1.2e-7` maximum residual.
-- `v0.6.1-visible-pin-prototype`: current dev build. It temporarily borrows one already-rendered **discovered DockPoint icon**, moves only that UI GameObject to the calculated position of the remaining Veithurgard Raven, centres the map camera on it, and restores the icon's exact original position when leaving the map. It also probes candidate dynamic Map/Compass APIs by name.
+The project has progressed beyond the original hidden-native-marker approach. Collectibles are tracked by their gameplay scripts/state, converted from world XYZ into Midgard map coordinates, and represented by synthetic native-compatible UI pins.
+
+Confirmed working milestones:
+
+- Odin's Raven gameplay objects expose exact XYZ and restored killed/alive state.
+- Midgard world-to-map transform is solved:
+  - `mapX = 0.004 * worldZ + 0.0625431`
+  - `mapZ = -0.004 * worldX + 0.6101961`
+- A remaining Raven can be placed on the map and tracked by the custom HUD compass.
+- Killing the Raven automatically clears the HUD target and suppresses its later map pin.
+- Breakable Nornir chests expose their chest parent and three seal GameObjects with exact XYZ.
+- Persisted already-broken Breakable seals can be distinguished and omitted.
+- Trying a locked Nornir chest reveals its remaining puzzle siblings.
+- Opening the real Runic chest is observed from `interact_chest_standard.lua::OnOpened()` and removes the Completionist parent marker.
+- Custom map filters are appended to the existing bottom-left filter cycle:
+  - `COMPLETIONIST`
+  - `RAVENS`
+  - `NORNIR CHESTS`
+  - `NORNIR PUZZLE`
+- Seal Add-to-Compass works through the custom arbitrary-XYZ HUD target.
+- Kratos's map marker has a session-local Hide/Show toggle when the stock Go-to-Journal action is not using that button.
+- Map zoom is extended from stock `MaxIn=6` to `MaxIn=2.5`.
+
+### v0.9.2 field regression
+
+The distinct-backing experiment itself was useful, but marker creation also called a late-declared experimental helper:
+
+```text
+CompletionistMapV092_ApplyZoomAdaptiveIconScale
+```
+
+The earlier creation functions resolved it as a nil global. The Raven remained visible because its GameObject had already been stored/moved before the protected call failed, while Nornir parent/child creation recycled their GameObjects on failure.
+
+### v0.9.3
+
+Current local test build:
+
+`Completionist-Map-v0.9.3-NORNIR-SNAP-FIX.zip`
+
+Changes:
+
+- removes the broken adaptive marker-scaling experiment;
+- keeps distinct discovered DockPoint backing IDs for Raven, Nornir parent and puzzle pins;
+- restores Nornir parent/child marker creation;
+- keeps `MaxIn=2.5`;
+- tightens close-zoom snapping with stock camera parameters:
+  - `CursorScale_Min = 0.18`
+  - `CursorSnap_Strength = 0.9`
+- retains filters, seal compass tracking and Hide/Show Kratos.
+
+## Version history
+
+Every numbered prototype/test build is documented in [`docs/VERSION_HISTORY.md`](docs/VERSION_HISTORY.md). Generated ZIPs are deliberately not committed.
 
 ## Repository policy
 
-The repository tracks our own patches, tooling, notes and diagnostic logic. Decompiled game source is intentionally not committed.
+The repository tracks our own patches, tooling, notes and diagnostic logic. Decompiled/proprietary game source and generated test ZIPs are intentionally not committed.
 
 ## Local paths used during testing
 
@@ -41,83 +88,28 @@ G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\
 G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\
 ```
 
-## Architecture findings
+## Architecture
 
-The native map marker table is useful for ordinary POIs and stock compass navigation, but collectible completion is tracked separately.
-
-The actual gameplay scripts retain the data we need:
-
-- Ravens: `thisObj`, `ravenKilled`, `regionSummaryQuest`, `thisObj:GetWorldPosition()`
-- Artefacts: `thisObj`, acquisition `state`, `regionSummaryQuest`
-- Lore markers/rune reads: `thisObj`, `mapSummaryComplete`, `regionSummaryQuest`
-- Pocket rifts: `thisObj`, `hasOpened`, `regionSummaryQuest`
-- Standard chests: `thisObj`, `state`, `ChestType`, `WADName`, region-summary updates for `LegendaryChest` and `RunicChest`
-
-The targeted Veithurgard Raven test proved two things simultaneously:
-
-1. restored per-object completion state is trustworthy: the three live objects reported `2 killed + 1 alive`, matching the map summary's `2 / 3`;
-2. collectible scripts are streamed by local WAD rather than instantiated realm-wide, because `precisionchallenge.lua` only loaded after entering the target area.
-
-Known remaining Raven from that test:
+The native hidden map-marker table is not the collectible database. The practical architecture is:
 
 ```text
-WAD: WAD_Xpl200_Funeral
-region summary quest: RegionSummary_VF_Raven_Parent
-x: -64.850898742676
-y: 12.987384796143
-z: 787.30694580078
-state on test save: alive
-```
-
-## Midgard world-to-map transform
-
-`v0.6` revealed that native marker records contain a `Coordinates` userdata vector in game world space. Comparing three native marker coordinates with their rendered icon positions, plus the live player world position with `MapIconPlayer`, produces an effectively exact X/Z transform:
-
-```text
-mapX = 0.004 * worldZ + 0.0625431
-mapZ = -0.004 * worldX + 0.6101961
-```
-
-The maximum observed residual across those four independent samples was approximately `1.2e-7` map units.
-
-For the remaining Veithurgard Raven this gives:
-
-```text
-mapX = 3.21177116
-mapZ = 0.86959973
-```
-
-This removes the need to guess map-space coordinates once an asset-derived collectible world coordinate is known.
-
-The stock map's normal waypoint flow ultimately calls:
-
-```lua
-game.Compass.ShowMarker(markerID, markerType)
-```
-
-for recognised map-marker IDs. The remaining technical problem is creating or emulating a compass target backed by an arbitrary collectible world position rather than an existing stock POI marker.
-
-## Current implementation path
-
-```text
-game assets / collectible objects
-    -> generated coordinate catalogue
-    -> live save/progression state
+game assets / collectible gameplay objects
+    -> identity + WAD + region + world position
+    -> restored live completion state
     -> remaining collectible set
     -> world-to-map transform
-    -> custom/native-compatible map icon
-    -> compass/navigation target
+    -> synthetic/native-compatible map UI pin
+    -> custom HUD compass bearing to arbitrary world XYZ
 ```
 
-Runtime object instrumentation remains useful for validating catalogue coordinates and state semantics, but it cannot discover the entire realm immediately because unloaded WADs do not instantiate their collectible scripts.
+Gameplay-object instrumentation remains valuable for validating state semantics, but unloaded WADs do not instantiate every collectible realm-wide. The final catalogue therefore needs an asset-derived/static component reconciled against live/save state.
 
-## v0.6.1 prototype
+## Safety rules
 
-Current `dev` tooling adds:
+Normal testing must not:
 
-- `tools/install-v0.6.1-visible-pin.ps1`
-- `tools/uninstall-v0.6.1-visible-pin.ps1`
-- `data/observed/midgard-world-map-transform-v0.6.json`
-- `catalogue/veithurgard-ravens.json`
-
-The visible-pin prototype deliberately borrows an **already-rendered discovered DockPoint icon** instead of creating a second native marker or touching a hidden marker. Its original map position is saved and restored on map exit. It does not call `Map.ChangeMarkerState()` and does not modify save/progression data. If the borrowed icon renders at the Raven's calculated location, arbitrary collectible placement on the native map is proven and the next step is the compass target.
+- call `Map.ChangeMarkerState()` for Completionist pins;
+- call synthetic `game.Compass.ShowMarker()` for arbitrary collectible XYZ;
+- increment region-summary completion artificially;
+- mutate puzzle or collectible completion state;
+- write synthetic save data.
