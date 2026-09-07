@@ -2,6 +2,12 @@
 
 This file records every numbered Completionist Map test build produced so far. Test ZIPs themselves are intentionally **not** committed because the repository policy excludes generated archives and decompiled game source. The repository tracks the design, result and regression history instead.
 
+## v0.10: custom icon pipeline
+
+| Version | Build | Result |
+| --- | --- | --- |
+| v0.10.0 | `Completionist-Map-v0.10.0-ICON-PIPELINE.zip` | **Current test build.** Built from the stable v0.9.6.1 behaviour. Installer fetches all ten user-authored concept PNG masters from `feat/completionist-icon-system`, generates 24/32/48/64 px transparent production candidates and writes a SHA256/dimension manifest under `mods/completionist-map/icons`. Synthetic Raven/Nornir map duplicates probe for undocumented direct `SetTexture` / `SetImage` style APIs and attempt a loose-PNG binding only if such a method is actually exposed. HUD carrier is capability-probed only. If the engine exposes no direct loose-PNG binding, stable DockPoint/HUD proof visuals remain and `ICON_CAPS` / `ICON_BIND_*` identify the next authored-material/texpack integration route. |
+
 ## v0.1 to v0.5.1: discovery and collectible-state research
 
 | Version | Build | Result |
@@ -54,7 +60,7 @@ This file records every numbered Completionist Map test build produced so far. T
 | v0.8.6 | `Completionist-Map-v0.8.6-MAP-FILTER-FIX.zip` | Fixed map-side load. Filters, parent marker and only-unbroken Breakable seals appeared. Nornir Add-to-Compass exposed a Lua lexical-scope bug. |
 | v0.8.7 | `Completionist-Map-v0.8.7-NORNIR-COMPASS-FIX.zip` | Forward-declared the Nornir registry helper; parent Add-to-Compass no longer crashed. |
 
-## v0.9 to current: native-feeling interaction and UX
+## v0.9: native-feeling interaction and UX
 
 | Version | Build | Result |
 | --- | --- | --- |
@@ -68,7 +74,7 @@ This file records every numbered Completionist Map test build produced so far. T
 | v0.9.5 | `Completionist-Map-v0.9.5-NO-MAGNET-HOVER.zip` | Attempted to remove native clickability and replace synthetic-marker selection with a manual `0.018` map-unit `MapCursor` proximity test. Initial installer validation ran too early. |
 | v0.9.5.1 | `Completionist-Map-v0.9.5.1-INSTALLER-FIX.zip` | Installer-order fix. Field result confirmed hidden-Kratos map centring, filters and marker placement, but disproved manual hover: `MapCursor:GetWorldPosition()` returned UI-root coordinates around `0,-40.222,0`, so no custom selection/compass event fired. The observed Boat Dock / ~683 m target was a stock DockPoint selection. |
 | v0.9.6 | `Completionist-Map-v0.9.6-NO-MAGNET-COMPASS-FIX.zip` | Returned to v0.9.4's proven `UI.SetIsClickable()` + collision-selection path, restored marker scale `1.0`, disabled `tMapCamera` magnetic snapping completely (`CursorSnap_Enabled=0`), cleared stale stock compass destinations before custom tracking, and retained hidden-Kratos centring plus deep zoom. Initial field install aborted because the hidden-player validation again ran before its replacement. |
-| v0.9.6.1 | `Completionist-Map-v0.9.6.1-INSTALLER-FIX.zip` | **Current test build.** Installer-order-only hotfix. Removes the premature `PLAYER_HIDDEN_CENTER` check while retaining the correct post-replacement validation. No v0.9.6 gameplay/marker/compass logic changes. |
+| v0.9.6.1 | `Completionist-Map-v0.9.6.1-INSTALLER-FIX.zip` | Stable behavioural base for v0.10.0. Installer-order-only hotfix. No gameplay/marker/compass logic changes from v0.9.6. |
 
 ## Current invariants
 
