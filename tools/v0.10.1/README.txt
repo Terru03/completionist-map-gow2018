@@ -115,7 +115,11 @@ Test
 Log export
 ----------
 $log = "G:\SteamLibrary\steamapps\common\GodOfWar\mods\loader_log.txt"
-$out = "$env:USERPROFILE\Desktop\completionist-v101.txt"
+$repo = (git rev-parse --show-toplevel).Trim()
+$outDir = Join-Path $repo "archive\field-logs"
+$out = Join-Path $outDir "completionist-v101.txt"
+
+New-Item -ItemType Directory -Force $outDir | Out-Null
 
 $lines = Select-String $log -Pattern "CompletionistMap v0.10.1" |
     ForEach-Object { $_.Line }
@@ -128,6 +132,7 @@ $lines = Select-String $log -Pattern "CompletionistMap v0.10.1" |
 ) | Set-Content $out
 
 Get-Content $out
+Write-Host "Saved test log: $out"
 
 Most useful new lines
 ---------------------
