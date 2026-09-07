@@ -1,15 +1,15 @@
 -- BEGIN COMPLETIONIST V0.10.4 RAVEN MAP CLASS SLOT PROOF
 --
--- Proves a custom Completionist map-class name can occupy an existing dormant
--- WAD_R_UI GOPool slot without growing or replacing r_ui.wad.  The temporary
--- donor slot is stock goMapIconCube, renamed in wad_r_ui.dcb to
--- goMapIconCompletionistRaven.  The underlying stock WAD resource remains the
--- Cube/debug visual for this diagnostic.  There is no Dock map proxy.
+-- Proves a custom Completionist map-class name can occupy an existing registered
+-- WAD_R_UI GOPool slot without growing or replacing r_ui.wad. The temporary
+-- donor slot is stock goMapIconChiselDungeon, renamed in wad_r_ui.dcb to
+-- goMapIconCompletionistRaven. The underlying stock WAD resource remains the
+-- ChiselDungeon visual for this diagnostic. There is no Dock map proxy.
 do
   local prefix = "[CompletionistMap v0.10.4-map-class-slot] "
   local candidate = "Completionist_V103_Veithurgard_Raven_01"
   local expectedMapResource = "goMapIconCompletionistRaven"
-  local donorResource = "goMapIconCube"
+  local donorResource = "goMapIconChiselDungeon"
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
