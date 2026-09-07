@@ -40,14 +40,14 @@ foreach ($root in $containerRoots) {
         Where-Object { $_.Name -match $containerRegex }
 }
 
-$containers = $containers |
-    Sort-Object FullName -Unique
+$containers = @($containers | Sort-Object FullName -Unique)
 
 $topExec = @()
 $execRoot = Join-Path $GameRoot 'exec'
 if (Test-Path $execRoot) {
-    $topExec = Get-ChildItem -LiteralPath $execRoot -Force -ErrorAction SilentlyContinue |
-        Sort-Object PSIsContainer -Descending, Name
+    $topExec = @(Get-ChildItem -LiteralPath $execRoot -Force -ErrorAction SilentlyContinue |
+        Sort-Object @{ Expression = { $_.PSIsContainer }; Descending = $true },
+                    @{ Expression = { $_.Name }; Descending = $false })
 }
 
 $bootOptionsPath = Join-Path $GameRoot 'exec\boot-options.json'
@@ -96,7 +96,7 @@ else {
 $lines.Add('')
 
 $lines.Add('=== container counts ===')
-$groups = $containers | Group-Object {
+$groups = @($containers | Group-Object {
     $n = $_.Name.ToLowerInvariant()
     if ($n.EndsWith('.texpack.toc')) { '.texpack.toc' }
     elseif ($n.EndsWith('.texpack')) { '.texpack' }
@@ -105,7 +105,7 @@ $groups = $containers | Group-Object {
     elseif ($n.EndsWith('.lodpack.toc')) { '.lodpack.toc' }
     elseif ($n.EndsWith('.lodpack')) { '.lodpack' }
     else { '<other>' }
-} | Sort-Object Name
+} | Sort-Object Name)
 foreach ($g in $groups) {
     $lines.Add(('{0,-14} {1,6}' -f $g.Name, $g.Count))
 }
@@ -113,7 +113,7 @@ $lines.Add("TOTAL          $($containers.Count)")
 $lines.Add('')
 
 $lines.Add('=== likely UI / map containers ===')
-$likely = $containers | Where-Object { $_.FullName -match $interestingRegex }
+$likely = @($containers | Where-Object { $_.FullName -match $interestingRegex })
 if ($likely.Count -eq 0) {
     $lines.Add('<none matched by filename>')
 }
@@ -126,7 +126,7 @@ else {
 $lines.Add('')
 
 $lines.Add('=== all texpack files ===')
-$texpacks = $containers | Where-Object { $_.Name -match '(?i)\.texpack$' }
+$texpacks = @($containers | Where-Object { $_.Name -match '(?i)\.texpack$' })
 foreach ($file in $texpacks) {
     $relative = $file.FullName.Substring($GameRoot.Length).TrimStart('\')
     $lines.Add(('{0,10:N2} MiB  {1}' -f ($file.Length / 1MB), $relative))
@@ -134,9 +134,9 @@ foreach ($file in $texpacks) {
 $lines.Add('')
 
 $lines.Add('=== likely UI / map WAD files ===')
-$likelyWads = $containers | Where-Object {
+$likelyWads = @($containers | Where-Object {
     $_.Name -match '(?i)\.wad$' -and $_.FullName -match $interestingRegex
-}
+})
 if ($likelyWads.Count -eq 0) {
     $lines.Add('<none matched by filename>')
 }
