@@ -1,0 +1,34 @@
+﻿=== Completionist Map v0.10.2 DockPoint Raven texture proof ===
+Generated: 2026-09-07 12:11:20 +03:00
+Branch: feat/v0.10.2-material-icons
+GameRoot: G:\SteamLibrary\steamapps\common\GodOfWar
+
+=== stock DockPoint textures ===
+Diffuse:  TX_mapmarker_docklocation_diffuse_982BF904AB84F2CC.dds
+Diffuse metadata: 148x148, mips=8, format=BC7_UNORM_SRGB, FourCC=DX10, DXGI=99
+Emissive: TX_mapmarker_docklocation_emissive_FCC664130951154C.dds
+Emissive metadata: 148x148, mips=8, format=BC1_UNORM, FourCC=DXT1, DXGI=
+
+=== generated Raven replacements ===
+TX_completionist_raven_dock_diffuse_982BF904AB84F2CC.dds SHA256=2CE8A6CA81853E347F29A84AE4BFA3C5C41FA0F1FB44350C8548F7074629C640
+TX_completionist_raven_dock_emissive_FCC664130951154C.dds SHA256=9C043DD80A96204E70FEDABE93F7E6731F4E1033C821DB20F2F6BDAAF07B1A4B
+
+=== patch texpack ===
+Installed: G:\SteamLibrary\steamapps\common\GodOfWar\exec\patch\pc_le\completionist_v102_dock_raven.texpack
+Texpack bytes: 137488
+Texpack SHA256: 28B4FF440505A2538908EFBB3518188DCA7490BF94F2C585C31F09097EE68D2A
+TOC bytes: 176
+Patch entry: ../../patch/pc_le/completionist_v102_dock_raven
+boot-options backup: G:\SteamLibrary\steamapps\common\GodOfWar\exec\boot-options.json.completionist-v102-before-dock-raven.bak
+
+=== toolchain ===
+GOWTool: C:\Users\david\AppData\Local\CompletionistMap\tools\GOWTool-v0.1.3-alpha\GOWTool.exe
+GOWTool exit: 0
+texconv: C:\Users\david\AppData\Local\CompletionistMap\tools\DirectXTex-may2026\texconv.exe
+texconv SHA256: DCFDEC10244E02CF5037FBA089C55FB7E1326B1C8181742D77D15FA5CB5EEF06
+
+=== expected runtime result ===
+All UI objects using the stock DockPoint map-marker diffuse/emissive pair will temporarily render with the Raven artwork.
+This intentionally includes normal dock markers and Completionist synthetic DockPoint proxies.
+The native Kratos/Omega player textures are not replaced by this patch.
+This is a texture-pack loading proof only, not the final per-category icon architecture.
