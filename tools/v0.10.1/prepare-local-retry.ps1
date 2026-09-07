@@ -9,7 +9,7 @@ if (-not (Test-Path $installerPath)) {
 
 $text = [IO.File]::ReadAllText($installerPath)
 
-$startMarker = "$IconRepo = 'Terru03/completionist-map-gow2018'"
+$startMarker = '$IconRepo = ''Terru03/completionist-map-gow2018'''
 $endMarker = 'function Export-CompletionistSquarePng('
 $start = $text.IndexOf($startMarker, [StringComparison]::Ordinal)
 $end = $text.IndexOf($endMarker, [StringComparison]::Ordinal)
