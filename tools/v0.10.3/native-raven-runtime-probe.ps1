@@ -110,7 +110,6 @@ if ($Mode -eq 'Remove') {
 
     if (Test-Path -LiteralPath $lookupManifest -PathType Leaf) {
         & $lookupScript -Mode Remove -GameRoot $game
-        if ($LASTEXITCODE -ne 0) { throw 'Lookup probe rollback failed.' }
     }
 
     Restore-Dcbs $manifest
@@ -185,7 +184,7 @@ $saveSnapshot = Get-SaveSnapshot $saveRoot
 if (Test-Path -LiteralPath $saveBackupDir) { Remove-Item -LiteralPath $saveBackupDir -Recurse -Force }
 if (Test-Path -LiteralPath $saveRoot -PathType Container) {
     New-Item -ItemType Directory -Force -Path $saveBackupDir | Out-Null
-    Copy-Item -LiteralPath (Join-Path $saveRoot '*') -Destination $saveBackupDir -Recurse -Force
+    Copy-Item -Path (Join-Path $saveRoot '*') -Destination $saveBackupDir -Recurse -Force
 }
 
 $manifest = [ordered]@{
@@ -212,13 +211,13 @@ try {
     }
 
     & $lookupScript -Mode Install -GameRoot $game
-    if ($LASTEXITCODE -ne 0) { throw 'Lookup probe install failed.' }
 } catch {
     try {
         if (Test-Path -LiteralPath $lookupManifest -PathType Leaf) {
             & $lookupScript -Mode Remove -GameRoot $game
         }
-        Restore-Dcbs ([pscustomobject]$manifest)
+        $recoveryManifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+        Restore-Dcbs $recoveryManifest
     } catch {
         Write-Warning "Automatic recovery also failed: $($_.Exception.Message)"
     }
