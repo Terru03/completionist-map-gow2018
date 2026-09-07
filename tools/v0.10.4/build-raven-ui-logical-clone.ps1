@@ -23,6 +23,52 @@ if (-not (Test-Path -LiteralPath $script -PathType Leaf)) {
 $python = Get-Command python -ErrorAction SilentlyContinue
 if ($null -eq $python) { throw 'Python 3.9+ is required.' }
 
+# dddd8db shipped two malformed dictionary comprehensions in the Python builder.
+# Repair those exact lines locally, syntax-check the result, then commit/push only
+# the corrected builder before running the offline build. This block is idempotent
+# and becomes a no-op once the repair commit has reached the branch.
+$builderText = [System.IO.File]::ReadAllText($script)
+$builderFixed = $builderText.Replace(
+    'original_by_kind = {c["kind"]: raw[c["start"]:c["end"] for c in chunks if c["kind"] != 12}',
+    'original_by_kind = {c["kind"]: raw[c["start"]:c["end"]] for c in chunks if c["kind"] != 12}'
+).Replace(
+    'candidate_by_kind = {c["kind"]: candidate[c["start"]:c["end"] for c in reparsed if c["kind"] != 12}',
+    'candidate_by_kind = {c["kind"]: candidate[c["start"]:c["end"]] for c in reparsed if c["kind"] != 12}'
+)
+$builderRepaired = $builderFixed -ne $builderText
+if ($builderRepaired) {
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($script, $builderFixed, $utf8NoBom)
+}
+
+& $python.Source -m py_compile $script
+$compileExit = $LASTEXITCODE
+Remove-Item -LiteralPath (Join-Path $PSScriptRoot '__pycache__') -Recurse -Force -ErrorAction SilentlyContinue
+if ($compileExit -ne 0) {
+    throw 'Raven UI logical clone builder still fails Python syntax validation.'
+}
+
+if ($builderRepaired) {
+    Push-Location $repo
+    try {
+        $builderRel = 'tools/v0.10.4/build-raven-ui-logical-clone.py'
+        git add -- $builderRel
+        if ($LASTEXITCODE -ne 0) { throw 'git add of repaired builder failed.' }
+        git diff --cached --check -- $builderRel
+        if ($LASTEXITCODE -ne 0) { throw 'git diff --cached --check of repaired builder failed.' }
+        git commit -m 'Fix Raven UI logical clone builder syntax' -- $builderRel
+        if ($LASTEXITCODE -ne 0) { throw 'git commit of repaired builder failed.' }
+        git push $Remote $branch
+        if ($LASTEXITCODE -ne 0) {
+            throw "git push failed; the syntax-fix commit remains local on '$branch'."
+        }
+        Write-Host "Pushed Raven UI builder syntax fix to $Remote/$branch"
+    }
+    finally {
+        Pop-Location
+    }
+}
+
 $outRel = 'archive/field-logs/completionist-v104-raven-ui-logical-clone.json'
 $out = Join-Path $repo ($outRel -replace '/', '\')
 $work = Join-Path $env:LOCALAPPDATA 'CompletionistMap\work\v0.10.4\raven-ui-logical-clone'
