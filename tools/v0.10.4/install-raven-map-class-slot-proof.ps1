@@ -60,10 +60,12 @@ $oldControlManifest = Join-Path $env:LOCALAPPDATA 'CompletionistMap\state\v0.10.
 $expectedNativeMapmaster = '1e076f7c5f0aea8d93ad72365bcaa267361503eee10fcdab0522c699b188508a'
 $stockRuiWad = '92294d218855ee4fbd06f66a2071f61c6b831240aaf41a59a3b7b8168c0f4b04'
 $stockRuiDcb = '21ec389426fb8b6a7f89c8fff6751522aa7ded13324e041b885dd7a490c2d14a'
-# goMapIconCube is present in the stock map-icon parent family but was absent
-# from the 382 authored mapmaster marker usages and has no GoWLUA call-site.
-# It is therefore a substantially safer temporary donor than Valkyrie.
-$oldSlotName = 'goMapIconCube'
+# goMapIconCube has a WAD resource but no WAD_R_UI GOPool row, so it cannot
+# be renamed as a class slot. goMapIconChiselDungeon is a real registered
+# map-icon family, exists in the stock WAD parent group, and was absent from the
+# complete 382 authored mapmaster marker usages. It is therefore the best
+# currently-known temporary donor for this registration proof.
+$oldSlotName = 'goMapIconChiselDungeon'
 $newSlotName = 'goMapIconCompletionistRaven'
 
 if ($Mode -eq 'Remove') {
@@ -217,13 +219,15 @@ $installReport = [ordered]@{
     map_resource = $newSlotName
     donor_slot = $oldSlotName
     donor_cnt = $donorCount
-    donor_visual_expected = 'stock Cube/debug artwork'
+    donor_visual_expected = 'stock ChiselDungeon artwork'
     compass_type = 'DockPoint'
-    r_ui_wad_stock = ((Hash $ruiWad) -eq $stockRuiWad)
+    dock_proxy_used = $false
+    stock_r_ui_wad_unchanged = ((Hash $ruiWad) -eq $stockRuiWad)
     texpack_loaded = $false
     save_state_written = $false
     progression_state_written = $false
     native_kratos_marker_touched = $false
+    map_patch = (Get-Content -LiteralPath $mapPatchReport -Raw | ConvertFrom-Json)
     slot_patch = $slotInfo
     reversible_manifest = $manifestPath
 }
@@ -248,14 +252,13 @@ finally { Pop-Location }
 
 Write-Host ''
 Write-Host 'Raven custom map-class SLOT proof installed.'
-Write-Host '- map class name: goMapIconCompletionistRaven'
-Write-Host '- temporary dormant donor slot: goMapIconCube'
-Write-Host ("- donor GOPool count preserved: {0}" -f $donorCount)
-Write-Host '- r_ui.wad: STOCK and untouched'
-Write-Host '- no texpack loaded'
-Write-Host '- no Dock map proxy used'
-Write-Host '- compass/navigation remains DockPoint for now'
+Write-Host '- Raven authored map class: goMapIconCompletionistRaven'
+Write-Host '- temporary physical donor slot: goMapIconChiselDungeon'
+Write-Host '- stock r_ui.wad: unchanged'
+Write-Host '- no custom texpack loaded'
+Write-Host '- Dock proxy creation: disabled'
+Write-Host '- compass/navigation: DockPoint temporarily unchanged'
 Write-Host ''
-Write-Host 'Launch God of War and open Midgard / Veithurgard.'
-Write-Host 'Expected: Raven appears with the stock Cube/debug donor visual through the CUSTOM class name, without the grey-map/crash behaviour caused by the grown WAD.'
+Write-Host 'Launch God of War and open Midgard / Veithurgard several times.'
+Write-Host 'Expected: Raven renders with the stock ChiselDungeon visual through the Completionist class name, while docks stay normal.'
 Write-Host ("Rollback: powershell -NoProfile -ExecutionPolicy Bypass -File `"{0}`" -Mode Remove" -f $PSCommandPath)
