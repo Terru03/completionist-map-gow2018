@@ -138,20 +138,21 @@ $before = [ordered]@{
     mapmenu = Hash $mapmenu
     boot = Hash $boot
 }
-Copy-Item -LiteralPath $mapmaster -Destination (Join-Path $backupDir 'mapmaster.dcb')
-Copy-Item -LiteralPath $ruiWad -Destination (Join-Path $backupDir 'r_ui.wad')
-Copy-Item -LiteralPath $ruiDcb -Destination (Join-Path $backupDir 'wad_r_ui.dcb')
-Copy-Item -LiteralPath $mapmenu -Destination (Join-Path $backupDir 'mapmenu.lua')
-Copy-Item -LiteralPath $boot -Destination (Join-Path $backupDir 'boot-options.json')
-foreach ($pair in @(
-    @($mapmaster,(Join-Path $backupDir 'mapmaster.dcb')),
-    @($ruiWad,(Join-Path $backupDir 'r_ui.wad')),
-    @($ruiDcb,(Join-Path $backupDir 'wad_r_ui.dcb')),
-    @($mapmenu,(Join-Path $backupDir 'mapmenu.lua')),
-    @($boot,(Join-Path $backupDir 'boot-options.json'))
-)) {
-    if ((Hash $pair[0]) -ne (Hash $pair[1])) { throw "Backup hash mismatch: $($pair[0])" }
-}
+$backupMapmaster = Join-Path $backupDir 'mapmaster.dcb'
+$backupRuiWad = Join-Path $backupDir 'r_ui.wad'
+$backupRuiDcb = Join-Path $backupDir 'wad_r_ui.dcb'
+$backupMapmenu = Join-Path $backupDir 'mapmenu.lua'
+$backupBoot = Join-Path $backupDir 'boot-options.json'
+Copy-Item -LiteralPath $mapmaster -Destination $backupMapmaster
+Copy-Item -LiteralPath $ruiWad -Destination $backupRuiWad
+Copy-Item -LiteralPath $ruiDcb -Destination $backupRuiDcb
+Copy-Item -LiteralPath $mapmenu -Destination $backupMapmenu
+Copy-Item -LiteralPath $boot -Destination $backupBoot
+if ((Hash $mapmaster) -ne (Hash $backupMapmaster)) { throw 'mapmaster backup hash mismatch.' }
+if ((Hash $ruiWad) -ne (Hash $backupRuiWad)) { throw 'r_ui.wad backup hash mismatch.' }
+if ((Hash $ruiDcb) -ne (Hash $backupRuiDcb)) { throw 'wad_r_ui.dcb backup hash mismatch.' }
+if ((Hash $mapmenu) -ne (Hash $backupMapmenu)) { throw 'mapmenu backup hash mismatch.' }
+if ((Hash $boot) -ne (Hash $backupBoot)) { throw 'boot-options backup hash mismatch.' }
 
 try {
     Copy-Item -LiteralPath $patchedMapmaster -Destination $mapmaster -Force
@@ -211,11 +212,11 @@ try {
 catch {
     Write-Warning "Install failed. Restoring pre-proof files: $($_.Exception.Message)"
     try {
-        Copy-Item -LiteralPath (Join-Path $backupDir 'mapmaster.dcb') -Destination $mapmaster -Force
-        Copy-Item -LiteralPath (Join-Path $backupDir 'r_ui.wad') -Destination $ruiWad -Force
-        Copy-Item -LiteralPath (Join-Path $backupDir 'wad_r_ui.dcb') -Destination $ruiDcb -Force
-        Copy-Item -LiteralPath (Join-Path $backupDir 'mapmenu.lua') -Destination $mapmenu -Force
-        Copy-Item -LiteralPath (Join-Path $backupDir 'boot-options.json') -Destination $boot -Force
+        Copy-Item -LiteralPath $backupMapmaster -Destination $mapmaster -Force
+        Copy-Item -LiteralPath $backupRuiWad -Destination $ruiWad -Force
+        Copy-Item -LiteralPath $backupRuiDcb -Destination $ruiDcb -Force
+        Copy-Item -LiteralPath $backupMapmenu -Destination $mapmenu -Force
+        Copy-Item -LiteralPath $backupBoot -Destination $boot -Force
         Remove-Item -LiteralPath $installedPack,$installedToc -Force -ErrorAction SilentlyContinue
     } catch {
         Write-Warning "Automatic recovery also failed: $($_.Exception.Message)"
