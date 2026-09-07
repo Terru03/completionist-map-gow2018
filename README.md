@@ -20,7 +20,7 @@ Preferred final behaviour:
 5. Hide completed objects immediately and correctly restore their state after reload.
 6. Ship dedicated God of War-style artwork for Completionist markers.
 
-## Current status: v0.9.5 test build
+## Current status: v0.9.6 test build
 
 The project has progressed beyond the original hidden-native-marker approach. Collectibles are tracked by their gameplay scripts/state, converted from world XYZ into Midgard map coordinates, and represented by synthetic native-compatible UI pins.
 
@@ -42,43 +42,59 @@ Confirmed working milestones:
   - `NORNIR CHESTS`
   - `NORNIR PUZZLE`
 - Seal Add-to-Compass works through the custom arbitrary-XYZ HUD target.
-- Kratos's map marker has a session-local Hide/Show toggle when the stock Go-to-Journal action is not using that button.
+- Kratos's map marker has a session-local Hide/Show toggle while preserving stock Go-to-Journal behaviour.
+- Hiding Kratos no longer changes the next map opening centre; the hidden transformed player marker remains the camera focus.
 - Map zoom is extended from stock `MaxIn=6` to `MaxIn=2.5`.
 - Distinct discovered DockPoint backing IDs are used for Raven, Nornir parents and Nornir puzzle actors, with field-confirmed `ALIAS_CHECK sameGO=false`.
+- Raven map placement is independent of the currently tracked compass target.
 
-### v0.9.4 field result
+### v0.9.5.1 field result
 
-`Completionist-Map-v0.9.4-RAVEN-SNAP-FIX.zip` successfully fixed Raven/Nornir target interference. Field testing confirmed:
+`Completionist-Map-v0.9.5.1-INSTALLER-FIX.zip` confirmed the hidden-Kratos centring fix and preserved filters/marker placement. It also disproved the attempted manual-hover coordinate path:
 
-- Raven remained at the correct map coordinate while a Nornir chest was the active compass target (`RAVEN_PIN_INDEPENDENT`).
-- Raven, Nornir parent and remaining seal pins were all correct.
-- Custom filters worked.
-- Hide/Show Kratos worked.
-- Nornir chest/seal compass tracking and real completion removal worked.
+- `MANUAL_HOVER_CURSOR` reported UI-root positions around `0,-40.222,0`.
+- custom map pins use map-space positions around `x=3.x`, `z=0.x`.
+- no `MANUAL_HOVER active=true`, `NORNIR_CHEST_COMPASS`, `NORNIR_COMPASS` or `CUSTOM_COMPASS` event fired.
+- the observed `BOAT DOCK - The Mason's Channel` and ~683 m HUD destination therefore came from a stock DockPoint selection, not the Completionist target.
 
-Two UX issues remained:
-
-1. Hiding Kratos also made `ShouldShowPlayerMarker()` false, so stock `SubmenuEnter()` opened the next map view at `CALDERA_MAP_POSITION` instead of Kratos's real position.
-2. Synthetic pins still produced an uncomfortably strong long-range cursor magnet at deep zoom. Shrinking them to `0.28` also made the marker artwork visibly smaller than native markers.
-
-### v0.9.5
+### v0.9.6
 
 Current test build:
 
-`Completionist-Map-v0.9.5-NO-MAGNET-HOVER.zip`
+`Completionist-Map-v0.9.6-NO-MAGNET-COMPASS-FIX.zip`
 
 Changes:
 
-- Hidden Kratos remains visually hidden, but the map still centres on the transformed hidden `MapIconPlayer` when reopening the current realm.
-- Synthetic marker visuals return to native backing scale `1.0`.
-- Synthetic Completionist pins are no longer registered with `UI.SetIsClickable()`, so the native `tMapCamera` cannot magnetically pull the cursor toward them from a large distance.
-- Custom Raven/Nornir hover now uses a manual nearest-target test with a `0.018` map-unit radius.
-- The normal selected-cursor animation and Add-to-Compass prompt are preserved when inside that small radius.
-- Stock/native map markers continue through the original native collision handler.
-- Existing softened native camera settings remain `CursorScale_Min=0.05`, `CursorSnap_Strength=0.18`.
-- Deep zoom remains `MaxIn=2.5`.
+- Returns to the field-proven v0.9.4 custom marker interaction model: synthetic markers are `UI.SetIsClickable()` and selected through `MapCollisionChangeHandler`.
+- Removes the failed manual `MapCursor:GetWorldPosition()` proximity path.
+- Disables the map camera's magnetic cursor attraction completely for this test:
+  - `CursorSnap_Enabled=0`
+  - `CursorSnap_Strength=0.0`
+- Keeps custom marker visuals at native backing scale `1.0`.
+- Clears any currently tracked stock compass marker before enabling Raven/Nornir custom tracking, so stale DockPoint destinations cannot remain on the HUD.
+- Deactivates the custom target when a stock marker is selected later, keeping one compass destination active at a time.
+- Retains hidden-Kratos centring, deep zoom `MaxIn=2.5`, filters and real completion lifecycle handling.
 
-The next field test should verify hidden-Kratos reopening, no-magnet custom hover, native-sized custom pins, and unchanged compass/filter/lifecycle behaviour.
+The next field test should verify that direct hover/collision still works with map-camera snap disabled, and that custom Raven/Nornir tracking no longer resolves to a stock Boat Dock destination.
+
+## Icon system
+
+Original Completionist artwork is already present on `dev` under `assets/icons/`.
+
+Canonical source glyphs currently include:
+
+- Raven
+- Nornir Chest
+- Nornir Seal
+- Nornir Bell
+- Nornir Mechanism
+- Lore Marker
+- Artefact
+- Legendary Chest
+- Generic Remaining
+- Player/filter artwork
+
+See [`docs/ICON-DESIGN-SYSTEM.md`](docs/ICON-DESIGN-SYSTEM.md). The current gameplay test build deliberately keeps the temporary DockPoint/HUD proof visuals until selection and compass routing are stable. Custom texture/material injection is the next isolated visual milestone.
 
 ## Version history
 
