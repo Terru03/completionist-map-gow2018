@@ -32,27 +32,27 @@ do
     return "<name-unavailable>"
   end
 
-  local function getRegionId(info)
+  local function getRegionId(info, markerId)
     local names = {"regionId", "RegionId", "RegionID", "regionID"}
     for _, name in ipairs(names) do
       local value = safeField(info, name)
       if value ~= nil then return value, "marker_info." .. name end
     end
 
-    local ok, region = pcall(function()
-      return game.Map.FindRegionFromMarker(candidate)
+    -- Native maputil.lua proves the signature is:
+    --   found, regionNameHash = Map.FindRegionFromMarker(markerIDHash)
+    -- The earlier proof incorrectly kept only the first return value, so the
+    -- boolean 'found' was passed to CreateMarkerIcon as argument #2.
+    local callOK, found, region = pcall(function()
+      return game.Map.FindRegionFromMarker(markerId)
     end)
-    if not ok or region == nil then
-      return nil, "unresolved"
+    if not callOK then
+      return nil, "FindRegionFromMarker.error=" .. tostring(found)
     end
-    if type(region) == "table" then
-      for _, name in ipairs({"Id", "id", "regionId", "RegionId"}) do
-        local value = safeField(region, name)
-        if value ~= nil then return value, "FindRegionFromMarker." .. name end
-      end
-      return nil, "region_table_without_id"
+    if found ~= true or region == nil then
+      return nil, "FindRegionFromMarker.not_found"
     end
-    return region, "FindRegionFromMarker.direct"
+    return region, "FindRegionFromMarker.region"
   end
 
   -- Do not retain the v0.10.1 Dock-backed creator as a fallback.  The entire
@@ -82,7 +82,7 @@ do
     local markerIcon = safeField(info, "Icon") or safeField(info, "icon") or
       safeField(info, "IconName") or safeField(info, "iconName")
     local markerState = safeField(info, "State") or safeField(info, "state")
-    local regionId, regionSource = getRegionId(info)
+    local regionId, regionSource = getRegionId(info, markerId)
 
     log("PREFLIGHT",
       "candidate=" .. candidate ..
@@ -90,6 +90,7 @@ do
       " icon=" .. tostring(markerIcon) ..
       " state=" .. tostring(markerState) ..
       " region=" .. tostring(regionId) ..
+      " regionType=" .. tostring(type(regionId)) ..
       " regionSource=" .. tostring(regionSource) ..
       " expectedMapResource=" .. expectedMapResource ..
       " compassType=DockPoint" ..
