@@ -1,0 +1,24 @@
+﻿=== Completionist Map v0.10.2 DockPoint Raven WAD-loader proof ===
+Generated: 2026-09-07 12:29:55 +03:00
+Branch: feat/v0.10.2-material-icons
+GameRoot: G:\SteamLibrary\steamapps\common\GodOfWar
+
+=== verified source pack ===
+Source: G:\SteamLibrary\steamapps\common\GodOfWar\exec\patch\pc_le\completionist_v102_dock_raven.texpack
+SHA256: 28B4FF440505A2538908EFBB3518188DCA7490BF94F2C585C31F09097EE68D2A
+
+=== alternate installed location ===
+Texpack: G:\SteamLibrary\steamapps\common\GodOfWar\exec\wad\pc_le\0Completionist_v102_dock_raven.texpack
+TOC: G:\SteamLibrary\steamapps\common\GodOfWar\exec\wad\pc_le\0Completionist_v102_dock_raven.texpack.toc
+SHA256: 28B4FF440505A2538908EFBB3518188DCA7490BF94F2C585C31F09097EE68D2A
+boot-options entry: 0Completionist_v102_dock_raven
+boot-options backup: G:\SteamLibrary\steamapps\common\GodOfWar\exec\boot-options.json.completionist-v102-before-wad-loader-proof.bak
+
+=== purpose ===
+This is the same already-verified two-texture DockPoint Raven pack, copied to exec\\wad\\pc_le.
+patch-texpacks now references the bare pack name to test alternate loader resolution/precedence.
+No Kratos/Omega texture hashes are contained in this pack.
+
+=== expected runtime result ===
+If this loader form is honoured, stock DockPoint map icons and Completionist DockPoint proxies will show Raven artwork.
+If boats remain unchanged, the remaining suspect is runtime texture override semantics rather than pack path or hash construction.
