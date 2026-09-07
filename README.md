@@ -20,7 +20,7 @@ Preferred final behaviour:
 5. Hide completed objects immediately and correctly restore their state after reload.
 6. Ship dedicated God of War-style artwork for Completionist markers.
 
-## Current status: v0.9.6 test build
+## Current status: v0.9.6.1 test build
 
 The project has progressed beyond the original hidden-native-marker approach. Collectibles are tracked by their gameplay scripts/state, converted from world XYZ into Midgard map coordinates, and represented by synthetic native-compatible UI pins.
 
@@ -57,13 +57,13 @@ Confirmed working milestones:
 - no `MANUAL_HOVER active=true`, `NORNIR_CHEST_COMPASS`, `NORNIR_COMPASS` or `CUSTOM_COMPASS` event fired.
 - the observed `BOAT DOCK - The Mason's Channel` and ~683 m HUD destination therefore came from a stock DockPoint selection, not the Completionist target.
 
-### v0.9.6
+### v0.9.6 / v0.9.6.1
 
 Current test build:
 
-`Completionist-Map-v0.9.6-NO-MAGNET-COMPASS-FIX.zip`
+`Completionist-Map-v0.9.6.1-INSTALLER-FIX.zip`
 
-Changes:
+v0.9.6 changes:
 
 - Returns to the field-proven v0.9.4 custom marker interaction model: synthetic markers are `UI.SetIsClickable()` and selected through `MapCollisionChangeHandler`.
 - Removes the failed manual `MapCursor:GetWorldPosition()` proximity path.
@@ -74,6 +74,8 @@ Changes:
 - Clears any currently tracked stock compass marker before enabling Raven/Nornir custom tracking, so stale DockPoint destinations cannot remain on the HUD.
 - Deactivates the custom target when a stock marker is selected later, keeping one compass destination active at a time.
 - Retains hidden-Kratos centring, deep zoom `MaxIn=2.5`, filters and real completion lifecycle handling.
+
+The first v0.9.6 installer aborted before writing the override because `PLAYER_HIDDEN_CENTER` was validated before the hidden-player regex replacement ran. v0.9.6.1 is an installer-order-only hotfix. No gameplay/marker/compass logic changed.
 
 The next field test should verify that direct hover/collision still works with map-camera snap disabled, and that custom Raven/Nornir tracking no longer resolves to a stock Boat Dock destination.
 
