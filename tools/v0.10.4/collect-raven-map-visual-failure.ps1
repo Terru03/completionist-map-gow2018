@@ -85,8 +85,11 @@ $lines.Add('')
 $lines.Add('NOTE')
 $lines.Add('This collector is read-only with respect to God of War. It does not roll back or install any proof.')
 
+# Loader lines can contain harmless trailing spaces. Normalise them before
+# git diff --check so captured runtime evidence can always be archived.
+$normalisedLines = @($lines | ForEach-Object { ([string]$_).TrimEnd() })
 $utf8 = New-Object System.Text.UTF8Encoding($false)
-[IO.File]::WriteAllLines($out, $lines, $utf8)
+[IO.File]::WriteAllLines($out, $normalisedLines, $utf8)
 Write-Host "Saved: $out"
 
 Push-Location $repo
