@@ -37,8 +37,18 @@ Write-Host 'Exporting DDS textures referenced by r_ui.wad...'
 Write-Host "WAD: $wad"
 Write-Host "Output: $outDir"
 
-$toolOutput = & $ToolPath wad -p $wad -o $outDir -t -d 2>&1
-$exitCode = $LASTEXITCODE
+# GOWTool v0.1.3-alpha stores config.ini next to the executable, so run it
+# from that directory rather than from the Git repository.
+$toolDir = Split-Path -Parent $ToolPath
+Push-Location $toolDir
+try {
+    $toolOutput = @(& $ToolPath wad -p $wad -o $outDir -t -d 2>&1)
+    $exitCode = $LASTEXITCODE
+}
+finally {
+    Pop-Location
+}
+
 if ($exitCode -ne 0) {
     $toolOutput | ForEach-Object { Write-Host $_ }
     throw "GOWTool r_ui texture export failed with exit code $exitCode."
@@ -88,7 +98,7 @@ $interesting = @($records | Where-Object { $_.Name -match $keywords })
 
 $dimensionGroups = $records |
     Group-Object { "{0}x{1}" -f $_.Width, $_.Height } |
-    Sort-Object Count -Descending, Name
+    Sort-Object @{ Expression = 'Count'; Descending = $true }, Name
 
 $smallUi = @($records | Where-Object {
     $_.Width -gt 0 -and $_.Height -gt 0 -and
