@@ -17,11 +17,10 @@ if ($text.Contains($postMessage)) {
 
 # The installer may contain mixed LF/CRLF because the seeded v0.10.0 file was
 # rewritten by PowerShell and then checked out by Git on Windows. Match either.
-$earlyPattern = [regex]::new(
-    "(?ms)^[ \t]*if \(-not \$hudText\.Contains\('HUD_ICON_CAPS'\)\) \{\r?\n" +
-    "[ \t]*throw 'v0\.10\.1 HUD icon capability probe is missing\.'\r?\n" +
-    "[ \t]*\}\r?\n?"
-)
+$earlyPatternText = @'
+(?ms)^[ \t]*if \(-not \$hudText\.Contains\('HUD_ICON_CAPS'\)\) \{\r?\n[ \t]*throw 'v0\.10\.1 HUD icon capability probe is missing\.'\r?\n[ \t]*\}\r?\n?
+'@
+$earlyPattern = [regex]::new($earlyPatternText.Trim())
 
 $earlyMatches = $earlyPattern.Matches($text)
 if ($earlyMatches.Count -ne 1) {
@@ -60,9 +59,6 @@ if (-not $hudText.Contains('[CompletionistMap v0.10.1] HUD_HOOK installed=true')
 $insertAt = $anchor.Index + $anchor.Length
 $text = $text.Substring(0, $insertAt) + $postValidation + "`r`n" + $text.Substring($insertAt)
 
-# Sanity-check that the final validation now occurs after the HUD helper is
-# actually inserted into $hudText.
-$helperInsertPos = $text.IndexOf('$hudText = $hudText.Replace(', [StringComparison]::Ordinal)
 $postValidationPos = $text.IndexOf($postMessage, [StringComparison]::Ordinal)
 if ($postValidationPos -lt 0) {
     throw 'Post-injection HUD validation was not written.'
