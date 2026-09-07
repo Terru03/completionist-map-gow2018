@@ -108,9 +108,57 @@ $text = $text.Replace(
     "- v0.10.1 uses bundled/local user-authored concept PNG masters with no GitHub/network dependency"
 )
 
+# The v0.10.0 seed validated HUD_ICON_CAPS before $hudHelper was injected into
+# $hudText. Move the assertion to the post-injection point so it validates the
+# final generated HUD script instead of the untouched source script.
+$earlyHudValidation = @'
+if (-not $hudText.Contains('HUD_ICON_CAPS')) {
+    throw 'v0.10.1 HUD icon capability probe is missing.'
+}
+
+'@
+
+if (-not $text.Contains($earlyHudValidation)) {
+    throw 'Could not locate the early v0.10.1 HUD_ICON_CAPS validation block.'
+}
+$text = $text.Replace($earlyHudValidation, '')
+
+$hudHookAnchor = @'
+$hudText = $setupTailRegex.Replace(
+    $hudText,
+    [System.Text.RegularExpressions.MatchEvaluator]{ param($m) $setupTailReplacement },
+    1
+)
+
+'@
+
+if (-not $text.Contains($hudHookAnchor)) {
+    throw 'Could not locate the post-HUD-hook validation anchor.'
+}
+
+$postHudValidation = @'
+$hudText = $setupTailRegex.Replace(
+    $hudText,
+    [System.Text.RegularExpressions.MatchEvaluator]{ param($m) $setupTailReplacement },
+    1
+)
+
+if (-not $hudText.Contains('HUD_ICON_CAPS')) {
+    throw 'v0.10.1 HUD icon capability probe is missing after HUD injection.'
+}
+
+if (-not $hudText.Contains('[CompletionistMap v0.10.1] HUD_HOOK installed=true')) {
+    throw 'v0.10.1 HUD update hook is missing after HUD injection.'
+}
+
+'@
+
+$text = $text.Replace($hudHookAnchor, $postHudValidation)
+
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [IO.File]::WriteAllText($installerPath, $text, $utf8NoBom)
 
 Write-Host "Patched: $installerPath"
 Write-Host "Icon source resolution: bundled package assets first, cloned repo assets second."
 Write-Host "No gh/token/private raw URL is required by the v0.10.1 installer."
+Write-Host "HUD capability validation now runs after HUD helper injection."
