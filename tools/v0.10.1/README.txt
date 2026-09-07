@@ -1,9 +1,13 @@
-Completionist Map v0.10.0
-CUSTOM ICON PIPELINE + RENDERING DISCOVERY
+Completionist Map v0.10.1
+LOCAL ICON PACKAGE + RENDERING DISCOVERY
 
 Base
 ----
-v0.10.0 is built from the field-proven v0.9.6.1 behaviour:
+v0.10.1 keeps the field-proven v0.9.6.1 behaviour and the v0.10.0 runtime
+icon-capability probes. The only intended functional change from v0.10.0 is
+how the user-authored icon masters reach the installer.
+
+Retained behaviour:
 - Raven map lifecycle
 - Nornir parent + remaining puzzle children
 - direct-XYZ custom HUD compass target
@@ -13,14 +17,19 @@ v0.10.0 is built from the field-proven v0.9.6.1 behaviour:
 - magnetic map cursor snapping disabled
 - no synthetic game.Compass.ShowMarker()
 
-User-authored concept PNGs
--------------------------
-At install time the build uses your authenticated GitHub CLI session to fetch
-ALL concept PNG masters from:
+Local/bundled concept PNGs
+--------------------------
+The installer no longer uses GitHub, gh, tokens, private raw URLs or the
+feat/completionist-icon-system branch.
 
-  Terru03/completionist-map-gow2018
-  feat/completionist-icon-system
-  assets/icons/concepts/
+The test ZIP bundles all ten concept PNG masters under:
+
+  assets\icons\concepts\
+
+When install.ps1 is run directly from the cloned repository it instead falls
+back to the repository's own:
+
+  assets\icons\concepts\
 
 Families staged:
 - Raven
@@ -34,7 +43,7 @@ Families staged:
 - Remaining Collectible
 - Player Marker
 
-Files are stored under:
+At install time each PNG signature is validated, copied to:
 
   GodOfWar\mods\completionist-map\icons\concepts
 
@@ -51,7 +60,8 @@ Rendering test
 God of War's exposed Lua UI API is known to support authored material swaps,
 but no loose-PNG binding API has yet been proven.
 
-v0.10.0 therefore probes the SAFE synthetic Raven/Nornir map duplicates for:
+v0.10.1 therefore retains the safe v0.10.0 probes on synthetic Raven/Nornir
+map duplicates for:
 
   SetTexture
   SetTextureName
@@ -60,20 +70,29 @@ v0.10.0 therefore probes the SAFE synthetic Raven/Nornir map duplicates for:
   SetSprite
   SetMaterialSwap
 
-If an obvious direct texture/image setter exists, v0.10.0 tries the staged 32 px
-PNG under pcall on that synthetic duplicate only.
+If an obvious direct texture/image setter exists, the staged 32 px PNG is tried
+under pcall on that synthetic duplicate only.
 
-If none exists, the marker remains the stable DockPoint proxy. The important
-result is the ICON_CAPS / ICON_BIND_* log, which tells us whether we can bind
-loose PNGs directly or must move to the game's authored material/texpack path.
+If none exists, the marker remains the stable DockPoint proxy. ICON_CAPS and
+ICON_BIND_* tell us whether loose PNGs can be bound directly or whether the
+next step must use the game's authored material/texpack path.
 
-The HUD proof carrier is only capability-probed in this build. Unknown image
-setters are NOT invoked on the borrowed HUD object.
+The HUD proof carrier is capability-probed only. Unknown image setters are not
+invoked on the borrowed HUD object.
 
-Install
--------
-$zip = "$env:USERPROFILE\Downloads\Completionist-Map-v0.10.0-ICON-PIPELINE.zip"
-$dir = "$env:TEMP\CompletionistMap-v100"
+Build from the cloned repo
+--------------------------
+powershell -ExecutionPolicy Bypass -File ".\tools\v0.10.1\prepare-local-retry.ps1"
+powershell -ExecutionPolicy Bypass -File ".\tools\v0.10.1\build-package.ps1"
+
+Output:
+
+  dist\Completionist-Map-v0.10.1-LOCAL-ICONS.zip
+
+Install test ZIP
+----------------
+$zip = "$env:USERPROFILE\Documents\GitHub\completionist-map-gow2018\dist\Completionist-Map-v0.10.1-LOCAL-ICONS.zip"
+$dir = "$env:TEMP\CompletionistMap-v101"
 
 Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $dir -Force
@@ -83,11 +102,12 @@ Fully restart God of War.
 
 Test
 ----
-1. Installer must download all ten concept masters and print dimensions/SHA256.
+1. Installer must stage all ten local/bundled concept masters without any
+   GitHub request and print dimensions/SHA256.
 2. Open the same Midgard/Veithurgard test save.
 3. Verify Raven and Nornir behaviour is unchanged.
-4. Look at Raven, Nornir Chest and Seal artwork:
-   - if a direct PNG setter exists, one or more may visibly switch to the custom art;
+4. Check Raven, Nornir Chest and Seal artwork:
+   - if a direct PNG setter exists, one or more may visibly switch to custom art;
    - otherwise they deliberately remain DockPoint proxies for this build.
 5. Test Add to Compass, filters and Hide/Show Kratos as regression checks.
 6. Export the log below.
@@ -95,13 +115,13 @@ Test
 Log export
 ----------
 $log = "G:\SteamLibrary\steamapps\common\GodOfWar\mods\loader_log.txt"
-$out = "$env:USERPROFILE\Desktop\completionist-v100.txt"
+$out = "$env:USERPROFILE\Desktop\completionist-v101.txt"
 
-$lines = Select-String $log -Pattern "CompletionistMap v0.10.0" |
+$lines = Select-String $log -Pattern "CompletionistMap v0.10.1" |
     ForEach-Object { $_.Line }
 
 @(
-    "=== Completionist Map v0.10.0 ==="
+    "=== Completionist Map v0.10.1 ==="
     "Matches: $($lines.Count)"
     ""
     $lines
