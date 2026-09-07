@@ -1,0 +1,87 @@
+{
+  "result": "MATERIAL_Q20_SHARING_INSPECTED",
+  "game_files_written": false,
+  "source_wad_sha256": "92294d218855ee4fbd06f66a2071f61c6b831240aaf41a59a3b7b8168c0f4b04",
+  "material_count": 60,
+  "qword_0x10": {
+    "unique_value_count": 60,
+    "all_values_unique": true
+  },
+  "qword_0x20": {
+    "unique_value_count": 59,
+    "duplicate_group_count": 1,
+    "stock_sharing_across_distinct_materials_proven": true,
+    "duplicate_groups": [
+      {
+        "qword_0x20": "871C6B68565A790E",
+        "count": 2,
+        "distinct_resource_ids": 2,
+        "distinct_names": 2,
+        "canonical_payload_variant_count": 1,
+        "canonical_payload_groups": {
+          "5483a3d930202a22f6a823b885f2e724dbbb0345067a3b5c7f58f2669615ee79": [
+            4896,
+            9682
+          ]
+        },
+        "materials": [
+          {
+            "physical_index": 5599,
+            "payload_index": 4896,
+            "offset": "0x1DF2DB0",
+            "name": "MAT_9AABB0BA443C898A",
+            "id": "be16d57958441b5059fd931fe8495850",
+            "qword_0x10": "0F7791AC4745D38A",
+            "canonical_payload_sha256": "5483a3d930202a22f6a823b885f2e724dbbb0345067a3b5c7f58f2669615ee79",
+            "group_links": [
+              {
+                "name": "9aabb0ba443c898a_ps_1040020d",
+                "id": "f8133748eca623928d2cc4bbc10f8050"
+              },
+              {
+                "name": "transp_vs_1040020d",
+                "id": "488f48722fae11c29f128153fbd133fc"
+              }
+            ]
+          },
+          {
+            "physical_index": 19664,
+            "payload_index": 9682,
+            "offset": "0x21BBA00",
+            "name": "MAT_FFD77FF9FB55F844",
+            "id": "f865f56c8f2ded8865aa9adc99330931",
+            "qword_0x10": "19958CCC3D1E8844",
+            "canonical_payload_sha256": "5483a3d930202a22f6a823b885f2e724dbbb0345067a3b5c7f58f2669615ee79",
+            "group_links": [
+              {
+                "name": "ffd77ff9fb55f844_ps_1040020d",
+                "id": "82a51a20c830d84a3ec73056a8a3fbbf"
+              },
+              {
+                "name": "transp_vs_1040020d",
+                "id": "488f48722fae11c29f128153fbd133fc"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "dock": {
+    "material": {
+      "physical_index": 31800,
+      "payload_index": 13699,
+      "offset": "0x2638710",
+      "name": "MAT_0C599DC8DC7E2170",
+      "id": "61ed20dc7a5567ba23016085750aacf2"
+    },
+    "qword_0x10": "013C2960E0801670",
+    "qword_0x20": "D595197B0961F689",
+    "qword_0x20_stock_user_count": 1
+  },
+  "decision": {
+    "safe_to_clone_with_fresh_q10_and_preserved_dock_q20": true,
+    "reason": "Stock proves +0x20 may be shared by distinct materials, while +0x10 is globally unique. If true, keep the known-good Dock +0x20 in the Raven clone and generate only a fresh +0x10."
+  },
+  "next_gate": "If decision is true, build the Raven-only material clone using a fresh +0x10 and preserved Dock +0x20, then clone fresh Raven texture definition/GPU identities and wire the Raven model/prototype to that material."
+}
