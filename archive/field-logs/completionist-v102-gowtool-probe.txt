@@ -1,0 +1,65 @@
+﻿=== Completionist Map v0.10.2 GOWTool probe ===
+Generated: 2026-09-07 11:41:05 +03:00
+Branch: feat/v0.10.2-material-icons
+GameRoot: G:\SteamLibrary\steamapps\common\GodOfWar
+Tool: GOWTool v0.1.3-alpha PC
+ToolPath: C:\Users\david\AppData\Local\CompletionistMap\tools\GOWTool-v0.1.3-alpha\GOWTool.exe
+DownloadURL: https://github.com/kainotoa/GOWTool/releases/download/v0.1.3-alpha/GOWTool.exe
+SizeBytes: 394240
+SHA256: C1B0F3C7FB9DD2B26AE7EF4AC377308761FD3C7AFB21DAC7E4BEE20160A0008B
+
+settings exit: 0
+
+Gamedir Updated
+
+root help exit: 0
+
+God of War Tool
+
+Usage:
+  GOWTool [command] [options]
+
+Commands:
+  wad       Target a Wad file for export.
+  texpack   Target a Texpack file for export.
+  settings  Change tool settings.
+
+Options:
+  -h, --help  Show help and usage information.
+
+texpack help exit: 0
+
+texpack
+  Target a Texpack file for export.
+
+Usage:
+  GOWTool texpack [options]
+
+Options:
+  -e, --export             Export textures from .texpack file.
+  -d, --dds                Export Textures in DDS Format.
+  -i, --import             Import textures and pack .texpack file.
+  -p, --path <path>        path to .texpack file or path to directory containing dds/gnf files for import.
+  -o, --outpath <outpath>  Output directory.
+
+wad help exit: 0
+
+wad
+  Target a Wad file for export.
+
+Usage:
+  GOWTool wad [options]
+
+Options:
+  -p, --path <path>        Input path to .wad file.
+  -o, --outpath <outpath>  Output directory.
+  -e, --extract            Extract all files from .wad.
+  -m, --mesh               Export all meshes from .wad.
+  -t, --texture            Export all textures from .wad.
+  -d, --dds                Export Textures in DDS Format.
+  -h, --help               Show help and usage information.
+
+Notes:
+- The executable is stored under LocalAppData, not in the Git repository.
+- This probe does not modify God of War game files.
+- The settings command only writes GOWTool local configuration pointing at the game directory.
