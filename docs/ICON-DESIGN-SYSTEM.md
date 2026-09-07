@@ -13,6 +13,10 @@ This document defines the original icon family used by Completionist Map. The vi
 - One source glyph should serve map, compass and filter surfaces wherever possible.
 - Nornir chest parent markers must remain visibly different from Nornir puzzle-child markers.
 
+## Player marker invariant
+
+The Kratos/player marker is not part of the custom runtime icon family. The map must keep the game's native Omega symbol exactly as the player marker. Completionist Map may hide/show the native marker, but must never replace its artwork or material. Any `player_marker` concept asset is reference-only and must not be bound to the live player marker.
+
 ## Base grid
 
 - Master SVG viewBox: `0 0 64 64`.
@@ -60,7 +64,7 @@ Hidden/filter-disabled should normally use 25-35% opacity rather than a new cate
 | Artefact | Portable collectible relic | yes | yes | yes | Chipped amulet/relic silhouette |
 | Legendary Chest | Legendary chest | yes | yes | yes | Narrow reinforced chest with radiant split |
 | Generic Remaining | Unknown remaining collectible | yes | yes | yes | Three rune fragments around centre |
-| Player | Current player | native preferred | no | yes | Reuse native map player marker if technically available; custom filter glyph only when needed |
+| Player | Current player | native only | no | no | Keep the game's native Omega marker unchanged |
 
 ## Nornir hierarchy
 
@@ -132,6 +136,7 @@ Completed, unavailable and hidden should normally be renderer treatments rather 
 - Optional common shield/lozenge marker shell.
 - Dark outer separation for bright terrain areas.
 - Selected/tracked state can add a reusable outer ring.
+- The Kratos/player Omega marker remains native and outside this custom rendering path.
 
 ### Compass
 - Glyph-only or glyph plus very small diamond base.
@@ -142,6 +147,7 @@ Completed, unavailable and hidden should normally be renderer treatments rather 
 - Same category glyph whenever possible.
 - 32 or 48 px.
 - Enabled/disabled represented by opacity/state treatment, not alternative category artwork.
+- Do not introduce a custom player-marker filter icon solely to replace the native Omega visual language.
 
 ## File naming
 
@@ -196,6 +202,6 @@ First state/surface matrix:
 
 - Main collectible families: `map_default`, `map_selected`, `compass_tracked`, `filter_default`.
 - Nornir child families: `map_default`, `compass_tracked`.
-- Keep the native Kratos/player marker where possible.
+- Keep the native Kratos/player Omega marker unchanged.
 
 The first visual acceptance gate is Raven + Nornir Chest + Nornir Seal + Nornir Bell at 24 px. If those remain immediately distinguishable in-game, the family is structurally sound.
