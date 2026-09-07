@@ -178,8 +178,14 @@ function Convert-RavenDds {
         [Parameter(Mandatory=$true)][string]$TargetName
     )
 
-    & $texconv -nologo -y -w $Meta.Width -h $Meta.Height -m $Meta.Mips -f $Meta.Format -o $TempDir $ravenPng
-    if ($LASTEXITCODE -ne 0) { throw "texconv failed for $TargetName" }
+    # texconv writes progress text to the success stream. Capture it explicitly
+    # so a caller assigning this function's return value receives only the DDS path.
+    $texOutput = @(& $texconv -nologo -y -w $Meta.Width -h $Meta.Height -m $Meta.Mips -f $Meta.Format -o $TempDir $ravenPng 2>&1)
+    $texExit = $LASTEXITCODE
+    if ($texExit -ne 0) {
+        $texOutput | ForEach-Object { Write-Host $_ }
+        throw "texconv failed for $TargetName with exit code $texExit"
+    }
     $generated = Join-Path $TempDir 'raven_concept_master.dds'
     if (-not (Test-Path -LiteralPath $generated -PathType Leaf)) {
         throw "texconv output missing: $generated"
@@ -192,7 +198,7 @@ function Convert-RavenDds {
             throw "Generated DDS metadata mismatch for $TargetName at $prop."
         }
     }
-    return $target
+    return [string]$target
 }
 
 $diffName = 'TX_completionist_raven_map_diffuse_19A41F00834C19F3.dds'
