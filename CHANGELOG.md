@@ -2,6 +2,14 @@
 
 For the exhaustive numbered prototype list, including superseded and failed test builds, see [`docs/VERSION_HISTORY.md`](docs/VERSION_HISTORY.md).
 
+## v0.9.6.1-installer-fix
+
+- Fixes an installer validation-order regression in v0.9.6.
+- v0.9.6 checked for `PLAYER_HIDDEN_CENTER` before applying `$hiddenPlayerFocusRegex.Replace(...)`, so installation aborted even though the patch definition itself was valid.
+- No gameplay, marker, filter, compass or lifecycle logic changes from v0.9.6.
+- Retains `CursorSnap_Enabled=0`, `CursorSnap_Strength=0.0`, native-scale custom markers, stale-stock-compass clearing, hidden-Kratos opening centring, custom filters, Raven/Nornir lifecycle and `MaxIn=2.5`.
+- Current test build: `Completionist-Map-v0.9.6.1-INSTALLER-FIX.zip`.
+
 ## v0.9.6-no-magnet-compass-fix
 
 - v0.9.5.1 field result confirmed `PLAYER_HIDDEN_CENTER`, custom filters, Raven placement, Nornir parent/seal placement, distinct backing objects and Hide/Show Kratos are healthy.
@@ -13,6 +21,7 @@ For the exhaustive numbered prototype list, including superseded and failed test
 - Clears any currently tracked stock compass marker before enabling Raven/Nornir custom tracking, avoiding stale stock DockPoint HUD destinations.
 - Retains the hidden-Kratos opening-centre fix and deep zoom `MaxIn=2.5`.
 - Notes that the original Completionist icon source set is already present on `dev`; icon injection remains a separate next milestone after interaction/compass routing is stable.
+- Initial field install did not complete because `PLAYER_HIDDEN_CENTER` was validated before its replacement ran. Superseded for testing by v0.9.6.1.
 
 ## v0.9.5.1-installer-fix
 
@@ -42,7 +51,7 @@ For the exhaustive numbered prototype list, including superseded and failed test
   - `CursorScale_Min: 0.12 -> 0.05`
   - `CursorSnap_Strength: 0.55 -> 0.18`
 - Retains deep zoom `MaxIn=2.5`, distinct backing IDs, custom filters, seal Add-to-Compass and Hide/Show Kratos.
-- Field result: Raven/Nornir target interference was fixed, but hidden Kratos caused fallback map centring and synthetic pins remained too magnetic at deep zoom. Scale `0.28` also made custom artwork visibly smaller than native markers.
+- Field result: Raven/Nornir target interference was fixed, but hidden Kratos caused fallback map centring and synthetic pins remained too magnetic at deep zoom. Scale `0.28` also made them visibly smaller than native markers.
 
 ## v0.9.3.1-map-load-hotfix
 
