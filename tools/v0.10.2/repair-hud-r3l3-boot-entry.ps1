@@ -120,7 +120,7 @@ if ($installerText.Contains($oldBlock)) {
     [IO.File]::WriteAllText($installerPath, $installerText, $utf8NoBom)
     $installerPatched = $true
 }
-elif (-not $installerText.Contains('$nextEntries += [string]$packBase')) {
+elseif (-not $installerText.Contains('$nextEntries += [string]$packBase')) {
     throw 'Could not recognise the HUD proof installer boot-entry block. Refusing to patch it.'
 }
 
