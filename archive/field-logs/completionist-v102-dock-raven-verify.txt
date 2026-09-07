@@ -1,0 +1,46 @@
+﻿=== Completionist Map v0.10.2 DockPoint Raven patch verification ===
+Generated: 2026-09-07 12:27:58 +03:00
+Branch: feat/v0.10.2-material-icons
+GameRoot: G:\SteamLibrary\steamapps\common\GodOfWar
+
+=== boot-options.json ===
+Expected entry present: True
+Expected entry: ../../patch/pc_le/completionist_v102_dock_raven
+patch-texpacks count: 1
+  ../../patch/pc_le/completionist_v102_dock_raven
+Backup exists: True
+
+=== patch files ===
+Texpack: G:\SteamLibrary\steamapps\common\GodOfWar\exec\patch\pc_le\completionist_v102_dock_raven.texpack
+Texpack bytes: 137488
+Texpack SHA256: 28B4FF440505A2538908EFBB3518188DCA7490BF94F2C585C31F09097EE68D2A
+TOC: G:\SteamLibrary\steamapps\common\GodOfWar\exec\patch\pc_le\completionist_v102_dock_raven.texpack.toc
+TOC bytes: 176
+
+=== patch texpack header ===
+TexSectionOff: 0xB0
+BlocksCount: 2
+BlocksInfoOff: 0x68
+TexCount: 2
+Marker: 0x5
+
+=== target hashes expected ===
+DockDiffuse: 982BF904AB84F2CC
+DockEmissive: FCC664130951154C
+
+=== target entries inside patch texpack ===
+index=0 fileHash=982BF904AB84F2CC userHash=B5C0D91355E4F2B9 blockInfoOff=0x68
+index=1 fileHash=FCC664130951154C userHash=16DD8FD4899DD159 blockInfoOff=0x88
+
+=== matching target entries in stock texpack set ===
+exec\wad\pc_le\root.texpack | index=3103 fileHash=982BF904AB84F2CC userHash=B5C0D91355E4F2B9 blockInfoOff=0x453B8
+exec\wad\pc_le\root.texpack | index=3104 fileHash=FCC664130951154C userHash=16DD8FD4899DD159 blockInfoOff=0x453D8
+
+=== patch vs stock user-hash comparison ===
+DockDiffuse: userHashMatch=True patch=B5C0D91355E4F2B9 stock=B5C0D91355E4F2B9
+DockEmissive: userHashMatch=True patch=16DD8FD4899DD159 stock=16DD8FD4899DD159
+
+=== conclusion hints ===
+If the boot entry is present and both fileHash/userHash pairs match stock, the pack itself is structurally targeting the correct textures and the next suspect is patch loading/precedence.
+If file hashes are absent or user hashes differ, rebuild the patch before any further runtime test.
+No game files are modified by this verification script.
