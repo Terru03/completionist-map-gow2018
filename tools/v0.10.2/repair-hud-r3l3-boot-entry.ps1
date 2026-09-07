@@ -89,6 +89,41 @@ if ($checkEntries -contains $malformedForward -or $checkEntries -contains $malfo
     throw 'Malformed concatenated Completionist proof entry remains after repair.'
 }
 
+# Persist the PowerShell 5.1 scalar/array fix into the proof installer itself.
+$installerRelative = 'tools/v0.10.2/build-install-hud-r3l3-raven-proof.ps1'
+$installerPath = Join-Path $repo ($installerRelative -replace '/', '\')
+if (-not (Test-Path -LiteralPath $installerPath)) {
+    throw "HUD proof installer not found: $installerPath"
+}
+
+$installerText = [IO.File]::ReadAllText($installerPath)
+$oldBlock = @'
+    $current = @($boot.'patch-texpacks') | Where-Object { $_ -ne $null -and [string]$_ -ne '' }
+    if ($current -notcontains $packBase) {
+        $boot.'patch-texpacks' = @($current + $packBase)
+    }
+'@
+$newBlock = @'
+    $current = @(
+        @($boot.'patch-texpacks') | Where-Object { $_ -ne $null -and [string]$_ -ne '' }
+    )
+    if ($current -notcontains $packBase) {
+        $nextEntries = @($current)
+        $nextEntries += [string]$packBase
+        $boot.'patch-texpacks' = [string[]]$nextEntries
+    }
+'@
+
+$installerPatched = $false
+if ($installerText.Contains($oldBlock)) {
+    $installerText = $installerText.Replace($oldBlock, $newBlock)
+    [IO.File]::WriteAllText($installerPath, $installerText, $utf8NoBom)
+    $installerPatched = $true
+}
+elif (-not $installerText.Contains('$nextEntries += [string]$packBase')) {
+    throw 'Could not recognise the HUD proof installer boot-entry block. Refusing to patch it.'
+}
+
 $reportDir = Join-Path $repo 'archive\field-logs'
 $report = Join-Path $reportDir 'completionist-v102-hud-r3l3-boot-repair.txt'
 New-Item -ItemType Directory -Force $reportDir | Out-Null
@@ -111,12 +146,14 @@ $lines = @(
     "Final patch-texpacks count: $($checkEntries.Count)"
     "Final entries: $($checkEntries -join ', ')"
     "Backup: $backup"
+    "Installer source patched: $installerPatched"
     ''
     '=== installed proof packs ==='
     "Map texpack: $mapPack"
     "HUD texpack: $hudPack"
     ''
     'Both proof packs are now referenced as separate boot entries.'
+    'The proof installer now forces array semantics before appending future entries.'
     'No Kratos/Omega texture hashes are involved in this repair.'
 )
 $lines | Set-Content -LiteralPath $report -Encoding UTF8
@@ -125,19 +162,20 @@ Write-Host ''
 Write-Host 'Repaired v0.10.2 patch-texpacks entries.'
 Write-Host "Malformed concatenation detected: $repairedMalformed"
 Write-Host "Final entries: $($checkEntries -join ', ')"
+Write-Host "Installer source patched: $installerPatched"
 Write-Host "Saved report: $report"
 Write-Host 'Fully restart God of War before testing.'
 
 $relativeReport = 'archive/field-logs/completionist-v102-hud-r3l3-boot-repair.txt'
-& git add -- $relativeReport
-if ($LASTEXITCODE -ne 0) { throw 'git add failed for the HUD boot repair report.' }
-& git diff --cached --quiet -- $relativeReport
+& git add -- $relativeReport $installerRelative
+if ($LASTEXITCODE -ne 0) { throw 'git add failed for the HUD boot repair changes.' }
+& git diff --cached --quiet -- $relativeReport $installerRelative
 if ($LASTEXITCODE -eq 0) {
-    Write-Host 'Repair report is unchanged. Nothing to commit.'
+    Write-Host 'Repair state is unchanged. Nothing to commit.'
     exit 0
 }
-& git commit -m 'Archive v0.10.2 HUD boot-entry repair' -- $relativeReport
-if ($LASTEXITCODE -ne 0) { throw 'git commit failed for the HUD boot repair report.' }
+& git commit -m 'Fix v0.10.2 HUD proof boot entry handling' -- $relativeReport $installerRelative
+if ($LASTEXITCODE -ne 0) { throw 'git commit failed for the HUD boot repair changes.' }
 & git push $Remote $branch
-if ($LASTEXITCODE -ne 0) { throw "git push failed. The repair report commit exists locally on '$branch'." }
-Write-Host "Pushed HUD boot repair report to $Remote/$branch"
+if ($LASTEXITCODE -ne 0) { throw "git push failed. The repair commit exists locally on '$branch'." }
+Write-Host "Pushed HUD boot repair and installer fix to $Remote/$branch"
