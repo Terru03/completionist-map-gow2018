@@ -338,8 +338,8 @@ def build_dcb(raw: bytes) -> tuple[bytes, dict]:
 
     # Every non-data DCB chunk is byte-identical; only its file offset moves by
     # 16 bytes because the data chunk grew by one aligned row.
-    original_by_kind = {c["kind"]: raw[c["start"]:c["end"] for c in chunks if c["kind"] != 12}
-    candidate_by_kind = {c["kind"]: candidate[c["start"]:c["end"] for c in reparsed if c["kind"] != 12}
+    original_by_kind = {c["kind"]: raw[c["start"]:c["end"]] for c in chunks if c["kind"] != 12}
+    candidate_by_kind = {c["kind"]: candidate[c["start"]:c["end"]] for c in reparsed if c["kind"] != 12}
     check(original_by_kind == candidate_by_kind, "a non-data DCB chunk changed")
 
     return candidate, {
