@@ -6,8 +6,9 @@ param(
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $branch = (& git -C $repo branch --show-current).Trim()
-if ($branch -ne 'feat/v0.10.3-native-raven') {
-    throw "Expected feat/v0.10.3-native-raven, got '$branch'."
+$allowedBranches = @('feat/v0.10.3-native-raven', 'feat/v0.10.4-all-ravens')
+if ($branch -notin $allowedBranches) {
+    throw "Expected one of [$($allowedBranches -join ', ')], got '$branch'."
 }
 if (Get-Process -Name GoW -ErrorAction SilentlyContinue) {
     throw 'Close God of War before installing or removing the v0.10.3 native Raven candidate.'
@@ -74,7 +75,7 @@ foreach ($probeManifest in $researchManifests) {
         throw "A research probe is still active: $probeManifest. Roll it back before installing the candidate."
     }
 }
-foreach ($path in @($mapTarget, $ravenTarget, $dcbTool, $mapBridge, $lifecycleBridge)) {
+foreach ($path in @($mapTarget, $ravenTarget,$dcbTool,$mapBridge,$lifecycleBridge)) {
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Missing required file: $path" }
 }
 
