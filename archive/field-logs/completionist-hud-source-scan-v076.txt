@@ -1,0 +1,589 @@
+﻿=== Completionist Map v0.7.6 HUD source research ===
+Generated: 2026-09-06 14:51:45
+UI Lua files: 118
+HUD Lua files: 20
+
+=== HUD util.GetUiObjByName inventory ===
+BottomTutorialMessage
+BuffLogTimer
+CalibrationScreens
+CalibrationToolTip
+CombatHUD
+Compass
+Compass_Base
+Compass_Radius
+CornerHUD_Blur
+DesignerMessage
+DM_Rage_Mode
+eventMeter
+FadeGameOutDecal
+globalMenu
+graphicsModeScreen
+GraphicsToolTip
+HDR_Calibrate
+health_meter
+healthbarflourish
+HealthMeter
+HUDTutorialMessage
+ItemCardMessage
+JournalLog
+mainHUD
+MechanicsMeter
+MechanicsText
+messageHUD
+photoModeHUD
+PM_Borders
+QuestLog
+R3_L3
+rage_meter
+ragebarflourish
+RageMeter
+ResourceLog
+RestrictedCamera
+SDR_Calibrate
+SidebarTutorialMessage_Large
+SidebarTutorialMessage_Medium
+SidebarTutorialMessage_Small
+son_arrow_meter
+SonMeters
+SonMetersBlur
+SonSpecial_meter
+SpecialMeters
+SplashScreenMessage_LandscapeLarge
+SplashScreenMessage_LandscapeSmall
+SplashScreenMessage_NoImage
+SplashScreenMessage_PortraitLarge
+SplashScreenMessage_PortraitSmall
+talismanOfBetrayalMeter
+UI_Elements
+
+=== UI namespace call inventory ===
+AlphaFade	90
+Anim	269
+AnimNoShow	12
+AvailableSpeechLanguages	1
+BestiaryCompare	1
+ClearIsClickable	1
+ClearNotification	6
+ClearUpHandled	1
+ClearUpHandlerShowing	5
+CopySaveGameToManualSave	1
+Desaturation	2
+FadeIn	2
+FadeOut	2
+FindCreatureByGOName	2
+FindTagsAndCountNewLines	1
+ForceHighMips	3
+GamePause	2
+GameUnpause	2
+GetAccessibilityScaling	27
+GetAllowDataCollection	1
+GetBestiaryCategories	1
+GetBestiaryEntriesForCategory	1
+GetBestiaryEntry	1
+GetBestiaryList	1
+GetCineSkipEnabled	1
+GetEventArgBool	1
+GetEventArgFloat	8
+GetEventArgInt	25
+GetEventArgStringHash	8
+GetEventSenderGameObject	35
+GetFrameTime	5
+GetFreeManualSlot	1
+GetGOLocalPosition	4
+GetGOScale	1
+GetInScreen	13
+GetLAMSMsg	2
+GetNewGamePlusAvailable	3
+GetPhotoModeFromTouchpad	3
+GetPlayGoDownloadProgress	1
+GetQuad	1
+GetSaveGameInfo	2
+GetSlotPlayGoDownloadProgress	2
+GetSpeechLanguage	5
+GetSpeechLanguagePlayGoDownloadProgress	1
+GetSubtitleBGAlpha	1
+GetSubtitleSpeakerPolicy	1
+GetTeamCredits	1
+GetTextExtent	1
+GetTextLanguage	1
+GetUserBossHealthBarSetting	1
+GetUserCameraSpeedMax	8
+GetUserCameraSpeedMin	8
+GetUserCombatHUDSetting	8
+GetUserCompassSetting	3
+GetUserEnemyHealthBarSetting	1
+GetUserGameplayNotificationsSetting	5
+GetUserHUDDisplaySetting	5
+GetUserLockOn	1
+GetUserMotionBlurMax	1
+GetUserMotionBlurMin	1
+GetUserOffscreenIndicatorSetting	1
+GetUserRumbleStrengthMax	1
+GetUserRumbleStrengthMin	1
+GetUserShakeStrengthMax	2
+GetUserShakeStrengthMin	2
+GetUserSuppressDesignerMessages	2
+GetUserSwayStrengthMax	2
+GetUserSwayStrengthMin	2
+HasNotification	9
+HasNotificationOfType	1
+Idle	2
+IsAutoSaveSlot	1
+IsPlatinum	2
+IsPlayGoDownloaded	1
+IsSlotPlayGoDownloaded	4
+IsSlotValid	1
+IsSpeechLanguagePlayGoDownloaded	4
+IsSpeechLanguagePlayGoDownloading	1
+IsSpeechLanguagePlayGoRequired	1
+LoadSaveGame	1
+MakeManualSaveGame	1
+PadClear	3
+PopCamera	3
+PushCamera	3
+ResetIntoNewGamePlus	1
+SavePrefs	3
+ScissorRect	2
+SendEvent	22
+SetAccessibilityScaling	1
+SetAllowDataCollection	3
+SetCineSkipEnabled	1
+SetCurrentSlot	1
+SetForcePauseMenuStreamingMode	3
+SetGOLocalPosition	4
+SetGOScale	1
+SetGOScreenEdge	6
+SetGOScreenEdgeVertical	2
+SetGOScreenLeft	2
+SetGOScreenRight	3
+SetGOTransform	1
+SetGOTransformCameraSpace	1
+SetGOTransformInterpolated	21
+SetInMenu	3
+SetInPauseMenu	3
+SetInUI	4
+SetInVendor	2
+SetIsClickable	10
+SetLutIndex	1
+SetLutWeight	1
+SetMaxSubtitleScale	1
+SetPhotoModeFromTouchpad	1
+SetSoundInBackground	1
+SetSpeechLanguage	3
+SetSpeechLanguagePlayGoRequired	2
+SetSubtitleBGAlpha	1
+SetSubtitles	2
+SetSubtitleScale	1
+SetSubtitleSpeakerPolicy	1
+SetText	226
+SetTextIsClickable	20
+SetTextIsDialog	2
+SetTextIsUIMacro	5
+SetTextLanguage	1
+SetTextScroll	2
+SetTextStyle	8
+SetUIGORenderLayer	11
+SetUpHandled	2
+SetUpHandlerShowing	2
+SetUserAimAssist	1
+SetUserAttackRecenter	1
+SetUserBossHealthBarSetting	1
+SetUserCameraElevationInvert	1
+SetUserCameraMouseSpeedHorizontalCamera	1
+SetUserCameraMouseSpeedVerticalCamera	1
+SetUserCameraRotationInvert	1
+SetUserCameraSpeedHorizontalAiming	1
+SetUserCameraSpeedHorizontalCamera	1
+SetUserCameraSpeedHorizontalMouseAiming	1
+SetUserCameraSpeedVerticalAiming	1
+SetUserCameraSpeedVerticalCamera	1
+SetUserCameraSpeedVerticalMouseAiming	1
+SetUserCombatHUDSetting	1
+SetUserCompassSetting	1
+SetUserEnemyHealthBarSetting	1
+SetUserGameplayNotificationsSetting	1
+SetUserHUDDisplaySetting	1
+SetUserLockOn	1
+SetUserMotionBlur	1
+SetUserOffscreenIndicatorSetting	1
+SetUserPauseOnFocusLoss	1
+SetUserRumbleStrength	1
+SetUserShakeStrength	2
+SetUserStrafeAssist	1
+SetUserSuppressDesignerMessages	1
+SetUserSwayStrength	2
+SoftSavePlayerState	5
+TextObject	1
+VideoPlay	1
+VideoUnload	1
+WorldUIRender	16
+
+=== GameObject colon-method inventory, creation/render relevant ===
+AdjustPositionForHeight	3
+AlphaFadeInstancedChildObject	2
+AnimateInChildObject	7
+AnimateOutChildObject	7
+AnimateTransitionOnNewItem	2
+CheckMaterialFullyStreamed	9
+CreateButton	3
+CreateButtonArray	5
+CreateCooldownMeter	2
+CreateMessage	4
+CreateMessageRow	1
+CreateMessageRowTimer	2
+CreateMomentumMeter	3
+CreateRowArray	2
+CreateSublist	2
+CurrentlyShowingMessage	3
+DestroyCreatureIcon	5
+EVT_CLOSE_SCREEN_SCALE_AND_LEAVE_PAUSE	1
+EVT_CLOSE_SCREEN_SCALE_SCREEN	1
+EVT_HIDE_ATTRIBUTE_CARD	1
+EVT_HIDE_ATTRIBUTE_DESCRIPTIONS	1
+EVT_HIDE_RECIPE_NOTICE	1
+EVT_HIDE_SUB_MENU_LIST	1
+EVT_HideCompassMarkerForQuest	1
+EVT_NEW_GAME_WARNING_FROM_SHELL	1
+EVT_NewGamePlusMessage	1
+EVT_SHOW_ATTRIBUTE_CARD	1
+EVT_SHOW_RECIPE_NOTICE	1
+EVT_SHOW_SETTINGS_DIALOG_MESSAGE	3
+EVT_SHOW_SUB_MENU_LIST	1
+EVT_ShowCompassMarkerForQuest	1
+EVT_UPDATE_WINDOW_POSITION	1
+FindMaterialEntry	1
+FindSingleGOByName	401
+get_fillObjectName	1
+get_flourishAnimName	1
+get_goMessageRequestChild	8
+get_name	7
+get_resourceName	7
+get_sortListName	21
+get_submenuListName	11
+get_textIndexNames	3
+get_timerName	2
+GetChildSubObject	13
+GetDisplayName	4
+GetEquippedItemNameAndStage	3
+GetIndexFromName	3
+GetInstancedChildObject	51
+GetItemName	2
+GetMaterialEntry	1
+GetName	13
+GetPosition	3
+GetResourceNameColor	4
+GetShowOnCompassPrompt	4
+GetSocketSlotsListNames	2
+GetSoundNameID	3
+GetStartChangeEndEventNames	3
+GetStateName	3
+GetSubStateDisplayName	2
+GetSubStateNames	8
+GetTimerName	4
+GetWeaponAttributeName	4
+GetWeaponUpgradeSlotsListNames	3
+GetWorldPosition	5
+HandleNewMessage	5
+Hide	412
+HideAll	4
+HideAllInfo	15
+HideAllMaps	4
+HideAllQuickTurnGOs	3
+HideAllReticles	4
+HideAllTheThings	6
+HideBacking	3
+HideButtonPrompt	5
+HideButtons	1
+HideCard	82
+HideCombatHUD	3
+HideComparisonCard	7
+HideCompass	3
+HideDescriptionGroup	1
+HideGOs	5
+HideHandler	2
+HideHeader	5
+HideIcon	2
+HideIndicator	7
+HideJoint	40
+HideLabel	4
+HideNodeHighlight	2
+HideRequirementsBoxGroup	3
+HideReticle	2
+HideRootLevelGOs	3
+HideScrollBar	3
+HideScrollDirectionIndicators	4
+HideSummary	7
+InitChildObjectAnimation	5
+InstructionEntry_GetEventName	3
+InstructionEntry_GetListName	2
+InstructionEntry_GetStateName	4
+IsModelShown	1
+IsShowing	3
+JournalSetMaterialSwap	8
+OnSliderParentHide	11
+PickupGetPickupNameInSlot	5
+SetAndDestroyCreatureIcon	4
+SetBackframeScale	6
+SetColorOnButtonAndAllChildren	3
+SetDisableInputItemByName	13
+SetItemByName	46
+SetLocalPosition	9
+SetMaterialSwap	70
+SetName	2
+SetNewMenu	4
+SetPosition	3
+SetRequirementDisplayName	2
+SetScale	11
+SetScaleY	4
+SetScrollBarPosition	4
+SetupTextIndexNames	2
+SetWorldPosition	6
+ShouldShowGlobalStats	1
+ShouldShowIconAfterPicture	2
+ShouldShowPauseWorld	3
+ShouldShowPlayerMarker	4
+Show	442
+Show_Recursive	3
+ShowAimReticle	2
+ShowAllInstancedObjects	2
+ShowAlreadyDiscovered	2
+ShowAndPlaceGO	2
+ShowButtonPrompt	5
+ShowCard	49
+ShowCard_Recursive	20
+ShowCharacters	3
+ShowComparisonCard	4
+ShowCompass	2
+ShowControllers	3
+ShowCreatureIconAfterHide	3
+ShowDescriptionGroup	1
+ShowGOs	2
+ShowHeader	5
+ShowHeaderTabs	2
+ShowIcon	2
+ShowIndicator	7
+ShowInstancedChildObject	8
+ShowJoint	29
+ShowKeyboard	2
+ShowKeys	4
+ShowKratos	3
+ShowKratosHUD	3
+ShowLabel	2
+ShowMap	2
+ShowNodeHighlight	2
+ShowOnCompass	2
+ShowOriginal	2
+ShowPreview	2
+ShowRegionSummary	2
+ShowRequirementsBoxGroup	2
+ShowReticle	2
+ShowRootLevelGOs	3
+ShowScrollBar	2
+ShowSelectedBorderGO	6
+ShowSon	3
+ShowSonHUD	3
+StartMaterialSwap	2
+ToggleShowTheDoFIcons	2
+UpdateLogPositions	3
+UpdateNewIcon	36
+UpdatePosition	3
+UpdatePositions	2
+UpdateRequirementsBoxPosition	2
+
+=== engine.* call inventory, creation relevant ===
+
+=== Exact source contexts for likely object factories ===
+gameart\ui\scripts\classes\button.lua:306: goButtonChild:SetMaterialSwap(iconMaterialName)
+gameart\ui\scripts\classes\cardmanager.lua:2: local clone = require("core.clone")
+gameart\ui\scripts\classes\cardmanager.lua:58: nonCompareArgs = clone.deep(args)
+gameart\ui\scripts\classes\cardmanager.lua:63: compareArgs = clone.deep(args)
+gameart\ui\scripts\classes\list.lua:1245: self._goIconObject:SetMaterialSwap(materialSwapName)
+gameart\ui\scripts\classes\logmanager.lua:268: assert(self._sequences[name] == nil, "Attempting to register Log with duplicated name/ID")
+gameart\ui\scripts\classes\message.lua:207: goHeaderIcon:SetMaterialSwap(self:get_icon())
+gameart\ui\scripts\classes\statscard.lua:1198: goUpgradeArrow:SetMaterialSwap("UpgradeArrow_Up")
+gameart\ui\scripts\classes\statscard.lua:1201: goUpgradeArrow:SetMaterialSwap("UpgradeArrow_Down")
+gameart\ui\scripts\classes\statscard.lua:1335: gameObjectsTable.goUpgradeSlotArrow:SetMaterialSwap("UpgradeArrow_Down")
+gameart\ui\scripts\classes\statscard.lua:1337: gameObjectsTable.goUpgradeSlotArrow:SetMaterialSwap("UpgradeArrow_Up")
+gameart\ui\scripts\classes\infocards\attributecard.lua:334: self.gameObjects.goIconR:SetMaterialSwap("Rage")
+gameart\ui\scripts\classes\infocards\attributecard.lua:340: self.gameObjects.goIconR:SetMaterialSwap("Arrow")
+gameart\ui\scripts\classes\infocards\attributecard.lua:375: goArrow:SetMaterialSwap("UpgradeArrow_Up")
+gameart\ui\scripts\classes\infocards\attributecard.lua:376: goArrow_small:SetMaterialSwap("UpgradeArrow_Up")
+gameart\ui\scripts\classes\infocards\attributecard.lua:378: goArrow:SetMaterialSwap("UpgradeArrow_Down")
+gameart\ui\scripts\classes\infocards\attributecard.lua:379: goArrow_small:SetMaterialSwap("UpgradeArrow_Down")
+gameart\ui\scripts\classes\infocards\components\cardcomponent_mapsummarylist.lua:98: goChild:SetMaterialSwap(materialSwapName)
+gameart\ui\scripts\classes\infocards\components\cardcomponent_mapsummarylist.lua:102: goChild:SetMaterialSwap("bulletPoint_empty")
+gameart\ui\scripts\classes\infocards\components\cardcomponent_mapsummarylist.lua:132: goChild:SetMaterialSwap(materialSwapName)
+gameart\ui\scripts\classes\infocards\components\cardcomponent_mapsummarylist.lua:136: goChild:SetMaterialSwap("bulletPoint_empty")
+gameart\ui\scripts\classes\infocards\components\cardcomponent_questsummary.lua:37: self._children.goQuestIcon:SetMaterialSwap(questType == questConsts.QUEST_CATEGORY_MAIN and "MainQuest" or "SideQuest")
+gameart\ui\scripts\classes\infocards\components\cardcomponent_weapon_slot.lua:134: self._children.goUpgradeSlotIcon_Hilt_Icon:SetMaterialSwap(pickup)
+gameart\ui\scripts\classes\infocards\components\cardcomponent_weapon_slot.lua:150: self._children.goUpgradeSlotIcon_Runic_Icon:SetMaterialSwap(pickup)
+gameart\ui\scripts\hud\combathud.lua:807: self.goIcon:SetMaterialSwap(self.currArrow)
+gameart\ui\scripts\hud\combathud.lua:928: self.goWeaponIcon:SetMaterialSwap(self.currentWeapon)
+gameart\ui\scripts\hud\combathud.lua:1025: self.goWeaponIcon:SetMaterialSwap(self.currentWeapon)
+gameart\ui\scripts\hud\designermessages.lua:108: go:SetMaterialSwap(currentMessage:get_itemCardArgs())
+gameart\ui\scripts\hud\designermessages.lua:924: goUpgradeIcon:SetMaterialSwap(displayTable.MaterialSwap)
+gameart\ui\scripts\hud\mainhud.lua:133: self.goRageMeter:SetMaterialSwap("key")
+gameart\ui\scripts\hud\mainhud.lua:135: self.goRageMeter:SetMaterialSwap(game.GetKey(6))
+gameart\ui\scripts\hud\mainhud.lua:136: self.goRageMeter:SetMaterialSwap(game.GetKey(5) .. "2")
+gameart\ui\scripts\hud\mainhud.lua:138: self.goRageMeter:SetMaterialSwap(game.GetKey(13))
+gameart\ui\scripts\hud\mainhud.lua:139: self.goRageMeter:SetMaterialSwap(game.GetKey(10) .. "2")
+gameart\ui\scripts\hud\mainhud.lua:142: self.goRageMeter:SetMaterialSwap("")
+gameart\ui\scripts\hud\mainhud.lua:144: self.goRageMeter:SetMaterialSwap("genA")
+gameart\ui\scripts\hud\mainhud.lua:145: self.goRageMeter:SetMaterialSwap("genB2")
+gameart\ui\scripts\hud\mainhud.lua:147: self.goRageMeter:SetMaterialSwap("genLS")
+gameart\ui\scripts\hud\mainhud.lua:148: self.goRageMeter:SetMaterialSwap("genRS2")
+gameart\ui\scripts\hud\mainhud.lua:151: self.goRageMeter:SetMaterialSwap("")
+gameart\ui\scripts\hud\mechanicshud.lua:46: self.rageButtons:SetMaterialSwap("key")
+gameart\ui\scripts\hud\mechanicshud.lua:48: self.genericL3R3:SetMaterialSwap(game.GetKey(6))
+gameart\ui\scripts\hud\mechanicshud.lua:49: self.genericL3R3:SetMaterialSwap(game.GetKey(5) .. "2")
+gameart\ui\scripts\hud\mechanicshud.lua:51: self.genericL3R3:SetMaterialSwap(game.GetKey(13))
+gameart\ui\scripts\hud\mechanicshud.lua:52: self.genericL3R3:SetMaterialSwap(game.GetKey(10) .. "2")
+gameart\ui\scripts\hud\mechanicshud.lua:55: self.rageButtons:SetMaterialSwap("")
+gameart\ui\scripts\hud\mechanicshud.lua:56: self.genericL3R3:SetMaterialSwap("")
+gameart\ui\scripts\hud\mechanicshud.lua:58: self.genericL3R3:SetMaterialSwap("genA")
+gameart\ui\scripts\hud\mechanicshud.lua:59: self.genericL3R3:SetMaterialSwap("genB2")
+gameart\ui\scripts\hud\mechanicshud.lua:61: self.genericL3R3:SetMaterialSwap("genLS")
+gameart\ui\scripts\hud\mechanicshud.lua:62: self.genericL3R3:SetMaterialSwap("genRS2")
+gameart\ui\scripts\hud\mechanicshud.lua:65: self.rageButtons:SetMaterialSwap("")
+gameart\ui\scripts\hud\mechanicshud.lua:66: self.genericL3R3:SetMaterialSwap("")
+gameart\ui\scripts\hud\reticle.lua:88: backdrop:SetMaterialSwap(mechanic)
+gameart\ui\scripts\hud\reticle.lua:90: backdrop:SetMaterialSwap(reticleConsts.STATES.NONE)
+gameart\ui\scripts\hud\sequence_journal.lua:183: childGO:SetMaterialSwap(icon)
+gameart\ui\scripts\hud\sequence_quest.lua:72: childGO:SetMaterialSwap(iconMatName)
+gameart\ui\scripts\hud\sequence_questspecialcomplete.lua:58: childGO:SetMaterialSwap(materialName)
+gameart\ui\scripts\hud\sequence_resource.lua:68: childGO:SetMaterialSwap(materialName)
+gameart\ui\scripts\hud\sequence_resource.lua:222: local CheckDuplicateAndAddAmount = function(resourceQueue, stageData)
+gameart\ui\scripts\hud\sequence_resource.lua:240: if CheckDuplicateAndAddAmount(sequence._stageDataQueue, newStageDatas[i]) then
+gameart\ui\scripts\hud\sequence_resource.lua:249: if not CheckDuplicateAndAddAmount(sequence._resourceQueue, stageData) then
+gameart\ui\scripts\inworldmenu\journalmenu.lua:102: self.goPageDecals:SetMaterialSwap("")
+gameart\ui\scripts\inworldmenu\journalmenu.lua:181: function JournalOn:JournalSetMaterialSwap(baseSwapMaterial, alwaysSwitch)
+gameart\ui\scripts\inworldmenu\journalmenu.lua:191: self.goPageDecals:SetMaterialSwap(baseSwapMaterial)
+gameart\ui\scripts\inworldmenu\journalmenu.lua:413: self.journalOn:JournalSetMaterialSwap(nil)
+gameart\ui\scripts\inworldmenu\journalmenu.lua:440: self.journalOn:JournalSetMaterialSwap(resource.Image)
+gameart\ui\scripts\inworldmenu\journalmenu.lua:620: self.journalOn:JournalSetMaterialSwap(nil)
+gameart\ui\scripts\inworldmenu\journalmenu.lua:639: function Bestiary:JournalSetMaterialSwap(bestiaryEntry)
+gameart\ui\scripts\inworldmenu\journalmenu.lua:641: self.journalOn:JournalSetMaterialSwap(bestiaryUtil.BestiaryEntry_GetMaterialSwap(bestiaryEntry), true)
+gameart\ui\scripts\inworldmenu\journalmenu.lua:643: self.journalOn:JournalSetMaterialSwap(nil)
+gameart\ui\scripts\inworldmenu\journalmenu.lua:664: self:JournalSetMaterialSwap(bestiaryEntry)
+gameart\ui\scripts\inworldmenu\questsmenu.lua:288: self.goQuestIcon:SetMaterialSwap(questIcon)
+gameart\ui\scripts\inworldmenu\questsmenu.lua:305: local childQuestFilter = questUtil.CreateChildQuestFilter(questFilter)
+gameart\ui\scripts\inworldmenu\questsmenu.lua:766: go:SetMaterialSwap("")
+gameart\ui\scripts\inworldmenu\questsmenu.lua:914: go:SetMaterialSwap(artifacts[i] or "")
+gameart\ui\scripts\inworldmenu\questsmenu.lua:1007: self.goTreasureMapDecal:SetMaterialSwap("")
+gameart\ui\scripts\inworldmenu\questsmenu.lua:1053: self.goTreasureMapDecal:SetMaterialSwap(questID)
+gameart\ui\scripts\inworldmenu\settingsmenu.lua:1056: goSaveImage:SetMaterialSwap(saveUtil.GetSaveSlotImageMaterial(saveData))
+gameart\ui\scripts\inworldmenu\settingsmenu.lua:1081: goSaveImage:SetMaterialSwap(saveUtil.GetSaveSlotImageMaterial(saveData))
+gameart\ui\scripts\inworldmenu\settingsmenu.lua:1785: self.goController:SetMaterialSwap("")
+gameart\ui\scripts\inworldmenu\settingsmenu.lua:1906: self.goController:SetMaterialSwap(controllerType)
+gameart\ui\scripts\inworldmenu\settingsmenu.lua:3525: self.goController:SetMaterialSwap("")
+gameart\ui\scripts\inworldmenu\settingsmenu.lua:3608: self.goController:SetMaterialSwap(controllerType)
+gameart\ui\scripts\inworldmenu\settingsmenu.lua:7767: self.goController:SetMaterialSwap(self.currentSetting)
+gameart\ui\scripts\inworldmenu\skilltreemenu.lua:849: animationUtil.SpawnFX("skills_flourish", goNode, "")
+gameart\ui\scripts\inworldmenu\statsmenu.lua:876: animationUtil.SpawnFX(particleName, goKratos, jointName)
+gameart\ui\scripts\inworldmenu\statsmenu.lua:879: animationUtil.SpawnFX("equip_pickupslot_flourish", goEquipFlourishJoint, "")
+gameart\ui\scripts\inworldmenu\weaponmenu.lua:966: animationUtil.SpawnFX(particleName, gameobj, jointName)
+gameart\ui\scripts\inworldmenu\weaponmenu.lua:969: animationUtil.SpawnFX("equip_pickupslot_flourish", goEquipFlourishJoint, "")
+gameart\ui\scripts\util\animationutil.lua:452: local SpawnFX = function(particleName, gameObject, joint)
+gameart\ui\scripts\util\animationutil.lua:453: game.FX.Spawn(particleName, nil, {
+gameart\ui\scripts\util\animationutil.lua:487: SpawnFX = SpawnFX
+gameart\ui\scripts\util\buttonutil.lua:227: goChild:SetMaterialSwap(iconMaterialName)
+gameart\ui\scripts\util\questutil.lua:445: local CreateChildQuestFilter = function(questFilter)
+gameart\ui\scripts\util\questutil.lua:605: CreateChildQuestFilter = CreateChildQuestFilter,
+gameart\ui\scripts\util\resourceutil.lua:309: local duplicateFound = false
+gameart\ui\scripts\util\resourceutil.lua:313: duplicateFound = true
+gameart\ui\scripts\util\resourceutil.lua:316: if not duplicateFound then
+gameart\ui\scripts\vendor\vendormenu.lua:759: animationUtil.SpawnFX(particleName, goCreature, jointName)
+gameart\ui\scripts\vendor\vendormenu.lua:767: animationUtil.SpawnFX(particleName, goWeapon, jointName)
+
+=== Compass / HUD marker-related source contexts ===
+gameart\ui\scripts\consts\consts.lua:23: consts.COMPASS_MARKER_TYPE_MAIN = "MAIN"
+gameart\ui\scripts\consts\consts.lua:24: consts.COMPASS_MARKER_TYPE_SIDE = "SIDE"
+gameart\ui\scripts\consts\consts.lua:25: consts.COMPASS_MARKER_TYPE_VENDOR = "VendorLocation"
+gameart\ui\scripts\consts\consts.lua:26: consts.COMPASS_MARKER_TYPE_VENDOR_NO_TRACK = "VendorLocationNoTrack"
+gameart\ui\scripts\consts\consts.lua:27: consts.COMPASS_MARKER_TYPE_FAST_TRAVEL = "FastTravel"
+gameart\ui\scripts\consts\consts.lua:28: consts.COMPASS_MARKER_TYPE_FAST_TRAVEL_NO_TRACK = "FastTravelNoTrack"
+gameart\ui\scripts\consts\consts.lua:29: consts.COMPASS_MARKER_TYPE_AREA_ENTRANCE = "AreaEntrance"
+gameart\ui\scripts\consts\consts.lua:30: consts.COMPASS_MARKER_TYPE_FIGHT_LOCATION = "FightLocation"
+gameart\ui\scripts\consts\consts.lua:31: consts.COMPASS_MARKER_TYPE_FIGHT_LOCATION_NO_TRACK = "FightLocationNoTrack"
+gameart\ui\scripts\consts\consts.lua:32: consts.COMPASS_MARKER_TYPE_DOCK_POINT = "DockPoint"
+gameart\ui\scripts\consts\consts.lua:33: consts.COMPASS_MARKER_TYPE_CHISEL_ENTRANCE = "ChiselLocation"
+gameart\ui\scripts\consts\consts.lua:34: consts.COMPASS_MARKER_TYPE_CHISEL_ENTRANCE_NO_TRACK = "ChiselLocationNoTrack"
+gameart\ui\scripts\consts\consts.lua:35: consts.COMPASS_MARKER_TYPE_INFO_ONLY = "InfoOnly"
+gameart\ui\scripts\consts\consts.lua:36: consts.COMPASS_MARKER_TYPE_VALKYRIE = "Valkyrie"
+gameart\ui\scripts\hud\mainhud.lua:42: self.compassIsWithinMarkerRadius = false
+gameart\ui\scripts\hud\mainhud.lua:44: self.compassBase = util.GetUiObjByName("Compass_Base")
+gameart\ui\scripts\hud\mainhud.lua:45: self.compassRadius = util.GetUiObjByName("Compass_Radius")
+gameart\ui\scripts\hud\mainhud.lua:192: if self.compassIsWithinMarkerRadius == true then
+gameart\ui\scripts\hud\mainhud.lua:202: ImageMaterialName = "Compass_Radius"
+gameart\ui\scripts\hud\mainhud.lua:237: return isMainQuest == true and consts.COMPASS_MARKER_TYPE_MAIN or consts.COMPASS_MARKER_TYPE_SIDE
+gameart\ui\scripts\hud\mainhud.lua:345: function MainHUD:EVT_ClearCompassMarkersForQuest(isMainQuest)
+gameart\ui\scripts\hud\mainhud.lua:347: Compass.HideAllMarkersOfType(markerType)
+gameart\ui\scripts\hud\mainhud.lua:349: function MainHUD:EVT_ShowCompassMarkerForQuest(isMainQuest, markerNameHash)
+gameart\ui\scripts\hud\mainhud.lua:352: Compass.HideAllMarkersOfType(markerType)
+gameart\ui\scripts\hud\mainhud.lua:354: Compass.ShowMarker(markerNameHash, markerType)
+gameart\ui\scripts\hud\mainhud.lua:356: function MainHUD:EVT_HideCompassMarkerForQuest(isMainQuest, markerNameHash)
+gameart\ui\scripts\hud\mainhud.lua:357: Compass.HideMarker(markerNameHash)
+gameart\ui\scripts\hud\mainhud.lua:359: function MainHUD:EVT_HandleWithinCompassMarkerRadius(markerNameHash, isWithinRadius)
+gameart\ui\scripts\hud\mainhud.lua:360: self.compassIsWithinMarkerRadius = isWithinRadius
+gameart\ui\scripts\hud\sequence_quest.lua:149: local SetCompassMarkers_StartCallback = function(stage, startCallbackArgs)
+gameart\ui\scripts\hud\sequence_quest.lua:151: questUtil.AddMarkersToCompassFromSequence(questID)
+gameart\ui\scripts\hud\sequence_quest.lua:288: StartCallback = SetCompassMarkers_StartCallback,
+gameart\ui\scripts\hud\sequence_questspecialstart.lua:15: local SetCompassMarkers_StartCallback = function(stage, startCallbackArgs)
+gameart\ui\scripts\hud\sequence_questspecialstart.lua:17: questUtil.AddMarkersToCompassFromSequence(questID)
+gameart\ui\scripts\hud\sequence_questspecialstart.lua:91: StartCallback = SetCompassMarkers_StartCallback,
+gameart\ui\scripts\hud\textlog.lua:268: self.logManager:Register("Compass", compassSequence.InitSequenceArgs, false, logTracks.QuestMarker)
+gameart\ui\scripts\hud\textlog.lua:538: function TextOn:EVT_QueueCompassMarkerForQuestEvent(args)
+gameart\ui\scripts\hud\textlog.lua:540: self.logManager:QueueMessage("Compass", compassStages, logPriorities.QuestMarker)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:27: local enabledShowOnCompassMarkerFlags = {
+gameart\ui\scripts\inworldmenu\mapmenu.lua:28: consts.COMPASS_MARKER_TYPE_VENDOR,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:29: consts.COMPASS_MARKER_TYPE_FAST_TRAVEL,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:30: consts.COMPASS_MARKER_TYPE_AREA_ENTRANCE,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:31: consts.COMPASS_MARKER_TYPE_FIGHT_LOCATION,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:32: consts.COMPASS_MARKER_TYPE_CHISEL_ENTRANCE,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:33: consts.COMPASS_MARKER_TYPE_DOCK_POINT,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:34: consts.COMPASS_MARKER_TYPE_VALKYRIE
+gameart\ui\scripts\inworldmenu\mapmenu.lua:45: consts.COMPASS_MARKER_TYPE_FAST_TRAVEL,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:46: consts.COMPASS_MARKER_TYPE_FAST_TRAVEL_NO_TRACK
+gameart\ui\scripts\inworldmenu\mapmenu.lua:52: consts.COMPASS_MARKER_TYPE_VENDOR,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:53: consts.COMPASS_MARKER_TYPE_VENDOR_NO_TRACK,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:54: consts.COMPASS_MARKER_TYPE_FAST_TRAVEL,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:55: consts.COMPASS_MARKER_TYPE_FAST_TRAVEL_NO_TRACK,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:56: consts.COMPASS_MARKER_TYPE_DOCK_POINT,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:57: consts.COMPASS_MARKER_TYPE_AREA_ENTRANCE,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:58: consts.COMPASS_MARKER_TYPE_CHISEL_ENTRANCE,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:59: consts.COMPASS_MARKER_TYPE_CHISEL_ENTRANCE_NO_TRACK,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:60: consts.COMPASS_MARKER_TYPE_FIGHT_LOCATION,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:61: consts.COMPASS_MARKER_TYPE_FIGHT_LOCATION_NO_TRACK,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:62: consts.COMPASS_MARKER_TYPE_INFO_ONLY,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:63: consts.COMPASS_MARKER_TYPE_VALKYRIE
+gameart\ui\scripts\inworldmenu\mapmenu.lua:69: consts.COMPASS_MARKER_TYPE_VENDOR,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:70: consts.COMPASS_MARKER_TYPE_VENDOR_NO_TRACK
+gameart\ui\scripts\inworldmenu\mapmenu.lua:77: consts.COMPASS_MARKER_TYPE_DOCK_POINT
+gameart\ui\scripts\inworldmenu\mapmenu.lua:83: consts.COMPASS_MARKER_TYPE_AREA_ENTRANCE,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:84: consts.COMPASS_MARKER_TYPE_CHISEL_ENTRANCE,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:85: consts.COMPASS_MARKER_TYPE_CHISEL_ENTRANCE_NO_TRACK
+gameart\ui\scripts\inworldmenu\mapmenu.lua:91: consts.COMPASS_MARKER_TYPE_FIGHT_LOCATION,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:92: consts.COMPASS_MARKER_TYPE_FIGHT_LOCATION_NO_TRACK
+gameart\ui\scripts\inworldmenu\mapmenu.lua:98: consts.COMPASS_MARKER_TYPE_VALKYRIE
+gameart\ui\scripts\inworldmenu\mapmenu.lua:317: local compassMarkers = game.Compass.FindMarkersByIconClass(enabledShowOnCompassMarkerFlags)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:318: if 0 < #compassMarkers then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:319: self.currShownMarkerID = compassMarkers[1]
+gameart\ui\scripts\inworldmenu\mapmenu.lua:320: if 1 < #compassMarkers then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:321: for i = 2, #compassMarkers do
+gameart\ui\scripts\inworldmenu\mapmenu.lua:322: game.Compass.HideMarker(compassMarkers[i])
+gameart\ui\scripts\inworldmenu\mapmenu.lua:418: if not (not self.isOpenedForFastTravel and game.Compass.HaveCompass()) or self.currRealmName ~= mapUtil.GetPlayerRealm() or self.currMarkerID == nil or tutorialUtil.CurrentlyShowingStep() or not Map.MarkerHasAnyFlag(self.currMarkerID, enabledShowOnCompassMarkerFlags) then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1561: if not Map.MarkerHasAnyFlag(self.currMarkerID, enabledShowOnCompassMarkerFlags) then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1566: game.Compass.HideMarker(self.currShownMarkerID)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1571: game.Compass.HideMarker(self.currShownMarkerID)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1574: for i = 1, #enabledShowOnCompassMarkerFlags do
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1575: local enabledMarkerFlag = enabledShowOnCompassMarkerFlags[i]
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1581: assert(markerType ~= nil, "unable to find ShowOnCompass marker type")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1582: game.Compass.ShowMarker(self.currMarkerID, markerType)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1588: game.Compass.HideMarker(self.currShownMarkerID)
+gameart\ui\scripts\util\questutil.lua:544: if QuestManager.AddMarkersToCompass ~= nil then
+gameart\ui\scripts\util\questutil.lua:545: QuestManager.AddMarkersToCompass(questID)
+gameart\ui\scripts\util\questutil.lua:548: local AddMarkersToCompassFromSequence = function(questID)
+gameart\ui\scripts\util\questutil.lua:549: if game.QuestManager.AddMarkersToCompass == nil then
+gameart\ui\scripts\util\questutil.lua:555: game.QuestManager.AddMarkersToCompass(questID)
+gameart\ui\scripts\util\questutil.lua:613: AddMarkersToCompassFromSequence = AddMarkersToCompassFromSequence,
