@@ -2224,9 +2224,6 @@ if (-not $mapText.Contains('ICON_CAPS')) {
     throw 'v0.10.1 map icon capability probe is missing.'
 }
 
-if (-not $hudText.Contains('HUD_ICON_CAPS')) {
-    throw 'v0.10.1 HUD icon capability probe is missing.'
-}
 
 if (-not $mapText.Contains('STOCK_COMPASS_CLEAR')) {
     throw 'Stock/custom compass isolation helper is missing.'
@@ -3381,6 +3378,16 @@ $hudText = $setupTailRegex.Replace(
     [System.Text.RegularExpressions.MatchEvaluator]{ param($m) $setupTailReplacement },
     1
 )
+
+# Validate HUD instrumentation only after the helper and Update hook have been
+# injected into $hudText. The previous seed checked the untouched source script.
+if (-not $hudText.Contains('HUD_ICON_CAPS')) {
+    throw 'v0.10.1 HUD icon capability probe is missing after HUD injection.'
+}
+
+if (-not $hudText.Contains('[CompletionistMap v0.10.1] HUD_HOOK installed=true')) {
+    throw 'v0.10.1 HUD update hook is missing after HUD injection.'
+}
 
 $mapDestDir = Split-Path $mapDest -Parent
 $hudDestDir = Split-Path $hudDest -Parent
