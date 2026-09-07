@@ -209,9 +209,13 @@ if ($null -eq $prop) {
     $boot | Add-Member -NotePropertyName 'patch-texpacks' -NotePropertyValue @($packBase)
 }
 else {
-    $current = @($boot.'patch-texpacks') | Where-Object { $_ -ne $null -and [string]$_ -ne '' }
+    $current = @(
+        @($boot.'patch-texpacks') | Where-Object { $_ -ne $null -and [string]$_ -ne '' }
+    )
     if ($current -notcontains $packBase) {
-        $boot.'patch-texpacks' = @($current + $packBase)
+        $nextEntries = @($current)
+        $nextEntries += [string]$packBase
+        $boot.'patch-texpacks' = [string[]]$nextEntries
     }
 }
 

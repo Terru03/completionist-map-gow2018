@@ -1,0 +1,26 @@
+﻿=== Completionist Map v0.10.2 HUD R3_L3 boot-entry repair ===
+Generated: 2026-09-07 12:49:17 +03:00
+Branch: feat/v0.10.2-material-icons
+GameRoot: G:\SteamLibrary\steamapps\common\GodOfWar
+
+=== reason ===
+Windows PowerShell 5.1 collapsed a one-item pipeline result to a scalar string.
+The original HUD proof installer then used string + string instead of array + element,
+creating one concatenated patch-texpacks entry.
+
+=== repair ===
+Malformed concatenation detected: True
+Map proof entry: 0Completionist_v102_dock_raven
+HUD proof entry: 0Completionist_v102_hud_r3l3_raven
+Final patch-texpacks count: 2
+Final entries: 0Completionist_v102_dock_raven, 0Completionist_v102_hud_r3l3_raven
+Backup: G:\SteamLibrary\steamapps\common\GodOfWar\exec\boot-options.json.completionist-v102-before-hud-boot-repair.bak
+Installer source patched: True
+
+=== installed proof packs ===
+Map texpack: G:\SteamLibrary\steamapps\common\GodOfWar\exec\wad\pc_le\0Completionist_v102_dock_raven.texpack
+HUD texpack: G:\SteamLibrary\steamapps\common\GodOfWar\exec\wad\pc_le\0Completionist_v102_hud_r3l3_raven.texpack
+
+Both proof packs are now referenced as separate boot entries.
+The proof installer now forces array semantics before appending future entries.
+No Kratos/Omega texture hashes are involved in this repair.
