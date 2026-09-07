@@ -39,12 +39,16 @@ foreach ($item in $items) {
 
     if (Test-Path $dest) {
         $text = [IO.File]::ReadAllText($dest)
-        if ($text.Contains('[CompletionistMap v0.10.0]')) {
+        if ($text.Contains('[CompletionistMap v0.10.1]') -or
+            $text.Contains('[CompletionistMap v0.10.0]')) {
             Remove-Item $dest -Force
-            Write-Host "Removed v0.10.0 override: $dest"
+            Write-Host "Removed Completionist v0.10.x override: $dest"
         }
     }
 }
 
 $iconRoot = Join-Path $GameRoot 'mods\completionist-map\icons'
-if (Test-Path $iconRoot) { Remove-Item $iconRoot -Recurse -Force }
+if (Test-Path $iconRoot) {
+    Remove-Item $iconRoot -Recurse -Force
+    Write-Host "Removed icon staging tree: $iconRoot"
+}
