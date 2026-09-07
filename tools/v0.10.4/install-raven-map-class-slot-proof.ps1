@@ -60,7 +60,10 @@ $oldControlManifest = Join-Path $env:LOCALAPPDATA 'CompletionistMap\state\v0.10.
 $expectedNativeMapmaster = '1e076f7c5f0aea8d93ad72365bcaa267361503eee10fcdab0522c699b188508a'
 $stockRuiWad = '92294d218855ee4fbd06f66a2071f61c6b831240aaf41a59a3b7b8168c0f4b04'
 $stockRuiDcb = '21ec389426fb8b6a7f89c8fff6751522aa7ded13324e041b885dd7a490c2d14a'
-$oldSlotName = 'goMapIconValkyrie_location'
+# goMapIconCube is present in the stock map-icon parent family but was absent
+# from the 382 authored mapmaster marker usages and has no GoWLUA call-site.
+# It is therefore a substantially safer temporary donor than Valkyrie.
+$oldSlotName = 'goMapIconCube'
 $newSlotName = 'goMapIconCompletionistRaven'
 
 if ($Mode -eq 'Remove') {
@@ -138,10 +141,12 @@ if ($LASTEXITCODE -ne 0) { throw 'Raven mapmaster class-name patch failed.' }
 if ($LASTEXITCODE -ne 0) { throw 'WAD_R_UI GOPool slot rename failed.' }
 
 $slotInfo = Get-Content -LiteralPath $slotPatchReport -Raw | ConvertFrom-Json
+$donorCount = [int]$slotInfo.cnt_preserved
 if ($slotInfo.only_name_hash_bytes_changed -ne $true -or
     $slotInfo.file_size_preserved -ne $true -or
-    $slotInfo.cnt_preserved -ne 9 -or
-    $slotInfo.new_name -ne $newSlotName) {
+    $donorCount -le 0 -or
+    $slotInfo.new_name -ne $newSlotName -or
+    $slotInfo.old_name -ne $oldSlotName) {
     throw 'GOPool slot patch report failed validation.'
 }
 if ((Hash $ruiWad) -ne $stockRuiWad) { throw 'r_ui.wad changed during offline preparation.' }
@@ -177,7 +182,7 @@ try {
         candidate = 'Completionist_V103_Veithurgard_Raven_01'
         map_resource = $newSlotName
         donor_slot = $oldSlotName
-        donor_cnt = 9
+        donor_cnt = $donorCount
         compass_type = 'DockPoint'
         r_ui_wad_unchanged = $true
         texpack_loaded = $false
@@ -211,7 +216,8 @@ $installReport = [ordered]@{
     candidate = 'Completionist_V103_Veithurgard_Raven_01'
     map_resource = $newSlotName
     donor_slot = $oldSlotName
-    donor_visual_expected = 'stock Valkyrie artwork'
+    donor_cnt = $donorCount
+    donor_visual_expected = 'stock Cube/debug artwork'
     compass_type = 'DockPoint'
     r_ui_wad_stock = ((Hash $ruiWad) -eq $stockRuiWad)
     texpack_loaded = $false
@@ -243,12 +249,13 @@ finally { Pop-Location }
 Write-Host ''
 Write-Host 'Raven custom map-class SLOT proof installed.'
 Write-Host '- map class name: goMapIconCompletionistRaven'
-Write-Host '- temporary donor slot: goMapIconValkyrie_location'
+Write-Host '- temporary dormant donor slot: goMapIconCube'
+Write-Host ("- donor GOPool count preserved: {0}" -f $donorCount)
 Write-Host '- r_ui.wad: STOCK and untouched'
 Write-Host '- no texpack loaded'
 Write-Host '- no Dock map proxy used'
 Write-Host '- compass/navigation remains DockPoint for now'
 Write-Host ''
 Write-Host 'Launch God of War and open Midgard / Veithurgard.'
-Write-Host 'Expected: Raven appears with stock Valkyrie artwork through the CUSTOM class name, without the grey-map/crash behaviour caused by the grown WAD.'
+Write-Host 'Expected: Raven appears with the stock Cube/debug donor visual through the CUSTOM class name, without the grey-map/crash behaviour caused by the grown WAD.'
 Write-Host ("Rollback: powershell -NoProfile -ExecutionPolicy Bypass -File `"{0}`" -Mode Remove" -f $PSCommandPath)
