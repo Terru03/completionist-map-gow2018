@@ -1,0 +1,79 @@
+{
+  "result": "OFFLINE_RAVEN_UI_LOGICAL_CLONE_BUILT",
+  "game_files_written": false,
+  "source_hashes_unchanged_after_build": true,
+  "architecture": {
+    "dedicated_ui_identity": "goMapIconCompletionistRaven",
+    "dedicated_ui_hash": "584F31DC8BD6E738",
+    "dedicated_wad_resource": "gomapiconcompletionistraven",
+    "shares_stock_Dock_prototype": true,
+    "real_Dock_resources_modified": false,
+    "expected_artwork_at_this_gate": "stock Dock artwork",
+    "purpose": "Prove a Raven-only logical GameObject identity before attaching Raven-only material/texture resources."
+  },
+  "source": {
+    "r_ui_wad": {
+      "path": "G:\\SteamLibrary\\steamapps\\common\\GodOfWar\\exec\\wad\\pc_le\\r_ui.wad",
+      "sha256": "92294d218855ee4fbd06f66a2071f61c6b831240aaf41a59a3b7b8168c0f4b04"
+    },
+    "wad_r_ui_dcb": {
+      "path": "G:\\SteamLibrary\\steamapps\\common\\GodOfWar\\exec\\dc\\pc_le\\wad_r_ui.dcb",
+      "sha256": "21ec389426fb8b6a7f89c8fff6751522aa7ded13324e041b885dd7a490c2d14a"
+    }
+  },
+  "candidate": {
+    "directory": "C:\\Users\\david\\AppData\\Local\\CompletionistMap\\work\\v0.10.4\\raven-ui-logical-clone",
+    "r_ui_wad": {
+      "path": "C:\\Users\\david\\AppData\\Local\\CompletionistMap\\work\\v0.10.4\\raven-ui-logical-clone\\r_ui.wad",
+      "bytes": 50034464,
+      "sha256": "ec0e697bfe861ea55a5d94384d07f6aecdc35db6a879cbcc681823350e4cf173"
+    },
+    "wad_r_ui_dcb": {
+      "path": "C:\\Users\\david\\AppData\\Local\\CompletionistMap\\work\\v0.10.4\\raven-ui-logical-clone\\wad_r_ui.dcb",
+      "bytes": 4864,
+      "sha256": "b8d5627416787ae6761e0212a1e8de56e33abe7c251db838c4af20a00afc161b"
+    }
+  },
+  "wad_validation": {
+    "stock_bytes": 50033904,
+    "candidate_bytes": 50034464,
+    "stock_physical_records": 53777,
+    "candidate_physical_records": 53781,
+    "stock_payloads": 20407,
+    "candidate_payloads": 20408,
+    "stock_final_payload_index": 13914,
+    "raven_final_payload_index": 13915,
+    "raven_wad_name": "gomapiconcompletionistraven",
+    "raven_final_id": "3d8f7153809e6db191c2d5e354f1e88c",
+    "shared_stock_dock_prototype_id": "78240cfd16abdf479082d1653e9b6bee",
+    "type_key": "0xD",
+    "type_count_before": 104,
+    "type_count_after": 105,
+    "heap_total_before": 16796,
+    "heap_total_after": 16797,
+    "full_group_reparse_passed": true,
+    "stock_dock_final_unchanged": true
+  },
+  "dcb_validation": {
+    "stock_bytes": 4848,
+    "candidate_bytes": 4864,
+    "gopool_count_before": 255,
+    "gopool_count_after": 256,
+    "raven_name": "goMapIconCompletionistRaven",
+    "raven_hash": "584F31DC8BD6E738",
+    "raven_row_hex": "38e7d68bdc314f580100000000000000",
+    "stock_rows_byte_identical": true,
+    "stock_memory_arrays_byte_identical": true,
+    "non_data_chunks_byte_identical": true,
+    "reparse_passed": true
+  },
+  "safety": {
+    "save_state_written": false,
+    "progression_state_written": false,
+    "boot_options_written": false,
+    "game_directory_written": false,
+    "stock_Dock_material_or_texture_changed": false,
+    "native_Kratos_marker_touched": false
+  },
+  "next_gate": "If this offline structure validates, clone only the Dock visual material dependency for the dedicated Completionist Raven identity and point that clone at unique Raven diffuse/emissive hashes. Build the matching texpack offline. Do not install this logical-only candidate as a release artifact."
+}
