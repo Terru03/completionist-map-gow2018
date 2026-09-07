@@ -29,22 +29,25 @@ $verified = @($verifyLines | Where-Object { $_ -match 'candidateFound=true' }).C
 $queued = @($lines | Where-Object { $_ -match 'NATIVE_COMPASS_RESULT request_queued=true active=true' }).Count -gt 0
 $luaReturned = @($showLines | Where-Object { $_ -match 'stage=lua_return ok=true' }).Count -gt 0
 
+# Always attempt full rollback before interpreting or archiving the result.
+& (Join-Path $PSScriptRoot 'native-compass-show-probe.ps1') -Mode Remove -GameRoot $GameRoot
+
+if ($lines.Count -eq 0) {
+    Write-Host 'Matched v0.10.3 lines: 0'
+    Write-Host 'No new native compass runtime lines were found.'
+    Write-Host 'Existing successful proof logs are preserved and will NOT be overwritten.'
+    Write-Host 'Stock DCBs/mapmenu rollback was still attempted.'
+    throw 'No native ShowMarker request was recorded in this loader log. Existing archived evidence was left untouched.'
+}
+
 $archiveDir = Join-Path $repo 'archive\field-logs'
 New-Item -ItemType Directory -Force -Path $archiveDir | Out-Null
 $outRel = 'archive/field-logs/completionist-v103-native-compass-show.txt'
 $out = Join-Path $repo ($outRel -replace '/', '\')
 $utf8 = New-Object Text.UTF8Encoding($false)
-
-if ($lines.Count -gt 0) {
-    [IO.File]::WriteAllLines($out, $lines, $utf8)
-} else {
-    [IO.File]::WriteAllLines($out, @('[CompletionistMap v0.10.3] NO_RUNTIME_LINES_FOUND'), $utf8)
-}
+[IO.File]::WriteAllLines($out, $lines, $utf8)
 Write-Host "Saved native compass runtime report: $out"
 Write-Host "Matched v0.10.3 lines: $($lines.Count)"
-
-# Always attempt full rollback before interpreting the result.
-& (Join-Path $PSScriptRoot 'native-compass-show-probe.ps1') -Mode Remove -GameRoot $GameRoot
 
 $result = if ($verified) {
     'NATIVE_COMPASS_MANAGER_ACCEPTED_RAVEN'
