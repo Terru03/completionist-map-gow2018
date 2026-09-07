@@ -15,6 +15,10 @@ $targetHashes = @{
     DockDiffuse  = [UInt64]::Parse('982BF904AB84F2CC', [Globalization.NumberStyles]::HexNumber)
     DockEmissive = [UInt64]::Parse('FCC664130951154C', [Globalization.NumberStyles]::HexNumber)
 }
+$targetHashList = [UInt64[]]@(
+    [UInt64]$targetHashes.DockDiffuse,
+    [UInt64]$targetHashes.DockEmissive
+)
 
 function Read-TexpackHeader {
     param([Parameter(Mandatory=$true)][string]$Path)
@@ -50,7 +54,7 @@ function Find-TexpackEntries {
     )
 
     $wanted = @{}
-    foreach ($h in $Hashes) { $wanted[$h] = $true }
+    foreach ($h in $Hashes) { $wanted[[UInt64]$h] = $true }
 
     $fs = [IO.File]::Open($Path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::ReadWrite)
     try {
@@ -60,22 +64,25 @@ function Find-TexpackEntries {
         $texCount = $br.ReadUInt32()
         $fs.Position = 0x38
 
-        $found = New-Object System.Collections.Generic.List[object]
+        # Plain PowerShell array is deliberate here. Windows PowerShell 5.1 can
+        # throw "Argument types do not match" when a generic List[object] is
+        # wrapped/returned through @(...).
+        $found = @()
         for ($i = 0; $i -lt $texCount; $i++) {
             if (($fs.Position + 24) -gt $fs.Length) { break }
-            $fileHash = $br.ReadUInt64()
-            $userHash = $br.ReadUInt64()
+            $fileHash = [UInt64]$br.ReadUInt64()
+            $userHash = [UInt64]$br.ReadUInt64()
             $blockInfoOff = $br.ReadUInt64()
             if ($wanted.ContainsKey($fileHash)) {
-                $found.Add([pscustomobject]@{
+                $found += [pscustomobject]@{
                     Index = $i
                     FileHash = $fileHash
                     UserHash = $userHash
                     BlockInfoOff = $blockInfoOff
-                })
+                }
             }
         }
-        return @($found)
+        return $found
     }
     finally {
         $fs.Dispose()
@@ -100,20 +107,21 @@ $patchEntries = @($boot.'patch-texpacks')
 $expectedBootEntry = '../../patch/pc_le/completionist_v102_dock_raven'
 
 $patchHeader = Read-TexpackHeader -Path $patchPath
-$patchFound = Find-TexpackEntries -Path $patchPath -Hashes @($targetHashes.Values)
+$patchFound = @(Find-TexpackEntries -Path $patchPath -Hashes $targetHashList)
 
-$baseMatches = New-Object System.Collections.Generic.List[object]
+# Also use a normal PowerShell array here for PS 5.1 compatibility.
+$baseMatches = @()
 $basePacks = @(Get-ChildItem -LiteralPath $wadTexRoot -Recurse -File -Filter '*.texpack' -ErrorAction Stop | Sort-Object FullName)
 foreach ($pack in $basePacks) {
-    $matches = @(Find-TexpackEntries -Path $pack.FullName -Hashes @($targetHashes.Values))
+    $matches = @(Find-TexpackEntries -Path $pack.FullName -Hashes $targetHashList)
     foreach ($m in $matches) {
-        $baseMatches.Add([pscustomobject]@{
+        $baseMatches += [pscustomobject]@{
             Pack = $pack.FullName
             Index = $m.Index
             FileHash = $m.FileHash
             UserHash = $m.UserHash
             BlockInfoOff = $m.BlockInfoOff
-        })
+        }
     }
 }
 
