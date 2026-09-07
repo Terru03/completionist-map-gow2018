@@ -24,11 +24,27 @@ if (-not (Test-Path $log)) {
     throw "Loader log not found: $log"
 }
 
-$versionToken = ($Version -replace '^v', '') -replace '\.', ''
+$cleanVersion = $Version -replace '^v', ''
+$parts = @($cleanVersion -split '\.')
+if ($parts.Count -lt 2) {
+    throw "Version must look like v0.10.1 or 0.10.1. Received: $Version"
+}
+
+# Preserve existing archive naming conventions:
+#   v0.9.6.1 -> completionist-v0961.txt
+#   v0.10.1  -> completionist-v101.txt
+if ($parts[0] -eq '0' -and [int]$parts[1] -ge 10) {
+    $versionToken = ($parts[1..($parts.Count - 1)] -join '')
+}
+else {
+    $versionToken = ($parts -join '')
+}
+
+$fileName = "completionist-v$versionToken.txt"
 $outDir = Join-Path $repo 'archive\field-logs'
-$out = Join-Path $outDir ("completionist-v{0}.txt" -f $versionToken)
-$relativeOut = [IO.Path]::GetRelativePath($repo, $out).Replace('\\', '/')
-$pattern = "CompletionistMap v$($Version -replace '^v', '')"
+$out = Join-Path $outDir $fileName
+$relativeOut = "archive/field-logs/$fileName"
+$pattern = "CompletionistMap v$cleanVersion"
 
 New-Item -ItemType Directory -Force $outDir | Out-Null
 
@@ -36,7 +52,7 @@ $lines = Select-String $log -Pattern $pattern |
     ForEach-Object { $_.Line }
 
 @(
-    "=== Completionist Map v$($Version -replace '^v', '') ==="
+    "=== Completionist Map v$cleanVersion ==="
     "Matches: $($lines.Count)"
     ''
     $lines
@@ -58,7 +74,7 @@ if (-not $hasChanges) {
     exit 0
 }
 
-$commitMessage = "Archive Completionist v$($Version -replace '^v', '') field test log"
+$commitMessage = "Archive Completionist v$cleanVersion field test log"
 & git commit -m $commitMessage -- $relativeOut
 if ($LASTEXITCODE -ne 0) {
     throw 'git commit failed for the exported field log.'
