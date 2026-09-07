@@ -1,14 +1,15 @@
 -- BEGIN COMPLETIONIST V0.10.4 RAVEN MAP CLASS SLOT PROOF
 --
--- Proves a custom Completionist map-class name can occupy an existing safe
+-- Proves a custom Completionist map-class name can occupy an existing dormant
 -- WAD_R_UI GOPool slot without growing or replacing r_ui.wad.  The temporary
--- donor slot is stock goMapIconValkyrie_location, renamed in wad_r_ui.dcb to
+-- donor slot is stock goMapIconCube, renamed in wad_r_ui.dcb to
 -- goMapIconCompletionistRaven.  The underlying stock WAD resource remains the
--- Valkyrie visual for this diagnostic.  There is no Dock map proxy.
+-- Cube/debug visual for this diagnostic.  There is no Dock map proxy.
 do
   local prefix = "[CompletionistMap v0.10.4-map-class-slot] "
   local candidate = "Completionist_V103_Veithurgard_Raven_01"
   local expectedMapResource = "goMapIconCompletionistRaven"
+  local donorResource = "goMapIconCube"
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
@@ -75,7 +76,7 @@ do
       " regionType=" .. tostring(type(regionId)) ..
       " regionSource=" .. tostring(regionSource) ..
       " expectedMapResource=" .. expectedMapResource ..
-      " donorResource=goMapIconValkyrie_location" ..
+      " donorResource=" .. donorResource ..
       " compassType=DockPoint" ..
       " dockProxyUsed=false")
 
@@ -109,7 +110,7 @@ do
       "active=true" ..
       " candidate=" .. candidate ..
       " resourceExpected=" .. expectedMapResource ..
-      " donorResource=goMapIconValkyrie_location" ..
+      " donorResource=" .. donorResource ..
       " goName=" .. safeName(newGO) ..
       " clickableOK=" .. tostring(clickableOK) ..
       " clickableError=" .. tostring(clickableErr) ..
@@ -122,7 +123,7 @@ do
   log("API",
     "installed=true candidate=" .. candidate ..
     " mapResource=" .. expectedMapResource ..
-    " donorResource=goMapIconValkyrie_location" ..
+    " donorResource=" .. donorResource ..
     " compassType=DockPoint" ..
     " stockWadUnchanged=true" ..
     " dockProxyUsed=false" ..
