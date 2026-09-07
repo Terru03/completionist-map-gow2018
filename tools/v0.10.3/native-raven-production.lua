@@ -70,9 +70,32 @@ do
 
   local function updatePrompt(self, currState)
     if currState == nil or currState.menu == nil then return end
+
     local show, text = self:GetShowOnCompassPrompt(currState.menu)
+
+    -- Keep both copies of the map action prompt in sync immediately. Stock
+    -- mapmenu updates the footer and the cursor-card prompt after Add/Remove;
+    -- the first native Raven candidate only refreshed the footer, leaving the
+    -- text above the selected marker stale until hover changed.
+    local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
+    if goMapCursorText ~= nil then
+      goMapCursorText:Show()
+      local goCursorInfoTop = goMapCursorText:FindSingleGOByName("CursorInfo_Top")
+      if goCursorInfoTop ~= nil then
+        local thPrompt = util.GetTextHandle(goCursorInfoTop, "CursorAction_Text")
+        if thPrompt ~= nil then
+          UI.SetTextIsClickable(thPrompt)
+          UI.SetText(thPrompt, show and text or "")
+        end
+      end
+    end
+
     currState.menu:UpdateFooterButton("ShowOnCompass", show, text)
     currState.menu:UpdateFooterButtonText()
+
+    log("NATIVE_RAVEN_PROMPT_REFRESH",
+      "cursor=true footer=true visible=" .. tostring(show) ..
+      " text=" .. tostring(text))
   end
 
   local function hideCandidate(reason)
