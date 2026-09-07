@@ -19,10 +19,10 @@ if (-not (Test-Path -LiteralPath $log -PathType Leaf)) {
 
 $lines = @(
     Select-String -LiteralPath $log -SimpleMatch '[CompletionistMap v0.10.3]' |
-        ForEach-Object { $_.Line }
+        ForEach-Object { $_.Line.TrimEnd() }
 )
 if ($lines.Count -eq 0) {
-    throw 'No v0.10.3 lookup-probe lines found. Do not remove the probe yet; verify the game/map was opened and inspect loader_log.txt.'
+    throw 'No v0.10.3 lookup-probe lines found. Verify the game/map was opened and inspect loader_log.txt.'
 }
 
 $archiveDir = Join-Path $repo 'archive\field-logs'
@@ -34,9 +34,15 @@ $utf8 = New-Object Text.UTF8Encoding($false)
 Write-Host "Saved runtime lookup report: $out"
 Write-Host "Matched lines: $($lines.Count)"
 
-& (Join-Path $PSScriptRoot 'lookup-probe.ps1') -Mode Remove -GameRoot $GameRoot
-if ($LASTEXITCODE -ne 0) {
-    throw 'Lookup probe rollback failed.'
+$manifestPath = Join-Path $repo 'build\v0.10.3-lookup\active.json'
+if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
+    & (Join-Path $PSScriptRoot 'lookup-probe.ps1') -Mode Remove -GameRoot $GameRoot
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Lookup probe rollback failed.'
+    }
+    Write-Host 'Lookup probe removed and original map override restored.'
+} else {
+    Write-Host 'Lookup probe is already removed; continuing with report finalization.'
 }
 
 Push-Location $repo
@@ -60,5 +66,3 @@ try {
 } finally {
     Pop-Location
 }
-
-Write-Host 'Lookup probe removed and original map override restored.'
