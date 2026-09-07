@@ -4,8 +4,6 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$IconRepo = 'Terru03/completionist-map-gow2018'
-$IconRef = 'feat/completionist-icon-system'
 $IconRoot = Join-Path $GameRoot 'mods\completionist-map\icons'
 $IconConceptDir = Join-Path $IconRoot 'concepts'
 $IconGeneratedDir = Join-Path $IconRoot 'generated'
@@ -24,55 +22,39 @@ $CompletionistIconFiles = [ordered]@{
     'player_marker' = 'player_marker_concept_master.png'
 }
 
-function Get-CompletionistGitHubBinary(
-    [string]$RemotePath,
-    [string]$Destination
-) {
-    $gh = Get-Command gh -ErrorAction SilentlyContinue
-    if ($null -eq $gh) {
-        throw 'GitHub CLI (gh) is required to fetch the private Completionist icon masters. Install/log in to gh, then rerun this installer.'
+# v0.10.1 is network-independent. Prefer assets bundled beside install.ps1.
+# When running directly from the cloned repository, fall back to repo/assets.
+$IconSourceDir = Join-Path $PSScriptRoot 'assets\icons\concepts'
+if (-not (Test-Path $IconSourceDir)) {
+    $repoRootCandidate = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+    $repoAssetCandidate = Join-Path $repoRootCandidate 'assets\icons\concepts'
+    if (Test-Path $repoAssetCandidate) {
+        $IconSourceDir = $repoAssetCandidate
+    }
+}
+
+if (-not (Test-Path $IconSourceDir)) {
+    throw "Completionist icon masters were not found. Expected bundled or repository assets at: $IconSourceDir"
+}
+
+function Assert-CompletionistPng([string]$Path) {
+    if (-not (Test-Path $Path)) {
+        throw "Missing icon master: $Path"
     }
 
-    $tokenLines = @(& gh auth token)
-    if ($LASTEXITCODE -ne 0 -or $tokenLines.Count -eq 0) {
-        throw 'GitHub CLI is installed but no authenticated token is available. Run: gh auth login'
-    }
-    $token = ($tokenLines -join '').Trim()
-
-    $escapedPath = ($RemotePath -split '/' | ForEach-Object {
-        [Uri]::EscapeDataString($_)
-    }) -join '/'
-    $escapedRef = [Uri]::EscapeDataString($IconRef)
-    $apiUrl = "https://api.github.com/repos/$IconRepo/contents/$escapedPath?ref=$escapedRef"
-
-    $headers = @{
-        Authorization = "Bearer $token"
-        Accept = 'application/vnd.github.raw+json'
-        'X-GitHub-Api-Version' = '2022-11-28'
-        'User-Agent' = 'Completionist-Map-v0.10.0'
-    }
-
-    try {
-        Invoke-WebRequest `
-            -Uri $apiUrl `
-            -Headers $headers `
-            -UseBasicParsing `
-            -OutFile $Destination
-    }
-    catch {
-        throw "Failed to fetch private icon asset: $RemotePath`n$($_.Exception.Message)"
-    }
-
-    $bytes = [IO.File]::ReadAllBytes($Destination)
+    $bytes = [IO.File]::ReadAllBytes($Path)
     if ($bytes.Length -lt 8 -or
         $bytes[0] -ne 0x89 -or
         $bytes[1] -ne 0x50 -or
         $bytes[2] -ne 0x4E -or
-        $bytes[3] -ne 0x47) {
-        throw "Downloaded icon is not a valid PNG: $RemotePath"
+        $bytes[3] -ne 0x47 -or
+        $bytes[4] -ne 0x0D -or
+        $bytes[5] -ne 0x0A -or
+        $bytes[6] -ne 0x1A -or
+        $bytes[7] -ne 0x0A) {
+        throw "Icon master is not a valid PNG: $Path"
     }
 }
-
 function Export-CompletionistSquarePng(
     [string]$Source,
     [string]$Destination,
@@ -126,7 +108,7 @@ function Export-CompletionistSquarePng(
 }
 
 Write-Host ''
-Write-Host 'Preparing Completionist Map v0.10.0 custom icon assets...'
+Write-Host 'Preparing Completionist Map v0.10.1 custom icon assets...'
 New-Item -ItemType Directory -Force -Path $IconConceptDir | Out-Null
 New-Item -ItemType Directory -Force -Path $IconGeneratedDir | Out-Null
 
@@ -136,10 +118,12 @@ $iconSizes = @(24, 32, 48, 64)
 
 foreach ($family in $CompletionistIconFiles.Keys) {
     $fileName = $CompletionistIconFiles[$family]
-    $remote = "assets/icons/concepts/$fileName"
+    $sourceConceptPath = Join-Path $IconSourceDir $fileName
     $conceptPath = Join-Path $IconConceptDir $fileName
 
-    Get-CompletionistGitHubBinary -RemotePath $remote -Destination $conceptPath
+    Assert-CompletionistPng -Path $sourceConceptPath
+    Copy-Item $sourceConceptPath $conceptPath -Force
+    Assert-CompletionistPng -Path $conceptPath
 
     $sourceImage = [Drawing.Image]::FromFile($conceptPath)
     try {
@@ -337,7 +321,7 @@ if ($null -eq $ravenText) {
 }
 
 $ravenHelper = @'
--- Completionist Map v0.10.0 Raven lifecycle bridge.
+-- Completionist Map v0.10.1 Raven lifecycle bridge.
 -- Read-only with respect to progression: it only observes the script's own
 -- ravenKilled state and publishes it to the custom map/HUD prototype.
 local function CompletionistMapV100_IsTargetRaven()
@@ -378,7 +362,7 @@ local function CompletionistMapV100_PublishTargetState(killed, source)
     end
   end
 
-  print("[CompletionistMap v0.10.0] RAVEN_STATE" ..
+  print("[CompletionistMap v0.10.1] RAVEN_STATE" ..
     " target=true" ..
     " source=" .. tostring(source) ..
     " killed=" .. tostring(collected) ..
@@ -421,7 +405,7 @@ $ravenText = $ravenText.Replace(
     "  ravenKilled = tab.ravenKilled`r`n  CompletionistMapV100_PublishTargetState(ravenKilled, `"OnRestoreCheckpoint`")`r`nend`r`n"
 )
 
-if (-not $ravenText.Contains('[CompletionistMap v0.10.0] RAVEN_STATE')) {
+if (-not $ravenText.Contains('[CompletionistMap v0.10.1] RAVEN_STATE')) {
     throw 'Failed to inject the Raven lifecycle bridge.'
 }
 
@@ -478,7 +462,7 @@ if ($null -eq $nornirText) {
 }
 
 $nornirHelper = @'
--- Completionist Map v0.10.0 Nornir state publisher.
+-- Completionist Map v0.10.1 Nornir state publisher.
 -- Observes stock Nornir state and forwards a plain-data snapshot to the UI
 -- WAD. It does not mutate puzzle state, quest state, or save data.
 
@@ -620,14 +604,14 @@ local function CompletionistMapV100_DumpNornir(source, activeIndex)
       for _, index in ipairs(unknownBreakable) do
         entry.keys[index].broken = true
       end
-      print("[CompletionistMap v0.10.0] NORNIR_PERSISTED_INFER" ..
+      print("[CompletionistMap v0.10.1] NORNIR_PERSISTED_INFER" ..
         " registryKey=" .. tostring(registryKey) ..
         " keysUsed=" .. tostring(keysUsed) ..
         " inferred=" .. tostring(#unknownBreakable))
     end
   end
 
-  print("[CompletionistMap v0.10.0] NORNIR_CHEST" ..
+  print("[CompletionistMap v0.10.1] NORNIR_CHEST" ..
     " source=" .. tostring(source) ..
     " activeIndex=" .. tostring(activeIndex) ..
     " name=" .. tostring(chestName) ..
@@ -643,7 +627,7 @@ local function CompletionistMapV100_DumpNornir(source, activeIndex)
 
   for i = 1, 3 do
     local key = entry.keys[i]
-    print("[CompletionistMap v0.10.0] NORNIR_KEY" ..
+    print("[CompletionistMap v0.10.1] NORNIR_KEY" ..
       " chest=" .. tostring(chestName) ..
       " keyType=" .. tostring(keyType) ..
       " activeIndex=" .. tostring(activeIndex) ..
@@ -669,7 +653,7 @@ local function CompletionistMapV100_DumpNornir(source, activeIndex)
     )
   end)
 
-  print("[CompletionistMap v0.10.0] NORNIR_UI_BRIDGE_SEND" ..
+  print("[CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_SEND" ..
     " ok=" .. tostring(sendOK) ..
     " error=" .. tostring(sendErr) ..
     " registryKey=" .. tostring(registryKey))
@@ -753,7 +737,7 @@ $nornirText = $nornirText.Replace(
     "  state = states.OPENED`r`n  CompletionistMapV100_DumpNornir(`"OnInteractFinish-after-open`")`r`n"
 )
 
-if (-not $nornirText.Contains('[CompletionistMap v0.10.0] NORNIR_KEY')) {
+if (-not $nornirText.Contains('[CompletionistMap v0.10.1] NORNIR_KEY')) {
     throw 'Failed to inject the Nornir position diagnostic.'
 }
 
@@ -808,7 +792,7 @@ if ($null -eq $standardChestText) {
 }
 
 $standardChestHelper = @'
--- Completionist Map v0.10.0 authoritative Nornir chest-open publisher.
+-- Completionist Map v0.10.1 authoritative Nornir chest-open publisher.
 -- The runic parent owns puzzle state, but interact_chest_standard.lua owns the
 -- actual loot chest's OPENED state. This is observational only.
 local function CompletionistMapV100_PublishRunicChestOpened(source)
@@ -855,7 +839,7 @@ local function CompletionistMapV100_PublishRunicChestOpened(source)
     )
   end)
 
-  print("[CompletionistMap v0.10.0] NORNIR_OPENED_SEND" ..
+  print("[CompletionistMap v0.10.1] NORNIR_OPENED_SEND" ..
     " source=" .. tostring(source) ..
     " ok=" .. tostring(sendOK) ..
     " error=" .. tostring(sendErr) ..
@@ -887,12 +871,12 @@ $standardChestText = $standardChestText.Replace(
     "function OnStart(level, obj)`r`n  if state == states.OPENED then CompletionistMapV100_PublishRunicChestOpened(`"OnStart-opened`") end`r`n"
 )
 
-if (-not $standardChestText.Contains('[CompletionistMap v0.10.0] NORNIR_OPENED_SEND')) {
+if (-not $standardChestText.Contains('[CompletionistMap v0.10.1] NORNIR_OPENED_SEND')) {
     throw 'Failed to inject standard Runic chest opened-state publisher.'
 }
 
 $mapHelper = @'
--- Completionist Map v0.10.0
+-- Completionist Map v0.10.1
 --
 -- Map side:
 --   Create a genuinely separate duplicate of a SAFE DISCOVERED DockPoint icon,
@@ -909,7 +893,7 @@ $mapHelper = @'
 -- No marker state, quest state, collectible state, or save data is changed.
 _G.CompletionistMapV100NornirRegistry = _G.CompletionistMapV100NornirRegistry or {}
 
-print("[CompletionistMap v0.10.0] MAP_SCRIPT_LOADED")
+print("[CompletionistMap v0.10.1] MAP_SCRIPT_LOADED")
 
 if _G.CompletionistMapV100PlayerMarkerVisible == nil then
   _G.CompletionistMapV100PlayerMarkerVisible = true
@@ -989,7 +973,7 @@ local function CompletionistMapV100_LogIconCapabilities(go, family)
     )
   end
 
-  print("[CompletionistMap v0.10.0] ICON_CAPS" ..
+  print("[CompletionistMap v0.10.1] ICON_CAPS" ..
     " family=" .. tostring(family) ..
     " go={" .. table.concat(goCaps, ",") .. "}" ..
     " ui={" .. table.concat(uiCaps, ",") .. "}" ..
@@ -1023,7 +1007,7 @@ local function CompletionistMapV100_TryDirectIconBind(go, family)
         end
       end)
 
-      print("[CompletionistMap v0.10.0] ICON_BIND_ATTEMPT" ..
+      print("[CompletionistMap v0.10.1] ICON_BIND_ATTEMPT" ..
         " family=" .. tostring(family) ..
         " api=" .. tostring(attempt.ownerName) .. "." .. tostring(attempt.name) ..
         " ok=" .. tostring(ok) ..
@@ -1036,7 +1020,7 @@ local function CompletionistMapV100_TryDirectIconBind(go, family)
     end
   end
 
-  print("[CompletionistMap v0.10.0] ICON_BIND_RESULT" ..
+  print("[CompletionistMap v0.10.1] ICON_BIND_RESULT" ..
     " family=" .. tostring(family) ..
     " direct=false" ..
     " fallback=DockPointProxy")
@@ -1076,7 +1060,7 @@ local function CompletionistMapV100_IsTargetCollected()
   if target.type == "NornirPuzzle" or target.type == "NornirChest" then
     if not _G.CompletionistMapV100TargetCollectedNornirLogged then
       _G.CompletionistMapV100TargetCollectedNornirLogged = true
-      print("[CompletionistMap v0.10.0] NORNIR_TARGET_STATE_CHECK" ..
+      print("[CompletionistMap v0.10.1] NORNIR_TARGET_STATE_CHECK" ..
         " type=" .. tostring(target.type) ..
         " registryKey=" .. tostring(target.registryKey) ..
         " helperScope=local_forward_declared")
@@ -1159,7 +1143,7 @@ local function CompletionistMapV100_LogMapCalibration(self)
     z = worldPos.z
   }
 
-  print("[CompletionistMap v0.10.0] MAP_CALIBRATION" ..
+  print("[CompletionistMap v0.10.1] MAP_CALIBRATION" ..
     " realm=" .. tostring(self.currRealmName) ..
     " worldX=" .. tostring(worldPos.x) ..
     " worldY=" .. tostring(worldPos.y) ..
@@ -1245,7 +1229,7 @@ local function CompletionistMapV100_BuildBackingDockPool(self)
     ids[#ids + 1] = tostring(pool[i].Id)
   end
 
-  print("[CompletionistMap v0.10.0] BACKING_POOL" ..
+  print("[CompletionistMap v0.10.1] BACKING_POOL" ..
     " count=" .. tostring(#pool) ..
     " first=" .. table.concat(ids, ","))
 
@@ -1267,7 +1251,7 @@ local function CompletionistMapV100_FindBackingDock(self, slot)
 
   if not self.completionistMapV100BackingSlotLog[slot] then
     self.completionistMapV100BackingSlotLog[slot] = true
-    print("[CompletionistMap v0.10.0] BACKING_ASSIGN" ..
+    print("[CompletionistMap v0.10.1] BACKING_ASSIGN" ..
       " slot=" .. tostring(slot) ..
       " id=" .. tostring(markerInfo.Id) ..
       " region=" .. tostring(markerInfo.regionId))
@@ -1288,7 +1272,7 @@ CompletionistMapV100_GetNornirRegistry = function()
   if type(uiRegistry) == "table" and next(uiRegistry) ~= nil then
     if not _G.CompletionistMapV100RegistryLogged then
       _G.CompletionistMapV100RegistryLogged = true
-      print("[CompletionistMap v0.10.0] NORNIR_REGISTRY" ..
+      print("[CompletionistMap v0.10.1] NORNIR_REGISTRY" ..
         " source=ui_call_event")
     end
     return uiRegistry, "ui_call_event"
@@ -1317,7 +1301,7 @@ CompletionistMapV100_GetNornirRegistry = function()
 
   if not _G.CompletionistMapV100FallbackLogged then
     _G.CompletionistMapV100FallbackLogged = true
-    print("[CompletionistMap v0.10.0] NORNIR_FALLBACK" ..
+    print("[CompletionistMap v0.10.1] NORNIR_FALLBACK" ..
       " parentOnly=true chest=chest_locked_parent" ..
       " ignoresStockSummary=true")
   end
@@ -1468,7 +1452,7 @@ local function CompletionistMapV100_CreateNornirChestPins(self, currState)
       local backing =
         CompletionistMapV100_FindBackingDock(self, 2 + chestOrdinal - 1)
       if backing == nil then
-        print("[CompletionistMap v0.10.0] NORNIR_CHEST_PIN" ..
+        print("[CompletionistMap v0.10.1] NORNIR_CHEST_PIN" ..
           " ok=false reason=safe_dock_not_found" ..
           " registryKey=" .. tostring(registryKey))
       else
@@ -1494,7 +1478,7 @@ local function CompletionistMapV100_CreateNornirChestPins(self, currState)
         end)
         if ok then
           table.insert(self.completionistMapV100NornirChestPins, pin)
-          print("[CompletionistMap v0.10.0] NORNIR_CHEST_PIN" ..
+          print("[CompletionistMap v0.10.1] NORNIR_CHEST_PIN" ..
             " ok=true source=" .. tostring(registrySource) ..
             " registryKey=" .. tostring(registryKey) ..
             " backingId=" .. tostring(backing.Id) ..
@@ -1546,7 +1530,7 @@ local function CompletionistMapV100_RefreshNornirChestPins(self)
         self.completionistMapV100NornirChestSelected = nil
       end
       table.remove(self.completionistMapV100NornirChestPins, i)
-      print("[CompletionistMap v0.10.0] NORNIR_CHEST_PIN_REMOVE" ..
+      print("[CompletionistMap v0.10.1] NORNIR_CHEST_PIN_REMOVE" ..
         " registryKey=" .. tostring(pin.registryKey))
     end
   end
@@ -1563,7 +1547,7 @@ local function CompletionistMapV100_CreateNornirPins(self, currState)
     CompletionistMapV100_GetNornirRegistry()
 
   if registrySource ~= "ui_call_event" then
-    print("[CompletionistMap v0.10.0] NORNIR_MAP" ..
+    print("[CompletionistMap v0.10.1] NORNIR_MAP" ..
       " count=0 reason=live_state_required")
     return
   end
@@ -1595,7 +1579,7 @@ local function CompletionistMapV100_CreateNornirPins(self, currState)
           local backing =
             CompletionistMapV100_FindBackingDock(self, 10 + created)
           if backing == nil then
-            print("[CompletionistMap v0.10.0] NORNIR_PIN_CREATE" ..
+            print("[CompletionistMap v0.10.1] NORNIR_PIN_CREATE" ..
               " ok=false index=" .. tostring(i) ..
               " reason=safe_dock_not_found")
           else
@@ -1635,7 +1619,7 @@ local function CompletionistMapV100_CreateNornirPins(self, currState)
             if setOK then
               table.insert(self.completionistMapV100NornirPins, pin)
               created = created + 1
-              print("[CompletionistMap v0.10.0] NORNIR_PIN_CREATE" ..
+              print("[CompletionistMap v0.10.1] NORNIR_PIN_CREATE" ..
                 " ok=true registryKey=" .. tostring(registryKey) ..
                 " keyType=" .. tostring(entry.keyType) ..
                 " index=" .. tostring(i) ..
@@ -1644,7 +1628,7 @@ local function CompletionistMapV100_CreateNornirPins(self, currState)
                 " mapZ=" .. tostring(mapZ))
             else
               pcall(function() Map.RecycleIcon(pin.iconGO) end)
-              print("[CompletionistMap v0.10.0] NORNIR_PIN_CREATE" ..
+              print("[CompletionistMap v0.10.1] NORNIR_PIN_CREATE" ..
                 " ok=false index=" .. tostring(i) ..
                 " error=" .. tostring(setErr))
             end
@@ -1655,7 +1639,7 @@ local function CompletionistMapV100_CreateNornirPins(self, currState)
     end
   end
 
-  print("[CompletionistMap v0.10.0] NORNIR_MAP" ..
+  print("[CompletionistMap v0.10.1] NORNIR_MAP" ..
     " count=" .. tostring(created) ..
     " source=" .. tostring(registrySource))
 end
@@ -1717,7 +1701,7 @@ local function CompletionistMapV100_RefreshNornirPins(self)
 
       table.remove(self.completionistMapV100NornirPins, i)
 
-      print("[CompletionistMap v0.10.0] NORNIR_PIN_REMOVE" ..
+      print("[CompletionistMap v0.10.1] NORNIR_PIN_REMOVE" ..
         " registryKey=" .. tostring(pin.registryKey) ..
         " index=" .. tostring(pin.keyIndex))
     elseif pin.frames == 30 and pin.iconGO ~= nil then
@@ -1725,7 +1709,7 @@ local function CompletionistMapV100_RefreshNornirPins(self)
         return pin.iconGO:GetWorldPosition()
       end)
 
-      print("[CompletionistMap v0.10.0] NORNIR_PIN_VERIFY" ..
+      print("[CompletionistMap v0.10.1] NORNIR_PIN_VERIFY" ..
         " index=" .. tostring(pin.keyIndex) ..
         " expectedX=" .. tostring(pin.mapX) ..
         " expectedZ=" .. tostring(pin.mapZ) ..
@@ -1760,7 +1744,7 @@ local function CompletionistMapV100_ClearStockCompass(self, reason)
 
   self.currShownMarkerID = nil
 
-  print("[CompletionistMap v0.10.0] STOCK_COMPASS_CLEAR" ..
+  print("[CompletionistMap v0.10.1] STOCK_COMPASS_CLEAR" ..
     " reason=" .. tostring(reason) ..
     " id=" .. tostring(oldId) ..
     " ok=" .. tostring(hideOK) ..
@@ -1811,13 +1795,13 @@ local function CompletionistMapV100_CreateMapPin(self, currState)
   CompletionistMapV100_DestroyMapPin(self)
 
   if CompletionistMapV100_IsRavenCollected() then
-    print("[CompletionistMap v0.10.0] MAP_PIN_SKIP reason=raven_collected")
+    print("[CompletionistMap v0.10.1] MAP_PIN_SKIP reason=raven_collected")
     return
   end
 
   local backing = CompletionistMapV100_FindBackingDock(self, 1)
   if backing == nil then
-    print("[CompletionistMap v0.10.0] MAP_PIN_CREATE" ..
+    print("[CompletionistMap v0.10.1] MAP_PIN_CREATE" ..
       " ok=false reason=safe_dock_not_found")
     return
   end
@@ -1831,7 +1815,7 @@ local function CompletionistMapV100_CreateMapPin(self, currState)
   end)
 
   if not createOK or iconOrErr == nil then
-    print("[CompletionistMap v0.10.0] MAP_PIN_CREATE" ..
+    print("[CompletionistMap v0.10.1] MAP_PIN_CREATE" ..
       " ok=false reason=duplicate_create_failed" ..
       " error=" .. tostring(iconOrErr))
     return
@@ -1878,7 +1862,7 @@ local function CompletionistMapV100_CreateMapPin(self, currState)
     return iconGO:GetWorldPosition()
   end)
 
-  print("[CompletionistMap v0.10.0] MAP_PIN_CREATE" ..
+  print("[CompletionistMap v0.10.1] MAP_PIN_CREATE" ..
     " ok=" .. tostring(setOK) ..
     " error=" .. tostring(setErr) ..
     " backingId=" .. tostring(backing.Id) ..
@@ -1916,7 +1900,7 @@ local function CompletionistMapV100_UpdateSnapTuning(self)
   local bucket = math.floor(iconScale * 10 + 0.5)
   if self.completionistMapV100SnapScaleBucket ~= bucket then
     self.completionistMapV100SnapScaleBucket = bucket
-    print("[CompletionistMap v0.10.0] SNAP_TUNING" ..
+    print("[CompletionistMap v0.10.1] SNAP_TUNING" ..
       " mode=native_scale_no_camera_snap" ..
       " customIconScale=" .. tostring(iconScale))
   end
@@ -1980,7 +1964,7 @@ local function CompletionistMapV100_ReinforceRavenPin(self)
       activeTarget.type ~= "Raven" and
       self.completionistMapV100RavenIndependentTargetType ~= activeTarget.type then
     self.completionistMapV100RavenIndependentTargetType = activeTarget.type
-    print("[CompletionistMap v0.10.0] RAVEN_PIN_INDEPENDENT" ..
+    print("[CompletionistMap v0.10.1] RAVEN_PIN_INDEPENDENT" ..
       " activeTargetType=" .. tostring(activeTarget.type) ..
       " mapX=" .. tostring(COMPLETIONIST_RAVEN_MAP_X) ..
       " mapZ=" .. tostring(COMPLETIONIST_RAVEN_MAP_Z))
@@ -1988,7 +1972,7 @@ local function CompletionistMapV100_ReinforceRavenPin(self)
 
   if self.completionistMapV100RavenPinFrames == 30 then
     local ok, actual = pcall(function() return go:GetWorldPosition() end)
-    print("[CompletionistMap v0.10.0] RAVEN_PIN_VERIFY" ..
+    print("[CompletionistMap v0.10.1] RAVEN_PIN_VERIFY" ..
       " expectedX=" .. tostring(COMPLETIONIST_RAVEN_MAP_X) ..
       " expectedZ=" .. tostring(COMPLETIONIST_RAVEN_MAP_Z) ..
       " activeTargetType=" .. tostring(
@@ -2056,7 +2040,7 @@ local function CompletionistMapV100_RefreshCustomPins(self)
     local raven = self.completionistMapV100MapIconGO
 
     for _, chestPin in ipairs(self.completionistMapV100NornirChestPins or {}) do
-      print("[CompletionistMap v0.10.0] ALIAS_CHECK" ..
+      print("[CompletionistMap v0.10.1] ALIAS_CHECK" ..
         " pair=raven_chest" ..
         " sameGO=" .. tostring(
           raven ~= nil and raven == chestPin.iconGO
@@ -2066,14 +2050,14 @@ local function CompletionistMapV100_RefreshCustomPins(self)
     local pins = self.completionistMapV100NornirPins or {}
     for i = 1, #pins do
       if raven ~= nil then
-        print("[CompletionistMap v0.10.0] ALIAS_CHECK" ..
+        print("[CompletionistMap v0.10.1] ALIAS_CHECK" ..
           " pair=raven_puzzle" ..
           " index=" .. tostring(pins[i].keyIndex) ..
           " sameGO=" .. tostring(raven == pins[i].iconGO))
       end
 
       for j = i + 1, #pins do
-        print("[CompletionistMap v0.10.0] ALIAS_CHECK" ..
+        print("[CompletionistMap v0.10.1] ALIAS_CHECK" ..
           " pair=puzzle_puzzle" ..
           " a=" .. tostring(pins[i].keyIndex) ..
           " b=" .. tostring(pins[j].keyIndex) ..
@@ -2122,7 +2106,7 @@ local function CompletionistMapV100_RefreshCustomPins(self)
 
   if self.completionistMapV100LastVisibilityFilter ~= filter then
     self.completionistMapV100LastVisibilityFilter = filter
-    print("[CompletionistMap v0.10.0] FILTER_CUSTOM_VISIBILITY" ..
+    print("[CompletionistMap v0.10.1] FILTER_CUSTOM_VISIBILITY" ..
       " filter=" .. tostring(filter) ..
       " raven=" .. tostring(showRaven) ..
       " chest=" .. tostring(showChest) ..
@@ -2193,7 +2177,7 @@ function MapOn:Update()
   if CompletionistMapV100_IsRavenCollected() then
     if self.completionistMapV100MapIconGO ~= nil then
       CompletionistMapV100_DestroyMapPin(self)
-      print("[CompletionistMap v0.10.0] MAP_PIN_REMOVE reason=raven_collected")
+      print("[CompletionistMap v0.10.1] MAP_PIN_REMOVE reason=raven_collected")
     end
   end
 '@
@@ -2206,7 +2190,7 @@ $mapText = $mapUpdateRegex.Replace(
     1
 )
 
-if (-not $mapText.Contains('[CompletionistMap v0.10.0] MAP_SCRIPT_LOADED')) {
+if (-not $mapText.Contains('[CompletionistMap v0.10.1] MAP_SCRIPT_LOADED')) {
     throw 'Map-side Completionist helper was not injected.'
 }
 
@@ -2237,11 +2221,11 @@ if (-not $mapText.Contains('RAVEN_PIN_VERIFY')) {
 }
 
 if (-not $mapText.Contains('ICON_CAPS')) {
-    throw 'v0.10.0 map icon capability probe is missing.'
+    throw 'v0.10.1 map icon capability probe is missing.'
 }
 
 if (-not $hudText.Contains('HUD_ICON_CAPS')) {
-    throw 'v0.10.0 HUD icon capability probe is missing.'
+    throw 'v0.10.1 HUD icon capability probe is missing.'
 }
 
 if (-not $mapText.Contains('STOCK_COMPASS_CLEAR')) {
@@ -2368,7 +2352,7 @@ $hiddenPlayerFocusReplacement = @'
       self.playerIconGO ~= nil then
     local instant = true
     Camera.PointAtGO(self.playerIconGO, instant)
-    print("[CompletionistMap v0.10.0] PLAYER_HIDDEN_CENTER" ..
+    print("[CompletionistMap v0.10.1] PLAYER_HIDDEN_CENTER" ..
       " centered=true realm=" .. tostring(self.currRealmName))
   elseif Camera.PointAt ~= nil then
 '@
@@ -2419,7 +2403,7 @@ function MapOn:Menu_Square_ReleaseHandler()
       self.completionistMapV100Menu:UpdateFooterButtonText()
     end
 
-    print("[CompletionistMap v0.10.0] PLAYER_MARKER_TOGGLE" ..
+    print("[CompletionistMap v0.10.1] PLAYER_MARKER_TOGGLE" ..
       " visible=" .. tostring(visible))
     Audio.PlaySound("SND_UX_Pause_Menu_Map_Region_Hover_Tick")
     return
@@ -2463,7 +2447,7 @@ function MapOn:MapCollisionChangeHandler(currState, collisionGameObjectTable, re
       completionistMapV100NornirPin
     )
 
-    print("[CompletionistMap v0.10.0] NORNIR_SELECTION" ..
+    print("[CompletionistMap v0.10.1] NORNIR_SELECTION" ..
       " active=true" ..
       " registryKey=" ..
         tostring(completionistMapV100NornirPin.registryKey) ..
@@ -2485,7 +2469,7 @@ function MapOn:MapCollisionChangeHandler(currState, collisionGameObjectTable, re
     end
 
     self.completionistMapV100NornirSelected = nil
-    print("[CompletionistMap v0.10.0] NORNIR_SELECTION cleared=true" ..
+    print("[CompletionistMap v0.10.1] NORNIR_SELECTION cleared=true" ..
       " latchFrames=12")
   end
 
@@ -2502,7 +2486,7 @@ function MapOn:MapCollisionChangeHandler(currState, collisionGameObjectTable, re
     CompletionistMapV100_NornirChestReticle(
       self, currState, completionistMapV100ChestPin
     )
-    print("[CompletionistMap v0.10.0] NORNIR_CHEST_SELECTION" ..
+    print("[CompletionistMap v0.10.1] NORNIR_CHEST_SELECTION" ..
       " active=true registryKey=" ..
         tostring(completionistMapV100ChestPin.registryKey) ..
       " priority=parent" ..
@@ -2524,13 +2508,13 @@ function MapOn:MapCollisionChangeHandler(currState, collisionGameObjectTable, re
     self.completionistMapV100LastHitFrame = frame
 
     if not self.completionistMapV100CollisionState then
-      print("[CompletionistMap v0.10.0] MAP_COLLISION hit=true")
+      print("[CompletionistMap v0.10.1] MAP_COLLISION hit=true")
     end
     self.completionistMapV100CollisionState = true
 
     if not self.completionistMapV100Selected then
       self.completionistMapV100Selected = true
-      print("[CompletionistMap v0.10.0] MAP_SELECTION active=true")
+      print("[CompletionistMap v0.10.1] MAP_SELECTION active=true")
     end
 
     CompletionistMapV100_SetCustomCursorSelected(true)
@@ -2538,7 +2522,7 @@ function MapOn:MapCollisionChangeHandler(currState, collisionGameObjectTable, re
 
     if not self.completionistMapV100NativeSnapLogged then
       self.completionistMapV100NativeSnapLogged = true
-      print("[CompletionistMap v0.10.0] MAP_SNAP" ..
+      print("[CompletionistMap v0.10.1] MAP_SNAP" ..
         " mode=native_cursor" ..
         " preservesZoom=true" ..
         " frame=" .. tostring(frame))
@@ -2547,7 +2531,7 @@ function MapOn:MapCollisionChangeHandler(currState, collisionGameObjectTable, re
   end
 
   if self.completionistMapV100CollisionState then
-    print("[CompletionistMap v0.10.0] MAP_COLLISION hit=false_debounced")
+    print("[CompletionistMap v0.10.1] MAP_COLLISION hit=false_debounced")
   end
   self.completionistMapV100CollisionState = false
 
@@ -2561,7 +2545,7 @@ function MapOn:MapCollisionChangeHandler(currState, collisionGameObjectTable, re
     end
 
     self.completionistMapV100Selected = false
-    print("[CompletionistMap v0.10.0] MAP_SELECTION cleared=true" ..
+    print("[CompletionistMap v0.10.1] MAP_SELECTION cleared=true" ..
       " ageFrames=" .. tostring(age))
   end
 '@
@@ -2637,7 +2621,7 @@ function MapOn:GetShowOnCompassPrompt(currMenu)
 
     if self.completionistMapV100NornirPromptLogged ~= pin.keyIndex then
       self.completionistMapV100NornirPromptLogged = pin.keyIndex
-      print("[CompletionistMap v0.10.0] NORNIR_PROMPT" ..
+      print("[CompletionistMap v0.10.1] NORNIR_PROMPT" ..
         " visible=true" ..
         " index=" .. tostring(pin.keyIndex) ..
         " active=" .. tostring(sameTarget and target.active == true))
@@ -2713,7 +2697,7 @@ function MapOn:ShowOnCompass(currState)
       Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
     end
     CompletionistMapV100_NornirChestReticle(self, currState, pin)
-    print("[CompletionistMap v0.10.0] NORNIR_CHEST_COMPASS" ..
+    print("[CompletionistMap v0.10.1] NORNIR_CHEST_COMPASS" ..
       " active=" .. tostring(target.active) ..
       " registryKey=" .. tostring(pin.registryKey) ..
       " x=" .. tostring(pin.worldX) ..
@@ -2762,7 +2746,7 @@ function MapOn:ShowOnCompass(currState)
 
     CompletionistMapV100_NornirReticle(self, currState, pin)
 
-    print("[CompletionistMap v0.10.0] NORNIR_COMPASS" ..
+    print("[CompletionistMap v0.10.1] NORNIR_COMPASS" ..
       " active=" .. tostring(target.active) ..
       " registryKey=" .. tostring(pin.registryKey) ..
       " index=" .. tostring(pin.keyIndex) ..
@@ -2782,7 +2766,7 @@ function MapOn:ShowOnCompass(currState)
         target.collected = true
       end
       self.completionistMapV100Selected = false
-      print("[CompletionistMap v0.10.0] CUSTOM_COMPASS refused=raven_collected")
+      print("[CompletionistMap v0.10.1] CUSTOM_COMPASS refused=raven_collected")
       return
     end
 
@@ -2810,7 +2794,7 @@ function MapOn:ShowOnCompass(currState)
 
     CompletionistMapV100_ShowReticle(self, currState)
 
-    print("[CompletionistMap v0.10.0] CUSTOM_COMPASS" ..
+    print("[CompletionistMap v0.10.1] CUSTOM_COMPASS" ..
       " active=" .. tostring(target.active) ..
       " mode=hud_native_visual_proof" ..
       " x=" .. tostring(target.x) ..
@@ -2823,7 +2807,7 @@ function MapOn:ShowOnCompass(currState)
       completionistTarget.active == true and
       self.currMarkerID ~= nil then
     completionistTarget.active = false
-    print("[CompletionistMap v0.10.0] CUSTOM_COMPASS_CLEAR" ..
+    print("[CompletionistMap v0.10.1] CUSTOM_COMPASS_CLEAR" ..
       " reason=stock_marker_selected" ..
       " type=" .. tostring(completionistTarget.type))
   end
@@ -2866,7 +2850,7 @@ function MapOn:Menu_Next_Filter(direction)
   self.jumpToMarkerIndex = 0
   self:UpdateMapMarkerHighlights()
   Audio.PlaySound("SND_UX_Pause_Menu_Map_Filters_Tick")
-  print("[CompletionistMap v0.10.0] FILTER_CHANGE" ..
+  print("[CompletionistMap v0.10.1] FILTER_CHANGE" ..
     " logical=" .. tostring(logical) ..
     " index=" .. tostring(self.filterIndex))
 end
@@ -2894,7 +2878,7 @@ function MapOn:UpdateFilterButtonMapping()
     self.filterButtonMapping[#self.filterButtonMapping + 1] = NORNIR_CHEST_FILTER
     self.filterButtonMapping[#self.filterButtonMapping + 1] = NORNIR_PUZZLE_FILTER
 
-    print("[CompletionistMap v0.10.0] FILTER_MAPPING" ..
+    print("[CompletionistMap v0.10.1] FILTER_MAPPING" ..
       " total=" .. tostring(#self.filterButtonMapping) ..
       " completionist=true")
   end
@@ -2986,7 +2970,7 @@ $mapText = $mouseFilterRegex.Replace(
 )
 
 $hudHelper = @'
--- Completionist Map v0.10.0
+-- Completionist Map v0.10.1
 -- HUD-native visual proof using an already-authored HUD object.
 --
 -- v0.7.6 proved there is no Lua-visible Clone/Create/Instantiate API for HUD
@@ -3024,7 +3008,7 @@ local function CompletionistMapV100_ProbeHudIconApi(go)
     parts[#parts + 1] = name .. "=" .. tostring(callable(go, name))
   end
 
-  print("[CompletionistMap v0.10.0] HUD_ICON_CAPS" ..
+  print("[CompletionistMap v0.10.1] HUD_ICON_CAPS" ..
     " go={" .. table.concat(parts, ",") .. "}" ..
     " assetRoot=__COMPLETIONIST_ICON_ROOT__")
 end
@@ -3063,7 +3047,7 @@ local function CompletionistMapV100_GetProofVisual(self)
           engine.Vector.New(pos.x, pos.y, pos.z)
       end
 
-      print("[CompletionistMap v0.10.0] HUD_VISUAL_SELECTED" ..
+      print("[CompletionistMap v0.10.1] HUD_VISUAL_SELECTED" ..
         " requested=" .. tostring(name) ..
         " actual=" .. tostring(self.completionistMapV100ProofName) ..
         " origin=" .. (
@@ -3080,7 +3064,7 @@ local function CompletionistMapV100_GetProofVisual(self)
 
   if not self.completionistMapV100MissingVisualLogged then
     self.completionistMapV100MissingVisualLogged = true
-    print("[CompletionistMap v0.10.0] HUD_VISUAL_SELECTED ok=false")
+    print("[CompletionistMap v0.10.1] HUD_VISUAL_SELECTED ok=false")
   end
 
   return nil
@@ -3101,7 +3085,7 @@ local function CompletionistMapV100_RestoreProofVisual(self)
       go:Hide()
     end)
 
-    print("[CompletionistMap v0.10.0] HUD_VISUAL_RESTORE" ..
+    print("[CompletionistMap v0.10.1] HUD_VISUAL_RESTORE" ..
       " ok=" .. tostring(restoreOK) ..
       " error=" .. tostring(restoreErr))
   end
@@ -3130,7 +3114,7 @@ local function CompletionistMapV100_StoreNornirUIState(args)
     end
   end
 
-  print("[CompletionistMap v0.10.0] NORNIR_UI_BRIDGE_RECV" ..
+  print("[CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_RECV" ..
     " registryKey=" .. tostring(args.registryKey) ..
     " keyType=" .. tostring(args.keyType) ..
     " opened=" .. tostring(args.opened) ..
@@ -3172,7 +3156,7 @@ local function CompletionistMapV100_StoreNornirOpened(args)
     target.active = false
   end
 
-  print("[CompletionistMap v0.10.0] NORNIR_OPENED_RECV" ..
+  print("[CompletionistMap v0.10.1] NORNIR_OPENED_RECV" ..
     " registryKey=" .. tostring(args.registryKey) ..
     " source=" .. tostring(args.source))
 end
@@ -3209,7 +3193,7 @@ local function CompletionistMapV100_UpdateHUDMarker(self)
           _G.CompletionistMapV100NornirTargetGeneration then
       self.completionistMapV100NornirGeneration =
         _G.CompletionistMapV100NornirTargetGeneration
-      print("[CompletionistMap v0.10.0] HUD_NORNIR_TRACK" ..
+      print("[CompletionistMap v0.10.1] HUD_NORNIR_TRACK" ..
         " active=true" ..
         " mode=direct_xyz" ..
         " registryLookup=false" ..
@@ -3221,7 +3205,7 @@ local function CompletionistMapV100_UpdateHUDMarker(self)
 
     if target.collected then
       if target.active then
-        print("[CompletionistMap v0.10.0] HUD_AUTO_CLEAR reason=target_collected")
+        print("[CompletionistMap v0.10.1] HUD_AUTO_CLEAR reason=target_collected")
       end
       target.active = false
       CompletionistMapV100_RestoreProofVisual(self)
@@ -3317,7 +3301,7 @@ local function CompletionistMapV100_UpdateHUDMarker(self)
   if not moveOK then
     if not self.completionistMapV100MoveErrorLogged then
       self.completionistMapV100MoveErrorLogged = true
-      print("[CompletionistMap v0.10.0] HUD_VISUAL_MOVE" ..
+      print("[CompletionistMap v0.10.1] HUD_VISUAL_MOVE" ..
         " ok=false error=" .. tostring(moveErr))
     end
     return
@@ -3333,7 +3317,7 @@ local function CompletionistMapV100_UpdateHUDMarker(self)
       return go:GetWorldPosition()
     end)
 
-    print("[CompletionistMap v0.10.0] HUD_VISUAL_FRAME" ..
+    print("[CompletionistMap v0.10.1] HUD_VISUAL_FRAME" ..
       " name=" .. tostring(self.completionistMapV100ProofName) ..
       " moveOK=true" ..
       " distance=" .. tostring(targetLen) ..
@@ -3387,7 +3371,7 @@ $setupTailReplacement = @'
     CompletionistMapV100_UpdateHUDMarker(self)
   end
 
-  print("[CompletionistMap v0.10.0] HUD_HOOK installed=true")
+  print("[CompletionistMap v0.10.1] HUD_HOOK installed=true")
 end
 function MainHUD:SetRagePrompts()
 '@
@@ -3438,7 +3422,7 @@ $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [IO.File]::WriteAllText($standardChestDest, $standardChestText, $utf8NoBom)
 
 Write-Host ''
-Write-Host 'Completionist Map v0.10.0 ICON PIPELINE + RENDERING DISCOVERY installed.'
+Write-Host 'Completionist Map v0.10.1 ICON PIPELINE + RENDERING DISCOVERY installed.'
 
 Write-Host "Map override: $mapDest"
 Write-Host "HUD override: $hudDest"
@@ -3460,4 +3444,4 @@ Write-Host '- Midgard map opens emit player world-to-map calibration pairs'
 Write-Host '- loaded incomplete Breakable Nornir chests now get separate selectable map pins'
 Write-Host '- selected Nornir seals reuse the proven arbitrary-XYZ custom HUD compass target'
 Write-Host ''
-Write-Host '- FIX: mapmenu.lua now loads correctly; v0.8.5 premature MapOn:Update closure removed'`r`nWrite-Host '- SHOW ALL includes top-level Completionist markers: remaining Raven + incomplete Nornir chest'`r`nWrite-Host '- NORNIR PUZZLE shows only unresolved puzzle actors; Breakable hides persisted broken seals'`r`nWrite-Host '- custom filters are appended to the EXISTING bottom-left filter cycle'`r`nWrite-Host '- stock regional Undiscovered summary is ignored for our synthetic Nornir chest parent pin'`r`nWrite-Host '- FIX: Nornir chest/seal Add to Compass no longer calls a nil global registry helper'`r`nWrite-Host '- GetNornirRegistry is now a forward-declared local captured by IsTargetCollected'`r`nWrite-Host '- filters, only-unbroken Breakable seals, Nornir parent pins, Raven path and extended zoom are retained'`r`nWrite-Host '- INSTALLER FIX: native-hover validation now runs after collision injection'`r`nWrite-Host '- milestone: Raven pin root is reinforced at its real map coordinate every map frame'`r`nWrite-Host '- custom marker hover no longer calls Camera.PointAt, so zoom is preserved'`r`nWrite-Host '- custom markers use the stock SetCursorSelected animation'`r`nWrite-Host '- trying a locked Nornir chest reveals remaining siblings in SHOW ALL'`r`nWrite-Host '- actual Runic chest OnOpened now removes the parent marker and clears its compass target'`r`nWrite-Host '- FIX: seal selection is no longer cleared every frame while puzzle actors are visible in SHOW ALL'`r`nWrite-Host '- Nornir puzzle children have priority over the parent chest and a 120-frame action latch'`r`nWrite-Host '- deeper zoom: MaxIn 6 -> 2.5 (~2.4x closer than stock)'`r`nWrite-Host '- Square/keyboard equivalent toggles Kratos marker whenever Go to Journal is unavailable'`r`nWrite-Host '- FIX: Raven, Nornir parent and each puzzle actor now use DISTINCT discovered DockPoint backing IDs'`r`nWrite-Host '- this prevents same-ID native marker aliasing from collapsing custom markers onto one location'`r`nWrite-Host '- max-zoom snap reach reduced with CursorScale_Min 0.32 and adaptive custom marker scaling'`r`nWrite-Host '- deep MaxIn 2.5 zoom and Kratos show/hide toggle are retained'`r`nWrite-Host '- HOTFIX: rebuilt from compile-good v0.9.2, not the broken v0.9.3 map patch'`r`nWrite-Host '- adaptive-scale helper is forward-declared so marker creation cannot resolve it as nil'`r`nWrite-Host '- distinct backings, filters, seal compass and Kratos toggle are retained'`r`nWrite-Host '- close-zoom snapping is much weaker: CursorScale_Min 0.12, CursorSnap_Strength 0.55'`r`nWrite-Host '- FIX: Raven map position is independent of the one active compass target object'`r`nWrite-Host '- tracking Nornir can no longer move/hide the Raven at the Nornir coordinates'`r`nWrite-Host '- synthetic marker roots are fixed at 0.28 scale to reduce their clickable/snap footprint'`r`nWrite-Host '- Nornir child debounce reduced from 120 to 12 frames'`r`nWrite-Host '- snap tuning tightened: CursorScale_Min 0.05, CursorSnap_Strength 0.18'`r`nWrite-Host '- FIX: restored v0.9.4 native-clickable custom collision instead of the failed manual-hover experiment'`r`nWrite-Host '- tMapCamera magnetic snapping is fully disabled: CursorSnap_Enabled=0'`r`nWrite-Host '- custom marker visuals are back at native scale 1.0'`r`nWrite-Host '- custom tracking clears any stale stock DockPoint compass destination first'`r`nWrite-Host '- hidden Kratos opening-centre fix is retained'`r`nWrite-Host '- INSTALLER HOTFIX: hidden-player validation now runs only after the camera-focus patch is applied'`r`nWrite-Host '- v0.10.0 downloads ALL user-authored concept PNG masters from feat/completionist-icon-system'`r`nWrite-Host '- generates 24/32/48/64 px transparent production candidates under mods\completionist-map\icons'`r`nWrite-Host '- Raven/Nornir synthetic GOs probe direct SetTexture/SetImage APIs and attempt binding only when such an API exists'`r`nWrite-Host '- if no direct loose-PNG API exists, stable DockPoint visuals remain while logs identify the next texture/material integration route'`r`nWrite-Host '- HUD carrier is capability-probed only; it is not mutated by unknown texture APIs in this build'`r`nWrite-Host 'Raven lifecycle + Nornir diagnostics are read-only with respect to puzzle/progression state.'
+Write-Host '- FIX: mapmenu.lua now loads correctly; v0.8.5 premature MapOn:Update closure removed'`r`nWrite-Host '- SHOW ALL includes top-level Completionist markers: remaining Raven + incomplete Nornir chest'`r`nWrite-Host '- NORNIR PUZZLE shows only unresolved puzzle actors; Breakable hides persisted broken seals'`r`nWrite-Host '- custom filters are appended to the EXISTING bottom-left filter cycle'`r`nWrite-Host '- stock regional Undiscovered summary is ignored for our synthetic Nornir chest parent pin'`r`nWrite-Host '- FIX: Nornir chest/seal Add to Compass no longer calls a nil global registry helper'`r`nWrite-Host '- GetNornirRegistry is now a forward-declared local captured by IsTargetCollected'`r`nWrite-Host '- filters, only-unbroken Breakable seals, Nornir parent pins, Raven path and extended zoom are retained'`r`nWrite-Host '- INSTALLER FIX: native-hover validation now runs after collision injection'`r`nWrite-Host '- milestone: Raven pin root is reinforced at its real map coordinate every map frame'`r`nWrite-Host '- custom marker hover no longer calls Camera.PointAt, so zoom is preserved'`r`nWrite-Host '- custom markers use the stock SetCursorSelected animation'`r`nWrite-Host '- trying a locked Nornir chest reveals remaining siblings in SHOW ALL'`r`nWrite-Host '- actual Runic chest OnOpened now removes the parent marker and clears its compass target'`r`nWrite-Host '- FIX: seal selection is no longer cleared every frame while puzzle actors are visible in SHOW ALL'`r`nWrite-Host '- Nornir puzzle children have priority over the parent chest and a 120-frame action latch'`r`nWrite-Host '- deeper zoom: MaxIn 6 -> 2.5 (~2.4x closer than stock)'`r`nWrite-Host '- Square/keyboard equivalent toggles Kratos marker whenever Go to Journal is unavailable'`r`nWrite-Host '- FIX: Raven, Nornir parent and each puzzle actor now use DISTINCT discovered DockPoint backing IDs'`r`nWrite-Host '- this prevents same-ID native marker aliasing from collapsing custom markers onto one location'`r`nWrite-Host '- max-zoom snap reach reduced with CursorScale_Min 0.32 and adaptive custom marker scaling'`r`nWrite-Host '- deep MaxIn 2.5 zoom and Kratos show/hide toggle are retained'`r`nWrite-Host '- HOTFIX: rebuilt from compile-good v0.9.2, not the broken v0.9.3 map patch'`r`nWrite-Host '- adaptive-scale helper is forward-declared so marker creation cannot resolve it as nil'`r`nWrite-Host '- distinct backings, filters, seal compass and Kratos toggle are retained'`r`nWrite-Host '- close-zoom snapping is much weaker: CursorScale_Min 0.12, CursorSnap_Strength 0.55'`r`nWrite-Host '- FIX: Raven map position is independent of the one active compass target object'`r`nWrite-Host '- tracking Nornir can no longer move/hide the Raven at the Nornir coordinates'`r`nWrite-Host '- synthetic marker roots are fixed at 0.28 scale to reduce their clickable/snap footprint'`r`nWrite-Host '- Nornir child debounce reduced from 120 to 12 frames'`r`nWrite-Host '- snap tuning tightened: CursorScale_Min 0.05, CursorSnap_Strength 0.18'`r`nWrite-Host '- FIX: restored v0.9.4 native-clickable custom collision instead of the failed manual-hover experiment'`r`nWrite-Host '- tMapCamera magnetic snapping is fully disabled: CursorSnap_Enabled=0'`r`nWrite-Host '- custom marker visuals are back at native scale 1.0'`r`nWrite-Host '- custom tracking clears any stale stock DockPoint compass destination first'`r`nWrite-Host '- hidden Kratos opening-centre fix is retained'`r`nWrite-Host '- INSTALLER HOTFIX: hidden-player validation now runs only after the camera-focus patch is applied'`r`nWrite-Host '- v0.10.1 uses bundled/local user-authored concept PNG masters with no GitHub/network dependency'`r`nWrite-Host '- generates 24/32/48/64 px transparent production candidates under mods\completionist-map\icons'`r`nWrite-Host '- Raven/Nornir synthetic GOs probe direct SetTexture/SetImage APIs and attempt binding only when such an API exists'`r`nWrite-Host '- if no direct loose-PNG API exists, stable DockPoint visuals remain while logs identify the next texture/material integration route'`r`nWrite-Host '- HUD carrier is capability-probed only; it is not mutated by unknown texture APIs in this build'`r`nWrite-Host 'Raven lifecycle + Nornir diagnostics are read-only with respect to puzzle/progression state.'
