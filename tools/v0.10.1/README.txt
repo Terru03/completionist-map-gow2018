@@ -17,6 +17,13 @@ Retained behaviour:
 - magnetic map cursor snapping disabled
 - no synthetic game.Compass.ShowMarker()
 
+Player marker invariant
+-----------------------
+The Kratos/player map marker must remain the game's native Omega marker.
+Completionist Map may hide/show that native marker, but must not replace its
+artwork or material. player_marker_concept_master.png is a design/reference
+asset only and is not a runtime replacement target.
+
 Local/bundled concept PNGs
 --------------------------
 The installer no longer uses GitHub, gh, tokens, private raw URLs or the
@@ -31,7 +38,7 @@ back to the repository's own:
 
   assets\icons\concepts\
 
-Families staged:
+Runtime collectible families staged/probed:
 - Raven
 - Nornir Chest
 - Nornir Seal
@@ -41,7 +48,9 @@ Families staged:
 - Artefact
 - Legendary Chest
 - Remaining Collectible
-- Player Marker
+
+The Player Marker master is bundled only as a reference asset. The native
+Kratos Omega marker remains untouched.
 
 At install time each PNG signature is validated, copied to:
 
@@ -80,6 +89,14 @@ next step must use the game's authored material/texpack path.
 The HUD proof carrier is capability-probed only. Unknown image setters are not
 invoked on the borrowed HUD object.
 
+Observed v0.10.1 result
+-----------------------
+The Veithurgard field test showed SetTexture/SetImage/SetSprite are not exposed
+on the synthetic map objects or UI helper. SetMaterialSwap is exposed. Raven,
+Nornir Chest and Nornir Seal therefore correctly fell back to DockPoint visuals.
+The next icon implementation path is authored material/MPIcon material swap,
+not loose PNG binding.
+
 Build from the cloned repo
 --------------------------
 powershell -ExecutionPolicy Bypass -File ".\tools\v0.10.1\prepare-local-retry.ps1"
@@ -102,37 +119,30 @@ Fully restart God of War.
 
 Test
 ----
-1. Installer must stage all ten local/bundled concept masters without any
-   GitHub request and print dimensions/SHA256.
+1. Installer must stage all local/bundled concept masters without any GitHub
+   request and print dimensions/SHA256.
 2. Open the same Midgard/Veithurgard test save.
 3. Verify Raven and Nornir behaviour is unchanged.
-4. Check Raven, Nornir Chest and Seal artwork:
-   - if a direct PNG setter exists, one or more may visibly switch to custom art;
-   - otherwise they deliberately remain DockPoint proxies for this build.
-5. Test Add to Compass, filters and Hide/Show Kratos as regression checks.
-6. Export the log below.
+4. Check Raven, Nornir Chest and Seal artwork.
+5. Confirm the Kratos player icon is still the native Omega marker.
+6. Test Add to Compass, filters and Hide/Show Kratos as regression checks.
+7. Export, commit and push the log with the helper below.
 
-Log export
-----------
-$log = "G:\SteamLibrary\steamapps\common\GodOfWar\mods\loader_log.txt"
-$repo = (git rev-parse --show-toplevel).Trim()
-$outDir = Join-Path $repo "archive\field-logs"
-$out = Join-Path $outDir "completionist-v101.txt"
+Log export + Git push
+---------------------
+From anywhere inside the cloned repository:
 
-New-Item -ItemType Directory -Force $outDir | Out-Null
+powershell -ExecutionPolicy Bypass -File ".\tools\export-field-log.ps1" -Version v0.10.1
 
-$lines = Select-String $log -Pattern "CompletionistMap v0.10.1" |
-    ForEach-Object { $_.Line }
+The helper:
+- reads GodOfWar\mods\loader_log.txt;
+- writes archive\field-logs\completionist-v101.txt;
+- stages only that field-log file;
+- commits only that field-log file if it changed;
+- pushes the current branch to origin.
 
-@(
-    "=== Completionist Map v0.10.1 ==="
-    "Matches: $($lines.Count)"
-    ""
-    $lines
-) | Set-Content $out
-
-Get-Content $out
-Write-Host "Saved test log: $out"
+This keeps field-test evidence available in GitHub for later analysis without a
+manual Desktop upload or separate git add/commit/push sequence.
 
 Most useful new lines
 ---------------------
@@ -159,5 +169,6 @@ No Map.ChangeMarkerState().
 No synthetic game.Compass.ShowMarker().
 No puzzle/quest progression mutation.
 No synthetic save writes.
+The native Kratos/Omega map marker artwork is never replaced.
 Unknown texture methods are attempted only on synthetic map duplicates and only
 when the method is actually present.
