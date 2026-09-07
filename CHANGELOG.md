@@ -2,17 +2,34 @@
 
 For the exhaustive numbered prototype list, including superseded and failed test builds, see [`docs/VERSION_HISTORY.md`](docs/VERSION_HISTORY.md).
 
+## v0.9.6-no-magnet-compass-fix
+
+- v0.9.5.1 field result confirmed `PLAYER_HIDDEN_CENTER`, custom filters, Raven placement, Nornir parent/seal placement, distinct backing objects and Hide/Show Kratos are healthy.
+- Diagnosed the v0.9.5 manual-hover experiment as invalid for selection: `MANUAL_HOVER_CURSOR` reported UI-local/root positions around `0,-40.222,0`, while custom map pins live around `x=3.x`, `z=0.x`.
+- Because no `MANUAL_HOVER active=true`, `NORNIR_CHEST_COMPASS`, `NORNIR_COMPASS` or `CUSTOM_COMPASS` event fired, the observed `BOAT DOCK - The Mason's Channel` / ~683 m HUD destination was a stock DockPoint selection, not the Completionist target.
+- Restores the field-proven v0.9.4 `UI.SetIsClickable()` + `MapCollisionChangeHandler` custom marker selection path.
+- Disables map-camera magnetic attraction completely for the test build: `CursorSnap_Enabled=0`, `CursorSnap_Strength=0.0`.
+- Restores custom map visuals to native backing scale `1.0`.
+- Clears any currently tracked stock compass marker before enabling Raven/Nornir custom tracking, avoiding stale stock DockPoint HUD destinations.
+- Retains the hidden-Kratos opening-centre fix and deep zoom `MaxIn=2.5`.
+- Notes that the original Completionist icon source set is already present on `dev`; icon injection remains a separate next milestone after interaction/compass routing is stable.
+
+## v0.9.5.1-installer-fix
+
+- Fixes another installer validation-order regression: v0.9.5 checked for `PLAYER_HIDDEN_CENTER` before applying the hidden-player-focus replacement.
+- Field result: installation succeeds and hidden Kratos correctly keeps the map centred on the player when reopening (`PLAYER_HIDDEN_CENTER`).
+- Field result also confirms filters, Raven and Nornir placement remain healthy.
+- Field result rejects the manual-hover coordinate approach: the queried `MapCursor` world positions are not map-space positions, so the custom marker selection path never activates.
+
 ## v0.9.5-no-magnet-hover
 
 - Field result from v0.9.4 confirmed Raven/Nornir target separation is fixed: Raven stayed at its immutable map coordinates while a Nornir chest was the active compass target.
 - Field result also confirmed custom filters, Raven/Nornir positions, Hide/Show Kratos, seal/chest compass tracking and Nornir lifecycle remain healthy.
 - Fixes hidden-Kratos reopening. Hiding `MapIconPlayer` no longer forces stock `SubmenuEnter()` to centre on `CALDERA_MAP_POSITION`; the hidden transformed player GO remains the opening camera focus.
 - Restores synthetic marker visuals from temporary scale `0.28` to native backing scale `1.0`.
-- Removes `UI.SetIsClickable()` from synthetic Completionist pins so the native `tMapCamera` cannot magnetically pull the cursor toward them from a large distance.
-- Adds manual nearest-target hover for custom Raven/Nornir pins with a `0.018` map-unit radius.
-- Preserves the selected-cursor animation and Add-to-Compass prompt inside the manual hover radius.
-- Leaves stock/native map marker collision handling intact.
-- Keeps deep zoom `MaxIn=2.5` and the already-softened native camera parameters `CursorScale_Min=0.05`, `CursorSnap_Strength=0.18`.
+- Removes `UI.SetIsClickable()` from synthetic Completionist pins and attempts a manual `0.018` map-unit nearest-target hover path.
+- **Field result:** the manual-hover approach cannot use `MapCursor:GetWorldPosition()` as map-space coordinates; no custom hover/compass selection event is produced. A nearby stock DockPoint can therefore be selected instead.
+- Superseded by v0.9.6, which returns to native clickable collision but disables the map-camera snap magnet itself.
 
 ## v0.9.4-raven-snap-fix
 
