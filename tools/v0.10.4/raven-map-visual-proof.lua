@@ -1,107 +1,141 @@
 -- BEGIN COMPLETIONIST V0.10.4 RAVEN MAP VISUAL PROOF
--- Replaces only the v0.10.1 synthetic Raven map pin after it has been created.
--- The native authored Raven marker supplies the dedicated map icon resource.
--- Compass navigation remains v0.10.3 DockPoint internally.
+-- Direct authored Completionist Raven map-class proof.
+-- No Dock map proxy is created or borrowed. The marker's authored Icon points
+-- to goMapIconCompletionistRaven; compass navigation remains DockPoint only as
+-- the currently proven native navigation backend.
 do
   local prefix = "[CompletionistMap v0.10.4-raven-map-visual] "
   local candidate = "Completionist_V103_Veithurgard_Raven_01"
-  local originalCreateMapPin = CompletionistMapV100_CreateMapPin
+  local expectedMapResource = "goMapIconCompletionistRaven"
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
   end
 
-  local function getRegionId(info)
-    if info ~= nil then
-      local direct = info.regionId or info.RegionId or info.RegionID or info.regionID
-      if direct ~= nil then return direct, "marker_info" end
+  local function safeField(tab, name)
+    if tab == nil then return nil end
+    local ok, value = pcall(function() return tab[name] end)
+    if ok then return value end
+    return nil
+  end
+
+  local function safeName(go)
+    if go == nil then return "<nil>" end
+    local ok, value = pcall(function() return go:GetName() end)
+    if ok and value ~= nil then return tostring(value) end
+    return "<name-unavailable>"
+  end
+
+  local function getRegionId(info, markerId)
+    for _, name in ipairs({"regionId", "RegionId", "RegionID", "regionID"}) do
+      local value = safeField(info, name)
+      if value ~= nil then return value, "marker_info." .. name end
     end
 
-    local ok, region = pcall(function()
-      return game.Map.FindRegionFromMarker(candidate)
+    -- Native maputil.lua proves the signature is:
+    --   found, regionNameHash = Map.FindRegionFromMarker(markerIDHash)
+    local callOK, found, region = pcall(function()
+      return game.Map.FindRegionFromMarker(markerId)
     end)
-    if ok and region ~= nil then
-      if type(region) == "table" then
-        local id = region.Id or region.id or region.regionId or region.RegionId
-        if id ~= nil then return id, "find_region_table" end
-      end
-      return region, "find_region_direct"
+    if not callOK then
+      return nil, "FindRegionFromMarker.error=" .. tostring(found)
     end
-    return nil, "unresolved"
+    if found ~= true or region == nil then
+      return nil, "FindRegionFromMarker.not_found"
+    end
+    return region, "FindRegionFromMarker.region"
   end
 
   CompletionistMapV100_CreateMapPin = function(self, currState)
-    originalCreateMapPin(self, currState)
-
     if self == nil or self.currRealmName ~= "Midgard" then return end
-    if CompletionistMapV100_IsRavenCollected() then return end
 
-    local oldGO = self.completionistMapV100MapIconGO
-    if oldGO == nil then
-      log("MAP_VISUAL_RESULT", "active=false reason=stock_completionist_pin_missing")
+    -- Remove any old Completionist proxy owned by earlier code. There is no
+    -- fallback to Dock artwork in this proof: a failure must stay visible.
+    CompletionistMapV100_DestroyMapPin(self)
+    if CompletionistMapV100_IsRavenCollected() then
+      log("MAP_VISUAL_RESULT", "active=false reason=raven_collected dockProxyUsed=false")
       return
     end
 
-    local okInfo, info = pcall(function()
+    local infoOK, info = pcall(function()
       return game.Map.GetMarkerInfo(candidate)
     end)
-    if not okInfo or info == nil then
-      log("MAP_VISUAL_RESULT", "active=false reason=native_candidate_missing error=" .. tostring(info))
+    if not infoOK or info == nil then
+      log("MAP_VISUAL_RESULT",
+        "active=false reason=native_candidate_missing dockProxyUsed=false error=" .. tostring(info))
       return
     end
 
-    local regionId, regionSource = getRegionId(info)
-    if regionId == nil then
-      log("MAP_VISUAL_RESULT", "active=false reason=region_unresolved")
+    local markerId = safeField(info, "Id") or safeField(info, "id")
+    local markerIcon = safeField(info, "Icon") or safeField(info, "icon") or
+      safeField(info, "IconName") or safeField(info, "iconName")
+    local markerState = safeField(info, "State") or safeField(info, "state")
+    local regionId, regionSource = getRegionId(info, markerId)
+
+    log("MAP_VISUAL_PREFLIGHT",
+      "candidate=" .. candidate ..
+      " id=" .. tostring(markerId) ..
+      " icon=" .. tostring(markerIcon) ..
+      " state=" .. tostring(markerState) ..
+      " region=" .. tostring(regionId) ..
+      " regionType=" .. tostring(type(regionId)) ..
+      " regionSource=" .. tostring(regionSource) ..
+      " expectedMapResource=" .. expectedMapResource ..
+      " compassType=DockPoint" ..
+      " dockProxyUsed=false")
+
+    if markerId == nil or regionId == nil then
+      log("MAP_VISUAL_RESULT", "active=false reason=id_or_region_unresolved dockProxyUsed=false")
       return
     end
 
     local createOK, newGO = pcall(function()
-      return Map.CreateMarkerIcon(info.Id, regionId, "")
+      return Map.CreateMarkerIcon(markerId, regionId, "")
     end)
     if not createOK or newGO == nil then
       log("MAP_VISUAL_RESULT",
-        "active=false reason=create_failed regionSource=" .. tostring(regionSource) ..
+        "active=false reason=create_failed dockProxyUsed=false regionSource=" .. tostring(regionSource) ..
         " error=" .. tostring(newGO))
       return
     end
 
-    local posOK, pos = pcall(function() return oldGO:GetWorldPosition() end)
-    local scaleOK, scale = pcall(function() return oldGO:GetWorldScale() end)
-    if not posOK or pos == nil then
-      pcall(function() Map.RecycleIcon(newGO) end)
-      log("MAP_VISUAL_RESULT", "active=false reason=old_pin_position_unavailable")
-      return
-    end
-
-    local setOK, setErr = pcall(function()
-      newGO:SetWorldPosition(pos)
-      if scaleOK and scale ~= nil then
-        newGO:SetWorldScale(scale)
-      end
+    local clickableOK, clickableErr = pcall(function()
+      UI.SetIsClickable(newGO)
+    end)
+    local showOK, showErr = pcall(function()
       newGO:Show()
     end)
-    if not setOK then
+    if not showOK then
       pcall(function() Map.RecycleIcon(newGO) end)
-      log("MAP_VISUAL_RESULT", "active=false reason=placement_failed error=" .. tostring(setErr))
+      log("MAP_VISUAL_RESULT",
+        "active=false reason=show_failed dockProxyUsed=false error=" .. tostring(showErr))
       return
     end
 
-    pcall(function() Map.RecycleIcon(oldGO) end)
     self.completionistMapV100MapIconGO = newGO
-
+    self.completionistMapV100MapIconFrames = 0
     CompletionistMapV100_LogIconCapabilities(newGO, "raven_v104_dedicated")
+
+    local posOK, pos = pcall(function() return newGO:GetWorldPosition() end)
     log("MAP_VISUAL_RESULT",
-      "active=true candidate=" .. candidate ..
-      " id=" .. tostring(info.Id) ..
-      " regionSource=" .. tostring(regionSource) ..
-      " resource=goMapIconCompletionistRaven" ..
-      " oldDockProxyRecycled=true")
+      "active=true" ..
+      " candidate=" .. candidate ..
+      " resourceExpected=" .. expectedMapResource ..
+      " goName=" .. safeName(newGO) ..
+      " clickableOK=" .. tostring(clickableOK) ..
+      " clickableError=" .. tostring(clickableErr) ..
+      " nativePlacement=" .. tostring(posOK and pos ~= nil) ..
+      " position=" .. (posOK and pos ~= nil and
+        ("x=" .. tostring(pos.x) .. ",y=" .. tostring(pos.y) .. ",z=" .. tostring(pos.z))
+        or "<unavailable>") ..
+      " dockProxyUsed=false")
   end
 
   log("MAP_VISUAL_API",
     "installed=true candidate=" .. candidate ..
-    " mapResource=goMapIconCompletionistRaven" ..
-    " compassType=DockPoint")
+    " mapResource=" .. expectedMapResource ..
+    " compassType=DockPoint" ..
+    " dockProxyUsed=false" ..
+    " callsOnLoad=false")
 end
 -- END COMPLETIONIST V0.10.4 RAVEN MAP VISUAL PROOF
