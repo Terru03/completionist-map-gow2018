@@ -1,0 +1,131 @@
+Completionist Map v0.10.4 Raven texpack user-hash binding runtime capture
+Captured UTC: 2026-09-08T07:01:30.4427432Z
+Game process running while captured: False
+mapmaster.dcb: b930c51316ca136d9c40ea7cda6a63a051127b357e97f1d4e4eb96a16993d96f
+r_ui.wad: e4a56165e9083eb7d0541699aa404e3e43a0c10aff9f04f1f751b801484e7959
+wad_r_ui.dcb: b8d5627416787ae6761e0212a1e8de56e33abe7c251db838c4af20a00afc161b
+patch texpack: 648a16a6fabd526b56c1be8d18c5f983b5257296e28081c81edafb8790a1c6a7
+patch toc: 67cceea0d91298881f4426bf0ce5e8883da45a82905921313004df618d959053
+
+ACTIVE BINDING MANIFEST
+{
+    "proof":  "v0.10.4 Raven texpack user-hash binding proof",
+    "cause_under_test":  "new custom file hashes retained GOWTool default UINT64_MAX userHash while dedicated WAD expects unique custom user hashes",
+    "patch_entry":  "../../patch/pc_le/completionist_v104_raven_map",
+    "pack_before":  "a224969576eb68b004a49e2baabe7a13957f5bfe12d8fd4e0bf87e04e2dd1fc1",
+    "toc_before":  "c7abce00f8a13f4dd63bad9f9c763cc54424426ecb679c60f0c496d0a95437e8",
+    "pack_after":  "648a16a6fabd526b56c1be8d18c5f983b5257296e28081c81edafb8790a1c6a7",
+    "toc_after":  "67cceea0d91298881f4426bf0ce5e8883da45a82905921313004df618d959053",
+    "wad_sha256":  "e4a56165e9083eb7d0541699aa404e3e43a0c10aff9f04f1f751b801484e7959",
+    "bindings":  [
+                     {
+                         "label":  "diffuse",
+                         "file_hash":  "19A41F00834C19F3",
+                         "desired_user_hash":  "7ABBBA793C03C741",
+                         "texinfo_user_hash_before":  "FFFFFFFFFFFFFFFF",
+                         "texinfo_user_hash_after":  "7ABBBA793C03C741",
+                         "embedded_gnf_user_hash_before":  "FFFFFFFFFFFFFFFF",
+                         "embedded_gnf_user_hash_after":  "7ABBBA793C03C741",
+                         "texinfo_index":  0,
+                         "block_info_offset":  "0x68",
+                         "block_base":  "0xB0",
+                         "block_size_field":  91440
+                     },
+                     {
+                         "label":  "emissive",
+                         "file_hash":  "63F1E18FF93B9037",
+                         "desired_user_hash":  "15AD16D2A17DEB42",
+                         "texinfo_user_hash_before":  "FFFFFFFFFFFFFFFF",
+                         "texinfo_user_hash_after":  "15AD16D2A17DEB42",
+                         "embedded_gnf_user_hash_before":  "FFFFFFFFFFFFFFFF",
+                         "embedded_gnf_user_hash_after":  "15AD16D2A17DEB42",
+                         "texinfo_index":  1,
+                         "block_info_offset":  "0x88",
+                         "block_base":  "0x165E0",
+                         "block_size_field":  45872
+                     }
+                 ],
+    "wad_texture_contract":  {
+                                 "diffuse":  {
+                                                 "name":  "TX_completionist_raven_map_diffuse_19A41F00834C19F3",
+                                                 "file_hash":  "19A41F00834C19F3",
+                                                 "wad_user_hash":  "7ABBBA793C03C741",
+                                                 "gpu_resource_id":  "000000000000000079babb7a41c7033c",
+                                                 "embedded_gpu_payload_matches_stock_dock":  true,
+                                                 "custom_gpu_payload_sha256":  "f164e0294dd5c4f1a11f5963fe6c60ef076069cc7f1b8920e12fd5bca563ac2c",
+                                                 "stock_gpu_payload_sha256":  "f164e0294dd5c4f1a11f5963fe6c60ef076069cc7f1b8920e12fd5bca563ac2c"
+                                             },
+                                 "emissive":  {
+                                                  "name":  "TX_completionist_raven_map_emissive_63F1E18FF93B9037",
+                                                  "file_hash":  "63F1E18FF93B9037",
+                                                  "wad_user_hash":  "15AD16D2A17DEB42",
+                                                  "gpu_resource_id":  "0000000000000000d216ad1542eb7da1",
+                                                  "embedded_gpu_payload_matches_stock_dock":  true,
+                                                  "custom_gpu_payload_sha256":  "c942f16318226f91f7ce5e15e2ece30932329b899aa7cbd40aef62260814a4f6",
+                                                  "stock_gpu_payload_sha256":  "c942f16318226f91f7ce5e15e2ece30932329b899aa7cbd40aef62260814a4f6"
+                                              }
+                             },
+    "boot_modified":  false,
+    "wad_modified":  false,
+    "dcb_modified":  false,
+    "mapmaster_modified":  false,
+    "save_state_written":  false,
+    "progression_state_written":  false,
+    "installed_utc":  "2026-09-08T06:59:36.5518940Z"
+}
+
+BOOT PATCH TEXPACKS
+../../patch/pc_le/completionist_v104_raven_map
+
+TARGET TEXPACK ENTRIES
+diffuse: index=0 fileHash=19A41F00834C19F3 userHash=7ABBBA793C03C741 blockInfoOff=0x68
+emissive: index=1 fileHash=63F1E18FF93B9037 userHash=15AD16D2A17DEB42 blockInfoOff=0x88
+
+RELEVANT LOADER LOG
+[10:00:19] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 markerType=DockPoint calls_on_load=false legacy_r3l3_for_raven=false prompt_async_guard=true
+[10:00:19] [info] [CompletionistMap v0.10.4-raven-registered-runtime] REGISTERED_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 mapResource=goMapIconCompletionistRaven compassType=DockPoint texpackLoaded=false dockProxyUsed=false callsOnLoad=false
+[10:00:19] [info] [CompletionistMap v0.10.4-raven-artwork] ART_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 mapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true compassType=DockPoint dockProxyUsed=false progressionWritten=false
+[10:00:36] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 markerType=DockPoint calls_on_load=false legacy_r3l3_for_raven=false prompt_async_guard=true
+[10:00:36] [info] [CompletionistMap v0.10.4-raven-registered-runtime] REGISTERED_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 mapResource=goMapIconCompletionistRaven compassType=DockPoint texpackLoaded=false dockProxyUsed=false callsOnLoad=false
+[10:00:36] [info] [CompletionistMap v0.10.4-raven-artwork] ART_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 mapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true compassType=DockPoint dockProxyUsed=false progressionWritten=false
+[10:00:40] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_LIFECYCLE installed=true calls_show=false
+[10:00:40] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_LIFECYCLE installed=true calls_show=false
+[10:00:40] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_LIFECYCLE installed=true calls_show=false
+[10:00:45] [info] [CompletionistMap v0.10.4-raven-artwork] ART_PREFLIGHT candidate=Completionist_V103_Veithurgard_Raven_01 id=-2207208259907848386 state=0 collected=false region=-6808215654220372037 regionType=userdata regionSource=FindRegionFromMarker.region expectedMapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false
+[10:00:45] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false
+[10:00:52] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PREFLIGHT id=-2207208259907848386 state=0 wad=WAD_Xpl200_Funeral x=-64.875 y=12.984375 z=787.5
+[10:00:52] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_SHOW stage=before id=-2207208259907848386 markerType=DockPoint
+[10:00:52] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_SHOW stage=lua_return ok=true error=nil
+[10:00:52] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PROMPT_REFRESH cursor=true footer=true visible=true intent=tracked text=[AdvanceButton] [MSG:40891]
+[10:00:52] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_RESULT request_queued=true active=true
+[10:00:52] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PROMPT_SETTLED state=tracked
+[10:00:52] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PROMPT_REFRESH cursor=true footer=true visible=true intent=nil text=[AdvanceButton] [MSG:40891]
+[10:00:52] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_VERIFY active=true frame=1 native_manager=true
+[10:00:54] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_VERIFY active=true frame=300 native_manager=true
+[10:00:59] [info] [CompletionistMap v0.10.4-raven-artwork] ART_PREFLIGHT candidate=Completionist_V103_Veithurgard_Raven_01 id=-2207208259907848386 state=0 collected=false region=-6808215654220372037 regionType=userdata regionSource=FindRegionFromMarker.region expectedMapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false
+[10:00:59] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false
+[10:01:01] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_VERIFY active=true frame=600 native_manager=true
+[10:01:06] [info] [CompletionistMap v0.10.4-raven-artwork] ART_PREFLIGHT candidate=Completionist_V103_Veithurgard_Raven_01 id=-2207208259907848386 state=0 collected=false region=-6808215654220372037 regionType=userdata regionSource=FindRegionFromMarker.region expectedMapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false
+[10:01:06] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false
+[10:01:09] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_REPLACE oldId=-8842713020487860608 hideOK=true error=nil
+[10:01:09] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PREFLIGHT id=-2207208259907848386 state=0 wad=WAD_Xpl200_Funeral x=-64.875 y=12.984375 z=787.5
+[10:01:09] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_SHOW stage=before id=-2207208259907848386 markerType=DockPoint
+[10:01:09] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_SHOW stage=lua_return ok=true error=nil
+[10:01:09] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PROMPT_REFRESH cursor=true footer=true visible=true intent=tracked text=[AdvanceButton] [MSG:40891]
+[10:01:09] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_RESULT request_queued=true active=true
+[10:01:09] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PROMPT_SETTLED state=tracked
+[10:01:09] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PROMPT_REFRESH cursor=true footer=true visible=true intent=nil text=[AdvanceButton] [MSG:40891]
+[10:01:09] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_VERIFY active=true frame=1 native_manager=true
+[10:01:14] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 markerType=DockPoint calls_on_load=false legacy_r3l3_for_raven=false prompt_async_guard=true
+[10:01:14] [info] [CompletionistMap v0.10.4-raven-registered-runtime] REGISTERED_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 mapResource=goMapIconCompletionistRaven compassType=DockPoint texpackLoaded=false dockProxyUsed=false callsOnLoad=false
+[10:01:14] [info] [CompletionistMap v0.10.4-raven-artwork] ART_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 mapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true compassType=DockPoint dockProxyUsed=false progressionWritten=false
+
+INTERPRETATION
+Expected custom diffuse userHash after binding: 7ABBBA793C03C741
+Expected custom emissive userHash after binding: 15AD16D2A17DEB42
+The dedicated Raven WAD contains stock-Dock embedded GPU fallback payload bytes; if the external stream does not bind, the marker can therefore appear as a lower-quality Dock icon.
+Visual success requires user confirmation that the Raven map marker now shows the custom Raven artwork while real docks remain stock.
+HUD compass artwork remains DockPoint by design at this stage.
+
+NOTE
+Read-only collector. No God of War files, saves, marker states, progression values or boot options are changed.
