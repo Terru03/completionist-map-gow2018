@@ -311,97 +311,58 @@ def native_probe(exe: bytes, type_keys: set[int]) -> dict:
     features = {}
     callers = collections.defaultdict(set)
 
-    interesting_imms = set(type_keys) | RIG_KEYS | {0xC, 0xF, 0x60, 0x401, 6}
-    interesting_disps = {0, 2, 4, 8, 0x18, 0x1C, 0x20, 0x28, 0x38, 0x50, 0x54, 0x60, 0x70, 0x78, 0x80}
-
+    interesting_imms = set(type_keys) | RIG_KEYS | {0x401, 6, 0xC, 0x1C, 0x20, 0x28, 0x60, 0x78, 0xF}
     for start, end in funcs:
-        if end - start <= 0 or end - start > 0x10000:
-            continue
         try:
-            block = pe.read(start, end - start)
+            code = pe.read(start, end - start)
         except ValueError:
             continue
-        insns = list(md.disasm(block, BASE + start))
-        if not insns:
-            continue
-        imms, disps, write_disps, calls = set(), set(), set(), set()
-        for ins in insns:
-            for op in ins.operands:
+        disps, imms, calls, write_disps = set(), set(), set(), set()
+        for insn in md.disasm(code, BASE + start):
+            for op in insn.operands:
                 if op.type == X86_OP_IMM:
-                    val = op.imm
-                    if ins.mnemonic == "call" and BASE <= val < BASE + 0x40000000:
-                        target = val - BASE
-                        calls.add(target)
-                        callers[target].add(start)
-                    elif 0 <= val <= 0xFFFFFFFFFFFFFFFF:
-                        imms.add(val)
+                    value = op.imm
+                    if value >= BASE:
+                        target = value - BASE
+                        if target in ranges:
+                            calls.add(target)
+                            callers[target].add(start)
+                    if value in interesting_imms:
+                        imms.add(value)
                 elif op.type == X86_OP_MEM:
                     disp = op.mem.disp
-                    if 0 <= disp <= 0x1000:
+                    if disp in interesting_imms:
                         disps.add(disp)
-                        if getattr(op, "access", 0) & capstone.CS_AC_WRITE:
+                        if insn.operands and insn.operands[0].type == X86_OP_MEM and insn.operands[0].mem.disp == disp:
                             write_disps.add(disp)
-        tscore, twhy = score_type_table_candidate(disps, imms, calls)
-        nscore, nwhy = score_name_map_candidate(disps, imms, calls, write_disps)
-        if tscore or nscore or calls & set(KNOWN_NATIVE) or (imms & type_keys):
-            context_idx = set()
-            for idx, ins in enumerate(insns):
-                hit = False
-                if ins.mnemonic == "call" and ins.operands and ins.operands[0].type == X86_OP_IMM:
-                    target = ins.operands[0].imm - BASE if ins.operands[0].imm >= BASE else -1
-                    hit = target in KNOWN_NATIVE
-                if not hit:
-                    for op in ins.operands:
-                        if op.type == X86_OP_IMM and op.imm in interesting_imms:
-                            hit = True
-                        elif op.type == X86_OP_MEM and op.mem.disp in interesting_disps:
-                            hit = True
-                if hit:
-                    context_idx.update(range(max(0, idx - 3), min(len(insns), idx + 4)))
-            context = [f"0x{insns[i].address-BASE:X}: {insns[i].mnemonic} {insns[i].op_str}" for i in sorted(context_idx)[:180]]
+        type_score, type_why = score_type_table_candidate(disps, imms, calls)
+        name_score, name_why = score_name_map_candidate(disps, imms, calls, write_disps)
+        if type_score or name_score or calls:
             features[start] = {
-                "start_rva": f"0x{start:X}", "end_rva": f"0x{end:X}", "bytes": end - start,
-                "direct_calls": [f"0x{x:X}" for x in sorted(calls)],
-                "interesting_immediates": [f"0x{x:X}" for x in sorted(imms & interesting_imms)],
-                "interesting_displacements": [f"0x{x:X}" for x in sorted(disps & interesting_disps)],
-                "write_displacements": [f"0x{x:X}" for x in sorted(write_disps & interesting_disps)],
-                "type_table_score": tscore, "type_table_reasons": twhy,
-                "name_map_score": nscore, "name_map_reasons": nwhy,
-                "context": context,
+                "start_rva": f"0x{start:X}",
+                "end_rva": f"0x{end:X}",
+                "bytes": end - start,
+                "type_score": type_score,
+                "type_reasons": type_why,
+                "name_map_score": name_score,
+                "name_map_reasons": name_why,
+                "calls": [f"0x{x:X}" for x in sorted(calls)],
             }
 
-    def top(key: str, limit=24):
-        return sorted((v for v in features.values() if v[key] > 0), key=lambda x: (-x[key], int(x["start_rva"], 16)))[:limit]
-
-    anchor_neighborhood = {}
-    for anchor, label in KNOWN_NATIVE.items():
-        fn = function_for_rva(starts, ranges, anchor)
-        direct = sorted(callers.get(anchor, []))
-        anchor_neighborhood[f"0x{anchor:X}"] = {
+    type_candidates = sorted((v for v in features.values() if v["type_score"]), key=lambda x: (-x["type_score"], int(x["start_rva"], 16)))[:80]
+    name_candidates = sorted((v for v in features.values() if v["name_map_score"]), key=lambda x: (-x["name_map_score"], int(x["start_rva"], 16)))[:80]
+    neighborhoods = []
+    for target, label in KNOWN_NATIVE.items():
+        neighborhoods.append({
+            "target_rva": f"0x{target:X}",
             "label": label,
-            "containing_function": None if fn is None else f"0x{fn:X}",
-            "direct_callers": [f"0x{x:X}" for x in direct],
-            "caller_features": [features[x] for x in direct if x in features][:20],
-        }
-
-    type_key_xrefs = {}
-    for key in sorted(type_keys):
-        hits = [v for v in features.values() if f"0x{key:X}" in v["interesting_immediates"]]
-        if hits:
-            type_key_xrefs[f"0x{key:X}"] = sorted(hits, key=lambda x: int(x["start_rva"], 16))[:30]
-
+            "direct_callers": [f"0x{x:X}" for x in sorted(callers.get(target, set()))],
+        })
     return {
-        "image_base": f"0x{pe.image_base:X}",
         "runtime_function_count": len(funcs),
-        "capstone_version": capstone.__version__,
-        "known_anchor_neighborhood": anchor_neighborhood,
-        "type_table_consumer_candidates": top("type_table_score"),
-        "name_map_construction_candidates": top("name_map_score"),
-        "type_key_immediate_xrefs": type_key_xrefs,
-        "interpretation": {
-            "candidate_scores_are_probes_not_proof": True,
-            "next_gate": "Inspect ranked functions and add pinned instruction anchors only after their semantics are understood.",
-        },
+        "type_table_consumer_candidates": type_candidates,
+        "name_map_construction_candidates": name_candidates,
+        "known_native_call_neighborhoods": neighborhoods,
     }
 
 
@@ -412,11 +373,11 @@ def main():
     ap.add_argument("--candidate-wad", type=Path, action="append", default=[])
     ap.add_argument("--output", type=Path, required=True)
     args = ap.parse_args()
+
+    logical = load_module("completionist_logical_clone", HERE / "build-raven-ui-logical-clone.py")
     if args.python_module_dir:
         sys.path.insert(0, str(args.python_module_dir.resolve()))
 
-    inventory = load_module("completionist_inventory", HERE / "inspect-r-ui-registered-map-classes.py")
-    logical = inventory.logical
     game = args.game_root.resolve()
     out = args.output.resolve()
     allowed = (HERE.parent.parent / "archive" / "field-logs").resolve()
@@ -462,9 +423,13 @@ def main():
     result["source_hashes_unchanged_after_scan"] = True
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    table_counts_match = stock_acc.get(
+        "all_table_counts_match_rig_type_words",
+        stock_acc.get("all_table_counts_match_global_first_dword"),
+    )
     print(json.dumps({
         "table_rows": stock_acc["table_row_count"],
-        "all_table_counts_match_global_first_dword": stock_acc["all_table_counts_match_global_first_dword"],
+        "all_table_counts_match": table_counts_match,
         "all_rig_counts_match": stock_acc["all_rig_counts_match"],
         "type_candidates": len(result["native_probe"]["type_table_consumer_candidates"]),
         "name_map_candidates": len(result["native_probe"]["name_map_construction_candidates"]),
