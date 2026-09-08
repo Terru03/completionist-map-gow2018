@@ -241,13 +241,13 @@ def validate_candidate(candidate: bytes, source_raw: bytes, source_records: list
         check(population == expected, f"candidate type population {key:#x} disagrees with accounting")
 
     source_same_scp = sum(
-        row["kind"] == 1 and row["data"] and row["id"] == source_scp["id"]
-        and bytes(row["data"]) == bytes(source_scp["data"])
+        bool(row["kind"] == 1 and row["data"] and row["id"] == source_scp["id"]
+             and bytes(row["data"]) == bytes(source_scp["data"]))
         for row in source_records
     )
     candidate_same_scp = sum(
-        row["kind"] == 1 and row["data"] and row["id"] == source_scp["id"]
-        and bytes(row["data"]) == bytes(source_scp["data"])
+        bool(row["kind"] == 1 and row["data"] and row["id"] == source_scp["id"]
+             and bytes(row["data"]) == bytes(source_scp["data"]))
         for row in records
     )
     check(candidate_same_scp == source_same_scp + 1,
