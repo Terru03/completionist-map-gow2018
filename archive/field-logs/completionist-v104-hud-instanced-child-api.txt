@@ -1,0 +1,169 @@
+Completionist Map v0.10.4 HUD instanced-child/API source context
+Generated UTC: 2026-09-08T11:28:36.4287314Z
+Source root: G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\gameart\ui\scripts
+Lua files scanned: 2
+Game files written: false
+
+MATCH COUNTS
+GetInstancedChildObject: 0
+GetChildSubObject: 0
+SetMaterialSwap: 13
+UI.WorldUIRender: 1
+UI.SendEvent: 0
+
+PURPOSE
+Resolve real engine-Lua call signatures and ownership context before probing renderer-owned compass instances. This report is read-only and does not alter HUD, map, saves, progression, or marker state.
+
+=== hud\mainhud.lua :: SetMaterialSwap :: line 44 ===
+     40:     "SetTextureName",
+     41:     "SetImage",
+     42:     "SetImagePath",
+     43:     "SetSprite",
+>    44:     "SetMaterialSwap"
+     45:   }
+     46:   local parts = {}
+     47:   for _, name in ipairs(names) do
+     48:     parts[#parts + 1] = name .. "=" .. tostring(callable(go, name))
+
+=== hud\mainhud.lua :: SetMaterialSwap :: line 512 ===
+    508: end
+    509: function MainHUD:SetRagePrompts()
+    510:   local pad = game.Player.FindPlayer().Pad
+    511:   if pad.IsKeyboardAndMouse then
+>   512:     self.goRageMeter:SetMaterialSwap("key")
+    513:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+    514:       self.goRageMeter:SetMaterialSwap(game.GetKey(6))
+    515:       self.goRageMeter:SetMaterialSwap(game.GetKey(5) .. "2")
+    516:     else
+
+=== hud\mainhud.lua :: SetMaterialSwap :: line 514 ===
+    510:   local pad = game.Player.FindPlayer().Pad
+    511:   if pad.IsKeyboardAndMouse then
+    512:     self.goRageMeter:SetMaterialSwap("key")
+    513:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+>   514:       self.goRageMeter:SetMaterialSwap(game.GetKey(6))
+    515:       self.goRageMeter:SetMaterialSwap(game.GetKey(5) .. "2")
+    516:     else
+    517:       self.goRageMeter:SetMaterialSwap(game.GetKey(13))
+    518:       self.goRageMeter:SetMaterialSwap(game.GetKey(10) .. "2")
+
+=== hud\mainhud.lua :: SetMaterialSwap :: line 515 ===
+    511:   if pad.IsKeyboardAndMouse then
+    512:     self.goRageMeter:SetMaterialSwap("key")
+    513:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+    514:       self.goRageMeter:SetMaterialSwap(game.GetKey(6))
+>   515:       self.goRageMeter:SetMaterialSwap(game.GetKey(5) .. "2")
+    516:     else
+    517:       self.goRageMeter:SetMaterialSwap(game.GetKey(13))
+    518:       self.goRageMeter:SetMaterialSwap(game.GetKey(10) .. "2")
+    519:     end
+
+=== hud\mainhud.lua :: SetMaterialSwap :: line 517 ===
+    513:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+    514:       self.goRageMeter:SetMaterialSwap(game.GetKey(6))
+    515:       self.goRageMeter:SetMaterialSwap(game.GetKey(5) .. "2")
+    516:     else
+>   517:       self.goRageMeter:SetMaterialSwap(game.GetKey(13))
+    518:       self.goRageMeter:SetMaterialSwap(game.GetKey(10) .. "2")
+    519:     end
+    520:   elseif pad.IsGeneric then
+    521:     self.goRageMeter:SetMaterialSwap("")
+
+=== hud\mainhud.lua :: SetMaterialSwap :: line 518 ===
+    514:       self.goRageMeter:SetMaterialSwap(game.GetKey(6))
+    515:       self.goRageMeter:SetMaterialSwap(game.GetKey(5) .. "2")
+    516:     else
+    517:       self.goRageMeter:SetMaterialSwap(game.GetKey(13))
+>   518:       self.goRageMeter:SetMaterialSwap(game.GetKey(10) .. "2")
+    519:     end
+    520:   elseif pad.IsGeneric then
+    521:     self.goRageMeter:SetMaterialSwap("")
+    522:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+
+=== hud\mainhud.lua :: SetMaterialSwap :: line 521 ===
+    517:       self.goRageMeter:SetMaterialSwap(game.GetKey(13))
+    518:       self.goRageMeter:SetMaterialSwap(game.GetKey(10) .. "2")
+    519:     end
+    520:   elseif pad.IsGeneric then
+>   521:     self.goRageMeter:SetMaterialSwap("")
+    522:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+    523:       self.goRageMeter:SetMaterialSwap("genA")
+    524:       self.goRageMeter:SetMaterialSwap("genB2")
+    525:     else
+
+=== hud\mainhud.lua :: SetMaterialSwap :: line 523 ===
+    519:     end
+    520:   elseif pad.IsGeneric then
+    521:     self.goRageMeter:SetMaterialSwap("")
+    522:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+>   523:       self.goRageMeter:SetMaterialSwap("genA")
+    524:       self.goRageMeter:SetMaterialSwap("genB2")
+    525:     else
+    526:       self.goRageMeter:SetMaterialSwap("genLS")
+    527:       self.goRageMeter:SetMaterialSwap("genRS2")
+
+=== hud\mainhud.lua :: SetMaterialSwap :: line 524 ===
+    520:   elseif pad.IsGeneric then
+    521:     self.goRageMeter:SetMaterialSwap("")
+    522:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+    523:       self.goRageMeter:SetMaterialSwap("genA")
+>   524:       self.goRageMeter:SetMaterialSwap("genB2")
+    525:     else
+    526:       self.goRageMeter:SetMaterialSwap("genLS")
+    527:       self.goRageMeter:SetMaterialSwap("genRS2")
+    528:     end
+
+=== hud\mainhud.lua :: SetMaterialSwap :: line 526 ===
+    522:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+    523:       self.goRageMeter:SetMaterialSwap("genA")
+    524:       self.goRageMeter:SetMaterialSwap("genB2")
+    525:     else
+>   526:       self.goRageMeter:SetMaterialSwap("genLS")
+    527:       self.goRageMeter:SetMaterialSwap("genRS2")
+    528:     end
+    529:   else
+    530:     self.goRageMeter:SetMaterialSwap("")
+
+=== hud\mainhud.lua :: SetMaterialSwap :: line 527 ===
+    523:       self.goRageMeter:SetMaterialSwap("genA")
+    524:       self.goRageMeter:SetMaterialSwap("genB2")
+    525:     else
+    526:       self.goRageMeter:SetMaterialSwap("genLS")
+>   527:       self.goRageMeter:SetMaterialSwap("genRS2")
+    528:     end
+    529:   else
+    530:     self.goRageMeter:SetMaterialSwap("")
+    531:   end
+
+=== hud\mainhud.lua :: SetMaterialSwap :: line 530 ===
+    526:       self.goRageMeter:SetMaterialSwap("genLS")
+    527:       self.goRageMeter:SetMaterialSwap("genRS2")
+    528:     end
+    529:   else
+>   530:     self.goRageMeter:SetMaterialSwap("")
+    531:   end
+    532: end
+    533: function MainHUD:Enter()
+    534:   self:WantPadEvents(true)
+
+=== inworldmenu\mapmenu.lua :: SetMaterialSwap :: line 113 ===
+    109:     "SetTextureName",
+    110:     "SetImage",
+    111:     "SetImagePath",
+    112:     "SetSprite",
+>   113:     "SetMaterialSwap"
+    114:   }
+    115:   local uiMethods = {
+    116:     "SetTexture",
+    117:     "SetTextureName",
+
+=== inworldmenu\mapmenu.lua :: UI.WorldUIRender :: line 2874 ===
+   2870:   CompletionistMapV100_CreateMapPin(self, currState)
+   2871:   CompletionistMapV100_CreateNornirChestPins(self, currState)
+   2872:   CompletionistMapV100_CreateNornirPins(self, currState)
+   2873:   CompletionistMapV100_RefreshCustomPins(self)
+>  2874:   UI.WorldUIRender(map_camera.Name)
+   2875:   currState.menu:ExecuteInstructions()
+   2876: end
+   2877: function MapOn:SubmenuExit(currState)
+   2878:   CompletionistMapV100_DestroyNornirChestPins(self)
