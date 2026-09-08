@@ -194,8 +194,25 @@ def build_candidate(stock_raw: bytes) -> tuple[bytes, dict]:
     stock_roots = [e["root"] for e in stock_compass]
     if stock_roots != EXPECTED_STOCK_CLASS_ROOTS:
         raise ValueError(f"stock CompassIconClass roots changed: {[hex(x) for x in stock_roots]}")
-    if any(INSERT_AT <= e["root"] < INSERT_AT + RECORD_SIZE for e in exports):
-        raise ValueError("unexpected stock export occupies proposed Raven class slot")
+
+    # COMPASS_GLOBALS intentionally starts exactly at INSERT_AT in stock and is
+    # the object that will move by +0x20 when the tenth CompassIconClass is
+    # inserted. Reject only any *other* export occupying the new class span.
+    unexpected_occupants = [
+        e for e in exports
+        if INSERT_AT <= e["root"] < INSERT_AT + RECORD_SIZE
+        and not (
+            e["name"] == "COMPASS_GLOBALS"
+            and e["root"] == INSERT_AT
+            and e["type_id"] == 0x11F
+        )
+    ]
+    if unexpected_occupants:
+        details = ", ".join(
+            f"{e['name']}@0x{e['root']:X}/type=0x{e['type_id']:X}"
+            for e in unexpected_occupants
+        )
+        raise ValueError(f"unexpected stock export occupies proposed Raven class slot: {details}")
 
     globals_exports = [e for e in exports if e["name"] == "COMPASS_GLOBALS"]
     if len(globals_exports) != 1 or globals_exports[0]["root"] != INSERT_AT or globals_exports[0]["type_id"] != 0x11F:
