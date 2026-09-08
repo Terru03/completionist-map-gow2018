@@ -55,7 +55,7 @@ foreach ($r in $roots) {
   Get-ChildItem -LiteralPath $r.Path -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
     $full = $_.FullName
     foreach ($skip in $skipParts) {
-      if ($full.Contains($skip, [StringComparison]::OrdinalIgnoreCase)) { return }
+      if ($full.IndexOf($skip, [StringComparison]::OrdinalIgnoreCase) -ge 0) { return }
     }
     if ($r.Extensions -contains $_.Extension.ToLowerInvariant()) {
       $allFiles.Add([pscustomobject]@{ Root = $r.Label; RootPath = $r.Path; File = $_ })
