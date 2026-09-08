@@ -28,7 +28,7 @@ if (-not (Test-Path -LiteralPath $log -PathType Leaf)) {
 }
 
 $m = Get-Content -LiteralPath $manifest -Raw | ConvertFrom-Json
-$matches = @(Select-String -LiteralPath $log -SimpleMatch $prefix | ForEach-Object { $_.Line })
+$matches = @(Select-String -LiteralPath $log -SimpleMatch $prefix | ForEach-Object { $_.Line.TrimEnd() })
 if ($matches.Count -eq 0) {
     throw 'No Raven HUD instance-probe lines were found. Launch the game and exercise Add to Compass first.'
 }
@@ -39,6 +39,19 @@ $trackedLines = @($matches | Where-Object { $_ -like '*tracked=true*' })
 $rootLines = @($matches | Where-Object { $_ -like '* ROOT *' -or $_ -like '* ROOT_ALIAS *' })
 $apiLines = @($matches | Where-Object { $_ -like '* API *' })
 $running = $null -ne (Get-Process -Name GoW -ErrorAction SilentlyContinue)
+
+$gate = if ($scanLines.Count -eq 0) {
+    'INCONCLUSIVE_NO_SCAN'
+}
+elseif ($trackedLines.Count -eq 0) {
+    'INCONCLUSIVE_NOT_TRACKED'
+}
+elseif ($hitLines.Count -gt 0) {
+    'POSITIVE_HUD_INSTANCE_HIT'
+}
+else {
+    'NEGATIVE_NAME_LOOKUP_WITH_TRACKED_TARGET'
+}
 
 $header = @(
     'Completionist Map v0.10.4 Raven HUD instance runtime capture',
@@ -53,9 +66,10 @@ $header = @(
     ('Scan starts: ' + $scanLines.Count),
     ('Tracked=true lines: ' + $trackedLines.Count),
     ('HUD candidate hits: ' + $hitLines.Count),
+    ('Interpretation gate: ' + $gate),
     '',
     'INTERPRETATION GATE',
-    'A useful positive result is one or more HIT lines that appear after tracked=true and identify a specific compass/HUD GameObject instance or child. No hit is also valid evidence and means name-based live lookup is insufficient.',
+    'A positive result is one or more HIT lines from a scan where tracked=true. A tracked=true scan with zero hits means name-based live lookup is insufficient. A capture with no scans or no tracked=true scan is inconclusive and must not be treated as a negative lookup result.',
     'This capture does not authorise a global goboatdock resource/material swap. DockPoint.IconName is shared with real docks.',
     '',
     'RELEVANT LOADER LOG'
@@ -64,7 +78,7 @@ $header = @(
 New-Item -ItemType Directory -Force -Path (Split-Path $report -Parent) | Out-Null
 [IO.File]::WriteAllLines($report, @($header + $matches), $utf8)
 Write-Host "Saved: $report"
-Write-Host "Probe lines: $($matches.Count); hits: $($hitLines.Count); tracked=true lines: $($trackedLines.Count)"
+Write-Host "Probe lines: $($matches.Count); hits: $($hitLines.Count); tracked=true lines: $($trackedLines.Count); gate=$gate"
 
 Push-Location $repo
 try {

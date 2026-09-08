@@ -170,6 +170,11 @@
         " tracked=" .. tostring(tracked))
     end
 
+    -- mainhud.lua is instantiated again when returning from the map to gameplay.
+    -- Scan immediately on script load so the second instance can observe the Raven
+    -- after MapOn.ShowOnCompass has set the native tracked flag.
+    scan("script_load")
+
     self.completionistMapV104HudProbeFrame = 0
     self.completionistMapV104HudProbeLastTracked = nil
 
