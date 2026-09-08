@@ -3,6 +3,7 @@
   -- call Compass.ShowMarker, or write progression/save state.
   do
     local prefix = "[CompletionistMap v0.10.4-hud-probe] "
+    local candidate = "Completionist_V103_Veithurgard_Raven_01"
 
     local function log(kind, fields)
       print(prefix .. tostring(kind) .. " " .. tostring(fields or ""))
@@ -37,6 +38,84 @@
       if go == nil then return false end
       local ok, value = pcall(function() return go[name] end)
       return ok and type(value) == "function"
+    end
+
+    local function idsContain(ids, wanted)
+      if type(ids) ~= "table" or wanted == nil then return false end
+      for _, id in ipairs(ids) do
+        if tostring(id) == tostring(wanted) then return true end
+      end
+      return false
+    end
+
+    -- Do not trust the mapmenu _G flag here. mainhud.lua can run in a distinct
+    -- script environment, so ask the native Compass manager directly.
+    local function nativeTrackingState()
+      local okInfo, info = pcall(function()
+        return game.Map.GetMarkerInfo(candidate)
+      end)
+      if not okInfo or info == nil then
+        log("TRACK_QUERY",
+          "candidate=" .. candidate ..
+          " infoOK=" .. tostring(okInfo) ..
+          " registered=false error=" .. tostring(okInfo and "<none>" or info))
+        return false
+      end
+
+      local candidateId = info.Id
+      local anyQueryOK = false
+      local tracked = false
+
+      -- First use the exact flag set used by the production map bridge when it
+      -- is visible in this script environment.
+      local flags = enabledShowOnCompassMarkerFlags
+      if flags ~= nil then
+        local okIds, ids = pcall(function()
+          return game.Compass.FindMarkersByIconClass(flags)
+        end)
+        anyQueryOK = anyQueryOK or okIds
+        if okIds and idsContain(ids, candidateId) then tracked = true end
+        log("TRACK_QUERY",
+          "mode=enabledFlags candidateId=" .. tostring(candidateId) ..
+          " ok=" .. tostring(okIds) ..
+          " count=" .. tostring(okIds and type(ids) == "table" and #ids or -1) ..
+          " tracked=" .. tostring(okIds and idsContain(ids, candidateId)) ..
+          " error=" .. tostring(okIds and "<none>" or ids))
+      else
+        log("TRACK_QUERY",
+          "mode=enabledFlags candidateId=" .. tostring(candidateId) ..
+          " ok=false unavailable=true")
+      end
+
+      -- Fallback: DockPoint is the class actually passed to ShowMarker for the
+      -- Raven. This is also read-only and gives mainhud a second independent
+      -- way to observe the manager's active marker list.
+      local markerType = consts ~= nil and consts.COMPASS_MARKER_TYPE_DOCK_POINT or nil
+      if markerType ~= nil then
+        local okDock, dockIds = pcall(function()
+          return game.Compass.FindMarkersByIconClass({markerType})
+        end)
+        anyQueryOK = anyQueryOK or okDock
+        if okDock and idsContain(dockIds, candidateId) then tracked = true end
+        log("TRACK_QUERY",
+          "mode=dockType candidateId=" .. tostring(candidateId) ..
+          " markerType=" .. tostring(markerType) ..
+          " ok=" .. tostring(okDock) ..
+          " count=" .. tostring(okDock and type(dockIds) == "table" and #dockIds or -1) ..
+          " tracked=" .. tostring(okDock and idsContain(dockIds, candidateId)) ..
+          " error=" .. tostring(okDock and "<none>" or dockIds))
+      else
+        log("TRACK_QUERY",
+          "mode=dockType candidateId=" .. tostring(candidateId) ..
+          " ok=false unavailable=true")
+      end
+
+      log("TRACK_STATE",
+        "candidateId=" .. tostring(candidateId) ..
+        " queryOK=" .. tostring(anyQueryOK) ..
+        " tracked=" .. tostring(tracked) ..
+        " mapGlobal=" .. tostring(_G.CompletionistMapV103NativeRavenTracked == true))
+      return tracked
     end
 
     local roots = {}
@@ -133,7 +212,7 @@
     end
 
     local function scan(reason)
-      local tracked = _G.CompletionistMapV103NativeRavenTracked == true
+      local tracked = nativeTrackingState()
       log("SCAN_BEGIN",
         "reason=" .. tostring(reason) ..
         " tracked=" .. tostring(tracked) ..
@@ -171,8 +250,8 @@
     end
 
     -- mainhud.lua is instantiated again when returning from the map to gameplay.
-    -- Scan immediately on script load so the second instance can observe the Raven
-    -- after MapOn.ShowOnCompass has set the native tracked flag.
+    -- Scan immediately on script load. The native manager query above determines
+    -- tracking state without relying on mapmenu globals crossing script contexts.
     scan("script_load")
 
     self.completionistMapV104HudProbeFrame = 0
@@ -187,7 +266,7 @@
       self.completionistMapV104HudProbeFrame =
         (self.completionistMapV104HudProbeFrame or 0) + 1
 
-      local tracked = _G.CompletionistMapV103NativeRavenTracked == true
+      local tracked = nativeTrackingState()
       local frame = self.completionistMapV104HudProbeFrame
       local reason = nil
 
@@ -209,6 +288,7 @@
     log("API",
       "installed=true readOnly=true callsShowMarker=false callsHideMarker=false" ..
       " movesGO=false hidesGO=false materialWrites=false saveWrites=false" ..
+      " nativeTrackingQuery=true" ..
       " dockIconHash=82F0296748C7393D" ..
       " inWorldHash=0E24C47DE2F769CA")
   end
