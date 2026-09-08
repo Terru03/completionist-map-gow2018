@@ -1,0 +1,333 @@
+{
+  "result": "READ_ONLY_R_PERM_INDIRECT_POPULATION_TRACE",
+  "game_files_written": false,
+  "save_progression_marker_state_written": false,
+  "source": "G:\\SteamLibrary\\steamapps\\common\\GodOfWar\\GoW.exe",
+  "source_sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+  "rperm_call_proof": {
+    "call_site_rva": "0x67C952",
+    "target_rva": "0x421040",
+    "edx_zeroed": true,
+    "rcx_string_rva": "0xDEF168",
+    "rcx_string": "R_Perm",
+    "argument_setup_hex": "33D2488D0D16287700"
+  },
+  "source_slot": {
+    "rva": "0x12390E0",
+    "write_instruction_count": 16,
+    "proven_zero_clear_count": 3,
+    "potential_population_or_unknown_count": 13,
+    "classified_writes": [
+      {
+        "site_rva": "0x102910",
+        "owner_rva": null,
+        "source_register": "rax",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x41D705",
+        "owner_rva": "0x41D444",
+        "source_register": "rbp",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x41E332",
+        "owner_rva": "0x41E259",
+        "source_register": "rsi",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x41F499",
+        "owner_rva": "0x41F440",
+        "source_register": "rax",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x41F66A",
+        "owner_rva": "0x41F640",
+        "source_register": "rdi",
+        "classification": "proven_zero_clear",
+        "proof": "0x41F640 executes xor edi,edi before storing RDI to 0x12390E0"
+      },
+      {
+        "site_rva": "0x41F7DD",
+        "owner_rva": "0x41F720",
+        "source_register": "rbx",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x41FB85",
+        "owner_rva": "0x41F8CE",
+        "source_register": "rax",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x4B5837",
+        "owner_rva": "0x4B55C0",
+        "source_register": "rax",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x67354F",
+        "owner_rva": "0x6733A0",
+        "source_register": "rbp",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x67455B",
+        "owner_rva": "0x674410",
+        "source_register": "rdi",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x675323",
+        "owner_rva": "0x674E90",
+        "source_register": "rdi",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x675988",
+        "owner_rva": "0x6755D0",
+        "source_register": "rbx",
+        "classification": "proven_zero_clear",
+        "proof": "immediate xor ebx,ebx directly precedes the source-slot store"
+      },
+      {
+        "site_rva": "0x675C2E",
+        "owner_rva": "0x675B60",
+        "source_register": "rdi",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x676123",
+        "owner_rva": "0x675FD0",
+        "source_register": "rdi",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x676A69",
+        "owner_rva": "0x676680",
+        "source_register": "rdi",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x67C977",
+        "owner_rva": "0x67C800",
+        "source_register": "rbp",
+        "classification": "proven_zero_clear",
+        "proof": "transfer owner zeroes EBP/RBP before clearing 0x12390E0 after publication"
+      }
+    ]
+  },
+  "semantic_correction": {
+    "prior_direct_path": [
+      "0x421040",
+      "0x41F640"
+    ],
+    "writer_site_rva": "0x41F66A",
+    "classification": "proven_zero_clear",
+    "meaning": "the prior direct path reaches reset/clear logic, not registry population"
+  },
+  "rperm_connect_function": {
+    "begin_rva": "0x421040",
+    "end_rva": "0x421145",
+    "bytes": 261,
+    "full_hex": "48895C240848896C24104889742418574883EC3033ED8BFA48892DE9A2E100488BF148892DE7A0E100E86290FEFF40382DBDA6E1008BDF740683FF010F44DD8BCBE8BAE5FFFF41B820000000488D0D8D80E100488BD6FF15DC7E9200448B053980E100488D0D26AB0102418BC040882D8B80E100C1E802488BD644890517AC0102C70511AC010202000000A801751541B902000000C744242001000000E80ECEFEFFEB1DE817840C0048392D40AF0102740D48392D27AF01027404B001EB0232C034010FB6C8E825E4FFFF85DB752184C0741D83FF017518392D2680E1007510892D46A0E100C7051480E1000A000000488B5C2440488B6C2448488B7424504883C4305FC3",
+    "direct_calls": [
+      {
+        "site_rva": "0x421069",
+        "target_rva": "0x40A0D0",
+        "target_function_begin_rva": "0x40A0D0"
+      },
+      {
+        "site_rva": "0x421081",
+        "target_rva": "0x41F640",
+        "target_function_begin_rva": "0x41F640"
+      },
+      {
+        "site_rva": "0x4210DD",
+        "target_rva": "0x40DEF0",
+        "target_function_begin_rva": "0x40DEF0"
+      },
+      {
+        "site_rva": "0x4210E4",
+        "target_rva": "0x4E9500",
+        "target_function_begin_rva": "0x4E9500"
+      },
+      {
+        "site_rva": "0x421106",
+        "target_rva": "0x41F530",
+        "target_function_begin_rva": "0x41F530"
+      }
+    ],
+    "heuristic_indirect_calls": [
+      {
+        "site_rva": "0x421096",
+        "rex": null,
+        "mod": 0,
+        "rm": 5,
+        "kind": "rip_memory",
+        "context_start_rva": "0x421086",
+        "context_hex": "41B820000000488D0D8D80E100488BD6FF15DC7E9200448B053980E100488D0D26AB0102",
+        "rip_target_slot_rva": "0xD48F78"
+      }
+    ]
+  },
+  "zero_helper_function": {
+    "begin_rva": "0x41F640",
+    "end_rva": "0x41F714",
+    "bytes": 212,
+    "full_hex": "48895C2408574883EC2033FF8BD9488B0D2BC0E10048893D2CBBE10048893D0DBBE10048893D9E9AE10048893D6F9AE10048893DD0E8920240883D509AE10040883DFBBAE10040883DF3BAE1004885C97443488B01FF90880000004885C0742E488D50F84889155D9AE1004885D274250FB64208488D0D15BFE1004883C208488B0CC1488B01FF9090000000EB0748893D339AE10083FB01891D329AE100488B5C2430B8020000000F44C7C605519AE100018905E499E1008B05469AE100890568BAE100C705369AE100010000004883C4205FC3",
+    "direct_calls": [],
+    "heuristic_indirect_calls": [
+      {
+        "site_rva": "0x41F695",
+        "rex": null,
+        "mod": 2,
+        "rm": 0,
+        "kind": "memory",
+        "context_start_rva": "0x41F685",
+        "context_hex": "0040883DF3BAE1004885C97443488B01FF90880000004885C0742E488D50F84889155D9A"
+      },
+      {
+        "site_rva": "0x41F6C6",
+        "rex": null,
+        "mod": 2,
+        "rm": 0,
+        "kind": "memory",
+        "context_start_rva": "0x41F6B6",
+        "context_hex": "0D15BFE1004883C208488B0CC1488B01FF9090000000EB0748893D339AE10083FB01891D"
+      }
+    ]
+  },
+  "immediate_direct_callee_reports": [
+    {
+      "begin_rva": "0x40A0D0",
+      "end_rva": "0x40A14D",
+      "bytes": 125,
+      "full_hex": "40534883EC20488D4C2430FF155FE39300488B5C2430482B1D8BDCE100488B05843ECB044885C07514488D0D783ECB04FF15DAE39300488B056B3ECB04F30F1015EBCCAE000F57C0F3480F2AC34885DB7904F30F58C2F30F5905AACBAE000F57C9F3480F2AC84885C07904F30F58CAF30F5EC1F30F2CC04883C4205BC3",
+      "direct_calls": [],
+      "heuristic_indirect_calls": [
+        {
+          "site_rva": "0x40A0DB",
+          "rex": null,
+          "mod": 0,
+          "rm": 5,
+          "kind": "rip_memory",
+          "context_start_rva": "0x40A0D0",
+          "context_hex": "40534883EC20488D4C2430FF155FE39300488B5C2430482B1D8BDCE100488B",
+          "rip_target_slot_rva": "0xD48440"
+        },
+        {
+          "site_rva": "0x40A100",
+          "rex": null,
+          "mod": 0,
+          "rm": 5,
+          "kind": "rip_memory",
+          "context_start_rva": "0x40A0F0",
+          "context_hex": "843ECB044885C07514488D0D783ECB04FF15DAE39300488B056B3ECB04F30F1015EBCCAE",
+          "rip_target_slot_rva": "0xD484E0"
+        }
+      ]
+    },
+    {
+      "begin_rva": "0x41F640",
+      "end_rva": "0x41F714",
+      "bytes": 212,
+      "full_hex": "48895C2408574883EC2033FF8BD9488B0D2BC0E10048893D2CBBE10048893D0DBBE10048893D9E9AE10048893D6F9AE10048893DD0E8920240883D509AE10040883DFBBAE10040883DF3BAE1004885C97443488B01FF90880000004885C0742E488D50F84889155D9AE1004885D274250FB64208488D0D15BFE1004883C208488B0CC1488B01FF9090000000EB0748893D339AE10083FB01891D329AE100488B5C2430B8020000000F44C7C605519AE100018905E499E1008B05469AE100890568BAE100C705369AE100010000004883C4205FC3",
+      "direct_calls": [],
+      "heuristic_indirect_calls": [
+        {
+          "site_rva": "0x41F695",
+          "rex": null,
+          "mod": 2,
+          "rm": 0,
+          "kind": "memory",
+          "context_start_rva": "0x41F685",
+          "context_hex": "0040883DF3BAE1004885C97443488B01FF90880000004885C0742E488D50F84889155D9A"
+        },
+        {
+          "site_rva": "0x41F6C6",
+          "rex": null,
+          "mod": 2,
+          "rm": 0,
+          "kind": "memory",
+          "context_start_rva": "0x41F6B6",
+          "context_hex": "0D15BFE1004883C208488B0CC1488B01FF9090000000EB0748893D339AE10083FB01891D"
+        }
+      ]
+    },
+    {
+      "begin_rva": "0x40DEF0",
+      "end_rva": "0x40DFB8",
+      "bytes": 200,
+      "full_hex": "48895C240848896C24104889742418574883EC30418BD84489890C010000488BC289990801000033FF488D51084889B918010000488BF189B91001000041B800010000488BC8E875BB0A008B44246083E320C1E31783CB0283F808730B488D3DACABD700488B3CC7488D8E20010000448BCB4C8BC7488D5608E8D2795B00F6860801000002488BF87420488BC8E88E655B008B5F08488BCF899E10010000E81D655B0085DB0F94C0EB094889BE48020000B001488B5C2440488B6C2448488B7424504883C4305FC3",
+      "direct_calls": [
+        {
+          "site_rva": "0x40DF36",
+          "target_rva": "0x4B9AB0",
+          "target_function_begin_rva": "0x4B9AB0"
+        },
+        {
+          "site_rva": "0x40DF69",
+          "target_rva": "0x9C5940",
+          "target_function_begin_rva": "0x9C5940"
+        },
+        {
+          "site_rva": "0x40DF7D",
+          "target_rva": "0x9C4510",
+          "target_function_begin_rva": "0x9C4510"
+        },
+        {
+          "site_rva": "0x40DF8E",
+          "target_rva": "0x9C44B0",
+          "target_function_begin_rva": "0x9C44B0"
+        }
+      ],
+      "heuristic_indirect_calls": []
+    },
+    {
+      "begin_rva": "0x4E9500",
+      "end_rva": "0x4E9525",
+      "bytes": 37,
+      "full_hex": "415541574881ECA8000000488B05F60CB7004833C448894424704C8BFA48895424204C8BE9",
+      "direct_calls": [],
+      "heuristic_indirect_calls": []
+    },
+    {
+      "begin_rva": "0x41F530",
+      "end_rva": "0x41F631",
+      "bytes": 257,
+      "full_hex": "40534883EC200FB6D980F301833D999BE100000F84DF0000008B1589C7010284C9740D48C7059A9BE10000000000EB2E488B05E9BBE1004885C075168BC2C1E802A801488B05A6CA0102480F44057EC701024889056F9BE1004885C0756BC1EA02F6C201750C488D0D33C60102E8CEE6FEFF803D999BE100000F57C08B05929BE100660F7F0566CA010248C7056BCA0102000000008905A1BBE100C7056F9BE10000000000741AC744243001000000C744243808000000C7051BBDC5000800000032C04883C4205BC348890578BBE100E82B02000084C07414833D4886E0000074EE32DB0FB6C34883C4205BC3833D3486E00000740232DB0FB6C34883C4205BC3",
+      "direct_calls": [
+        {
+          "site_rva": "0x41F59D",
+          "target_rva": "0x40DC70",
+          "target_function_begin_rva": "0x40DC70"
+        },
+        {
+          "site_rva": "0x41F600",
+          "target_rva": "0x41F830",
+          "target_function_begin_rva": "0x41F830"
+        }
+      ],
+      "heuristic_indirect_calls": []
+    }
+  ],
+  "heuristic_indirect_call_candidate_count": 5,
+  "conclusion": "R_PERM_DIRECT_PATH_REACHES_ONLY_PROVEN_SOURCE_CLEAR",
+  "next_gate": "Resolve the indirect/vtable call candidates in 0x421040 and its immediate callees, and identify which callback publishes a non-zero tweak registry object before 0x67C800 transfers 0x12390E0 into 0x22C6948. Do not patch GoW.exe or mutate DCB/WAD data yet."
+}
