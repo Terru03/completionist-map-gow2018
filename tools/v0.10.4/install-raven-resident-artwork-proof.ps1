@@ -20,7 +20,7 @@ $mapmaster = Join-Path $game 'exec\dc\pc_le\mapmaster.dcb'
 $boot = Join-Path $game 'exec\boot-options.json'
 $rootPack = Join-Path $game 'exec\wad\pc_le\root.texpack'
 $ravenPack = Join-Path $game 'exec\patch\pc_le\completionist_v104_raven_map.texpack'
-$patcher = Join-Path $PSScriptRoot 'patch-raven-resident-artwork.py'
+$patcher = Join-Path $PSScriptRoot 'patch-raven-resident-artwork-v2.py'
 $python = Get-Command python -ErrorAction SilentlyContinue
 if ($null -eq $python) { throw 'Python 3.9+ is required.' }
 
