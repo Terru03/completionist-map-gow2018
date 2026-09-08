@@ -93,7 +93,8 @@ if ($LASTEXITCODE -ne 0) { throw 'Resident Raven 96px artwork offline patch fail
 $p = Get-Content -LiteralPath $patchReport -Raw | ConvertFrom-Json
 if ($p.result -ne 'RAVEN_RESIDENT_96PX_ARTWORK_PATCHED_OFFLINE' -or
     $p.resident_96px_layout_gate_passed -ne $true -or
-    $p.stock_dock_valkyrie_resident_header_match -ne $true -or
+    $p.raven_dock_resident_prefix_preserved -ne $true -or
+    $p.stock_resident_prefix_is_not_universal -ne $true -or
     $p.custom_raven_96px_swizzle_applied -ne $true -or
     $p.raven_texture_definitions_preserved -ne $true -or
     $p.raven_resource_identity_preserved -ne $true -or
@@ -115,9 +116,10 @@ try {
     $m = [ordered]@{
         proof = 'v0.10.4 dedicated Raven custom 96px resident artwork'
         map_resource = 'goMapIconCompletionistRaven'
-        resident_layout = '12-byte common resident header + standalone 96x96 BC swizzled body'
+        resident_layout = 'preserve Raven Dock-derived 12-byte resident prefix + standalone 96x96 BC swizzled body'
         diffuse_layout = '9228 = 12 + 96*96*8/8'
         emissive_layout = '4620 = 12 + 96*96*4/8'
+        resident_prefix_scope = 'resource-specific; Raven prefix preserved from its Dock-derived baseline'
         wad_before = $before
         wad_after = $after
         dcb_unchanged = $true
@@ -173,6 +175,7 @@ Write-Host ''
 Write-Host 'Raven resident 96px artwork proof installed.'
 Write-Host '- the failed mip-tail assumption is no longer used'
 Write-Host '- resident body is generated as a standalone 96x96 BC surface'
+Write-Host '- the Raven/Dock-derived resident prefix is preserved exactly; Valkyrie is allowed to use a different prefix'
 Write-Host '- only the isolated Raven resident payloads were changed'
 Write-Host '- real Dock and Valkyrie resources remain untouched'
 Write-Host '- HUD compass remains DockPoint for now'
