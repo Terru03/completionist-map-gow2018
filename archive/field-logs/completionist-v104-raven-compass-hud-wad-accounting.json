@@ -1,0 +1,234 @@
+{
+  "result": "READ_ONLY_RAVEN_COMPASS_HUD_WAD_ACCOUNTING",
+  "game_files_read": true,
+  "game_files_written": false,
+  "save_state_written": false,
+  "progression_state_written": false,
+  "marker_state_written": false,
+  "source_wad_sha256": "9eb1f548de036eb56c031561a9b7665d71b54fe251d360d2a5b7c60e3d6ff3c3",
+  "source_round_trip_byte_exact": true,
+  "physical_record_count": 53811,
+  "payload_count": 20415,
+  "accounting": {
+    "heap_total": 16802,
+    "root_total": 16802,
+    "type_row_count": 21,
+    "type_row_count_sum": 16802,
+    "relevant_rig_rows": {
+      "0x10001": {
+        "row": {
+          "key": "0x10001",
+          "base": 3,
+          "count": 1725
+        },
+        "payloads_with_first_dword": 1725,
+        "payloads_with_first_dword_and_flags_0x3D": 1725,
+        "count_contract_exact": true
+      },
+      "0x20001": {
+        "row": {
+          "key": "0x20001",
+          "base": 1728,
+          "count": 2073
+        },
+        "payloads_with_first_dword": 2073,
+        "payloads_with_first_dword_and_flags_0x3D": 2073,
+        "count_contract_exact": true
+      }
+    }
+  },
+  "dock_sources": {
+    "root": {
+      "name": "goboatdock",
+      "id": "e38da34945defe418b8be0bb6b985f12",
+      "kind": 1,
+      "flags": "0x3D",
+      "bytes": 164,
+      "payload_index": 18491,
+      "first_dword": "0x20001"
+    },
+    "prototype": {
+      "name": "goProtoBoatDock",
+      "id": "e38da34945defe418b8be0bb6a985f12",
+      "kind": 1,
+      "flags": "0x3D",
+      "bytes": 1184,
+      "payload_index": 18489,
+      "first_dword": "0x10001"
+    },
+    "model": {
+      "name": "MDL_boatdock",
+      "id": "808e5817524559f5c65636ffc0fbc1a9",
+      "kind": 1,
+      "flags": "0x8E",
+      "bytes": 80,
+      "payload_index": 18488,
+      "first_dword": "0x1002000C"
+    }
+  },
+  "three_payload_clone_plan": {
+    "physical_payload_delta": 3,
+    "root_type_accounting_delta": 2,
+    "payloads": [
+      {
+        "name": "goProtoCompletionistRavenHUD",
+        "source": "goProtoBoatDock",
+        "type_key": "0x10001",
+        "root_table_delta": 1
+      },
+      {
+        "name": "gocompletionistravenhud",
+        "source": "goboatdock",
+        "type_key": "0x20001",
+        "root_table_delta": 1
+      },
+      {
+        "name": "MDL_completionistravenhud",
+        "source": "MDL_boatdock",
+        "type_key": "0x1002000C",
+        "root_table_delta": 0
+      }
+    ],
+    "simulated_heap_total": 16804,
+    "simulated_root_total": 16804,
+    "simulated_type_rows": [
+      {
+        "key": "0x1",
+        "base": 0,
+        "count": 3,
+        "delta": 0
+      },
+      {
+        "key": "0x10001",
+        "base": 3,
+        "count": 1726,
+        "delta": 1
+      },
+      {
+        "key": "0x20001",
+        "base": 1729,
+        "count": 2074,
+        "delta": 1
+      },
+      {
+        "key": "0x30001",
+        "base": 3803,
+        "count": 586,
+        "delta": 0
+      },
+      {
+        "key": "0x40001",
+        "base": 4389,
+        "count": 1,
+        "delta": 0
+      },
+      {
+        "key": "0x2",
+        "base": 4390,
+        "count": 288,
+        "delta": 0
+      },
+      {
+        "key": "0x10003",
+        "base": 4678,
+        "count": 1,
+        "delta": 0
+      },
+      {
+        "key": "0x4",
+        "base": 4679,
+        "count": 400,
+        "delta": 0
+      },
+      {
+        "key": "0x10005",
+        "base": 5079,
+        "count": 2600,
+        "delta": 0
+      },
+      {
+        "key": "0x7",
+        "base": 7679,
+        "count": 19,
+        "delta": 0
+      },
+      {
+        "key": "0x50009",
+        "base": 7698,
+        "count": 1,
+        "delta": 0
+      },
+      {
+        "key": "0x70009",
+        "base": 7699,
+        "count": 37,
+        "delta": 0
+      },
+      {
+        "key": "0xA",
+        "base": 7736,
+        "count": 1480,
+        "delta": 0
+      },
+      {
+        "key": "0x1000A",
+        "base": 9216,
+        "count": 2718,
+        "delta": 0
+      },
+      {
+        "key": "0x3000A",
+        "base": 11934,
+        "count": 3,
+        "delta": 0
+      },
+      {
+        "key": "0x1000C",
+        "base": 11937,
+        "count": 990,
+        "delta": 0
+      },
+      {
+        "key": "0x2000C",
+        "base": 12927,
+        "count": 991,
+        "delta": 0
+      },
+      {
+        "key": "0xD",
+        "base": 13918,
+        "count": 104,
+        "delta": 0
+      },
+      {
+        "key": "0x3000D",
+        "base": 14022,
+        "count": 79,
+        "delta": 0
+      },
+      {
+        "key": "0x2000E",
+        "base": 14101,
+        "count": 1256,
+        "delta": 0
+      },
+      {
+        "key": "0x10015",
+        "base": 15357,
+        "count": 1447,
+        "delta": 0
+      }
+    ]
+  },
+  "proof": {
+    "prototype_type_row_is_exact_first_dword_population": true,
+    "root_type_row_is_exact_first_dword_population": true,
+    "model_first_dword_absent_from_root_type_table": true,
+    "clone_requires_0x10001_delta": 1,
+    "clone_requires_0x20001_delta": 1,
+    "clone_requires_model_type_delta": 0,
+    "ready_for_offline_three_payload_builder": true
+  },
+  "conclusion": "THREE_PAYLOAD_RAVEN_HUD_WAD_ACCOUNTING_PROVEN",
+  "next_gate": "Build the three-payload HUD clone offline. Update only WAD_R_UI heap/root totals and the 0x10001/0x20001 row counts/bases implied by this report; then reparse and prove all stock Dock and existing Raven resources remain byte-identical."
+}
