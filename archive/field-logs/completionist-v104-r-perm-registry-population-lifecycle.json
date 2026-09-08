@@ -1,0 +1,221 @@
+{
+  "result": "READ_ONLY_R_PERM_REGISTRY_POPULATION_LIFECYCLE_TRACE",
+  "game_files_written": false,
+  "save_progression_marker_state_written": false,
+  "source": "G:\\SteamLibrary\\steamapps\\common\\GodOfWar\\GoW.exe",
+  "source_sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+  "known_handoff": {
+    "source_slot_rva": "0x12390E0",
+    "registry_slot_rva": "0x22C6948",
+    "transfer_owner_rva": "0x67C800",
+    "transfer_site_rva": "0x67C969",
+    "startup_owner_rva": "0x682020",
+    "startup_transfer_call_site_rva": "0x683173"
+  },
+  "indirect_candidates": {
+    "count": 5,
+    "resolved_import_count": 3,
+    "rows": [
+      {
+        "site_rva": "0x421096",
+        "owner_rva": "0x421040",
+        "kind": "rip_iat",
+        "iat_slot_rva": "0xD48F78",
+        "resolved_import": "api-ms-win-crt-string-l1-1-0.dll!strncpy"
+      },
+      {
+        "site_rva": "0x40A0DB",
+        "owner_rva": "0x40A0D0",
+        "kind": "rip_iat",
+        "iat_slot_rva": "0xD48440",
+        "resolved_import": "KERNEL32.dll!QueryPerformanceCounter"
+      },
+      {
+        "site_rva": "0x40A100",
+        "owner_rva": "0x40A0D0",
+        "kind": "rip_iat",
+        "iat_slot_rva": "0xD484E0",
+        "resolved_import": "KERNEL32.dll!QueryPerformanceFrequency"
+      },
+      {
+        "site_rva": "0x41F695",
+        "owner_rva": "0x41F640",
+        "kind": "vtable",
+        "vtable_offset": "0x88",
+        "nearest_preceding_rip_load": null
+      },
+      {
+        "site_rva": "0x41F6C6",
+        "owner_rva": "0x41F640",
+        "kind": "vtable",
+        "vtable_offset": "0x90",
+        "nearest_preceding_rip_load": null
+      }
+    ]
+  },
+  "source_slot_writes": {
+    "count": 16,
+    "candidate_owner_count": 12,
+    "rows": [
+      {
+        "site_rva": "0x102910",
+        "owner_rva": null,
+        "source_register": "rax",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x41D705",
+        "owner_rva": "0x41D444",
+        "source_register": "rbp",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x41E332",
+        "owner_rva": "0x41E259",
+        "source_register": "rsi",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x41F499",
+        "owner_rva": "0x41F440",
+        "source_register": "rax",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x41F66A",
+        "owner_rva": "0x41F640",
+        "source_register": "rdi",
+        "classification": "proven_zero_clear",
+        "proof": "0x41F640 zeroes EDI/RDI before the source-slot store"
+      },
+      {
+        "site_rva": "0x41F7DD",
+        "owner_rva": "0x41F720",
+        "source_register": "rbx",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x41FB85",
+        "owner_rva": "0x41F8CE",
+        "source_register": "rax",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x4B5837",
+        "owner_rva": "0x4B55C0",
+        "source_register": "rax",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x67354F",
+        "owner_rva": "0x6733A0",
+        "source_register": "rbp",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x67455B",
+        "owner_rva": "0x674410",
+        "source_register": "rdi",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x675323",
+        "owner_rva": "0x674E90",
+        "source_register": "rdi",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x675988",
+        "owner_rva": "0x6755D0",
+        "source_register": "rbx",
+        "classification": "proven_zero_clear",
+        "proof": "immediate xor ebx,ebx precedes the source-slot store"
+      },
+      {
+        "site_rva": "0x675C2E",
+        "owner_rva": "0x675B60",
+        "source_register": "rdi",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x676123",
+        "owner_rva": "0x675FD0",
+        "source_register": "rdi",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x676A69",
+        "owner_rva": "0x676680",
+        "source_register": "rdi",
+        "classification": "potential_population_or_unknown",
+        "proof": null
+      },
+      {
+        "site_rva": "0x67C977",
+        "owner_rva": "0x67C800",
+        "source_register": "rbp",
+        "classification": "proven_zero_clear",
+        "proof": "R_Perm transfer owner zeroes EBP/RBP before post-publication clear"
+      }
+    ]
+  },
+  "ordered_pretransfer_reachability": {
+    "startup_pretransfer_direct_call_count": 47,
+    "startup_paths": [],
+    "parent_pre_startup_paths": [],
+    "second_transfer_owner_caller_paths": []
+  },
+  "second_transfer_owner_caller": {
+    "begin_rva": "0x66CA8E",
+    "end_rva": "0x66CB13",
+    "bytes": 133,
+    "full_hex": "4181E8000001008B15519EC5014181C000040300488B0D9F96C50141B101E80F52FFFF8B15399EC501448D8340140000488B0DF39CC50141B101E8F351FFFF8B15219EC501448D8340140100488B0DCF9CC50141B101E8D751FFFF4533C9C74424500A000000448D8348100000488D4C2450418D5104E8B751FFFFE8E2FAFFFF488B5C2440",
+    "direct_calls": [
+      {
+        "site_rva": "0x66CA90",
+        "target_rva": "0x67C800"
+      },
+      {
+        "site_rva": "0x66CAAC",
+        "target_rva": "0x661CC0"
+      },
+      {
+        "site_rva": "0x66CAC8",
+        "target_rva": "0x661CC0"
+      },
+      {
+        "site_rva": "0x66CAE4",
+        "target_rva": "0x661CC0"
+      },
+      {
+        "site_rva": "0x66CB04",
+        "target_rva": "0x661CC0"
+      },
+      {
+        "site_rva": "0x66CB09",
+        "target_rva": "0x66C5F0"
+      }
+    ],
+    "callers": []
+  },
+  "startup_owner_callers": [
+    {
+      "call_site_rva": "0x404D76",
+      "owner_rva": "0x404280"
+    }
+  ],
+  "conclusion": "NO_ORDERED_DIRECT_PATH_TO_POTENTIAL_SOURCE_WRITER",
+  "next_gate": "With import calls resolved, trace the remaining vtable/indirect callback or an earlier initialization path that creates 0x12390E0. Do not patch GoW.exe or mutate DCB/WAD data yet."
+}
