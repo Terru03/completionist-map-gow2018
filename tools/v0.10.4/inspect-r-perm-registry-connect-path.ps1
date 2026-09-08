@@ -15,7 +15,7 @@ if (Get-Process -Name GoW -ErrorAction SilentlyContinue) {
 }
 
 $game = [IO.Path]::GetFullPath($GameRoot)
-$scanner = Join-Path $PSScriptRoot 'inspect-r-perm-registry-connect-path.py'
+$scanner = Join-Path $PSScriptRoot 'inspect-r-perm-registry-connect-path-v2.py'
 $outRel = 'archive/field-logs/completionist-v104-r-perm-registry-connect-path.json'
 $out = Join-Path $repo ($outRel -replace '/', '\')
 
@@ -29,7 +29,7 @@ if ($preStaged.Count -gt 0 -and -not [string]::IsNullOrWhiteSpace(($preStaged -j
     throw "Git index already has staged changes. Commit/unstage them first.`n$($preStaged -join "`n")"
 }
 
-Write-Host 'Syntax-checking R_Perm registry connect-path tracer...'
+Write-Host 'Syntax-checking corrected R_Perm registry connect-path tracer...'
 & $python.Source -m py_compile $scanner
 if ($LASTEXITCODE -ne 0) { throw 'Python syntax check failed.' }
 
@@ -54,9 +54,13 @@ if ([string]$r.known_handoff.rperm_connect_call_site_rva -ne '0x67C952' -or
     [string]$r.known_handoff.rperm_connect_target_rva -ne '0x421040') {
     throw 'Known R_Perm connect call changed.'
 }
+if ([int]$r.guard_fix.validated_bytes -ne 28) {
+    throw 'Corrected transfer guard did not validate the expected 28-byte sequence.'
+}
 
 Write-Host ''
 Write-Host 'R_Perm registry connect-path trace complete.'
+Write-Host ("- transfer guard bytes: {0}" -f [int]$r.guard_fix.validated_bytes)
 Write-Host ("- source-slot write instructions: {0}; writer owners: {1}" -f [int]$r.source_slot_writes.instruction_count, [int]$r.source_slot_writes.owner_function_count)
 foreach ($prop in $r.root_reachability.PSObject.Properties) {
     $path = @($prop.Value.shortest_direct_call_path_to_source_writer)
