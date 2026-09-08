@@ -1,0 +1,261 @@
+{
+  "result": "READ_ONLY_RAVEN_COMPASS_HUD_SCP_BINDING",
+  "source_wad_sha256": "9eb1f548de036eb56c031561a9b7665d71b54fe251d360d2a5b7c60e3d6ff3c3",
+  "source_round_trip_byte_exact": true,
+  "decision": "LOCAL_SCP_REQUIRED",
+  "decision_reasons": {
+    "all_stock_compass_peers_author_direct_local_scp_payload": true,
+    "stock_compass_peers_keep_local_scp_even_when_body_is_identical": true,
+    "scp_sentinel_id_is_not_unique_definition_identity": true,
+    "stock_compass_zero_data_scp_link_precedent_absent": true,
+    "map_zero_data_link_precedent_is_not_stock_compass_binding_proof": true
+  },
+  "stock_compass_peers": {
+    "DockPoint": {
+      "prototype": "goProtoBoatDock",
+      "prototype_record_index": 49151,
+      "script_record_index": 49153,
+      "script_name": "SCP_BoatDock",
+      "script_id": "baaddbbad0baaddbbaaddbbad7baaddb",
+      "script_flags": "0x18",
+      "script_bytes": 96,
+      "script_first_dword": "0x10005",
+      "script_payload_sha256": "bec78f134e8174b9b5636dbe8d3bb6116bf0eb79b58e2c75edc660d43b654b0f",
+      "local_direct_member": true,
+      "zero_data_sentinel_links_in_prototype_group": []
+    },
+    "FastTravel": {
+      "prototype": "goProtoFastTravel",
+      "prototype_record_index": 49136,
+      "script_record_index": 49138,
+      "script_name": "SCP_FastTravel",
+      "script_id": "baaddbbad0baaddbbaaddbbad7baaddb",
+      "script_flags": "0x18",
+      "script_bytes": 96,
+      "script_first_dword": "0x10005",
+      "script_payload_sha256": "bec78f134e8174b9b5636dbe8d3bb6116bf0eb79b58e2c75edc660d43b654b0f",
+      "local_direct_member": true,
+      "zero_data_sentinel_links_in_prototype_group": []
+    },
+    "Valkyrie": {
+      "prototype": "goProtoValkyrie",
+      "prototype_record_index": 49213,
+      "script_record_index": 49215,
+      "script_name": "SCP_Valkyrie",
+      "script_id": "baaddbbad0baaddbbaaddbbad7baaddb",
+      "script_flags": "0x18",
+      "script_bytes": 96,
+      "script_first_dword": "0x10005",
+      "script_payload_sha256": "bec78f134e8174b9b5636dbe8d3bb6116bf0eb79b58e2c75edc660d43b654b0f",
+      "local_direct_member": true,
+      "zero_data_sentinel_links_in_prototype_group": []
+    },
+    "MAIN": {
+      "prototype": "goProtoMainQuest",
+      "prototype_record_index": 48899,
+      "script_record_index": 48901,
+      "script_name": "SCP_MainQuest",
+      "script_id": "baaddbbad0baaddbbaaddbbad7baaddb",
+      "script_flags": "0x18",
+      "script_bytes": 96,
+      "script_first_dword": "0x10005",
+      "script_payload_sha256": "bec78f134e8174b9b5636dbe8d3bb6116bf0eb79b58e2c75edc660d43b654b0f",
+      "local_direct_member": true,
+      "zero_data_sentinel_links_in_prototype_group": []
+    },
+    "SIDE": {
+      "prototype": "goProtoSideQuest",
+      "prototype_record_index": 48914,
+      "script_record_index": 48916,
+      "script_name": "SCP_SideQuest",
+      "script_id": "baaddbbad0baaddbbaaddbbad7baaddb",
+      "script_flags": "0x18",
+      "script_bytes": 96,
+      "script_first_dword": "0x10005",
+      "script_payload_sha256": "bec78f134e8174b9b5636dbe8d3bb6116bf0eb79b58e2c75edc660d43b654b0f",
+      "local_direct_member": true,
+      "zero_data_sentinel_links_in_prototype_group": []
+    }
+  },
+  "scp_sentinel_population": {
+    "id": "baaddbbad0baaddbbaaddbbad7baaddb",
+    "payload_definitions": 2057,
+    "distinct_payload_bodies": 211,
+    "definitions_matching_stock_compass_body": 401,
+    "zero_data_links": 3,
+    "zero_data_link_samples": [
+      {
+        "record_index": 32442,
+        "name": "SCP_MapIconDock",
+        "parent_record_index": 32437
+      },
+      {
+        "record_index": 32443,
+        "name": "SCP_CollidableSphere9",
+        "parent_record_index": 32437
+      },
+      {
+        "record_index": 32444,
+        "name": "SCP_flourishD1",
+        "parent_record_index": 32437
+      }
+    ]
+  },
+  "broad_0x10001_prototype_sample": {
+    "prototype_groups_scanned": 1725,
+    "local_sentinel_payload_only": 833,
+    "sentinel_zero_data_link_only": 1,
+    "both_local_and_link": 0,
+    "neither": 885,
+    "local_samples": [
+      {
+        "prototype": "goProtometer",
+        "scripts": [
+          "SCP_meterFill",
+          "SCP_meterHousing",
+          "SCP_meterBacking"
+        ]
+      },
+      {
+        "prototype": "goProtometer",
+        "scripts": [
+          "SCP_meterFill"
+        ]
+      },
+      {
+        "prototype": "goProtoattribute_bar",
+        "scripts": [
+          "SCP_IconHousing"
+        ]
+      },
+      {
+        "prototype": "goProtometer",
+        "scripts": [
+          "SCP_meterFill",
+          "SCP_meterHousing",
+          "SCP_meterBacking"
+        ]
+      },
+      {
+        "prototype": "goProtometer",
+        "scripts": [
+          "SCP_meterFill"
+        ]
+      },
+      {
+        "prototype": "goProtoattribute_bar",
+        "scripts": [
+          "SCP_IconHousing"
+        ]
+      },
+      {
+        "prototype": "goProtometer",
+        "scripts": [
+          "SCP_meterFill"
+        ]
+      },
+      {
+        "prototype": "goProtoRoot",
+        "scripts": [
+          "SCP_backing"
+        ]
+      },
+      {
+        "prototype": "goProtoflourish",
+        "scripts": [
+          "SCP_light5",
+          "SCP_glow"
+        ]
+      },
+      {
+        "prototype": "goProtopowerLevel",
+        "scripts": [
+          "SCP_fillGlow",
+          "SCP_fill"
+        ]
+      },
+      {
+        "prototype": "goProtopowerLevelPreviewArrow",
+        "scripts": [
+          "SCP_powerLevelPreviewArrow"
+        ]
+      },
+      {
+        "prototype": "goProtoicon_R",
+        "scripts": [
+          "SCP_icon_R"
+        ]
+      }
+    ],
+    "link_samples": [
+      {
+        "prototype": "goProtoMapIconCompletionistRaven",
+        "scripts": [
+          "SCP_MapIconDock",
+          "SCP_CollidableSphere9",
+          "SCP_flourishD1"
+        ]
+      }
+    ]
+  },
+  "working_map_raven_prototype": {
+    "present": true,
+    "record_index": 32438,
+    "flags": "0x3D",
+    "bytes": 1984,
+    "first_dword": "0x10001",
+    "node_count_at_0x0C": 4,
+    "direct_sentinel_members": [
+      {
+        "relative_index": 5,
+        "role": "dependency_link",
+        "name": "SCP_MapIconDock",
+        "has_payload": false,
+        "flags": "0x0",
+        "bytes": 0,
+        "first_dword": null
+      },
+      {
+        "relative_index": 6,
+        "role": "dependency_link",
+        "name": "SCP_CollidableSphere9",
+        "has_payload": false,
+        "flags": "0x0",
+        "bytes": 0,
+        "first_dword": null
+      },
+      {
+        "relative_index": 7,
+        "role": "dependency_link",
+        "name": "SCP_flourishD1",
+        "has_payload": false,
+        "flags": "0x0",
+        "bytes": 0,
+        "first_dword": null
+      }
+    ],
+    "uses_zero_data_sentinel_links": true,
+    "same_two_node_topology_as_stock_compass": false,
+    "note": "The working map Raven may share generic SCP definitions, but it is not stock compass-HUD precedent and its node/member topology is evaluated separately."
+  },
+  "selected_topology": {
+    "root_payloads": 1,
+    "prototype_payloads": 2,
+    "model_payloads": 1,
+    "physical_records": 13,
+    "payload_records": 4,
+    "wad_r_ui_accounting_delta": 3,
+    "local_scp_payload_preserved": true
+  },
+  "ready_for_offline_four_payload_builder": true,
+  "ready_for_runtime_test": false,
+  "game_files_read": true,
+  "game_files_written": false,
+  "dcb_files_read": false,
+  "save_state_written": false,
+  "progression_state_written": false,
+  "marker_state_written": false,
+  "conclusion": "LOCAL_SCP_REQUIRED",
+  "physical_grammar_report": "archive/field-logs/completionist-v104-compass-hud-physical-groups.json",
+  "reduced_report": "archive/field-logs/completionist-v104-compass-hud-local-subtrees.json"
+}

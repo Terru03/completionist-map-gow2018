@@ -1,0 +1,118 @@
+{
+  "result": "OFFLINE_RAVEN_COMPASS_HUD_FOUR_PAYLOAD_BUILT",
+  "conclusion": "FOUR_PAYLOAD_RAVEN_HUD_CLONE_BUILT_OFFLINE",
+  "source_wad_sha256": "9eb1f548de036eb56c031561a9b7665d71b54fe251d360d2a5b7c60e3d6ff3c3",
+  "candidate_wad_sha256": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
+  "scp_binding_decision": "LOCAL_SCP_REQUIRED",
+  "architecture": {
+    "hud_IconName_source_string": "goCompletionistRavenHUD",
+    "hud_IconName_hash": "45E5C7943749F81C",
+    "root": {
+      "name": "gocompletionistravenhud",
+      "id": "f0029a68d9705e95a981aab8bff0c5b8",
+      "new": true
+    },
+    "prototype": {
+      "name": "goProtoCompletionistRavenHUD",
+      "id": "b2a833d6144789e8099acf85e832d652",
+      "new": true
+    },
+    "model": {
+      "name": "MDL_completionistravenhud",
+      "id": "4a7911dc2db72cecaf6c187a66bfd11f",
+      "new": true
+    },
+    "local_scp": {
+      "name": "SCP_BoatDock",
+      "id": "baaddbbad0baaddbbaaddbbad7baaddb",
+      "new_identity": false,
+      "new_local_payload_instance": true,
+      "serialized_byte_identical_to_DockPoint_source": true
+    },
+    "material": {
+      "name": "MAT_AE4AD85BB993F040",
+      "id": "dac6009fd0f18caad2ed322463c3d0c8",
+      "reused": true
+    },
+    "mesh": {
+      "name": "MG_boatdock_0",
+      "id": "c3f6b4c5a8270df607ea3e6e7f891292",
+      "reused": true
+    },
+    "shared_compass": {
+      "name": "goProtocompassicons",
+      "id": "502b9225361cf6449d8d85048f0b1a75",
+      "reused": true
+    }
+  },
+  "clone_accounting": {
+    "physical_records_delta": 13,
+    "payload_records_delta": 4,
+    "wad_r_ui_accounting_delta": 3,
+    "before_total": 16802,
+    "after_total": 16805,
+    "type_increments": {
+      "0x10001": 1,
+      "0x10005": 1,
+      "0x20001": 1
+    },
+    "source_counts": {
+      "0x10001": 1725,
+      "0x10005": 2600,
+      "0x20001": 2073
+    },
+    "candidate_counts": {
+      "0x10001": 1726,
+      "0x10005": 2601,
+      "0x20001": 2074
+    }
+  },
+  "validation": {
+    "candidate_round_trip_byte_exact": true,
+    "candidate_physical_records": 53824,
+    "candidate_payload_records": 20419,
+    "new_groups": {
+      "model": {
+        "physical_records": 5,
+        "payloads": 1
+      },
+      "prototype": {
+        "physical_records": 5,
+        "payloads": 2
+      },
+      "root": {
+        "physical_records": 3,
+        "payloads": 1
+      }
+    },
+    "local_scp_preserved_byte_exact": true,
+    "local_scp_same_body_population_before": 401,
+    "local_scp_same_body_population_after": 402,
+    "root_prototype_slot": "b2a833d6144789e8099acf85e832d652",
+    "root_shared_compass_slot": "502b9225361cf6449d8d85048f0b1a75",
+    "prototype_model_link": "4a7911dc2db72cecaf6c187a66bfd11f",
+    "model_material_link": "dac6009fd0f18caad2ed322463c3d0c8",
+    "model_mesh_link": "c3f6b4c5a8270df607ea3e6e7f891292",
+    "accounting_total": 16805,
+    "accounting_counts": {
+      "0x10001": 1726,
+      "0x10005": 2601,
+      "0x20001": 2074
+    },
+    "original_records_byte_identical_after_removing_new_groups_and_normalizing_accounting": true,
+    "source_sha256": "9eb1f548de036eb56c031561a9b7665d71b54fe251d360d2a5b7c60e3d6ff3c3",
+    "candidate_sha256": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60"
+  },
+  "game_files_read": true,
+  "game_files_written": false,
+  "dcb_files_written": false,
+  "save_state_written": false,
+  "progression_state_written": false,
+  "marker_state_written": false,
+  "ready_for_offline_dcb_iconname_gate": true,
+  "ready_for_runtime_test": false,
+  "next_gate": "Build the offline wad_r_perm.dcb candidate whose only visual change is CompletionistRaven.IconName -> goCompletionistRavenHUD, then validate both files together.",
+  "source": "G:\\SteamLibrary\\steamapps\\common\\GodOfWar\\exec\\wad\\pc_le\\r_ui.wad",
+  "output_wad": "C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018\\build\\v0.10.4\\raven-compass-hud-four-payload\\r_ui.wad",
+  "report": "C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018\\archive\\field-logs\\completionist-v104-raven-compass-hud-four-payload.json"
+}

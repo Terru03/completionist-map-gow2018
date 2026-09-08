@@ -1,0 +1,49 @@
+{
+  "result": "OFFLINE_RAVEN_COMPASS_HUD_COMBINED_CONTRACT_PASSED",
+  "conclusion": "RAVEN_COMPASS_HUD_RUNTIME_CANDIDATE_READY",
+  "contract": {
+    "hud_resource_name": "goCompletionistRavenHUD",
+    "hud_resource_hash": "45E5C7943749F81C",
+    "wad_root_name": "gocompletionistravenhud",
+    "wad_root_id": "f0029a68d9705e95a981aab8bff0c5b8",
+    "dcb_class": "CompletionistRaven",
+    "dcb_IconName": "45E5C7943749F81C",
+    "dcb_InWorld_tMPIcon_Name": "0E24C47DE2F769CA",
+    "map_GameObject_used_as_HUD_root": false,
+    "local_SCP_preserved": true,
+    "raven_material_reused": "MAT_AE4AD85BB993F040",
+    "stock_dock_mesh_reused": "MG_boatdock_0",
+    "shared_compass_reused": "goProtocompassicons"
+  },
+  "wad_candidate": {
+    "path": "C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018\\build\\v0.10.4\\raven-compass-hud-four-payload\\r_ui.wad",
+    "sha256": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
+    "matches_recomputed_candidate": true,
+    "physical_records_delta": 13,
+    "payload_records_delta": 4,
+    "wad_r_ui_accounting_delta": 3
+  },
+  "dcb_candidate": {
+    "path": "C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018\\build\\v0.10.4\\raven-compass-hud-four-payload\\wad_r_perm.dcb",
+    "sha256": "7b4ebef237043e97822ffdfc2ba788b0414434514e9ead723622df0fc12a1961",
+    "matches_recomputed_candidate": true,
+    "only_CompletionistRaven_IconName_visual_field_changed": true,
+    "real_DockPoint_record_byte_identical": true
+  },
+  "live_sources": {
+    "r_ui_wad_sha256": "9eb1f548de036eb56c031561a9b7665d71b54fe251d360d2a5b7c60e3d6ff3c3",
+    "wad_r_perm_dcb_sha256": "eabb9e548202e2f710520a0fab905952cefc10ffb2b6b5540e773d64eb1d8039",
+    "unchanged_during_validation": true
+  },
+  "safety": {
+    "game_files_written": false,
+    "save_state_written": false,
+    "progression_state_written": false,
+    "marker_state_written": false,
+    "runtime_test_performed": false,
+    "installed": false
+  },
+  "ready_for_reversible_runtime_install": true,
+  "ready_for_runtime_test_after_reversible_install": true,
+  "next_gate": "Use a separate reversible installer that requires these exact candidate hashes, backs up both live files, installs both candidates as one pair, and can restore both. Do not reuse the failed map-GameObject HUD installer."
+}
