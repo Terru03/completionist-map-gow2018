@@ -1,0 +1,582 @@
+{
+  "result": "READ_ONLY_COMPASS_HUD_ICON_CONTRACT",
+  "game_files_written": false,
+  "save_state_written": false,
+  "progression_state_written": false,
+  "marker_state_written": false,
+  "source_hashes": {
+    "GoW.exe": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+    "wad_r_perm.dcb": "eabb9e548202e2f710520a0fab905952cefc10ffb2b6b5540e773d64eb1d8039",
+    "r_ui.wad": "9eb1f548de036eb56c031561a9b7665d71b54fe251d360d2a5b7c60e3d6ff3c3"
+  },
+  "runtime_observation": {
+    "previous_registration_only_result": "CompletionistRaven accepted and manager-verified with DockPoint visuals",
+    "hud_override_result": "ShowMarker returned ok=true, then game crashed before manager verification",
+    "changed_field": "CompletionistRaven.IconName only",
+    "bad_test_value": "584F31DC8BD6E738"
+  },
+  "stock_compass_classes": [
+    {
+      "name": "MAIN",
+      "uid": "00004DFF112F2137",
+      "root": "0x4E2B30",
+      "IconName": "BE15A0CF478B4A6E",
+      "RadiusIconName": "F237F1C2C68C56DD",
+      "InWorld_tMPIcon_Name": "0E24CFE4F0863823",
+      "IconScale": 1.0,
+      "IsMainQuest": true
+    },
+    {
+      "name": "SIDE",
+      "uid": "00005352BEA3C3F1",
+      "root": "0x4E2B50",
+      "IconName": "D8E3145BD78C4398",
+      "RadiusIconName": "E6B82F258C8DFD49",
+      "InWorld_tMPIcon_Name": "0E24CF72E968ACF0",
+      "IconScale": 1.0,
+      "IsMainQuest": false
+    },
+    {
+      "name": "VendorLocation",
+      "uid": "5EFB0C30147F2D27",
+      "root": "0x4E2B70",
+      "IconName": "000A2FE676394F22",
+      "RadiusIconName": "0000000000000000",
+      "InWorld_tMPIcon_Name": "92BD714EEEC2C7EC",
+      "IconScale": 1.0,
+      "IsMainQuest": false
+    },
+    {
+      "name": "Valkyrie",
+      "uid": "D4497FD7D6BEDE7A",
+      "root": "0x4E2B90",
+      "IconName": "2BB7DB2C07DD29CC",
+      "RadiusIconName": "0000000000000000",
+      "InWorld_tMPIcon_Name": "532F3E368428DCE3",
+      "IconScale": 1.0,
+      "IsMainQuest": false
+    },
+    {
+      "name": "DockPoint",
+      "uid": "A9FBE73C1DDFBBC5",
+      "root": "0x4E2BB0",
+      "IconName": "82F0296748C7393D",
+      "RadiusIconName": "0000000000000000",
+      "InWorld_tMPIcon_Name": "0E24C47DE2F769CA",
+      "IconScale": 1.0,
+      "IsMainQuest": false
+    },
+    {
+      "name": "FastTravel",
+      "uid": "22998929FB117E4A",
+      "root": "0x4E2BD0",
+      "IconName": "809288737FB39762",
+      "RadiusIconName": "0000000000000000",
+      "InWorld_tMPIcon_Name": "352BDF521BCBB527",
+      "IconScale": 1.0,
+      "IsMainQuest": false
+    },
+    {
+      "name": "AreaEntrance",
+      "uid": "6B8EF34937F9039A",
+      "root": "0x4E2BF0",
+      "IconName": "AAF32B3BACA2DD2A",
+      "RadiusIconName": "0000000000000000",
+      "InWorld_tMPIcon_Name": "0E24A3A958F5A701",
+      "IconScale": 1.0,
+      "IsMainQuest": false
+    },
+    {
+      "name": "ChiselLocation",
+      "uid": "B8580F7DBB34A4FD",
+      "root": "0x4E2C10",
+      "IconName": "AAF32B3BACA2DD2A",
+      "RadiusIconName": "0000000000000000",
+      "InWorld_tMPIcon_Name": "0E24A3A958F5A701",
+      "IconScale": 1.0,
+      "IsMainQuest": false
+    },
+    {
+      "name": "FightLocation",
+      "uid": "8EEF3CDC31B6E639",
+      "root": "0x4E2C30",
+      "IconName": "D46B207E9A11CBD8",
+      "RadiusIconName": "0000000000000000",
+      "InWorld_tMPIcon_Name": "A3C5AFB7FEC45C45",
+      "IconScale": 1.0,
+      "IsMainQuest": false
+    }
+  ],
+  "stock_iconname_wad_resolution": [
+    {
+      "class": "MAIN",
+      "IconName": "BE15A0CF478B4A6E",
+      "matches": [
+        {
+          "record_index": 48904,
+          "name": "gomainquest",
+          "kind": 1,
+          "flags": "0x3D",
+          "data_bytes": 164,
+          "payload_index": 18387,
+          "file_offset": "0x2E62470",
+          "resource_id": "50af59f9984cb6d6bed4509369bd8b92",
+          "parent_index": 48903,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "01000200000000000000000050AF59F9984CB6D6BED4509368BD8B92676F6D61696E717565737400000000000000000000000000000000000000000000000000",
+          "payload_type_key": null
+        },
+        {
+          "record_index": 49222,
+          "name": "gomainquest",
+          "kind": 1,
+          "flags": "0x0",
+          "data_bytes": 0,
+          "payload_index": null,
+          "file_offset": "0x2E74E90",
+          "resource_id": "50af59f9984cb6d6bed4509369bd8b92",
+          "parent_index": 49220,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "",
+          "payload_type_key": null
+        }
+      ]
+    },
+    {
+      "class": "SIDE",
+      "IconName": "D8E3145BD78C4398",
+      "matches": [
+        {
+          "record_index": 48919,
+          "name": "gosidequest",
+          "kind": 1,
+          "flags": "0x3D",
+          "data_bytes": 164,
+          "payload_index": 18393,
+          "file_offset": "0x2E63200",
+          "resource_id": "43b9f792734e669f0fe74099ddfdab35",
+          "parent_index": 48918,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "01000200000000000000000043B9F792734E669F0FE74099DCFDAB35676F73696465717565737400000000000000000000000000000000000000000000000000",
+          "payload_type_key": null
+        },
+        {
+          "record_index": 49223,
+          "name": "gosidequest",
+          "kind": 1,
+          "flags": "0x0",
+          "data_bytes": 0,
+          "payload_index": null,
+          "file_offset": "0x2E74EF0",
+          "resource_id": "43b9f792734e669f0fe74099ddfdab35",
+          "parent_index": 49220,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "",
+          "payload_type_key": null
+        }
+      ]
+    },
+    {
+      "class": "VendorLocation",
+      "IconName": "000A2FE676394F22",
+      "matches": [
+        {
+          "record_index": 49126,
+          "name": "govendor",
+          "kind": 1,
+          "flags": "0x3D",
+          "data_bytes": 164,
+          "payload_index": 18479,
+          "file_offset": "0x2E6F3B0",
+          "resource_id": "150539aecc3468489f0df526e76c7c4a",
+          "parent_index": 49125,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "010002000000000000000000150539AECC3468489F0DF526E66C7C4A676F76656E646F7200000000000000000000000000000000000000000000000000000000",
+          "payload_type_key": null
+        },
+        {
+          "record_index": 49236,
+          "name": "govendor",
+          "kind": 1,
+          "flags": "0x0",
+          "data_bytes": 0,
+          "payload_index": null,
+          "file_offset": "0x2E753D0",
+          "resource_id": "150539aecc3468489f0df526e76c7c4a",
+          "parent_index": 49220,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "",
+          "payload_type_key": null
+        }
+      ]
+    },
+    {
+      "class": "Valkyrie",
+      "IconName": "2BB7DB2C07DD29CC",
+      "matches": [
+        {
+          "record_index": 49218,
+          "name": "govalkyrie",
+          "kind": 1,
+          "flags": "0x3D",
+          "data_bytes": 164,
+          "payload_index": 18515,
+          "file_offset": "0x2E74950",
+          "resource_id": "ab3e0f277f46d8449226dfbe003a2030",
+          "parent_index": 49217,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "010002000000000000000000AB3E0F277F46D8449226DFBEFF392030676F76616C6B797269650000000000000000000000000000000000000000000000000000",
+          "payload_type_key": null
+        },
+        {
+          "record_index": 49242,
+          "name": "govalkyrie",
+          "kind": 1,
+          "flags": "0x0",
+          "data_bytes": 0,
+          "payload_index": null,
+          "file_offset": "0x2E75610",
+          "resource_id": "ab3e0f277f46d8449226dfbe003a2030",
+          "parent_index": 49220,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "",
+          "payload_type_key": null
+        }
+      ]
+    },
+    {
+      "class": "DockPoint",
+      "IconName": "82F0296748C7393D",
+      "matches": [
+        {
+          "record_index": 49156,
+          "name": "goboatdock",
+          "kind": 1,
+          "flags": "0x3D",
+          "data_bytes": 164,
+          "payload_index": 18491,
+          "file_offset": "0x2E70FD0",
+          "resource_id": "e38da34945defe418b8be0bb6b985f12",
+          "parent_index": 49155,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "010002000000000000000000E38DA34945DEFE418B8BE0BB6A985F12676F626F6174646F636B0000000000000000000000000000000000000000000000000000",
+          "payload_type_key": null
+        },
+        {
+          "record_index": 49238,
+          "name": "goboatdock",
+          "kind": 1,
+          "flags": "0x0",
+          "data_bytes": 0,
+          "payload_index": null,
+          "file_offset": "0x2E75490",
+          "resource_id": "e38da34945defe418b8be0bb6b985f12",
+          "parent_index": 49220,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "",
+          "payload_type_key": null
+        }
+      ]
+    },
+    {
+      "class": "FastTravel",
+      "IconName": "809288737FB39762",
+      "matches": [
+        {
+          "record_index": 49141,
+          "name": "gofasttravel",
+          "kind": 1,
+          "flags": "0x3D",
+          "data_bytes": 164,
+          "payload_index": 18485,
+          "file_offset": "0x2E70230",
+          "resource_id": "efdc6f74ac81c742bdf5259e60e89a2b",
+          "parent_index": 49140,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "010002000000000000000000EFDC6F74AC81C742BDF5259E5FE89A2B676F6661737474726176656C000000000000000000000000000000000000000000000000",
+          "payload_type_key": null
+        },
+        {
+          "record_index": 49237,
+          "name": "gofasttravel",
+          "kind": 1,
+          "flags": "0x0",
+          "data_bytes": 0,
+          "payload_index": null,
+          "file_offset": "0x2E75430",
+          "resource_id": "efdc6f74ac81c742bdf5259e60e89a2b",
+          "parent_index": 49220,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "",
+          "payload_type_key": null
+        }
+      ]
+    },
+    {
+      "class": "AreaEntrance",
+      "IconName": "AAF32B3BACA2DD2A",
+      "matches": [
+        {
+          "record_index": 49111,
+          "name": "goentrance",
+          "kind": 1,
+          "flags": "0x3D",
+          "data_bytes": 164,
+          "payload_index": 18473,
+          "file_offset": "0x2E6E610",
+          "resource_id": "a4d43fd481f2844e967123cac444d7e6",
+          "parent_index": 49110,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "010002000000000000000000A4D43FD481F2844E967123CAC344D7E6676F656E7472616E63650000000000000000000000000000000000000000000000000000",
+          "payload_type_key": null
+        },
+        {
+          "record_index": 49235,
+          "name": "goentrance",
+          "kind": 1,
+          "flags": "0x0",
+          "data_bytes": 0,
+          "payload_index": null,
+          "file_offset": "0x2E75370",
+          "resource_id": "a4d43fd481f2844e967123cac444d7e6",
+          "parent_index": 49220,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "",
+          "payload_type_key": null
+        }
+      ]
+    },
+    {
+      "class": "ChiselLocation",
+      "IconName": "AAF32B3BACA2DD2A",
+      "matches": [
+        {
+          "record_index": 49111,
+          "name": "goentrance",
+          "kind": 1,
+          "flags": "0x3D",
+          "data_bytes": 164,
+          "payload_index": 18473,
+          "file_offset": "0x2E6E610",
+          "resource_id": "a4d43fd481f2844e967123cac444d7e6",
+          "parent_index": 49110,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "010002000000000000000000A4D43FD481F2844E967123CAC344D7E6676F656E7472616E63650000000000000000000000000000000000000000000000000000",
+          "payload_type_key": null
+        },
+        {
+          "record_index": 49235,
+          "name": "goentrance",
+          "kind": 1,
+          "flags": "0x0",
+          "data_bytes": 0,
+          "payload_index": null,
+          "file_offset": "0x2E75370",
+          "resource_id": "a4d43fd481f2844e967123cac444d7e6",
+          "parent_index": 49220,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "",
+          "payload_type_key": null
+        }
+      ]
+    },
+    {
+      "class": "FightLocation",
+      "IconName": "D46B207E9A11CBD8",
+      "matches": [
+        {
+          "record_index": 49171,
+          "name": "gofightlocation",
+          "kind": 1,
+          "flags": "0x3D",
+          "data_bytes": 164,
+          "payload_index": 18497,
+          "file_offset": "0x2E71D70",
+          "resource_id": "977bd931b65af2469bb11cfd7de7bdcf",
+          "parent_index": 49170,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "010002000000000000000000977BD931B65AF2469BB11CFD7CE7BDCF676F66696768746C6F636174696F6E000000000000000000000000000000000000000000",
+          "payload_type_key": null
+        },
+        {
+          "record_index": 49239,
+          "name": "gofightlocation",
+          "kind": 1,
+          "flags": "0x0",
+          "data_bytes": 0,
+          "payload_index": null,
+          "file_offset": "0x2E754F0",
+          "resource_id": "977bd931b65af2469bb11cfd7de7bdcf",
+          "parent_index": 49220,
+          "parent_name": "GroupStart",
+          "payload_prefix_hex": "",
+          "payload_type_key": null
+        }
+      ]
+    }
+  ],
+  "dock_icon": {
+    "hash": "82F0296748C7393D",
+    "matches": [
+      {
+        "record_index": 49156,
+        "name": "goboatdock",
+        "kind": 1,
+        "flags": "0x3D",
+        "data_bytes": 164,
+        "payload_index": 18491,
+        "file_offset": "0x2E70FD0",
+        "resource_id": "e38da34945defe418b8be0bb6b985f12",
+        "parent_index": 49155,
+        "parent_name": "GroupStart",
+        "payload_prefix_hex": "010002000000000000000000E38DA34945DEFE418B8BE0BB6A985F12676F626F6174646F636B0000000000000000000000000000000000000000000000000000",
+        "payload_type_key": null
+      },
+      {
+        "record_index": 49238,
+        "name": "goboatdock",
+        "kind": 1,
+        "flags": "0x0",
+        "data_bytes": 0,
+        "payload_index": null,
+        "file_offset": "0x2E75490",
+        "resource_id": "e38da34945defe418b8be0bb6b985f12",
+        "parent_index": 49220,
+        "parent_name": "GroupStart",
+        "payload_prefix_hex": "",
+        "payload_type_key": null
+      }
+    ]
+  },
+  "raven_map_resource_hash": {
+    "hash": "584F31DC8BD6E738",
+    "matches": [
+      {
+        "record_index": 32459,
+        "name": "gomapiconcompletionistraven",
+        "kind": 1,
+        "flags": "0x3D",
+        "data_bytes": 164,
+        "payload_index": 13922,
+        "file_offset": "0x26791E0",
+        "resource_id": "3d8f7153809e6db191c2d5e354f1e88c",
+        "parent_index": 32458,
+        "parent_name": "GroupStart",
+        "payload_prefix_hex": "010002000000000000000000F29A83D61D2FE0B9BB96123FFE77225D676F6D617069636F6E636F6D706C6574696F6E697374726176656E000000000000000000",
+        "payload_type_key": "0xD"
+      },
+      {
+        "record_index": 32510,
+        "name": "gomapiconcompletionistraven",
+        "kind": 1,
+        "flags": "0x0",
+        "data_bytes": 0,
+        "payload_index": null,
+        "file_offset": "0x267E140",
+        "resource_id": "3d8f7153809e6db191c2d5e354f1e88c",
+        "parent_index": 32492,
+        "parent_name": "GroupStart",
+        "payload_prefix_hex": "",
+        "payload_type_key": null
+      }
+    ]
+  },
+  "dock_vs_raven_payload": {
+    "left_bytes": 164,
+    "right_bytes": 164,
+    "difference_count": 71,
+    "first_difference_offsets": [
+      "0xC",
+      "0xD",
+      "0xE",
+      "0xF",
+      "0x10",
+      "0x11",
+      "0x12",
+      "0x13",
+      "0x14",
+      "0x15",
+      "0x16",
+      "0x17",
+      "0x18",
+      "0x19",
+      "0x1A",
+      "0x1B",
+      "0x1E",
+      "0x1F",
+      "0x20",
+      "0x21",
+      "0x22",
+      "0x24",
+      "0x25",
+      "0x26",
+      "0x27",
+      "0x28",
+      "0x29",
+      "0x2A",
+      "0x2B",
+      "0x2C",
+      "0x2D",
+      "0x2E",
+      "0x2F",
+      "0x30",
+      "0x31",
+      "0x32",
+      "0x33",
+      "0x34",
+      "0x35",
+      "0x36",
+      "0x54",
+      "0x55",
+      "0x56",
+      "0x57",
+      "0x58",
+      "0x59",
+      "0x5A",
+      "0x5B",
+      "0x5C",
+      "0x5D",
+      "0x5E",
+      "0x5F",
+      "0x60",
+      "0x61",
+      "0x62",
+      "0x63",
+      "0x64",
+      "0x68",
+      "0x69",
+      "0x6A",
+      "0x6B",
+      "0x78",
+      "0x79",
+      "0x7A"
+    ],
+    "left_hex": "010002000000000000000000E38DA34945DEFE418B8BE0BB6A985F12676F626F6174646F636B00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000502B9225361CF6449D8D85048F0B1A75010400000000484200000000000000000000000000004842000000000000000000000000000048420000D02A000000000000000000000000003C000000000000",
+    "right_hex": "010002000000000000000000F29A83D61D2FE0B9BB96123FFE77225D676F6D617069636F6E636F6D706C6574696F6E697374726176656E0000000000000000000000000000000000000000000000000000000000A3C894ECF0A9613025E8F9898018560D050400001F856B3F0000000000000000000000001F856B3F0000000000000000000000001F856B3F00000000000000000000000000000000003C000000000000",
+    "dock_name": "goboatdock",
+    "raven_name": "gomapiconcompletionistraven",
+    "dock_type_key": null,
+    "raven_type_key": "0xD",
+    "dock_prototype_id_at_0x0C": "e38da34945defe418b8be0bb6a985f12",
+    "raven_prototype_id_at_0x0C": "f29a83d61d2fe0b9bb96123ffe77225d"
+  },
+  "native_show_icon_creation": {
+    "function": {
+      "begin": "0x6C0C80",
+      "end": "0x6C0CD3"
+    },
+    "prior_icon_create_site": "0x6C0E65",
+    "hex_window": {
+      "start_rva": "0x6C0DC5",
+      "end_rva": "0x6C0F05",
+      "hex": "080000488D4601410F45CF4584F6448BF9480F44F04532F648FFC2483BF274AC498B85489A0100488D0CF048833900759B48FFC64883C108483BF275EEEB8D4C8BB424F80800004183FF064C8BBC24F0080000488B9D48080000488B7C24200F8DB0020000488BD3498BCDE81B2DB1FF488B150C5BC00141B81E010000488BCF0FB6F0E8430DD7FF33C94885C074114084F67409488B48084885C97503488B08E836B61E0083BD300800000041B8D0090800488985B8070000B8600A0800440F45C04533C94D03C533D233C9498D40104438087411FFC248FFC14883C0184883F9067CECEB104863C2488D14404D8D0CD041C64110014C8BC34C898DC0070000488D953008000048C785C807000000000000498BCDE891ED1E00498D8DE0210200488B10E86244B1FF48899DB00700004889BDD00700000F10100FB685E40700"
+    },
+    "heuristic_direct_calls": [],
+    "capstone": {
+      "available": false,
+      "reason": "ModuleNotFoundError: No module named 'capstone'"
+    }
+  },
+  "conclusion": "HUD_ICONNAME_RESOURCE_CONTRACT_REQUIRES_SEPARATE_PROOF",
+  "next_gate": "Use the stock IconName resolution set plus native 0x6C0C80 icon-creation data flow to identify the exact authored HUD resource/template contract. Do not point CompassIconClass.IconName at goMapIconCompletionistRaven again, do not alter InWorld_tMPIcon_Name, and do not modify shared DockPoint resources."
+}
