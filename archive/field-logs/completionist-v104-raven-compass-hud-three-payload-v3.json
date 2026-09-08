@@ -1,0 +1,89 @@
+{
+  "result": "OFFLINE_RAVEN_COMPASS_HUD_THREE_PAYLOAD_BLOCKED",
+  "builder_revision": 3,
+  "reason": "Complete prototype group includes nonempty SCP payload; +3 payload/+2 accounting gate conflicts.",
+  "required_clone": {
+    "physical_records": 13,
+    "payload_records": 4,
+    "accounting_delta": 3,
+    "type_deltas": {
+      "0x10001": 1,
+      "0x20001": 1,
+      "0x10005": 1
+    },
+    "matches_three_payload_gate": false
+  },
+  "requested_payload_delta": 3,
+  "requested_accounting_delta": 2,
+  "candidate_written": false,
+  "candidate_wad_sha256": null,
+  "candidate_dcb_sha256": null,
+  "candidate_path_reserved_only": "build/v0.10.4/raven-compass-hud-three-payload-v3/r_ui.wad",
+  "ready_for_offline_dcb_iconname_gate": false,
+  "ready_for_runtime_test": false,
+  "game_files_written": false,
+  "save_state_written": false,
+  "progression_state_written": false,
+  "marker_state_written": false,
+  "conclusion": "STOP_REQUIRED_BY_AUTHORITATIVE_SPEC_TOPOLOGY_CLAUSE",
+  "next_research": "Prove local SCP binding before changing topology or requested payload/accounting deltas.",
+  "source_wad_sha256": "9eb1f548de036eb56c031561a9b7665d71b54fe251d360d2a5b7c60e3d6ff3c3",
+  "source_round_trip_byte_exact": true,
+  "peer_comparison_passed": true,
+  "clone_transform_preview": {
+    "groups": {
+      "model": {
+        "physical_records": 5,
+        "payload_records": 1,
+        "source_group_sha256": "1e7378c954633630435c3711881521e8cc867e190b566a34fcb74d9005491869",
+        "in_memory_clone_group_sha256": "db75b2022f205f3fda5fc2a8426b50e27b2eaaf070248aeeec312da483fec1f7",
+        "round_trip_byte_exact": true,
+        "undo_intentional_edits_restores_source_bytes": true,
+        "changed_definition_relative_index": 1,
+        "changed_link_relative_indices": [
+          2
+        ],
+        "changed_inline_id_offsets": [],
+        "changed_inline_name_offsets": []
+      },
+      "prototype": {
+        "physical_records": 5,
+        "payload_records": 2,
+        "source_group_sha256": "bb6c742da59a67e31574da98e6ad471185b5ae1281d542233618b8aa8daae0cc",
+        "in_memory_clone_group_sha256": "9ab02851b170159567b294b62b632dc7b28569546e32df6df5b7baaa9c0514f1",
+        "round_trip_byte_exact": true,
+        "undo_intentional_edits_restores_source_bytes": true,
+        "changed_definition_relative_index": 1,
+        "changed_link_relative_indices": [
+          2
+        ],
+        "changed_inline_id_offsets": [
+          "0x3A8"
+        ],
+        "changed_inline_name_offsets": []
+      },
+      "root": {
+        "physical_records": 3,
+        "payload_records": 1,
+        "source_group_sha256": "ffe2744b56c845ba616d61cbe8a1c6dd42e73ff531a93ae068c6560e3b50aa76",
+        "in_memory_clone_group_sha256": "0cccffe5bc606bbf7d78b51686df0c93be935d5d0a18b10d866f3df3385976ca",
+        "round_trip_byte_exact": true,
+        "undo_intentional_edits_restores_source_bytes": true,
+        "changed_definition_relative_index": 1,
+        "changed_link_relative_indices": [],
+        "changed_inline_id_offsets": [
+          "0xC"
+        ],
+        "changed_inline_name_offsets": [
+          "0x1C"
+        ]
+      }
+    },
+    "full_wad_candidate_built": false,
+    "script_payload_preserved": true,
+    "stock_dock_mesh_link_preserved": true,
+    "shared_compass_inline_ref_preserved": true,
+    "note": "Group transforms tested in memory only. Full WAD acceptance gate remains blocked."
+  },
+  "source_unchanged_after_preview": true
+}

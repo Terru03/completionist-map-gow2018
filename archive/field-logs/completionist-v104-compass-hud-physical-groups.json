@@ -1,0 +1,1978 @@
+{
+  "result": "READ_ONLY_COMPASS_HUD_PHYSICAL_GROUPS",
+  "source_wad_sha256": "9eb1f548de036eb56c031561a9b7665d71b54fe251d360d2a5b7c60e3d6ff3c3",
+  "source_round_trip_byte_exact": true,
+  "source_physical_records": 53811,
+  "source_payload_records": 20415,
+  "peer_classes": [
+    "DockPoint",
+    "FastTravel",
+    "Valkyrie",
+    "MAIN",
+    "SIDE"
+  ],
+  "peer_comparison_passed": true,
+  "classes": {
+    "DockPoint": {
+      "root": {
+        "start": 49155,
+        "end": 49157,
+        "physical_count": 3,
+        "payload_count": 1,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "group_end"
+        ],
+        "resource_role": "root",
+        "target_record_index": 49156,
+        "records": [
+          {
+            "record_index": 49155,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 49155,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 49156,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x3D",
+            "name": "goboatdock",
+            "id": "e38da34945defe418b8be0bb6b985f12",
+            "data_size": 164,
+            "first_dword": "0x20001",
+            "payload_index": 18491,
+            "parent_record_index": 49155,
+            "parent_relative_index": 0,
+            "containing_group_start": 49155,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "e3cfd6786c2d34494e37553f8bd400cee2373154c6a7d8637a40fe75d14d802c",
+            "record_sha256": "8205b9851d40a2f3866d1a09808f3672635fea6b7410e69073f67baa90abd612"
+          },
+          {
+            "record_index": 49157,
+            "relative_index": 2,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49155,
+            "parent_relative_index": 0,
+            "containing_group_start": 49155,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "prototype": {
+        "start": 49150,
+        "end": 49154,
+        "physical_count": 5,
+        "payload_count": 2,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "dependency_link",
+          "auxiliary_payload",
+          "group_end"
+        ],
+        "resource_role": "prototype",
+        "target_record_index": 49151,
+        "records": [
+          {
+            "record_index": 49150,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 49150,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 49151,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x3D",
+            "name": "goProtoBoatDock",
+            "id": "e38da34945defe418b8be0bb6a985f12",
+            "data_size": 1184,
+            "first_dword": "0x10001",
+            "payload_index": 18489,
+            "parent_record_index": 49150,
+            "parent_relative_index": 0,
+            "containing_group_start": 49150,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "c8065c63cf5f6dd344d9eaccd85a152562dd09f340ae40b311ca54d24ac6fbc7",
+            "record_sha256": "1962751fc1352968e0594a35fc333e505d05641e4a41b2b10d37751a93ddede7"
+          },
+          {
+            "record_index": 49152,
+            "relative_index": 2,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MDL_boatdock",
+            "id": "808e5817524559f5c65636ffc0fbc1a9",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49150,
+            "parent_relative_index": 0,
+            "containing_group_start": 49150,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 49146,
+                "name": "MDL_boatdock",
+                "flags": "0x8E",
+                "data_size": 80
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "687a0d6c354db87377c40c48378aefa186725f7e907dfabf6c1cadc1e7356c49"
+          },
+          {
+            "record_index": 49153,
+            "relative_index": 3,
+            "depth": 1,
+            "role": "auxiliary_payload",
+            "kind": 1,
+            "flags": "0x18",
+            "name": "SCP_BoatDock",
+            "id": "baaddbbad0baaddbbaaddbbad7baaddb",
+            "data_size": 96,
+            "first_dword": "0x10005",
+            "payload_index": 18490,
+            "parent_record_index": 49150,
+            "parent_relative_index": 0,
+            "containing_group_start": 49150,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "bec78f134e8174b9b5636dbe8d3bb6116bf0eb79b58e2c75edc660d43b654b0f",
+            "record_sha256": "e6e271c7dccc8b4fd7477a69ee8e9b7b68d419f318e2fa5e2cebd70a821a78d9"
+          },
+          {
+            "record_index": 49154,
+            "relative_index": 4,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49150,
+            "parent_relative_index": 0,
+            "containing_group_start": 49150,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "model": {
+        "start": 49145,
+        "end": 49149,
+        "physical_count": 5,
+        "payload_count": 1,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "dependency_link",
+          "dependency_link",
+          "group_end"
+        ],
+        "resource_role": "model",
+        "target_record_index": 49146,
+        "records": [
+          {
+            "record_index": 49145,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 49145,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 49146,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x8E",
+            "name": "MDL_boatdock",
+            "id": "808e5817524559f5c65636ffc0fbc1a9",
+            "data_size": 80,
+            "first_dword": "0x1002000C",
+            "payload_index": 18488,
+            "parent_record_index": 49145,
+            "parent_relative_index": 0,
+            "containing_group_start": 49145,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "f51dd3e3721c498bf169bd99a8ae22f689e34dedb5275820fccfad352a2fce2b",
+            "record_sha256": "388c527a89c1f83b535281d86848b66b0cb6c8d163a5c3282a3c350847b0b2a2"
+          },
+          {
+            "record_index": 49147,
+            "relative_index": 2,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MAT_0C599DC8DC7E2170",
+            "id": "61ed20dc7a5567ba23016085750aacf2",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49145,
+            "parent_relative_index": 0,
+            "containing_group_start": 49145,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 31804,
+                "name": "MAT_0C599DC8DC7E2170",
+                "flags": "0x14",
+                "data_size": 384
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "5035a9e3054ae58bc0f95e5de3ec744073084c886f0f5303bb5650b0ae521ef0"
+          },
+          {
+            "record_index": 49148,
+            "relative_index": 3,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MG_boatdock_0",
+            "id": "c3f6b4c5a8270df607ea3e6e7f891292",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49145,
+            "parent_relative_index": 0,
+            "containing_group_start": 49145,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 49144,
+                "name": "MG_boatdock_0",
+                "flags": "0x98",
+                "data_size": 388
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "2e2dc0e8f4dc354cc276121edede6143ff23b5d8dd754aaad79f412a9a4baedf"
+          },
+          {
+            "record_index": 49149,
+            "relative_index": 4,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49145,
+            "parent_relative_index": 0,
+            "containing_group_start": 49145,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "dependency_encodings": {
+        "prototype_to_model": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            2
+          ]
+        },
+        "model_to_material": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            2
+          ]
+        },
+        "model_to_mesh": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            3
+          ]
+        }
+      },
+      "inline_fields": {
+        "root_prototype_offset": "0xC",
+        "root_shared_compass_offset": "0x54",
+        "root_loader_name_offset": "0x1C",
+        "root_loader_name_bytes": 56,
+        "root_loader_name": "goboatdock",
+        "prototype_self_id_offset": "0x3A8"
+      }
+    },
+    "FastTravel": {
+      "root": {
+        "start": 49140,
+        "end": 49142,
+        "physical_count": 3,
+        "payload_count": 1,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "group_end"
+        ],
+        "resource_role": "root",
+        "target_record_index": 49141,
+        "records": [
+          {
+            "record_index": 49140,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 49140,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 49141,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x3D",
+            "name": "gofasttravel",
+            "id": "efdc6f74ac81c742bdf5259e60e89a2b",
+            "data_size": 164,
+            "first_dword": "0x20001",
+            "payload_index": 18485,
+            "parent_record_index": 49140,
+            "parent_relative_index": 0,
+            "containing_group_start": 49140,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "3333673ae9fcb7bdd54bead6e36e0c845dfa8b84d2004383a75b8e2c68425d70",
+            "record_sha256": "a5f98fbcf5b88b929e8a81b91fb23fea5be63e3c33e65722dcf7894ca2261f1f"
+          },
+          {
+            "record_index": 49142,
+            "relative_index": 2,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49140,
+            "parent_relative_index": 0,
+            "containing_group_start": 49140,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "prototype": {
+        "start": 49135,
+        "end": 49139,
+        "physical_count": 5,
+        "payload_count": 2,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "dependency_link",
+          "auxiliary_payload",
+          "group_end"
+        ],
+        "resource_role": "prototype",
+        "target_record_index": 49136,
+        "records": [
+          {
+            "record_index": 49135,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 49135,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 49136,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x3D",
+            "name": "goProtoFastTravel",
+            "id": "efdc6f74ac81c742bdf5259e5fe89a2b",
+            "data_size": 1184,
+            "first_dword": "0x10001",
+            "payload_index": 18483,
+            "parent_record_index": 49135,
+            "parent_relative_index": 0,
+            "containing_group_start": 49135,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "9e744fbbe6d08654e64823d730bced077fbda49d4471ec32dfc10537d56f2855",
+            "record_sha256": "79e70bd6f19b34b53c8f277de6fa6b4c3563b25eb18881cf55fde00108c4b6db"
+          },
+          {
+            "record_index": 49137,
+            "relative_index": 2,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MDL_fasttravel",
+            "id": "ee161721b98770644159f8b566b6435f",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49135,
+            "parent_relative_index": 0,
+            "containing_group_start": 49135,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 49131,
+                "name": "MDL_fasttravel",
+                "flags": "0x8E",
+                "data_size": 80
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "69e923f7522a31ac48559cfe39d152e46d30a3e50f8bab695494ba3ed20ed887"
+          },
+          {
+            "record_index": 49138,
+            "relative_index": 3,
+            "depth": 1,
+            "role": "auxiliary_payload",
+            "kind": 1,
+            "flags": "0x18",
+            "name": "SCP_FastTravel",
+            "id": "baaddbbad0baaddbbaaddbbad7baaddb",
+            "data_size": 96,
+            "first_dword": "0x10005",
+            "payload_index": 18484,
+            "parent_record_index": 49135,
+            "parent_relative_index": 0,
+            "containing_group_start": 49135,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "bec78f134e8174b9b5636dbe8d3bb6116bf0eb79b58e2c75edc660d43b654b0f",
+            "record_sha256": "ea407a607453aa0e6cdfb214938359bac33d48de45f85bcedad7e3e28a70c3d8"
+          },
+          {
+            "record_index": 49139,
+            "relative_index": 4,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49135,
+            "parent_relative_index": 0,
+            "containing_group_start": 49135,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "model": {
+        "start": 49130,
+        "end": 49134,
+        "physical_count": 5,
+        "payload_count": 1,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "dependency_link",
+          "dependency_link",
+          "group_end"
+        ],
+        "resource_role": "model",
+        "target_record_index": 49131,
+        "records": [
+          {
+            "record_index": 49130,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 49130,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 49131,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x8E",
+            "name": "MDL_fasttravel",
+            "id": "ee161721b98770644159f8b566b6435f",
+            "data_size": 80,
+            "first_dword": "0x1002000C",
+            "payload_index": 18482,
+            "parent_record_index": 49130,
+            "parent_relative_index": 0,
+            "containing_group_start": 49130,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "0ec1a5dc36ff7814dbc10de2c72e6610e39fbb9de79611fc319a1dbe1e66cf63",
+            "record_sha256": "559a88a51532cec23f60ffe938a8db44d6e7b0fbd00e053ad0a8cca559db36ba"
+          },
+          {
+            "record_index": 49132,
+            "relative_index": 2,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MAT_1023F8AB087192C6",
+            "id": "4f7e300c069d9cb8916d8ee5b72877bb",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49130,
+            "parent_relative_index": 0,
+            "containing_group_start": 49130,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 31822,
+                "name": "MAT_1023F8AB087192C6",
+                "flags": "0x14",
+                "data_size": 432
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "fe1d5828ecd1606dd5b74024cc26ce65f07ac7579666d85c038827af41b267c9"
+          },
+          {
+            "record_index": 49133,
+            "relative_index": 3,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MG_fasttravel_0",
+            "id": "5bce04277d019a4778d880934fd0eea2",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49130,
+            "parent_relative_index": 0,
+            "containing_group_start": 49130,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 49129,
+                "name": "MG_fasttravel_0",
+                "flags": "0x98",
+                "data_size": 420
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "7f058107785af348a243fadd7eee569f3c6d1dcc6e593247ae5698e4882432a3"
+          },
+          {
+            "record_index": 49134,
+            "relative_index": 4,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49130,
+            "parent_relative_index": 0,
+            "containing_group_start": 49130,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "dependency_encodings": {
+        "prototype_to_model": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            2
+          ]
+        },
+        "model_to_material": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            2
+          ]
+        },
+        "model_to_mesh": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            3
+          ]
+        }
+      },
+      "inline_fields": {
+        "root_prototype_offset": "0xC",
+        "root_shared_compass_offset": "0x54",
+        "root_loader_name_offset": "0x1C",
+        "root_loader_name_bytes": 56,
+        "root_loader_name": "gofasttravel",
+        "prototype_self_id_offset": "0x3A8"
+      }
+    },
+    "Valkyrie": {
+      "root": {
+        "start": 49217,
+        "end": 49219,
+        "physical_count": 3,
+        "payload_count": 1,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "group_end"
+        ],
+        "resource_role": "root",
+        "target_record_index": 49218,
+        "records": [
+          {
+            "record_index": 49217,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 49217,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 49218,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x3D",
+            "name": "govalkyrie",
+            "id": "ab3e0f277f46d8449226dfbe003a2030",
+            "data_size": 164,
+            "first_dword": "0x20001",
+            "payload_index": 18515,
+            "parent_record_index": 49217,
+            "parent_relative_index": 0,
+            "containing_group_start": 49217,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "4d214226d5dd9bf25b5599d72da84295cbbe8f24ea16560d931f660da4ce6d50",
+            "record_sha256": "e4f070fe30bd759f8f11e5fe802fbcacbca8a6e80b80686f0ed1387f0090de6a"
+          },
+          {
+            "record_index": 49219,
+            "relative_index": 2,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49217,
+            "parent_relative_index": 0,
+            "containing_group_start": 49217,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "prototype": {
+        "start": 49212,
+        "end": 49216,
+        "physical_count": 5,
+        "payload_count": 2,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "dependency_link",
+          "auxiliary_payload",
+          "group_end"
+        ],
+        "resource_role": "prototype",
+        "target_record_index": 49213,
+        "records": [
+          {
+            "record_index": 49212,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 49212,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 49213,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x3D",
+            "name": "goProtoValkyrie",
+            "id": "ab3e0f277f46d8449226dfbeff392030",
+            "data_size": 1184,
+            "first_dword": "0x10001",
+            "payload_index": 18513,
+            "parent_record_index": 49212,
+            "parent_relative_index": 0,
+            "containing_group_start": 49212,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "1de5814b84da1c95fbd896578285bda58e4d5ac2597688ebacadda85cb033606",
+            "record_sha256": "681ff8f1181ae80cd69aef71f57ae026407e5f1129bfa60ee3938db9fcfaae6d"
+          },
+          {
+            "record_index": 49214,
+            "relative_index": 2,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MDL_valkyrie",
+            "id": "87f7e93fdfda7fce2ff15f9ee8a29299",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49212,
+            "parent_relative_index": 0,
+            "containing_group_start": 49212,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 49208,
+                "name": "MDL_valkyrie",
+                "flags": "0x8E",
+                "data_size": 80
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "3ee4c75ac4ae058253e797d23034fb56a2e60ef5068b5be14d9da3a47553935d"
+          },
+          {
+            "record_index": 49215,
+            "relative_index": 3,
+            "depth": 1,
+            "role": "auxiliary_payload",
+            "kind": 1,
+            "flags": "0x18",
+            "name": "SCP_Valkyrie",
+            "id": "baaddbbad0baaddbbaaddbbad7baaddb",
+            "data_size": 96,
+            "first_dword": "0x10005",
+            "payload_index": 18514,
+            "parent_record_index": 49212,
+            "parent_relative_index": 0,
+            "containing_group_start": 49212,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "bec78f134e8174b9b5636dbe8d3bb6116bf0eb79b58e2c75edc660d43b654b0f",
+            "record_sha256": "8bfe58d770a176dcb9b944f05a830a2b0cc8b4cb0fa3fcd04a89b9f83faeca36"
+          },
+          {
+            "record_index": 49216,
+            "relative_index": 4,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49212,
+            "parent_relative_index": 0,
+            "containing_group_start": 49212,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "model": {
+        "start": 49207,
+        "end": 49211,
+        "physical_count": 5,
+        "payload_count": 1,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "dependency_link",
+          "dependency_link",
+          "group_end"
+        ],
+        "resource_role": "model",
+        "target_record_index": 49208,
+        "records": [
+          {
+            "record_index": 49207,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 49207,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 49208,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x8E",
+            "name": "MDL_valkyrie",
+            "id": "87f7e93fdfda7fce2ff15f9ee8a29299",
+            "data_size": 80,
+            "first_dword": "0x1002000C",
+            "payload_index": 18512,
+            "parent_record_index": 49207,
+            "parent_relative_index": 0,
+            "containing_group_start": 49207,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "d12992f6edbf935d67a413317b20a862c85dc79b9cda9d97dadea7fd3e5d2542",
+            "record_sha256": "b1ac2b6cb427e38c477aa8d4efb4fd9c306ece1880e0603d203c54aa47e45a95"
+          },
+          {
+            "record_index": 49209,
+            "relative_index": 2,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MAT_6E61ADE0E7E52595",
+            "id": "9ad69f7b2173a3aec1220e56f35c2e54",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49207,
+            "parent_relative_index": 0,
+            "containing_group_start": 49207,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 31862,
+                "name": "MAT_6E61ADE0E7E52595",
+                "flags": "0x14",
+                "data_size": 384
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "b0da73c1757f4938072e63418d5bed2cec95e78054056b5c1cc06091bf73ddcf"
+          },
+          {
+            "record_index": 49210,
+            "relative_index": 3,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MG_valkyrie_0",
+            "id": "df1adfe86e45304b6dbb59c693ca1452",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49207,
+            "parent_relative_index": 0,
+            "containing_group_start": 49207,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 49206,
+                "name": "MG_valkyrie_0",
+                "flags": "0x98",
+                "data_size": 388
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "f9a4969a263642c84b87790db17614e5964502ac4a493f2e84b08aada4e561a9"
+          },
+          {
+            "record_index": 49211,
+            "relative_index": 4,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 49207,
+            "parent_relative_index": 0,
+            "containing_group_start": 49207,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "dependency_encodings": {
+        "prototype_to_model": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            2
+          ]
+        },
+        "model_to_material": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            2
+          ]
+        },
+        "model_to_mesh": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            3
+          ]
+        }
+      },
+      "inline_fields": {
+        "root_prototype_offset": "0xC",
+        "root_shared_compass_offset": "0x54",
+        "root_loader_name_offset": "0x1C",
+        "root_loader_name_bytes": 56,
+        "root_loader_name": "govalkyrie",
+        "prototype_self_id_offset": "0x3A8"
+      }
+    },
+    "MAIN": {
+      "root": {
+        "start": 48903,
+        "end": 48905,
+        "physical_count": 3,
+        "payload_count": 1,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "group_end"
+        ],
+        "resource_role": "root",
+        "target_record_index": 48904,
+        "records": [
+          {
+            "record_index": 48903,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 48903,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 48904,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x3D",
+            "name": "gomainquest",
+            "id": "50af59f9984cb6d6bed4509369bd8b92",
+            "data_size": 164,
+            "first_dword": "0x20001",
+            "payload_index": 18387,
+            "parent_record_index": 48903,
+            "parent_relative_index": 0,
+            "containing_group_start": 48903,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "7475d26187d2f61fb01d5b644252aa4ca5e12d3557a172c9fa5d93e5a82b3aa3",
+            "record_sha256": "89fdf0e5fb6a9adbfd68039448e2ab82eabd97d716eb7cc387bd373471a96417"
+          },
+          {
+            "record_index": 48905,
+            "relative_index": 2,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 48903,
+            "parent_relative_index": 0,
+            "containing_group_start": 48903,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "prototype": {
+        "start": 48898,
+        "end": 48902,
+        "physical_count": 5,
+        "payload_count": 2,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "dependency_link",
+          "auxiliary_payload",
+          "group_end"
+        ],
+        "resource_role": "prototype",
+        "target_record_index": 48899,
+        "records": [
+          {
+            "record_index": 48898,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 48898,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 48899,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x3D",
+            "name": "goProtoMainQuest",
+            "id": "50af59f9984cb6d6bed4509368bd8b92",
+            "data_size": 1184,
+            "first_dword": "0x10001",
+            "payload_index": 18385,
+            "parent_record_index": 48898,
+            "parent_relative_index": 0,
+            "containing_group_start": 48898,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "829733cc0fed0a6d9996c47662dbf8e939680265f960443b34f0ce70b2d5b30a",
+            "record_sha256": "f97ca8da8d91f77e970e8345ca56e79319e0425d112ccd199b86afabc7365433"
+          },
+          {
+            "record_index": 48900,
+            "relative_index": 2,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MDL_mainquest",
+            "id": "5f5031217b8d3203db6d2f2f6d7c2d93",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 48898,
+            "parent_relative_index": 0,
+            "containing_group_start": 48898,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 48894,
+                "name": "MDL_mainquest",
+                "flags": "0x8E",
+                "data_size": 80
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "5ef4488aea7d96346d0c331f1e3ed9b5a24ccb71f424ef73bc754eb35efb63c1"
+          },
+          {
+            "record_index": 48901,
+            "relative_index": 3,
+            "depth": 1,
+            "role": "auxiliary_payload",
+            "kind": 1,
+            "flags": "0x18",
+            "name": "SCP_MainQuest",
+            "id": "baaddbbad0baaddbbaaddbbad7baaddb",
+            "data_size": 96,
+            "first_dword": "0x10005",
+            "payload_index": 18386,
+            "parent_record_index": 48898,
+            "parent_relative_index": 0,
+            "containing_group_start": 48898,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "bec78f134e8174b9b5636dbe8d3bb6116bf0eb79b58e2c75edc660d43b654b0f",
+            "record_sha256": "85bbc9b2e7f0356fa33e33718111364a65032862de06cc4f475860229550c26b"
+          },
+          {
+            "record_index": 48902,
+            "relative_index": 4,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 48898,
+            "parent_relative_index": 0,
+            "containing_group_start": 48898,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "model": {
+        "start": 48893,
+        "end": 48897,
+        "physical_count": 5,
+        "payload_count": 1,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "dependency_link",
+          "dependency_link",
+          "group_end"
+        ],
+        "resource_role": "model",
+        "target_record_index": 48894,
+        "records": [
+          {
+            "record_index": 48893,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 48893,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 48894,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x8E",
+            "name": "MDL_mainquest",
+            "id": "5f5031217b8d3203db6d2f2f6d7c2d93",
+            "data_size": 80,
+            "first_dword": "0x1002000C",
+            "payload_index": 18384,
+            "parent_record_index": 48893,
+            "parent_relative_index": 0,
+            "containing_group_start": 48893,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "c442072a6a2d815bc1c1cb2aa8ce19a282f5d84c1c34021c72317dbfd1936c9e",
+            "record_sha256": "4c11918fbe35de14ba0bec43765e1886297a97ef5a8f54d393d26779136c57f1"
+          },
+          {
+            "record_index": 48895,
+            "relative_index": 2,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MAT_7BEE7883B502739D",
+            "id": "603076007349db120c0b2d7532ca1587",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 48893,
+            "parent_relative_index": 0,
+            "containing_group_start": 48893,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 31889,
+                "name": "MAT_7BEE7883B502739D",
+                "flags": "0x14",
+                "data_size": 384
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "48e86f2d907a66baf9b7e0929d68860e8822c6fb14850a577d0cbe0c71380fb8"
+          },
+          {
+            "record_index": 48896,
+            "relative_index": 3,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MG_mainquest_0",
+            "id": "c4322ad843faee9157c573fcd06f50f4",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 48893,
+            "parent_relative_index": 0,
+            "containing_group_start": 48893,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 48892,
+                "name": "MG_mainquest_0",
+                "flags": "0x98",
+                "data_size": 372
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "26156200d1b3ff897aff7a8708a6c86dd2828d3aa4edb97b4d2e18898446a6de"
+          },
+          {
+            "record_index": 48897,
+            "relative_index": 4,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 48893,
+            "parent_relative_index": 0,
+            "containing_group_start": 48893,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "dependency_encodings": {
+        "prototype_to_model": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            2
+          ]
+        },
+        "model_to_material": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            2
+          ]
+        },
+        "model_to_mesh": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            3
+          ]
+        }
+      },
+      "inline_fields": {
+        "root_prototype_offset": "0xC",
+        "root_shared_compass_offset": "0x54",
+        "root_loader_name_offset": "0x1C",
+        "root_loader_name_bytes": 56,
+        "root_loader_name": "gomainquest",
+        "prototype_self_id_offset": "0x3A8"
+      }
+    },
+    "SIDE": {
+      "root": {
+        "start": 48918,
+        "end": 48920,
+        "physical_count": 3,
+        "payload_count": 1,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "group_end"
+        ],
+        "resource_role": "root",
+        "target_record_index": 48919,
+        "records": [
+          {
+            "record_index": 48918,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 48918,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 48919,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x3D",
+            "name": "gosidequest",
+            "id": "43b9f792734e669f0fe74099ddfdab35",
+            "data_size": 164,
+            "first_dword": "0x20001",
+            "payload_index": 18393,
+            "parent_record_index": 48918,
+            "parent_relative_index": 0,
+            "containing_group_start": 48918,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "519be715fc9bf82cd2218f023184a30b0dde21badb9ad9d80e635ed8248cd2ea",
+            "record_sha256": "374069834c5e7adcaca09ca8513dc03aec8da301c851a5f3b4ccd6e59523e702"
+          },
+          {
+            "record_index": 48920,
+            "relative_index": 2,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 48918,
+            "parent_relative_index": 0,
+            "containing_group_start": 48918,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "prototype": {
+        "start": 48913,
+        "end": 48917,
+        "physical_count": 5,
+        "payload_count": 2,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "dependency_link",
+          "auxiliary_payload",
+          "group_end"
+        ],
+        "resource_role": "prototype",
+        "target_record_index": 48914,
+        "records": [
+          {
+            "record_index": 48913,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 48913,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 48914,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x3D",
+            "name": "goProtoSideQuest",
+            "id": "43b9f792734e669f0fe74099dcfdab35",
+            "data_size": 1184,
+            "first_dword": "0x10001",
+            "payload_index": 18391,
+            "parent_record_index": 48913,
+            "parent_relative_index": 0,
+            "containing_group_start": 48913,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "6d83d9d5b740cb46b35df4916c049c8973f5a3ad31c46df3cf3e11d44750f23d",
+            "record_sha256": "6150c85c67bbce4a42f17871ee34bbb56b94e0a19d3b6ecf185c588956347823"
+          },
+          {
+            "record_index": 48915,
+            "relative_index": 2,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MDL_sidequest",
+            "id": "97123806da3cf1122d2c9a23235babf2",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 48913,
+            "parent_relative_index": 0,
+            "containing_group_start": 48913,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 48909,
+                "name": "MDL_sidequest",
+                "flags": "0x8E",
+                "data_size": 80
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "d6e526730fa702cd3f52b966f20075f906fc0b76d900ee661cdcf5a104df5d34"
+          },
+          {
+            "record_index": 48916,
+            "relative_index": 3,
+            "depth": 1,
+            "role": "auxiliary_payload",
+            "kind": 1,
+            "flags": "0x18",
+            "name": "SCP_SideQuest",
+            "id": "baaddbbad0baaddbbaaddbbad7baaddb",
+            "data_size": 96,
+            "first_dword": "0x10005",
+            "payload_index": 18392,
+            "parent_record_index": 48913,
+            "parent_relative_index": 0,
+            "containing_group_start": 48913,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "bec78f134e8174b9b5636dbe8d3bb6116bf0eb79b58e2c75edc660d43b654b0f",
+            "record_sha256": "3f6dc9fd8035d2d6edac6546ec413d2b5d3c891b72a2aef1dfb9ff7c7b5dd2c1"
+          },
+          {
+            "record_index": 48917,
+            "relative_index": 4,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 48913,
+            "parent_relative_index": 0,
+            "containing_group_start": 48913,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "model": {
+        "start": 48908,
+        "end": 48912,
+        "physical_count": 5,
+        "payload_count": 1,
+        "roles": [
+          "group_start",
+          "target_payload",
+          "dependency_link",
+          "dependency_link",
+          "group_end"
+        ],
+        "resource_role": "model",
+        "target_record_index": 48909,
+        "records": [
+          {
+            "record_index": 48908,
+            "relative_index": 0,
+            "depth": 0,
+            "role": "group_start",
+            "kind": 2,
+            "flags": "0x0",
+            "name": "GroupStart",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa95d3aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": null,
+            "parent_relative_index": null,
+            "containing_group_start": 48908,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "c498108ef97787a5680d52c2a353fd20118552d62e32a155e9a848278c9d9ede"
+          },
+          {
+            "record_index": 48909,
+            "relative_index": 1,
+            "depth": 1,
+            "role": "target_payload",
+            "kind": 1,
+            "flags": "0x8E",
+            "name": "MDL_sidequest",
+            "id": "97123806da3cf1122d2c9a23235babf2",
+            "data_size": 80,
+            "first_dword": "0x1002000C",
+            "payload_index": 18390,
+            "parent_record_index": 48908,
+            "parent_relative_index": 0,
+            "containing_group_start": 48908,
+            "is_target_payload": true,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": "aab2dbe47f1b5d301660f7ceb8b4698e7b497de8d73cfe16a938c7dc6b096033",
+            "record_sha256": "07912bc22afa4f305b79aeccadc1873155d1865e029d71718a5645c566634e43"
+          },
+          {
+            "record_index": 48910,
+            "relative_index": 2,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MAT_3FDE1BC1C3C8B171",
+            "id": "45df6f7ec40156ccdbe41db5fb946bb1",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 48908,
+            "parent_relative_index": 0,
+            "containing_group_start": 48908,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 31853,
+                "name": "MAT_3FDE1BC1C3C8B171",
+                "flags": "0x14",
+                "data_size": 384
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "4268f6d1dbd63f55fa0c8acf926b0d0ded2f5556fe885339a6ba8472272d7cd5"
+          },
+          {
+            "record_index": 48911,
+            "relative_index": 3,
+            "depth": 1,
+            "role": "dependency_link",
+            "kind": 1,
+            "flags": "0x0",
+            "name": "MG_sidequest_0",
+            "id": "3ed6ac3d21f112e30bd5ff03430205dc",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 48908,
+            "parent_relative_index": 0,
+            "containing_group_start": 48908,
+            "is_target_payload": false,
+            "zero_data_dependency_link": true,
+            "resolved_targets": [
+              {
+                "record_index": 48907,
+                "name": "MG_sidequest_0",
+                "flags": "0x98",
+                "data_size": 372
+              }
+            ],
+            "payload_sha256": null,
+            "record_sha256": "d4001ee22e6919881fc2b87cfc8fb40af2ee02b0bfed5016a1d540a9c4ad936d"
+          },
+          {
+            "record_index": 48912,
+            "relative_index": 4,
+            "depth": 0,
+            "role": "group_end",
+            "kind": 3,
+            "flags": "0x0",
+            "name": "GroupEnd",
+            "id": "aaaaaabaaaaaaaaaaaaaaaaa03d4aaaa",
+            "data_size": 0,
+            "first_dword": null,
+            "payload_index": null,
+            "parent_record_index": 48908,
+            "parent_relative_index": 0,
+            "containing_group_start": 48908,
+            "is_target_payload": false,
+            "zero_data_dependency_link": false,
+            "resolved_targets": [],
+            "payload_sha256": null,
+            "record_sha256": "59cf79c82b5044772fca3a17d68a148d00639dd321ab890141c980c9951e1530"
+          }
+        ]
+      },
+      "dependency_encodings": {
+        "prototype_to_model": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            2
+          ]
+        },
+        "model_to_material": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            2
+          ]
+        },
+        "model_to_mesh": {
+          "inline_offsets": [],
+          "local_link_relative_indices": [
+            3
+          ]
+        }
+      },
+      "inline_fields": {
+        "root_prototype_offset": "0xC",
+        "root_shared_compass_offset": "0x54",
+        "root_loader_name_offset": "0x1C",
+        "root_loader_name_bytes": 56,
+        "root_loader_name": "gosidequest",
+        "prototype_self_id_offset": "0x3A8"
+      }
+    }
+  },
+  "reserved_identities": [
+    {
+      "name": "gocompletionistravenhud",
+      "id": "f0029a68d9705e95a981aab8bff0c5b8",
+      "name_collisions": [],
+      "id_collisions": []
+    },
+    {
+      "name": "goProtoCompletionistRavenHUD",
+      "id": "b2a833d6144789e8099acf85e832d652",
+      "name_collisions": [],
+      "id_collisions": []
+    },
+    {
+      "name": "MDL_completionistravenhud",
+      "id": "4a7911dc2db72cecaf6c187a66bfd11f",
+      "name_collisions": [],
+      "id_collisions": []
+    }
+  ],
+  "required_clone": {
+    "physical_records": 13,
+    "payload_records": 4,
+    "accounting_delta": 3,
+    "type_deltas": {
+      "0x10001": 1,
+      "0x20001": 1,
+      "0x10005": 1
+    },
+    "matches_three_payload_gate": false
+  },
+  "accounting_if_complete_groups_cloned": {
+    "heap_and_root_total": {
+      "before": 16802,
+      "after": 16805
+    },
+    "rows": [
+      {
+        "key": "0x10001",
+        "before": 1725,
+        "after": 1726
+      },
+      {
+        "key": "0x20001",
+        "before": 2073,
+        "after": 2074
+      },
+      {
+        "key": "0x10005",
+        "before": 2600,
+        "after": 2601
+      }
+    ],
+    "payload_records_after": 20419,
+    "physical_records_after": 53824,
+    "counts_are_inferred_for_complete_clone_not_a_built_candidate": true
+  },
+  "script_reuse_evidence": {
+    "source_record_index": 49153,
+    "name": "SCP_BoatDock",
+    "id": "baaddbbad0baaddbbaaddbbad7baaddb",
+    "same_id_payload_definitions": 2057,
+    "distinct_payload_contents_for_id": 211,
+    "same_id_and_same_payload_contents": 401,
+    "zero_data_links_with_same_id": [
+      {
+        "record_index": 32442,
+        "name": "SCP_MapIconDock",
+        "parent": 32437
+      },
+      {
+        "record_index": 32443,
+        "name": "SCP_CollidableSphere9",
+        "parent": 32437
+      },
+      {
+        "record_index": 32444,
+        "name": "SCP_flourishD1",
+        "parent": 32437
+      }
+    ],
+    "peer_scripts_byte_identical": true,
+    "id_only_resolution_unique": false,
+    "hud_script_conversion_proven": false,
+    "note": "Only three inserted Raven map links use this script ID. Map precedent does not prove HUD local script sharing."
+  },
+  "conclusion": "THREE_PAYLOAD_DESIGN_CONFLICTS_WITH_COMPLETE_SOURCE_GROUPS",
+  "game_files_read": true,
+  "game_files_written": false,
+  "dcb_files_read": false,
+  "save_state_written": false,
+  "progression_state_written": false,
+  "marker_state_written": false,
+  "ready_for_runtime_test": false,
+  "reduced_report": "archive/field-logs/completionist-v104-compass-hud-local-subtrees.json",
+  "reduced_report_sha256_lf": "1a75618ca633ff736323e220c6da6bbb93d42155a6b33c7013c5721cab91e4d9"
+}
