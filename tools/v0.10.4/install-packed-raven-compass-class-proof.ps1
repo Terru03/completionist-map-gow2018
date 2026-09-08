@@ -23,7 +23,7 @@ $mapBackup = Join-Path $stateDir 'mapmenu-before.lua'
 $classReport = Join-Path $stateDir 'packed-compass-class-prepared.json'
 $runtime3Dir = Join-Path $repo 'build\v0.10.3-native-runtime\game-root\exec\dc\pc_le'
 $classOutput = Join-Path $repo 'build\v0.10.4-packed-raven-compass-class\game-root\exec\dc\pc_le\wad_r_perm.dcb'
-$classBuilder = Join-Path $PSScriptRoot 'build-packed-raven-compass-class.py'
+$classBuilder = Join-Path $PSScriptRoot 'build-packed-raven-compass-class-v2.py'
 $bridge = Join-Path $PSScriptRoot 'dedicated-raven-compass-class.lua'
 $utf8 = New-Object Text.UTF8Encoding($false)
 
@@ -173,7 +173,7 @@ $python = Get-Command python -ErrorAction SilentlyContinue
 if ($null -eq $python) { throw 'Python 3.9+ is required.' }
 New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
 
-Write-Host 'Building packed CompletionistRaven CompassIconClass candidate...'
+Write-Host 'Building UID-sorted packed CompletionistRaven CompassIconClass candidate...'
 New-Item -ItemType Directory -Force -Path (Split-Path $classOutput -Parent) | Out-Null
 & $python.Source $classBuilder --game-root $game --output $classOutput --report $classReport
 if ($LASTEXITCODE -ne 0) { throw 'Packed Raven CompassIconClass build failed.' }
@@ -188,7 +188,9 @@ if ($class.result -ne 'OFFLINE_PACKED_COMPLETIONIST_RAVEN_COMPASS_CLASS_BUILT' -
     $class.validation.candidate_exact_0x20_stride -ne $true -or
     [string]$class.validation.COMPASS_GLOBALS_shifted_to -ne '0x4E2C70' -or
     $class.validation.all_stock_exports_preserved -ne $true -or
-    $class.validation.all_stock_relocations_preserved_semantically -ne $true) {
+    $class.validation.all_stock_relocations_preserved_semantically -ne $true -or
+    $class.validation.export_uid_order_strictly_increasing -ne $true -or
+    $class.validation.runtime_lookup_entry_layout_matches_export_layout -ne $true) {
     throw 'Packed Raven class build report failed validation.'
 }
 
@@ -238,13 +240,12 @@ $manifest = [ordered]@{
     compass_class_root = '0x4E2C50'
     candidate_wad_sha256 = $patchedHashes['wad_r_perm.dcb']
     baseline_hashes = $baselineHashes
-    # Kept for compatibility with older rollback tooling; mapmaster here is a
-    # v0.10.4 baseline, not literal retail stock.
     stock_hashes = $baselineHashes
     patched_hashes = $patchedHashes
     map_before = $mapBefore
     map_after = $mapAfter
     mapmaster_preserved = $true
+    export_uid_order_strictly_increasing = $true
     calls_show_on_install = $false
     writes_progression_state = $false
     writes_marker_state = $false
@@ -272,11 +273,12 @@ try {
 }
 
 Write-Host ''
-Write-Host 'Completionist Map v0.10.4 PACKED Raven compass-class proof installed.'
+Write-Host 'Completionist Map v0.10.4 UID-SORTED PACKED Raven compass-class proof installed.'
 Write-Host '- proven v0.10.4 mapmaster preserved unchanged'
 Write-Host '- proven Raven map icon/binding preserved'
 Write-Host '- native Raven coordinate/graph copies restored for runtime navigation'
 Write-Host '- CompletionistRaven is at packed type-0x11E root 0x4E2C50'
+Write-Host '- chunk-13 export entry is now inserted in strict ascending UID order required by native lookup 0x431B90'
 Write-Host '- its visual fields intentionally clone DockPoint for this registration-only proof'
 Write-Host '- Add to Compass calls ShowMarker(RavenID, CompletionistRaven) only when you press the map action'
 Write-Host '- installer itself never calls ShowMarker and never writes save/progression/marker state'
