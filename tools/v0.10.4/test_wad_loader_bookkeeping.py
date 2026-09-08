@@ -6,12 +6,13 @@ import struct
 import unittest
 
 HERE = Path(__file__).resolve().parent
-TARGET = HERE / "inspect-wad-loader-bookkeeping.py"
-spec = importlib.util.spec_from_file_location("wad_bookkeeping", TARGET)
+TARGET = HERE / "inspect-wad-loader-bookkeeping-v2.py"
+spec = importlib.util.spec_from_file_location("wad_bookkeeping_v2", TARGET)
 if spec is None or spec.loader is None:
-    raise RuntimeError("could not load bookkeeping probe")
+    raise RuntimeError("could not load corrected bookkeeping probe")
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
+base = mod.base
 
 
 def record(name="gomapiconx", flags=0x3D, data=b"", kind=1, index=1):
@@ -29,47 +30,48 @@ def record(name="gomapiconx", flags=0x3D, data=b"", kind=1, index=1):
 class WadLoaderBookkeepingTests(unittest.TestCase):
     def test_payload_type_word(self):
         r = record(data=struct.pack("<I", 0x20001) + bytes(160))
-        self.assertEqual(mod.payload_type_word(r), 0x20001)
+        self.assertEqual(base.payload_type_word(r), 0x20001)
 
     def test_short_payload_has_no_type_word(self):
-        self.assertIsNone(mod.payload_type_word(record(data=b"\x01\x02\x03")))
+        self.assertIsNone(base.payload_type_word(record(data=b"\x01\x02\x03")))
 
     def test_final_payload_name(self):
         data = bytearray(164)
         struct.pack_into("<I", data, 0, 0x20001)
         data[0x1C:0x1C + len(b"gomapiconraven\0")] = b"gomapiconraven\0"
-        self.assertEqual(mod.payload_internal_name(record(name="gomapiconraven", data=data)), "gomapiconraven")
+        self.assertEqual(base.payload_internal_name(record(name="gomapiconraven", data=data)), "gomapiconraven")
 
     def test_final_payload_name_requires_terminator(self):
         data = bytearray(164)
         data[0x1C:0x54] = b"A" * (0x54 - 0x1C)
         with self.assertRaises(ValueError):
-            mod.payload_internal_name(record(data=data))
+            base.payload_internal_name(record(data=data))
 
-    def test_type_word_counts(self):
+    def test_rig_type_word_counts_ignore_non_rig_payloads(self):
         rows = [
             record(data=struct.pack("<I", 0x10001) + bytes(4), index=1),
             record(data=struct.pack("<I", 0x10001) + bytes(4), index=2),
             record(data=struct.pack("<I", 0x20001) + bytes(4), index=3),
+            record(flags=0x14, data=struct.pack("<I", 0x20001) + bytes(4), index=4),
         ]
-        counts = mod.type_word_counts(rows)
+        counts = mod.rig_type_word_counts(rows)
         self.assertEqual(counts[0x10001], 2)
         self.assertEqual(counts[0x20001], 1)
 
     def test_type_table_candidate_scoring(self):
-        score, reasons = mod.score_type_table_candidate({0x1C, 0x20, 0x28}, {0xC, 0x20001}, {0x423100})
+        score, reasons = base.score_type_table_candidate({0x1C, 0x20, 0x28}, {0xC, 0x20001}, {0x423100})
         self.assertGreaterEqual(score, 20)
         self.assertTrue(any("root offsets" in x for x in reasons))
         self.assertTrue(any("resource resolver" in x for x in reasons))
 
     def test_name_map_candidate_scoring(self):
-        score, reasons = mod.score_name_map_candidate({0x78}, {0x401, 6}, {0x423100}, {0x78})
+        score, reasons = base.score_name_map_candidate({0x78}, {0x401, 6}, {0x423100}, {0x78})
         self.assertGreaterEqual(score, 20)
         self.assertTrue(any("writes through +0x78" in x for x in reasons))
 
     def test_uninteresting_function_scores_zero(self):
-        self.assertEqual(mod.score_type_table_candidate(set(), set(), set())[0], 0)
-        self.assertEqual(mod.score_name_map_candidate(set(), set(), set(), set())[0], 0)
+        self.assertEqual(base.score_type_table_candidate(set(), set(), set())[0], 0)
+        self.assertEqual(base.score_name_map_candidate(set(), set(), set(), set())[0], 0)
 
 
 if __name__ == "__main__":
