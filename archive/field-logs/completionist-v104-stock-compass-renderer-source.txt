@@ -1,0 +1,640 @@
+Completionist Map v0.10.4 stock compass renderer source inspection
+Generated UTC: 2026-09-08T11:43:45.3717822Z
+Source root: G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts
+Lua files scanned: 118
+Game files written: false
+
+PURPOSE
+Recover the stock Lua ownership/render path for compass markers before any Raven-specific HUD write test. This report is read-only.
+
+RANKED COMPASS-RELATED FILES
+score=12 | hud\sequence_compass.lua | 
+score=11 | hud\mainhud.lua | game.Compass, Compass.ShowMarker, Compass.HideMarker, COMPASS_MARKER, SetMaterialSwap, compass_base, Compass_Base, compass_radius, Compass_Radius
+score=8 | inworldmenu\mapmenu.lua | game.Compass, Compass.ShowMarker, Compass.HideMarker, FindMarkersByIconClass, COMPASS_MARKER, ShowOnCompass, WorldUIRender, FindSingleGOByName
+score=4 | hud\combathud.lua | SetMaterialSwap, FindSingleGOByName
+score=4 | hud\designermessages.lua | SetMaterialSwap, FindSingleGOByName
+score=3 | hud\dialogmessage.lua | FindSingleGOByName
+score=3 | hud\mechanicshud.lua | SetMaterialSwap
+score=3 | hud\photomodehud.lua | WorldUIRender
+score=3 | hud\reticle.lua | SetMaterialSwap
+score=3 | hud\sequence_journal.lua | SetMaterialSwap
+score=3 | hud\sequence_quest.lua | SetMaterialSwap
+score=3 | hud\sequence_questspecialcomplete.lua | SetMaterialSwap
+score=3 | hud\sequence_resource.lua | SetMaterialSwap
+score=3 | inworldmenu\journalmenu.lua | WorldUIRender, SetMaterialSwap, FindSingleGOByName
+score=3 | inworldmenu\questsmenu.lua | WorldUIRender, SetMaterialSwap, FindSingleGOByName
+score=3 | inworldmenu\settingsmenu.lua | WorldUIRender, SetMaterialSwap, FindSingleGOByName
+score=2 | classes\infocards\attributecard.lua | SetMaterialSwap, FindSingleGOByName
+score=2 | classes\infocards\components\cardcomponent_mapsummarylist.lua | SetMaterialSwap, FindSingleGOByName
+score=2 | classes\infocards\components\cardcomponent_questsummary.lua | SetMaterialSwap, FindSingleGOByName
+score=2 | classes\infocards\components\cardcomponent_weapon_slot.lua | SetMaterialSwap, FindSingleGOByName
+score=2 | classes\list.lua | SetMaterialSwap, FindSingleGOByName
+score=2 | classes\message.lua | SetMaterialSwap, FindSingleGOByName
+score=2 | classes\statscard.lua | SetMaterialSwap, FindSingleGOByName
+score=2 | inworldmenu\globalmenu.lua | WorldUIRender, FindSingleGOByName
+score=2 | inworldmenu\inworldmenu.lua | WorldUIRender, FindSingleGOByName
+score=2 | inworldmenu\skilltreemenu.lua | WorldUIRender, FindSingleGOByName
+score=2 | inworldmenu\statsmenu.lua | WorldUIRender, FindSingleGOByName
+score=2 | inworldmenu\weaponmenu.lua | WorldUIRender, FindSingleGOByName
+score=2 | util\buttonutil.lua | SetMaterialSwap, FindSingleGOByName
+score=1 | classes\button.lua | SetMaterialSwap
+
+COMPASS-NAMED FILES: 1
+
+===== FULL SOURCE: hud\sequence_compass.lua =====
+local fsm = require("ui.fsm")
+local logManager = require("ui.logManager")
+local ActivateCallback = function(sequence, args, stages)
+  for _, stage in ipairs(stages) do
+    assert(stage.FuncName ~= nil, "Compass sequence message does not have function name")
+    assert(stage.IsMainQuest ~= nil, "Compass sequence message is missing arguments")
+    local funcName = stage.FuncName
+    local isMainQuest = stage.IsMainQuest
+    local markerHash = stage.MarkerHash
+    fsm.HandleEvent(funcName, isMainQuest, markerHash)
+  end
+  sequence._manager:Handle_SequenceFinished(sequence)
+  return false
+end
+local InitSequenceArgs = {
+  ParentGOName = "DummyObjectForLogs",
+  InitStages = {},
+  ActivateCallback = ActivateCallback
+}
+local CreateSequenceStages = function(args)
+  local newStages = {args}
+  return newStages
+end
+return {InitSequenceArgs = InitSequenceArgs, CreateSequenceStages = CreateSequenceStages}
+
+
+===== CONTEXTS: hud\mainhud.lua =====
+-- around line 9
+      3: local fsm = require("ui.fsm")
+      4: local hudConsts = require("ui.hudConsts")
+      5: local util = require("ui.util")
+      6: local priorityList = require("ui.priorityList")
+      7: local timer = require("level.timer")
+      8: local uiCalls = require("ui.uicalls")
+>     9: local Compass = game.Compass
+     10: local UI = game.UI
+     11: local MainHUD = classlib.Class("MainHUD", fsm.UIState)
+     12: local mainHUD = MainHUD.New("mainHUD", {})
+     13: function MainHUD:HandleDisplaySetting(setting)
+     14:   if setting == 0 or setting == 2 and not self.touchPad then
+     15:     return false
+     16:   else
+     17:     return nil
+-- around line 44
+     38:   self.compassTimer = nil
+     39:   self.compassTimerTurnOffDelay = 4
+     40:   self.compassAlpha = 0.6
+     41:   self.compassFadeTime = 0.5
+     42:   self.compassIsWithinMarkerRadius = false
+     43:   self.compassObj = util.GetUiObjByName("Compass")
+>    44:   self.compassBase = util.GetUiObjByName("Compass_Base")
+     45:   self.compassRadius = util.GetUiObjByName("Compass_Radius")
+     46:   self.reticleForceState = hudConsts.FORCE_STATE_NONE
+     47:   self.reticleVisible = true
+     48:   self.reticlePriorityList = priorityList.PriorityList.New(priorityList.STATES.OFF)
+     49:   self.reticlePriorityList:Inherit(self.mainHUDPriorityList)
+     50:   self.reticlePriorityList:AddCounter("Action Force HUD State")
+     51:   self.reticlePriorityList:AddItem("Aim-Capable")
+     52:   self.reticlePriorityList:AddItem("Aiming")
+-- around line 133
+    127:     end
+    128:   end
+    129: end
+    130: function MainHUD:SetRagePrompts()
+    131:   local pad = game.Player.FindPlayer().Pad
+    132:   if pad.IsKeyboardAndMouse then
+>   133:     self.goRageMeter:SetMaterialSwap("key")
+    134:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+    135:       self.goRageMeter:SetMaterialSwap(game.GetKey(6))
+    136:       self.goRageMeter:SetMaterialSwap(game.GetKey(5) .. "2")
+    137:     else
+    138:       self.goRageMeter:SetMaterialSwap(game.GetKey(13))
+    139:       self.goRageMeter:SetMaterialSwap(game.GetKey(10) .. "2")
+    140:     end
+    141:   elseif pad.IsGeneric then
+-- around line 138
+    132:   if pad.IsKeyboardAndMouse then
+    133:     self.goRageMeter:SetMaterialSwap("key")
+    134:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+    135:       self.goRageMeter:SetMaterialSwap(game.GetKey(6))
+    136:       self.goRageMeter:SetMaterialSwap(game.GetKey(5) .. "2")
+    137:     else
+>   138:       self.goRageMeter:SetMaterialSwap(game.GetKey(13))
+    139:       self.goRageMeter:SetMaterialSwap(game.GetKey(10) .. "2")
+    140:     end
+    141:   elseif pad.IsGeneric then
+    142:     self.goRageMeter:SetMaterialSwap("")
+    143:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+    144:       self.goRageMeter:SetMaterialSwap("genA")
+    145:       self.goRageMeter:SetMaterialSwap("genB2")
+    146:     else
+-- around line 145
+    139:       self.goRageMeter:SetMaterialSwap(game.GetKey(10) .. "2")
+    140:     end
+    141:   elseif pad.IsGeneric then
+    142:     self.goRageMeter:SetMaterialSwap("")
+    143:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+    144:       self.goRageMeter:SetMaterialSwap("genA")
+>   145:       self.goRageMeter:SetMaterialSwap("genB2")
+    146:     else
+    147:       self.goRageMeter:SetMaterialSwap("genLS")
+    148:       self.goRageMeter:SetMaterialSwap("genRS2")
+    149:     end
+    150:   else
+    151:     self.goRageMeter:SetMaterialSwap("")
+    152:   end
+    153: end
+-- around line 147
+    141:   elseif pad.IsGeneric then
+    142:     self.goRageMeter:SetMaterialSwap("")
+    143:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+    144:       self.goRageMeter:SetMaterialSwap("genA")
+    145:       self.goRageMeter:SetMaterialSwap("genB2")
+    146:     else
+>   147:       self.goRageMeter:SetMaterialSwap("genLS")
+    148:       self.goRageMeter:SetMaterialSwap("genRS2")
+    149:     end
+    150:   else
+    151:     self.goRageMeter:SetMaterialSwap("")
+    152:   end
+    153: end
+    154: function MainHUD:Enter()
+    155:   self:WantPadEvents(true)
+-- around line 351
+    345: function MainHUD:EVT_ClearCompassMarkersForQuest(isMainQuest)
+    346:   local markerType = self:GetMarkerType(isMainQuest)
+    347:   Compass.HideAllMarkersOfType(markerType)
+    348: end
+    349: function MainHUD:EVT_ShowCompassMarkerForQuest(isMainQuest, markerNameHash)
+    350:   local markerType = self:GetMarkerType(isMainQuest)
+>   351:   if not game.Compass.MultiCompassTargetQuestSupport then
+    352:     Compass.HideAllMarkersOfType(markerType)
+    353:   end
+    354:   Compass.ShowMarker(markerNameHash, markerType)
+    355: end
+    356: function MainHUD:EVT_HideCompassMarkerForQuest(isMainQuest, markerNameHash)
+    357:   Compass.HideMarker(markerNameHash)
+    358: end
+    359: function MainHUD:EVT_HandleWithinCompassMarkerRadius(markerNameHash, isWithinRadius)
+-- around line 354
+    348: end
+    349: function MainHUD:EVT_ShowCompassMarkerForQuest(isMainQuest, markerNameHash)
+    350:   local markerType = self:GetMarkerType(isMainQuest)
+    351:   if not game.Compass.MultiCompassTargetQuestSupport then
+    352:     Compass.HideAllMarkersOfType(markerType)
+    353:   end
+>   354:   Compass.ShowMarker(markerNameHash, markerType)
+    355: end
+    356: function MainHUD:EVT_HideCompassMarkerForQuest(isMainQuest, markerNameHash)
+    357:   Compass.HideMarker(markerNameHash)
+    358: end
+    359: function MainHUD:EVT_HandleWithinCompassMarkerRadius(markerNameHash, isWithinRadius)
+    360:   self.compassIsWithinMarkerRadius = isWithinRadius
+    361:   self:UpdateCompass()
+    362: end
+
+===== CONTEXTS: inworldmenu\mapmenu.lua =====
+-- around line 317
+    311:     self.mapSummaryCard_Region:SetOnScreen(false, instant)
+    312:     self.mapSummaryCard_Realm:ShowCard()
+    313:     self.mapSummaryCard_Realm:SetOnScreen(true, instant)
+    314:     self:CheckForTutorial()
+    315:   end
+    316:   self:UpdateIcons()
+>   317:   local compassMarkers = game.Compass.FindMarkersByIconClass(enabledShowOnCompassMarkerFlags)
+    318:   if 0 < #compassMarkers then
+    319:     self.currShownMarkerID = compassMarkers[1]
+    320:     if 1 < #compassMarkers then
+    321:       for i = 2, #compassMarkers do
+    322:         game.Compass.HideMarker(compassMarkers[i])
+    323:       end
+    324:     end
+    325:   else
+-- around line 322
+    316:   self:UpdateIcons()
+    317:   local compassMarkers = game.Compass.FindMarkersByIconClass(enabledShowOnCompassMarkerFlags)
+    318:   if 0 < #compassMarkers then
+    319:     self.currShownMarkerID = compassMarkers[1]
+    320:     if 1 < #compassMarkers then
+    321:       for i = 2, #compassMarkers do
+>   322:         game.Compass.HideMarker(compassMarkers[i])
+    323:       end
+    324:     end
+    325:   else
+    326:     self.currShownMarkerID = nil
+    327:   end
+    328:   for _, realmName in ipairs(mapConsts.REALM_NAMES) do
+    329:     self:EnableAllFog(realmName)
+    330:   end
+-- around line 418
+    412:   local subState = self:GetState(currentItem)
+    413:   subState.menu:set_instructionEntries(self.menu:get_instructionEntries())
+    414:   button._MapMenu_ManuallySelected = true
+    415:   self:Goto(currentItem)
+    416: end
+    417: function MapOn:GetShowOnCompassPrompt(currMenu)
+>   418:   if not (not self.isOpenedForFastTravel and game.Compass.HaveCompass()) or self.currRealmName ~= mapUtil.GetPlayerRealm() or self.currMarkerID == nil or tutorialUtil.CurrentlyShowingStep() or not Map.MarkerHasAnyFlag(self.currMarkerID, enabledShowOnCompassMarkerFlags) then
+    419:     return false, nil
+    420:   end
+    421:   local showOnCompassText = lamsConsts.AddToCompass
+    422:   if self.currMarkerID == nil and self.currShownMarkerID ~= nil or self.currMarkerID == self.currShownMarkerID then
+    423:     showOnCompassText = lamsConsts.RemoveFromCompass
+    424:   elseif self.currShownMarkerID ~= nil and self.currMarkerID ~= self.currShownMarkerID then
+    425:     showOnCompassText = lamsConsts.ReplaceInCompass
+    426:   end
+-- around line 1364
+   1358:     Camera.PointAt(CALDERA_MAP_POSITION, instant)
+   1359:   end
+   1360:   self:UpdateFastTravelList(currState)
+   1361:   if self.isOpenedForFastTravel and selectMarker ~= nil then
+   1362:     self:SelectFastTravelButtonByMarkerInfo(currState, selectMarker)
+   1363:   end
+>  1364:   UI.WorldUIRender(map_camera.Name)
+   1365:   currState.menu:ExecuteInstructions()
+   1366: end
+   1367: function MapOn:SubmenuExit(currState)
+   1368:   currState.menu:Deactivate(true)
+   1369:   self:ClearMarkers(true)
+   1370:   if self.playerIconGO ~= nil then
+   1371:     self.playerIconGO:Hide()
+   1372:   end
+-- around line 1566
+   1560:   if self.currMarkerID ~= nil then
+   1561:     if not Map.MarkerHasAnyFlag(self.currMarkerID, enabledShowOnCompassMarkerFlags) then
+   1562:       return
+   1563:     end
+   1564:     updatePrompt = true
+   1565:     if self.currMarkerID == self.currShownMarkerID then
+>  1566:       game.Compass.HideMarker(self.currShownMarkerID)
+   1567:       Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
+   1568:       self.currShownMarkerID = nil
+   1569:     else
+   1570:       if self.currShownMarkerID ~= nil then
+   1571:         game.Compass.HideMarker(self.currShownMarkerID)
+   1572:       end
+   1573:       local markerType
+   1574:       for i = 1, #enabledShowOnCompassMarkerFlags do
+-- around line 1571
+   1565:     if self.currMarkerID == self.currShownMarkerID then
+   1566:       game.Compass.HideMarker(self.currShownMarkerID)
+   1567:       Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
+   1568:       self.currShownMarkerID = nil
+   1569:     else
+   1570:       if self.currShownMarkerID ~= nil then
+>  1571:         game.Compass.HideMarker(self.currShownMarkerID)
+   1572:       end
+   1573:       local markerType
+   1574:       for i = 1, #enabledShowOnCompassMarkerFlags do
+   1575:         local enabledMarkerFlag = enabledShowOnCompassMarkerFlags[i]
+   1576:         if Map.MarkerHasFlag(self.currMarkerID, {enabledMarkerFlag}) then
+   1577:           markerType = enabledMarkerFlag
+   1578:           break
+   1579:         end
+-- around line 1582
+   1576:         if Map.MarkerHasFlag(self.currMarkerID, {enabledMarkerFlag}) then
+   1577:           markerType = enabledMarkerFlag
+   1578:           break
+   1579:         end
+   1580:       end
+   1581:       assert(markerType ~= nil, "unable to find ShowOnCompass marker type")
+>  1582:       game.Compass.ShowMarker(self.currMarkerID, markerType)
+   1583:       Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
+   1584:       self.currShownMarkerID = self.currMarkerID
+   1585:     end
+   1586:   elseif self.currShownMarkerID ~= nil then
+   1587:     updatePrompt = true
+   1588:     game.Compass.HideMarker(self.currShownMarkerID)
+   1589:     self.currShownMarkerID = nil
+   1590:   end
+-- around line 1588
+   1582:       game.Compass.ShowMarker(self.currMarkerID, markerType)
+   1583:       Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
+   1584:       self.currShownMarkerID = self.currMarkerID
+   1585:     end
+   1586:   elseif self.currShownMarkerID ~= nil then
+   1587:     updatePrompt = true
+>  1588:     game.Compass.HideMarker(self.currShownMarkerID)
+   1589:     self.currShownMarkerID = nil
+   1590:   end
+   1591:   if updatePrompt then
+   1592:     local currMenu = currState.menu
+   1593:     local showShowOnCompass, text = self:GetShowOnCompassPrompt(currMenu)
+   1594:     local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
+   1595:     goMapCursorText:Show()
+   1596:     local goCursorInfo_Top = goMapCursorText:FindSingleGOByName("CursorInfo_Top")
+
+===== CONTEXTS: hud\combathud.lua =====
+-- around line 807
+    801: end
+    802: function SonHUDOn:UpdateIconsBasedOnCurrentArrow()
+    803:   local childObj = self.sonSpecialMeter:GetInstancedChildObject()
+    804:   if pickupConsts.HUDSonCooldownMeterColorTimes[self.currArrow] ~= nil then
+    805:     UI.Anim(childObj, consts.AS_Forward, "special_colorchange", 0, pickupConsts.HUDSonCooldownMeterColorTimes[self.currArrow])
+    806:   end
+>   807:   self.goIcon:SetMaterialSwap(self.currArrow)
+    808: end
+    809: function SonHUDGrabbed:Setup()
+    810:   local goCombatHUD = util.GetUiObjByName("CombatHUD")
+    811:   self.goSonMeters = goCombatHUD:FindSingleGOByName("SonMeters")
+    812:   self.goSonMetersBlur = goCombatHUD:FindSingleGOByName("SonMetersBlur")
+    813:   self.inDanger = self.goSonMeters:FindSingleGOByName("InDanger")
+    814:   self.inDanger:Hide()
+    815:   self.grabbedMeter = meterCooldown.MeterCooldown.New(self, {
+-- around line 928
+    922:   end
+    923:   for _, buttonPromptName in ipairs(pickupConsts.HUDSpecialMetersButtonPrompts) do
+    924:     self.goButtonPrompts[buttonPromptName] = goSpecialMeters:FindSingleGOByName("WeaponSpecial_" .. buttonPromptName)
+    925:   end
+    926:   self.goWeaponIcon = goSpecialMeters:FindSingleGOByName("WeaponIcon")
+    927:   self.goWeaponIcon:Show()
+>   928:   self.goWeaponIcon:SetMaterialSwap(self.currentWeapon)
+    929:   self.momentumMeters = {}
+    930:   self.momentumIDToWeapon = {
+    931:     [hudConsts.METER_MOMENTUM] = pickupConsts.Axe,
+    932:     [hudConsts.METER_MOMENTUM_BLADES] = pickupConsts.Blades
+    933:   }
+    934:   self:CreateMomentumMeter(goSpecialMeters, hudConsts.METER_MOMENTUM)
+    935:   self:CreateMomentumMeter(goSpecialMeters, hudConsts.METER_MOMENTUM_BLADES)
+    936:   self.talismanOfBetrayalMeter = meter.Meter.New(self, {
+-- around line 1025
+   1019: function SMOn:UpdateWeapon()
+   1020:   local Kratos = FindPlayer()
+   1021:   if self.stowedWeapon ~= self.currentWeapon then
+   1022:     self.stowedWeapon = self.currentWeapon
+   1023:   end
+   1024:   self.currentWeapon = Kratos:GetCurrentWeapon()
+>  1025:   self.goWeaponIcon:SetMaterialSwap(self.currentWeapon)
+   1026:   self:HideButtonPrompt("AxeRecallButton")
+   1027:   if not self.inRageMode and self.canAxeBeRecalled == true then
+   1028:     self:ShowButtonPrompt("AxeRecallButton")
+   1029:   end
+   1030: end
+   1031: function SMOn:ShouldUpdateCooldownMeter(pickupSlotName, currentWeapon)
+   1032:   return pickupSlotName == pickupConsts.Slot_TalismanCooldown or pickupUtil.WeaponSpecialSlotDisplayForWeapon(pickupSlotName, currentWeapon) == true
+   1033: end
+
+===== CONTEXTS: hud\designermessages.lua =====
+-- around line 108
+    102:     if currentMessage:get_itemCardArgs() ~= nil then
+    103:       local go = currentMessage:get_goMessageRequestChild()
+    104:       local skipHighMips = game.CHECK_FEATURE("SAFE_SKIP_HIGH_MIPS")
+    105:       if not currentMessage._imagePreparedBeganLoad_ then
+    106:         self:SetStreamingAlgorithm(true)
+    107:         currentMessage._imagePreparedBeganLoad_ = true
+>   108:         go:SetMaterialSwap(currentMessage:get_itemCardArgs())
+    109:         if go.RequestLoadHighMips ~= nil then
+    110:           go:RequestLoadHighMips(skipHighMips)
+    111:         end
+    112:         return false
+    113:       elseif go.RequestLoadHighMips ~= nil then
+    114:         go:RequestLoadHighMips(skipHighMips)
+    115:         return go:CheckMaterialFullyStreamed()
+    116:       end
+-- around line 924
+    918:     local thItemIcon = util.GetTextHandle(goItemIcon)
+    919:     UI.SetText(thItemIcon, displayTable.IconText)
+    920:     goItemIcon:Show()
+    921:     UI.Anim(goItemIcon, consts.AS_Forward, "default")
+    922:     goUpgradeIcon:Hide()
+    923:   elseif displayTable.MaterialSwap ~= nil then
+>   924:     goUpgradeIcon:SetMaterialSwap(displayTable.MaterialSwap)
+    925:     goUpgradeIcon:Show()
+    926:     UI.Anim(goUpgradeIcon, consts.AS_Forward, "default")
+    927:     goItemIcon:Hide()
+    928:   end
+    929: end
+    930: function DesignerMessage:EVT_PAUSE_MENU_OPEN()
+    931:   self:WantPadEvents(false)
+    932:   self.pauseMenuOpen = true
+
+===== CONTEXTS: hud\dialogmessage.lua =====
+
+===== CONTEXTS: hud\mechanicshud.lua =====
+-- around line 46
+     40:   self.rageButtons = util.GetUiObjByName("DM_Rage_Mode")
+     41:   self.genericL3R3 = util.GetUiObjByName("R3_L3")
+     42: end
+     43: function MechanicsHUD:SetRagePrompts()
+     44:   local pad = game.Player.FindPlayer().Pad
+     45:   if pad.IsKeyboardAndMouse then
+>    46:     self.rageButtons:SetMaterialSwap("key")
+     47:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+     48:       self.genericL3R3:SetMaterialSwap(game.GetKey(6))
+     49:       self.genericL3R3:SetMaterialSwap(game.GetKey(5) .. "2")
+     50:     else
+     51:       self.genericL3R3:SetMaterialSwap(game.GetKey(13))
+     52:       self.genericL3R3:SetMaterialSwap(game.GetKey(10) .. "2")
+     53:     end
+     54:   elseif pad.IsGeneric then
+-- around line 49
+     43: function MechanicsHUD:SetRagePrompts()
+     44:   local pad = game.Player.FindPlayer().Pad
+     45:   if pad.IsKeyboardAndMouse then
+     46:     self.rageButtons:SetMaterialSwap("key")
+     47:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+     48:       self.genericL3R3:SetMaterialSwap(game.GetKey(6))
+>    49:       self.genericL3R3:SetMaterialSwap(game.GetKey(5) .. "2")
+     50:     else
+     51:       self.genericL3R3:SetMaterialSwap(game.GetKey(13))
+     52:       self.genericL3R3:SetMaterialSwap(game.GetKey(10) .. "2")
+     53:     end
+     54:   elseif pad.IsGeneric then
+     55:     self.rageButtons:SetMaterialSwap("")
+     56:     self.genericL3R3:SetMaterialSwap("")
+     57:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+-- around line 51
+     45:   if pad.IsKeyboardAndMouse then
+     46:     self.rageButtons:SetMaterialSwap("key")
+     47:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+     48:       self.genericL3R3:SetMaterialSwap(game.GetKey(6))
+     49:       self.genericL3R3:SetMaterialSwap(game.GetKey(5) .. "2")
+     50:     else
+>    51:       self.genericL3R3:SetMaterialSwap(game.GetKey(13))
+     52:       self.genericL3R3:SetMaterialSwap(game.GetKey(10) .. "2")
+     53:     end
+     54:   elseif pad.IsGeneric then
+     55:     self.rageButtons:SetMaterialSwap("")
+     56:     self.genericL3R3:SetMaterialSwap("")
+     57:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+     58:       self.genericL3R3:SetMaterialSwap("genA")
+     59:       self.genericL3R3:SetMaterialSwap("genB2")
+-- around line 58
+     52:       self.genericL3R3:SetMaterialSwap(game.GetKey(10) .. "2")
+     53:     end
+     54:   elseif pad.IsGeneric then
+     55:     self.rageButtons:SetMaterialSwap("")
+     56:     self.genericL3R3:SetMaterialSwap("")
+     57:     if game.GetEnterRageModeOptionNumber ~= nil and game.GetEnterRageModeOptionNumber() == 1 then
+>    58:       self.genericL3R3:SetMaterialSwap("genA")
+     59:       self.genericL3R3:SetMaterialSwap("genB2")
+     60:     else
+     61:       self.genericL3R3:SetMaterialSwap("genLS")
+     62:       self.genericL3R3:SetMaterialSwap("genRS2")
+     63:     end
+     64:   else
+     65:     self.rageButtons:SetMaterialSwap("")
+     66:     self.genericL3R3:SetMaterialSwap("")
+-- around line 65
+     59:       self.genericL3R3:SetMaterialSwap("genB2")
+     60:     else
+     61:       self.genericL3R3:SetMaterialSwap("genLS")
+     62:       self.genericL3R3:SetMaterialSwap("genRS2")
+     63:     end
+     64:   else
+>    65:     self.rageButtons:SetMaterialSwap("")
+     66:     self.genericL3R3:SetMaterialSwap("")
+     67:   end
+     68: end
+     69: function MechanicsHUD:Enter()
+     70:   self:EVT_DISABLE_MECHANIC()
+     71:   self:SetRagePrompts()
+     72: end
+     73: function MechanicsHUD:UpdateRageOptionButtons()
+-- around line 66
+     60:     else
+     61:       self.genericL3R3:SetMaterialSwap("genLS")
+     62:       self.genericL3R3:SetMaterialSwap("genRS2")
+     63:     end
+     64:   else
+     65:     self.rageButtons:SetMaterialSwap("")
+>    66:     self.genericL3R3:SetMaterialSwap("")
+     67:   end
+     68: end
+     69: function MechanicsHUD:Enter()
+     70:   self:EVT_DISABLE_MECHANIC()
+     71:   self:SetRagePrompts()
+     72: end
+     73: function MechanicsHUD:UpdateRageOptionButtons()
+     74:   local val = 0
+
+===== CONTEXTS: hud\photomodehud.lua =====
+-- around line 95
+     89:   self.player.Pad:UIDisableHack(true, consts.UIBUTTONDISABLE_PHOTOMODE)
+     90:   if self.player.Pad.PhotoModeButtonMappingHack then
+     91:     self.player.Pad:PhotoModeButtonMappingHack(true)
+     92:   end
+     93:   self.currentMenu = 1
+     94:   UI.PushCamera("HUDMenuCam")
+>    95:   UI.WorldUIRender("")
+     96:   engine.PhotoModeActivate()
+     97:   self:SendEventToUIFsm("mainHUD", "EVT_TURN_PHOTO_MODE_ON")
+     98:   self:SendEventToUIFsm("globalMenu", "EVT_TURN_PHOTO_MODE_ON")
+     99: end
+    100: function PHOn:Exit()
+    101:   self:ResetValuesOnExit()
+    102:   self.go_photoModeHUD:Hide()
+    103:   self.go_UI_Elements:Hide()
+
+===== CONTEXTS: hud\reticle.lua =====
+-- around line 88
+     82:     end
+     83:     if mechanic ~= reticleConsts.STATES.NONE and mechanicAvailable then
+     84:       reticleTintState = mechanic
+     85:     end
+     86:     local backdrop = util.GetUiObjByName(reticleConsts.BACKDROP)
+     87:     if mechanic ~= reticleConsts.STATES.NONE and mechanicAvailable and mechanicInRange then
+>    88:       backdrop:SetMaterialSwap(mechanic)
+     89:     else
+     90:       backdrop:SetMaterialSwap(reticleConsts.STATES.NONE)
+     91:     end
+     92:     self:UpdateReticleTints(reticleTintState)
+     93:     if reticleGOName ~= nil then
+     94:       util.Show(table.unpack(reticleGOName))
+     95:     end
+     96:   end
+-- around line 90
+     84:       reticleTintState = mechanic
+     85:     end
+     86:     local backdrop = util.GetUiObjByName(reticleConsts.BACKDROP)
+     87:     if mechanic ~= reticleConsts.STATES.NONE and mechanicAvailable and mechanicInRange then
+     88:       backdrop:SetMaterialSwap(mechanic)
+     89:     else
+>    90:       backdrop:SetMaterialSwap(reticleConsts.STATES.NONE)
+     91:     end
+     92:     self:UpdateReticleTints(reticleTintState)
+     93:     if reticleGOName ~= nil then
+     94:       util.Show(table.unpack(reticleGOName))
+     95:     end
+     96:   end
+     97: end
+     98: function RetOn:UpdateReticle(reticleState)
+
+===== CONTEXTS: hud\sequence_journal.lua =====
+-- around line 183
+    177:             local quest = animTable.Quest
+    178:             local icon = animTable.Icon
+    179:             if icon == nil and quest ~= nil then
+    180:               icon = questUtil.GetQuestIcon(quest)
+    181:             end
+    182:             if icon ~= nil then
+>   183:               childGO:SetMaterialSwap(icon)
+    184:             end
+    185:           end
+    186:         },
+    187:         {
+    188:           GOPath = "log|log_text_header",
+    189:           FadeValue = 0,
+    190:           FadeTime = 0,
+    191:           DoAnimate = false,
+
+===== CONTEXTS: hud\sequence_quest.lua =====
+-- around line 72
+     66:     InternalSetText("", sequence.promptGO)
+     67:   end
+     68: end
+     69: local Anim_Icon_ProcessCallback = function(childGO, animTable)
+     70:   local questID = animTable.QuestID
+     71:   local iconMatName = questUtil.GetQuestIcon(questID)
+>    72:   childGO:SetMaterialSwap(iconMatName)
+     73: end
+     74: local Anim_Category_ProcessCallback = function(childGO, animTable)
+     75:   local textStr = util.GetLAMSMsg(animTable.Category)
+     76:   InternalSetText(textStr, childGO)
+     77: end
+     78: local Anim_Header_ProcessCallback = function(childGO, animTable)
+     79:   local textStr = util.GetLAMSMsg(animTable.Header)
+     80:   InternalSetText(textStr, childGO)
+
+===== CONTEXTS: hud\sequence_questspecialcomplete.lua =====
+-- around line 58
+     52:         materialName = flag2Mat.Material
+     53:       end
+     54:     end
+     55:   elseif animTable.Is100Complete then
+     56:     materialName = "100Complete"
+     57:   end
+>    58:   childGO:SetMaterialSwap(materialName)
+     59: end
+     60: local PausedChanged = function(sequence, gamePaused, uiPaused)
+     61:   if uiPaused then
+     62:     game.UI.AlphaFade(sequence._parentGO, 0, 1)
+     63:   elseif sequence._activeStageName ~= "FadeOut" and sequence._activeStageName ~= "EarlyFadeOut" then
+     64:     game.UI.AlphaFade(sequence._parentGO, 1, 1)
+     65:   end
+     66: end
+
+===== CONTEXTS: hud\sequence_resource.lua =====
+-- around line 68
+     62:   if materialName == nil and iconText == "" then
+     63:     engine.Warning(tostring(tostring(resourceType) .. " resource " .. tostring(animTable.Resource) .. " named " .. util.GetLAMSStringFromMsg(displayStr)) .. " does not have an icon!")
+     64:   end
+     65:   if util.IsStringNilOrEmpty(materialName) then
+     66:     materialName = consts.EMPTY_MATERIAL_NAME
+     67:   end
+>    68:   childGO:SetMaterialSwap(materialName)
+     69:   local thIconText = util.GetTextHandle(childGO, "icon_text")
+     70:   if thIconText ~= nil then
+     71:     game.UI.SetText(thIconText, iconText)
+     72:   end
+     73:   if childGO.FindMaterialEntry then
+     74:     local colorEntry = childGO:FindMaterialEntry("body_text", "LayerX.cst_EmissiveTint")
+     75:     if colorEntry ~= nil then
+     76:       colorEntry.Value = engine.Vector.New(rarityColor[1], rarityColor[2], rarityColor[3])
+
+INTERPRETATION GATE
+Do not mutate compass_base or shared DockPoint artwork from this report alone. First identify the stock marker-instance owner and whether marker icon material is assigned per instance or through a shared class resource.
