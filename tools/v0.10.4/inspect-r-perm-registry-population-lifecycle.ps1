@@ -1,0 +1,88 @@
+param(
+    [string]$GameRoot = 'G:\SteamLibrary\steamapps\common\GodOfWar',
+    [string]$Remote = 'origin',
+    [switch]$NoPublish
+)
+
+$ErrorActionPreference = 'Stop'
+$repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+$branch = (& git -C $repo branch --show-current).Trim()
+if ($branch -ne 'codex/v104-raven-hud-research') {
+    throw "Expected codex/v104-raven-hud-research, got '$branch'."
+}
+if (Get-Process -Name GoW -ErrorAction SilentlyContinue) {
+    throw 'Close God of War before the R_Perm registry population lifecycle trace.'
+}
+
+$game = [IO.Path]::GetFullPath($GameRoot)
+$scanner = Join-Path $PSScriptRoot 'inspect-r-perm-registry-population-lifecycle.py'
+$outRel = 'archive/field-logs/completionist-v104-r-perm-registry-population-lifecycle.json'
+$out = Join-Path $repo ($outRel -replace '/', '\')
+
+if (-not (Test-Path -LiteralPath $scanner -PathType Leaf)) { throw "Missing tracer: $scanner" }
+if (-not (Test-Path -LiteralPath $game -PathType Container)) { throw "Missing game root: $game" }
+$python = Get-Command python -ErrorAction SilentlyContinue
+if ($null -eq $python) { throw 'Python 3.9+ is required.' }
+
+$preStaged = @(& git -C $repo diff --cached --name-only)
+if ($preStaged.Count -gt 0 -and -not [string]::IsNullOrWhiteSpace(($preStaged -join ''))) {
+    throw "Git index already has staged changes. Commit/unstage them first.`n$($preStaged -join "`n")"
+}
+
+Write-Host 'Syntax-checking R_Perm registry population lifecycle tracer...'
+& $python.Source -m py_compile $scanner
+if ($LASTEXITCODE -ne 0) { throw 'Python syntax check failed.' }
+
+Write-Host 'Tracing R_Perm registry population lifecycle read-only...'
+& $python.Source $scanner --game-root $game --output $out
+if ($LASTEXITCODE -ne 0) { throw 'R_Perm registry population lifecycle trace failed.' }
+if (-not (Test-Path -LiteralPath $out -PathType Leaf)) { throw "Report was not produced: $out" }
+
+$r = Get-Content -LiteralPath $out -Raw | ConvertFrom-Json
+if ([string]$r.result -ne 'READ_ONLY_R_PERM_REGISTRY_POPULATION_LIFECYCLE_TRACE') {
+    throw "Unexpected result: $($r.result)"
+}
+if ($r.game_files_written -ne $false -or $r.save_progression_marker_state_written -ne $false) {
+    throw 'Read-only safety flags failed.'
+}
+if ([string]$r.known_handoff.source_slot_rva -ne '0x12390E0' -or
+    [string]$r.known_handoff.registry_slot_rva -ne '0x22C6948' -or
+    [string]$r.known_handoff.transfer_owner_rva -ne '0x67C800') {
+    throw 'Known R_Perm registry handoff addresses changed.'
+}
+
+Write-Host ''
+Write-Host 'R_Perm registry population lifecycle trace complete.'
+Write-Host ("- indirect candidates: {0}; imports resolved: {1}" -f [int]$r.indirect_candidates.count, [int]$r.indirect_candidates.resolved_import_count)
+foreach ($row in @($r.indirect_candidates.rows)) {
+    $label = if ($row.resolved_import) { [string]$row.resolved_import } elseif ($row.vtable_offset) { "vtable+$($row.vtable_offset)" } else { [string]$row.kind }
+    Write-Host ("- {0}: {1}" -f [string]$row.site_rva, $label)
+}
+Write-Host ("- source-slot writers: {0}; potential owner functions: {1}" -f [int]$r.source_slot_writes.count, [int]$r.source_slot_writes.candidate_owner_count)
+Write-Host ("- ordered startup pre-transfer paths: {0}" -f @($r.ordered_pretransfer_reachability.startup_paths).Count)
+Write-Host ("- parent pre-startup paths: {0}" -f @($r.ordered_pretransfer_reachability.parent_pre_startup_paths).Count)
+Write-Host ("- alternate-owner-caller paths: {0}" -f @($r.ordered_pretransfer_reachability.second_transfer_owner_caller_paths).Count)
+Write-Host ("- conclusion: {0}" -f [string]$r.conclusion)
+Write-Host ("- report: {0}" -f $out)
+Write-Host '- game files written: false'
+
+if ($NoPublish) {
+    Write-Host 'Report publishing skipped (-NoPublish).'
+    return
+}
+
+& git -C $repo add -- $outRel
+if ($LASTEXITCODE -ne 0) { throw 'git add failed.' }
+& git -C $repo diff --cached --check -- $outRel
+if ($LASTEXITCODE -ne 0) { throw 'git diff --cached --check failed.' }
+& git -C $repo diff --cached --quiet -- $outRel
+if ($LASTEXITCODE -eq 0) {
+    Write-Host 'Report unchanged; nothing new to commit.'
+    return
+}
+
+& git -C $repo commit -m 'Archive R_Perm registry population lifecycle trace' -- $outRel
+if ($LASTEXITCODE -ne 0) { throw 'git commit failed.' }
+& git -C $repo push $Remote $branch
+if ($LASTEXITCODE -ne 0) { throw 'git push failed.' }
+Write-Host "Report committed and pushed to $Remote/$branch."
