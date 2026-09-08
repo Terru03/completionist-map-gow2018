@@ -161,6 +161,10 @@ $manifest = [ordered]@{
     }
     combined_report = $combinedReportPath
     save_progression_marker_state_written = $false
+    installed_utc = $null
+    rolled_back_utc = $null
+    rollback_utc = $null
+    install_error = $null
 }
 Write-Manifest $manifestFull $manifest
 
