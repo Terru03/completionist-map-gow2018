@@ -4,18 +4,18 @@ Field proof established that the isolated Completionist Raven map GO renders the
 resident 0x80A1 WAD payload directly: copying the stock Valkyrie resident
 payload into only the Raven resource made only that Raven render as Valkyrie.
 
-The resident payload sizes reveal the actual layout much more directly than the
-failed mip-tail hypothesis:
+The resident payload sizes are consistent with a 12-byte resource-specific
+prefix followed by a standalone 96x96 BC-compressed body:
 
-  BC7 diffuse:  9228 = 12-byte resident header + 96*96*8/8
-  BC1 emissive: 4620 = 12-byte resident header + 96*96*4/8
+  BC7 diffuse:  9228 = 12 + 96*96*8/8
+  BC1 emissive: 4620 = 12 + 96*96*4/8
 
-This helper therefore builds one 96x96, one-mip DDS for each Raven channel with
-pinned texconv, swizzles its 24x24 compressed-block grid with the exact Morton
-routine used by GOWTool, and places that body after the proven stock resident
-12-byte header. Before patching it requires the stock Dock and Valkyrie headers
-to agree for the same channel and requires the current Raven resident payload to
-be the untouched Dock clone.
+The stock Valkyrie control proved that an entire alternate resident payload can
+be rendered through the isolated Raven resource. A later static check showed
+that the first 12 bytes are not universal: Dock and Valkyrie emissive prefixes
+differ. The dedicated Raven resource was cloned from Dock, so this helper now
+preserves the Raven/Dock 12-byte prefix exactly and changes only the 96x96 BC
+body. It does not require unrelated stock resources to share that prefix.
 
 No game file is modified in-place by this helper.
 """
@@ -113,9 +113,8 @@ def morton(t: int, sx: int, sy: int) -> int:
 
 
 def swizzle_96(linear: bytes, bits_per_pixel: int) -> bytes:
-    # Exact GOWTool GnfImage::Swizzle traversal, but deliberately without the
-    # power-of-two padding applied by full GNF creation. The resident surface is
-    # a standalone 96x96 image, i.e. a 24x24 grid of 4x4 BC blocks.
+    # Exact GOWTool GnfImage::Swizzle traversal over a standalone 96x96 image,
+    # i.e. a 24x24 grid of 4x4 BC blocks.
     width = height = 96
     pixbl = 4
     bytes_per_block = bits_per_pixel * 2
@@ -219,6 +218,7 @@ def patch(wad_raw: bytes, source_png: Path, texconv: Path) -> tuple[bytes, dict]
 
     rows = []
     preserved_records: dict[str, bytes] = {}
+    header_variation_observed = False
     for label, spec in TEXTURES.items():
         raven_gpu = one_gpu(records, spec["raven_name"])
         dock_gpu = one_gpu(records, spec["dock_name"])
@@ -233,25 +233,32 @@ def patch(wad_raw: bytes, source_png: Path, texconv: Path) -> tuple[bytes, dict]
         dock_header = bytes(dock_gpu["data"][:12])
         valk_header = bytes(valk_gpu["data"][:12])
         raven_header = bytes(raven_gpu["data"][:12])
-        check(dock_header == valk_header,
-              f"{label}: Dock/Valkyrie 12-byte resident headers differ: {dock_header.hex()} vs {valk_header.hex()}")
-        check(raven_header == dock_header, f"{label}: Raven resident header differs from stock common header")
+        # The failed static gate established these prefixes are resource-specific
+        # for at least the emissive channel. What matters for our cloned Raven is
+        # that its prefix still exactly matches its Dock-derived baseline.
+        check(raven_header == dock_header, f"{label}: Raven resident prefix differs from its Dock-derived baseline")
+        if valk_header != dock_header:
+            header_variation_observed = True
 
         linear = built[label]["linear_body"]
         swizzled = swizzle_96(linear, spec["bits_per_pixel"])
         check(len(swizzled) == spec["body_bytes"], f"{label}: swizzled body size wrong")
 
         before = bytes(raven_gpu["data"])
-        raven_gpu["data"][:] = dock_header + swizzled
+        raven_gpu["data"][:] = raven_header + swizzled
         after = bytes(raven_gpu["data"])
         check(len(after) == spec["resident_bytes"], f"{label}: resident output size changed")
+        check(after[:12] == raven_header, f"{label}: Raven resident prefix changed")
         check(after != before, f"{label}: generated Raven resident payload equals Dock unexpectedly")
 
         preserved_records[label] = bytes(raven_def["data"])
         rows.append({
             "label": label,
             "resident_formula": f"12 + 96*96*{spec['bits_per_pixel']}/8",
-            "resident_header_hex": dock_header.hex(),
+            "raven_preserved_prefix_hex": raven_header.hex(),
+            "dock_prefix_hex": dock_header.hex(),
+            "valkyrie_prefix_hex": valk_header.hex(),
+            "dock_valkyrie_prefix_equal": dock_header == valk_header,
             "resident_bytes": spec["resident_bytes"],
             "body_bytes": spec["body_bytes"],
             "linear_dds_sha256": sha(linear),
@@ -277,7 +284,8 @@ def patch(wad_raw: bytes, source_png: Path, texconv: Path) -> tuple[bytes, dict]
             "diffuse": "9228 = 12 + 96*96*8/8",
             "emissive": "4620 = 12 + 96*96*4/8",
         },
-        "stock_dock_valkyrie_resident_header_match": True,
+        "raven_dock_resident_prefix_preserved": True,
+        "stock_resident_prefix_is_not_universal": header_variation_observed,
         "custom_raven_96px_swizzle_applied": True,
         "input_wad_sha256": sha(wad_raw),
         "output_wad_sha256": sha(out),
@@ -291,7 +299,7 @@ def patch(wad_raw: bytes, source_png: Path, texconv: Path) -> tuple[bytes, dict]
         "game_files_written": False,
         "save_state_written": False,
         "progression_state_written": False,
-        "note": "The previous mip2+ hypothesis was disproven by stock Dock bytes. Resident body sizes instead exactly describe standalone 96x96 BC7/BC1 surfaces.",
+        "note": "The 12-byte resident prefix is resource-specific, not universal. The isolated Raven keeps its original Dock-derived prefix and only its 96x96 compressed body is replaced.",
     }
     return out, report
 
