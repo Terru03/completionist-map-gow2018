@@ -4,10 +4,10 @@ This diagnostic intentionally does not add DCB rows or modify r_ui.wad.  It
 changes only the 64-bit Name hash of an existing 16-byte GOPool row while
 preserving its Cnt field and every other byte in wad_r_ui.dcb.
 
-Used first to rename the stock Valkyrie map-icon slot to
-``goMapIconCompletionistRaven``.  If the authored Raven marker then renders the
-stock Valkyrie resource through the new name, we have a safe custom-class slot
-route that does not require growing the WAD.
+Historical offline byte-patch experiment, not a safe class-registration route.
+GOPool Name selects an existing resource; it is not an alias-to-row index.
+Valkyrie has live authored use and must not be a donor. No safe donor established.
+See docs/research/astra-v104-map-class-registry-findings.md.
 """
 from __future__ import annotations
 

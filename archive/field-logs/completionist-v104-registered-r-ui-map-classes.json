@@ -1903,10 +1903,11 @@
     }
   ],
   "interpretation": {
-    "important": "A gomapicon* WAD resource is not a registered class unless its hash is also present in WAD_R_UI.GOPool.",
+    "important": "GOPool lists preallocation requests. 'Registered' in this report means pooled here, not proof of resource-registry membership or runtime safety.",
     "gopool_name_hashes_are_not_assumed_unique": true,
     "duplicate_hash_classes_are_excluded_from_donor_candidates": true,
     "donor_candidates_are_not_yet_proven_safe": true,
-    "next_gate": "Choose only a uniquely registered zero-authored-usage candidate, then inspect runtime/code references before any in-game rename proof."
-  }
+    "next_gate": "No safe donor established. Run inspect-map-class-registry.py for resource, pool, executable and Lua evidence before any runtime proof."
+  },
+  "source_hashes_unchanged_after_scan": true
 }

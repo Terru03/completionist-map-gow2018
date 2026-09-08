@@ -1,5 +1,9 @@
 """Build a Raven-only logical map-icon clone offline.
 
+Historical experiment only. Grown WAD failed runtime proof. This builder keeps
+the old final-instance payload name; full WAD bookkeeping is not understood.
+Do not install its output. See map-class-registry findings.
+
 This is the smallest structural isolation gate after the v0.10.4 map-icon-chain
 trace. It creates a new r_ui.wad final-instance identity named
 ``gomapiconcompletionistraven`` that deliberately reuses the proven stock Dock

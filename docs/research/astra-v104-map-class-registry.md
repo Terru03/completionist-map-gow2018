@@ -1,5 +1,8 @@
 # Astra task: v0.10.4 native Completionist map-class registry
 
+Research pass: 2026-09-08. See [findings and next gates](astra-v104-map-class-registry-findings.md).
+Pool semantics and old builder defects traced. No safe donor or runtime install proof ready.
+
 ## Goal
 
 Resolve the God of War (2018) `WAD_R_UI.GOPool` / `r_ui.wad` map-icon registration model well enough to give the Completionist Raven a stable independent map class without using DockPoint artwork, without globally changing stock classes, and without growing/rebuilding `r_ui.wad` unless the full runtime bookkeeping is understood.

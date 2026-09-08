@@ -1,5 +1,9 @@
 """Build a complete Raven-only map UI visual chain offline.
 
+Historical experiment only. Grown WAD failed runtime proof. Header rename does
+not fix the retained Dock payload name or prove WAD bookkeeping. Do not install
+its output. See map-class-registry findings.
+
 Clones only the stock Dock dependencies that must become Raven-specific:
 two texture definition/GPU pairs, the Dock artwork material, model, prototype
 group and final instance. Geometry, animation, generic shaders and unrelated

@@ -1,6 +1,7 @@
 param(
     [string]$GameRoot = 'G:\SteamLibrary\steamapps\common\GodOfWar',
-    [string]$Remote = 'origin'
+    [string]$Remote = 'origin',
+    [switch]$NoPublish
 )
 
 $ErrorActionPreference = 'Stop'
@@ -29,33 +30,35 @@ foreach ($required in @($wad,$dcb,$mapmaster,$py)) {
 $python = Get-Command python -ErrorAction SilentlyContinue
 if ($null -eq $python) { throw 'Python 3.9+ is required.' }
 
-& $python.Source -m py_compile $py
+& $python -m py_compile $py
 if ($LASTEXITCODE -ne 0) { throw 'Python syntax check failed.' }
 
-& $python.Source $py `
+& $python $py `
     --r-ui-wad $wad `
     --wad-r-ui-dcb $dcb `
     --mapmaster $mapmaster `
     --output $out
 if ($LASTEXITCODE -ne 0) { throw 'Registered map-class inventory failed.' }
 
-Push-Location $repo
-try {
-    git add -- $outRel
-    if ($LASTEXITCODE -ne 0) { throw 'git add failed for map-class inventory report.' }
-    git diff --cached --check -- $outRel
-    if ($LASTEXITCODE -ne 0) { throw 'git diff --cached --check failed.' }
-    git diff --cached --quiet -- $outRel
-    if ($LASTEXITCODE -ne 0) {
-        git commit -m 'Archive registered r_ui map class inventory' -- $outRel
-        if ($LASTEXITCODE -ne 0) { throw 'git commit failed for map-class inventory report.' }
-        git push $Remote $branch
-        if ($LASTEXITCODE -ne 0) { throw 'git push failed for map-class inventory report.' }
-    } else {
-        Write-Host 'Registered map-class inventory unchanged; nothing to commit.'
+if (-not $NoPublish) {
+    Push-Location $repo
+    try {
+        git add -- $outRel
+        if ($LASTEXITCODE -ne 0) { throw 'git add failed for map-class inventory report.' }
+        git diff --cached --check -- $outRel
+        if ($LASTEXITCODE -ne 0) { throw 'git diff --cached --check failed.' }
+        git diff --cached --quiet -- $outRel
+        if ($LASTEXITCODE -ne 0) {
+            git commit -m 'Archive registered r_ui map class inventory' -- $outRel
+            if ($LASTEXITCODE -ne 0) { throw 'git commit failed for map-class inventory report.' }
+            git push $Remote $branch
+            if ($LASTEXITCODE -ne 0) { throw 'git push failed for map-class inventory report.' }
+        } else {
+            Write-Host 'Registered map-class inventory unchanged; nothing to commit.'
+        }
     }
+    finally { Pop-Location }
 }
-finally { Pop-Location }
 
 Write-Host ''
 Write-Host 'Registered r_ui map-class inventory complete.'

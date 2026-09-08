@@ -1,0 +1,54 @@
+Registry research validation — 2026-09-08
+Branch: feat/v0.10.4-all-ravens
+
+Scope checked against docs/research/astra-v104-map-class-registry.md:
+A1-A6: pool rows, duplicates, Cnt, Icon lookup, resource chain, unpooled
+objects and names outside map prefix covered in findings and JSON.
+B: 13 pooled map classes all have authored use. No safe donor established.
+C1-C4: each route assessed; no runtime-ready route claimed.
+Deliverables: read-only tools, findings, full JSON, validation, commit/push.
+Conditional proof not built: required safety and bookkeeping gates not met.
+
+Commands run from repo root; outputs inspected:
+1. Required inspect-r-ui-registered-map-classes.ps1 initially failed because
+   Get-Command python returned AliasInfo with empty Source. Invoking CommandInfo
+   fixed alias path. Required inventory then ran and archived report in 5d015e3.
+2. powershell -NoProfile -ExecutionPolicy Bypass -File
+   tools/v0.10.4/inspect-r-ui-registered-map-classes.ps1 -NoPublish
+   Exit 0. 255 rows, 254 unique hashes, one duplicate group, 13 pooled map
+   classes, zero zero-authored-use map donor candidates.
+3. powershell -NoProfile -ExecutionPolicy Bypass -File
+   tools/v0.10.4/inspect-map-class-registry.ps1
+   Exit 0. 254 row-name matches; one unresolved row; 21 map finals;
+   nine native blocks checked; 547 pinned Lua files; zero safe donors.
+   Existing logical and visual candidates both fail rig type accounting.
+   Both retain gomapicondock inside renamed final payload.
+   Stock WAD byte round-trip passes; all four game source pins unchanged.
+4. python -m py_compile tools/v0.10.4/inspect-map-class-registry.py
+   tools/v0.10.4/inspect-r-ui-registered-map-classes.py
+   tools/v0.10.4/test_map_class_registry.py
+   Exit 0. Python syntax check only; no game or application build claimed.
+5. python tools/v0.10.4/test_map_class_registry.py
+   Nine tests, OK. Duplicate counts/offsets, wrong pointer/count, padding,
+   truncation, report write bounds, separate payload/header names,
+   unterminated names, known folded hashes and wrong/missing rig types covered.
+6. Evidence acceptance assertions: unique hashes 254; one unresolved row;
+   every pooled map class has authored use; duplicate count sum 10;
+   both old candidates fail type counts; native anchors match;
+   547 Lua files; source pins unchanged; runtime_test_ready=false. Passed.
+7. git diff --check: exit 0.
+
+Independent review read new tools and pinned native code. Review found a missing
+whole rig type could evade audit because only observed keys were compared.
+Reviewer removed sole 0x40001 record in memory and reproduced false pass.
+Fix checks all four rig type keys; missing-type and wrong-count tests now pass.
+Review confirmed pointer-based duplicate merge, Cnt clone loop and null checkout.
+No unsafe game write found. No save path opened; path guard tests use path values.
+
+Existing astra-mapicon-chain JSON matches already tracked map-icon-chain JSON
+byte for byte; preserved as prior research evidence. Existing empty '-File'
+artifact is unrelated and stays untouched, outside commit.
+
+No game launch, runtime test, install, save/progression write, or WAD rebuild.
+No binary payload or copied Lua source included. Full loader bookkeeping,
+unknown row 104, author intent, dynamic use and exact crash cause remain open.

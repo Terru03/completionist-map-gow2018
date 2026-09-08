@@ -5,9 +5,9 @@ Read-only. Intersects three independent sources:
 2. concrete gomapicon* final-instance resources from stock r_ui.wad
 3. authored marker Icon usage from mapmaster.dcb
 
-This deliberately replaces the previous guess-and-test donor selection. A WAD
-resource is not assumed to be a registered map class unless its case-folded name
-hash is actually present in GOPool.
+GOPool is a preallocation list, not the resource name registry. Here,
+"registered" means listed in this WAD's GOPool only. Resource lookup and pool
+lookup are separate native steps; see the registry research report.
 
 Important: GOPool Name hashes are not assumed unique. The stock file contains
 repeated Name hashes, so this tool records duplicate groups explicitly and only
@@ -61,6 +61,10 @@ def digest(data: bytes) -> str:
 
 def parse_gopool(dcb: native.Dcb) -> list[dict]:
     blob = dcb.blob
+    root = dcb.root("WAD_R_UI", 0x10F)
+    offsets = list(dcb.array(root, ROW_SIZE))
+    if root != 0 or offsets != list(range(POOL_OFFSET, POOL_OFFSET + POOL_COUNT * ROW_SIZE, ROW_SIZE)):
+        raise ValueError("unexpected WAD_R_UI GOPool pointer/count")
     if len(blob) != 4272:
         raise ValueError(f"unexpected WAD_R_UI data size: {len(blob)}")
     if POOL_OFFSET + POOL_COUNT * ROW_SIZE > len(blob):
@@ -69,6 +73,8 @@ def parse_gopool(dcb: native.Dcb) -> list[dict]:
     for i in range(POOL_COUNT):
         at = POOL_OFFSET + i * ROW_SIZE
         name_hash, cnt = struct.unpack_from("<QH", blob, at)
+        if blob[at + 10:at + ROW_SIZE] != bytes(6):
+            raise ValueError(f"nonzero GOPool padding at row {i}")
         rows.append({
             "row_index": i,
             "offset": f"0x{at:X}",
@@ -94,6 +100,17 @@ def public_row(row: dict) -> dict:
     return {k: v for k, v in row.items() if k != "name_hash_int"}
 
 
+def report_path(path: Path) -> Path:
+    """Keep report writes in repo field logs. Resolve links before check."""
+    out = path.resolve()
+    allowed = HERE.parent.parent / "archive" / "field-logs"
+    if not out.is_relative_to(allowed.resolve()) or out.suffix.lower() != ".json":
+        raise ValueError("report must be JSON under repository archive/field-logs")
+    if out.exists() and out.stat().st_nlink > 1:
+        raise ValueError("report must not be a hard link")
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--r-ui-wad", type=Path, required=True)
@@ -101,6 +118,7 @@ def main() -> None:
     ap.add_argument("--mapmaster", type=Path, required=True)
     ap.add_argument("--output", type=Path, required=True)
     args = ap.parse_args()
+    out = report_path(args.output)
 
     wad_raw = args.r_ui_wad.resolve().read_bytes()
     dcb_raw = args.wad_r_ui_dcb.resolve().read_bytes()
@@ -234,15 +252,20 @@ def main() -> None:
         "unregistered_wad_map_resources": unregistered_wad_resources,
         "opaque_gopool_rows": opaque_rows,
         "interpretation": {
-            "important": "A gomapicon* WAD resource is not a registered class unless its hash is also present in WAD_R_UI.GOPool.",
+            "important": "GOPool lists preallocation requests. 'Registered' in this report means pooled here, not proof of resource-registry membership or runtime safety.",
             "gopool_name_hashes_are_not_assumed_unique": True,
             "duplicate_hash_classes_are_excluded_from_donor_candidates": True,
             "donor_candidates_are_not_yet_proven_safe": True,
-            "next_gate": "Choose only a uniquely registered zero-authored-usage candidate, then inspect runtime/code references before any in-game rename proof.",
+            "next_gate": "No safe donor established. Run inspect-map-class-registry.py for resource, pool, executable and Lua evidence before any runtime proof.",
         },
     }
 
-    out = args.output.resolve()
+    result["source_hashes_unchanged_after_scan"] = all(
+        digest(path.resolve().read_bytes()) == digest(raw)
+        for path, raw in [(args.r_ui_wad, wad_raw), (args.wad_r_ui_dcb, dcb_raw), (args.mapmaster, map_raw)]
+    )
+    if not result["source_hashes_unchanged_after_scan"]:
+        raise ValueError("source changed during scan")
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(f"GOPool duplicate Name-hash groups: {len(duplicate_groups)}")
