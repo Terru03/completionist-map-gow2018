@@ -13,12 +13,12 @@ if ($branch -ne 'codex/v104-raven-hud-research') {
 $python = Get-Command python -ErrorAction SilentlyContinue
 if ($null -eq $python) { throw 'Python 3.9+ is required.' }
 
-$builder = Join-Path $PSScriptRoot 'build-raven-compass-hud-three-payload.py'
+$builder = Join-Path $PSScriptRoot 'build-raven-compass-hud-three-payload-v2.py'
 if (-not (Test-Path -LiteralPath $builder -PathType Leaf)) {
     throw "Missing builder: $builder"
 }
 
-Write-Host 'Syntax-checking offline Raven compass HUD builder...'
+Write-Host 'Syntax-checking dependency-aware offline Raven compass HUD builder...'
 $sourceCode = [IO.File]::ReadAllText($builder)
 $sourceCode | & $python.Source -c 'import ast,sys; ast.parse(sys.stdin.read())'
 if ($LASTEXITCODE -ne 0) { throw 'Offline Raven compass HUD builder syntax check failed.' }
@@ -54,6 +54,7 @@ if ((Resolve-Path -LiteralPath $candidate).Path -eq (Resolve-Path -LiteralPath $
 
 $result = Get-Content -LiteralPath $report -Raw | ConvertFrom-Json
 if ([string]$result.result -ne 'OFFLINE_RAVEN_COMPASS_HUD_THREE_PAYLOAD_BUILT' -or
+    [int]$result.builder_revision -ne 2 -or
     [string]$result.conclusion -ne 'THREE_PAYLOAD_RAVEN_HUD_CLONE_BUILT_OFFLINE' -or
     [int]$result.physical_payload_delta -ne 3 -or
     [int]$result.accounting_delta -ne 2 -or
@@ -64,6 +65,7 @@ if ([string]$result.result -ne 'OFFLINE_RAVEN_COMPASS_HUD_THREE_PAYLOAD_BUILT' -
     $result.proof.candidate_round_trip_byte_exact -ne $true -or
     $result.proof.three_new_payloads_only -ne $true -or
     $result.proof.root_type_accounting_delta_exactly_two -ne $true -or
+    $result.proof.dependency_encoding_preserved_exactly -ne $true -or
     $result.proof.prototype_points_to_new_model -ne $true -or
     $result.proof.model_points_to_existing_raven_material -ne $true -or
     $result.proof.model_reuses_stock_dock_mesh -ne $true -or
@@ -82,9 +84,13 @@ if ($candidateSha -ne [string]$result.candidate_wad_sha256) {
 
 Write-Host ''
 Write-Host 'Offline Raven compass HUD three-payload gate passed.'
+Write-Host '- builder revision: 2 (dependency-encoding aware)'
 Write-Host '- new payloads: gocompletionistravenhud, goProtoCompletionistRavenHUD, MDL_completionistravenhud'
 Write-Host '- physical payload delta: +3'
 Write-Host '- WAD_R_UI accounting delta: +2'
+Write-Host ("- prototype -> model source encoding: inline={0}, zero-data-links={1}" -f $result.source_dependency_signatures.prototype_to_model.inline, $result.source_dependency_signatures.prototype_to_model.zero_data_links)
+Write-Host ("- model -> material source encoding: inline={0}, zero-data-links={1}" -f $result.source_dependency_signatures.model_to_material.inline, $result.source_dependency_signatures.model_to_material.zero_data_links)
+Write-Host ("- model -> mesh source encoding: inline={0}, zero-data-links={1}" -f $result.source_dependency_signatures.model_to_mesh.inline, $result.source_dependency_signatures.model_to_mesh.zero_data_links)
 Write-Host '- Raven material reused: MAT_AE4AD85BB993F040'
 Write-Host '- Dock mesh reused: MG_boatdock_0'
 Write-Host '- shared compass reused: goProtocompassicons'
