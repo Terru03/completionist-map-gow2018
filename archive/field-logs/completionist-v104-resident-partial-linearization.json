@@ -1,0 +1,566 @@
+{
+  "result": "RESIDENT_PARTIAL_LINEARIZATION_INSPECTED",
+  "game_files_written": false,
+  "save_files_written": false,
+  "progression_state_written": false,
+  "wad_sha256": "e4a56165e9083eb7d0541699aa404e3e43a0c10aff9f04f1f751b801484e7959",
+  "root_texpack_sha256": "2ddfee7265928da5da4e4824ca6af98a1c6a858ebd0f03f2c5b20dde71fc1f3d",
+  "hypothesis": "For each mip2..7 fixed-size resident segment: copy raw streamed/swizzled segment, unswizzle it, pack authored 4x4-aligned rows into the segment prefix, and leave the remaining segment bytes in original streamed/swizzled order.",
+  "icons": {
+    "dock": {
+      "diffuse": {
+        "resource": "TX_mapmarker_docklocation_diffuse_982BF904AB84F2CC",
+        "authored_dimensions": [
+          148,
+          148
+        ],
+        "block_bytes": 16,
+        "resident_bytes": 9228,
+        "resident_body_bytes": 9216,
+        "trailer_hex": "000000000000000000000000",
+        "stream_bytes": 91136,
+        "stream_meta": {
+          "texinfo_index": 3103,
+          "file_hash": "982BF904AB84F2CC",
+          "user_hash": "B5C0D91355E4F2B9",
+          "chain": [
+            {
+              "index": 5908,
+              "raw_size": 91136,
+              "mip_start": 7,
+              "mip_end": 0,
+              "mip_width": 148,
+              "mip_height": 148
+            }
+          ]
+        },
+        "candidate_exact": true,
+        "different_bytes": 0,
+        "first_difference": null,
+        "last_difference": null,
+        "resident_body_sha256": "aa1103b403c0c0ff930d18164a93a2d049aa7cff8ba4d43065c9fd9d12cdb27a",
+        "candidate_body_sha256": "aa1103b403c0c0ff930d18164a93a2d049aa7cff8ba4d43065c9fd9d12cdb27a",
+        "mips": [
+          {
+            "mip": 2,
+            "padded_blocks": [
+              16,
+              16
+            ],
+            "active_blocks": [
+              10,
+              10
+            ],
+            "segment_blocks": 256,
+            "packed_active_blocks": 100,
+            "untouched_raw_tail_blocks": 156,
+            "raw_segment_sha256": "4bf76b7c18cf161b177276fc178e1048135a92b685c608aac6d5521d843ca345",
+            "packed_active_sha256": "cec33d0d7ad718417b485c69ac6f83c66941d431efdb6347d91f58496d1ac540",
+            "candidate_segment_sha256": "1bd2fd524015dd72953e0b065fa149b544c24a7aec53957a51e4985a2273599e"
+          },
+          {
+            "mip": 3,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              5,
+              5
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 25,
+            "untouched_raw_tail_blocks": 39,
+            "raw_segment_sha256": "149b83380dd59c91f5935a3f913f8d289773eccf3c2aa8c8fa0214a587220336",
+            "packed_active_sha256": "e679afeb773370a216b00986615bf06e7f4c29a5f02af0439943a5bebff5e762",
+            "candidate_segment_sha256": "cc5211787d5f7dcb2adf5ed15da822f64448ffff39fcf173107b59688772c7d5"
+          },
+          {
+            "mip": 4,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              3,
+              3
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 9,
+            "untouched_raw_tail_blocks": 55,
+            "raw_segment_sha256": "806e349f718948823311924853be79b8647d0aa2fa2907fccc924ea090c4afcb",
+            "packed_active_sha256": "f860fa6e7c6cbf03b142229e62696f486e391ec16a901b78fd00e98e9b45b726",
+            "candidate_segment_sha256": "963cc8f0cc59b8b8366dc77fa782a9df2120acc344d4e64b6599c72bd424f11d"
+          },
+          {
+            "mip": 5,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              1,
+              1
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 1,
+            "untouched_raw_tail_blocks": 63,
+            "raw_segment_sha256": "a1d81efeb0b865555db70d803a6ebf3c39ef2686db810f8ce833f94c51e2a357",
+            "packed_active_sha256": "709f7ba0c21399de3bbb80b1a38bdc95d5d392ec663f533cb50795f1814b4b56",
+            "candidate_segment_sha256": "a1d81efeb0b865555db70d803a6ebf3c39ef2686db810f8ce833f94c51e2a357"
+          },
+          {
+            "mip": 6,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              1,
+              1
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 1,
+            "untouched_raw_tail_blocks": 63,
+            "raw_segment_sha256": "71eba5a891ec014c1b1158a09e5fb334fde799b3a46fca8ae534f528ff17c655",
+            "packed_active_sha256": "507fe4f52b8ec1b55e034e1803955401364903a4f3edecaf6f8a4662d90cbd27",
+            "candidate_segment_sha256": "71eba5a891ec014c1b1158a09e5fb334fde799b3a46fca8ae534f528ff17c655"
+          },
+          {
+            "mip": 7,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              1,
+              1
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 1,
+            "untouched_raw_tail_blocks": 63,
+            "raw_segment_sha256": "8b0a3987b30861220fce6317a759ffc6f4487dc3dc5212f0ecab802a99b59f26",
+            "packed_active_sha256": "576df900d49c0bde485122b91a8370b3a5f941ebcd9ac0649ed2fde62db8bed5",
+            "candidate_segment_sha256": "8b0a3987b30861220fce6317a759ffc6f4487dc3dc5212f0ecab802a99b59f26"
+          }
+        ]
+      },
+      "emissive": {
+        "resource": "TX_mapmarker_docklocation_emissive_FCC664130951154C",
+        "authored_dimensions": [
+          148,
+          148
+        ],
+        "block_bytes": 8,
+        "resident_bytes": 4620,
+        "resident_body_bytes": 4608,
+        "trailer_hex": "000000000000000000000000",
+        "stream_bytes": 45568,
+        "stream_meta": {
+          "texinfo_index": 3104,
+          "file_hash": "FCC664130951154C",
+          "user_hash": "16DD8FD4899DD159",
+          "chain": [
+            {
+              "index": 5909,
+              "raw_size": 45568,
+              "mip_start": 7,
+              "mip_end": 0,
+              "mip_width": 148,
+              "mip_height": 148
+            }
+          ]
+        },
+        "candidate_exact": true,
+        "different_bytes": 0,
+        "first_difference": null,
+        "last_difference": null,
+        "resident_body_sha256": "3c640b8ca0ac22a49efc5e41e5421fc50b34ab262aa47bc902308f10b48b88d9",
+        "candidate_body_sha256": "3c640b8ca0ac22a49efc5e41e5421fc50b34ab262aa47bc902308f10b48b88d9",
+        "mips": [
+          {
+            "mip": 2,
+            "padded_blocks": [
+              16,
+              16
+            ],
+            "active_blocks": [
+              10,
+              10
+            ],
+            "segment_blocks": 256,
+            "packed_active_blocks": 100,
+            "untouched_raw_tail_blocks": 156,
+            "raw_segment_sha256": "44eccf8bbbceb62043194e601372b87e9329b61e4141c18452651f5a18a46fac",
+            "packed_active_sha256": "86cc57ece32bb348aa7801a515dd80bce0f0007f63f9b77063a31d74fd05dd21",
+            "candidate_segment_sha256": "d80b655ce16847973d4d1415eefeeda3ac38b59caf35097bfb74514188be6fc2"
+          },
+          {
+            "mip": 3,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              5,
+              5
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 25,
+            "untouched_raw_tail_blocks": 39,
+            "raw_segment_sha256": "d3aae284d291ea2202b94cb7cd8200e1fb7e8fad20451126ccab650332eadcc6",
+            "packed_active_sha256": "863a7c66d6456e4990431f6ea615228a6ac7baea8b0617599b8987a4f361f59d",
+            "candidate_segment_sha256": "bcede0d755c4b49d79ba027acc3dc7d9963a71aa3bac27df4e0b500b57827c4a"
+          },
+          {
+            "mip": 4,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              3,
+              3
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 9,
+            "untouched_raw_tail_blocks": 55,
+            "raw_segment_sha256": "499b39155799d9fc93e31e009f9dae8b60671dd6bdafca14ae378642c1e96f64",
+            "packed_active_sha256": "4ae944a8cf47dcf50f1bb230bd4b4ae5d92306527b77c5f3dd1b8de10524d94d",
+            "candidate_segment_sha256": "409445de0e61cc6a1bdb42569096304abba89f8fba7ee37b58cb3d4db3b46cdc"
+          },
+          {
+            "mip": 5,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              1,
+              1
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 1,
+            "untouched_raw_tail_blocks": 63,
+            "raw_segment_sha256": "fa0f3a26237f13a452ccf4b3fe52e279ad54d9d711535901ba885db3178ed852",
+            "packed_active_sha256": "66559cdb251ac5faa28b7d11d6d9cddfe957b59008a18d507a1b1c82bedd09a0",
+            "candidate_segment_sha256": "fa0f3a26237f13a452ccf4b3fe52e279ad54d9d711535901ba885db3178ed852"
+          },
+          {
+            "mip": 6,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              1,
+              1
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 1,
+            "untouched_raw_tail_blocks": 63,
+            "raw_segment_sha256": "72bdffdf53a592afa250dc8cd7bb37034fd240b614cb80ea9d844cccaf7b18f3",
+            "packed_active_sha256": "d0ee4402eae2334a46608ce647293badbc85532fe6bacd1ed29fcc753f88304f",
+            "candidate_segment_sha256": "72bdffdf53a592afa250dc8cd7bb37034fd240b614cb80ea9d844cccaf7b18f3"
+          },
+          {
+            "mip": 7,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              1,
+              1
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 1,
+            "untouched_raw_tail_blocks": 63,
+            "raw_segment_sha256": "653219338a67eb645383ae1d54568ceada66ae630feec155891ee939de8c57c1",
+            "packed_active_sha256": "4edebd0ebe31aca60358d1aac55148b50ca2d33b47a1138cbfdcb5a5c4036e47",
+            "candidate_segment_sha256": "653219338a67eb645383ae1d54568ceada66ae630feec155891ee939de8c57c1"
+          }
+        ]
+      }
+    },
+    "valkyrie": {
+      "diffuse": {
+        "resource": "TX_mapmarker_valkyrielocation_diffu_8A041E6BFCE5E589",
+        "authored_dimensions": [
+          156,
+          156
+        ],
+        "block_bytes": 16,
+        "resident_bytes": 9228,
+        "resident_body_bytes": 9216,
+        "trailer_hex": "000000000000000000000000",
+        "stream_bytes": 91136,
+        "stream_meta": {
+          "texinfo_index": 3379,
+          "file_hash": "8A041E6BFCE5E589",
+          "user_hash": "20CD6E638C469C70",
+          "chain": [
+            {
+              "index": 6283,
+              "raw_size": 91136,
+              "mip_start": 7,
+              "mip_end": 0,
+              "mip_width": 156,
+              "mip_height": 156
+            }
+          ]
+        },
+        "candidate_exact": true,
+        "different_bytes": 0,
+        "first_difference": null,
+        "last_difference": null,
+        "resident_body_sha256": "6b97c0d3093d0659613f4daa718404ff9377af3a04e55aeeb80de50e02e5d777",
+        "candidate_body_sha256": "6b97c0d3093d0659613f4daa718404ff9377af3a04e55aeeb80de50e02e5d777",
+        "mips": [
+          {
+            "mip": 2,
+            "padded_blocks": [
+              16,
+              16
+            ],
+            "active_blocks": [
+              10,
+              10
+            ],
+            "segment_blocks": 256,
+            "packed_active_blocks": 100,
+            "untouched_raw_tail_blocks": 156,
+            "raw_segment_sha256": "4d6ac6e822401afbbb7bf5256c8dc8cb56a2d5d7dc3863c1a410ad818bee1d6f",
+            "packed_active_sha256": "7b89cda8f33bb814ac4d5be70e8ca127f0c05c821baa206178e9acd9ee8e0778",
+            "candidate_segment_sha256": "c81be7998e2bc79a925c4b9e0c32fa1ffaaef7cb648e1b1e8bf71c0137f9e9f6"
+          },
+          {
+            "mip": 3,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              5,
+              5
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 25,
+            "untouched_raw_tail_blocks": 39,
+            "raw_segment_sha256": "d1df3ece7c4fae54d9a2dda4f9023d2c3ccdb095773f410dcd6594df4756964e",
+            "packed_active_sha256": "519e439990a671872bd1676ac1bef9a7535ccf8c3663caa4c4469ab74855d345",
+            "candidate_segment_sha256": "f315a497509019bc4cdc8f882eae0ff63d893147c62158238d12146a9bc0af60"
+          },
+          {
+            "mip": 4,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              3,
+              3
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 9,
+            "untouched_raw_tail_blocks": 55,
+            "raw_segment_sha256": "b07eb1ab9cbb53f78fce4348d9733d4f8c2e059a0f42cd0345187de71da54568",
+            "packed_active_sha256": "baa3725951c48aa7649a3f16c5f5e60bb826164842c5c810ed59aed458ea4547",
+            "candidate_segment_sha256": "93b025038db700926e61ef088f1f0419d9a3bbe0353e7eda1b715697d57c28b5"
+          },
+          {
+            "mip": 5,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              1,
+              1
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 1,
+            "untouched_raw_tail_blocks": 63,
+            "raw_segment_sha256": "c498b93b96d5b9194ac0ba131dd217717691d6c4d374a5571ae9e00f9488dfae",
+            "packed_active_sha256": "2543380d7c632f6ac568d96560f3dc258542eac7ef948293a8ec80643fadf4d7",
+            "candidate_segment_sha256": "c498b93b96d5b9194ac0ba131dd217717691d6c4d374a5571ae9e00f9488dfae"
+          },
+          {
+            "mip": 6,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              1,
+              1
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 1,
+            "untouched_raw_tail_blocks": 63,
+            "raw_segment_sha256": "f60f1a01556270b4f7f5b2185396dce1d1e21bbe1467a8570cea8b7e451e09b9",
+            "packed_active_sha256": "8db40b2dc5f26cafb38b4eda3de6a5d18725884ea5f6d38ee3de7393d58d1757",
+            "candidate_segment_sha256": "f60f1a01556270b4f7f5b2185396dce1d1e21bbe1467a8570cea8b7e451e09b9"
+          },
+          {
+            "mip": 7,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              1,
+              1
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 1,
+            "untouched_raw_tail_blocks": 63,
+            "raw_segment_sha256": "9f139f9612037edfa809145c78ed59dc8436d326ae4dca25cab52735accdc8a5",
+            "packed_active_sha256": "b83611552acafecdb1e2de463917a1c3a64983b95d2c85a61eb80fe11ea24a18",
+            "candidate_segment_sha256": "9f139f9612037edfa809145c78ed59dc8436d326ae4dca25cab52735accdc8a5"
+          }
+        ]
+      },
+      "emissive": {
+        "resource": "TX_mapmarker_valkyrielocation_emiss_9938C16BB9F6A5AC",
+        "authored_dimensions": [
+          156,
+          156
+        ],
+        "block_bytes": 8,
+        "resident_bytes": 4620,
+        "resident_body_bytes": 4608,
+        "trailer_hex": "000000000000000000000000",
+        "stream_bytes": 45568,
+        "stream_meta": {
+          "texinfo_index": 3380,
+          "file_hash": "9938C16BB9F6A5AC",
+          "user_hash": "ED444408527BC170",
+          "chain": [
+            {
+              "index": 6284,
+              "raw_size": 45568,
+              "mip_start": 7,
+              "mip_end": 0,
+              "mip_width": 156,
+              "mip_height": 156
+            }
+          ]
+        },
+        "candidate_exact": true,
+        "different_bytes": 0,
+        "first_difference": null,
+        "last_difference": null,
+        "resident_body_sha256": "0fc9637a917bc129f649f1c849b207c8fb9c00586e2e5e64a01886774bbcf864",
+        "candidate_body_sha256": "0fc9637a917bc129f649f1c849b207c8fb9c00586e2e5e64a01886774bbcf864",
+        "mips": [
+          {
+            "mip": 2,
+            "padded_blocks": [
+              16,
+              16
+            ],
+            "active_blocks": [
+              10,
+              10
+            ],
+            "segment_blocks": 256,
+            "packed_active_blocks": 100,
+            "untouched_raw_tail_blocks": 156,
+            "raw_segment_sha256": "6f5c95deed247ab587c5e1e0c6a93c2b1d79a98f96fd1cd322092c4d91526a7c",
+            "packed_active_sha256": "84bbdedc0d120b5b3744c95f53151c153317fbf79ba664805568d0d368ab3bda",
+            "candidate_segment_sha256": "11ea015c227e8dca4b0290cc776835e2b7b94440e0c8d4606baf9fbfc9afce98"
+          },
+          {
+            "mip": 3,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              5,
+              5
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 25,
+            "untouched_raw_tail_blocks": 39,
+            "raw_segment_sha256": "bb5958357c8e151a8d7e7f10bb03e8a5dcc6c98ba1328958eff4673c9fd0a263",
+            "packed_active_sha256": "04e0442240ffb82935796484c842be3d8447af15e142df004bb0ee70c55c6fe7",
+            "candidate_segment_sha256": "fd113a47883efbacf3bf6a9034ebbeef07340644233bc0e5305e7566f4c8b7de"
+          },
+          {
+            "mip": 4,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              3,
+              3
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 9,
+            "untouched_raw_tail_blocks": 55,
+            "raw_segment_sha256": "2b651efd88c5ad2f945e32c21e332e81a65222f21e82e03b542a4b2b0fe016dc",
+            "packed_active_sha256": "c4c4c5ddf76c5ef17d6d479e89d49a882f2ec0406570e01082b926d1d52fe4af",
+            "candidate_segment_sha256": "807f42c66907d0c9655a4cd79e210bdb4bdcf82002a8d91da61b0641c7d6a0b3"
+          },
+          {
+            "mip": 5,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              1,
+              1
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 1,
+            "untouched_raw_tail_blocks": 63,
+            "raw_segment_sha256": "e5f59f09d8b6c22b3ab0eadc42f5e2c841f91f5d859ffc5cbf0843f479b05faa",
+            "packed_active_sha256": "007f18a90f1e033cbd4ccf63c0529b07f82677eb82a150edf14f544811193d51",
+            "candidate_segment_sha256": "e5f59f09d8b6c22b3ab0eadc42f5e2c841f91f5d859ffc5cbf0843f479b05faa"
+          },
+          {
+            "mip": 6,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              1,
+              1
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 1,
+            "untouched_raw_tail_blocks": 63,
+            "raw_segment_sha256": "3bed4e50d46f328503eefb9bcb8694ebfbe1a128a784c2c553f89db27f27bc1b",
+            "packed_active_sha256": "05645cf8b8868947d3cd051ed667bab14f59bb637fd09bb0d6c168af5e346a29",
+            "candidate_segment_sha256": "3bed4e50d46f328503eefb9bcb8694ebfbe1a128a784c2c553f89db27f27bc1b"
+          },
+          {
+            "mip": 7,
+            "padded_blocks": [
+              8,
+              8
+            ],
+            "active_blocks": [
+              1,
+              1
+            ],
+            "segment_blocks": 64,
+            "packed_active_blocks": 1,
+            "untouched_raw_tail_blocks": 63,
+            "raw_segment_sha256": "3208112ce6c820581fd6be12ad5b1dd6dfab185a8a03f41993efb9dc22202a82",
+            "packed_active_sha256": "86d77b8e2f1c00ca6b4c636aa5161d2c2c776f37c1560432063d4d78e284fc5b",
+            "candidate_segment_sha256": "3208112ce6c820581fd6be12ad5b1dd6dfab185a8a03f41993efb9dc22202a82"
+          }
+        ]
+      }
+    }
+  },
+  "all_four_stock_resources_reconstructed_exactly": true,
+  "runtime_patch_gate": true,
+  "next_gate": "If runtime_patch_gate is true, apply this exact stock-proven transform to the custom Raven diffuse/emissive streamed mips2..7 and preserve the Raven resident final 12 bytes. If false, inspect per-mip mismatch ranges before any runtime write."
+}
