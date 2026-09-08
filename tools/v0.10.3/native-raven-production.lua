@@ -16,6 +16,8 @@ do
 
   local verifyFrames = 0
   local verifyBucket = -1
+  local promptIntent = nil
+  local lastManagerShown = nil
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
@@ -73,10 +75,9 @@ do
 
     local show, text = self:GetShowOnCompassPrompt(currState.menu)
 
-    -- Keep both copies of the map action prompt in sync immediately. Stock
-    -- mapmenu updates the footer and the cursor-card prompt after Add/Remove;
-    -- the first native Raven candidate only refreshed the footer, leaving the
-    -- text above the selected marker stale until hover changed.
+    -- Keep the cursor-card copy and footer copy in sync. The native compass
+    -- manager commits ShowMarker/HideMarker asynchronously, so GetShowOnCompassPrompt
+    -- also honours promptIntent until the manager reports the requested state.
     local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
     if goMapCursorText ~= nil then
       goMapCursorText:Show()
@@ -87,6 +88,11 @@ do
           UI.SetTextIsClickable(thPrompt)
           UI.SetText(thPrompt, show and text or "")
         end
+        if show then
+          goCursorInfoTop:Show()
+        else
+          goCursorInfoTop:Hide()
+        end
       end
     end
 
@@ -95,7 +101,14 @@ do
 
     log("NATIVE_RAVEN_PROMPT_REFRESH",
       "cursor=true footer=true visible=" .. tostring(show) ..
+      " intent=" .. tostring(promptIntent) ..
       " text=" .. tostring(text))
+  end
+
+  local function refreshPromptFromLiveMap(self)
+    if self ~= nil and self.menu ~= nil and ravenSelected(self) then
+      updatePrompt(self, {menu = self.menu})
+    end
   end
 
   local function hideCandidate(reason)
@@ -128,7 +141,19 @@ do
 
       local shown, others, queryOK = shownState()
       local lamsId = lamsConsts.AddToCompass
-      if queryOK and shown then
+
+      -- Show/Hide is asynchronous in the native compass manager. Keep the UI
+      -- on the user's requested state until shownState catches up, otherwise
+      -- stock reticle refreshes can overwrite the prompt with the old text.
+      if promptIntent == "tracked" then
+        lamsId = lamsConsts.RemoveFromCompass
+      elseif promptIntent == "untracked" then
+        if queryOK and #others > 0 then
+          lamsId = lamsConsts.ReplaceInCompass
+        else
+          lamsId = lamsConsts.AddToCompass
+        end
+      elseif queryOK and shown then
         lamsId = lamsConsts.RemoveFromCompass
       elseif queryOK and #others > 0 then
         lamsId = lamsConsts.ReplaceInCompass
@@ -145,6 +170,7 @@ do
     end
 
     if CompletionistMapV100_IsRavenCollected() then
+      promptIntent = nil
       hideCandidate("raven_already_collected")
       self.completionistMapV100Selected = false
       updatePrompt(self, currState)
@@ -178,6 +204,7 @@ do
 
     if shown then
       if hideCandidate("user_remove") then
+        promptIntent = "untracked"
         self.currShownMarkerID = nil
         Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
       end
@@ -218,10 +245,12 @@ do
       " error=" .. tostring(showErr))
 
     if not showOK then
+      promptIntent = nil
       log("NATIVE_RAVEN_RESULT", "active=false reason=lua_wrapper_failed")
       return
     end
 
+    promptIntent = "tracked"
     self.currShownMarkerID = info.Id
     _G.CompletionistMapV103NativeRavenTracked = true
     verifyFrames = 0
@@ -235,11 +264,31 @@ do
     local result = originalUpdate(self, ...)
 
     local shown, _, queryOK = shownState()
+    if queryOK then
+      local settledIntent = false
+      if promptIntent == "tracked" and shown then
+        promptIntent = nil
+        settledIntent = true
+        log("NATIVE_RAVEN_PROMPT_SETTLED", "state=tracked")
+      elseif promptIntent == "untracked" and not shown then
+        promptIntent = nil
+        settledIntent = true
+        log("NATIVE_RAVEN_PROMPT_SETTLED", "state=untracked")
+      end
+
+      if ravenSelected(self) and
+          (settledIntent or lastManagerShown == nil or shown ~= lastManagerShown) then
+        refreshPromptFromLiveMap(self)
+      end
+      lastManagerShown = shown
+    end
+
     if queryOK and shown then
       _G.CompletionistMapV103NativeRavenTracked = true
       suppressLegacyRavenHud()
 
       if CompletionistMapV100_IsRavenCollected() then
+        promptIntent = nil
         hideCandidate("raven_collected_map_update")
       else
         verifyFrames = verifyFrames + 1
@@ -262,6 +311,6 @@ do
   log("NATIVE_RAVEN_API",
     "installed=true candidate=" .. candidate ..
     " markerType=" .. tostring(markerType) ..
-    " calls_on_load=false legacy_r3l3_for_raven=false")
+    " calls_on_load=false legacy_r3l3_for_raven=false prompt_async_guard=true")
 end
 -- END COMPLETIONIST V0.10.3 NATIVE RAVEN PRODUCTION BRIDGE
