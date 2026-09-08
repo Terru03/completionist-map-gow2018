@@ -11,7 +11,7 @@ if (-not $PythonModuleDir) { $PythonModuleDir = Join-Path $repo 'dist\re-tools' 
 $python = Get-Command python -ErrorAction Stop
 $report = Join-Path $repo 'archive\field-logs\completionist-v104-wad-loader-bookkeeping.json'
 $toolArgs = @(
-    (Join-Path $PSScriptRoot 'inspect-wad-loader-bookkeeping.py'),
+    (Join-Path $PSScriptRoot 'inspect-wad-loader-bookkeeping-v2.py'),
     '--game-root', $GameRoot,
     '--python-module-dir', $PythonModuleDir,
     '--output', $report
