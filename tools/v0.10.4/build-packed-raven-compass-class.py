@@ -133,8 +133,11 @@ def parse_relocations(payload: bytes, data: bytes) -> list[dict]:
     if len(payload) != 4 + count * 4:
         raise ValueError("relocation chunk size/count mismatch")
     fields = struct.unpack_from(f"<{count}I", payload, 4) if count else ()
-    if list(fields) != sorted(fields) or len(set(fields)) != len(fields):
-        raise ValueError("relocation fields are not unique/sorted")
+
+    # Important: wad_r_perm.dcb's stock relocation table is not guaranteed to
+    # be sorted or unique. The earlier packed builder incorrectly imposed that
+    # invariant and rejected the untouched stock file. Preserve the exact table
+    # sequence (including any duplicate entries) and validate semantics instead.
     rows = []
     for field in fields:
         if field + 8 > len(data):
@@ -171,6 +174,9 @@ def build_candidate(stock_raw: bytes) -> tuple[bytes, dict]:
     stock_data = bytes(data_chunk["payload"])
     export_header8, exports, export_tail = parse_exports(export_chunk["payload"])
     stock_relocs = parse_relocations(reloc_chunk["payload"], stock_data)
+    stock_fields = [row["field"] for row in stock_relocs]
+    stock_fields_sorted = stock_fields == sorted(stock_fields)
+    stock_duplicate_field_entries = len(stock_fields) - len(set(stock_fields))
 
     if INSERT_AT + RECORD_SIZE > len(stock_data):
         raise ValueError("packed-class insertion point outside stock data")
@@ -204,7 +210,8 @@ def build_candidate(stock_raw: bytes) -> tuple[bytes, dict]:
 
     # Preserve all existing relative pointers semantically. The relocation list
     # stores the field locations; the pointed-to target is field + signed delta.
-    # Inserting bytes can move the field, target, or both.
+    # Inserting bytes can move the field, target, or both. Keep the relocation
+    # entry ordering and duplicate-entry multiplicity exactly as stock authored it.
     patched_fields = []
     crossing_forward = 0
     crossing_backward = 0
@@ -224,8 +231,8 @@ def build_candidate(stock_raw: bytes) -> tuple[bytes, dict]:
         struct.pack_into("<q", patched_data, new_field, new_delta)
         patched_fields.append(new_field)
 
-    if patched_fields != sorted(patched_fields) or len(set(patched_fields)) != len(patched_fields):
-        raise ValueError("patched relocation fields lost unique/sorted invariant")
+    if len(patched_fields) != len(stock_fields):
+        raise ValueError("patched relocation count changed before serialization")
     patched_reloc_payload = struct.pack("<I", len(patched_fields)) + (
         struct.pack(f"<{len(patched_fields)}I", *patched_fields) if patched_fields else b""
     )
@@ -294,6 +301,8 @@ def build_candidate(stock_raw: bytes) -> tuple[bytes, dict]:
 
     if len(out_relocs) != len(stock_relocs):
         raise ValueError("relocation count changed")
+    if [r["field"] for r in out_relocs] != patched_fields:
+        raise ValueError("relocation entry sequence/multiplicity changed")
     for old, new in zip(stock_relocs, out_relocs):
         if new["field"] != shifted(old["field"]) or new["target"] != shifted(old["target"]):
             raise ValueError(
@@ -351,6 +360,9 @@ def build_candidate(stock_raw: bytes) -> tuple[bytes, dict]:
         "relocations": {
             "count": len(stock_relocs),
             "count_unchanged": True,
+            "stock_fields_sorted": stock_fields_sorted,
+            "stock_duplicate_field_entries": stock_duplicate_field_entries,
+            "entry_sequence_and_multiplicity_preserved": True,
             "fields_shifted_at_or_after_insertion": sum(1 for r in stock_relocs if r["field"] >= INSERT_AT),
             "targets_shifted_at_or_after_insertion": sum(1 for r in stock_relocs if r["target"] >= INSERT_AT),
             "forward_crossing_pointers": crossing_forward,
