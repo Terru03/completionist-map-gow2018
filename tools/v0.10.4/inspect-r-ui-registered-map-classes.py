@@ -8,6 +8,11 @@ Read-only. Intersects three independent sources:
 This deliberately replaces the previous guess-and-test donor selection. A WAD
 resource is not assumed to be a registered map class unless its case-folded name
 hash is actually present in GOPool.
+
+Important: GOPool Name hashes are not assumed unique. The stock file contains
+repeated Name hashes, so this tool records duplicate groups explicitly and only
+considers a class a donor candidate when its matching GOPool hash resolves to a
+single row.
 """
 from __future__ import annotations
 
@@ -85,6 +90,10 @@ def iter_map_markers(master: native.Dcb):
                 yield realm_id, region_id, marker_id, master.string(marker + 8)
 
 
+def public_row(row: dict) -> dict:
+    return {k: v for k, v in row.items() if k != "name_hash_int"}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--r-ui-wad", type=Path, required=True)
@@ -105,9 +114,20 @@ def main() -> None:
 
     dcb = native.Dcb(args.wad_r_ui_dcb.resolve())
     gopool_rows = parse_gopool(dcb)
-    by_hash = {row["name_hash_int"]: row for row in gopool_rows}
-    if len(by_hash) != len(gopool_rows):
-        raise ValueError("duplicate GOPool Name hash")
+    by_hash: dict[int, list[dict]] = collections.defaultdict(list)
+    for row in gopool_rows:
+        by_hash[row["name_hash_int"]].append(row)
+
+    duplicate_groups = []
+    for h, rows in sorted(by_hash.items()):
+        if len(rows) <= 1:
+            continue
+        duplicate_groups.append({
+            "name_hash": f"{h:016X}",
+            "row_count": len(rows),
+            "rows": [public_row(r) for r in rows],
+            "cnt_values": [r["cnt"] for r in rows],
+        })
 
     records = logical.parse_wad(wad_raw)
     if logical.serialize_wad(records) != wad_raw:
@@ -152,26 +172,33 @@ def main() -> None:
 
     registered_concrete = []
     donor_candidates = []
+    ambiguous_registered_concrete = []
     unregistered_wad_resources = []
     for item in sorted(concrete, key=lambda x: x["payload_index"]):
         h = item["wad_hash_int"]
-        row = by_hash.get(h)
+        rows = by_hash.get(h, [])
         entry = {k: v for k, v in item.items() if not k.endswith("_int")}
         entry["authored_mapmaster_usage"] = usage_by_hash[h]
         entry["authored_icon_spellings"] = dict(usage_names[h])
         entry["runtime_reserved"] = item["wad_name"].lower() in RUNTIME_RESERVED_NAMES
-        if row is not None:
-            entry["gopool_row_index"] = row["row_index"]
-            entry["gopool_cnt"] = row["cnt"]
+        entry["gopool_match_count"] = len(rows)
+        entry["gopool_rows"] = [public_row(r) for r in rows]
+        if rows:
             registered_concrete.append(entry)
-            if usage_by_hash[h] == 0 and not entry["runtime_reserved"]:
-                donor_candidates.append(entry)
+            if len(rows) == 1:
+                entry["gopool_row_index"] = rows[0]["row_index"]
+                entry["gopool_cnt"] = rows[0]["cnt"]
+                if usage_by_hash[h] == 0 and not entry["runtime_reserved"]:
+                    donor_candidates.append(entry)
+            else:
+                entry["ambiguous_duplicate_gopool_hash"] = True
+                ambiguous_registered_concrete.append(entry)
         else:
             unregistered_wad_resources.append(entry)
 
     known_hashes = {x["wad_hash_int"] for x in concrete}
     opaque_rows = [
-        {k: v for k, v in row.items() if k != "name_hash_int"}
+        public_row(row)
         for row in gopool_rows
         if row["name_hash_int"] not in known_hashes
     ]
@@ -189,30 +216,38 @@ def main() -> None:
         },
         "counts": {
             "gopool_rows": len(gopool_rows),
+            "unique_gopool_name_hashes": len(by_hash),
+            "duplicate_gopool_name_hash_groups": len(duplicate_groups),
             "concrete_gomapicon_final_instances": len(concrete),
             "registered_concrete_map_classes": len(registered_concrete),
+            "ambiguous_registered_concrete_classes": len(ambiguous_registered_concrete),
             "unregistered_wad_map_resources": len(unregistered_wad_resources),
             "opaque_gopool_rows": len(opaque_rows),
             "authored_mapmaster_markers": marker_total,
             "zero_authored_usage_registered_candidates": len(donor_candidates),
         },
         "raven_baseline": raven_record,
+        "duplicate_gopool_name_hash_groups": duplicate_groups,
         "registered_concrete_map_classes": registered_concrete,
+        "ambiguous_registered_concrete_classes": ambiguous_registered_concrete,
         "zero_authored_usage_registered_candidates": donor_candidates,
         "unregistered_wad_map_resources": unregistered_wad_resources,
         "opaque_gopool_rows": opaque_rows,
         "interpretation": {
             "important": "A gomapicon* WAD resource is not a registered class unless its hash is also present in WAD_R_UI.GOPool.",
+            "gopool_name_hashes_are_not_assumed_unique": True,
+            "duplicate_hash_classes_are_excluded_from_donor_candidates": True,
             "donor_candidates_are_not_yet_proven_safe": True,
-            "next_gate": "Choose only from registered zero-authored-usage candidates, then inspect runtime/code references before any in-game rename proof.",
+            "next_gate": "Choose only a uniquely registered zero-authored-usage candidate, then inspect runtime/code references before any in-game rename proof.",
         },
     }
 
     out = args.output.resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    print(f"GOPool duplicate Name-hash groups: {len(duplicate_groups)}")
     print(f"Registered concrete map classes: {len(registered_concrete)}")
-    print(f"Zero-authored-usage registered candidates: {len(donor_candidates)}")
+    print(f"Zero-authored-usage uniquely registered candidates: {len(donor_candidates)}")
     for c in donor_candidates:
         print(f"  {c['wad_name']} row={c['gopool_row_index']} cnt={c['gopool_cnt']} payload={c['payload_index']}")
     print(f"Saved: {out}")
