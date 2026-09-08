@@ -66,16 +66,18 @@ $before = Hash-File $mapTarget
 Copy-Item -LiteralPath $mapTarget -Destination $backup -Force
 if ((Hash-File $backup) -ne $before) { throw 'SIDE control backup verification failed.' }
 
-Write-Host 'Building byte-preserving stock SIDE control offline...'
+Write-Host 'Building Raven-only stock SIDE control on the installed stock ShowOnCompass path...'
 & $python.Source $patcher --input $mapTarget --output $candidate --report $report
 if ($LASTEXITCODE -ne 0) { throw 'Raven native SIDE control build failed.' }
 $proof = Get-Content -LiteralPath $report -Raw | ConvertFrom-Json
 if ([string]$proof.result -ne 'OFFLINE_RAVEN_NATIVE_SIDE_CONTROL_BUILT' -or
     [string]$proof.source_sha256 -ne $before -or
-    [string]$proof.marker_type_before -ne 'CompletionistRaven' -or
+    [string]$proof.marker_type_before -ne 'stock_flag_derived' -or
     [string]$proof.marker_type_after -ne 'SIDE' -or
-    $proof.byte_length_unchanged -ne $true -or
-    $proof.only_marker_type_assignment_changed -ne $true -or
+    $proof.source_mapmenu_sha256_pinned -ne $true -or
+    $proof.stock_show_call_unchanged -ne $true -or
+    $proof.only_guarded_raven_side_override_inserted -ne $true -or
+    $proof.source_reconstructs_exactly_after_removing_insertion -ne $true -or
     $proof.game_files_written -ne $false) {
     throw 'SIDE control offline proof failed validation.'
 }
@@ -84,13 +86,16 @@ if ($after -ne ([string]$proof.candidate_sha256).ToLowerInvariant()) { throw 'SI
 
 $manifest = [ordered]@{
     kind = 'completionist-v104-raven-native-side-control'
+    control_path = 'stock-MapOn-ShowOnCompass-raven-only-override'
     map_before_sha256 = $before
     map_after_sha256 = $after
     backup = $backup
     candidate = $candidate
     marker = 'Completionist_V103_Veithurgard_Raven_01'
-    marker_type_before = 'CompletionistRaven'
+    marker_type_before = 'stock_flag_derived'
     marker_type_after = 'SIDE'
+    stock_show_call_unchanged = $true
+    raven_only_guard = $true
     dcb_files_written = $false
     wad_files_written = $false
     save_progression_marker_state_written = $false
@@ -110,16 +115,20 @@ try {
 
 Write-Host ''
 Write-Host 'Raven native SIDE A/B control installed.'
-Write-Host '- same Raven native marker ID: true'
+Write-Host '- actual installed path targeted: stock MapOn:ShowOnCompass'
+Write-Host '- exact Raven marker only: true'
+Write-Host '- same Raven marker ID: true'
 Write-Host '- same mapcoords position: true'
 Write-Host '- same compassgraph edge: true'
-Write-Host '- only runtime CompassIconClass request changes: CompletionistRaven -> SIDE'
+Write-Host '- stock ShowMarker(self.currMarkerID, markerType) call preserved'
+Write-Host '- Raven markerType only: stock flag-derived -> SIDE'
+Write-Host '- every non-Raven map marker keeps stock behavior'
 Write-Host '- custom Raven WAD/DCB artwork pair left untouched'
 Write-Host '- saves/progression/marker state touched: false'
 Write-Host ''
 Write-Host 'Launch God of War and Add the same Raven to Compass.'
 Write-Host 'Observe: routed direction/bends, distance behavior, and an in-world marker.'
-Write-Host 'The icon itself should be stock SIDE for this control; that is intentional.'
+Write-Host 'The compass icon should be stock SIDE for this control; that is intentional.'
 Write-Host ''
 Write-Host 'After the test, close God of War and remove the control with:'
 Write-Host ("powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"{0}`" -Mode Remove" -f $PSCommandPath)
