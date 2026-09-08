@@ -1,10 +1,10 @@
 Completionist Map v0.10.4 Raven HUD instance runtime capture
-Captured UTC: 2026-09-08T11:02:45.4177137Z
+Captured UTC: 2026-09-08T11:12:13.7790292Z
 Game process running while captured: True
 Probe read-only: True
 mainhud pre-probe SHA256: f15d1400e8a6f3f9ec17b128a97b790d6ecfa35a8aff69295ca319941e47d4bf
-mainhud probe SHA256: 5d4ccef56760889ea8ef5720c503b6e4a65b10bb9be9a9e1126e00e45fa8f737
-Total probe log lines: 56
+mainhud probe SHA256: 417f689451d69440ed35e5ea3ec7e17c618fafb2d990d4b95c52b3314900c163
+Total probe log lines: 62
 API lines: 2
 Root lines: 16
 Scan starts: 2
@@ -17,59 +17,65 @@ A positive result is one or more HIT lines from a scan where tracked=true. A tra
 This capture does not authorise a global goboatdock resource/material swap. DockPoint.IconName is shared with real docks.
 
 RELEVANT LOADER LOG
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=self.compassObj goName=compass parent=mainhud world=x=0,y=7.9999995231628,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=self.compassBase goName=compass_base parent=compass world=x=0,y=8,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=self.compassRadius goName=compass_radius parent=compass world=x=0,y=8,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=Compass ok=true goName=compass world=x=0,y=7.9999995231628,z=0
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] ROOT_ALIAS label=ui.Compass goName=compass existing=self.compassObj
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=Compass_Base ok=true goName=compass_base world=x=0,y=8,z=0
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] ROOT_ALIAS label=ui.Compass_Base goName=compass_base existing=self.compassBase
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=Compass_Radius ok=true goName=compass_radius world=x=0,y=8,z=0
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] ROOT_ALIAS label=ui.Compass_Radius goName=compass_radius existing=self.compassRadius
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=mainHUD ok=true goName=mainhud world=x=0,y=0,z=0
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=ui.mainHUD goName=mainhud parent=<none> world=x=0,y=0,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=UI_Elements ok=true goName=ui_elements world=x=0,y=-40.22200012207,z=6.8275923728943
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=ui.UI_Elements goName=ui_elements parent=photomodehud world=x=0,y=-40.22200012207,z=6.8275923728943 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] SCAN_BEGIN reason=script_load tracked=false roots=5
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=compass_base ordinal=1 goName=compass_base parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=compass_base ordinal=1 goName=compass_base parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=Compass_Base ordinal=1 goName=compass_base parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=Compass_Base ordinal=1 goName=compass_base parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=compass_radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=compass_radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=Compass_Radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=Compass_Radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=ui.mainHUD query=compass ordinal=1 goName=compass parent=mainhud world=x=0,y=7.9999995231628,z=0 materialSwap=true findSingle=true findMany=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=ui.mainHUD query=compass ordinal=1 goName=compass parent=mainhud world=x=0,y=7.9999995231628,z=0 materialSwap=true findSingle=true findMany=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=ui.mainHUD query=Compass ordinal=1 goName=compass parent=mainhud world=x=0,y=7.9999995231628,z=0 materialSwap=true findSingle=true findMany=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=ui.mainHUD query=Compass ordinal=1 goName=compass parent=mainhud world=x=0,y=7.9999995231628,z=0 materialSwap=true findSingle=true findMany=true
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] SCAN_END reason=script_load tracked=false
-[14:00:58] [info] [CompletionistMap v0.10.4-hud-probe] API installed=true readOnly=true callsShowMarker=false callsHideMarker=false movesGO=false hidesGO=false materialWrites=false saveWrites=false dockIconHash=82F0296748C7393D inWorldHash=0E24C47DE2F769CA
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=self.compassObj goName=compass parent=mainhud world=x=0,y=8,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=self.compassBase goName=compass_base parent=compass world=x=0,y=8.0000009536743,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=self.compassRadius goName=compass_radius parent=compass world=x=0,y=8.0000009536743,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=Compass ok=true goName=compass world=x=0,y=8,z=0
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] ROOT_ALIAS label=ui.Compass goName=compass existing=self.compassObj
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=Compass_Base ok=true goName=compass_base world=x=0,y=8.0000009536743,z=0
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] ROOT_ALIAS label=ui.Compass_Base goName=compass_base existing=self.compassBase
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=Compass_Radius ok=true goName=compass_radius world=x=0,y=8.0000009536743,z=0
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] ROOT_ALIAS label=ui.Compass_Radius goName=compass_radius existing=self.compassRadius
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=mainHUD ok=true goName=mainhud world=x=0,y=0,z=0
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=ui.mainHUD goName=mainhud parent=<none> world=x=0,y=0,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=UI_Elements ok=true goName=ui_elements world=x=0,y=-40.22200012207,z=6.8275923728943
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=ui.UI_Elements goName=ui_elements parent=photomodehud world=x=0,y=-40.22200012207,z=6.8275923728943 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] SCAN_BEGIN reason=script_load tracked=false roots=5
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=compass_base ordinal=1 goName=compass_base parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=compass_base ordinal=1 goName=compass_base parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=Compass_Base ordinal=1 goName=compass_base parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=Compass_Base ordinal=1 goName=compass_base parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=compass_radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=compass_radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=Compass_Radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=Compass_Radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=ui.mainHUD query=compass ordinal=1 goName=compass parent=mainhud world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=ui.mainHUD query=compass ordinal=1 goName=compass parent=mainhud world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=ui.mainHUD query=Compass ordinal=1 goName=compass parent=mainhud world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=ui.mainHUD query=Compass ordinal=1 goName=compass parent=mainhud world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] SCAN_END reason=script_load tracked=false
-[14:01:21] [info] [CompletionistMap v0.10.4-hud-probe] API installed=true readOnly=true callsShowMarker=false callsHideMarker=false movesGO=false hidesGO=false materialWrites=false saveWrites=false dockIconHash=82F0296748C7393D inWorldHash=0E24C47DE2F769CA
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=self.compassObj goName=compass parent=mainhud world=x=0,y=7.9999995231628,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=self.compassBase goName=compass_base parent=compass world=x=0,y=8,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=self.compassRadius goName=compass_radius parent=compass world=x=0,y=8,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=Compass ok=true goName=compass world=x=0,y=7.9999995231628,z=0
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] ROOT_ALIAS label=ui.Compass goName=compass existing=self.compassObj
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=Compass_Base ok=true goName=compass_base world=x=0,y=8,z=0
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] ROOT_ALIAS label=ui.Compass_Base goName=compass_base existing=self.compassBase
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=Compass_Radius ok=true goName=compass_radius world=x=0,y=8,z=0
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] ROOT_ALIAS label=ui.Compass_Radius goName=compass_radius existing=self.compassRadius
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=mainHUD ok=true goName=mainhud world=x=0,y=0,z=0
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=ui.mainHUD goName=mainhud parent=<none> world=x=0,y=0,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=UI_Elements ok=true goName=ui_elements world=x=0,y=-40.22200012207,z=6.8275923728943
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=ui.UI_Elements goName=ui_elements parent=photomodehud world=x=0,y=-40.22200012207,z=6.8275923728943 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] TRACK_QUERY mode=enabledFlags candidateId=-2207208259907848386 ok=false unavailable=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] TRACK_QUERY mode=dockType candidateId=-2207208259907848386 markerType=DockPoint ok=true count=0 tracked=false error=<none>
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] TRACK_STATE candidateId=-2207208259907848386 queryOK=true tracked=false mapGlobal=false
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] SCAN_BEGIN reason=script_load tracked=false roots=5
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=compass_base ordinal=1 goName=compass_base parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=compass_base ordinal=1 goName=compass_base parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=Compass_Base ordinal=1 goName=compass_base parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=Compass_Base ordinal=1 goName=compass_base parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=compass_radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=compass_radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=Compass_Radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=Compass_Radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=ui.mainHUD query=compass ordinal=1 goName=compass parent=mainhud world=x=0,y=7.9999995231628,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=ui.mainHUD query=compass ordinal=1 goName=compass parent=mainhud world=x=0,y=7.9999995231628,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=ui.mainHUD query=Compass ordinal=1 goName=compass parent=mainhud world=x=0,y=7.9999995231628,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=ui.mainHUD query=Compass ordinal=1 goName=compass parent=mainhud world=x=0,y=7.9999995231628,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] SCAN_END reason=script_load tracked=false
+[14:10:40] [info] [CompletionistMap v0.10.4-hud-probe] API installed=true readOnly=true callsShowMarker=false callsHideMarker=false movesGO=false hidesGO=false materialWrites=false saveWrites=false nativeTrackingQuery=true dockIconHash=82F0296748C7393D inWorldHash=0E24C47DE2F769CA
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=self.compassObj goName=compass parent=mainhud world=x=0,y=8,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=self.compassBase goName=compass_base parent=compass world=x=0,y=8.0000009536743,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=self.compassRadius goName=compass_radius parent=compass world=x=0,y=8.0000009536743,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=Compass ok=true goName=compass world=x=0,y=8,z=0
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] ROOT_ALIAS label=ui.Compass goName=compass existing=self.compassObj
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=Compass_Base ok=true goName=compass_base world=x=0,y=8.0000009536743,z=0
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] ROOT_ALIAS label=ui.Compass_Base goName=compass_base existing=self.compassBase
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=Compass_Radius ok=true goName=compass_radius world=x=0,y=8.0000009536743,z=0
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] ROOT_ALIAS label=ui.Compass_Radius goName=compass_radius existing=self.compassRadius
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=mainHUD ok=true goName=mainhud world=x=0,y=0,z=0
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=ui.mainHUD goName=mainhud parent=<none> world=x=0,y=0,z=0 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] UI_LOOKUP query=UI_Elements ok=true goName=ui_elements world=x=0,y=-40.22200012207,z=6.8275923728943
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] ROOT label=ui.UI_Elements goName=ui_elements parent=photomodehud world=x=0,y=-40.22200012207,z=6.8275923728943 findSingle=true findMany=true materialSwap=true addChild=true unparent=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] TRACK_QUERY mode=enabledFlags candidateId=-2207208259907848386 ok=false unavailable=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] TRACK_QUERY mode=dockType candidateId=-2207208259907848386 markerType=DockPoint ok=true count=0 tracked=false error=<none>
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] TRACK_STATE candidateId=-2207208259907848386 queryOK=true tracked=false mapGlobal=false
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] SCAN_BEGIN reason=script_load tracked=false roots=5
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=compass_base ordinal=1 goName=compass_base parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=compass_base ordinal=1 goName=compass_base parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=Compass_Base ordinal=1 goName=compass_base parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=Compass_Base ordinal=1 goName=compass_base parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=compass_radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=compass_radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=self.compassObj query=Compass_Radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=self.compassObj query=Compass_Radius ordinal=1 goName=compass_radius parent=compass world=x=0,y=8.0000009536743,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=ui.mainHUD query=compass ordinal=1 goName=compass parent=mainhud world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=ui.mainHUD query=compass ordinal=1 goName=compass parent=mainhud world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=single root=ui.mainHUD query=Compass ordinal=1 goName=compass parent=mainhud world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] HIT reason=many root=ui.mainHUD query=Compass ordinal=1 goName=compass parent=mainhud world=x=0,y=8,z=0 materialSwap=true findSingle=true findMany=true
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] SCAN_END reason=script_load tracked=false
+[14:10:53] [info] [CompletionistMap v0.10.4-hud-probe] API installed=true readOnly=true callsShowMarker=false callsHideMarker=false movesGO=false hidesGO=false materialWrites=false saveWrites=false nativeTrackingQuery=true dockIconHash=82F0296748C7393D inWorldHash=0E24C47DE2F769CA
