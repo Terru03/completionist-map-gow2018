@@ -25,7 +25,7 @@ $out = Join-Path $repo ($outRel -replace '/', '\')
 
 Write-Host 'Syntax-checking compass HUD GameObject chain tracer...'
 $source = [IO.File]::ReadAllText($script)
-& $python.Source -c 'import ast,sys; ast.parse(sys.stdin.read())' <<< $source
+$source | & $python.Source -c 'import ast,sys; ast.parse(sys.stdin.read())'
 if ($LASTEXITCODE -ne 0) { throw 'Compass HUD GameObject chain tracer syntax check failed.' }
 
 Write-Host 'Tracing stock compass HUD GameObject resource chains read-only...'
