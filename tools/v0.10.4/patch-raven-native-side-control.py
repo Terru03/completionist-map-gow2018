@@ -1,13 +1,14 @@
-"""Build a byte-preserving mapmenu.lua control that uses stock SIDE for the Raven.
+"""Build an OFFLINE Raven-only stock SIDE compass A/B control.
 
-This is a diagnostic only. It changes exactly the CompassIconClass name used by
-the existing Raven native bridge from CompletionistRaven to SIDE. The output
-has the same byte length as the input and is never written to the game by this
-script.
+The currently installed mapmenu.lua does not contain the older dedicated Raven
+ShowMarker(candidate, markerType) bridge. It uses the stock MapOn:ShowOnCompass
+path and derives markerType from the marker's authored map flags. This control
+therefore leaves that stock path intact and inserts one guarded override directly
+before the unique stock ShowMarker(self.currMarkerID, markerType) call.
 
-Bridge detection deliberately uses the runtime contract rather than a historical
-BEGIN comment. Later v0.10.4 installers preserve the same Raven candidate and
-markerType call path but may use a different wrapper/comment banner.
+Only the Completionist Raven is redirected to the stock SIDE CompassIconClass.
+Every other map marker continues to use the original stock markerType selection.
+The script itself never writes game files.
 """
 from __future__ import annotations
 
@@ -16,12 +17,13 @@ import hashlib
 import json
 from pathlib import Path
 
-SOURCE = b'local markerType = "CompletionistRaven"'
-SHORT_TARGET = b'local markerType = "SIDE"'
-TARGET = SHORT_TARGET + (b" " * (len(SOURCE) - len(SHORT_TARGET)))
-CANDIDATE_ASSIGNMENT = b'local candidate = "Completionist_V103_Veithurgard_Raven_01"'
-CANDIDATE = b'Completionist_V103_Veithurgard_Raven_01'
-SHOW_CALL = b'game.Compass.ShowMarker(candidate, markerType)'
+EXPECTED_SOURCE_SHA256 = "fb68996fad866acb978d6743b5d6054d0f2a82dba485a307ee810fc100c2be45"
+RAVEN_NAME = "Completionist_V103_Veithurgard_Raven_01"
+RAVEN_BYTES = RAVEN_NAME.encode("ascii")
+SHOW_CALL = b"      game.Compass.ShowMarker(self.currMarkerID, markerType)"
+ASSERT_LINE = b'      assert(markerType ~= nil, "unable to find ShowOnCompass marker type")'
+BEGIN = b"      -- BEGIN COMPLETIONIST V0.10.4 RAVEN SIDE A/B CONTROL"
+END = b"      -- END COMPLETIONIST V0.10.4 RAVEN SIDE A/B CONTROL"
 RESULT = "OFFLINE_RAVEN_NATIVE_SIDE_CONTROL_BUILT"
 
 
@@ -30,90 +32,101 @@ def sha256(raw: bytes) -> str:
 
 
 def build(raw: bytes) -> tuple[bytes, dict]:
-    source_count = raw.count(SOURCE)
-    candidate_assignment_count = raw.count(CANDIDATE_ASSIGNMENT)
-    show_call_count = raw.count(SHOW_CALL)
+    source_sha = sha256(raw)
+    if source_sha != EXPECTED_SOURCE_SHA256:
+        raise ValueError(
+            "mapmenu.lua is not the inspected runtime baseline: "
+            f"expected {EXPECTED_SOURCE_SHA256}, got {source_sha}"
+        )
 
-    if source_count != 1:
-        raise ValueError(
-            f"expected exactly one CompletionistRaven markerType assignment, found {source_count}"
-        )
-    if candidate_assignment_count != 1:
-        raise ValueError(
-            "expected exactly one installed Raven native candidate assignment, "
-            f"found {candidate_assignment_count}"
-        )
-    if show_call_count != 1:
-        raise ValueError(
-            f"expected exactly one Raven ShowMarker(candidate, markerType) call, found {show_call_count}"
-        )
-    if raw.count(TARGET) != 0:
-        raise ValueError("SIDE control already appears to be applied")
+    show_count = raw.count(SHOW_CALL)
+    assert_count = raw.count(ASSERT_LINE)
+    raven_count = raw.count(RAVEN_BYTES)
+    if show_count != 1:
+        raise ValueError(f"expected exactly one stock ShowMarker(self.currMarkerID, markerType), found {show_count}")
+    if assert_count != 1:
+        raise ValueError(f"expected exactly one stock markerType assertion, found {assert_count}")
+    if raven_count < 1:
+        raise ValueError("Completionist Raven marker identity is missing from installed mapmenu")
+    if raw.count(BEGIN) != 0 or raw.count(END) != 0:
+        raise ValueError("Raven SIDE A/B control already appears to be applied")
 
-    offset = raw.index(SOURCE)
-    candidate_offset = raw.index(CANDIDATE_ASSIGNMENT)
     show_offset = raw.index(SHOW_CALL)
+    assert_offset = raw.index(ASSERT_LINE)
+    if not assert_offset < show_offset or show_offset - assert_offset > 512:
+        raise ValueError("stock markerType assertion and ShowMarker call are not in the expected local block")
 
-    # The three anchors must belong to one local Raven bridge. This prevents a
-    # generic markerType assignment elsewhere in mapmenu.lua from being patched.
-    if not candidate_offset < offset < show_offset:
-        raise ValueError(
-            "Raven bridge anchors are out of order; refusing to patch an ambiguous mapmenu"
-        )
-    if offset - candidate_offset > 2048:
-        raise ValueError("Raven candidate and markerType anchors are unexpectedly far apart")
-    if show_offset - offset > 16384:
-        raise ValueError("Raven markerType and ShowMarker anchors are unexpectedly far apart")
-    if raw.count(CANDIDATE) < 1:
-        raise ValueError("Raven candidate identity missing")
+    newline = b"\r\n" if b"\r\n" in raw else b"\n"
+    lines = [
+        BEGIN,
+        b'      local ravenInfoOK, completionistRavenInfo = pcall(function()',
+        b'        return game.Map.GetMarkerInfo("' + RAVEN_BYTES + b'")',
+        b"      end)",
+        b"      local completionistRavenSelected = self.completionistMapV100Selected == true",
+        b"      if not completionistRavenSelected and ravenInfoOK and completionistRavenInfo ~= nil then",
+        b"        completionistRavenSelected = tostring(self.currMarkerID) == tostring(completionistRavenInfo.Id)",
+        b"      end",
+        b"      if completionistRavenSelected then",
+        b'        markerType = "SIDE"',
+        b"      end",
+        END,
+    ]
+    injection = newline.join(lines) + newline
+    candidate = raw[:show_offset] + injection + raw[show_offset:]
 
-    candidate = raw[:offset] + TARGET + raw[offset + len(SOURCE):]
-    if len(candidate) != len(raw):
-        raise ValueError("control patch changed mapmenu byte length")
+    if candidate.count(BEGIN) != 1 or candidate.count(END) != 1:
+        raise ValueError("SIDE control insertion did not resolve exactly once")
+    if candidate.count(SHOW_CALL) != 1:
+        raise ValueError("stock ShowMarker call changed during SIDE control insertion")
+    if candidate.count(ASSERT_LINE) != 1:
+        raise ValueError("stock markerType assertion changed during SIDE control insertion")
+    if candidate.count(RAVEN_BYTES) != raven_count + 1:
+        raise ValueError("unexpected Raven identity count after SIDE control insertion")
+    if candidate[:show_offset] != raw[:show_offset]:
+        raise ValueError("bytes before SIDE control insertion changed")
+    suffix_start = show_offset + len(injection)
+    if candidate[suffix_start:] != raw[show_offset:]:
+        raise ValueError("bytes after SIDE control insertion changed")
+    if candidate[:show_offset] + candidate[suffix_start:] != raw:
+        raise ValueError("removing the inserted SIDE control does not reconstruct source byte-for-byte")
 
-    changed = [i for i, (a, b) in enumerate(zip(raw, candidate)) if a != b]
-    if not changed:
-        raise ValueError("control patch produced no changes")
-    expected_span = set(range(offset, offset + len(SOURCE)))
-    if any(i not in expected_span for i in changed):
-        raise ValueError("control patch changed bytes outside markerType assignment")
-    if candidate.count(TARGET) != 1 or candidate.count(SOURCE) != 0:
-        raise ValueError("SIDE control substitution did not resolve exactly once")
-    if candidate.count(CANDIDATE_ASSIGNMENT) != 1 or candidate.count(SHOW_CALL) != 1:
-        raise ValueError("SIDE control altered Raven bridge identity/call anchors")
-
-    return candidate, {
+    report = {
         "result": RESULT,
-        "source_sha256": sha256(raw),
+        "source_sha256": source_sha,
+        "expected_source_sha256": EXPECTED_SOURCE_SHA256,
         "candidate_sha256": sha256(candidate),
-        "bytes": len(raw),
-        "byte_length_unchanged": True,
-        "changed_byte_count": len(changed),
-        "changed_span": [offset, offset + len(SOURCE)],
-        "only_marker_type_assignment_changed": True,
-        "bridge_detection": {
-            "method": "unique_raven_candidate_markerType_show_call_contract",
-            "candidate_assignment_count": candidate_assignment_count,
-            "marker_type_assignment_count": source_count,
-            "show_call_count": show_call_count,
-            "candidate_assignment_offset": candidate_offset,
-            "marker_type_assignment_offset": offset,
-            "show_call_offset": show_offset,
-            "historical_begin_comment_required": False,
-        },
-        "marker_name": "Completionist_V103_Veithurgard_Raven_01",
-        "marker_type_before": "CompletionistRaven",
+        "source_bytes": len(raw),
+        "candidate_bytes": len(candidate),
+        "byte_length_delta": len(injection),
+        "source_mapmenu_sha256_pinned": True,
+        "stock_show_call_count": show_count,
+        "stock_assert_count": assert_count,
+        "raven_identity_count_before": raven_count,
+        "stock_show_call_unchanged": True,
+        "only_guarded_raven_side_override_inserted": True,
+        "source_reconstructs_exactly_after_removing_insertion": True,
+        "insertion_offset": show_offset,
+        "insertion_bytes": len(injection),
+        "marker_name": RAVEN_NAME,
+        "marker_type_before": "stock_flag_derived",
         "marker_type_after": "SIDE",
+        "selection_guard": {
+            "primary": "self.completionistMapV100Selected == true",
+            "fallback": "self.currMarkerID equals game.Map.GetMarkerInfo(Raven).Id",
+            "lookup_protected_by_pcall": True,
+        },
+        "native_marker_id_unchanged": True,
         "native_marker_coordinates_graph_unchanged": True,
         "raven_wad_artwork_unchanged": True,
         "wad_r_perm_dcb_unchanged": True,
         "game_files_written": False,
         "purpose": (
-            "A/B control: if stock SIDE restores routed/native compass behavior for the exact same "
-            "Raven marker ID, coordinates and graph, the remaining defect is CompassIconClass behavior. "
-            "If not, investigate native graph/marker registration instead."
+            "A/B control on the actual installed stock MapOn:ShowOnCompass path: if stock SIDE restores "
+            "routed/native compass presentation for the exact same Raven marker ID, coordinates and graph, "
+            "the remaining custom-class defect is in CompassIconClass behavior/presentation fields."
         ),
     }
+    return candidate, report
 
 
 def main() -> None:
@@ -142,10 +155,11 @@ def main() -> None:
         raise ValueError("source mapmenu changed during offline build")
 
     print(RESULT)
-    print("  bridge detection: unique Raven candidate + markerType + ShowMarker call")
-    print("  markerType: CompletionistRaven -> SIDE")
+    print("  installed path: stock MapOn:ShowOnCompass")
+    print("  Raven-only markerType override: stock flag-derived -> SIDE")
+    print("  stock ShowMarker call unchanged: true")
     print("  same marker ID / coords / graph: true")
-    print("  output length unchanged: true")
+    print("  non-Raven map markers changed: false")
     print("  game files written: false")
     print(f"  candidate: {output}")
     print(f"  report:    {report_path}")
