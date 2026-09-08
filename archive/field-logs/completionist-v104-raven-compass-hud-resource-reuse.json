@@ -1,0 +1,162 @@
+{
+  "result": "READ_ONLY_RAVEN_COMPASS_HUD_REUSE_GATE",
+  "game_files_read": true,
+  "game_files_written": false,
+  "save_state_written": false,
+  "progression_state_written": false,
+  "marker_state_written": false,
+  "r_ui_wad_sha256": "9eb1f548de036eb56c031561a9b7665d71b54fe251d360d2a5b7c60e3d6ff3c3",
+  "stock_hud_contract": {
+    "root": {
+      "name": "goboatdock",
+      "id": "e38da34945defe418b8be0bb6b985f12",
+      "kind": 1,
+      "flags": "0x3D",
+      "bytes": 164,
+      "payload_index": 18491,
+      "file_offset": "0x2E70FD0"
+    },
+    "prototype": {
+      "name": "goProtoBoatDock",
+      "id": "e38da34945defe418b8be0bb6a985f12",
+      "kind": 1,
+      "flags": "0x3D",
+      "bytes": 1184,
+      "payload_index": 18489,
+      "file_offset": "0x2E708F0"
+    },
+    "model": {
+      "name": "MDL_boatdock",
+      "id": "808e5817524559f5c65636ffc0fbc1a9",
+      "kind": 1,
+      "flags": "0x8E",
+      "bytes": 80,
+      "payload_index": 18488,
+      "file_offset": "0x2E706C0"
+    },
+    "material": {
+      "name": "MAT_0C599DC8DC7E2170",
+      "id": "61ed20dc7a5567ba23016085750aacf2",
+      "kind": 1,
+      "flags": "0x14",
+      "bytes": 384,
+      "payload_index": 13703,
+      "file_offset": "0x263C190"
+    },
+    "mesh": {
+      "name": "MG_boatdock_0",
+      "id": "c3f6b4c5a8270df607ea3e6e7f891292",
+      "kind": 1,
+      "flags": "0x98",
+      "bytes": 388,
+      "payload_index": 18487,
+      "file_offset": "0x2E70470"
+    },
+    "shared_compass": {
+      "name": "goProtocompassicons",
+      "id": "502b9225361cf6449d8d85048f0b1a75",
+      "kind": 1,
+      "flags": "0x3D",
+      "bytes": 784,
+      "payload_index": 18516,
+      "file_offset": "0x2E74B20"
+    },
+    "root_prototype_ref_offset": "0x0C",
+    "root_shared_compass_ref_offset": "0x54",
+    "prototype_model_link_count": 1,
+    "model_material_link_count": 1,
+    "model_mesh_link_count": 1
+  },
+  "existing_raven_artwork": {
+    "material": {
+      "name": "MAT_AE4AD85BB993F040",
+      "id": "dac6009fd0f18caad2ed322463c3d0c8",
+      "kind": 1,
+      "flags": "0x14",
+      "bytes": 384,
+      "payload_index": 13704,
+      "file_offset": "0x263C670"
+    },
+    "material_qword_0x10": "1B0989158D4A2908",
+    "material_qword_0x20": "D595197B0961F689",
+    "diffuse_definition": {
+      "name": "TX_completionist_raven_map_diffuse_19A41F00834C19F3",
+      "id": "5458455400455255001fa419f3194c83",
+      "kind": 1,
+      "flags": "0x8021",
+      "bytes": 356,
+      "payload_index": 2968,
+      "file_offset": "0x171BD50"
+    },
+    "diffuse_gpu": {
+      "name": "TX_completionist_raven_map_diffuse_19A41F00834C19F3",
+      "id": "000000000000000079babb7a41c7033c",
+      "kind": 29,
+      "flags": "0x80A1",
+      "bytes": 9228,
+      "payload_index": 2966,
+      "file_offset": "0x1719710"
+    },
+    "emissive_definition": {
+      "name": "TX_completionist_raven_map_emissive_63F1E18FF93B9037",
+      "id": "54584554004552558fe1f16337903bf9",
+      "kind": 1,
+      "flags": "0x8021",
+      "bytes": 356,
+      "payload_index": 2964,
+      "file_offset": "0x17170D0"
+    },
+    "emissive_gpu": {
+      "name": "TX_completionist_raven_map_emissive_63F1E18FF93B9037",
+      "id": "0000000000000000d216ad1542eb7da1",
+      "kind": 29,
+      "flags": "0x80A1",
+      "bytes": 4620,
+      "payload_index": 2962,
+      "file_offset": "0x1715C90"
+    },
+    "generic_links_preserved": [
+      "0c599dc8dc7e2170_ps_10000207",
+      "TX_mapmarker_vendorlocation_gloss_0F72BB3EB6D02EA3",
+      "TX_rewards_headerbacking_[0_1]_norm_182F0CA0F54A6666",
+      "transp_vs_10000207"
+    ]
+  },
+  "reuse_decision": {
+    "existing_raven_material_payload_shape_matches_dock": true,
+    "existing_raven_material_is_dock_compatible": true,
+    "existing_raven_material_already_owns_dedicated_diffuse_emissive": true,
+    "stock_hud_geometry_can_remain_shared": true,
+    "new_material_payload_required": false,
+    "new_texture_definition_payloads_required": false,
+    "new_texture_gpu_payloads_required": false,
+    "new_mesh_payload_required": false,
+    "minimal_new_payloads": [
+      "gocompletionistravenhud",
+      "goProtoCompletionistRavenHUD",
+      "MDL_completionistravenhud"
+    ],
+    "minimal_new_payload_count": 3
+  },
+  "proposed_compass_hud_identity": {
+    "IconName_source_string": "goCompletionistRavenHUD",
+    "IconName_hash": "45E5C7943749F81C",
+    "root": {
+      "name": "gocompletionistravenhud",
+      "id": "f0029a68d9705e95a981aab8bff0c5b8"
+    },
+    "prototype": {
+      "name": "goProtoCompletionistRavenHUD",
+      "id": "b2a833d6144789e8099acf85e832d652"
+    },
+    "model": {
+      "name": "MDL_completionistravenhud",
+      "id": "4a7911dc2db72cecaf6c187a66bfd11f"
+    },
+    "material_reused": "MAT_AE4AD85BB993F040",
+    "mesh_reused": "MG_boatdock_0",
+    "shared_compass_reused": "goProtocompassicons"
+  },
+  "conclusion": "EXISTING_RAVEN_ARTWORK_REUSABLE_FOR_COMPASS_HUD",
+  "next_gate": "Build an offline three-payload Raven compass HUD clone from goboatdock/goProtoBoatDock/MDL_boatdock. Retarget only the cloned model material link to MAT_AE4AD85BB993F040, keep MG_boatdock_0 shared, keep goProtocompassicons at root offset 0x54, and do not modify wad_r_perm.dcb yet."
+}
