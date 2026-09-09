@@ -77,7 +77,7 @@ Write-Host '  ranked Nornir helper candidates:'
         $_.id, $_.distance_to_target_m, $_.helper_type, $_.same_helper_type_as_raven_anchor, `
         $_.same_graph_component_as_raven_anchor, $_.degree, $_.nearest_stock_map_coordinate_graph_steps)
 }
-Write-Host "  provisional same-type nearest: $($proof.provisional_same-type_nearest_candidate)"
+Write-Host "  provisional same-type nearest: $($proof.'provisional_same-type_nearest_candidate')"
 Write-Host '  Raven production files changed: false'
 Write-Host '  game files written: false'
 Write-Host '  saves/progression/marker state written: false'
