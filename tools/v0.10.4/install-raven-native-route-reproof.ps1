@@ -73,13 +73,19 @@ if ($before -ne $expectedBaseline) {
 $source = [IO.File]::ReadAllText($mapTarget)
 $bridgeText = [IO.File]::ReadAllText($bridge)
 
+# This exact fb68996... baseline is the post-v0.10.4 installed mapmenu used by the
+# SIDE A/B control. It intentionally does NOT contain the old appended v0.10.3
+# native bridge or the old mapmenu-side R3/L3 proof helpers. Validate the actual
+# stock-path contract that the re-proof needs instead of requiring stale symbols.
 foreach ($needle in @(
-    '[CompletionistMap v0.10.1] MAP_SCRIPT_LOADED',
     'function MapOn:ShowOnCompass(currState)',
-    'mode=hud_native_visual_proof',
-    'CompletionistMapV100_GetProofVisual'
+    'game.Compass.ShowMarker(self.currMarkerID, markerType)',
+    'CompletionistMapV100_IsRavenCollected',
+    'enabledShowOnCompassMarkerFlags',
+    'completionistMapV100Selected',
+    'Completionist_V103_Veithurgard_Raven_01'
 )) {
-    if (-not $source.Contains($needle)) { throw "Expected installed v0.10.1/fake-HUD signature missing: $needle" }
+    if (-not $source.Contains($needle)) { throw "Expected inspected stock-path baseline signature missing: $needle" }
 }
 if ($source.Contains('BEGIN COMPLETIONIST V0.10.3 NATIVE RAVEN PRODUCTION BRIDGE')) {
     throw 'Native Raven production bridge already exists in mapmenu.lua.'
@@ -111,8 +117,8 @@ if (($proofText.Split('BEGIN COMPLETIONIST V0.10.3 NATIVE RAVEN PRODUCTION BRIDG
 if (($proofText.Split('game.Compass.ShowMarker(candidate, markerType)').Count - 1) -ne 1) {
     throw 'Route re-proof candidate does not contain exactly one dedicated Raven native ShowMarker call.'
 }
-if (-not $proofText.Contains('mode=hud_native_visual_proof')) {
-    throw 'Legacy fake-HUD source unexpectedly disappeared; re-proof must suppress it at runtime rather than rewrite unrelated v0.10.1 code.'
+if (-not $proofText.Contains('LEGACY_R3L3_DISABLED') -or -not $proofText.Contains('target.active = false')) {
+    throw 'Route re-proof candidate lost the runtime legacy-Raven-HUD suppression contract.'
 }
 
 $manifest = [ordered]@{
@@ -125,7 +131,9 @@ $manifest = [ordered]@{
     backup = $backup
     candidate = $candidate
     bridge = $bridge
-    legacy_r3l3_runtime_suppressed = $true
+    source_baseline = 'post-v0.10.4-pre-SIDE-stock-ShowOnCompass'
+    source_contains_old_fake_hud_helpers = $false
+    legacy_r3l3_runtime_suppressed_if_present = $true
     dedicated_native_showmarker_call = $true
     wad_files_written = $false
     dcb_files_written = $false
@@ -146,9 +154,10 @@ try {
 
 Write-Host ''
 Write-Host 'Raven NATIVE route re-proof installed.'
-Write-Host '- Raven selection is intercepted AFTER v0.10.1 and redirected to the dedicated authored native marker'
+Write-Host '- exact inspected pre-SIDE stock ShowOnCompass baseline verified'
+Write-Host '- Raven selection is intercepted by the appended proven native bridge'
 Write-Host '- game.Compass.ShowMarker(candidate, DockPoint) is used'
-Write-Host '- legacy CompletionistMapV100Target Raven HUD is forced inactive while native tracking is active'
+Write-Host '- any legacy CompletionistMapV100Target Raven HUD is forced inactive while native tracking is active'
 Write-Host '- R3_L3 fake marker should NOT render for the Raven'
 Write-Host '- same native Raven mapmaster/mapcoords/compassgraph data: unchanged'
 Write-Host '- custom Raven WAD/DCB pair: left untouched'
