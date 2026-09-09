@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "result": "NORNIR_VERTICAL_SLICE_OFFLINE_GATE_PASSED",
+  "source": "user local PowerShell run",
+  "source_commit": "f9bb99a596292a8879e7a4f799a02b4d73f6b10e",
+  "marker": {
+    "name": "Completionist_V104_Veithurgard_NornirChest_01",
+    "id": "381B067F07254A25",
+    "world": [-43.904609680176, 14.5, 748.57946777344],
+    "graph_neighbor": "45DE535858C63212",
+    "helper_type": "62BDC63B4FBF649D",
+    "helper_distance_metres": 13.4942
+  },
+  "resources": {
+    "compass_class": {
+      "name": "CompletionistNornirChest",
+      "uid": "8D5A770E0C4272CE",
+      "type_id": "0x11E"
+    },
+    "map_visual": {
+      "name": "goMapIconCompletionistNornirChest",
+      "hash": "E14C66C3B90633E0",
+      "gopool_capacity": 1
+    },
+    "hud_visual": {
+      "name": "goCompletionistNornirChestHUD",
+      "hash": "7DDC11175EBD1E94",
+      "gopool_capacity": 2
+    },
+    "inworld_carrier": {
+      "name": "COMPASS_INWORLD_COMPLETIONIST_NORNIR_CHEST",
+      "uid": "32BBE7E267644D93",
+      "type_id": "0x129",
+      "visual_hash": "7DDC11175EBD1E94"
+    }
+  },
+  "passing_component_hashes": {
+    "native_route_only_mapmaster": "dc51308e22807b3404ea951ae52f7daf28e8dbb442b09e59bfa98b4d243fc8fa",
+    "mapcoords": "b870adccf66baf0d71dd1c0774d12e5ca503415da1e9270f82d0b77c0f11cd7f",
+    "compassgraph": "8477f6332436959ce06b0c7e84a4871a7ff947421f9e858589e360e2e7c0d45e",
+    "r_ui_wad": "340e0ceccd8d399e39612355b4b05e387c48809a654e765530346b029ba2a16c",
+    "wad_r_ui_dcb": "93164584bc115b64144bef73680ce5163b7ddf48f74bfd2698fef1b165dc891a",
+    "wad_r_perm_dcb": "be453733a57a27dde5eb33e553973ec34c330e4841f7c632e4f784a8adc34350"
+  },
+  "proof": {
+    "six_file_candidate_complete": true,
+    "mapmaster_retarget_exact_inverse_proof": true,
+    "raven_class_carrier_map_hud_native_edge_preserved": true,
+    "stock_dockpoint_resources_preserved": true,
+    "raven_production_state_reverified_after_build": true
+  },
+  "safety": {
+    "game_files_written": false,
+    "saves_progression_marker_state_written": false,
+    "runtime_install_performed": false
+  },
+  "interpretation": "The dedicated Veithurgard Nornir Chest native vertical slice is structurally complete offline. Runtime behavior is not yet claimed. The next gate adds native single-target mapmenu behavior and a read-only lifecycle relay based on stock Nornir challenge/open state before any reversible runtime install."
+}
