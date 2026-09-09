@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "result": "RAVEN_SINGLE_TARGET_REPLACE_WORKS_REMOVE_REGRESSION_INWORLD_DOCK",
+  "captured_from_user_observation_utc": "2026-09-09T07:27:53Z",
+  "marker": "Completionist_V103_Veithurgard_Raven_01",
+  "runtime_observation": {
+    "crash": false,
+    "raven_add": "working",
+    "raven_to_stock_replace": "working; stock marker becomes sole tracked target",
+    "stock_to_raven_replace": "working; Raven becomes sole tracked target",
+    "raven_remove_from_compass": "not working",
+    "raven_compass_hud_art": "custom Raven",
+    "native_distance": "visible",
+    "native_routing_pathfinding": "working",
+    "in_world_marker_art": "DockPoint/boat dock"
+  },
+  "interpretation": {
+    "single_target_replacement_logic": "working in both replacement directions",
+    "remove_regression": "the older inner Raven bridge queries stock enabledShowOnCompassMarkerFlags and therefore cannot reliably detect a marker shown as custom class CompletionistRaven",
+    "fix_direction": "outer v3 control owns Raven-origin add/remove using FindMarkersByIconClass({CompletionistRaven}) and direct ShowMarker/HideMarker",
+    "in_world_visual_status": "still intentionally bound to COMPASS_INWORLD_DOCK pending structural clone analysis"
+  },
+  "safety": {
+    "evidence_file_only": true,
+    "game_files_written_by_archive": false,
+    "saves_progression_marker_state_written": false
+  }
+}
