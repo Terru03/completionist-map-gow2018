@@ -1,0 +1,210 @@
+{
+  "schema": 1,
+  "deterministic_namespace": "completionist-map-gow2018:v0.10.4:collectible-framework",
+  "collectibles": [
+    {
+      "key": "odins_raven",
+      "display_name": "Odin's Raven",
+      "status": "production_frozen",
+      "parent_collectible_key": null,
+      "map_filter_category": "COMPLETIONIST_FILTER",
+      "identities": {
+        "map_icon": {"game_object": "goMapIconCompletionistRaven", "folded_hash": "584F31DC8BD6E738"},
+        "compass": {"class_name": "CompletionistRaven", "class_uid": "5DC46967D3095F7E", "game_object": "goCompletionistRavenHUD", "folded_hash": "45E5C7943749F81C"},
+        "in_world": {"name": "COMPASS_INWORLD_COMPLETIONIST_RAVEN", "uid": "21DC5A7D4AD17628"}
+      },
+      "resources": {
+        "map_root": {"name": "gomapiconcompletionistraven", "id": "3d8f7153809e6db191c2d5e354f1e88c"},
+        "map_prototype": {"name": "goProtoMapIconCompletionistRaven", "id": "f29a83d61d2fe0b9bb96123ffe77225d"},
+        "map_model": {"name": "MDL_completionistraven", "id": "e281a8d67849d97b3d5e7d88f140f59b"},
+        "material": {"name": "MAT_AE4AD85BB993F040", "id": "dac6009fd0f18caad2ed322463c3d0c8", "qword_0x10": "1B0989158D4A2908", "qword_0x20": "D595197B0961F689"},
+        "diffuse": {"name": "TX_completionist_raven_map_diffuse_19A41F00834C19F3", "definition_id": "5458455400455255001fa419f3194c83", "gpu_id": "000000000000000079babb7a41c7033c", "file_hash": "19A41F00834C19F3", "user_hash": "7ABBBA793C03C741"},
+        "emissive": {"name": "TX_completionist_raven_map_emissive_63F1E18FF93B9037", "definition_id": "54584554004552558fe1f16337903bf9", "gpu_id": "0000000000000000d216ad1542eb7da1", "file_hash": "63F1E18FF93B9037", "user_hash": "15AD16D2A17DEB42"},
+        "hud_root": {"name": "gocompletionistravenhud", "id": "f0029a68d9705e95a981aab8bff0c5b8"},
+        "hud_prototype": {"name": "goProtoCompletionistRavenHUD", "id": "b2a833d6144789e8099acf85e832d652"},
+        "hud_model": {"name": "MDL_completionistravenhud", "id": "4a7911dc2db72cecaf6c187a66bfd11f"}
+      },
+      "donors": {"kind": "frozen_self", "collectible_key": "odins_raven"},
+      "model_group_policy": {
+        "map": {"mode": "share_stock", "name": "MG_mapicondock_0", "id": "44b11676af9c4e0ff860108fd46b0b32", "mutate_payload": false},
+        "hud": {"mode": "share_stock", "name": "MG_boatdock_0", "id": "c3f6b4c5a8270df607ea3e6e7f891292", "mutate_payload": false}
+      },
+      "gopool": [
+        {"role": "map", "name": "goMapIconCompletionistRaven", "folded_hash": "584F31DC8BD6E738", "capacity": 1, "index": 255},
+        {"role": "hud", "name": "goCompletionistRavenHUD", "folded_hash": "45E5C7943749F81C", "capacity": 2, "index": 256}
+      ],
+      "lifecycle": {"adapter": "killable_collectible", "completion_predicate": "frozen_raven_completion_state", "hooks": "frozen_runtime_implementation"},
+      "native_discovery": {"marker_name": "Completionist_V103_Veithurgard_Raven_01", "marker_uid": "E15E6BC82AE2773E", "status": "runtime_proven"},
+      "build": {"enabled": false, "mode": "golden_fixture", "art_source": "frozen_self", "id_policy": "explicit"},
+      "unresolved": ["Exact engine meaning of material qword +0x10 and +0x20 remains unknown."]
+    },
+    {
+      "key": "nornir_chest",
+      "display_name": "Nornir Chest",
+      "status": "offline_candidate",
+      "parent_collectible_key": null,
+      "map_filter_category": "NORNIR_CHEST_FILTER",
+      "identities": {
+        "map_icon": {"game_object": "goMapIconCompletionistNornirChest", "folded_hash": "E14C66C3B90633E0"},
+        "compass": {"class_name": "CompletionistNornirChest", "class_uid": "8D5A770E0C4272CE", "game_object": "goCompletionistNornirChestHUD", "folded_hash": "7DDC11175EBD1E94"},
+        "in_world": {"name": "COMPASS_INWORLD_COMPLETIONIST_NORNIR_CHEST", "uid": "32BBE7E267644D93"}
+      },
+      "resources": {
+        "map_root": {"name": "gomapiconcompletionistnornirchest", "id": "0cd3d77d5358980222fec665082e7eb9"},
+        "map_prototype": {"name": "goProtoMapIconCompletionistNornirChest", "id": "4f57ab1faf5e1018b2018cc0c891ce94"},
+        "map_model": {"name": "MDL_completionistnornirchest", "id": "8df34a0395272bc1ded6f22e357a2188"},
+        "material": {"name": "MAT_completionistnornirchest", "id": "e6e7f5294aef261b3899f785bfc07a13", "qword_0x10": "E2265134DFA7BA70", "qword_0x20": "D595197B0961F689"},
+        "diffuse": {"name": "TX_completionist_nornir_chest_diff_0A43AEB29D6F80DA", "definition_id": "5458455400455255b2ae430ada806f9d", "gpu_id": "00000000000000007ddf06481c7596a1", "file_hash": "0A43AEB29D6F80DA", "user_hash": "4806DF7DA196751C"},
+        "emissive": {"name": "TX_completionist_nornir_chest_emis_58012A499511A0BB", "definition_id": "5458455400455255492a0158bba01195", "gpu_id": "0000000000000000570b1aa0174d247d", "file_hash": "58012A499511A0BB", "user_hash": "A01A0B577D244D17"},
+        "hud_root": {"name": "gocompletionistnornirchesthud", "id": "6ebb1f850a95179e8f0d9f35f6f39466"},
+        "hud_prototype": {"name": "goProtoCompletionistNornirChestHUD", "id": "fa54df9c2758da779d03f6c46414b144"},
+        "hud_model": {"name": "MDL_completionistnornirchesthud", "id": "f114131a824be2d5a10bee929d0a0ad0"}
+      },
+      "donors": {"kind": "collectible", "collectible_key": "odins_raven"},
+      "model_group_policy": {
+        "map": {"mode": "share_stock", "name": "MG_mapicondock_0", "id": "44b11676af9c4e0ff860108fd46b0b32", "mutate_payload": false},
+        "hud": {"mode": "share_stock", "name": "MG_boatdock_0", "id": "c3f6b4c5a8270df607ea3e6e7f891292", "mutate_payload": false}
+      },
+      "gopool": [
+        {"role": "map", "name": "goMapIconCompletionistNornirChest", "folded_hash": "E14C66C3B90633E0", "capacity": 1, "index": 257},
+        {"role": "hud", "name": "goCompletionistNornirChestHUD", "folded_hash": "7DDC11175EBD1E94", "capacity": 2, "index": 258}
+      ],
+      "lifecycle": {"adapter": "parent_puzzle_collectible", "completion_predicate": "authoritative_reward_chest_state_equals_OPENED", "hooks": "offline_proven_target_scoped_publishers"},
+      "native_discovery": {"marker_name": "Completionist_V104_Veithurgard_NornirChest_01", "marker_uid": "381B067F07254A25", "status": "offline_only"},
+      "build": {"enabled": true, "mode": "offline_candidate", "art_source": "nornir_candidate3_resident_report", "id_policy": "explicit"},
+      "unresolved": ["Candidate 3 has no runtime proof.", "Material qword +0x20 engine meaning is unknown; donor byte rule is proven."]
+    },
+    {
+      "key": "nornir_bell",
+      "display_name": "Nornir Bell",
+      "status": "placeholder",
+      "parent_collectible_key": "nornir_chest",
+      "map_filter_category": "NORNIR_CHEST_FILTER",
+      "identities": {"map_icon": null, "compass": null, "in_world": null},
+      "resources": {},
+      "donors": {"kind": "unresolved"},
+      "model_group_policy": {"map": {"mode": "unresolved"}, "hud": {"mode": "unresolved"}},
+      "gopool": [],
+      "lifecycle": {"adapter": "child_puzzle_element", "completion_predicate": null, "hooks": null},
+      "native_discovery": {"marker_name": null, "marker_uid": null, "status": "unresolved"},
+      "build": {"enabled": false, "mode": "placeholder", "art_source": null, "id_policy": null},
+      "unresolved": ["Map, compass, in-world, resource, donor, native marker, completion predicate, and exact lifecycle hooks are unknown."]
+    },
+    {
+      "key": "nornir_seal",
+      "display_name": "Nornir Seal",
+      "status": "placeholder",
+      "parent_collectible_key": "nornir_chest",
+      "map_filter_category": "NORNIR_CHEST_FILTER",
+      "identities": {"map_icon": null, "compass": null, "in_world": null},
+      "resources": {},
+      "donors": {"kind": "unresolved"},
+      "model_group_policy": {"map": {"mode": "unresolved"}, "hud": {"mode": "unresolved"}},
+      "gopool": [],
+      "lifecycle": {"adapter": "child_puzzle_element", "completion_predicate": null, "hooks": null},
+      "native_discovery": {"marker_name": null, "marker_uid": null, "status": "unresolved"},
+      "build": {"enabled": false, "mode": "placeholder", "art_source": null, "id_policy": null},
+      "unresolved": ["Map, compass, in-world, resource, donor, native marker, completion predicate, and exact lifecycle hooks are unknown."]
+    },
+    {
+      "key": "nornir_mechanism",
+      "display_name": "Nornir Mechanism",
+      "status": "placeholder",
+      "parent_collectible_key": "nornir_chest",
+      "map_filter_category": "NORNIR_CHEST_FILTER",
+      "identities": {"map_icon": null, "compass": null, "in_world": null},
+      "resources": {},
+      "donors": {"kind": "unresolved"},
+      "model_group_policy": {"map": {"mode": "unresolved"}, "hud": {"mode": "unresolved"}},
+      "gopool": [],
+      "lifecycle": {"adapter": "child_puzzle_element", "completion_predicate": null, "hooks": null},
+      "native_discovery": {"marker_name": null, "marker_uid": null, "status": "unresolved"},
+      "build": {"enabled": false, "mode": "placeholder", "art_source": null, "id_policy": null},
+      "unresolved": ["Map, compass, in-world, resource, donor, native marker, completion predicate, and exact lifecycle hooks are unknown."]
+    },
+    {
+      "key": "lore_marker",
+      "display_name": "Lore Marker",
+      "status": "placeholder",
+      "parent_collectible_key": null,
+      "map_filter_category": "LORE_FILTER",
+      "identities": {"map_icon": null, "compass": null, "in_world": null},
+      "resources": {},
+      "donors": {"kind": "unresolved"},
+      "model_group_policy": {"map": {"mode": "unresolved"}, "hud": {"mode": "unresolved"}},
+      "gopool": [],
+      "lifecycle": {"adapter": "interact_read_collectible", "completion_predicate": "interact_or_read_complete", "hooks": null},
+      "native_discovery": {"marker_name": null, "marker_uid": null, "status": "unresolved"},
+      "build": {"enabled": false, "mode": "placeholder", "art_source": null, "id_policy": null},
+      "unresolved": ["Exact read/interact hook, identities, donors, and native rows are unknown."]
+    },
+    {
+      "key": "artefact",
+      "display_name": "Artefact",
+      "status": "placeholder",
+      "parent_collectible_key": null,
+      "map_filter_category": "ARTEFACT_FILTER",
+      "identities": {"map_icon": null, "compass": null, "in_world": null},
+      "resources": {},
+      "donors": {"kind": "unresolved"},
+      "model_group_policy": {"map": {"mode": "unresolved"}, "hud": {"mode": "unresolved"}},
+      "gopool": [],
+      "lifecycle": {"adapter": "pickup_collectible", "completion_predicate": "pickup_complete", "hooks": null},
+      "native_discovery": {"marker_name": null, "marker_uid": null, "status": "unresolved"},
+      "build": {"enabled": false, "mode": "placeholder", "art_source": null, "id_policy": null},
+      "unresolved": ["Exact pickup hook, identities, donors, and native rows are unknown."]
+    },
+    {
+      "key": "legendary_chest",
+      "display_name": "Legendary Chest",
+      "status": "placeholder",
+      "parent_collectible_key": null,
+      "map_filter_category": "CHEST_FILTER",
+      "identities": {"map_icon": null, "compass": null, "in_world": null},
+      "resources": {},
+      "donors": {"kind": "unresolved"},
+      "model_group_policy": {"map": {"mode": "unresolved"}, "hud": {"mode": "unresolved"}},
+      "gopool": [],
+      "lifecycle": {"adapter": "opened_chest", "completion_predicate": "state_equals_OPENED", "hooks": null},
+      "native_discovery": {"marker_name": null, "marker_uid": null, "status": "unresolved"},
+      "build": {"enabled": false, "mode": "placeholder", "art_source": null, "id_policy": null},
+      "unresolved": ["Exact Legendary Chest OPENED hook, identities, donors, and native rows are unknown."]
+    },
+    {
+      "key": "framework_probe",
+      "display_name": "Framework Synthetic Probe",
+      "status": "synthetic_test",
+      "parent_collectible_key": null,
+      "map_filter_category": "TEST_ONLY",
+      "identities": {
+        "map_icon": {"game_object": "goMapIconCompletionistFrameworkProbe", "folded_hash": null},
+        "compass": {"class_name": null, "class_uid": null, "game_object": "goCompletionistFrameworkProbeHUD", "folded_hash": null},
+        "in_world": {"name": null, "uid": null}
+      },
+      "resources": {
+        "map_root": {"name": "gomapiconcompletionistframeworkprobe", "id": null},
+        "map_prototype": {"name": "goProtoMapIconCompletionistFrameworkProbe", "id": null},
+        "map_model": {"name": "MDL_completionistframeworkprobe", "id": null},
+        "material": {"name": "MAT_completionistframeworkprobe", "id": null, "qword_0x10": null, "qword_0x20": "D595197B0961F689"},
+        "diffuse": {"name": "TX_completionist_probe_diff", "definition_id": null, "gpu_id": null, "file_hash": null, "user_hash": null},
+        "emissive": {"name": "TX_completionist_probe_emis", "definition_id": null, "gpu_id": null, "file_hash": null, "user_hash": null},
+        "hud_root": {"name": "gocompletionistframeworkprobehud", "id": null},
+        "hud_prototype": {"name": "goProtoCompletionistFrameworkProbeHUD", "id": null},
+        "hud_model": {"name": "MDL_completionistframeworkprobehud", "id": null}
+      },
+      "donors": {"kind": "collectible", "collectible_key": "odins_raven"},
+      "model_group_policy": {
+        "map": {"mode": "share_stock", "name": "MG_mapicondock_0", "id": "44b11676af9c4e0ff860108fd46b0b32", "mutate_payload": false},
+        "hud": {"mode": "share_stock", "name": "MG_boatdock_0", "id": "c3f6b4c5a8270df607ea3e6e7f891292", "mutate_payload": false}
+      },
+      "gopool": [
+        {"role": "map", "name": "goMapIconCompletionistFrameworkProbe", "folded_hash": null, "capacity": 1, "index": 257},
+        {"role": "hud", "name": "goCompletionistFrameworkProbeHUD", "folded_hash": null, "capacity": 2, "index": 258}
+      ],
+      "lifecycle": {"adapter": "synthetic_test", "completion_predicate": null, "hooks": null},
+      "native_discovery": {"marker_name": null, "marker_uid": null, "status": "not_applicable_test_only"},
+      "build": {"enabled": true, "mode": "synthetic_test", "art_source": "copy_donor_resident_bytes", "id_policy": "deterministic_test_namespace"},
+      "unresolved": ["Test-only type has no native marker, compass class, in-world carrier, or gameplay lifecycle hook."]
+    }
+  ]
+}

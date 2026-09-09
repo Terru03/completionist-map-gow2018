@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://completionist-map.local/schemas/v0.10.4/collectibles.schema.json",
+  "title": "Completionist collectible registry",
+  "type": "object",
+  "required": ["schema", "deterministic_namespace", "collectibles"],
+  "properties": {
+    "schema": {"const": 1},
+    "deterministic_namespace": {"type": "string", "minLength": 1},
+    "collectibles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/collectible"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hex64": {"type": ["string", "null"], "pattern": "^[0-9A-F]{16}$"},
+    "hex128": {"type": ["string", "null"], "pattern": "^[0-9a-f]{32}$"},
+    "namedIdentity": {
+      "type": "object",
+      "required": ["name", "id"],
+      "properties": {
+        "name": {"type": ["string", "null"]},
+        "id": {"$ref": "#/$defs/hex128"}
+      },
+      "additionalProperties": false
+    },
+    "collectible": {
+      "type": "object",
+      "required": [
+        "key", "display_name", "status", "parent_collectible_key",
+        "map_filter_category", "identities", "resources", "donors",
+        "model_group_policy", "gopool", "lifecycle", "native_discovery",
+        "build", "unresolved"
+      ],
+      "properties": {
+        "key": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "display_name": {"type": "string", "minLength": 1},
+        "status": {"enum": ["production_frozen", "offline_candidate", "placeholder", "synthetic_test"]},
+        "parent_collectible_key": {"type": ["string", "null"]},
+        "map_filter_category": {"type": ["string", "null"]},
+        "identities": {"type": "object"},
+        "resources": {"type": "object"},
+        "donors": {"type": "object"},
+        "model_group_policy": {"type": "object"},
+        "gopool": {"type": "array"},
+        "lifecycle": {"type": "object"},
+        "native_discovery": {"type": "object"},
+        "build": {"type": "object"},
+        "unresolved": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    }
+  }
+}
