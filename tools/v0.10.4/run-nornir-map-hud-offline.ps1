@@ -16,7 +16,7 @@ if (-not (Test-Path -LiteralPath $GameRoot -PathType Container)) { throw "God of
 $python = Get-Command python -ErrorAction SilentlyContinue
 if ($null -eq $python) { throw 'Python 3 is required.' }
 $verify = Join-Path $PSScriptRoot 'verify-raven-production-state.ps1'
-$builder = Join-Path $PSScriptRoot 'build-nornir-map-hud-offline.py'
+$builder = Join-Path $PSScriptRoot 'build-nornir-map-hud-offline-v2.py'
 foreach ($required in @($verify, $builder)) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) { throw "Missing required tool: $required" }
 }
