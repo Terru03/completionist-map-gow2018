@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "result": "RAVEN_SINGLE_ACTIVE_RUNTIME_SUCCESS",
+  "captured_from_user_observation_utc": "2026-09-09T07:49:00Z",
+  "marker": "Completionist_V103_Veithurgard_Raven_01",
+  "runtime_observation": {
+    "crash": false,
+    "raven_add_to_compass": "working",
+    "raven_replace_stock_marker": "working",
+    "stock_marker_replace_raven": "working",
+    "raven_remove_from_compass": "working",
+    "single_active_target_invariant": "working",
+    "native_distance": "working",
+    "native_routing_pathfinding": "working flawlessly",
+    "raven_compass_hud_art": "custom Raven",
+    "in_world_marker_art": "DockPoint/boat dock placeholder remains"
+  },
+  "interpretation": {
+    "compass_logic": "proven for add, replace in both directions, remove, and native routing/pathfinding",
+    "remaining_runtime_issue": "only the floating in-world marker artwork remains DockPoint"
+  },
+  "next_gate": "Run the read-only COMPASS_INWORLD export topology inspector, then build a dedicated Raven in-world carrier without changing the proven HUD, routing, mapcoords, compassgraph, or stock DockPoint resources."
+}
