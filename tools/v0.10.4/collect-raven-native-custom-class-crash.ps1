@@ -47,8 +47,9 @@ if ((Hash-File $wad) -ne ([string]$manifest.r_ui_wad_sha256).ToLowerInvariant())
 if (-not (Test-Path -LiteralPath $log -PathType Leaf)) { throw "Missing loader log: $log" }
 
 $all = @(Get-Content -LiteralPath $log)
-$native = @($all | Where-Object { $_ -like '*[CompletionistMap v0.10.3-native]*' })
-$completionist = @($all | Where-Object { $_ -like '*[CompletionistMap*' })
+# Use literal substring checks. PowerShell -like treats '[' as a wildcard character-class opener.
+$native = @($all | Where-Object { $_.Contains('[CompletionistMap v0.10.3-native]') })
+$completionist = @($all | Where-Object { $_.Contains('[CompletionistMap') })
 $tail = @($all | Select-Object -Last 180)
 
 $showBeforeCustom = @($native | Where-Object { $_ -match 'NATIVE_RAVEN_SHOW stage=before' -and $_ -match 'markerType=CompletionistRaven' }).Count
