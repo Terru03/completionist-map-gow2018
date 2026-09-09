@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "result": "RAVEN_FULL_COMPASS_RUNTIME_SUCCESS",
+  "marker": "Completionist_V103_Veithurgard_Raven_01",
+  "runtime_observation": {
+    "crash": false,
+    "map_icon": "custom Raven",
+    "compass_hud_icon": "custom Raven",
+    "in_world_marker_icon": "custom Raven",
+    "native_distance": "working",
+    "native_routing_pathfinding": "working",
+    "add_to_compass": "working",
+    "replace_stock_with_raven": "working",
+    "replace_raven_with_stock": "working",
+    "remove_from_compass": "working",
+    "single_active_target_invariant": "working"
+  },
+  "causal_result": {
+    "dedicated_inworld_export": "COMPASS_INWORLD_COMPLETIONIST_RAVEN",
+    "dedicated_inworld_uid": "21DC5A7D4AD17628",
+    "custom_raven_hud_hash": "45E5C7943749F81C",
+    "gopool_capacity_before": 1,
+    "gopool_capacity_after": 2,
+    "capacity_1_result": "custom Raven rendered on compass HUD but no in-world marker",
+    "stock_art_control_result": "boat in-world marker rendered through the same dedicated type-0x129 export",
+    "capacity_2_result": "custom Raven rendered simultaneously on compass HUD and as the in-world marker",
+    "root_cause": "goCompletionistRavenHUD GOPool capacity 1 prevented the second simultaneous instance required by the in-world carrier"
+  },
+  "proven_final_state": {
+    "wad_r_perm_custom_inworld_carrier_sha256": "85d33925a10a6d70629a79eb19c51c4c92957f9eb78eda0c1145e585ea5781a5",
+    "r_ui_wad_sha256": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
+    "mapcoords_sha256": "945774dbc965f45ad78b8408bb1d2b10a527c6390e4e7c1190e8f2d7538df3cb",
+    "compassgraph_sha256": "d0ed78ba4b91813c74dc6088a8521d332ea991e760b1c2600d6eeefc5fe60e68",
+    "hud_gopool_capacity": 2
+  },
+  "interpretation": "The Raven compass pipeline is runtime-proven end-to-end. The custom Raven now renders on the map, compass HUD, and floating in-world marker while preserving native distance, native pathfinding, stock single-target replacement semantics, and removal behavior."
+}
