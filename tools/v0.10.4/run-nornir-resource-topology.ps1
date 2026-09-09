@@ -39,7 +39,7 @@ if (-not (Test-Path -LiteralPath $nativeReport -PathType Leaf)) {
     throw "Run the successful Nornir native-data offline gate first; report missing: $nativeReport"
 }
 $native = Get-Content -LiteralPath $nativeReport -Raw | ConvertFrom-Json
-if ($native.result -ne 'OFFLINE_NORNIR_NATIVE_DATA_BUILT') {
+if ($native.result -ne 'OFFLINE_NORNIR_NATIVE_DATA_BUILT_AND_REPARSED') {
     throw "Unexpected Nornir native-data report result: $($native.result)"
 }
 if ($native.generated_files.'mapmaster.dcb'.sha256 -ne 'dc51308e22807b3404ea951ae52f7daf28e8dbb442b09e59bfa98b4d243fc8fa') {
