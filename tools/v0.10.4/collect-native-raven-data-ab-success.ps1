@@ -37,7 +37,9 @@ Get-ChildItem -LiteralPath $stateRoot -Recurse -Filter manifest.json -File | For
 if ($installed.Count -ne 1) {
     throw "Expected exactly one installed native Raven A/B transaction, found $($installed.Count)."
 }
-$manifest = $installed[0]
+$manifest = [IO.Path]::GetFullPath($installed[0])
+$manifestValue = Get-Content -LiteralPath $manifest -Raw | ConvertFrom-Json
+$manifestSha = (Get-FileHash -Algorithm SHA256 -LiteralPath $manifest).Hash.ToLowerInvariant()
 
 $archiveRelPrefix = 'archive/field-logs/completionist-v104-native-raven-data-ab-'
 $untracked = @(
@@ -48,20 +50,47 @@ $untracked = @(
 if ($LASTEXITCODE -ne 0) { throw 'git ls-files failed while checking recoverable A/B reports.' }
 
 $report = $null
-if ($untracked.Count -eq 1) {
-    $candidateRel = $untracked[0].Replace('/', '\')
-    $candidate = Join-Path $repo $candidateRel
-    $evidence = Get-Content -LiteralPath $candidate -Raw | ConvertFrom-Json
-    if ([string]$evidence.result -ne 'NATIVE_RAVEN_DATA_AB_CAPTURED_NOT_VISUAL_PROOF') {
-        throw "Existing untracked A/B report has unexpected result: $candidate"
+if ($untracked.Count -gt 0) {
+    $matching = @()
+    foreach ($candidateRelUnix in $untracked) {
+        $candidate = Join-Path $repo ($candidateRelUnix.Replace('/', '\'))
+        try {
+            $evidence = Get-Content -LiteralPath $candidate -Raw | ConvertFrom-Json
+            $evidenceManifestPath = [IO.Path]::GetFullPath([string]$evidence.manifest.path)
+            $sameManifestPath = $evidenceManifestPath.Equals($manifest, [StringComparison]::OrdinalIgnoreCase)
+            $sameManifestSha = ([string]$evidence.manifest.sha256).ToLowerInvariant() -eq $manifestSha
+            $sameKind = [string]$evidence.transaction.kind -eq [string]$manifestValue.kind
+            $sameState = [string]$evidence.transaction.state -eq 'installed'
+            $sameInstalledUtc = [string]$evidence.transaction.installed_utc -eq [string]$manifestValue.installed_utc
+            $sameResult = [string]$evidence.result -eq 'NATIVE_RAVEN_DATA_AB_CAPTURED_NOT_VISUAL_PROOF'
+            $hudVisible = [string]$evidence.user_observation.hud -eq 'visible'
+            if ($sameManifestPath -and $sameManifestSha -and $sameKind -and $sameState -and $sameInstalledUtc -and $sameResult -and $hudVisible) {
+                $captured = [DateTimeOffset]::MinValue
+                if (-not [DateTimeOffset]::TryParse([string]$evidence.captured_utc, [ref]$captured)) {
+                    throw "Matching A/B report has invalid captured_utc: $candidate"
+                }
+                $matching += [pscustomobject]@{
+                    Path = $candidate
+                    Relative = $candidateRelUnix
+                    CapturedUtc = $captured
+                }
+            }
+        } catch {
+            Write-Host "Ignoring non-matching/unreadable untracked A/B report: $candidateRelUnix"
+        }
     }
-    if ([string]$evidence.transaction.state -ne 'installed') {
-        throw "Existing untracked A/B report is not from an installed transaction: $candidate"
+
+    if ($matching.Count -gt 0) {
+        $selected = @($matching | Sort-Object CapturedUtc, Relative -Descending)[0]
+        $report = $selected.Path
+        Write-Host "Reusing newest exact-match A/B evidence: $report"
+        if ($matching.Count -gt 1) {
+            Write-Host "  exact duplicate captures for this transaction: $($matching.Count)"
+            Write-Host '  older duplicate capture(s) are left untouched and untracked.'
+        }
+    } else {
+        throw ("Untracked A/B evidence exists, but none matches the exact active manifest/transaction:`n" + ($untracked -join "`n"))
     }
-    $report = $candidate
-    Write-Host "Reusing already-collected untracked A/B evidence: $report"
-} elseif ($untracked.Count -gt 1) {
-    throw ("Multiple untracked A/B evidence reports exist; refusing ambiguous recovery:`n" + ($untracked -join "`n"))
 } else {
     $before = @(Get-ChildItem -LiteralPath (Join-Path $repo 'archive\field-logs') -Filter 'completionist-v104-native-raven-data-ab-*.json' -File -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)
 
