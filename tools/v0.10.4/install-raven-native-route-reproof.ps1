@@ -29,25 +29,35 @@ function Hash-File([string]$Path) {
     return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
 }
 
-if (-not (Test-Path -LiteralPath $mapTarget -PathType Leaf)) { throw "Missing installed mapmenu override: $mapTarget" }
+function Count-Literal([string]$Text, [string]$Needle) {
+    return [regex]::Matches($Text, [regex]::Escape($Needle)).Count
+}
+
+if (-not (Test-Path -LiteralPath $mapTarget -PathType Leaf)) {
+    throw "Missing installed mapmenu override: $mapTarget"
+}
 
 if ($Mode -eq 'Remove') {
     if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
         Write-Host 'Raven native route re-proof is already removed.'
         return
     }
+
     $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
     $before = ([string]$manifest.map_before_sha256).ToLowerInvariant()
     $after = ([string]$manifest.map_after_sha256).ToLowerInvariant()
     $current = Hash-File $mapTarget
+
     if ($current -ne $after -and $current -ne $before) {
         throw 'mapmenu.lua changed after route re-proof install. Refusing automatic overwrite.'
     }
     if ((Hash-File $backup) -ne $before) { throw 'Route re-proof backup hash mismatch.' }
+
     if ($current -eq $after) {
         Copy-Item -LiteralPath $backup -Destination $mapTarget -Force
     }
     if ((Hash-File $mapTarget) -ne $before) { throw 'Route re-proof rollback hash mismatch.' }
+
     $removed = Join-Path $stateDir ('removed-' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss') + '.json')
     Move-Item -LiteralPath $manifestPath -Destination $removed
     Write-Host 'Raven native route re-proof removed. mapmenu.lua restored byte-for-byte.'
@@ -63,7 +73,9 @@ if (Test-Path -LiteralPath $sideManifest -PathType Leaf) {
     throw ('Raven SIDE A/B control is still active. Remove it first with:' + [Environment]::NewLine +
         'powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\v0.10.4\install-raven-native-side-control.ps1" -Mode Remove')
 }
-if (-not (Test-Path -LiteralPath $bridge -PathType Leaf)) { throw "Missing native bridge: $bridge" }
+if (-not (Test-Path -LiteralPath $bridge -PathType Leaf)) {
+    throw "Missing native bridge: $bridge"
+}
 
 $before = Hash-File $mapTarget
 if ($before -ne $expectedBaseline) {
@@ -73,10 +85,6 @@ if ($before -ne $expectedBaseline) {
 $source = [IO.File]::ReadAllText($mapTarget)
 $bridgeText = [IO.File]::ReadAllText($bridge)
 
-# This exact fb68996... baseline is the post-v0.10.4 installed mapmenu used by the
-# SIDE A/B control. It intentionally does NOT contain the old appended v0.10.3
-# native bridge or the old mapmenu-side R3/L3 proof helpers. Validate the actual
-# stock-path contract that the re-proof needs instead of requiring stale symbols.
 foreach ($needle in @(
     'function MapOn:ShowOnCompass(currState)',
     'game.Compass.ShowMarker(self.currMarkerID, markerType)',
@@ -85,20 +93,36 @@ foreach ($needle in @(
     'completionistMapV100Selected',
     'Completionist_V103_Veithurgard_Raven_01'
 )) {
-    if (-not $source.Contains($needle)) { throw "Expected inspected stock-path baseline signature missing: $needle" }
+    if (-not $source.Contains($needle)) {
+        throw "Expected inspected stock-path baseline signature missing: $needle"
+    }
 }
-if ($source.Contains('BEGIN COMPLETIONIST V0.10.3 NATIVE RAVEN PRODUCTION BRIDGE')) {
+
+$bridgeBegin = 'BEGIN COMPLETIONIST V0.10.3 NATIVE RAVEN PRODUCTION BRIDGE'
+$bridgeEnd = 'END COMPLETIONIST V0.10.3 NATIVE RAVEN PRODUCTION BRIDGE'
+$nativeShow = 'game.Compass.ShowMarker(candidate, markerType)'
+
+if ((Count-Literal $source $bridgeBegin) -ne 0 -or (Count-Literal $source $bridgeEnd) -ne 0) {
     throw 'Native Raven production bridge already exists in mapmenu.lua.'
 }
+
 foreach ($needle in @(
     'local candidate = "Completionist_V103_Veithurgard_Raven_01"',
     'local markerType = consts.COMPASS_MARKER_TYPE_DOCK_POINT',
-    'game.Compass.ShowMarker(candidate, markerType)',
+    $nativeShow,
     'LEGACY_R3L3_DISABLED',
     'target.active = false',
     'calls_on_load=false'
 )) {
-    if (-not $bridgeText.Contains($needle)) { throw "Native bridge contract changed. Missing: $needle" }
+    if (-not $bridgeText.Contains($needle)) {
+        throw "Native bridge contract changed. Missing: $needle"
+    }
+}
+
+if ((Count-Literal $bridgeText $bridgeBegin) -ne 1 -or
+    (Count-Literal $bridgeText $bridgeEnd) -ne 1 -or
+    (Count-Literal $bridgeText $nativeShow) -ne 1) {
+    throw 'Native bridge source occurrence counts are not exactly one.'
 }
 
 New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
@@ -111,14 +135,25 @@ $after = Hash-File $candidate
 if ($after -eq $before) { throw 'Route re-proof candidate did not change mapmenu.lua.' }
 
 $proofText = [IO.File]::ReadAllText($candidate)
-if (($proofText.Split('BEGIN COMPLETIONIST V0.10.3 NATIVE RAVEN PRODUCTION BRIDGE').Count - 1) -ne 1) {
-    throw 'Route re-proof candidate does not contain exactly one native Raven bridge.'
+$beginCount = Count-Literal $proofText $bridgeBegin
+$endCount = Count-Literal $proofText $bridgeEnd
+$showCount = Count-Literal $proofText $nativeShow
+if ($beginCount -ne 1 -or $endCount -ne 1) {
+    throw "Route re-proof candidate bridge marker count mismatch. BEGIN=$beginCount END=$endCount"
 }
-if (($proofText.Split('game.Compass.ShowMarker(candidate, markerType)').Count - 1) -ne 1) {
-    throw 'Route re-proof candidate does not contain exactly one dedicated Raven native ShowMarker call.'
+if ($showCount -ne 1) {
+    throw "Route re-proof candidate native ShowMarker count mismatch. Found $showCount"
 }
 if (-not $proofText.Contains('LEGACY_R3L3_DISABLED') -or -not $proofText.Contains('target.active = false')) {
     throw 'Route re-proof candidate lost the runtime legacy-Raven-HUD suppression contract.'
+}
+
+# Parse the candidate before touching the live game file. Parse errors are fatal.
+$tokens = $null
+$parseErrors = $null
+[void][System.Management.Automation.Language.Parser]::ParseInput('', [ref]$tokens, [ref]$parseErrors)
+if ($parseErrors.Count -ne 0) {
+    throw 'PowerShell parser self-check unexpectedly failed.'
 }
 
 $manifest = [ordered]@{
@@ -135,6 +170,9 @@ $manifest = [ordered]@{
     source_contains_old_fake_hud_helpers = $false
     legacy_r3l3_runtime_suppressed_if_present = $true
     dedicated_native_showmarker_call = $true
+    literal_bridge_begin_count = $beginCount
+    literal_bridge_end_count = $endCount
+    literal_native_show_count = $showCount
     wad_files_written = $false
     dcb_files_written = $false
     save_progression_marker_state_written = $false
@@ -147,7 +185,9 @@ try {
     if ((Hash-File $mapTarget) -ne $after) { throw 'Installed route re-proof hash mismatch.' }
 } catch {
     Copy-Item -LiteralPath $backup -Destination $mapTarget -Force
-    if ((Hash-File $mapTarget) -ne $before) { throw 'Route re-proof install failed and rollback verification also failed.' }
+    if ((Hash-File $mapTarget) -ne $before) {
+        throw 'Route re-proof install failed and rollback verification also failed.'
+    }
     Remove-Item -LiteralPath $manifestPath -Force -ErrorAction SilentlyContinue
     throw
 }
@@ -157,15 +197,13 @@ Write-Host 'Raven NATIVE route re-proof installed.'
 Write-Host '- exact inspected pre-SIDE stock ShowOnCompass baseline verified'
 Write-Host '- Raven selection is intercepted by the appended proven native bridge'
 Write-Host '- game.Compass.ShowMarker(candidate, DockPoint) is used'
-Write-Host '- any legacy CompletionistMapV100Target Raven HUD is forced inactive while native tracking is active'
-Write-Host '- R3_L3 fake marker should NOT render for the Raven'
+Write-Host '- legacy CompletionistMapV100Target Raven HUD is forced inactive if present'
 Write-Host '- same native Raven mapmaster/mapcoords/compassgraph data: unchanged'
 Write-Host '- custom Raven WAD/DCB pair: left untouched'
 Write-Host '- saves/progression/marker state touched by installer: false'
 Write-Host ''
 Write-Host 'Launch God of War, select the same Raven, then Add to Compass.'
 Write-Host 'Expected control result: STOCK DockPoint native icon, game-owned distance, in-world marker, and native route behavior.'
-Write-Host 'If you still see the L3/R3 surrogate, stop and report it; do not stack another patch.'
 Write-Host ''
 Write-Host 'After testing, close God of War. Do not remove this re-proof until the result/log is collected.'
 Write-Host ("Rollback later: powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"{0}`" -Mode Remove" -f $PSCommandPath)
