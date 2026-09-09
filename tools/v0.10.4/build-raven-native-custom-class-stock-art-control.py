@@ -1,7 +1,7 @@
 """Build a current-state A/B DCB where CompletionistRaven keeps stock DockPoint art.
 
 This is deliberately narrower than the dedicated Raven HUD candidate. It rebuilds the
-runtime-proven packed CompletionistRaven class from the exact pre-HUD stock
+runtime-proven UID-sorted packed CompletionistRaven class from the exact pre-HUD stock
 wad_r_perm.dcb, so the custom class remains registered but its 0x20-byte class record
 is byte-identical to DockPoint. It never writes the game directory.
 """
@@ -24,8 +24,10 @@ def sha(data: bytes) -> str:
 
 
 def load_builder():
-    path = HERE / "build-packed-raven-compass-class.py"
-    spec = importlib.util.spec_from_file_location("packed_raven_stock_art_control", path)
+    # The successful runtime proof used the v2 builder. v1 deliberately left the
+    # new export appended and therefore not UID-sorted for the native binary search.
+    path = HERE / "build-packed-raven-compass-class-v2.py"
+    spec = importlib.util.spec_from_file_location("packed_raven_stock_art_control_v2", path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"Could not import {path}")
     module = importlib.util.module_from_spec(spec)
@@ -45,15 +47,15 @@ def main() -> None:
     if sha(raw) != EXPECTED_STOCK:
         raise ValueError(f"Pre-HUD stock DCB hash mismatch: {sha(raw)}")
 
-    packed = load_builder()
-    candidate, base_report = packed.build_candidate(raw)
+    packed_v2 = load_builder()
+    candidate, base_report, legacy = packed_v2.build_corrected(raw)
     candidate_sha = sha(candidate)
     if candidate_sha != EXPECTED_CANDIDATE:
-        raise ValueError(f"Runtime-proven packed candidate hash changed: {candidate_sha}")
+        raise ValueError(f"Runtime-proven UID-sorted packed candidate hash changed: {candidate_sha}")
 
-    chunks = packed.parse_chunks(candidate)
-    data = packed.one(chunks, 12)["payload"]
-    exports = packed.parse_exports(packed.one(chunks, 13)["payload"])[1]
+    chunks = legacy.parse_chunks(candidate)
+    data = legacy.one(chunks, 12)["payload"]
+    exports = legacy.parse_exports(legacy.one(chunks, 13)["payload"])[1]
     by_name = {row["name"]: row for row in exports}
     dock = by_name["DockPoint"]
     raven = by_name["CompletionistRaven"]
@@ -63,6 +65,10 @@ def main() -> None:
     raven_record = bytes(data[raven["root"]:raven["root"] + 0x20])
     if raven_record != dock_record:
         raise ValueError("CompletionistRaven is not byte-identical to DockPoint in stock-art control")
+
+    uids = [int(row["uid"]) for row in exports]
+    if not packed_v2.strictly_increasing(uids):
+        raise ValueError("Stock-art control export table is not strictly UID-sorted")
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.report.parent.mkdir(parents=True, exist_ok=True)
@@ -74,11 +80,13 @@ def main() -> None:
         "candidate": str(args.output.resolve()),
         "candidate_sha256": candidate_sha,
         "compass_class": "CompletionistRaven",
-        "class_uid": f"{packed.name_hash('CompletionistRaven'):016X}",
+        "class_uid": f"{legacy.name_hash('CompletionistRaven'):016X}",
         "class_record_byte_identical_to_DockPoint": True,
+        "export_uid_order_strictly_increasing": True,
         "DockPoint_root": hex(dock["root"]),
         "CompletionistRaven_root": hex(raven["root"]),
         "base_builder_result": base_report.get("result"),
+        "base_builder": "build-packed-raven-compass-class-v2.py",
         "game_files_written": False,
         "purpose": "Isolate dedicated Raven HUD IconName/resource chain from custom-class registration and native routing.",
     }
@@ -86,6 +94,7 @@ def main() -> None:
     print(RESULT)
     print(f"  candidate SHA256: {candidate_sha}")
     print("  CompletionistRaven record == DockPoint record: true")
+    print("  export UID order strictly increasing: true")
     print("  game files written: false")
 
 
