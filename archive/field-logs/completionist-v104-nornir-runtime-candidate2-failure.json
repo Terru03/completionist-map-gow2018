@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "result": "RUNTIME_NORNIR_CANDIDATE2_HARD_FAIL_ROLLED_BACK",
+  "branch": "codex/v104-raven-production",
+  "install_head": "c5028b9541f82e5a60349b98771ddfd6d969639e",
+  "transaction_id": "20260909T172720Z-a56d1ee4",
+  "observed_runtime": {
+    "raven_map_marker_visible": false,
+    "stock_boat_docks_rendered_nornir_chest_art": true,
+    "map_open_crash": true
+  },
+  "rollback": {
+    "exact_preinstall_state_restored": true,
+    "raven_production_verifier_passed": true,
+    "save_progression_marker_state_touched": false
+  },
+  "restored_raven_hashes": {
+    "wad_r_perm.dcb": "85d33925a10a6d70629a79eb19c51c4c92957f9eb78eda0c1145e585ea5781a5",
+    "wad_r_ui.dcb": "765ef6c08a3c9d52ed9485c184237bc3fdde103feef01c496a6999fdbea8826d",
+    "r_ui.wad": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
+    "mapmenu.lua": "67d069a798417b631c271f48c129fb2083591b81a31859ab94769fbbb8b01c6b"
+  },
+  "candidate2_isolation_evidence": {
+    "map_stock_donor": "MG_mapicondock_0",
+    "map_dedicated_clone": "MG_completionistnornirchest_map",
+    "hud_stock_donor": "MG_boatdock_0",
+    "hud_dedicated_clone": "MG_completionistnornirchest_hud",
+    "dedicated_model_group_payloads_byte_identical_to_stock_donors": true
+  },
+  "diagnosis": {
+    "candidate2_retired": true,
+    "offline_isolation_gate_invalidated_by_runtime": true,
+    "suspected_scope": "physical/model-group identity below top-level name, UID and reverse-reference isolation",
+    "root_cause_field_proven": false,
+    "evidence": "Dedicated Nornir map and HUD model-group payloads were byte-identical to the stock boat-dock donor payloads. Runtime then replaced stock boat-dock art with Nornir art, displaced the Raven map marker, and crashed on map open."
+  },
+  "next_step": "Run a read-only hidden model-group identity forensic audit. Do not reinstall Candidate 2."
+}
