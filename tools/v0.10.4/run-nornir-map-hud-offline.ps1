@@ -16,7 +16,7 @@ if (-not (Test-Path -LiteralPath $GameRoot -PathType Container)) { throw "God of
 $python = Get-Command python -ErrorAction SilentlyContinue
 if ($null -eq $python) { throw 'Python 3 is required.' }
 $verify = Join-Path $PSScriptRoot 'verify-raven-production-state.ps1'
-$builder = Join-Path $PSScriptRoot 'build-nornir-map-hud-offline-v2.py'
+$builder = Join-Path $PSScriptRoot 'build-nornir-map-hud-offline-v3.py'
 foreach ($required in @($verify, $builder)) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) { throw "Missing required tool: $required" }
 }
@@ -104,6 +104,9 @@ if ($proof.candidate.gopool.source_rows -ne 257 -or
     $proof.candidate.gopool.hud_capacity -ne 2) {
     throw 'Nornir map/HUD GOPool result does not match the approved plan.'
 }
+if (-not $proof.candidate.wad.all_wad_header_names_fit_55_bytes) {
+    throw 'Nornir WAD-header alias proof did not pass.'
+}
 if ($proof.safety.game_files_written -or $proof.safety.runtime_install_performed -or
     $proof.safety.save_state_written -or $proof.safety.progression_state_written -or
     $proof.safety.marker_state_written -or $proof.safety.raven_production_files_changed) {
@@ -140,6 +143,7 @@ Write-Host 'GOPool rows: 257 -> 259'
 Write-Host 'map: goMapIconCompletionistNornirChest index 257 capacity 1'
 Write-Host 'HUD: goCompletionistNornirChestHUD index 258 capacity 2'
 Write-Host 'resident Nornir art injected exactly: true'
+Write-Host 'WAD texture header aliases fit fixed 55-byte name limit: true'
 Write-Host 'candidate WAD reparsed and normalized to Raven production: true'
 Write-Host 'candidate GOPool normalized to Raven production: true'
 Write-Host 'Raven production files changed: false'
