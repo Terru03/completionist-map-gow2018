@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "result": "HUD_RESOURCE_PHYSICAL_BUT_GOPool_UNREGISTERED",
+  "game_files_written": false,
+  "save_progression_marker_state_written": false,
+  "installed": {
+    "r_ui.wad": {
+      "path": "G:\\SteamLibrary\\steamapps\\common\\GodOfWar\\exec\\wad\\pc_le\\r_ui.wad",
+      "sha256": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
+      "bytes": 50057168
+    },
+    "wad_r_ui.dcb": {
+      "path": "G:\\SteamLibrary\\steamapps\\common\\GodOfWar\\exec\\dc\\pc_le\\wad_r_ui.dcb",
+      "sha256": "b8d5627416787ae6761e0212a1e8de56e33abe7c251db838c4af20a00afc161b",
+      "bytes": 4864
+    }
+  },
+  "gopool": {
+    "count": 256,
+    "data_bytes": 4288,
+    "chunk_layout": [
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "probes": {
+    "completionist_hud": {
+      "expected_name": "goCompletionistRavenHUD",
+      "hash": "45E5C7943749F81C",
+      "wad_names": [
+        "gocompletionistravenhud"
+      ],
+      "wad_definitions": [
+        {
+          "record_index": 49169,
+          "name": "gocompletionistravenhud",
+          "kind": 1,
+          "flags": 61,
+          "payload_bytes": 164,
+          "resource_id": "f0029a68d9705e95a981aab8bff0c5b8",
+          "original_offset": 48700080
+        }
+      ],
+      "gopool_rows": [],
+      "physically_defined": true,
+      "registered": false
+    },
+    "stock_dock_icon": {
+      "expected_name": null,
+      "hash": "82F0296748C7393D",
+      "wad_names": [
+        "goboatdock"
+      ],
+      "wad_definitions": [
+        {
+          "record_index": 49166,
+          "name": "goboatdock",
+          "kind": 1,
+          "flags": 61,
+          "payload_bytes": 164,
+          "resource_id": "e38da34945defe418b8be0bb6b985f12",
+          "original_offset": 48699616
+        }
+      ],
+      "gopool_rows": [
+        {
+          "index": 220,
+          "uid": 9435086742920575293,
+          "uid_hex": "82F0296748C7393D",
+          "capacity": 2,
+          "raw_hex": "3d39c7486729f0820200000000000000"
+        }
+      ],
+      "physically_defined": true,
+      "registered": true
+    },
+    "working_map_raven": {
+      "expected_name": "goMapIconCompletionistRaven",
+      "hash": "584F31DC8BD6E738",
+      "wad_names": [
+        "gomapiconcompletionistraven"
+      ],
+      "wad_definitions": [
+        {
+          "record_index": 32459,
+          "name": "gomapiconcompletionistraven",
+          "kind": 1,
+          "flags": 61,
+          "payload_bytes": 164,
+          "resource_id": "3d8f7153809e6db191c2d5e354f1e88c",
+          "original_offset": 40341984
+        }
+      ],
+      "gopool_rows": [
+        {
+          "index": 255,
+          "uid": 6363359621806483256,
+          "uid_hex": "584F31DC8BD6E738",
+          "capacity": 1,
+          "raw_hex": "38e7d68bdc314f580100000000000000"
+        }
+      ],
+      "physically_defined": true,
+      "registered": true
+    }
+  },
+  "controls": {
+    "stock_dock_registered": true,
+    "working_map_raven_registered": true,
+    "working_map_raven_physically_defined": true
+  },
+  "interpretation": "If the dedicated HUD root is physically present but absent from WAD_R_UI.GOPool while the stock Dock and working map Raven controls are registered, missing resource registration is the leading crash mechanism. Do not patch runtime files until a reversible wad_r_ui.dcb candidate is built and validated offline."
+}
