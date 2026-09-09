@@ -15,7 +15,7 @@ $gow = Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName
 if ($gow) { throw 'God of War must be closed for this offline isolation gate.' }
 
 $verifyRaven = Join-Path $PSScriptRoot 'verify-raven-production-state.ps1'
-$builder = Join-Path $PSScriptRoot 'build-nornir-mg-isolation-offline.py'
+$builder = Join-Path $PSScriptRoot 'build-nornir-mg-isolation-offline-v2.py'
 $failedCandidate = Join-Path $repo 'build\v0.10.4-nornir-lifecycle\offline\candidate\game-root\exec\wad\pc_le\r_ui.wad'
 $ravenWad = Join-Path $GameRoot 'exec\wad\pc_le\r_ui.wad'
 $outRoot = Join-Path $repo 'build\v0.10.4-nornir-mg-isolation\offline'
@@ -40,7 +40,7 @@ if (Test-Path -LiteralPath $outRoot) {
 }
 New-Item -ItemType Directory -Force -Path $outRoot | Out-Null
 
-Write-Host 'Cloning only MG_mapicondock_0 / MG_boatdock_0 under dedicated Nornir identities OFFLINE...'
+Write-Host 'Cloning standalone MG_mapicondock_0 / MG_boatdock_0 under dedicated Nornir identities OFFLINE...'
 & python $builder `
     --failed-candidate-wad $failedCandidate `
     --raven-wad $ravenWad `
@@ -50,6 +50,9 @@ if ($LASTEXITCODE -ne 0) { throw 'Offline Nornir model-group isolation builder f
 
 $proof = Get-Content -LiteralPath $report -Raw | ConvertFrom-Json
 if ($proof.result -ne 'OFFLINE_NORNIR_MG_ISOLATION_BUILT') { throw "Unexpected isolation report result: $($proof.result)" }
+if (-not $proof.proofs.stock_mg_payloads_are_standalone_records) { throw 'Stock MG donor payloads were not proven standalone.' }
+if (-not $proof.proofs.standalone_stock_mg_records_match_raven_baseline_byte_exactly) { throw 'Standalone stock MG donors differ from Raven baseline.' }
+if (-not $proof.proofs.standalone_resource_span_logic_used) { throw 'Standalone-safe resource-span logic was not used.' }
 if (-not $proof.proofs.shared_stock_model_group_isolation_gap_closed) { throw 'Shared stock model-group gap is not closed.' }
 if (-not $proof.proofs.nornir_map_model_uses_dedicated_mg_only) { throw 'Nornir map model is not isolated to its dedicated MG.' }
 if (-not $proof.proofs.nornir_hud_model_uses_dedicated_mg_only) { throw 'Nornir HUD model is not isolated to its dedicated MG.' }
@@ -67,8 +70,11 @@ if ($LASTEXITCODE -ne 0) { throw 'Frozen Raven production verifier failed after 
 Write-Host ''
 Write-Host 'NORNIR_MG_ISOLATION_OFFLINE_GATE_PASSED'
 Write-Host ("  isolated WAD SHA256: {0}" -f $proof.candidate_sha256)
+Write-Host ("  map donor shape: standalone payload, id={0}" -f $proof.standalone_stock_mg_donors.map.id)
+Write-Host ("  HUD donor shape: standalone payload, id={0}" -f $proof.standalone_stock_mg_donors.hud.id)
 Write-Host ("  map MG: {0} / {1}" -f $proof.dedicated_model_groups.map.new_name, $proof.dedicated_model_groups.map.new_id)
 Write-Host ("  HUD MG: {0} / {1}" -f $proof.dedicated_model_groups.hud.new_name, $proof.dedicated_model_groups.hud.new_id)
+Write-Host '  stock MG donors match Raven baseline byte-exactly: true'
 Write-Host '  Nornir map/HUD models use dedicated MGs only: true'
 Write-Host '  Raven map/HUD models still use stock MGs: true'
 Write-Host '  candidate reparsed/round-tripped exactly: true'
