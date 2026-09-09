@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "result": "RAVEN_SINGLE_ACTIVE_RUNTIME_WORKS_PROMPT_STALE_INWORLD_DOCK",
+  "captured_from_user_observation_utc": "2026-09-09T07:27:53Z",
+  "marker": "Completionist_V103_Veithurgard_Raven_01",
+  "runtime_observation": {
+    "crash": false,
+    "raven_compass_hud_art": "custom Raven",
+    "native_distance": "visible (5m in supplied screenshot)",
+    "native_routing_pathfinding": "working",
+    "raven_to_stock_replace": "working; stock marker becomes the sole tracked target",
+    "stock_to_raven_replace": "working; Raven becomes the sole tracked target",
+    "single_active_target_logic": "working",
+    "map_prompt_after_stock_replaces_raven": "stale Remove from Compass text",
+    "map_prompt_expected": "Replace in Compass while a stock target is active and Raven is not",
+    "pressing_stale_remove_prompt": "correctly replaces the stock target with Raven",
+    "in_world_marker_art": "DockPoint/boat dock"
+  },
+  "interpretation": {
+    "single_target_manager_logic": "proven working in both replacement directions",
+    "remaining_logic_bug": "Raven map prompt state is stale after an external stock replacement because the inner Raven bridge retains its asynchronous tracked prompt intent",
+    "remaining_visual_bug": "CompletionistRaven InWorld_tMPIcon_Name is still intentionally bound to DockPoint"
+  },
+  "next_gates": [
+    "Make the Raven prompt derive from live manager state after a stock-origin replacement without changing the proven replacement logic.",
+    "Inspect the read-only DockPoint/SIDE in-world resource trace before creating a dedicated Raven in-world marker resource."
+  ]
+}

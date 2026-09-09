@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Build an offline mapmenu.lua candidate that restores stock single-active compass semantics.
 
-The currently proven Raven bridge correctly replaces a stock compass marker when the
-Raven is selected, but the reverse direction is incomplete: selecting a stock marker
-can leave CompletionistRaven active as a second target. This patch wraps the already
-installed custom-class bridge and explicitly retires the Raven before delegating a
-non-Raven tracking action to the game's existing MapOn.ShowOnCompass implementation.
+The proven Raven bridge already replaces a stock compass marker when the Raven is
+selected. This wrapper fixes the reverse direction and also fixes the Raven map
+prompt after a stock-origin replacement. The replacement logic remains manager-owned;
+this layer only retires CompletionistRaven before delegating a stock action and, after
+that external replacement, derives Raven prompt text from live manager state instead
+of the inner bridge's stale asynchronous prompt intent.
 
 No game file is written by this builder.
 """
@@ -26,16 +27,24 @@ LUA = r'''-- BEGIN COMPLETIONIST V0.10.4 SINGLE ACTIVE COMPASS CONTROL
 -- hide the Raven first, then let the already-installed stock/custom bridge
 -- perform the requested stock action. A small Update watchdog retries the
 -- asynchronous HideMarker request until the custom class is gone.
+--
+-- The inner Raven bridge keeps a private asynchronous promptIntent. A stock
+-- marker can hide CompletionistRaven without clearing that private value, so
+-- the Raven card can incorrectly keep saying Remove from Compass. After an
+-- external stock replacement, this wrapper temporarily derives the Raven
+-- prompt from live manager state until the next Raven-origin action.
 do
   local prefix = "[CompletionistMap v0.10.4-single-active] "
   local ravenCandidate = "Completionist_V103_Veithurgard_Raven_01"
   local ravenClass = "CompletionistRaven"
   local previousShow = MapOn.ShowOnCompass
   local previousUpdate = MapOn.Update
+  local previousPrompt = MapOn.GetShowOnCompassPrompt
 
   local stockReplacePending = false
   local retryFrames = 0
   local retryBucket = -1
+  local forceLiveRavenPrompt = false
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
@@ -45,15 +54,22 @@ do
     return self ~= nil and self.completionistMapV100Selected == true
   end
 
-  local function ravenShown()
+  local function candidateIdString()
     local infoOK, info = pcall(function()
       return game.Map.GetMarkerInfo(ravenCandidate)
     end)
     if not infoOK or info == nil then
+      return nil
+    end
+    return tostring(info.Id)
+  end
+
+  local function ravenShown()
+    local candidateId = candidateIdString()
+    if candidateId == nil then
       return false, false, "candidate_lookup_failed"
     end
 
-    local candidateId = tostring(info.Id)
     local ok, ids = pcall(function()
       return game.Compass.FindMarkersByIconClass({ravenClass})
     end)
@@ -69,6 +85,28 @@ do
     return false, true, nil
   end
 
+  local function stockTargets()
+    local ravenId = candidateIdString()
+    local ok, ids = pcall(function()
+      return game.Compass.FindMarkersByIconClass(enabledShowOnCompassMarkerFlags)
+    end)
+    if not ok then
+      return {}, false, tostring(ids)
+    end
+
+    local out = {}
+    for _, id in ipairs(ids or {}) do
+      if ravenId == nil or tostring(id) ~= ravenId then
+        out[#out + 1] = id
+      end
+    end
+    return out, true, nil
+  end
+
+  local function actionText(lamsId)
+    return "[AdvanceButton] " .. util.GetLAMSMsg(lamsId)
+  end
+
   local function hideRaven(reason)
     local ok, err = pcall(function()
       game.Compass.HideMarker(ravenCandidate)
@@ -80,10 +118,43 @@ do
     return ok
   end
 
+  function MapOn:GetShowOnCompassPrompt(currMenu)
+    local show, text = previousPrompt(self, currMenu)
+    if not ravenSelected(self) or not show or not forceLiveRavenPrompt then
+      return show, text
+    end
+
+    local shown, ravenQueryOK, ravenQueryErr = ravenShown()
+    if not ravenQueryOK then
+      log("PROMPT_LIVE_QUERY",
+        "ravenQueryOK=false error=" .. tostring(ravenQueryErr) ..
+        " fallback=previous")
+      return show, text
+    end
+
+    if shown then
+      return true, actionText(lamsConsts.RemoveFromCompass)
+    end
+
+    local others, stockQueryOK, stockQueryErr = stockTargets()
+    if not stockQueryOK then
+      log("PROMPT_LIVE_QUERY",
+        "stockQueryOK=false error=" .. tostring(stockQueryErr) ..
+        " fallback=previous")
+      return show, text
+    end
+
+    if #others > 0 then
+      return true, actionText(lamsConsts.ReplaceInCompass)
+    end
+    return true, actionText(lamsConsts.AddToCompass)
+  end
+
   function MapOn:ShowOnCompass(currState)
-    -- The existing Raven bridge already owns Raven -> stock replacement and
-    -- Raven add/remove semantics. Do not interfere with Raven-origin actions.
+    -- A Raven-origin action returns prompt ownership to the proven inner bridge.
+    -- Its own promptIntent is correct for add/remove/replace actions it initiates.
     if ravenSelected(self) then
+      forceLiveRavenPrompt = false
       stockReplacePending = false
       retryFrames = 0
       retryBucket = -1
@@ -95,6 +166,7 @@ do
 
     if shown or trackedHint then
       stockReplacePending = true
+      forceLiveRavenPrompt = true
       retryFrames = 0
       retryBucket = -1
       log("STOCK_REPLACE_BEGIN",
@@ -124,7 +196,9 @@ do
           retryFrames = 0
           retryBucket = -1
           _G.CompletionistMapV103NativeRavenTracked = false
-          log("STOCK_REPLACE_SETTLED", "ravenActive=false")
+          forceLiveRavenPrompt = true
+          log("STOCK_REPLACE_SETTLED",
+            "ravenActive=false promptSource=live_manager")
         else
           retryFrames = retryFrames + 1
           local bucket = math.floor(retryFrames / 30)
@@ -139,8 +213,6 @@ do
           log("STOCK_REPLACE_VERIFY",
             "queryOK=false error=" .. tostring(queryErr) ..
             " frame=" .. tostring(retryFrames))
-          -- The global tracked hint was set by the proven Raven bridge, so a
-          -- failed class query must not silently permit a permanent duplicate.
           hideRaven("stock_replace_query_retry")
         end
       end
@@ -150,9 +222,10 @@ do
   end
 
   _G.CompletionistMapV104SingleActiveCompass = true
+  _G.CompletionistMapV104SingleActivePromptLiveSync = true
   log("API",
     "installed=true ravenClass=" .. ravenClass ..
-    " invariant=single_active_compass_target")
+    " invariant=single_active_compass_target prompt_live_sync=true")
 end
 -- END COMPLETIONIST V0.10.4 SINGLE ACTIVE COMPASS CONTROL
 '''
@@ -184,6 +257,7 @@ def main() -> None:
         "CompletionistRaven",
         "game.Compass.ShowMarker",
         "game.Compass.HideMarker",
+        "GetShowOnCompassPrompt",
     )
     missing = [needle for needle in required if needle not in text]
     if missing:
@@ -193,25 +267,29 @@ def main() -> None:
     candidate_text = text + separator + LUA
     candidate = candidate_text.encode("utf-8")
 
-    # Contract checks: this patch is append-only and does not rewrite the
-    # already-proven mapmenu baseline.
     if not candidate.startswith(source):
         raise AssertionError("candidate no longer preserves source bytes as prefix")
     if candidate_text.count(BEGIN) != 1 or candidate_text.count(END) != 1:
         raise AssertionError("single-active block markers are not unique")
-    if "return previousShow(self, currState)" not in LUA:
-        raise AssertionError("stock MapOn.ShowOnCompass delegation missing")
-    if "game.Compass.HideMarker(ravenCandidate)" not in LUA:
-        raise AssertionError("explicit Raven retirement missing")
-    if "FindMarkersByIconClass({ravenClass})" not in LUA:
-        raise AssertionError("custom-class manager verification missing")
+    required_patch_tokens = (
+        "return previousShow(self, currState)",
+        "game.Compass.HideMarker(ravenCandidate)",
+        "FindMarkersByIconClass({ravenClass})",
+        "local previousPrompt = MapOn.GetShowOnCompassPrompt",
+        "function MapOn:GetShowOnCompassPrompt(currMenu)",
+        "lamsConsts.ReplaceInCompass",
+        "forceLiveRavenPrompt = true",
+    )
+    missing_patch = [needle for needle in required_patch_tokens if needle not in LUA]
+    if missing_patch:
+        raise AssertionError(f"required v2 control token missing: {missing_patch}")
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes(candidate)
 
     report = {
-        "schema": 1,
+        "schema": 2,
         "result": "OFFLINE_RAVEN_SINGLE_ACTIVE_COMPASS_CONTROL_BUILT",
         "source_sha256": source_sha,
         "candidate_sha256": sha256(candidate),
@@ -223,6 +301,8 @@ def main() -> None:
             "raven_origin_actions_delegated_unchanged": True,
             "stock_origin_action_hides_raven_before_delegate": True,
             "async_hide_watchdog": True,
+            "stock_replacement_prompt_forces_live_manager_state": True,
+            "prompt_override_only_active_after_external_stock_replacement": True,
             "manager_query_class": "CompletionistRaven",
             "tracked_marker": "Completionist_V103_Veithurgard_Raven_01",
         },
@@ -231,13 +311,13 @@ def main() -> None:
             "raven_to_stock": "stock only",
             "raven_remove": "none",
             "maximum_active_user_target": 1,
+            "prompt_after_raven_replaced_by_stock": "Replace in Compass",
         },
         "game_files_written": False,
         "saves_progression_marker_state_written": False,
     }
     args.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
-    # Re-read source to prove the builder itself stayed read-only.
     if args.input.read_bytes() != source:
         raise AssertionError("source mapmenu.lua changed during offline build")
 
@@ -245,6 +325,8 @@ def main() -> None:
     print(f"  source SHA256:    {source_sha}")
     print(f"  candidate SHA256: {report['candidate_sha256']}")
     print("  append-only: true")
+    print("  single-active reverse replacement: true")
+    print("  stale Raven prompt live-sync fix: true")
     print("  game files written: false")
     print(f"  candidate: {args.output}")
     print(f"  report:    {args.report}")

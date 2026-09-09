@@ -141,12 +141,15 @@ if ((Get-Sha256 $BackupPath) -ne $ExpectedMapBefore) { throw 'mapmenu backup ver
 if ($LASTEXITCODE -ne 0) { throw 'Single-active compass candidate build failed.' }
 $proof = Get-Content -LiteralPath $OfflineReport -Raw | ConvertFrom-Json
 if ([string]$proof.result -ne 'OFFLINE_RAVEN_SINGLE_ACTIVE_COMPASS_CONTROL_BUILT' -or
+    $proof.schema -ne 2 -or
     $proof.changes.append_only -ne $true -or
     $proof.changes.source_prefix_byte_identical -ne $true -or
     $proof.changes.stock_origin_action_hides_raven_before_delegate -ne $true -or
     $proof.changes.async_hide_watchdog -ne $true -or
+    $proof.changes.stock_replacement_prompt_forces_live_manager_state -ne $true -or
+    $proof.changes.prompt_override_only_active_after_external_stock_replacement -ne $true -or
     $proof.game_files_written -ne $false) {
-    throw 'Offline single-active proof failed.'
+    throw 'Offline single-active/prompt-sync proof failed.'
 }
 $after = Get-Sha256 $Candidate
 if ($after -ne ([string]$proof.candidate_sha256).ToLowerInvariant()) {
@@ -155,7 +158,8 @@ if ($after -ne ([string]$proof.candidate_sha256).ToLowerInvariant()) {
 
 $m = [ordered]@{
     kind = 'completionist-v104-raven-single-active-compass-control'
-    purpose = 'Restore stock Replace in Compass semantics when a stock target replaces CompletionistRaven.'
+    schema = 2
+    purpose = 'Preserve stock single-target semantics and live-sync the Raven map prompt after stock-origin replacement.'
     map_before_sha256 = $ExpectedMapBefore
     map_after_sha256 = $after
     wad_r_perm_sha256 = $ExpectedPerm
@@ -192,12 +196,14 @@ Write-Host "  mapmenu.lua: $ExpectedMapBefore -> $after"
 Write-Host '  only mapmenu.lua written: true'
 Write-Host '  Raven HUD + GOPool registration preserved: true'
 Write-Host '  native mapcoords/compassgraph preserved: true'
+Write-Host '  stale Raven prompt after stock replacement: live-manager sync enabled'
 Write-Host '  saves/progression/marker state touched: false'
 Write-Host ''
 Write-Host 'Runtime test:'
 Write-Host '  1) stock marker -> Replace with Raven => Raven only'
 Write-Host '  2) Raven -> Replace with stock marker => stock only'
-Write-Host '  3) Raven -> Remove from Compass => none'
-Write-Host '  4) Raven HUD/distance/native routing must remain unchanged'
+Write-Host '  3) return to Raven after step 2 => text must say Replace in Compass'
+Write-Host '  4) Raven -> Remove from Compass => none'
+Write-Host '  5) Raven HUD/distance/native routing must remain unchanged'
 Write-Host ''
 Write-Host ("Rollback: powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"{0}`" -Mode Remove" -f $PSCommandPath)
