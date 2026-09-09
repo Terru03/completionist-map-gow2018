@@ -190,7 +190,7 @@ def normalize_to_raven(logical, source_raw: bytes, candidate_records: list[dict]
     return logical.serialize_wad(stripped)
 
 
-def build_candidate3_wad(source_raw: bytes, art_report: Path) -> tuple[bytes, dict]:
+def _legacy_build_candidate3_wad_reference(source_raw: bytes, art_report: Path) -> tuple[bytes, dict]:
     v5 = load_module("completionist_nornir_candidate3_v5",
                      HERE / "build-nornir-map-hud-offline-v5.py")
     base = v5.base
@@ -324,6 +324,95 @@ def build_candidate3_wad(source_raw: bytes, art_report: Path) -> tuple[bytes, di
     }
 
 
+def build_candidate3_wad(source_raw: bytes, art_report: Path) -> tuple[bytes, dict]:
+    """Build Candidate 3 through shared collectible framework."""
+    framework = load_module("completionist_collectible_framework",
+                            HERE / "collectible_framework.py")
+    registry = framework.load_registry()
+    definition = framework.definition_for(registry, "nornir_chest")
+    candidate3, generic = framework.build_collectible_wad(
+        source_raw, registry, "nornir_chest", art_report)
+    check(generic["candidate_sha256"] == "90391a2841d3a9ad889b95d5c17fc0ee09de803a57675b6d237a98051b08c660",
+          "generic framework changed Candidate 3 WAD")
+    check(generic["pre_material_rule_sha256"] == CANDIDATE1_WAD,
+          "generic framework no longer reconstructs Candidate 1 control")
+    check(len(generic["material_rule_diff_offsets"]) == 8,
+          "Candidate 3 material correction is not exactly one qword")
+
+    resources = definition["resources"]
+    target = {
+        "material": resources["material"]["name"],
+        "map_model": resources["map_model"]["name"],
+        "hud_model": resources["hud_model"]["name"],
+    }
+    legacy = generic["legacy_compatible_report"]
+    return candidate3, {
+        "source_sha256": generic["source_sha256"],
+        "candidate1_reconstructed_sha256": generic["pre_material_rule_sha256"],
+        "candidate2_retired_sha256": CANDIDATE2_WAD,
+        "candidate3_sha256": generic["candidate_sha256"],
+        "bytes": generic["bytes"],
+        "candidate3_reparse_roundtrip_exact": generic["parse_serialize_roundtrip_exact"],
+        "candidate3_normalizes_exactly_to_frozen_raven": generic["normalized_to_frozen_raven_exact"],
+        "candidate1_to_candidate3_diff": {
+            "raw_byte_difference_count": len(generic["material_rule_diff_offsets"]),
+            "one_contiguous_qword": True,
+            "logical_owner": target["material"],
+            "logical_field": "material payload +0x20",
+            "before": generic["material"]["qword_0x20_before_generic_rule"],
+            "after": generic["material"]["qword_0x20"],
+            "reason": "runtime-proven Raven preserved the Dock donor +0x20 field",
+        },
+        "material": {
+            "name": target["material"],
+            "id": resources["material"]["id"],
+            "fresh_qword_0x10": generic["material"]["qword_0x10"],
+            "preserved_raven_donor_qword_0x20": generic["material"]["qword_0x20"],
+            "bound_by_map_model": {"name": target["material"], "id": resources["material"]["id"]},
+            "bound_by_hud_model": {"name": target["material"], "id": resources["material"]["id"]},
+        },
+        "model_groups": {
+            "dedicated_nornir_mg_records": 0,
+            "map_shared_dependency": {
+                "name": definition["model_group_policy"]["map"]["name"],
+                "id": definition["model_group_policy"]["map"]["id"],
+            },
+            "hud_shared_dependency": {
+                "name": definition["model_group_policy"]["hud"]["name"],
+                "id": definition["model_group_policy"]["hud"]["id"],
+            },
+            "opaque_mg_payload_bytes_changed": generic["model_groups"]["opaque_payload_bytes_changed"],
+        },
+        "preservation": {
+            "named_resources": generic["preserved_named_records"],
+            "all_frozen_raven_records_recovered_by_exact_normalization": True,
+            "stock_dock_and_boatdock_definitions_mutated": False,
+        },
+        "reverse_reference_audit": {
+            "nornir_material_reference_count": 2,
+            "nornir_material_owners": [
+                {"name": target["map_model"], "id": resources["map_model"]["id"]},
+                {"name": target["hud_model"], "id": resources["hud_model"]["id"]},
+            ],
+            "nornir_texture_owners": generic["texture_owners"],
+            "stock_or_raven_owners_of_nornir_material": 0,
+            "stock_or_raven_owners_of_nornir_textures": 0,
+            "original_stock_dock_boatdock_owner_records_byte_identical": True,
+            "shared_mg_new_owners": [target["map_model"], target["hud_model"]],
+            "shared_mg_definitions_reowned_or_mutated": False,
+        },
+        "accounting": generic["accounting"],
+        "texture_record_classification": legacy.get("texture_record_classification", {}),
+        "generic_framework": {
+            "registry": str(framework.REGISTRY_PATH),
+            "collectible_key": "nornir_chest",
+            "same_resource_builder_as_synthetic_probe": True,
+            "reverse_reference_ownership_valid": generic["reverse_reference_ownership_valid"],
+            "unexpected_payload_changes": generic["unexpected_payload_changes"],
+        },
+    }
+
+
 def live_hashes(game: Path) -> dict[str, str]:
     return {relative: file_sha(game / relative) for relative in RAVEN_HASHES}
 
@@ -405,13 +494,20 @@ def main() -> None:
     source_wad = (game / "exec/wad/pc_le/r_ui.wad").read_bytes()
     candidate_wad, wad_report = build_candidate3_wad(source_wad, art_report)
 
-    v5 = load_module("completionist_nornir_candidate3_dcb",
-                     HERE / "build-nornir-map-hud-offline-v5.py")
+    framework = load_module("completionist_collectible_framework_main",
+                            HERE / "collectible_framework.py")
+    registry = framework.load_registry()
     source_ui_dcb = (game / "exec/dc/pc_le/wad_r_ui.dcb").read_bytes()
-    candidate_ui_dcb, dcb_report = v5.base.build_dcb(source_ui_dcb)
+    candidate_ui_dcb, dcb_report = framework.build_collectible_gopool(
+        source_ui_dcb, registry, "nornir_chest")
     check(dcb_report["candidate_rows"] == 259, "Candidate 3 GOPool count changed")
     check(dcb_report["raven_map_row_preserved"] and dcb_report["raven_hud_row_preserved"],
           "Candidate 3 GOPool does not preserve Raven rows")
+    source_perm_dcb = (game / "exec/dc/pc_le/wad_r_perm.dcb").read_bytes()
+    candidate_perm_dcb, perm_report = framework.build_collectible_compass_inworld(
+        source_perm_dcb, registry, "nornir_chest")
+    check(candidate_perm_dcb == (lifecycle_root / "exec/dc/pc_le/wad_r_perm.dcb").read_bytes(),
+          "generic compass/in-world chain differs from pinned Candidate 3 lifecycle artifact")
 
     output_root = output / "candidate/game-root"
     manifest = assemble_files(output_root, candidate_wad, candidate_ui_dcb, lifecycle_root)
@@ -546,7 +642,9 @@ def main() -> None:
             "files": manifest,
             "wad": wad_report,
             "gopool": dcb_report,
+            "compass_inworld": perm_report,
             "lifecycle_result": lifecycle_report["result"],
+            "framework_registry": str(framework.REGISTRY_PATH),
             "runtime_install_allowed": False,
         },
         "proofs": {

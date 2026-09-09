@@ -178,8 +178,8 @@
       "map_filter_category": "TEST_ONLY",
       "identities": {
         "map_icon": {"game_object": "goMapIconCompletionistFrameworkProbe", "folded_hash": null},
-        "compass": {"class_name": null, "class_uid": null, "game_object": "goCompletionistFrameworkProbeHUD", "folded_hash": null},
-        "in_world": {"name": null, "uid": null}
+        "compass": {"class_name": "CompletionistFrameworkProbe", "class_uid": null, "game_object": "goCompletionistFrameworkProbeHUD", "folded_hash": null},
+        "in_world": {"name": "COMPASS_INWORLD_COMPLETIONIST_FRAMEWORK_PROBE", "uid": null}
       },
       "resources": {
         "map_root": {"name": "gomapiconcompletionistframeworkprobe", "id": null},
@@ -204,7 +204,7 @@
       "lifecycle": {"adapter": "synthetic_test", "completion_predicate": null, "hooks": null},
       "native_discovery": {"marker_name": null, "marker_uid": null, "status": "not_applicable_test_only"},
       "build": {"enabled": true, "mode": "synthetic_test", "art_source": "copy_donor_resident_bytes", "id_policy": "deterministic_test_namespace"},
-      "unresolved": ["Test-only type has no native marker, compass class, in-world carrier, or gameplay lifecycle hook."]
+      "unresolved": ["Test-only compass class and in-world names/UIDs are deterministic proof identities, not discovered game identities; no native marker or gameplay lifecycle hook exists."]
     }
   ]
 }
