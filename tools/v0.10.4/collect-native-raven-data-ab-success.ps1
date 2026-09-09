@@ -39,18 +39,55 @@ if ($installed.Count -ne 1) {
 }
 $manifest = $installed[0]
 
-$before = @(Get-ChildItem -LiteralPath (Join-Path $repo 'archive\field-logs') -Filter 'completionist-v104-native-raven-data-ab-*.json' -File -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)
+$archiveRelPrefix = 'archive/field-logs/completionist-v104-native-raven-data-ab-'
+$untracked = @(
+    & git -C $repo ls-files --others --exclude-standard -- 'archive/field-logs/completionist-v104-native-raven-data-ab-*.json' |
+        ForEach-Object { $_.Trim() } |
+        Where-Object { $_ }
+)
+if ($LASTEXITCODE -ne 0) { throw 'git ls-files failed while checking recoverable A/B reports.' }
 
-& $python.Source $ab --mode collect --game-root $GameRoot --manifest $manifest --hud visible --world unknown
-if ($LASTEXITCODE -ne 0) { throw 'Native Raven A/B evidence collection failed.' }
+$report = $null
+if ($untracked.Count -eq 1) {
+    $candidateRel = $untracked[0].Replace('/', '\')
+    $candidate = Join-Path $repo $candidateRel
+    $evidence = Get-Content -LiteralPath $candidate -Raw | ConvertFrom-Json
+    if ([string]$evidence.result -ne 'NATIVE_RAVEN_DATA_AB_CAPTURED_NOT_VISUAL_PROOF') {
+        throw "Existing untracked A/B report has unexpected result: $candidate"
+    }
+    if ([string]$evidence.transaction.state -ne 'installed') {
+        throw "Existing untracked A/B report is not from an installed transaction: $candidate"
+    }
+    $report = $candidate
+    Write-Host "Reusing already-collected untracked A/B evidence: $report"
+} elseif ($untracked.Count -gt 1) {
+    throw ("Multiple untracked A/B evidence reports exist; refusing ambiguous recovery:`n" + ($untracked -join "`n"))
+} else {
+    $before = @(Get-ChildItem -LiteralPath (Join-Path $repo 'archive\field-logs') -Filter 'completionist-v104-native-raven-data-ab-*.json' -File -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)
 
-$after = @(Get-ChildItem -LiteralPath (Join-Path $repo 'archive\field-logs') -Filter 'completionist-v104-native-raven-data-ab-*.json' -File | Select-Object -ExpandProperty FullName)
-$newFiles = @($after | Where-Object { $_ -notin $before })
-if ($newFiles.Count -ne 1) {
-    throw "Expected exactly one new A/B evidence report, found $($newFiles.Count)."
+    & $python.Source $ab --mode collect --game-root $GameRoot --manifest $manifest --hud visible --world unknown
+    if ($LASTEXITCODE -ne 0) { throw 'Native Raven A/B evidence collection failed.' }
+
+    $after = @(Get-ChildItem -LiteralPath (Join-Path $repo 'archive\field-logs') -Filter 'completionist-v104-native-raven-data-ab-*.json' -File | Select-Object -ExpandProperty FullName)
+    $newFiles = @($after | Where-Object { $_ -notin $before })
+    if ($newFiles.Count -ne 1) {
+        throw "Expected exactly one new A/B evidence report, found $($newFiles.Count)."
+    }
+    $report = $newFiles[0]
 }
-$report = $newFiles[0]
-$rel = [IO.Path]::GetRelativePath($repo, $report).Replace('\','/')
+
+# Windows PowerShell 5.1 runs on .NET Framework and does not expose
+# System.IO.Path.GetRelativePath(). Compute the repo-relative path directly.
+$repoFull = [IO.Path]::GetFullPath($repo).TrimEnd('\')
+$reportFull = [IO.Path]::GetFullPath($report)
+$prefix = $repoFull + '\'
+if (-not $reportFull.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) {
+    throw "A/B evidence report escaped the repository: $reportFull"
+}
+$rel = $reportFull.Substring($prefix.Length).Replace('\','/')
+if (-not $rel.StartsWith($archiveRelPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+    throw "Unexpected A/B report path: $rel"
+}
 
 Push-Location $repo
 try {
