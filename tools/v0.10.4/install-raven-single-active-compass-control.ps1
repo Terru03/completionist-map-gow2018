@@ -36,7 +36,7 @@ $NativeAbRoot = Join-Path $RepoRoot 'build\v0.10.4\native-raven-no-render\ab-tra
 
 function Get-Sha256([string]$Path) {
     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw "Missing file: $Path" }
-    return ((Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash).ToLowerInvariant()
+    return ((Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant())
 }
 
 function Assert-GameClosed {
@@ -141,15 +141,17 @@ if ((Get-Sha256 $BackupPath) -ne $ExpectedMapBefore) { throw 'mapmenu backup ver
 if ($LASTEXITCODE -ne 0) { throw 'Single-active compass candidate build failed.' }
 $proof = Get-Content -LiteralPath $OfflineReport -Raw | ConvertFrom-Json
 if ([string]$proof.result -ne 'OFFLINE_RAVEN_SINGLE_ACTIVE_COMPASS_CONTROL_BUILT' -or
-    $proof.schema -ne 2 -or
+    $proof.schema -ne 3 -or
     $proof.changes.append_only -ne $true -or
     $proof.changes.source_prefix_byte_identical -ne $true -or
+    $proof.changes.raven_origin_actions_use_custom_class_manager -ne $true -or
+    $proof.changes.raven_remove_is_direct_HideMarker -ne $true -or
+    $proof.changes.raven_add_is_direct_ShowMarker_custom_class -ne $true -or
     $proof.changes.stock_origin_action_hides_raven_before_delegate -ne $true -or
     $proof.changes.async_hide_watchdog -ne $true -or
-    $proof.changes.stock_replacement_prompt_forces_live_manager_state -ne $true -or
-    $proof.changes.prompt_override_only_active_after_external_stock_replacement -ne $true -or
+    $proof.changes.prompt_always_live_for_raven -ne $true -or
     $proof.game_files_written -ne $false) {
-    throw 'Offline single-active/prompt-sync proof failed.'
+    throw 'Offline single-active/custom-class-manager proof failed.'
 }
 $after = Get-Sha256 $Candidate
 if ($after -ne ([string]$proof.candidate_sha256).ToLowerInvariant()) {
@@ -158,8 +160,8 @@ if ($after -ne ([string]$proof.candidate_sha256).ToLowerInvariant()) {
 
 $m = [ordered]@{
     kind = 'completionist-v104-raven-single-active-compass-control'
-    schema = 2
-    purpose = 'Preserve stock single-target semantics and live-sync the Raven map prompt after stock-origin replacement.'
+    schema = 3
+    purpose = 'Use the live CompletionistRaven manager query for Raven add/remove and preserve stock single-target replacement semantics.'
     map_before_sha256 = $ExpectedMapBefore
     map_after_sha256 = $after
     wad_r_perm_sha256 = $ExpectedPerm
@@ -194,16 +196,18 @@ try {
 Write-Host 'RAVEN_SINGLE_ACTIVE_COMPASS_CONTROL_INSTALLED'
 Write-Host "  mapmenu.lua: $ExpectedMapBefore -> $after"
 Write-Host '  only mapmenu.lua written: true'
+Write-Host '  Raven add/remove now uses live CompletionistRaven manager state: true'
+Write-Host '  stock <-> Raven single-target replacement preserved: true'
+Write-Host '  Raven prompt derives from live manager state: true'
 Write-Host '  Raven HUD + GOPool registration preserved: true'
 Write-Host '  native mapcoords/compassgraph preserved: true'
-Write-Host '  stale Raven prompt after stock replacement: live-manager sync enabled'
 Write-Host '  saves/progression/marker state touched: false'
 Write-Host ''
 Write-Host 'Runtime test:'
-Write-Host '  1) stock marker -> Replace with Raven => Raven only'
-Write-Host '  2) Raven -> Replace with stock marker => stock only'
-Write-Host '  3) return to Raven after step 2 => text must say Replace in Compass'
-Write-Host '  4) Raven -> Remove from Compass => none'
-Write-Host '  5) Raven HUD/distance/native routing must remain unchanged'
+Write-Host '  1) Raven inactive, no stock target => Add to Compass; press => Raven only'
+Write-Host '  2) Raven active => text says Remove from Compass; press => nothing tracked'
+Write-Host '  3) stock marker active => Raven says Replace in Compass; press => Raven only'
+Write-Host '  4) Raven active -> stock marker => stock only'
+Write-Host '  5) Raven HUD/distance/native routing remain unchanged'
 Write-Host ''
 Write-Host ("Rollback: powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"{0}`" -Mode Remove" -f $PSCommandPath)
