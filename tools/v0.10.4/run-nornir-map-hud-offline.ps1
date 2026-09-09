@@ -16,7 +16,7 @@ if (-not (Test-Path -LiteralPath $GameRoot -PathType Container)) { throw "God of
 $python = Get-Command python -ErrorAction SilentlyContinue
 if ($null -eq $python) { throw 'Python 3 is required.' }
 $verify = Join-Path $PSScriptRoot 'verify-raven-production-state.ps1'
-$builder = Join-Path $PSScriptRoot 'build-nornir-map-hud-offline-v3.py'
+$builder = Join-Path $PSScriptRoot 'build-nornir-map-hud-offline-v4.py'
 foreach ($required in @($verify, $builder)) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) { throw "Missing required tool: $required" }
 }
@@ -107,6 +107,12 @@ if ($proof.candidate.gopool.source_rows -ne 257 -or
 if (-not $proof.candidate.wad.all_wad_header_names_fit_55_bytes) {
     throw 'Nornir WAD-header alias proof did not pass.'
 }
+if (-not $proof.candidate.wad.accounting.hud_accounting_grammar_verified -or
+    $proof.candidate.wad.accounting.fallback_type_key_accounted_payloads -ne 3 -or
+    $proof.candidate.wad.accounting.unaccounted_payload_count -ne 1 -or
+    $proof.candidate.wad.accounting.unaccounted_payload_names[0] -ne 'MDL_completionistnornirchesthud') {
+    throw 'Nornir WAD accounting did not match the runtime-proven Raven HUD grammar.'
+}
 if ($proof.safety.game_files_written -or $proof.safety.runtime_install_performed -or
     $proof.safety.save_state_written -or $proof.safety.progression_state_written -or
     $proof.safety.marker_state_written -or $proof.safety.raven_production_files_changed) {
@@ -139,6 +145,8 @@ Write-Host "  $($proof.candidate.gopool.source_sha256)"
 Write-Host '  ->'
 Write-Host "  $($proof.candidate.gopool.candidate_sha256)"
 Write-Host "WAD payload delta: $($proof.candidate.wad.accounting.payload_delta)"
+Write-Host "WAD accounted delta: $($proof.candidate.wad.accounting.accounted_delta)"
+Write-Host 'Raven HUD accounting grammar reused: 3 type-key payloads + 1 unaccounted model'
 Write-Host 'GOPool rows: 257 -> 259'
 Write-Host 'map: goMapIconCompletionistNornirChest index 257 capacity 1'
 Write-Host 'HUD: goCompletionistNornirChestHUD index 258 capacity 2'
