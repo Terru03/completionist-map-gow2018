@@ -138,6 +138,14 @@ def unique_texture(records: list[dict], name: str, *, gpu: bool) -> tuple[int, d
     return hits[0]
 
 
+def texture_removal_rows(records: list[dict], name: str, group_removal: set[int]) -> set[int]:
+    """Find old two-row texture shape. New wrappers may tighten this hook."""
+    del group_removal
+    rows = {i for i, row in enumerate(records) if row["name"].lower() == name.lower()}
+    check(len(rows) == 2, f"expected exactly two Nornir texture records for {name!r}")
+    return rows
+
+
 def group_bounds(logical, records: list[dict], payload_index: int) -> tuple[int, int]:
     payload = records[payload_index]
     start = payload["parent"]
@@ -437,9 +445,7 @@ def build_wad(source_raw: bytes, art_report: Path) -> tuple[bytes, dict]:
         start, end = group_bounds(logical, reparsed, idx)
         removal.update(range(start, end + 1))
     for label in ("diffuse", "emissive"):
-        tex_rows = [i for i, row in enumerate(reparsed) if row["name"].lower() == NORNIR[label].lower()]
-        check(len(tex_rows) == 2, f"{label}: expected exactly two Nornir texture records")
-        removal.update(tex_rows)
+        removal.update(texture_removal_rows(reparsed, NORNIR[label], removal))
     new_parent = [i for i, row in enumerate(reparsed) if row["kind"] == 1 and not row["data"]
                   and row["name"].lower() == NORNIR["map_root"].lower() and row["id"] == ids["map_root"]]
     check(len(new_parent) == 1, "Nornir map parent link did not reparse uniquely")

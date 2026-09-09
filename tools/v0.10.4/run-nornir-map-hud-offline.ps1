@@ -16,7 +16,7 @@ if (-not (Test-Path -LiteralPath $GameRoot -PathType Container)) { throw "God of
 $python = Get-Command python -ErrorAction SilentlyContinue
 if ($null -eq $python) { throw 'Python 3 is required.' }
 $verify = Join-Path $PSScriptRoot 'verify-raven-production-state.ps1'
-$builder = Join-Path $PSScriptRoot 'build-nornir-map-hud-offline-v4.py'
+$builder = Join-Path $PSScriptRoot 'build-nornir-map-hud-offline-v5.py'
 foreach ($required in @($verify, $builder)) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) { throw "Missing required tool: $required" }
 }
@@ -107,6 +107,22 @@ if ($proof.candidate.gopool.source_rows -ne 257 -or
 if (-not $proof.candidate.wad.all_wad_header_names_fit_55_bytes) {
     throw 'Nornir WAD-header alias proof did not pass.'
 }
+if (-not $proof.candidate.wad.strict_texture_reversibility_verified) {
+    throw 'Strict Nornir texture reversibility proof did not pass.'
+}
+foreach ($label in @('diffuse', 'emissive')) {
+    $texture = $proof.candidate.wad.texture_record_classification.$label
+    if ($texture.same_name_record_count -ne 3 -or
+        $texture.gpu.classification -ne 'standalone_gpu_texture' -or
+        $texture.definition.classification -ne 'standalone_texture_definition' -or
+        $texture.additional_record_count -ne 1 -or
+        $texture.additional_records[0].classification -ne 'zero_data_dependency_link' -or
+        -not $texture.additional_records[0].in_scheduled_nornir_group -or
+        -not $texture.standalone_records_removed_explicitly -or
+        -not $texture.all_additional_records_in_scheduled_nornir_groups) {
+        throw "Nornir $label same-name texture records do not match the strict removal proof."
+    }
+}
 if (-not $proof.candidate.wad.accounting.hud_accounting_grammar_verified -or
     $proof.candidate.wad.accounting.fallback_type_key_accounted_payloads -ne 3 -or
     $proof.candidate.wad.accounting.unaccounted_payload_count -ne 1 -or
@@ -152,6 +168,8 @@ Write-Host 'map: goMapIconCompletionistNornirChest index 257 capacity 1'
 Write-Host 'HUD: goCompletionistNornirChestHUD index 258 capacity 2'
 Write-Host 'resident Nornir art injected exactly: true'
 Write-Host 'WAD texture header aliases fit fixed 55-byte name limit: true'
+Write-Host 'Nornir texture rows: one GPU + one definition + one in-group dependency per texture'
+Write-Host 'unexpected same-name texture refs outside Nornir groups: 0'
 Write-Host 'candidate WAD reparsed and normalized to Raven production: true'
 Write-Host 'candidate GOPool normalized to Raven production: true'
 Write-Host 'Raven production files changed: false'
