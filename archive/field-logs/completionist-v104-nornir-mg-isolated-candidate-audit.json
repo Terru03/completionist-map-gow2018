@@ -1,0 +1,149 @@
+{
+  "schema": 1,
+  "result": "NORNIR_MG_ISOLATED_CANDIDATE_AUDIT_READ_ONLY",
+  "sha256": {
+    "frozen_raven": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
+    "failed_candidate": "340e0ceccd8d399e39612355b4b05e387c48809a654e765530346b029ba2a16c",
+    "isolated_candidate": "96772dd9e36e1d3050ad936dbb9d8d8dfadb39ed2d7b4f74e400c2844877acef"
+  },
+  "model_groups": {
+    "map": {
+      "stock_record_index": 32432,
+      "dedicated_record_index": 32433,
+      "stock_name": "MG_mapicondock_0",
+      "stock_id": "44b11676af9c4e0ff860108fd46b0b32",
+      "dedicated_name": "MG_completionistnornirchest_map",
+      "dedicated_id": "5744bb47f2e8c80f74e30dbdf4a53b3a",
+      "payload_bytes": 1108,
+      "all_named_rows": [
+        {
+          "index": 32433,
+          "kind": 1,
+          "flags": 152,
+          "bytes": 1108,
+          "id": "5744bb47f2e8c80f74e30dbdf4a53b3a",
+          "payload_index": 13918,
+          "parent": null
+        },
+        {
+          "index": 32456,
+          "kind": 1,
+          "flags": 0,
+          "bytes": 0,
+          "id": "5744bb47f2e8c80f74e30dbdf4a53b3a",
+          "payload_index": null,
+          "parent": 32450
+        }
+      ],
+      "payload_byte_identical_to_donor": true
+    },
+    "hud": {
+      "stock_record_index": 49179,
+      "dedicated_record_index": 49180,
+      "stock_name": "MG_boatdock_0",
+      "stock_id": "c3f6b4c5a8270df607ea3e6e7f891292",
+      "dedicated_name": "MG_completionistnornirchest_hud",
+      "dedicated_id": "4e70c65d5c2fa007585254e7c2a3e333",
+      "payload_bytes": 388,
+      "all_named_rows": [
+        {
+          "index": 49180,
+          "kind": 1,
+          "flags": 152,
+          "bytes": 388,
+          "id": "4e70c65d5c2fa007585254e7c2a3e333",
+          "payload_index": 18497,
+          "parent": null
+        },
+        {
+          "index": 49194,
+          "kind": 1,
+          "flags": 0,
+          "bytes": 0,
+          "id": "4e70c65d5c2fa007585254e7c2a3e333",
+          "payload_index": null,
+          "parent": 49191
+        }
+      ],
+      "payload_byte_identical_to_donor": true
+    }
+  },
+  "model_dependencies": {
+    "map": {
+      "nornir_model": "MDL_completionistnornirchest",
+      "raven_model": "MDL_completionistraven",
+      "stock_mg": {
+        "name": "MG_mapicondock_0",
+        "id": "44b11676af9c4e0ff860108fd46b0b32"
+      },
+      "dedicated_mg": {
+        "name": "MG_completionistnornirchest_map",
+        "id": "5744bb47f2e8c80f74e30dbdf4a53b3a"
+      },
+      "nornir_dedicated_ref_index": 32456,
+      "nornir_stock_ref_count": 0,
+      "raven_stock_ref_index": 32448,
+      "raven_dedicated_ref_count": 0,
+      "dedicated_reverse_ref_count": 1
+    },
+    "hud": {
+      "nornir_model": "MDL_completionistnornirchesthud",
+      "raven_model": "MDL_completionistravenhud",
+      "stock_mg": {
+        "name": "MG_boatdock_0",
+        "id": "c3f6b4c5a8270df607ea3e6e7f891292"
+      },
+      "dedicated_mg": {
+        "name": "MG_completionistnornirchest_hud",
+        "id": "4e70c65d5c2fa007585254e7c2a3e333"
+      },
+      "nornir_dedicated_ref_index": 49194,
+      "nornir_stock_ref_count": 0,
+      "raven_stock_ref_index": 49189,
+      "raven_dedicated_ref_count": 0,
+      "dedicated_reverse_ref_count": 1
+    }
+  },
+  "raven_model_groups_byte_identical_to_failed_candidate": {
+    "map": true,
+    "hud": true
+  },
+  "nornir_material_texture_boundary": {
+    "material_id": "e6e7f5294aef261b3899f785bfc07a13",
+    "material_reference_count": 2,
+    "material_refs_only_from_nornir_models": true,
+    "textures": {
+      "diffuse": {
+        "name": "TX_completionist_nornir_chest_diff_0A43AEB29D6F80DA",
+        "definition_id": "5458455400455255b2ae430ada806f9d",
+        "reference_index": 31827
+      },
+      "emissive": {
+        "name": "TX_completionist_nornir_chest_emis_58012A499511A0BB",
+        "definition_id": "5458455400455255492a0158bba01195",
+        "reference_index": 31830
+      }
+    },
+    "texture_refs_only_from_nornir_material": true
+  },
+  "proofs": {
+    "isolated_candidate_reparse_roundtrip_exact": true,
+    "original_stock_mg_payloads_preserved": true,
+    "dedicated_mg_payloads_match_stock_donors": true,
+    "nornir_models_use_dedicated_mg_only": true,
+    "raven_models_use_stock_mg_only": true,
+    "dedicated_mg_reverse_refs_exactly_intended_nornir_models": true,
+    "raven_model_groups_unchanged": true,
+    "nornir_material_refs_do_not_leak": true,
+    "nornir_texture_refs_do_not_leak": true,
+    "shared_stock_model_group_isolation_gap_closed": true,
+    "safe_to_assemble_runtime_candidate_2": true
+  },
+  "safety": {
+    "game_files_written": false,
+    "runtime_install_performed": false,
+    "save_state_written": false,
+    "progression_state_written": false,
+    "marker_state_written": false
+  }
+}
