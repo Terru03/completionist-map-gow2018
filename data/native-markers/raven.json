@@ -1,0 +1,65 @@
+{
+  "$schema": "./schema.json",
+  "schema_version": 1,
+  "family": "ravens",
+  "display_name": "Odin's Ravens",
+  "compass_class": {
+    "name": "CompletionistRaven",
+    "uid": "5DC46967D3095F7E",
+    "type_id": "0x11E"
+  },
+  "map_visual": {
+    "name": "goMapIconCompletionistRaven",
+    "hash": "584F31DC8BD6E738",
+    "gopool_capacity": 1
+  },
+  "hud_visual": {
+    "name": "goCompletionistRavenHUD",
+    "hash": "45E5C7943749F81C",
+    "gopool_capacity": 2,
+    "simultaneous_instance_capacity": 2
+  },
+  "inworld_carrier": {
+    "name": "COMPASS_INWORLD_COMPLETIONIST_RAVEN",
+    "uid": "21DC5A7D4AD17628",
+    "type_id": "0x129",
+    "visual_hash": "45E5C7943749F81C",
+    "clone_donor": "COMPASS_INWORLD_DOCK"
+  },
+  "resource_chain": {
+    "root_id": "f0029a68d9705e95a981aab8bff0c5b8",
+    "prototype_id": "b2a833d6144789e8099acf85e832d652",
+    "model_id": "4a7911dc2db72cecaf6c187a66bfd11f",
+    "material_name": "MAT_AE4AD85BB993F040"
+  },
+  "authored_markers": [
+    {
+      "name": "Completionist_V103_Veithurgard_Raven_01",
+      "id": "E15E6BC82AE2773E",
+      "realm": "7CE593BC21393690",
+      "region": "A1845BEF17F0E7BB",
+      "wad": "WAD_Xpl200_Funeral",
+      "position": [-64.875, 12.984375, 787.5],
+      "graph_neighbor": "BABC033C454755A0"
+    }
+  ],
+  "routing": {
+    "native": true,
+    "mapcoords_sha256": "945774dbc965f45ad78b8408bb1d2b10a527c6390e4e7c1190e8f2d7538df3cb",
+    "compassgraph_sha256": "d0ed78ba4b91813c74dc6088a8521d332ea991e760b1c2600d6eeefc5fe60e68"
+  },
+  "lifecycle": {
+    "completion_source": "Raven gameplay object/restored killed state",
+    "completed_behavior": "suppress map marker and remove active compass target"
+  },
+  "runtime_invariants": {
+    "single_active_target": true,
+    "stock_replace_semantics": true,
+    "remove_semantics": true,
+    "native_distance": true,
+    "native_pathfinding": true,
+    "custom_map_art": true,
+    "custom_hud_art": true,
+    "custom_inworld_art": true
+  }
+}

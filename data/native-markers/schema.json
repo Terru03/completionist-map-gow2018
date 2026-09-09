@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://completionist-map.local/schemas/native-marker.schema.json",
+  "title": "Completionist Map native marker specification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "family",
+    "compass_class",
+    "map_visual",
+    "hud_visual",
+    "inworld_carrier",
+    "routing",
+    "runtime_invariants"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "family": { "type": "string", "minLength": 1 },
+    "display_name": { "type": "string", "minLength": 1 },
+    "compass_class": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "uid", "type_id"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "uid": { "$ref": "#/$defs/hex64" },
+        "type_id": { "type": "string", "pattern": "^0x[0-9A-Fa-f]+$" }
+      }
+    },
+    "map_visual": { "$ref": "#/$defs/visual" },
+    "hud_visual": {
+      "allOf": [
+        { "$ref": "#/$defs/visual" },
+        {
+          "type": "object",
+          "required": ["simultaneous_instance_capacity"],
+          "properties": {
+            "simultaneous_instance_capacity": {
+              "type": "integer",
+              "minimum": 2,
+              "description": "Must support compass HUD plus floating in-world instance simultaneously."
+            }
+          }
+        }
+      ]
+    },
+    "inworld_carrier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "uid", "type_id", "visual_hash"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "uid": { "$ref": "#/$defs/hex64" },
+        "type_id": { "const": "0x129" },
+        "visual_hash": { "$ref": "#/$defs/hex64" },
+        "clone_donor": { "type": "string" }
+      }
+    },
+    "resource_chain": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "root_id": { "$ref": "#/$defs/hex128" },
+        "prototype_id": { "$ref": "#/$defs/hex128" },
+        "model_id": { "$ref": "#/$defs/hex128" },
+        "material_name": { "type": "string" }
+      }
+    },
+    "authored_markers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "id", "realm", "region", "wad", "position"],
+        "properties": {
+          "name": { "type": "string" },
+          "id": { "$ref": "#/$defs/hex64" },
+          "realm": { "$ref": "#/$defs/hex64" },
+          "region": { "$ref": "#/$defs/hex64" },
+          "wad": { "type": "string" },
+          "position": {
+            "type": "array",
+            "prefixItems": [
+              { "type": "number" },
+              { "type": "number" },
+              { "type": "number" }
+            ],
+            "items": false,
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "graph_neighbor": { "$ref": "#/$defs/hex64" }
+        }
+      }
+    },
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["native", "mapcoords_sha256", "compassgraph_sha256"],
+      "properties": {
+        "native": { "const": true },
+        "mapcoords_sha256": { "$ref": "#/$defs/sha256" },
+        "compassgraph_sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Family-specific completion-state source and suppression behavior."
+    },
+    "runtime_invariants": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "single_active_target",
+        "stock_replace_semantics",
+        "remove_semantics",
+        "native_distance",
+        "native_pathfinding",
+        "custom_map_art",
+        "custom_hud_art",
+        "custom_inworld_art"
+      ],
+      "properties": {
+        "single_active_target": { "const": true },
+        "stock_replace_semantics": { "const": true },
+        "remove_semantics": { "const": true },
+        "native_distance": { "const": true },
+        "native_pathfinding": { "const": true },
+        "custom_map_art": { "const": true },
+        "custom_hud_art": { "const": true },
+        "custom_inworld_art": { "const": true }
+      }
+    }
+  },
+  "$defs": {
+    "hex64": { "type": "string", "pattern": "^[0-9A-Fa-f]{16}$" },
+    "hex128": { "type": "string", "pattern": "^[0-9A-Fa-f]{32}$" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "visual": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name", "hash", "gopool_capacity"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "hash": { "$ref": "#/$defs/hex64" },
+        "gopool_capacity": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}
