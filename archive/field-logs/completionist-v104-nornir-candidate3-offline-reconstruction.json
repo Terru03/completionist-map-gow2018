@@ -397,6 +397,51 @@
       },
       "preservation": {
         "named_resources": {
+          "MAT_AE4AD85BB993F040": {
+            "source_record_count": 5,
+            "candidate_record_count": 5,
+            "every_source_record_byte_identical": true
+          },
+          "TX_completionist_raven_map_diffuse_19A41F00834C19F3": {
+            "source_record_count": 3,
+            "candidate_record_count": 3,
+            "every_source_record_byte_identical": true
+          },
+          "TX_completionist_raven_map_emissive_63F1E18FF93B9037": {
+            "source_record_count": 3,
+            "candidate_record_count": 3,
+            "every_source_record_byte_identical": true
+          },
+          "MDL_completionistraven": {
+            "source_record_count": 2,
+            "candidate_record_count": 2,
+            "every_source_record_byte_identical": true
+          },
+          "goProtoMapIconCompletionistRaven": {
+            "source_record_count": 1,
+            "candidate_record_count": 1,
+            "every_source_record_byte_identical": true
+          },
+          "gomapiconcompletionistraven": {
+            "source_record_count": 2,
+            "candidate_record_count": 2,
+            "every_source_record_byte_identical": true
+          },
+          "MDL_completionistravenhud": {
+            "source_record_count": 2,
+            "candidate_record_count": 2,
+            "every_source_record_byte_identical": true
+          },
+          "goProtoCompletionistRavenHUD": {
+            "source_record_count": 1,
+            "candidate_record_count": 1,
+            "every_source_record_byte_identical": true
+          },
+          "gocompletionistravenhud": {
+            "source_record_count": 1,
+            "candidate_record_count": 1,
+            "every_source_record_byte_identical": true
+          },
           "MAT_0C599DC8DC7E2170": {
             "source_record_count": 5,
             "candidate_record_count": 5,
@@ -431,41 +476,6 @@
             "source_record_count": 2,
             "candidate_record_count": 2,
             "every_source_record_byte_identical": true
-          },
-          "MAT_AE4AD85BB993F040": {
-            "source_record_count": 5,
-            "candidate_record_count": 5,
-            "every_source_record_byte_identical": true
-          },
-          "MDL_completionistraven": {
-            "source_record_count": 2,
-            "candidate_record_count": 2,
-            "every_source_record_byte_identical": true
-          },
-          "goProtoMapIconCompletionistRaven": {
-            "source_record_count": 1,
-            "candidate_record_count": 1,
-            "every_source_record_byte_identical": true
-          },
-          "gomapiconcompletionistraven": {
-            "source_record_count": 2,
-            "candidate_record_count": 2,
-            "every_source_record_byte_identical": true
-          },
-          "MDL_completionistravenhud": {
-            "source_record_count": 2,
-            "candidate_record_count": 2,
-            "every_source_record_byte_identical": true
-          },
-          "goProtoCompletionistRavenHUD": {
-            "source_record_count": 1,
-            "candidate_record_count": 1,
-            "every_source_record_byte_identical": true
-          },
-          "gocompletionistravenhud": {
-            "source_record_count": 1,
-            "candidate_record_count": 1,
-            "every_source_record_byte_identical": true
           }
         },
         "all_frozen_raven_records_recovered_by_exact_normalization": true,
@@ -475,30 +485,20 @@
         "nornir_material_reference_count": 2,
         "nornir_material_owners": [
           {
-            "record_index": 32450,
             "name": "MDL_completionistnornirchest",
             "id": "8df34a0395272bc1ded6f22e357a2188"
           },
           {
-            "record_index": 49190,
             "name": "MDL_completionistnornirchesthud",
             "id": "f114131a824be2d5a10bee929d0a0ad0"
           }
         ],
         "nornir_texture_owners": {
           "diffuse": [
-            {
-              "record_index": 31826,
-              "name": "MAT_completionistnornirchest",
-              "id": "e6e7f5294aef261b3899f785bfc07a13"
-            }
+            "MAT_completionistnornirchest"
           ],
           "emissive": [
-            {
-              "record_index": 31826,
-              "name": "MAT_completionistnornirchest",
-              "id": "e6e7f5294aef261b3899f785bfc07a13"
-            }
+            "MAT_completionistnornirchest"
           ]
         },
         "stock_or_raven_owners_of_nornir_material": 0,
@@ -638,13 +638,35 @@
           "standalone_records_removed_explicitly": true,
           "all_additional_records_in_scheduled_nornir_groups": true
         }
+      },
+      "generic_framework": {
+        "registry": "C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018\\config\\collectibles\\v0.10.4\\collectibles.json",
+        "collectible_key": "nornir_chest",
+        "same_resource_builder_as_synthetic_probe": true,
+        "reverse_reference_ownership_valid": true,
+        "unexpected_payload_changes": false
       }
     },
     "gopool": {
+      "collectible_key": "nornir_chest",
       "source_sha256": "765ef6c08a3c9d52ed9485c184237bc3fdde103feef01c496a6999fdbea8826d",
       "candidate_sha256": "93164584bc115b64144bef73680ce5163b7ddf48f74bfd2698fef1b165dc891a",
       "source_rows": 257,
       "candidate_rows": 259,
+      "rows": [
+        {
+          "role": "map",
+          "index": 257,
+          "hash": "E14C66C3B90633E0",
+          "capacity": 1
+        },
+        {
+          "role": "hud",
+          "index": 258,
+          "hash": "7DDC11175EBD1E94",
+          "capacity": 2
+        }
+      ],
       "map_index": 257,
       "map_capacity": 1,
       "hud_index": 258,
@@ -652,11 +674,46 @@
       "all_existing_rows_byte_identical": true,
       "raven_map_row_preserved": true,
       "raven_hud_row_preserved": true,
+      "raven_rows_preserved": true,
       "memorypools_lua_tail_preserved_after_shift": true,
       "non_data_chunks_byte_identical": true,
-      "normalized_candidate_equals_frozen_raven_dcb": true
+      "normalized_candidate_equals_frozen_raven_dcb": true,
+      "normalized_to_frozen_raven_exact": true
+    },
+    "compass_inworld": {
+      "collectible_key": "nornir_chest",
+      "source_sha256": "85d33925a10a6d70629a79eb19c51c4c92957f9eb78eda0c1145e585ea5781a5",
+      "candidate_sha256": "be453733a57a27dde5eb33e553973ec34c330e4841f7c632e4f784a8adc34350",
+      "compass_class": {
+        "name": "CompletionistNornirChest",
+        "uid": "8D5A770E0C4272CE",
+        "type_id": "0x11E",
+        "root": "0x4E2DA0",
+        "IconName": "7DDC11175EBD1E94",
+        "RadiusIconName": "0000000000000000",
+        "InWorld_tMPIcon_Name": "32BBE7E267644D93",
+        "cloned_from": "CompletionistRaven",
+        "tail_equal_to_raven": true
+      },
+      "in_world_carrier": {
+        "name": "COMPASS_INWORLD_COMPLETIONIST_NORNIR_CHEST",
+        "uid": "32BBE7E267644D93",
+        "type_id": "0x129",
+        "root": "0x4E2BC8",
+        "IconName": "7DDC11175EBD1E94",
+        "cloned_from": "COMPASS_INWORLD_COMPLETIONIST_RAVEN",
+        "equal_to_raven_except_IconName": true,
+        "relocation_field_relative": "0x10",
+        "relocation_target_relative": "0x90",
+        "relocation_self_contained": true
+      },
+      "parse_rebuild_valid": true,
+      "normalized_to_frozen_raven_exact": true,
+      "frozen_raven_bytes_preserved": true,
+      "runtime_proven": false
     },
     "lifecycle_result": "OFFLINE_NORNIR_LIFECYCLE_BUILT_AND_REPARSED",
+    "framework_registry": "C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018\\config\\collectibles\\v0.10.4\\collectibles.json",
     "runtime_install_allowed": false
   },
   "proofs": {
