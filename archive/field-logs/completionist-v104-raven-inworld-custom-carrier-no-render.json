@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "result": "RAVEN_INWORLD_CUSTOM_CARRIER_NO_RENDER",
+  "marker": "Completionist_V103_Veithurgard_Raven_01",
+  "runtime_candidate": {
+    "wad_r_perm_sha256": "85d33925a10a6d70629a79eb19c51c4c92957f9eb78eda0c1145e585ea5781a5",
+    "new_export": "COMPASS_INWORLD_COMPLETIONIST_RAVEN",
+    "new_export_uid": "21DC5A7D4AD17628",
+    "carrier_icon_hash": "45E5C7943749F81C"
+  },
+  "runtime_observation": {
+    "crash": false,
+    "compass_hud_custom_raven": "working",
+    "native_distance": "working",
+    "native_routing_pathfinding": "working",
+    "add_replace_remove_single_target_logic": "working as before",
+    "in_world_marker": "not rendered at all"
+  },
+  "interpretation": {
+    "prior_state": "Binding CompletionistRaven directly to stock COMPASS_INWORLD_DOCK rendered the stock boat marker.",
+    "current_state": "Binding CompletionistRaven to the new type-0x129 clone whose first qword is goCompletionistRavenHUD produces no in-world marker.",
+    "not_yet_distinguished": [
+      "the new COMPASS_INWORLD_* export is not runtime-resolvable/registered",
+      "the new export resolves but goCompletionistRavenHUD is not renderable through the in-world carrier path"
+    ],
+    "next_causal_test": "Keep the new export and Raven binding unchanged, but restore only the clone's first qword to the stock Dock HUD hash. Boat render => new export resolves and custom art is the failing layer. No marker => new type-0x129 export resolution/registration is the failing layer."
+  }
+}
