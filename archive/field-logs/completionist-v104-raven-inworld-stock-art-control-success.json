@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "result": "RAVEN_INWORLD_STOCK_ART_CONTROL_SUCCESS",
+  "marker": "Completionist_V103_Veithurgard_Raven_01",
+  "runtime_observation": {
+    "crash": false,
+    "compass_hud_custom_raven": "working",
+    "native_distance": "working",
+    "native_routing_pathfinding": "working",
+    "add_replace_remove_single_target_logic": "working",
+    "in_world_marker": "stock DockPoint/boat rendered"
+  },
+  "causal_interpretation": {
+    "new_inworld_export_resolves": true,
+    "new_export": "COMPASS_INWORLD_COMPLETIONIST_RAVEN",
+    "new_export_uid": "21DC5A7D4AD17628",
+    "custom_carrier_no_render_was_not_caused_by_new_type_0x129_export_resolution": true,
+    "remaining_difference": "The custom-art carrier uses goCompletionistRavenHUD in-world while the successful control uses the stock Dock HUD root."
+  },
+  "next_hypothesis": {
+    "name": "shared_Raven_HUD_GOPool_capacity",
+    "evidence": [
+      "goCompletionistRavenHUD is registered with GOPool capacity 1.",
+      "The tracked Raven already instantiates goCompletionistRavenHUD on the compass HUD.",
+      "The custom in-world carrier attempts to instantiate the same root concurrently.",
+      "The stock Dock root is registered with GOPool capacity 2 and renders in the in-world control."
+    ],
+    "next_causal_test": "Restore the custom-art carrier and change only goCompletionistRavenHUD GOPool capacity from 1 to 2."
+  }
+}
