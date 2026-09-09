@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "result": "NORNIR_FIRST_RUNTIME_FIELD_TEST_FAILED",
+  "date": "2026-09-09",
+  "branch": "codex/v104-raven-production",
+  "install_commit": "3c76616a93efbd4ad6489240a2a3baff8a20040c",
+  "transaction_id": "20260909T131852Z-e5fce91d",
+  "candidate_marker": {
+    "name": "Completionist_V104_Veithurgard_NornirChest_01",
+    "id": "381B067F07254A25"
+  },
+  "runtime_observations": {
+    "game_launched": true,
+    "map_opened_long_enough_to_render": true,
+    "custom_nornir_art_visible": true,
+    "custom_nornir_art_incorrectly_applied_to_stock_boat_markers": true,
+    "runtime_proven_raven_custom_map_art_visible": false,
+    "game_crashed_during_or_immediately_after_map_open": true
+  },
+  "interpretation": {
+    "candidate_rejected": true,
+    "do_not_continue_collectible_lifecycle_test": true,
+    "likely_failure_domain": "r_ui.wad map visual resource isolation / model-material identity or dependency aliasing",
+    "root_cause_proven": false,
+    "offline_byte_reversibility_was_insufficient_to_prove_runtime_resource_isolation": true
+  },
+  "required_action": {
+    "rollback_transaction_before_further_runtime_work": true,
+    "rollback_command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\tools\\v0.10.4\\nornir-runtime-transaction.ps1 -Mode Rollback",
+    "next_gate": "read-only/offline audit of stock Dock, Raven and Nornir map model/material/prototype identities and dependency resolution before any second runtime candidate"
+  }
+}
