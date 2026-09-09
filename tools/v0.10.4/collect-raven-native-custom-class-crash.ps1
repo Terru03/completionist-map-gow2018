@@ -46,7 +46,10 @@ if ((Hash-File $perm) -ne ([string]$manifest.wad_r_perm_sha256).ToLowerInvariant
 if ((Hash-File $wad) -ne ([string]$manifest.r_ui_wad_sha256).ToLowerInvariant()) { throw 'r_ui.wad changed after class control install.' }
 if (-not (Test-Path -LiteralPath $log -PathType Leaf)) { throw "Missing loader log: $log" }
 
-$all = @(Get-Content -LiteralPath $log)
+# Normalize only trailing whitespace from copied log lines so the archived evidence
+# remains readable while also satisfying git diff --check. The source loader log is
+# never modified.
+$all = @(Get-Content -LiteralPath $log | ForEach-Object { $_.TrimEnd() })
 # Use literal substring checks. PowerShell -like treats '[' as a wildcard character-class opener.
 $native = @($all | Where-Object { $_.Contains('[CompletionistMap v0.10.3-native]') })
 $completionist = @($all | Where-Object { $_.Contains('[CompletionistMap') })
