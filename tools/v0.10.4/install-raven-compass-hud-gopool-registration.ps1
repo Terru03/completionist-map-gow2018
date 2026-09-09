@@ -205,8 +205,8 @@ try {
         throw "Installed candidate hash mismatch. Expected $candidateSha, got $afterSha"
     }
 
-    $manifest.status = 'installed'
-    $manifest.installed_utc = [DateTime]::UtcNow.ToString('o')
+    $manifest['status'] = 'installed'
+    $manifest['installed_utc'] = [DateTime]::UtcNow.ToString('o')
     Write-JsonFile $manifest $ManifestPath
 }
 catch {
