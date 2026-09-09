@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "recorded_from_user_runtime_log": true,
+  "source_branch": "codex/v104-raven-production",
+  "source_commit": "f159b05b59166de1d16b0737dd9d02538bfac865",
+  "result": "NORNIR_LIFECYCLE_OFFLINE_GATE_PASSED",
+  "candidate": {
+    "marker": "Completionist_V104_Veithurgard_NornirChest_01",
+    "marker_id": "381B067F07254A25",
+    "compass_class": {
+      "name": "CompletionistNornirChest",
+      "uid": "8D5A770E0C4272CE"
+    },
+    "map_visual": {
+      "name": "goMapIconCompletionistNornirChest",
+      "hash": "E14C66C3B90633E0"
+    },
+    "hud_visual": {
+      "name": "goCompletionistNornirChestHUD",
+      "hash": "7DDC11175EBD1E94",
+      "simultaneous_instance_capacity": 2
+    },
+    "inworld_carrier": {
+      "name": "COMPASS_INWORLD_COMPLETIONIST_NORNIR_CHEST",
+      "uid": "32BBE7E267644D93"
+    },
+    "ten_file_candidate_complete": true
+  },
+  "source_resolution": {
+    "mainhud": "lua_source",
+    "interact_chest_runic": "installed-v101-deinstrumented-in-memory",
+    "interact_chest_standard": "lua_source",
+    "normalization_wrote_game_file": false
+  },
+  "lifecycle_contract": {
+    "challengeComplete_observed_and_restored": true,
+    "challengeComplete_without_opened_keeps_marker_visible": true,
+    "actual_loot_chest_opened_is_authoritative_completion": true,
+    "opened_suppresses_map_marker": true,
+    "opened_removes_active_native_compass_target": true,
+    "synthetic_progression_writes": false
+  },
+  "proof": {
+    "native_add_replace_remove_authored_offline": true,
+    "old_synthetic_nornir_map_hud_path_retired": true,
+    "raven_production_mapmenu_exact_prefix": true,
+    "raven_production_reverified_before_and_after": true,
+    "game_files_written": false,
+    "save_progression_marker_state_written": false,
+    "runtime_install_performed": false
+  },
+  "next_gate": "Transactional backup/rollback runtime installer followed by one controlled Veithurgard Nornir field test on a disposable or backed-up save."
+}
