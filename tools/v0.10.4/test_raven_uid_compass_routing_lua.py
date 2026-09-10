@@ -9,9 +9,10 @@ sys.path.insert(0, str(REPO / "dist/re-tools"))
 from lupa.lua51 import LuaRuntime
 
 PRELUDE = r'''
-local calls = {logs={}, previousShow=0, shownName=nil, shownClass=nil, hidden={}}
+local calls = {logs={}, previousShow=0, shownName=nil, shownClass=nil, hidden={}, thread=nil}
 local customIds = {}
 local stockIds = {}
+local ravenCollected = false
 local ravenGO = {kind="raven"}
 local twinGO = {kind="twin"}
 local stockGO = {kind="stock"}
@@ -80,8 +81,11 @@ lamsConsts = {
 util = {}
 function util.GetLAMSMsg(id) return id end
 function util.GetUiObjByName(name) return nil end
+function util.create_thread(fn) calls.thread = fn end
+function util.yield(seconds) calls.lastYield = seconds end
 UI = {}
 Audio = {PlaySound=function(name) calls.lastSound=name end}
+_G.CompletionistMapV100_IsRavenCollected = function() return ravenCollected end
 '''
 
 POSTLUDE = r'''
@@ -94,6 +98,8 @@ return {
   prompt=function() return MapOn.GetShowOnCompassPrompt(self,{}) end,
   action=function() return MapOn.ShowOnCompass(self,{}) end,
   update=function() return MapOn.Update(self) end,
+  setCollected=function(value) ravenCollected=value end,
+  observe=function(reason) return _G.CompletionistMapV104ObserveRavenCompletion(reason or "test") end,
   selectedName=function()
     local s=self.completionistMapV104SelectedRavenIdentity
     return s and s.Name or nil
@@ -103,6 +109,7 @@ return {
     return s and s.IdString or nil
   end,
   customId=function() return customIds[1] end,
+  trackedName=function() return _G.CompletionistMapV104UidRavenTrackedName end,
   logs=function() return table.concat(calls.logs,"\n") end,
 }
 '''
@@ -121,6 +128,7 @@ class RavenUidRoutingLuaTests(unittest.TestCase):
         self.assertNotIn("function MapRecordView:", self.source)
         self.assertTrue(self.lua.globals().CompletionistMapV104UidAwareRavenCompassRouting)
         self.assertIn("identitySource=MapOn.mapIconCollision_exact_object_reference", self.probe.logs())
+        self.assertIsNotNone(self.probe.calls.thread)
 
     def test_twin_selection_routes_by_exact_object_reference(self):
         show, text = self.probe.prompt()
@@ -156,7 +164,39 @@ class RavenUidRoutingLuaTests(unittest.TestCase):
         self.probe.action()
         self.assertEqual(self.probe.calls.shownName, "Completionist_V103_Veithurgard_Raven_01")
         self.assertEqual(self.probe.customId(), "raven-id")
+        self.assertEqual(self.probe.trackedName(), "Completionist_V103_Veithurgard_Raven_01")
         self.assertIn("source=raven_object_reference", self.probe.logs())
+
+    def test_original_completion_clears_active_original_without_progression_write(self):
+        self.probe.self.mapIconCollision = self.probe.ravenGO
+        self.probe.prompt()
+        self.probe.action()
+        self.assertEqual(self.probe.customId(), "raven-id")
+        self.probe.setCollected(True)
+        self.assertTrue(self.probe.observe("test_completion"))
+        self.assertIsNone(self.probe.customId())
+        self.assertIsNone(self.probe.selectedName())
+        self.assertIsNone(self.probe.trackedName())
+        self.assertIn("LIFECYCLE_CLEAR", self.probe.logs())
+        self.assertIn("twinTouched=false progressionWrites=false", self.probe.logs())
+
+    def test_original_completion_does_not_clear_active_twin(self):
+        self.probe.prompt()
+        self.probe.action()
+        self.assertEqual(self.probe.customId(), "twin-id")
+        self.assertEqual(self.probe.trackedName(), "Completionist_V104_Veithurgard_Raven_Twin_01")
+        self.probe.setCollected(True)
+        self.assertTrue(self.probe.observe("test_completion_with_twin"))
+        self.assertEqual(self.probe.customId(), "twin-id")
+        self.assertEqual(self.probe.trackedName(), "Completionist_V104_Veithurgard_Raven_Twin_01")
+
+    def test_collected_original_is_not_reselected(self):
+        self.probe.setCollected(True)
+        self.probe.self.mapIconCollision = self.probe.ravenGO
+        show, text = self.probe.prompt()
+        self.assertTrue(show)
+        self.assertEqual(text, "previous-prompt")
+        self.assertIsNone(self.probe.selectedName())
 
 
 if __name__ == "__main__":
