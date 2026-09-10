@@ -1,18 +1,17 @@
 -- BEGIN COMPLETIONIST V0.10.4 UID-AWARE RAVEN COMPASS ROUTING
 -- Runtime hypothesis probe layered on the proven shared-loader Twin.
 --
--- Both map pins intentionally share goMapIconCompletionistRaven.  Therefore GO name
--- cannot identify which marker was clicked.  The shared-loader keeps the exact live
--- GO references on the map view, so selection can distinguish the original and Twin
--- without inventing an engine identity API.  Once identified, native marker Id/Name
--- comes from Map.GetMarkerInfo and the selected marker Name is routed through the
--- already-proven CompletionistRaven compass class.
+-- Both map pins intentionally share goMapIconCompletionistRaven. Therefore GO name
+-- cannot identify which marker was clicked. The shared-loader keeps the exact live
+-- GO references on the map view, so the globally available MapOn prompt/action path
+-- can distinguish original and Twin from mapIconCollision without depending on the
+-- lexical MapRecordView class. Native marker Id/Name then comes from Map.GetMarkerInfo
+-- and the selected marker Name is routed through CompletionistRaven.
 do
   local prefix = "[CompletionistMap v0.10.4-uid-routing] "
   local ravenName = "Completionist_V103_Veithurgard_Raven_01"
   local twinName = "Completionist_V104_Veithurgard_Raven_Twin_01"
   local ravenClass = "CompletionistRaven"
-  local previousSelect = MapRecordView.SelectMarker
   local previousPrompt = MapOn.GetShowOnCompassPrompt
   local previousShow = MapOn.ShowOnCompass
   local previousUpdate = MapOn.Update
@@ -53,7 +52,7 @@ do
 
   local function collisionIdentity(self, collision)
     if self == nil or collision == nil then return nil end
-    -- Exact object-reference matching is deliberate.  The two objects have the same
+    -- Exact object-reference matching is deliberate. The two objects have the same
     -- resource/GO name, but the proven shared-loader created and retained two distinct
     -- objects: completionistMapV100MapIconGO and completionistSharedLoaderTwinGO.
     if self.completionistSharedLoaderTwinGO ~= nil and collision == self.completionistSharedLoaderTwinGO then
@@ -63,6 +62,35 @@ do
       return identity(ravenName), "raven_object_reference"
     end
     return nil, nil
+  end
+
+  local function refreshSelectedIdentity(self, reason)
+    if self == nil then return nil end
+    local collision = self.mapIconCollision
+    if collision == nil then
+      -- Footer/action dispatch can occur after the collision frame. Preserve the last
+      -- custom identity only while there is no newer non-custom collision to disprove it.
+      return selectedIdentity(self)
+    end
+
+    local routed, source = collisionIdentity(self, collision)
+    if routed ~= nil then
+      local previous = selectedIdentity(self)
+      self.completionistMapV104SelectedRavenIdentity = routed
+      if previous == nil or previous.IdString ~= routed.IdString then
+        log("SELECT", "reason=" .. tostring(reason) .. " source=" .. tostring(source) ..
+            " name=" .. routed.Name .. " uid=" .. routed.IdString ..
+            " collisionGO=" .. tostring(collision))
+      end
+      return routed
+    end
+
+    if selectedIdentity(self) ~= nil then
+      log("SELECT_CLEAR", "reason=" .. tostring(reason) ..
+          " collisionGO=" .. tostring(collision))
+    end
+    self.completionistMapV104SelectedRavenIdentity = nil
+    return nil
   end
 
   local function customTargetIds()
@@ -180,23 +208,9 @@ do
     log("PROMPT_REFRESH", "visible=" .. tostring(show) .. " text=" .. tostring(text))
   end
 
-  function MapRecordView:SelectMarker(...)
-    local collision = self.mapIconCollision
-    local routed, source = collisionIdentity(self, collision)
-    local result = previousSelect(self, ...)
-    if routed ~= nil then
-      self.completionistMapV104SelectedRavenIdentity = routed
-      log("SELECT", "source=" .. tostring(source) .. " name=" .. routed.Name ..
-          " uid=" .. routed.IdString .. " collisionGO=" .. tostring(collision))
-    else
-      self.completionistMapV104SelectedRavenIdentity = nil
-    end
-    return result
-  end
-
   function MapOn:GetShowOnCompassPrompt(currMenu)
+    local selected = refreshSelectedIdentity(self, "prompt")
     local show, previousText = previousPrompt(self, currMenu)
-    local selected = selectedIdentity(self)
     if selected == nil or not show then return show, previousText end
 
     if pending ~= nil and pending.IdString == selected.IdString then
@@ -233,10 +247,10 @@ do
   end
 
   function MapOn:ShowOnCompass(currState)
-    local selected = selectedIdentity(self)
+    local selected = refreshSelectedIdentity(self, "action")
     if selected == nil then
       -- The preceding production controller already knows how to replace the original
-      -- Raven with stock targets.  Its only blind spot is the new Twin, so remove the
+      -- Raven with stock targets. Its only blind spot is the new Twin, so remove the
       -- Twin first if it is the active custom target, then delegate unchanged stock flow.
       local twin = identity(twinName)
       if twin ~= nil then
@@ -329,7 +343,8 @@ do
   end
 
   _G.CompletionistMapV104UidAwareRavenCompassRouting = true
-  log("API", "installed=true identitySource=exact_map_object_reference markerIdentity=Map.GetMarkerInfo" ..
-      " compassClass=" .. ravenClass .. " singleActive=true progressionWrites=false")
+  log("API", "installed=true identitySource=MapOn.mapIconCollision_exact_object_reference" ..
+      " markerIdentity=Map.GetMarkerInfo compassClass=" .. ravenClass ..
+      " singleActive=true progressionWrites=false")
 end
 -- END COMPLETIONIST V0.10.4 UID-AWARE RAVEN COMPASS ROUTING
