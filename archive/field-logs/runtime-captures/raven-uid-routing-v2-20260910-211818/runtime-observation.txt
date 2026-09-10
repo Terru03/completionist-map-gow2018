@@ -1,0 +1,58 @@
+﻿RAVEN UID COMPASS ROUTING V2 - HUMAN RUNTIME RESULT
+===================================================
+
+Branch:
+codex/v104-raven-uid-compass-routing-v2
+
+Tested commit:
+0901c5824cf9a0faafb6d14026b13f37cf871c7e
+
+Result:
+PARTIAL PASS - COMPASS ROUTING PASSED, COMPLETION LIFECYCLE FAILED
+
+Observed behaviour:
+
+1. Initial real Raven and Twin map markers appeared correctly.
+2. Tracking the real Raven worked correctly with custom Raven compass art.
+3. Tracking the Twin worked correctly with the same custom Raven compass art.
+4. Switching between Twin and real Raven worked without duplicate user targets.
+5. Normal target replacement/removal worked.
+6. Stock Dock target retained native compass behaviour/art.
+7. Twin correctly replaced a stock target using Raven compass art.
+8. Killing the real Raven naturally caused BOTH the real Raven map marker
+   AND the Twin map marker to disappear.
+9. If the real Raven was tracked when killed, its HUD/in-world compass marker
+   remained visible after the kill.
+10. Selecting another compass target cleared the stale Raven compass marker.
+11. After completion, neither the real Raven nor Twin could be selected again
+    because both map markers were gone.
+12. If the Twin was tracked when the real Raven was killed, the Twin HUD marker
+    remained active despite the Twin disappearing from the map.
+13. The same save was loaded and tested twice. Behaviour reproduced both times.
+14. No crash occurred.
+15. Native compass paths remained functional.
+
+Critical conclusions:
+
+PASS:
+- UID-aware real Raven routing
+- UID-aware Twin routing
+- single active compass target behaviour
+- native Dock compass preservation
+- runtime stability
+
+FAIL:
+- Twin map-object lifetime is still coupled to real Raven destruction/completion
+- active real-Raven compass target is not cleared immediately on natural completion
+- stale active target is only invalidated after another compass target is selected
+
+Required v3 direction:
+
+- Real Raven completion/destruction must NOT destroy or recycle the Twin.
+- Twin must survive map close/reopen after the real Raven has been collected.
+- Twin must remain independently selectable and trackable after real Raven completion.
+- Completion must immediately clear the active compass target ONLY when the
+  active UID is the real Raven UID.
+- If Twin UID is active during real Raven completion, Twin compass target must survive.
+- Do not synthesise or modify progression state.
+- Preserve existing proven routing and native compass behaviour.
