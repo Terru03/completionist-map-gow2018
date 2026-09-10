@@ -34,8 +34,20 @@ function Write-Log([string]$Text = '') {
 function Invoke-Captured([string]$Label, [scriptblock]$Command) {
     Write-Log ""
     Write-Log "=== $Label ==="
-    $lines = & $Command 2>&1 | ForEach-Object { $_.ToString() }
-    $code = $LASTEXITCODE
+
+    # Native tools legitimately use stderr for warnings. Windows PowerShell 5.1
+    # can promote those lines to NativeCommandError under Stop, so capture with
+    # Continue and decide command success only from the native exit code.
+    $oldPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        $lines = & $Command 2>&1 | ForEach-Object { $_.ToString() }
+        $code = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $oldPreference
+    }
+
     foreach ($line in $lines) { Write-Log $line }
     if ($code -ne 0) { throw "$Label failed (exit $code)." }
     return ,$lines
