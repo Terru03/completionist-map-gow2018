@@ -26,12 +26,12 @@ $ConfirmRuntimeTest = $requestedConfirm
 $LibraryOnly = $requestedLibrary
 
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$expectedBranch = 'codex/v104-raven-uid-compass-routing'
-$stateRoot = Join-Path $repo 'build/v0.10.4-raven-uid-compass-routing/runtime/transaction'
+$expectedBranch = 'codex/v104-raven-uid-compass-routing-v2'
+$stateRoot = Join-Path $repo 'build/v0.10.4-raven-uid-compass-routing-v2/runtime/transaction'
 $activeManifest = Join-Path $stateRoot 'active.json'
-$candidateRoot = Join-Path $repo 'build/v0.10.4-raven-uid-compass-routing/offline/candidate/game-root'
-$archivedReport = Join-Path $repo 'archive/field-logs/completionist-v104-raven-uid-compass-routing-offline.json'
-$candidateLabel = 'raven-uid-compass-routing'
+$candidateRoot = Join-Path $repo 'build/v0.10.4-raven-uid-compass-routing-v2/offline/candidate/game-root'
+$archivedReport = Join-Path $repo 'archive/field-logs/completionist-v104-raven-uid-compass-routing-v2-offline.json'
+$candidateLabel = 'raven-uid-compass-routing-v2'
 $builder = Join-Path $PSScriptRoot 'build-raven-uid-compass-routing.py'
 $tests = Join-Path $PSScriptRoot 'test_raven_uid_compass_routing.py'
 $luaTests = Join-Path $PSScriptRoot 'test_raven_uid_compass_routing_lua.py'
@@ -59,12 +59,12 @@ $sharedLoaderBinaryShas = [ordered]@{
 # Pin every source file that can affect this candidate. These are Git blob IDs, not
 # runtime resource IDs; they are used only to make the local offline build reproducible.
 $sourceBlobPins = [ordered]@{
-    'tools/v0.10.4/raven-uid-compass-routing.lua' = '0cf5afb1f1e61ae8caed220b52cfda77ce8ce915'
-    'tools/v0.10.4/build-raven-uid-compass-routing.py' = '878d8c1564715c5337c37476e8ddd2bec7e14217'
-    'tools/v0.10.4/test_raven_uid_compass_routing.py' = '4ac6cb794312e5fe0ecfabf18be97d96fa0e2fb1'
-    'tools/v0.10.4/test_raven_uid_compass_routing_lua.py' = 'e963f4c62bc219aa445972e6f2179411545e4ec2'
+    'tools/v0.10.4/raven-uid-compass-routing.lua' = '80bdc7d0b45a3992cfa18bd5333bd6da2cb042e1'
+    'tools/v0.10.4/build-raven-uid-compass-routing.py' = '6d6636ead3a8685a560d70a6bb4f7d73e0d1afec'
+    'tools/v0.10.4/test_raven_uid_compass_routing.py' = '1f27697c187abc5141c2cdbd9b6c3f79c30ddc1b'
+    'tools/v0.10.4/test_raven_uid_compass_routing_lua.py' = 'fdc1ff1a16ae33bbfea521b8080764fa13851952'
     'tools/v0.10.4/build-raven-shared-loader.py' = '9a59bf573a9773923282f0f9bbb9f842487b67b2'
-    'tools/v0.10.4/raven-shared-loader-twin.lua' = 'f785bf3dd02be40536a39d6b859209343ffec8f1'
+    'tools/v0.10.4/raven-shared-loader-twin.lua' = '10851c148e268a2421560aea895a4c9f06443861'
     'tools/v0.10.4/build-raven-twin-stage-a-offline.py' = '861d5f1f2a867044e6b9b6cca844fb124ec17ee6'
     'tools/v0.10.4/nornir-runtime-candidate3.ps1' = 'e66705836f9c0c5578377572d629929b5b330119'
 }
@@ -89,7 +89,7 @@ function Assert-FrozenRavenMapFiles([string]$Game) {
 
 function Invoke-FrozenRavenVerifier([string]$Game) {
     $verifier = Join-Path $PSScriptRoot 'verify-raven-production-state.py'
-    $output = Join-Path $repo 'build/v0.10.4-raven-uid-compass-routing/runtime/frozen-raven-verification.json'
+    $output = Join-Path $repo 'build/v0.10.4-raven-uid-compass-routing-v2/runtime/frozen-raven-verification.json'
     & py.exe -3 $verifier --game-root $Game --repo-root $repo --output $output | Out-Host
     if ($LASTEXITCODE -ne 0) { throw 'Frozen Raven production verifier failed.' }
 }
@@ -99,15 +99,15 @@ function Invoke-OfflineBuildAndTests([string]$Game) {
     Assert-FrozenRavenMapFiles -Game $Game
 
     & py.exe -3 $builder --raven-root $Game | Out-Host
-    if ($LASTEXITCODE -ne 0) { throw 'UID-routing offline build failed.' }
+    if ($LASTEXITCODE -ne 0) { throw 'UID-routing v2 offline build failed.' }
 
     $oldRoot = $env:COMPLETIONIST_RAVEN_ROOT
     try {
         $env:COMPLETIONIST_RAVEN_ROOT = $Game
         & py.exe -3 $tests | Out-Host
-        if ($LASTEXITCODE -ne 0) { throw 'UID-routing offline tests failed.' }
+        if ($LASTEXITCODE -ne 0) { throw 'UID-routing v2 offline tests failed.' }
         & py.exe -3 $luaTests | Out-Host
-        if ($LASTEXITCODE -ne 0) { throw 'UID-routing Lua 5.1 scope regression failed.' }
+        if ($LASTEXITCODE -ne 0) { throw 'UID-routing v2 Lua 5.1 regression failed.' }
     }
     finally {
         if ($null -eq $oldRoot) { Remove-Item Env:COMPLETIONIST_RAVEN_ROOT -ErrorAction SilentlyContinue }
@@ -115,21 +115,24 @@ function Invoke-OfflineBuildAndTests([string]$Game) {
     }
 
     & py.exe -3 $builder --raven-root $Game --check | Out-Host
-    if ($LASTEXITCODE -ne 0) { throw 'UID-routing deterministic rebuild check failed.' }
+    if ($LASTEXITCODE -ne 0) { throw 'UID-routing v2 deterministic rebuild check failed.' }
 }
 
 function Assert-UidRoutingProof {
-    if (-not (Test-Path -LiteralPath $archivedReport -PathType Leaf)) { throw 'UID-routing offline proof missing.' }
+    if (-not (Test-Path -LiteralPath $archivedReport -PathType Leaf)) { throw 'UID-routing v2 offline proof missing.' }
     $proof = Get-Content -LiteralPath $archivedReport -Raw | ConvertFrom-Json
-    if ($proof.result -ne 'RAVEN_UID_COMPASS_ROUTING_OFFLINE_PROOF_PASSED' -or
+    if ($proof.schema -ne 2 -or
+        $proof.result -ne 'RAVEN_UID_COMPASS_ROUTING_V2_OFFLINE_PROOF_PASSED' -or
         $proof.branch_contract -ne $expectedBranch -or
-        $proof.base_head -ne 'e29b841b2e8799ebe90780413c8330755415183f' -or
+        $proof.base_head -ne '4fa06adc412f5e2c1e8e84f0a4769d57319b63b7' -or
+        $proof.shared_loader_runtime_success_head -ne 'e29b841b2e8799ebe90780413c8330755415183f' -or
         $proof.ready_for_runtime_test -ne $true -or
         $proof.runtime_test_performed -ne $false -or
         $proof.game_files_written -ne $false -or
         $proof.retired_candidates_used -ne $false -or
-        $proof.progression_or_marker_state_writes -ne $false) {
-        throw 'UID-routing offline proof gate differs.'
+        $proof.progression_or_marker_state_writes -ne $false -or
+        $proof.map_title_behavior_changed -ne $false) {
+        throw 'UID-routing v2 offline proof gate differs.'
     }
 
     if ($proof.identities.raven_uid -ne 'E15E6BC82AE2773E' -or
@@ -137,34 +140,38 @@ function Assert-UidRoutingProof {
         $proof.identities.shared_map_loader -ne 'goMapIconCompletionistRaven' -or
         $proof.identities.shared_map_resource_hash -ne '584F31DC8BD6E738' -or
         $proof.identities.compass_class -ne 'CompletionistRaven') {
-        throw 'UID-routing identity contract differs.'
+        throw 'UID-routing v2 identity contract differs.'
     }
 
     if ($proof.routing_contract.selection_identity_source -ne 'exact live map object reference retained by shared-loader' -or
         $proof.routing_contract.native_identity_source -ne 'game.Map.GetMarkerInfo(Name).Id' -or
         $proof.routing_contract.same_visual_resource_for_both_map_markers -ne $true -or
         $proof.routing_contract.selected_name_routed_to_native_compass -ne $true -or
-        $proof.routing_contract.'selected_uid_used_for_active-target comparison' -ne $true -or
+        $proof.routing_contract.selected_uid_used_for_active_target_comparison -ne $true -or
         $proof.routing_contract.single_active_custom_target_policy -ne $true -or
         $proof.routing_contract.new_wad_resource_identity -ne $false -or
         $proof.routing_contract.compassgraph_changed -ne $false -or
-        $proof.routing_contract.lifecycle_changes -ne $false -or
+        $proof.routing_contract.lifecycle_observation -ne $true -or
+        $proof.routing_contract.completion_oracle -ne 'CompletionistMapV100_IsRavenCollected' -or
+        $proof.routing_contract.completion_cleanup_scope -ne 'original Raven compass/local routing state only' -or
+        $proof.routing_contract.twin_lifetime_independent_of_original_ui_object -ne $true -or
+        $proof.routing_contract.lifecycle_progression_mutation -ne $false -or
         $proof.routing_contract.synthetic_progression_writes -ne $false) {
-        throw 'UID-routing behavior contract differs.'
+        throw 'UID-routing v2 behavior contract differs.'
     }
 
     $expected = @($files.Values | Sort-Object)
     $actual = @($proof.files.PSObject.Properties.Name | Sort-Object)
-    if (($expected -join "`n") -ne ($actual -join "`n")) { throw 'UID-routing proof file set differs.' }
+    if (($expected -join "`n") -ne ($actual -join "`n")) { throw 'UID-routing v2 proof file set differs.' }
 
     foreach ($name in $files.Keys) {
         $relative = [string]$files[$name]
         if ($proof.source_sha256.PSObject.Properties[$relative].Value -ne $frozenRavenShas[$name]) {
-            throw "UID-routing frozen source SHA differs in proof: $name"
+            throw "UID-routing v2 frozen source SHA differs in proof: $name"
         }
         if ($name -ne 'mapmenu.lua' -and
             $proof.files.PSObject.Properties[$relative].Value.sha256 -ne $sharedLoaderBinaryShas[$name]) {
-            throw "UID-routing binary is not the proven shared-loader candidate: $name"
+            throw "UID-routing v2 binary is not the proven shared-loader candidate: $name"
         }
     }
     return $proof
@@ -182,16 +189,16 @@ function Get-CandidateShasFromProof([object]$Proof) {
 }
 
 function Assert-UidRoutingCandidate([object]$Proof, [System.Collections.IDictionary]$CandidateShas) {
-    if (-not (Test-Path -LiteralPath $candidateRoot -PathType Container)) { throw 'UID-routing candidate missing.' }
+    if (-not (Test-Path -LiteralPath $candidateRoot -PathType Container)) { throw 'UID-routing v2 candidate missing.' }
     $actual = @(Get-ChildItem -LiteralPath $candidateRoot -Recurse -File | ForEach-Object {
-        Get-SafeRelativePath -Root $candidateRoot -Path $_.FullName -Label 'UID-routing candidate'
+        Get-SafeRelativePath -Root $candidateRoot -Path $_.FullName -Label 'UID-routing v2 candidate'
     } | Sort-Object)
     $expected = @($files.Values | Sort-Object)
-    if (($actual -join "`n") -ne ($expected -join "`n")) { throw 'UID-routing candidate must contain exactly four approved files.' }
+    if (($actual -join "`n") -ne ($expected -join "`n")) { throw 'UID-routing v2 candidate must contain exactly four approved files.' }
 
     foreach ($name in $files.Keys) {
-        $path = Resolve-SafeChildPath -Root $candidateRoot -Relative ([string]$files[$name]) -Label 'UID-routing candidate'
-        if ((Get-Sha256 $path) -ne [string]$CandidateShas[$name]) { throw "UID-routing candidate SHA differs: $name" }
+        $path = Resolve-SafeChildPath -Root $candidateRoot -Relative ([string]$files[$name]) -Label 'UID-routing v2 candidate'
+        if ((Get-Sha256 $path) -ne [string]$CandidateShas[$name]) { throw "UID-routing v2 candidate SHA differs: $name" }
     }
 }
 
@@ -205,7 +212,7 @@ function Get-UidRoutingRollbackCheckInstalled([string]$Status) {
 if ($LibraryOnly) { return }
 
 if ($Mode -eq 'Status') {
-    Write-Host 'RAVEN_UID_COMPASS_ROUTING_RUNTIME_STATUS'
+    Write-Host 'RAVEN_UID_COMPASS_ROUTING_V2_RUNTIME_STATUS'
     Write-Host "  branch: $expectedBranch"
     Write-Host "  offline proof present: $(Test-Path -LiteralPath $archivedReport -PathType Leaf)"
     if (-not (Test-Path -LiteralPath $activeManifest -PathType Leaf)) {
@@ -244,7 +251,7 @@ if ($Mode -eq 'Install') {
         if ($null -ne $existingProof) {
             $existingShas = Get-CandidateShasFromProof -Proof $existingProof
             $old = Get-ValidatedActiveTransaction -Active $activeManifest -Game $GameRoot -Candidate $candidateRoot -State $stateRoot -ProofPath $archivedReport -FileMap $files -CandidateShas $existingShas -CandidateLabel $candidateLabel -RepoBranch $branch
-            if ($old.status -notin @('rolled-back','rolled-back-after-install-failure')) { throw 'Active UID-routing transaction exists.' }
+            if ($old.status -notin @('rolled-back','rolled-back-after-install-failure')) { throw 'Active UID-routing v2 transaction exists.' }
         }
     }
 
@@ -264,12 +271,12 @@ if ($Mode -eq 'Install') {
     }
 
     $manifest = Invoke-TransactionalInstall -Game $GameRoot -Candidate $candidateRoot -State $stateRoot -Active $activeManifest -FileMap $files -CandidateShas $candidateShas -CandidateLabel $candidateLabel -RepoBranch $branch -RepoHead $operationHead -ProofPath $archivedReport -PreWriteValidation $preWriteValidation -WriteGuard $writeGuard
-    Write-Host 'RAVEN_UID_COMPASS_ROUTING_INSTALLED_FOR_HUMAN_TEST'
+    Write-Host 'RAVEN_UID_COMPASS_ROUTING_V2_INSTALLED_FOR_HUMAN_TEST'
     Write-Host "  transaction: $($manifest.transaction_id)"
     Write-Host '  game launched: false'
     Write-Host '  binary candidate: exact proven shared-loader bytes'
-    Write-Host '  additional change: append-only UID-aware mapmenu routing shim'
-    Write-Host '  progression/lifecycle writes: false'
+    Write-Host '  additional changes: UID-aware routing + observe-only original completion cleanup + independent Twin lifetime'
+    Write-Host '  progression/marker-state writes: false'
     exit 0
 }
 
@@ -285,7 +292,7 @@ if ($Mode -eq 'Rollback') {
     Save-TransactionManifest -Manifest $manifest -Active $activeManifest
     Assert-FrozenRavenMapFiles -Game $GameRoot
     Invoke-FrozenRavenVerifier -Game $GameRoot
-    Write-Host 'RAVEN_UID_COMPASS_ROUTING_ROLLED_BACK'
+    Write-Host 'RAVEN_UID_COMPASS_ROUTING_V2_ROLLED_BACK'
     Write-Host '  exact pre-install bytes restored: true'
     exit 0
 }
