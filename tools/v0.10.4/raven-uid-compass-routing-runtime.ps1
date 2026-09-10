@@ -140,7 +140,7 @@ function Assert-UidRoutingProof {
         $proof.routing_contract.native_identity_source -ne 'game.Map.GetMarkerInfo(Name).Id' -or
         $proof.routing_contract.same_visual_resource_for_both_map_markers -ne $true -or
         $proof.routing_contract.selected_name_routed_to_native_compass -ne $true -or
-        $proof.routing_contract.selected_uid_used_for_active-target_comparison -ne $true -or
+        $proof.routing_contract.'selected_uid_used_for_active-target_comparison' -ne $true -or
         $proof.routing_contract.single_active_custom_target_policy -ne $true -or
         $proof.routing_contract.new_wad_resource_identity -ne $false -or
         $proof.routing_contract.compassgraph_changed -ne $false -or
