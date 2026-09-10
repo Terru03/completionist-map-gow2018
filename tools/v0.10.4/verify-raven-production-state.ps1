@@ -1,11 +1,11 @@
 param(
-    [string]$GameRoot = 'G:\SteamLibrary\steamapps\common\GodOfWar'
+    [string]$GameRoot = 'G:\SteamLibrary\steamapps\common\GodOfWar',
+    [string]$ExpectedBranch = 'codex/v104-raven-production'
 )
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-$ExpectedBranch = 'codex/v104-raven-production'
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $Verifier = Join-Path $PSScriptRoot 'verify-raven-production-state.py'
 $StateDir = Join-Path $RepoRoot 'build\v0.10.4-raven-production'
