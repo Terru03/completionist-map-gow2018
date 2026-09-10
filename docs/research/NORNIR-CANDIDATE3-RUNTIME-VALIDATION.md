@@ -17,14 +17,20 @@ The next useful evidence is a tightly controlled field test of Candidate 3. The 
 - exact ten-file Candidate 3 proof validation before installation;
 - exact Candidate 3 WAD identity and donor material `+0x20` rule validation;
 - explicit rejection of the retired Candidate 2 WAD;
-- frozen Raven verification immediately before the first runtime write;
+- frozen Raven verification before backup and again after backup immediately before the first runtime write;
 - all destination backups and backup SHA checks complete before the first game write;
+- all required backup SHA checks complete again before the first rollback write;
+- durable per-entry `pending` / `write-started` / `installed` / `restored` transaction state;
 - source SHA check before each write;
 - temporary-file copy plus SHA verification before destination replacement;
 - post-install SHA verification for all ten files;
 - automatic full rollback on any partial installation failure;
 - normal rollback refuses files changed after installation unless `-ForceRollback` is explicitly chosen after review;
+- forced rollback rejects terminal/unknown transactions and never deletes an uncertain non-Candidate 3 file from a `write-started` entry;
 - exact pre-install state restoration, including removal of destinations that did not exist before installation;
+- exact active and transaction-local manifest, transaction-root, file-set, path-topology, and reparse-point validation before install/recovery decisions;
+- `GoW.exe` identity check under the selected game root before install or rollback;
+- branch, HEAD, tracked-tree, and game-process checks repeated at the final pre-write gate and before each game-file write;
 - frozen Raven verification after rollback;
 - no save, progression, or marker-state writes;
 - no automatic God of War launch.
@@ -42,12 +48,15 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\v0.10.4\run-nor
 The gate does **not** write to the installed game. It:
 
 1. parses the installer and self-test with the PowerShell parser;
-2. checks the archived Candidate 3 proof remains offline-only and pinned;
+2. checks the archived Candidate 3 proof and current build output remain exact, offline-only, and pinned;
 3. runs the exact transaction helpers against a temporary fake game root;
 4. proves successful install + exact rollback;
-5. injects a failure after a partial install and proves automatic exact rollback;
-6. proves a tampered installed file blocks normal rollback;
-7. proves explicit forced rollback can restore the exact baseline after review.
+5. injects failures before the manifest, before the first write, and after a partial install;
+6. proves a corrupt backup stops rollback before any destination changes;
+7. proves pending destinations survive recovery and uncertain non-Candidate 3 files survive forced recovery;
+8. proves stale/unknown force status, malformed manifest roots/file sets, overlapping roots, and reparse points fail closed;
+9. proves a tampered installed file blocks normal rollback;
+10. proves explicit forced rollback can restore the exact baseline after review.
 
 Expected final marker:
 
@@ -89,7 +98,7 @@ Close God of War first, then:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\v0.10.4\nornir-runtime-candidate3.ps1" -Mode Rollback
 ```
 
-Normal rollback refuses to overwrite a destination that no longer matches the installed Candidate 3 SHA. `-ForceRollback` exists only for reviewed recovery and should not be used reflexively.
+Normal rollback refuses to overwrite a destination that no longer matches the installed Candidate 3 SHA. `-ForceRollback` exists only for reviewed recovery and should not be used reflexively. It cannot replay a terminal or unknown transaction, and it will not delete unknown bytes from an entry whose write never reached the durable `installed` state.
 
 A successful rollback must end with frozen Raven production verification passing.
 

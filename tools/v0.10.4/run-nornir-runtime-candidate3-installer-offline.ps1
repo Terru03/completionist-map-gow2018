@@ -27,17 +27,15 @@ foreach ($script in @($installer, $selfTest)) {
         throw "PowerShell syntax errors in $script : $detail"
     }
 }
+$installerText = Get-Content -LiteralPath $installer -Raw
+if ($installerText -match 'nornir-runtime-candidate2\.ps1|v0\.10\.4-nornir-runtime-candidate2') {
+    throw 'Candidate 3 installer references a retired Candidate 2 artifact path.'
+}
 
-Write-Host 'Checking Candidate 3 archived proof remains offline-only and pinned...'
-$proof = Get-Content -LiteralPath $proofPath -Raw | ConvertFrom-Json
-if ($proof.result -ne 'NORNIR_CANDIDATE3_OFFLINE_ASSEMBLED') { throw 'Unexpected Candidate 3 proof result.' }
-if ($proof.candidate3.wad.candidate3_sha256 -ne '90391a2841d3a9ad889b95d5c17fc0ee09de803a57675b6d237a98051b08c660') { throw 'Candidate 3 WAD hash changed.' }
-if ($proof.candidate3.runtime_install_allowed -or $proof.safety.runtime_install_allowed) { throw 'Candidate 3 proof must remain runtime_install_allowed=false.' }
-if ($proof.proofs.candidate2_used_as_input) { throw 'Candidate 2 must not be an input to Candidate 3.' }
-if ($proof.candidate3.wad.model_groups.opaque_mg_payload_bytes_changed) { throw 'Opaque MG payload mutation detected.' }
-if ($proof.candidate3.wad.preservation.stock_dock_and_boatdock_definitions_mutated) { throw 'Stock Dock/BoatDock mutation detected.' }
-if (-not $proof.proofs.raven_resources_preserved) { throw 'Raven preservation proof missing.' }
-if (@($proof.candidate3.files.PSObject.Properties).Count -ne 10) { throw 'Candidate 3 proof does not contain exactly ten files.' }
+Write-Host 'Checking Candidate 3 archived proof and current build output remain exact, offline-only, and pinned...'
+. $installer -LibraryOnly
+$validatedCandidate = Assert-Candidate3
+if (@($validatedCandidate.shas.Keys).Count -ne 10) { throw 'Candidate 3 validation did not return exactly ten files.' }
 
 Write-Host 'Running transaction engine only against a temporary fake game root...'
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $selfTest | Out-Host
@@ -48,9 +46,14 @@ Write-Host 'NORNIR_RUNTIME_CANDIDATE3_INSTALLER_OFFLINE_GATE_PASSED'
 Write-Host '  PowerShell syntax parsed: true'
 Write-Host '  Candidate 3 proof remains offline-only: true'
 Write-Host '  exact ten-file manifest pinned: true'
+Write-Host '  current Candidate 3 build output SHA-verified: true'
+Write-Host '  Candidate 2 artifact paths referenced: false'
 Write-Host '  transaction success/rollback fake-root proof: passed'
 Write-Host '  automatic partial-failure rollback fake-root proof: passed'
 Write-Host '  tamper refusal fake-root proof: passed'
+Write-Host '  corrupt-backup all-or-nothing fake-root proof: passed'
+Write-Host '  pending-entry, stale-active, and stale-force fake-root guards: passed'
+Write-Host '  manifest and path-topology fake-root guards: passed'
 Write-Host '  installed God of War files written: false'
 Write-Host '  Candidate 3 runtime test performed: false'
 Write-Host '  next: human review, then explicit -ConfirmRuntimeTest field install if approved'

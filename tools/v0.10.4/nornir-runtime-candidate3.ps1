@@ -43,6 +43,21 @@ function Get-FullPath([string]$Path) {
     return [IO.Path]::GetFullPath($Path)
 }
 
+function Assert-NoReparsePoint([string]$Path, [string]$Label) {
+    $full = Get-FullPath $Path
+    $volume = [IO.Path]::GetPathRoot($full)
+    $current = $volume
+    $tail = $full.Substring($volume.Length)
+    foreach ($segment in @($tail -split '[\\/]' | Where-Object { $_ -ne '' })) {
+        $current = Join-Path $current $segment
+        if (-not (Test-Path -LiteralPath $current)) { break }
+        $item = Get-Item -LiteralPath $current -Force
+        if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+            throw "$Label contains a reparse point: $current"
+        }
+    }
+}
+
 function Test-PathWithin([string]$Parent, [string]$Child) {
     $parentFull = (Get-FullPath $Parent).TrimEnd([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)
     $childFull = Get-FullPath $Child
@@ -51,10 +66,21 @@ function Test-PathWithin([string]$Parent, [string]$Child) {
     return $childFull.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)
 }
 
+function Get-SafeRelativePath([string]$Root, [string]$Path, [string]$Label) {
+    $rootFull = (Get-FullPath $Root).TrimEnd([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)
+    $pathFull = Get-FullPath $Path
+    if (-not (Test-PathWithin -Parent $rootFull -Child $pathFull) -or $pathFull.Equals($rootFull, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "$Label is not a child of its root: $Path"
+    }
+    return $pathFull.Substring($rootFull.Length + 1).Replace('\','/')
+}
+
 function Resolve-SafeChildPath([string]$Root, [string]$Relative, [string]$Label) {
     if ([IO.Path]::IsPathRooted($Relative)) { throw "$Label must be relative: $Relative" }
     $full = Get-FullPath (Join-Path $Root $Relative)
     if (-not (Test-PathWithin -Parent $Root -Child $full)) { throw "$Label escapes root: $Relative" }
+    Assert-NoReparsePoint -Path $Root -Label "$Label root"
+    Assert-NoReparsePoint -Path $full -Label $Label
     return $full
 }
 
@@ -63,16 +89,42 @@ function Assert-PathTopology([string]$Game, [string]$Candidate, [string]$State) 
     $candidateFull = Get-FullPath $Candidate
     $stateFull = Get-FullPath $State
     $repoFull = Get-FullPath $repo
-    if (-not (Test-PathWithin -Parent $repoFull -Child $candidateFull)) { throw 'Candidate root must stay inside the repository build tree.' }
-    if (-not (Test-PathWithin -Parent $repoFull -Child $stateFull)) { throw 'Transaction state must stay inside the repository build tree.' }
-    if (Test-PathWithin -Parent $gameFull -Child $candidateFull) { throw 'Candidate root must not be inside the installed game.' }
-    if (Test-PathWithin -Parent $gameFull -Child $stateFull) { throw 'Transaction state must not be inside the installed game.' }
-    if (Test-PathWithin -Parent $candidateFull -Child $gameFull) { throw 'Installed game must not be inside the Candidate 3 output tree.' }
+    $buildFull = Get-FullPath (Join-Path $repoFull 'build')
+    if (-not (Test-PathWithin -Parent $buildFull -Child $candidateFull)) { throw 'Candidate root must stay inside the repository build tree.' }
+    if (-not (Test-PathWithin -Parent $buildFull -Child $stateFull)) { throw 'Transaction state must stay inside the repository build tree.' }
+    foreach ($pair in @(
+        @('installed game', $gameFull, 'Candidate 3 output', $candidateFull),
+        @('installed game', $gameFull, 'transaction state', $stateFull),
+        @('Candidate 3 output', $candidateFull, 'transaction state', $stateFull)
+    )) {
+        if ((Test-PathWithin -Parent $pair[1] -Child $pair[3]) -or (Test-PathWithin -Parent $pair[3] -Child $pair[1])) {
+            throw "$($pair[0]) and $($pair[2]) paths must not overlap."
+        }
+    }
+    Assert-NoReparsePoint -Path $gameFull -Label 'installed game root'
+    Assert-NoReparsePoint -Path $candidateFull -Label 'Candidate 3 output root'
+    Assert-NoReparsePoint -Path $stateFull -Label 'transaction state root'
 }
 
-function Assert-GameClosed {
-    if (Get-Process -Name GoW -ErrorAction SilentlyContinue) { throw 'Close God of War first.' }
-    if (Get-Process -Name GodOfWar -ErrorAction SilentlyContinue) { throw 'Close God of War first.' }
+function Assert-GameClosed([string]$Game) {
+    $gameFull = if ([string]::IsNullOrWhiteSpace($Game)) { $null } else { Get-FullPath $Game }
+    foreach ($process in @(Get-Process -ErrorAction SilentlyContinue)) {
+        if ($process.ProcessName -in @('GoW','GodOfWar')) { throw 'Close God of War first.' }
+        if ($null -eq $gameFull) { continue }
+        try {
+            $processPath = [string]$process.Path
+            if (-not [string]::IsNullOrWhiteSpace($processPath) -and (Test-PathWithin -Parent $gameFull -Child $processPath)) {
+                throw "Close process running from the God of War root first: $($process.ProcessName)"
+            }
+        }
+        catch [System.Management.Automation.PropertyNotFoundException] {}
+        catch [System.ComponentModel.Win32Exception] {}
+    }
+}
+
+function Assert-GameRootIdentity([string]$Game) {
+    $executable = Resolve-SafeChildPath -Root $Game -Relative 'GoW.exe' -Label 'God of War executable'
+    if (-not (Test-Path -LiteralPath $executable -PathType Leaf)) { throw "God of War executable not found under game root: $executable" }
 }
 
 function Assert-Branch {
@@ -87,6 +139,22 @@ function Assert-TrackedTreeClean {
     if ($LASTEXITCODE -ne 0) { throw 'Tracked working-tree changes exist. Commit or revert them before Candidate 3 runtime work.' }
     & git -C $repo diff --cached --quiet --ignore-submodules --
     if ($LASTEXITCODE -ne 0) { throw 'Staged changes exist. Commit or unstage them before Candidate 3 runtime work.' }
+}
+
+function Get-RepoHead {
+    $head = (& git -C $repo rev-parse HEAD).Trim()
+    if ($LASTEXITCODE -ne 0 -or $head -notmatch '^[0-9a-fA-F]{40}$') { throw 'Could not determine Git HEAD.' }
+    return $head.ToLowerInvariant()
+}
+
+function Assert-RepoHead([string]$ExpectedHead) {
+    $actualHead = Get-RepoHead
+    if ($actualHead -ne $ExpectedHead.ToLowerInvariant()) { throw "Git HEAD changed during Candidate 3 transaction setup: $actualHead" }
+}
+
+function Assert-RavenProduction([string]$Game) {
+    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $verifyRaven -GameRoot $Game | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw 'Frozen Raven production verification failed. Candidate 3 was not installed.' }
 }
 
 function Write-JsonAtomic([object]$Value, [string]$Path) {
@@ -106,10 +174,15 @@ function Write-JsonAtomic([object]$Value, [string]$Path) {
 
 function Copy-Verified([string]$Source, [string]$Destination, [string]$ExpectedSha) {
     New-Item -ItemType Directory -Force -Path (Split-Path $Destination -Parent) | Out-Null
+    Assert-NoReparsePoint -Path $Source -Label 'copy source'
+    Assert-NoReparsePoint -Path (Split-Path $Destination -Parent) -Label 'copy destination parent'
+    Assert-NoReparsePoint -Path $Destination -Label 'copy destination'
     $temp = "$Destination.completionist-tmp-$([Guid]::NewGuid().ToString('N'))"
     try {
         Copy-Item -LiteralPath $Source -Destination $temp -Force
         if ((Get-Sha256 $temp) -ne $ExpectedSha.ToLowerInvariant()) { throw "Temporary SHA mismatch: $Destination" }
+        Assert-NoReparsePoint -Path (Split-Path $Destination -Parent) -Label 'copy destination parent'
+        Assert-NoReparsePoint -Path $Destination -Label 'copy destination'
         Move-Item -LiteralPath $temp -Destination $Destination -Force
         if ((Get-Sha256 $Destination) -ne $ExpectedSha.ToLowerInvariant()) { throw "Destination SHA mismatch: $Destination" }
     }
@@ -148,6 +221,23 @@ function Assert-ProofObject([object]$Proof) {
     if (($expected -join "`n") -ne ($actual -join "`n")) { throw 'Candidate 3 proof file set differs from the approved ten-file set.' }
 }
 
+function Get-ApprovedCandidate3Shas([object]$Proof) {
+    Assert-ProofObject $Proof
+    $approvedShas = [ordered]@{}
+    foreach ($name in $files.Keys) {
+        $relative = ([string]$files[$name]).Replace('\','/')
+        $property = $Proof.candidate3.files.PSObject.Properties[$relative]
+        if ($null -eq $property) { throw "Missing Candidate 3 proof entry: $relative" }
+        $sha = ([string]$property.Value.sha256).ToLowerInvariant()
+        if ($sha -notmatch '^[0-9a-f]{64}$') { throw "Invalid Candidate 3 proof SHA: $relative" }
+        $approvedShas[$name] = $sha
+    }
+    if ($approvedShas['r_ui.wad'] -ne $expectedCandidateWad -or $approvedShas['r_ui.wad'] -eq $retiredCandidate2Wad) {
+        throw 'Candidate 3 proof does not pin the approved Candidate 3 WAD.'
+    }
+    return $approvedShas
+}
+
 function Assert-Candidate3 {
     foreach ($required in @($candidateRoot, $archivedReport, $verifyRaven)) {
         if (-not (Test-Path -LiteralPath $required)) {
@@ -156,27 +246,20 @@ function Assert-Candidate3 {
     }
 
     $proof = Get-Content -LiteralPath $archivedReport -Raw | ConvertFrom-Json
-    Assert-ProofObject $proof
+    $candidateShas = Get-ApprovedCandidate3Shas $proof
 
     $diskFiles = @(Get-ChildItem -LiteralPath $candidateRoot -Recurse -File | ForEach-Object {
-        [IO.Path]::GetRelativePath($candidateRoot, $_.FullName).Replace('\','/')
+        Get-SafeRelativePath -Root $candidateRoot -Path $_.FullName -Label 'candidate file'
     } | Sort-Object)
     $approved = @($files.Values | ForEach-Object { ([string]$_).Replace('\','/') } | Sort-Object)
     if (($diskFiles -join "`n") -ne ($approved -join "`n")) { throw 'Candidate 3 output root contains a missing or unexpected file.' }
 
-    $candidateShas = [ordered]@{}
     foreach ($name in $files.Keys) {
         $relative = ([string]$files[$name]).Replace('\','/')
-        $property = $proof.candidate3.files.PSObject.Properties[$relative]
-        if ($null -eq $property) { throw "Missing Candidate 3 proof entry: $relative" }
-        $expectedSha = ([string]$property.Value.sha256).ToLowerInvariant()
+        $expectedSha = [string]$candidateShas[$name]
         $source = Resolve-SafeChildPath -Root $candidateRoot -Relative $relative -Label 'candidate source'
         if ((Get-Sha256 $source) -ne $expectedSha) { throw "Candidate 3 file SHA mismatch: $name" }
-        $candidateShas[$name] = $expectedSha
     }
-
-    if ($candidateShas['r_ui.wad'] -ne $expectedCandidateWad) { throw 'Candidate 3 r_ui.wad is not the approved Candidate 3 WAD.' }
-    if ($candidateShas['r_ui.wad'] -eq $retiredCandidate2Wad) { throw 'Retired Candidate 2 WAD detected.' }
     return [pscustomobject]@{ proof = $proof; shas = $candidateShas }
 }
 
@@ -193,9 +276,9 @@ function New-TransactionManifest(
     [string]$ProofPath
 ) {
     $transactionId = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ') + '-' + [Guid]::NewGuid().ToString('N').Substring(0,8)
-    $transactionRoot = Join-Path $State ('transactions\' + $transactionId)
-    $backupRoot = Join-Path $transactionRoot 'backup\game-root'
-    $transactionManifest = Join-Path $transactionRoot 'manifest.json'
+    $transactionRoot = Resolve-SafeChildPath -Root $State -Relative ('transactions/' + $transactionId) -Label 'transaction root'
+    $backupRoot = Resolve-SafeChildPath -Root $transactionRoot -Relative 'backup/game-root' -Label 'backup root'
+    $transactionManifest = Resolve-SafeChildPath -Root $transactionRoot -Relative 'manifest.json' -Label 'transaction manifest'
     New-Item -ItemType Directory -Force -Path $backupRoot | Out-Null
 
     $entries = @()
@@ -214,8 +297,7 @@ function New-TransactionManifest(
             $backupRelative = ('backup/game-root/' + $relative)
             $backup = Resolve-SafeChildPath -Root $transactionRoot -Relative $backupRelative -Label 'backup path'
             New-Item -ItemType Directory -Force -Path (Split-Path $backup -Parent) | Out-Null
-            Copy-Item -LiteralPath $dest -Destination $backup -Force
-            if ((Get-Sha256 $backup) -ne $beforeSha) { throw "Backup verification failed: $name" }
+            Copy-Verified -Source $dest -Destination $backup -ExpectedSha $beforeSha
         }
 
         $entries += [ordered]@{
@@ -225,11 +307,12 @@ function New-TransactionManifest(
             existed_before = [bool]$existed
             before_sha256 = $beforeSha
             backup_relative = $backupRelative
+            write_state = 'pending'
         }
     }
 
     $manifest = [ordered]@{
-        schema = 1
+        schema = 2
         candidate = $CandidateLabel
         transaction_id = $transactionId
         status = 'backup-complete'
@@ -264,17 +347,119 @@ function Save-TransactionManifest([object]$Manifest, [string]$Active) {
     Write-JsonAtomic $Manifest $Active
 }
 
+function Assert-RollbackStatus([string]$Status, [bool]$Force) {
+    $recoverable = @('backup-complete','installing','installed','rolling-back','rolling-back-after-install-failure','rollback-failed-after-install-failure')
+    $terminal = @('rolled-back','rolled-back-after-install-failure')
+    if ($Status -in $terminal) { throw "Candidate 3 transaction status '$Status' is terminal and cannot be rolled back again." }
+    if ($Status -notin $recoverable) { throw "Unknown Candidate 3 transaction status: '$Status'." }
+    if ($Status -ne 'installed' -and -not $Force) {
+        throw "Candidate 3 transaction status is '$Status', not 'installed'. Use -ForceRollback only after review."
+    }
+}
+
+function Assert-TransactionManifest(
+    [object]$Manifest,
+    [string]$Game,
+    [string]$Candidate,
+    [string]$State,
+    [string]$ProofPath,
+    [System.Collections.IDictionary]$FileMap,
+    [System.Collections.IDictionary]$CandidateShas,
+    [string]$CandidateLabel,
+    [string]$RepoBranch
+) {
+    if ([int]$Manifest.schema -ne 2) { throw 'Candidate 3 transaction manifest schema must be 2.' }
+    if ([string]$Manifest.candidate -ne $CandidateLabel) { throw "Active transaction belongs to a different candidate: $($Manifest.candidate)" }
+    if ([string]$Manifest.repo_branch -ne $RepoBranch) { throw 'Candidate 3 transaction branch does not match.' }
+    if ([string]$Manifest.transaction_id -notmatch '^\d{8}T\d{6}Z-[0-9a-f]{8}$') { throw 'Candidate 3 transaction ID is invalid.' }
+    if ((Get-FullPath ([string]$Manifest.game_root)) -ne (Get-FullPath $Game)) { throw "Transaction belongs to a different game root: $($Manifest.game_root)" }
+    if ((Get-FullPath ([string]$Manifest.candidate_root)) -ne (Get-FullPath $Candidate)) { throw 'Candidate 3 transaction candidate root does not match.' }
+    if ([string]$Manifest.archived_proof -ne $ProofPath) { throw 'Candidate 3 transaction proof path does not match.' }
+    if ([string]$Manifest.status -notin @('backup-complete','installing','installed','rolling-back','rolling-back-after-install-failure','rollback-failed-after-install-failure','rolled-back','rolled-back-after-install-failure')) {
+        throw "Unknown Candidate 3 transaction status: '$($Manifest.status)'."
+    }
+
+    $expectedTransactionRoot = Get-FullPath (Join-Path $State ('transactions\' + [string]$Manifest.transaction_id))
+    $actualTransactionRoot = Get-FullPath ([string]$Manifest.transaction_root)
+    if ($actualTransactionRoot -ne $expectedTransactionRoot -or -not (Test-PathWithin -Parent $State -Child $actualTransactionRoot)) {
+        throw 'Candidate 3 transaction root does not match its state root and transaction ID.'
+    }
+    Assert-NoReparsePoint -Path $actualTransactionRoot -Label 'transaction root'
+
+    $entries = @($Manifest.entries)
+    if ($entries.Count -ne @($FileMap.Keys).Count) { throw 'Candidate 3 transaction must contain exactly ten entries.' }
+    for ($index = 0; $index -lt $entries.Count; $index++) {
+        $entry = $entries[$index]
+        $name = [string]@($FileMap.Keys)[$index]
+        $relative = ([string]$FileMap[$name]).Replace('\','/')
+        if ([string]$entry.name -ne $name -or ([string]$entry.relative).Replace('\','/') -ne $relative) {
+            throw "Candidate 3 transaction entry order or path changed at index $index."
+        }
+        $expectedCandidateSha = ([string]$CandidateShas[$name]).ToLowerInvariant()
+        if ([string]$entry.candidate_sha256 -ne $expectedCandidateSha) { throw "Candidate 3 transaction SHA changed: $name" }
+        if ([string]$entry.write_state -notin @('pending','write-started','installed','restored')) { throw "Invalid write state: $name" }
+
+        if ([bool]$entry.existed_before) {
+            if ([string]$entry.before_sha256 -notmatch '^[0-9a-f]{64}$') { throw "Invalid pre-install SHA: $name" }
+            $expectedBackup = 'backup/game-root/' + $relative
+            if (([string]$entry.backup_relative).Replace('\','/') -ne $expectedBackup) { throw "Invalid backup path: $name" }
+            [void](Resolve-SafeChildPath -Root $actualTransactionRoot -Relative $expectedBackup -Label 'backup path')
+        }
+        else {
+            if ($null -ne $entry.before_sha256 -or $null -ne $entry.backup_relative) { throw "Unexpected backup metadata for new file: $name" }
+        }
+    }
+
+    $states = @($entries | ForEach-Object { [string]$_.write_state })
+    if ([string]$Manifest.status -eq 'backup-complete' -and @($states | Where-Object { $_ -ne 'pending' }).Count -ne 0) {
+        throw 'Backup-complete transaction contains a written entry.'
+    }
+    if ([string]$Manifest.status -eq 'installed' -and @($states | Where-Object { $_ -ne 'installed' }).Count -ne 0) {
+        throw 'Installed transaction does not mark every entry installed.'
+    }
+    if ([string]$Manifest.status -in @('rolled-back','rolled-back-after-install-failure') -and @($states | Where-Object { $_ -notin @('pending','restored') }).Count -ne 0) {
+        throw 'Rolled-back transaction contains an unrestored written entry.'
+    }
+}
+
+function Get-ValidatedActiveTransaction(
+    [string]$Active,
+    [string]$Game,
+    [string]$Candidate,
+    [string]$State,
+    [string]$ProofPath,
+    [System.Collections.IDictionary]$FileMap,
+    [System.Collections.IDictionary]$CandidateShas,
+    [string]$CandidateLabel,
+    [string]$RepoBranch
+) {
+    $activeValue = Get-Content -LiteralPath $Active -Raw | ConvertFrom-Json
+    Assert-TransactionManifest -Manifest $activeValue -Game $Game -Candidate $Candidate -State $State -ProofPath $ProofPath -FileMap $FileMap -CandidateShas $CandidateShas -CandidateLabel $CandidateLabel -RepoBranch $RepoBranch
+    $transactionPath = Resolve-SafeChildPath -Root ([string]$activeValue.transaction_root) -Relative 'manifest.json' -Label 'transaction manifest'
+    $transactionValue = Get-Content -LiteralPath $transactionPath -Raw | ConvertFrom-Json
+    Assert-TransactionManifest -Manifest $transactionValue -Game $Game -Candidate $Candidate -State $State -ProofPath $ProofPath -FileMap $FileMap -CandidateShas $CandidateShas -CandidateLabel $CandidateLabel -RepoBranch $RepoBranch
+    if ([string]$transactionValue.transaction_id -ne [string]$activeValue.transaction_id) { throw 'Active and transaction manifest IDs differ.' }
+    return $transactionValue
+}
+
 function Install-TransactionFiles(
     [object]$Manifest,
     [string]$Game,
     [string]$Candidate,
+    [string]$Active,
+    [scriptblock]$WriteGuard,
     [int]$FailureInjectionAfter = -1
 ) {
     $written = 0
     foreach ($entry in @($Manifest.entries)) {
         $source = Resolve-SafeChildPath -Root $Candidate -Relative ([string]$entry.relative) -Label 'candidate source'
         $dest = Resolve-SafeChildPath -Root $Game -Relative ([string]$entry.relative) -Label 'game destination'
+        $entry.write_state = 'write-started'
+        Save-TransactionManifest -Manifest $Manifest -Active $Active
+        if ($null -ne $WriteGuard) { & $WriteGuard }
         Copy-Verified -Source $source -Destination $dest -ExpectedSha ([string]$entry.candidate_sha256)
+        $entry.write_state = 'installed'
+        Save-TransactionManifest -Manifest $Manifest -Active $Active
         $written++
         if ($FailureInjectionAfter -ge 0 -and $written -ge $FailureInjectionAfter) {
             throw "SELF_TEST_INJECTED_FAILURE_AFTER_$written"
@@ -286,9 +471,27 @@ function Install-TransactionFiles(
     }
 }
 
-function Restore-State([object]$Manifest, [string]$Game, [bool]$CheckInstalled, [bool]$Force) {
+function Restore-State(
+    [object]$Manifest,
+    [string]$Game,
+    [string]$Candidate,
+    [string]$State,
+    [string]$Active,
+    [string]$ProofPath,
+    [System.Collections.IDictionary]$FileMap,
+    [System.Collections.IDictionary]$CandidateShas,
+    [string]$CandidateLabel,
+    [string]$RepoBranch,
+    [bool]$CheckInstalled,
+    [bool]$Force,
+    [scriptblock]$WriteGuard
+) {
+    Assert-TransactionManifest -Manifest $Manifest -Game $Game -Candidate $Candidate -State $State -ProofPath $ProofPath -FileMap $FileMap -CandidateShas $CandidateShas -CandidateLabel $CandidateLabel -RepoBranch $RepoBranch
+    $actionEntries = @($Manifest.entries | Where-Object { [string]$_.write_state -in @('write-started','installed') })
+
     if ($CheckInstalled -and -not $Force) {
-        foreach ($entry in @($Manifest.entries)) {
+        foreach ($entry in $actionEntries) {
+            if ([string]$entry.write_state -ne 'installed') { throw "Transaction write state is uncertain before rollback: $($entry.name)" }
             $dest = Resolve-SafeChildPath -Root $Game -Relative ([string]$entry.relative) -Label 'game destination'
             if (-not (Test-Path -LiteralPath $dest -PathType Leaf)) { throw "Installed file missing before rollback: $($entry.name)" }
             if ((Get-Sha256 $dest) -ne ([string]$entry.candidate_sha256).ToLowerInvariant()) {
@@ -297,23 +500,55 @@ function Restore-State([object]$Manifest, [string]$Game, [bool]$CheckInstalled, 
         }
     }
 
-    $reverse = @($Manifest.entries)
+    # Check every needed backup before first rollback write.
+    foreach ($entry in $actionEntries) {
+        if (-not [bool]$entry.existed_before) { continue }
+        $backup = Resolve-SafeChildPath -Root ([string]$Manifest.transaction_root) -Relative ([string]$entry.backup_relative) -Label 'backup path'
+        $beforeSha = ([string]$entry.before_sha256).ToLowerInvariant()
+        if ((Get-Sha256 $backup) -ne $beforeSha) { throw "Backup SHA mismatch: $($entry.name)" }
+    }
+
+    if ([string]$Manifest.status -in @('rolled-back','rolled-back-after-install-failure')) {
+        throw "Candidate 3 transaction status '$($Manifest.status)' is terminal and cannot be rolled back again."
+    }
+    if ([string]$Manifest.status -notin @('rolling-back','rolling-back-after-install-failure')) {
+        $Manifest.status = if ([string]$Manifest.status -eq 'installed') { 'rolling-back' } else { 'rolling-back-after-install-failure' }
+        Save-TransactionManifest -Manifest $Manifest -Active $Active
+    }
+
+    $reverse = @($actionEntries)
     [array]::Reverse($reverse)
     foreach ($entry in $reverse) {
         $dest = Resolve-SafeChildPath -Root $Game -Relative ([string]$entry.relative) -Label 'game destination'
+        $currentSha = if (Test-Path -LiteralPath $dest -PathType Leaf) { Get-Sha256 $dest } else { $null }
+        $candidateSha = ([string]$entry.candidate_sha256).ToLowerInvariant()
         if ([bool]$entry.existed_before) {
             $backup = Resolve-SafeChildPath -Root ([string]$Manifest.transaction_root) -Relative ([string]$entry.backup_relative) -Label 'backup path'
             $beforeSha = ([string]$entry.before_sha256).ToLowerInvariant()
-            if ((Get-Sha256 $backup) -ne $beforeSha) { throw "Backup SHA mismatch: $($entry.name)" }
-            Copy-Verified -Source $backup -Destination $dest -ExpectedSha $beforeSha
+            if ($currentSha -ne $beforeSha) {
+                if ($null -ne $currentSha -and $currentSha -ne $candidateSha -and (-not $Force -or [string]$entry.write_state -ne 'installed')) {
+                    throw "Destination changed during uncertain rollback state: $($entry.name)"
+                }
+                if ($null -ne $WriteGuard) { & $WriteGuard }
+                Copy-Verified -Source $backup -Destination $dest -ExpectedSha $beforeSha
+            }
         }
         else {
-            Remove-Item -LiteralPath $dest -Force -ErrorAction SilentlyContinue
-            if (Test-Path -LiteralPath $dest) { throw "Could not remove newly-created file: $($entry.name)" }
+            if ($null -ne $currentSha) {
+                if ($currentSha -ne $candidateSha -and (-not $Force -or [string]$entry.write_state -ne 'installed')) {
+                    throw "Refusing to remove non-Candidate 3 file during uncertain rollback state: $($entry.name)"
+                }
+                if ($null -ne $WriteGuard) { & $WriteGuard }
+                Assert-NoReparsePoint -Path $dest -Label 'rollback destination'
+                Remove-Item -LiteralPath $dest -Force
+                if (Test-Path -LiteralPath $dest) { throw "Could not remove newly-created file: $($entry.name)" }
+            }
         }
+        $entry.write_state = 'restored'
+        Save-TransactionManifest -Manifest $Manifest -Active $Active
     }
 
-    foreach ($entry in @($Manifest.entries)) {
+    foreach ($entry in $actionEntries) {
         $dest = Resolve-SafeChildPath -Root $Game -Relative ([string]$entry.relative) -Label 'game destination'
         if ([bool]$entry.existed_before) {
             if ((Get-Sha256 $dest) -ne ([string]$entry.before_sha256).ToLowerInvariant()) { throw "Rollback verification failed: $($entry.name)" }
@@ -335,13 +570,16 @@ function Invoke-TransactionalInstall(
     [string]$RepoBranch,
     [string]$RepoHead,
     [string]$ProofPath,
+    [scriptblock]$PreWriteValidation,
+    [scriptblock]$WriteGuard,
     [int]$FailureInjectionAfter = -1
 ) {
     $manifest = New-TransactionManifest -Game $Game -Candidate $Candidate -State $State -Active $Active -FileMap $FileMap -CandidateShas $CandidateShas -CandidateLabel $CandidateLabel -RepoBranch $RepoBranch -RepoHead $RepoHead -ProofPath $ProofPath
     try {
+        if ($null -ne $PreWriteValidation) { & $PreWriteValidation }
         $manifest.status = 'installing'
         Save-TransactionManifest -Manifest $manifest -Active $Active
-        Install-TransactionFiles -Manifest $manifest -Game $Game -Candidate $Candidate -FailureInjectionAfter $FailureInjectionAfter
+        Install-TransactionFiles -Manifest $manifest -Game $Game -Candidate $Candidate -Active $Active -WriteGuard $WriteGuard -FailureInjectionAfter $FailureInjectionAfter
         $manifest.status = 'installed'
         $manifest.installed_utc = (Get-Date).ToUniversalTime().ToString('o')
         Save-TransactionManifest -Manifest $manifest -Active $Active
@@ -350,7 +588,7 @@ function Invoke-TransactionalInstall(
     catch {
         $installError = $_.Exception.Message
         try {
-            Restore-State -Manifest $manifest -Game $Game -CheckInstalled $false -Force $true
+            Restore-State -Manifest $manifest -Game $Game -Candidate $Candidate -State $State -Active $Active -ProofPath $ProofPath -FileMap $FileMap -CandidateShas $CandidateShas -CandidateLabel $CandidateLabel -RepoBranch $RepoBranch -CheckInstalled $false -Force $false -WriteGuard $WriteGuard
             $manifest.status = 'rolled-back-after-install-failure'
             $manifest.rolled_back_utc = (Get-Date).ToUniversalTime().ToString('o')
             Save-TransactionManifest -Manifest $manifest -Active $Active
@@ -385,29 +623,41 @@ if ($Mode -eq 'Status') {
 
 if (-not (Test-Path -LiteralPath $GameRoot -PathType Container)) { throw "God of War root not found: $GameRoot" }
 Assert-PathTopology -Game $GameRoot -Candidate $candidateRoot -State $stateRoot
+Assert-GameRootIdentity -Game $GameRoot
 $branch = Assert-Branch
 Assert-TrackedTreeClean
-Assert-GameClosed
+Assert-GameClosed -Game $GameRoot
+$operationHead = Get-RepoHead
 
 if ($Mode -eq 'Install') {
     if (-not $ConfirmRuntimeTest) {
         throw 'Candidate 3 install is intentionally disarmed. Re-run with -ConfirmRuntimeTest only after reviewing the offline installer self-test and deciding to perform the controlled field test.'
     }
-    if (Test-Path -LiteralPath $activeManifest -PathType Leaf) {
-        $old = Get-Content -LiteralPath $activeManifest -Raw | ConvertFrom-Json
-        if ($old.status -in @('backup-complete','installing','installed','rollback-failed-after-install-failure')) {
-            throw "Active Candidate 3 transaction already exists with status '$($old.status)'. Resolve or roll it back first."
-        }
-    }
 
     $candidate = Assert-Candidate3
-    Write-Host 'Re-verifying frozen Raven production immediately before Candidate 3 install...'
-    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $verifyRaven -GameRoot $GameRoot | Out-Host
-    if ($LASTEXITCODE -ne 0) { throw 'Frozen Raven production verification failed. Candidate 3 was not installed.' }
+    if (Test-Path -LiteralPath $activeManifest -PathType Leaf) {
+        $old = Get-ValidatedActiveTransaction -Active $activeManifest -Game $GameRoot -Candidate $candidateRoot -State $stateRoot -ProofPath $archivedReport -FileMap $files -CandidateShas $candidate.shas -CandidateLabel 'nornir-runtime-candidate3' -RepoBranch $branch
+        if ([string]$old.status -notin @('rolled-back','rolled-back-after-install-failure')) { throw "Active Candidate 3 transaction already exists with status '$($old.status)'. Resolve or roll it back first." }
+    }
 
-    $head = (& git -C $repo rev-parse HEAD).Trim()
-    if ($LASTEXITCODE -ne 0) { throw 'Could not determine Git HEAD.' }
-    $manifest = Invoke-TransactionalInstall -Game $GameRoot -Candidate $candidateRoot -State $stateRoot -Active $activeManifest -FileMap $files -CandidateShas $candidate.shas -CandidateLabel 'nornir-runtime-candidate3' -RepoBranch $branch -RepoHead $head -ProofPath $archivedReport
+    Write-Host 'Re-verifying frozen Raven production immediately before Candidate 3 install...'
+    Assert-RavenProduction -Game $GameRoot
+
+    $preWriteValidation = {
+        [void](Assert-Branch)
+        Assert-RepoHead -ExpectedHead $operationHead
+        Assert-TrackedTreeClean
+        Assert-GameClosed -Game $GameRoot
+        Write-Host 'Re-verifying frozen Raven after backup and immediately before first Candidate 3 write...'
+        Assert-RavenProduction -Game $GameRoot
+        Assert-GameClosed -Game $GameRoot
+    }
+    $writeGuard = {
+        Assert-GameClosed -Game $GameRoot
+        Assert-RepoHead -ExpectedHead $operationHead
+        Assert-TrackedTreeClean
+    }
+    $manifest = Invoke-TransactionalInstall -Game $GameRoot -Candidate $candidateRoot -State $stateRoot -Active $activeManifest -FileMap $files -CandidateShas $candidate.shas -CandidateLabel 'nornir-runtime-candidate3' -RepoBranch $branch -RepoHead $operationHead -ProofPath $archivedReport -PreWriteValidation $preWriteValidation -WriteGuard $writeGuard
 
     Write-Host ''
     Write-Host 'NORNIR_RUNTIME_CANDIDATE3_INSTALLED'
@@ -423,14 +673,17 @@ if ($Mode -eq 'Install') {
 
 if ($Mode -eq 'Rollback') {
     if (-not (Test-Path -LiteralPath $activeManifest -PathType Leaf)) { throw 'No Candidate 3 transaction exists.' }
-    $manifest = Get-Content -LiteralPath $activeManifest -Raw | ConvertFrom-Json
-    if ($manifest.candidate -ne 'nornir-runtime-candidate3') { throw "Active transaction belongs to a different candidate: $($manifest.candidate)" }
-    if ($manifest.status -ne 'installed' -and -not $ForceRollback) {
-        throw "Candidate 3 transaction status is '$($manifest.status)', not 'installed'."
+    $proof = Get-Content -LiteralPath $archivedReport -Raw | ConvertFrom-Json
+    $approvedShas = Get-ApprovedCandidate3Shas $proof
+    $manifest = Get-ValidatedActiveTransaction -Active $activeManifest -Game $GameRoot -Candidate $candidateRoot -State $stateRoot -ProofPath $archivedReport -FileMap $files -CandidateShas $approvedShas -CandidateLabel 'nornir-runtime-candidate3' -RepoBranch $branch
+    Assert-RollbackStatus -Status ([string]$manifest.status) -Force ([bool]$ForceRollback)
+    Assert-GameClosed -Game $GameRoot
+    $writeGuard = {
+        Assert-GameClosed -Game $GameRoot
+        Assert-RepoHead -ExpectedHead $operationHead
+        Assert-TrackedTreeClean
     }
-    if ((Get-FullPath ([string]$manifest.game_root)) -ne (Get-FullPath $GameRoot)) { throw "Transaction belongs to a different game root: $($manifest.game_root)" }
-
-    Restore-State -Manifest $manifest -Game $GameRoot -CheckInstalled $true -Force ([bool]$ForceRollback)
+    Restore-State -Manifest $manifest -Game $GameRoot -Candidate $candidateRoot -State $stateRoot -Active $activeManifest -ProofPath $archivedReport -FileMap $files -CandidateShas $approvedShas -CandidateLabel 'nornir-runtime-candidate3' -RepoBranch $branch -CheckInstalled $true -Force ([bool]$ForceRollback) -WriteGuard $writeGuard
     $manifest.status = 'rolled-back'
     $manifest.rolled_back_utc = (Get-Date).ToUniversalTime().ToString('o')
     Save-TransactionManifest -Manifest $manifest -Active $activeManifest
