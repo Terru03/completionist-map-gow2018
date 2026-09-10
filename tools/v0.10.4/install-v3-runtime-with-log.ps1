@@ -30,8 +30,22 @@ function Write-Log([string]$Text = '') {
 function Invoke-Captured([string]$Label, [scriptblock]$Command) {
     Write-Log ""
     Write-Log "=== $Label ==="
-    $lines = & $Command 2>&1 | ForEach-Object { $_.ToString() }
-    $code = $LASTEXITCODE
+
+    # Windows PowerShell 5.1 can promote native stderr text to a terminating
+    # NativeCommandError when the caller uses ErrorActionPreference=Stop.  Git
+    # legitimately writes warnings (for example line-ending notices) to stderr,
+    # so capture native output with Continue and judge success solely by the
+    # process exit code.  The wrapper still throws on any non-zero exit code.
+    $oldPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        $lines = & $Command 2>&1 | ForEach-Object { $_.ToString() }
+        $code = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $oldPreference
+    }
+
     foreach ($line in $lines) { Write-Log $line }
     if ($code -ne 0) { throw "$Label failed (exit $code)." }
     return ,$lines
