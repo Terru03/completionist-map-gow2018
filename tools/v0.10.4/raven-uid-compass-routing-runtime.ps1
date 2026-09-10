@@ -34,6 +34,7 @@ $archivedReport = Join-Path $repo 'archive/field-logs/completionist-v104-raven-u
 $candidateLabel = 'raven-uid-compass-routing'
 $builder = Join-Path $PSScriptRoot 'build-raven-uid-compass-routing.py'
 $tests = Join-Path $PSScriptRoot 'test_raven_uid_compass_routing.py'
+$luaTests = Join-Path $PSScriptRoot 'test_raven_uid_compass_routing_lua.py'
 
 $files = [ordered]@{
     'mapmaster.dcb' = 'exec/dc/pc_le/mapmaster.dcb'
@@ -58,9 +59,10 @@ $sharedLoaderBinaryShas = [ordered]@{
 # Pin every source file that can affect this candidate. These are Git blob IDs, not
 # runtime resource IDs; they are used only to make the local offline build reproducible.
 $sourceBlobPins = [ordered]@{
-    'tools/v0.10.4/raven-uid-compass-routing.lua' = 'aaa64e75a015529545159262620d56c93e88cc08'
+    'tools/v0.10.4/raven-uid-compass-routing.lua' = '0cf5afb1f1e61ae8caed220b52cfda77ce8ce915'
     'tools/v0.10.4/build-raven-uid-compass-routing.py' = '878d8c1564715c5337c37476e8ddd2bec7e14217'
     'tools/v0.10.4/test_raven_uid_compass_routing.py' = '4ac6cb794312e5fe0ecfabf18be97d96fa0e2fb1'
+    'tools/v0.10.4/test_raven_uid_compass_routing_lua.py' = 'e963f4c62bc219aa445972e6f2179411545e4ec2'
     'tools/v0.10.4/build-raven-shared-loader.py' = '9a59bf573a9773923282f0f9bbb9f842487b67b2'
     'tools/v0.10.4/raven-shared-loader-twin.lua' = 'f785bf3dd02be40536a39d6b859209343ffec8f1'
     'tools/v0.10.4/build-raven-twin-stage-a-offline.py' = '861d5f1f2a867044e6b9b6cca844fb124ec17ee6'
@@ -104,6 +106,8 @@ function Invoke-OfflineBuildAndTests([string]$Game) {
         $env:COMPLETIONIST_RAVEN_ROOT = $Game
         & py.exe -3 $tests | Out-Host
         if ($LASTEXITCODE -ne 0) { throw 'UID-routing offline tests failed.' }
+        & py.exe -3 $luaTests | Out-Host
+        if ($LASTEXITCODE -ne 0) { throw 'UID-routing Lua 5.1 scope regression failed.' }
     }
     finally {
         if ($null -eq $oldRoot) { Remove-Item Env:COMPLETIONIST_RAVEN_ROOT -ErrorAction SilentlyContinue }
