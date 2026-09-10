@@ -1,0 +1,26 @@
+{
+    "schema":  1,
+    "result":  "RAVEN_TWIN_STAGE_A2_TRANSACTION_SELF_TEST_PASSED",
+    "tested_installer":  "tools/v0.10.4/raven-twin-stage-a2-runtime.ps1",
+    "derived_engine":  "tools/v0.10.4/nornir-runtime-candidate3.ps1@036628c",
+    "derived_engine_sha256":  "2be08999fbc529f3ac87f795cea33ac5d2bc16b62049480bd15de60a1be63add",
+    "approved_file_count":  4,
+    "approved_r_ui_sha256":  "4578112255a95e1d7014d3b42538531093c4e8e1f2ef4933e66b94aab1721d19",
+    "proofs":  {
+                   "exact_036628c_engine_pinned":  true,
+                   "exact_success_install":  true,
+                   "backup_complete_before_first_write":  true,
+                   "exact_success_rollback":  true,
+                   "partial_failure_automatic_rollback":  true,
+                   "abrupt_interruption_normal_recovery":  true,
+                   "tampered_install_refused_by_normal_rollback":  true,
+                   "force_rollback_used":  false
+               },
+    "safety":  {
+                   "fake_game_root_only":  true,
+                   "installed_god_of_war_written":  false,
+                   "god_of_war_launched":  false,
+                   "saves_progression_marker_state_written":  false,
+                   "runtime_installer_executed_against_game":  false
+               }
+}

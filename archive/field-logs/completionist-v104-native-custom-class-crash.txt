@@ -1,0 +1,264 @@
+Completionist Map v0.10.4 native custom-class crash capture
+Captured UTC: 2026-09-09T06:13:37.9966477Z
+User observation: CRASHED when adding the authored Raven to compass
+Control delta: native ShowMarker markerType DockPoint -> CompletionistRaven
+Installed control UTC: 2026-09-09T05:17:30.9414542Z
+mapmenu SHA256: 55e6ab3771417211cab670aaa4871e5f4083dac8f00f324d5584e803bb9a11a9
+mapcoords SHA256: 945774dbc965f45ad78b8408bb1d2b10a527c6390e4e7c1190e8f2d7538df3cb
+compassgraph SHA256: d0ed78ba4b91813c74dc6088a8521d332ea991e760b1c2600d6eeefc5fe60e68
+wad_r_perm SHA256: 7b4ebef237043e97822ffdfc2ba788b0414434514e9ead723622df0fc12a1961
+r_ui.wad SHA256: 5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60
+Custom Show-before lines: 1
+All native Show-return lines in log: 1
+All native Show-return-ok lines in log: 1
+All native manager-verify lines in log: 0
+Native coordinate/graph A/B remains installed and was previously user-proven to route/pathfind with DockPoint.
+No save/progression/marker-state files touched by collector.
+
+=== all v0.10.3-native lines ===
+[08:54:57] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 markerType=CompletionistRaven calls_on_load=false legacy_r3l3_for_raven=false prompt_async_guard=true 
+[08:55:11] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 markerType=CompletionistRaven calls_on_load=false legacy_r3l3_for_raven=false prompt_async_guard=true 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PREFLIGHT id=-2207208259907848386 state=0 wad=WAD_Xpl200_Funeral x=-64.875 y=12.984375 z=787.5 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_SHOW stage=before id=-2207208259907848386 markerType=CompletionistRaven 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_SHOW stage=lua_return ok=true error=nil 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PROMPT_REFRESH cursor=true footer=true visible=true intent=tracked text=[AdvanceButton] [MSG:40891] 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_RESULT request_queued=true active=true 
+
+=== recent CompletionistMap lines ===
+[08:54:57] [info] [CompletionistMap v0.10.1] MAP_SCRIPT_LOADED 
+[08:54:57] [info] [CompletionistMap v0.10.4-raven-registered-runtime] REGISTERED_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 mapResource=goMapIconCompletionistRaven compassType=DockPoint texpackLoaded=false dockProxyUsed=false callsOnLoad=false 
+[08:54:57] [info] [CompletionistMap v0.10.4-raven-artwork] ART_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 mapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true compassType=DockPoint dockProxyUsed=false progressionWritten=false 
+[08:54:57] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 markerType=CompletionistRaven calls_on_load=false legacy_r3l3_for_raven=false prompt_async_guard=true 
+[08:54:58] [info] [CompletionistMap v0.10.1] HUD_HOOK installed=true 
+[08:55:11] [info] [CompletionistMap v0.10.1] MAP_SCRIPT_LOADED 
+[08:55:11] [info] [CompletionistMap v0.10.4-raven-registered-runtime] REGISTERED_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 mapResource=goMapIconCompletionistRaven compassType=DockPoint texpackLoaded=false dockProxyUsed=false callsOnLoad=false 
+[08:55:11] [info] [CompletionistMap v0.10.4-raven-artwork] ART_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 mapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true compassType=DockPoint dockProxyUsed=false progressionWritten=false 
+[08:55:11] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 markerType=CompletionistRaven calls_on_load=false legacy_r3l3_for_raven=false prompt_async_guard=true 
+[08:55:11] [info] [CompletionistMap v0.10.1] HUD_HOOK installed=true 
+[08:55:14] [info] [CompletionistMap v0.10.1] RAVEN_STATE target=true source=OnRestoreCheckpoint killed=false regionQuest=RegionSummary_VF_Raven_Parent x=-64.850898742676 y=12.987384796143 z=787.30694580078 
+[08:55:14] [info] [CompletionistMap v0.10.1] NORNIR_CHEST source=OnStart activeIndex=nil name=chest_locked_parent keyType=Breakable state=nil opened=false puzzleRevealed=false challengeComplete=false keysUsed=1 x=-43.904609680176 y=14.5 z=748.57946777344 
+[08:55:14] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Breakable activeIndex=nil index=1 runeEnabledKnown=true runeEnabled=true broken=false ref=RunicLock01 name=runiclock01 x=-40.486217498779 y=16.5 z=743.48889160156 
+[08:55:14] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Breakable activeIndex=nil index=2 runeEnabledKnown=true runeEnabled=false broken=true ref=RunicLock02 name=runiclock02 x=-27.675853729248 y=16.294486999512 z=763.55865478516 
+[08:55:14] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Breakable activeIndex=nil index=3 runeEnabledKnown=true runeEnabled=true broken=false ref=RunicLock03 name=runiclock03 x=-15.035886764526 y=11.5 z=721.61047363281 
+[08:55:14] [info] [CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_SEND ok=true error=nil registryKey=chest_locked_parent|-43.904609680176|748.57946777344 
+[08:55:14] [info] [CompletionistMap v0.10.1] RAVEN_STATE target=true source=OnStart killed=false regionQuest=RegionSummary_VF_Raven_Parent x=-64.850898742676 y=12.987384796143 z=787.30694580078 
+[08:55:14] [info] [CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_RECV registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable opened=false challengeComplete=false keysUsed=1 
+[08:56:04] [info] [CompletionistMap v0.10.1] FILTER_MAPPING total=11 completionist=true 
+[08:56:04] [info] [CompletionistMap v0.10.1] MAP_CALIBRATION realm=Midgard worldX=-152.47120666504 worldY=7.4999976158142 worldZ=750.49426269531 mapX=3.0645203590393 mapY=-0.15561676025391 mapZ=1.2200809717178 
+[08:56:04] [info] [CompletionistMap v0.10.4-raven-artwork] ART_PREFLIGHT candidate=Completionist_V103_Veithurgard_Raven_01 id=-2207208259907848386 state=0 collected=false region=-6808215654220372037 regionType=userdata regionSource=FindRegionFromMarker.region expectedMapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[08:56:04] [info] [CompletionistMap v0.10.1] ICON_CAPS family=raven_artwork_layer go={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false,SetMaterialSwap=true} ui={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false} path=G:/SteamLibrary/steamapps/common/GodOfWar/mods/completionist-map/icons/generated/32/raven_artwork_layer.png 
+[08:56:04] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_REGISTRY source=ui_call_event 
+[08:56:04] [info] [CompletionistMap v0.10.1] BACKING_POOL count=22 first=2924516555722838670,3015224018432851104,-8580963607903916635,-8580963607903813648,-8580963607903819882,-8580963607903820923,-8580963607903817804,-8580963607903818837,-8580963607903824038,3665597207158594306,-7682859529157234129,2012662071676473320 
+[08:56:04] [info] [CompletionistMap v0.10.1] BACKING_ASSIGN slot=2 id=3015224018432851104 region=8898843836327563556 
+[08:56:04] [info] [CompletionistMap v0.10.1] ICON_CAPS family=nornir_chest go={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false,SetMaterialSwap=true} ui={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false} path=G:/SteamLibrary/steamapps/common/GodOfWar/mods/completionist-map/icons/generated/32/nornir_chest.png 
+[08:56:04] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_chest direct=false fallback=DockPointProxy 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_CHEST_PIN ok=true source=ui_call_event registryKey=chest_locked_parent|-43.904609680176|748.57946777344 backingId=3015224018432851104 mapX=3.0568611621857 mapZ=0.7858145236969 
+[08:56:04] [info] [CompletionistMap v0.10.1] BACKING_ASSIGN slot=10 id=3665597207158594306 region=8898843836327563556 
+[08:56:04] [info] [CompletionistMap v0.10.1] ICON_CAPS family=nornir_seal go={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false,SetMaterialSwap=true} ui={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false} path=G:/SteamLibrary/steamapps/common/GodOfWar/mods/completionist-map/icons/generated/32/nornir_seal.png 
+[08:56:04] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=1 backingId=3665597207158594306 mapX=3.0364987850189 mapZ=0.77214097976685 
+[08:56:04] [info] [CompletionistMap v0.10.1] BACKING_ASSIGN slot=11 id=-7682859529157234129 region=112041209474229565 
+[08:56:04] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=3 backingId=-7682859529157234129 mapX=2.9489850997925 mapZ=0.67033964395523 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_MAP count=2 source=ui_call_event 
+[08:56:04] [info] [CompletionistMap v0.10.1] SNAP_TUNING mode=native_scale_no_camera_snap customIconScale=1 
+[08:56:04] [info] [CompletionistMap v0.10.1] ALIAS_CHECK pair=raven_chest sameGO=false 
+[08:56:04] [info] [CompletionistMap v0.10.1] ALIAS_CHECK pair=raven_puzzle index=1 sameGO=false 
+[08:56:04] [info] [CompletionistMap v0.10.1] ALIAS_CHECK pair=puzzle_puzzle a=1 b=3 sameGO=false 
+[08:56:04] [info] [CompletionistMap v0.10.1] ALIAS_CHECK pair=raven_puzzle index=3 sameGO=false 
+[08:56:04] [info] [CompletionistMap v0.10.1] FILTER_CUSTOM_VISIBILITY filter=1 raven=true chest=true puzzleFilter=false puzzleAfterAttempt=true 
+[08:56:04] [info] [CompletionistMap v0.10.1] RAVEN_PIN_VERIFY expectedX=3.2117712497711 expectedZ=0.8695997595787 activeTargetType=Raven actual=x=3.2117712497711,y=-0.15561676025391,z=0.8695997595787 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=3 expectedX=2.9489850997925 expectedZ=0.67033964395523 actual=x=2.9489850997925,y=-0.15561676025391,z=0.67033964395523 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=1 expectedX=3.0364987850189 expectedZ=0.77214097976685 actual=x=3.0364987850189,y=-0.15561676025391,z=0.77214097976685 
+[08:56:05] [info] [CompletionistMap v0.10.1] MAP_COLLISION hit=true 
+[08:56:05] [info] [CompletionistMap v0.10.1] MAP_SELECTION active=true 
+[08:56:05] [info] [CompletionistMap v0.10.1] MAP_SNAP mode=native_cursor preservesZoom=true frame=165 
+[08:56:05] [info] [CompletionistMap v0.10.1] MAP_COLLISION hit=false_debounced 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PREFLIGHT id=-2207208259907848386 state=0 wad=WAD_Xpl200_Funeral x=-64.875 y=12.984375 z=787.5 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_SHOW stage=before id=-2207208259907848386 markerType=CompletionistRaven 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_SHOW stage=lua_return ok=true error=nil 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PROMPT_REFRESH cursor=true footer=true visible=true intent=tracked text=[AdvanceButton] [MSG:40891] 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_RESULT request_queued=true active=true 
+
+=== loader log tail (180 lines) ===
+[08:55:14] [trace] Restore a large mesh completed. bytes = 4822 islands = 2 triangles = 93
+[08:55:14] [trace] Restore a large mesh completed. bytes = 525 islands = 1 triangles = 12
+[08:55:14] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[08:55:14] [info] Loading lua script [Context: contextaction_basemodule, Path: gameart/scripts/levels/gameplaymodules/contextactions/contextaction_basemodule.lua]
+[08:55:14] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[08:55:14] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[08:55:14] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[08:55:14] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[08:55:14] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[08:55:14] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[08:55:14] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [info] Loading lua script [Context: checkpointzone, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/checkpointzone.lua]
+[08:55:14] [info] Loading lua script [Context: interact_chest_standard, Path: gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua]
+[08:55:14] [trace] Compiling new source code...
+[08:55:14] [info] Loading lua script [Context: lootchest_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootchest_redirect.lua]
+[08:55:14] [info] Loading lua script [Context: lootchest_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootchest_redirect.lua]
+[08:55:14] [trace] Restore a large mesh completed. bytes = 657 islands = 1 triangles = 8
+[08:55:14] [trace] Restore a large mesh completed. bytes = 1297 islands = 1 triangles = 24
+[08:55:14] [trace] Restore a large mesh completed. bytes = 10457 islands = 4 triangles = 200
+[08:55:14] [info] Loading lua script [Context: enemyspawner, Path: gameart/scripts/levels/gameplaymodules/combat/spawners/enemyspawner.lua]
+[08:55:14] [info] Loading lua script [Context: lootchest_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootchest_redirect.lua]
+[08:55:14] [trace] Restore a large mesh completed. bytes = 545 islands = 1 triangles = 8
+[08:55:14] [trace] Restore a large mesh completed. bytes = 1831 islands = 1 triangles = 50
+[08:55:14] [trace] Restore a large mesh completed. bytes = 3959 islands = 2 triangles = 108
+[08:55:14] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[08:55:14] [trace] Restore a large mesh completed. bytes = 1613 islands = 1 triangles = 44
+[08:55:14] [trace] Restore a large mesh completed. bytes = 1133 islands = 1 triangles = 20
+[08:55:14] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[08:55:14] [info] Loading lua script [Context: combatcollisionmanager, Path: gameart/scripts/levels/gameplaymodules/hazards/combatcollisionmanager.lua]
+[08:55:14] [info] Loading lua script [Context: genericsoninteract, Path: gameart/scripts/levels/gameplaymodules/soninteracts/templatescripts/genericsoninteract.lua]
+[08:55:14] [info] Loading lua script [Context: shook_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/shook_breakable.lua]
+[08:55:14] [info] Loading lua script [Context: hanginghazard_cutrope, Path: gameart/scripts/levels/gameplaymodules/hazards/hanginghazard_cutrope.lua]
+[08:55:14] [info] Loading lua script [Context: hangingloot_c, Path: gameart/scripts/levels/gameplaymodules/progression/hangingloot_c.lua]
+[08:55:14] [info] Loading lua script [Context: hanginghazard_cutrope, Path: gameart/scripts/levels/gameplaymodules/hazards/hanginghazard_cutrope.lua]
+[08:55:14] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[08:55:14] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[08:55:14] [info] Loading lua script [Context: consumableobject_scoop, Path: gameart/scripts/loot/consumableobject_scoop.lua]
+[08:55:14] [trace] Restore a large mesh completed. bytes = 1069 islands = 1 triangles = 20
+[08:55:14] [trace] Restore a large mesh completed. bytes = 8633 islands = 4 triangles = 152
+[08:55:14] [trace] Restore a large mesh completed. bytes = 2141 islands = 1 triangles = 36
+[08:55:14] [trace] Restore a large mesh completed. bytes = 1821 islands = 1 triangles = 36
+[08:55:14] [trace] Restore a large mesh completed. bytes = 1821 islands = 1 triangles = 36
+[08:55:14] [trace] Restore a large mesh completed. bytes = 2009 islands = 1 triangles = 40
+[08:55:14] [info] Loading lua script [Context: lootobject_scoop, Path: gameart/scripts/loot/lootobject_scoop.lua]
+[08:55:14] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[08:55:14] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[08:55:14] [info] Loading lua script [Context: leadthewayspline, Path: gameart/scripts/levelobjects/interactables/leadthewayspline.lua]
+[08:55:14] [trace] Restore a large mesh completed. bytes = 4263 islands = 2 triangles = 80
+[08:55:14] [trace] Restore a large mesh completed. bytes = 2551 islands = 2 triangles = 66
+[08:55:14] [info] Loading lua script [Context: interact_loot_corpse, Path: gameart/scripts/levels/gameplaymodules/progression/interact_loot_corpse.lua]
+[08:55:14] [info] Loading lua script [Context: lootcorpse_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootcorpse_redirect.lua]
+[08:55:14] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[08:55:14] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[08:55:14] [trace] Restore a large mesh completed. bytes = 525 islands = 1 triangles = 12
+[08:55:14] [trace] Restore a large mesh completed. bytes = 3795 islands = 2 triangles = 104
+[08:55:14] [trace] Restore a large mesh completed. bytes = 2637 islands = 2 triangles = 68
+[08:55:14] [trace] Restore a large mesh completed. bytes = 9605 islands = 8 triangles = 228
+[08:55:14] [trace] Restore a large mesh completed. bytes = 3231 islands = 2 triangles = 88
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [info] Loading lua script [Context: langcheckruneread, Path: gameart/scripts/levels/gameplaymodules/soninteracts/langcheckruneread.lua]
+[08:55:14] [info] Loading lua script [Context: questloremarker, Path: gameart/scripts/levels/gameplaymodules/progression/interactables/questloremarker.lua]
+[08:55:14] [trace] Restore a large mesh completed. bytes = 1613 islands = 1 triangles = 44
+[08:55:14] [trace] Restore a large mesh completed. bytes = 7667 islands = 4 triangles = 146
+[08:55:14] [info] Loading lua script [Context: consumableobject_scoop, Path: gameart/scripts/loot/consumableobject_scoop.lua]
+[08:55:14] [trace] Restore a large mesh completed. bytes = 2630 islands = 1 triangles = 47
+[08:55:14] [trace] Restore a large mesh completed. bytes = 243 islands = 1 triangles = 2
+[08:55:14] [info] Loading lua script [Context: skyfxmanager, Path: gameart/scripts/levels/global/skyfxmanager.lua]
+[08:55:14] [info] Loading lua script [Context: interactiveobject_twoway, Path: gameart/scripts/levels/gameplaymodules/interactive/templatescripts/interactiveobject_twoway.lua]
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [info] Loading lua script [Context: interactstonepedestal, Path: gameart/scripts/levels/gameplaymodules/progression/interactstonepedestal.lua]
+[08:55:14] [info] Loading lua script [Context: basicswitch, Path: gameart/scripts/levels/gameplaymodules/interactive/basicswitch.lua]
+[08:55:14] [info] Loading lua script [Context: basicswitch, Path: gameart/scripts/levels/gameplaymodules/interactive/basicswitch.lua]
+[08:55:14] [trace] Restore a large mesh completed. bytes = 1069 islands = 1 triangles = 20
+[08:55:14] [trace] Restore a large mesh completed. bytes = 505 islands = 1 triangles = 8
+[08:55:14] [trace] Restore a large mesh completed. bytes = 545 islands = 1 triangles = 8
+[08:55:14] [info] Loading lua script [Context: crankscriptofficial, Path: gameart/scripts/levels/gameplaymodules/interactive/cranks/crankscriptofficial.lua]
+[08:55:14] [trace] Restore a large mesh completed. bytes = 1154 islands = 1 triangles = 19
+[08:55:14] [info] Loading lua script [Context: interact_triptych, Path: gameart/scripts/levels/gameplaymodules/interactive/triptychs/interact_triptych.lua]
+[08:55:14] [trace] Restore a large mesh completed. bytes = 14339 islands = 8 triangles = 384
+[08:55:14] [trace] Restore a large mesh completed. bytes = 11875 islands = 8 triangles = 318
+[08:55:14] [trace] Restore a large mesh completed. bytes = 17549 islands = 16 triangles = 456
+[08:55:14] [trace] Restore a large mesh completed. bytes = 26079 islands = 16 triangles = 696
+[08:55:14] [trace] Restore a large mesh completed. bytes = 6737 islands = 4 triangles = 180
+[08:55:14] [trace] Restore a large mesh completed. bytes = 2573 islands = 1 triangles = 52
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [trace] Restore a large mesh completed. bytes = 525 islands = 1 triangles = 12
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [trace] Restore a large mesh completed. bytes = 891 islands = 1 triangles = 20
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [trace] Restore a large mesh completed. bytes = 3415 islands = 2 triangles = 64
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:14] [trace] Restore a large mesh completed. bytes = 693 islands = 1 triangles = 12
+[08:55:15] [trace] Restore a large mesh completed. bytes = 1869 islands = 1 triangles = 36
+[08:55:15] [trace] Restore a large mesh completed. bytes = 683 islands = 1 triangles = 10
+[08:55:15] [trace] Restore a large mesh completed. bytes = 683 islands = 1 triangles = 10
+[08:55:15] [trace] Restore a large mesh completed. bytes = 243 islands = 1 triangles = 2
+[08:55:15] [trace] Restore a large mesh completed. bytes = 381 islands = 1 triangles = 4
+[08:55:15] [trace] Restore a large mesh completed. bytes = 188856 islands = 128 triangles = 4829
+[08:55:15] [trace] Restore a large mesh completed. bytes = 58786 islands = 32 triangles = 1031
+[08:55:15] [trace] Restore a large mesh completed. bytes = 3181 islands = 2 triangles = 58
+[08:55:15] [trace] Restore a large mesh completed. bytes = 229663 islands = 128 triangles = 4146
+[08:55:15] [trace] Restore a large mesh completed. bytes = 57864 islands = 32 triangles = 977
+[08:55:15] [trace] Restore a large mesh completed. bytes = 7081 islands = 4 triangles = 116
+[08:55:15] [trace] Restore a large mesh completed. bytes = 243 islands = 1 triangles = 2
+[08:55:15] [trace] Restore a large mesh completed. bytes = 32529 islands = 16 triangles = 794
+[08:55:15] [trace] Restore a large mesh completed. bytes = 10017 islands = 4 triangles = 180
+[08:55:15] [trace] Restore a large mesh completed. bytes = 557 islands = 1 triangles = 8
+[08:55:15] [trace] Restore a large mesh completed. bytes = 821 islands = 1 triangles = 12
+[08:55:15] [trace] Restore a large mesh completed. bytes = 353 islands = 1 triangles = 4
+[08:55:15] [trace] Restore a large mesh completed. bytes = 243 islands = 1 triangles = 2
+[08:55:15] [trace] Restore a large mesh completed. bytes = 243 islands = 1 triangles = 2
+[08:55:15] [info] Loading lua script [Context: xpl250_funeralinterior, Path: gameart/scripts/levels/exploration/xpl250_funeralinterior/xpl250_funeralinterior.lua]
+[08:55:15] [info] Chest - Unpickle 
+[08:55:15] [info] idle 
+[08:55:15] [info] PLAYING LOOP 
+[08:55:16] [info] Breath playing 
+[08:55:16] [info] SPAM CHECK MAKE SURE ITS OFF 
+[08:55:16] [info] Bare 
+[08:55:16] [info] MimirHead: Weapon 'gomimirhead00' LeftEye: GameObject 'gomimir00_eyeleft' Showing Mimir's Eye Joint Number: 12 
+[08:55:16] [info] Axe 
+[08:55:16] [info] Axe 
+[08:55:16] [info] Axe 
+[08:55:16] [info] Axe 
+[08:55:16] [info] Axe 
+[08:55:16] [info] Axe 
+[08:55:16] [info] Axe 
+[08:55:16] [info] Axe 
+[08:55:16] [info] Axe 
+[08:55:16] [info] Kratos was legitimately not holding the blades on load 
+[08:55:28] [info] Angle: -142.61106872559  Direction: 3  Direction 6 way: 4 
+[08:55:28] [info] Distance: 2.3814015388489  CA_Distance: 1 
+[08:55:41] [info] Angle: -142.61106872559  Direction: 3  Direction 6 way: 4 
+[08:55:41] [info] Distance: 2.3814015388489  CA_Distance: 1 
+[08:55:52] [info] Angle: -142.61106872559  Direction: 3  Direction 6 way: 4 
+[08:55:52] [info] Distance: 2.3814015388489  CA_Distance: 1 
+[08:56:04] [info] [CompletionistMap v0.10.1] FILTER_MAPPING total=11 completionist=true 
+[08:56:04] [info] [CompletionistMap v0.10.1] MAP_CALIBRATION realm=Midgard worldX=-152.47120666504 worldY=7.4999976158142 worldZ=750.49426269531 mapX=3.0645203590393 mapY=-0.15561676025391 mapZ=1.2200809717178 
+[08:56:04] [info] [CompletionistMap v0.10.4-raven-artwork] ART_PREFLIGHT candidate=Completionist_V103_Veithurgard_Raven_01 id=-2207208259907848386 state=0 collected=false region=-6808215654220372037 regionType=userdata regionSource=FindRegionFromMarker.region expectedMapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[08:56:04] [info] [CompletionistMap v0.10.1] ICON_CAPS family=raven_artwork_layer go={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false,SetMaterialSwap=true} ui={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false} path=G:/SteamLibrary/steamapps/common/GodOfWar/mods/completionist-map/icons/generated/32/raven_artwork_layer.png 
+[08:56:04] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_REGISTRY source=ui_call_event 
+[08:56:04] [info] [CompletionistMap v0.10.1] BACKING_POOL count=22 first=2924516555722838670,3015224018432851104,-8580963607903916635,-8580963607903813648,-8580963607903819882,-8580963607903820923,-8580963607903817804,-8580963607903818837,-8580963607903824038,3665597207158594306,-7682859529157234129,2012662071676473320 
+[08:56:04] [info] [CompletionistMap v0.10.1] BACKING_ASSIGN slot=2 id=3015224018432851104 region=8898843836327563556 
+[08:56:04] [info] [CompletionistMap v0.10.1] ICON_CAPS family=nornir_chest go={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false,SetMaterialSwap=true} ui={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false} path=G:/SteamLibrary/steamapps/common/GodOfWar/mods/completionist-map/icons/generated/32/nornir_chest.png 
+[08:56:04] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_chest direct=false fallback=DockPointProxy 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_CHEST_PIN ok=true source=ui_call_event registryKey=chest_locked_parent|-43.904609680176|748.57946777344 backingId=3015224018432851104 mapX=3.0568611621857 mapZ=0.7858145236969 
+[08:56:04] [info] [CompletionistMap v0.10.1] BACKING_ASSIGN slot=10 id=3665597207158594306 region=8898843836327563556 
+[08:56:04] [info] [CompletionistMap v0.10.1] ICON_CAPS family=nornir_seal go={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false,SetMaterialSwap=true} ui={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false} path=G:/SteamLibrary/steamapps/common/GodOfWar/mods/completionist-map/icons/generated/32/nornir_seal.png 
+[08:56:04] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=1 backingId=3665597207158594306 mapX=3.0364987850189 mapZ=0.77214097976685 
+[08:56:04] [info] [CompletionistMap v0.10.1] BACKING_ASSIGN slot=11 id=-7682859529157234129 region=112041209474229565 
+[08:56:04] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=3 backingId=-7682859529157234129 mapX=2.9489850997925 mapZ=0.67033964395523 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_MAP count=2 source=ui_call_event 
+[08:56:04] [info] [CompletionistMap v0.10.1] SNAP_TUNING mode=native_scale_no_camera_snap customIconScale=1 
+[08:56:04] [info] [CompletionistMap v0.10.1] ALIAS_CHECK pair=raven_chest sameGO=false 
+[08:56:04] [info] [CompletionistMap v0.10.1] ALIAS_CHECK pair=raven_puzzle index=1 sameGO=false 
+[08:56:04] [info] [CompletionistMap v0.10.1] ALIAS_CHECK pair=puzzle_puzzle a=1 b=3 sameGO=false 
+[08:56:04] [info] [CompletionistMap v0.10.1] ALIAS_CHECK pair=raven_puzzle index=3 sameGO=false 
+[08:56:04] [info] [CompletionistMap v0.10.1] FILTER_CUSTOM_VISIBILITY filter=1 raven=true chest=true puzzleFilter=false puzzleAfterAttempt=true 
+[08:56:04] [info] [CompletionistMap v0.10.1] RAVEN_PIN_VERIFY expectedX=3.2117712497711 expectedZ=0.8695997595787 activeTargetType=Raven actual=x=3.2117712497711,y=-0.15561676025391,z=0.8695997595787 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=3 expectedX=2.9489850997925 expectedZ=0.67033964395523 actual=x=2.9489850997925,y=-0.15561676025391,z=0.67033964395523 
+[08:56:04] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=1 expectedX=3.0364987850189 expectedZ=0.77214097976685 actual=x=3.0364987850189,y=-0.15561676025391,z=0.77214097976685 
+[08:56:05] [info] [CompletionistMap v0.10.1] MAP_COLLISION hit=true 
+[08:56:05] [info] [CompletionistMap v0.10.1] MAP_SELECTION active=true 
+[08:56:05] [info] [CompletionistMap v0.10.1] MAP_SNAP mode=native_cursor preservesZoom=true frame=165 
+[08:56:05] [info] [CompletionistMap v0.10.1] MAP_COLLISION hit=false_debounced 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PREFLIGHT id=-2207208259907848386 state=0 wad=WAD_Xpl200_Funeral x=-64.875 y=12.984375 z=787.5 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_SHOW stage=before id=-2207208259907848386 markerType=CompletionistRaven 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_SHOW stage=lua_return ok=true error=nil 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_PROMPT_REFRESH cursor=true footer=true visible=true intent=tracked text=[AdvanceButton] [MSG:40891] 
+[08:56:06] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_RESULT request_queued=true active=true 
