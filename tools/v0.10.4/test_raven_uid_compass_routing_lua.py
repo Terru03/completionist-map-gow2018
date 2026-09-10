@@ -115,6 +115,7 @@ return {
     return s and s.IdString or nil
   end,
   customId=function() return customIds[1] end,
+  loseRealInfo=function() markerInfo.Completionist_V103_Veithurgard_Raven_01=nil end,
   stock=function() stockIds={"dock-id"}; self.currShownMarkerID="dock-id" end,
   delay=function() delayShow=true end,
   flush=function() if delayedShow then customIds={delayedShow}; delayedShow=nil end end,
@@ -297,6 +298,16 @@ class RavenUidRoutingLuaTests(unittest.TestCase):
             self.probe.self.mapIconCollision = go
             self.probe.action()
             self.assertEqual(self.probe.customId(), uid)
+
+    def test_completion_cleans_cached_real_identity_when_lookup_disappears(self):
+        self.probe.self.mapIconCollision = self.probe.ravenGO
+        self.probe.action()
+        self.probe.loseRealInfo()
+        self.probe.setCollected(True)
+        self.probe.observe()
+        self.assertIsNone(self.probe.customId())
+        self.assertIsNone(self.probe.self.currShownMarkerID)
+        self.assertIsNone(self.probe.selectedName())
 
 if __name__ == "__main__":
     unittest.main()

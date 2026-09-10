@@ -1,16 +1,7 @@
 -- BEGIN COMPLETIONIST V0.10.4 UID-AWARE RAVEN COMPASS ROUTING
--- Runtime hypothesis probe layered on the proven shared-loader Twin.
---
--- Both map pins intentionally share goMapIconCompletionistRaven. Therefore GO name
--- cannot identify which marker was clicked. The shared-loader keeps the exact live
--- GO references on the map view, so the globally available MapOn prompt/action path
--- can distinguish original and Twin from mapIconCollision without depending on the
--- lexical MapRecordView class. Native marker Id/Name then comes from Map.GetMarkerInfo
--- and the selected marker Name is routed through CompletionistRaven.
---
--- V2 also observes the already-proven production Raven completion oracle. It never
--- writes progression or marker state: completion only clears an active original-Raven
--- compass target and local routing selection. The independent Twin remains untouched.
+-- Keep proven exact-GO / native-UID route and Raven art.
+-- Observe native hit/start/restore; clean only real target on completion.
+-- Twin map lifetime follows view teardown. No progression writes.
 do
   local prefix = "[CompletionistMap v0.10.4-uid-lifecycle-v3] "
   local ravenName = "Completionist_V103_Veithurgard_Raven_01"
@@ -21,6 +12,7 @@ do
   local previousUpdate = MapOn.Update
   local pending = nil
   local lastMapOnSelf = nil
+  local knownRavenIdentity = nil
   local completionObserved = nil
   local completionHideRequested = false
   local completionNeedsHide = false
@@ -44,7 +36,7 @@ do
   local function identity(name)
     local info = markerInfo(name)
     if info == nil then return nil end
-    return {
+    local result = {
       Name = name,
       Id = info.Id,
       IdString = tostring(info.Id),
@@ -52,6 +44,8 @@ do
       Y = info.Y,
       Z = info.Z,
     }
+    if name == ravenName then knownRavenIdentity = result end
+    return result
   end
 
   -- Production bridge publishes real script state on hit/start/restore.
@@ -255,7 +249,7 @@ do
     end
     if completionObserved == true then return true, false end
 
-    local original = identity(ravenName)
+    local original = identity(ravenName) or knownRavenIdentity
     local trackedReal = _G.CompletionistMapV104UidRavenTrackedName == ravenName
     local queuedReal = original ~= nil and pending ~= nil and
       pending.IdString == original.IdString and pending.State == "tracked"
