@@ -31,8 +31,8 @@ BRANCH = "codex/v104-raven-uid-compass-routing-v2"
 BASE_HEAD = "4fa06adc412f5e2c1e8e84f0a4769d57319b63b7"
 SHARED_LOADER_RUNTIME_SUCCESS_HEAD = "e29b841b2e8799ebe90780413c8330755415183f"
 RESULT = "RAVEN_UID_COMPASS_ROUTING_V2_OFFLINE_PROOF_PASSED"
-OUTPUT = REPO / "build/v0.10.4-raven-uid-compass-routing/offline/candidate/game-root"
-REPORT = REPO / "archive/field-logs/completionist-v104-raven-uid-compass-routing-offline.json"
+OUTPUT = REPO / "build/v0.10.4-raven-uid-compass-routing-v2/offline/candidate/game-root"
+REPORT = REPO / "archive/field-logs/completionist-v104-raven-uid-compass-routing-v2-offline.json"
 LUA = shared.LUA
 
 
