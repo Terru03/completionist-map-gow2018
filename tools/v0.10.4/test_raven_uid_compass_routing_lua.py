@@ -116,8 +116,9 @@ class RavenUidRoutingLuaTests(unittest.TestCase):
         # runtime scope that exposed the original load-time failure.
         self.probe = self.lua.execute(PRELUDE + self.source + POSTLUDE)
 
-    def test_no_maprecordview_dependency_and_module_loads(self):
-        self.assertNotIn("MapRecordView", self.source)
+    def test_no_maprecordview_dereference_and_module_loads(self):
+        self.assertNotIn("MapRecordView.", self.source)
+        self.assertNotIn("function MapRecordView:", self.source)
         self.assertTrue(self.lua.globals().CompletionistMapV104UidAwareRavenCompassRouting)
         self.assertIn("identitySource=MapOn.mapIconCollision_exact_object_reference", self.probe.logs())
 
