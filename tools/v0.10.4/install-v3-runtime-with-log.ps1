@@ -32,10 +32,9 @@ function Invoke-Captured([string]$Label, [scriptblock]$Command) {
     Write-Log "=== $Label ==="
 
     # Windows PowerShell 5.1 can promote native stderr text to a terminating
-    # NativeCommandError when the caller uses ErrorActionPreference=Stop.  Git
-    # legitimately writes warnings (for example line-ending notices) to stderr,
-    # so capture native output with Continue and judge success solely by the
-    # process exit code.  The wrapper still throws on any non-zero exit code.
+    # NativeCommandError when the caller uses ErrorActionPreference=Stop. Git
+    # legitimately writes warnings to stderr, so capture native output with
+    # Continue and judge success solely by the process exit code.
     $oldPreference = $ErrorActionPreference
     try {
         $ErrorActionPreference = 'Continue'
@@ -74,16 +73,32 @@ try {
         Write-Log "pretest_loader_log_sha256=$((Get-FileHash -LiteralPath $LoaderLog -Algorithm SHA256).Hash.ToLowerInvariant())"
     }
 
-    Invoke-Captured 'V3 STATUS BEFORE INSTALL' {
+    $statusBefore = Invoke-Captured 'V3 STATUS BEFORE INSTALL' {
         & powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\tools\v0.10.4\raven-uid-compass-lifecycle-v3-runtime.ps1' -Mode Status -GameRoot $GameRoot
     }
 
-    Invoke-Captured 'V3 INSTALL' {
-        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\tools\v0.10.4\raven-uid-compass-lifecycle-v3-runtime.ps1' -Mode Install -GameRoot $GameRoot -ConfirmRuntimeTest
+    $alreadyInstalled = @($statusBefore | Where-Object { $_ -match '^\s*status:\s*installed\s*$' }).Count -gt 0
+    $noActive = @($statusBefore | Where-Object { $_ -match '^\s*active transaction:\s*none\s*$' }).Count -gt 0
+
+    if ($alreadyInstalled) {
+        Write-Log ''
+        Write-Log 'V3 is already installed; skipping duplicate install.'
+    }
+    elseif ($noActive) {
+        Invoke-Captured 'V3 INSTALL' {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\tools\v0.10.4\raven-uid-compass-lifecycle-v3-runtime.ps1' -Mode Install -GameRoot $GameRoot -ConfirmRuntimeTest
+        }
+    }
+    else {
+        throw 'V3 has an active transaction in an unexpected non-installed state. Review before retrying.'
     }
 
-    Invoke-Captured 'V3 STATUS AFTER INSTALL' {
+    $statusAfter = Invoke-Captured 'V3 STATUS AFTER INSTALL' {
         & powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\tools\v0.10.4\raven-uid-compass-lifecycle-v3-runtime.ps1' -Mode Status -GameRoot $GameRoot
+    }
+
+    if (@($statusAfter | Where-Object { $_ -match '^\s*status:\s*installed\s*$' }).Count -eq 0) {
+        throw 'V3 status after install does not report installed.'
     }
 
     $Succeeded = $true
