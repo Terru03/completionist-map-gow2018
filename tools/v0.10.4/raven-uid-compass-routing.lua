@@ -12,7 +12,7 @@
 -- writes progression or marker state: completion only clears an active original-Raven
 -- compass target and local routing selection. The independent Twin remains untouched.
 do
-  local prefix = "[CompletionistMap v0.10.4-uid-routing-v2] "
+  local prefix = "[CompletionistMap v0.10.4-uid-lifecycle-v3] "
   local ravenName = "Completionist_V103_Veithurgard_Raven_01"
   local twinName = "Completionist_V104_Veithurgard_Raven_Twin_01"
   local ravenClass = "CompletionistRaven"
@@ -21,7 +21,9 @@ do
   local previousUpdate = MapOn.Update
   local pending = nil
   local lastMapOnSelf = nil
-  local completionObserved = false
+  local completionObserved = nil
+  local completionHideRequested = false
+  local completionNeedsHide = false
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
@@ -52,12 +54,22 @@ do
     }
   end
 
+  -- Production bridge publishes real script state on hit/start/restore.
+  -- False from restore must win over stale quest/cache state.
+  CompletionistMapV100_IsRavenCollected = function()
+    local state = _G.CompletionistMapV100TargetRavenKilled
+    if type(state) == "boolean" then return state end
+    local ok, quest = pcall(function()
+      return game.QuestManager.GetQuestState("RegionSummary_VF_Raven_Parent")
+    end)
+    if not ok or quest == nil then return nil end
+    return tostring(quest) == "Complete"
+  end
+
   local function originalCollected()
-    local oracle = _G.CompletionistMapV100_IsRavenCollected
-    if oracle == nil then return false, "oracle_missing" end
-    local ok, value = pcall(oracle)
-    if not ok then return false, tostring(value) end
-    return value == true, nil
+    local ok, value = pcall(CompletionistMapV100_IsRavenCollected)
+    if not ok or type(value) ~= "boolean" then return nil, "oracle_unavailable" end
+    return value, nil
   end
 
   local function selectedIdentity(self)
@@ -74,7 +86,7 @@ do
     end
     if self.completionistMapV100MapIconGO ~= nil and collision == self.completionistMapV100MapIconGO then
       local collected = originalCollected()
-      if collected then return nil, "raven_collected" end
+      if collected ~= false then return nil, "raven_collected" end
       return identity(ravenName), "raven_object_reference"
     end
     return nil, nil
@@ -87,7 +99,12 @@ do
     if collision == nil then
       -- Footer/action dispatch can occur after the collision frame. Preserve the last
       -- custom identity only while there is no newer non-custom collision to disprove it.
-      return selectedIdentity(self)
+      local selected = selectedIdentity(self)
+      if selected ~= nil and selected.Name == ravenName and originalCollected() ~= false then
+        self.completionistMapV104SelectedRavenIdentity = nil
+        return nil
+      end
+      return selected
     end
 
     local routed, source = collisionIdentity(self, collision)
@@ -225,60 +242,71 @@ do
     log("PROMPT_REFRESH", "visible=" .. tostring(show) .. " text=" .. tostring(text))
   end
 
-  local function observeOriginalCompletion(reason)
-    if completionObserved then return true end
-    local collected, oracleErr = originalCollected()
-    if not collected then
-      if oracleErr ~= nil and oracleErr ~= "oracle_missing" then
-        log("LIFECYCLE_ORACLE", "ok=false error=" .. tostring(oracleErr))
-      end
-      return false
+  local function observeOriginalCompletion(reason, liveState)
+    local collected = originalCollected()
+    if type(liveState) == "boolean" then collected = liveState end
+    if collected == nil then return false, false end
+    if collected == false then
+      if completionObserved == true then log("LIFECYCLE_REARM", "reason=" .. tostring(reason)) end
+      completionObserved = false
+      completionHideRequested = false
+      completionNeedsHide = false
+      return false, false
     end
+    if completionObserved == true then return true, false end
 
-    completionObserved = true
     local original = identity(ravenName)
-    local hideAttempted = false
-    local hideOK = true
-    local hideErr = nil
-    if original ~= nil then
-      local shown, queryOK, queryErr = customShown(original)
-      if queryOK and shown then
-        hideAttempted = true
-        hideOK, hideErr = pcall(function()
-          game.Compass.HideMarker(ravenName)
-        end)
-      elseif not queryOK then
-        hideOK = false
-        hideErr = queryErr
-      end
-
-      if pending ~= nil and pending.IdString == original.IdString then
-        pending = nil
-      end
-      if lastMapOnSelf ~= nil then
-        local selected = selectedIdentity(lastMapOnSelf)
-        if selected ~= nil and selected.IdString == original.IdString then
-          lastMapOnSelf.completionistMapV104SelectedRavenIdentity = nil
-        end
-        if lastMapOnSelf.currShownMarkerID ~= nil and
-           tostring(lastMapOnSelf.currShownMarkerID) == original.IdString then
-          lastMapOnSelf.currShownMarkerID = nil
-        end
-      end
+    local trackedReal = _G.CompletionistMapV104UidRavenTrackedName == ravenName
+    local queuedReal = original ~= nil and pending ~= nil and
+      pending.IdString == original.IdString and pending.State == "tracked"
+    completionNeedsHide = completionNeedsHide or trackedReal or queuedReal
+    local shown, queryOK, queryErr = customShown(original)
+    local hideAttempted, hideOK, hideErr = false, true, nil
+    if (shown or completionNeedsHide) and not completionHideRequested then
+      hideAttempted = true
+      hideOK, hideErr = pcall(function() game.Compass.HideMarker(ravenName) end)
+      completionHideRequested = hideOK
     end
 
-    if _G.CompletionistMapV104UidRavenTrackedName == ravenName then
-      _G.CompletionistMapV104UidRavenTrackedName = nil
+    if original ~= nil and pending ~= nil and pending.IdString == original.IdString then
+      pending = nil
     end
+    if lastMapOnSelf ~= nil then
+      local selected = selectedIdentity(lastMapOnSelf)
+      if selected ~= nil and selected.Name == ravenName then
+        lastMapOnSelf.completionistMapV104SelectedRavenIdentity = nil
+      end
+      if original ~= nil and lastMapOnSelf.currShownMarkerID ~= nil and
+        tostring(lastMapOnSelf.currShownMarkerID) == original.IdString then
+        lastMapOnSelf.currShownMarkerID = nil
+      end
+    end
+    if trackedReal then _G.CompletionistMapV104UidRavenTrackedName = nil end
 
+    -- Verify queued hide on next event-local check. Never reissue successful hide.
+    completionObserved = queryOK and not shown and not hideAttempted and
+      (not completionNeedsHide or completionHideRequested)
     log("LIFECYCLE_CLEAR", "reason=" .. tostring(reason) ..
-        " originalCollected=true hideAttempted=" .. tostring(hideAttempted) ..
-        " hideOK=" .. tostring(hideOK) .. " hideError=" .. tostring(hideErr) ..
-        " twinTouched=false progressionWrites=false")
-    return true
+      " originalCollected=true hideAttempted=" .. tostring(hideAttempted) ..
+      " hideOK=" .. tostring(hideOK) .. " hideError=" .. tostring(hideErr or queryErr) ..
+      " settled=" .. tostring(completionObserved) ..
+      " twinTouched=false progressionWrites=false")
+    return true, not completionObserved
+  end
+
+  local function blockedRealSelection(self)
+    local selected = selectedIdentity(self)
+    local realCollision = self.mapIconCollision ~= nil and
+      self.mapIconCollision == self.completionistMapV100MapIconGO
+    local retainedReal = self.mapIconCollision == nil and selected ~= nil and selected.Name == ravenName
+    return (realCollision or retainedReal) and originalCollected() ~= false
   end
 
   function MapOn:GetShowOnCompassPrompt(currMenu)
+    if blockedRealSelection(self) then
+      self.completionistMapV104SelectedRavenIdentity = nil
+      return false, nil
+    end
     local selected = refreshSelectedIdentity(self, "prompt")
     local show, previousText = previousPrompt(self, currMenu)
     if selected == nil or not show then return show, previousText end
@@ -317,6 +345,12 @@ do
   end
 
   function MapOn:ShowOnCompass(currState)
+    if blockedRealSelection(self) then
+      lastMapOnSelf = self
+      observeOriginalCompletion("action_guard")
+      self.completionistMapV104SelectedRavenIdentity = nil
+      return
+    end
     local selected = refreshSelectedIdentity(self, "action")
     if selected == nil then
       -- The preceding production controller already knows how to replace the original
@@ -418,16 +452,9 @@ do
   end
 
   _G.CompletionistMapV104ObserveRavenCompletion = observeOriginalCompletion
-  if util ~= nil and util.create_thread ~= nil and util.yield ~= nil then
-    util.create_thread(function()
-      while not completionObserved do
-        if observeOriginalCompletion("poll") then return end
-        util.yield(0.25)
-      end
-    end)
-  else
-    log("LIFECYCLE_WATCH", "installed=false reason=thread_api_missing")
-  end
+  -- Gameplay bridge calls observer after native hit/start/restore.
+  -- Map update is fallback for load order and retry; no worker thread.
+  observeOriginalCompletion("mapmenu_load")
 
   _G.CompletionistMapV104UidAwareRavenCompassRouting = true
   log("API", "installed=true identitySource=MapOn.mapIconCollision_exact_object_reference" ..

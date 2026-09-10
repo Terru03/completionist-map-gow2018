@@ -3,7 +3,6 @@
 do
   local twinName = "Completionist_V104_Veithurgard_Raven_Twin_01"
   local createRaven = CompletionistMapV100_CreateMapPin
-  local destroyRaven = CompletionistMapV100_DestroyMapPin
   local prefix = "[CompletionistMap shared-loader-twin] "
 
   local function log(text)
@@ -18,15 +17,25 @@ do
         log("CLEANUP_FAILED error=" .. tostring(err))
         return false
       end
+      if self.mapIconCollision == go then self.mapIconCollision = nil end
       self.completionistSharedLoaderTwinGO = nil
+      local selected = self.completionistMapV104SelectedRavenIdentity
+      if selected ~= nil and selected.Name == twinName then
+        self.completionistMapV104SelectedRavenIdentity = nil
+      end
       log("RECYCLED twin=true")
     end
     return true
   end
 
-  CompletionistMapV100_DestroyMapPin = function(self)
-    clearTwin(self)
-    return destroyRaven(self)
+  -- Map view owns Twin. Raven completion owns only real pin.
+  for _, method in ipairs({"SubmenuExit", "Exit", "ClearIcons"}) do
+    local previous = MapOn[method]
+    assert(type(previous) == "function", "Missing map lifecycle method: " .. method)
+    MapOn[method] = function(self, ...)
+      clearTwin(self)
+      return previous(self, ...)
+    end
   end
 
   CompletionistMapV100_CreateMapPin = function(self, currState)

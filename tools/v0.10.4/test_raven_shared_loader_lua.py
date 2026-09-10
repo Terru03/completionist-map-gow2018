@@ -65,6 +65,7 @@ local function CompletionistMapV100_DestroyMapPin(s)
   s.completionistMapV100MapIconGO=nil
   return "old-destroy-result"
 end
+MapOn = {Exit=function() return "exit" end, SubmenuExit=function() return "submenu" end, ClearIcons=function() return "clear" end}
 local function CompletionistMapV100_CreateMapPin(s, state)
   calls.oldCreate=calls.oldCreate+1
   if s.currRealmName ~= "Midgard" then return "old-create-result" end
@@ -78,6 +79,8 @@ return {
  self=self, calls=calls, options=options,
  create=function() return CompletionistMapV100_CreateMapPin(self,{}) end,
  destroy=function() return CompletionistMapV100_DestroyMapPin(self) end,
+ teardown=function() CompletionistMapV100_DestroyMapPin(self); return MapOn.SubmenuExit(self) end,
+ clear=function() return MapOn.ClearIcons(self) end,
  count=function() local n=0 for _ in pairs(live) do n=n+1 end return n end,
  logs=function() return table.concat(calls.logs,"\n") end
 }
@@ -95,7 +98,7 @@ class SharedLoaderLuaTests(unittest.TestCase):
         self.assertEqual(p.count(), 2)
         self.assertIn('distinctObjects=true', p.logs())
         self.assertIn('state=0', p.logs())
-        self.assertEqual(p.destroy(), 'old-destroy-result')
+        self.assertEqual(p.teardown(), 'submenu')
         self.assertEqual(p.count(), 0)
         self.assertEqual(p.calls.oldCreate, 1)
 
@@ -104,9 +107,9 @@ class SharedLoaderLuaTests(unittest.TestCase):
         for _ in range(25):
             p.create()
             self.assertEqual(p.count(), 2)
-        p.destroy()
+        p.teardown()
         self.assertEqual(p.count(), 0)
-        self.assertEqual(p.calls.create, 25)
+        self.assertEqual(p.calls.create, 1)
 
     def test_capacity_one_is_discriminating_control(self):
         p = self.probe
@@ -116,12 +119,13 @@ class SharedLoaderLuaTests(unittest.TestCase):
         self.assertIn('reason=nil_object', p.logs())
         self.assertIsNone(p.self.completionistSharedLoaderTwinGO)
 
-    def test_no_original_does_not_claim_twin_success(self):
+    def test_no_original_creates_twin(self):
         p = self.probe
         p.options.noOriginal = True
         p.create()
-        self.assertEqual(p.count(), 0)
-        self.assertEqual(p.calls.create, 0)
+        self.assertEqual(p.count(), 1)
+        self.assertEqual(p.calls.create, 1)
+        self.assertIn("originalPresent=false", p.logs())
 
     def test_missing_lookup_or_region_keeps_original(self):
         for key in ('absent', 'regionMissing', 'lookupError'):
@@ -132,7 +136,7 @@ class SharedLoaderLuaTests(unittest.TestCase):
                 p.create()
                 self.assertEqual(p.count(), 1)
                 self.assertEqual(p.calls.create, 0)
-                p.destroy()
+                p.teardown()
                 self.assertEqual(p.count(), 0)
 
     def test_create_and_show_errors_keep_original_and_release_twin(self):
@@ -153,25 +157,26 @@ class SharedLoaderLuaTests(unittest.TestCase):
         self.assertEqual(p.count(), 1)
         self.assertIsNone(p.self.completionistSharedLoaderTwinGO)
         self.assertIn('reason=original_object_reused', p.logs())
-        p.destroy()
+        p.teardown()
         self.assertEqual(p.count(), 0)
 
     def test_cleanup_error_keeps_handle_and_retries(self):
         p = self.probe
         p.create()
         p.options.recycleError = True
+        p.clear()
         p.create()
         self.assertEqual(p.count(), 2)
         self.assertEqual(p.calls.create, 1)
         self.assertIn('prior_twin_not_recycled', p.logs())
         p.options.recycleError = False
-        p.destroy()
+        p.teardown()
         self.assertEqual(p.count(), 0)
 
     def test_realm_switch_has_no_twin_request(self):
         p = self.probe
         p.create()
-        p.destroy()
+        p.teardown()
         p.self.currRealmName = 'Alfheim'
         p.create()
         self.assertEqual(p.count(), 0)
@@ -182,6 +187,29 @@ class SharedLoaderLuaTests(unittest.TestCase):
         compiler = self.lua.eval('function(s) local f,e=loadstring(s); assert(f,e); return true end')
         self.assertTrue(compiler(path.read_text(encoding='utf-8')))
 
+
+    def test_real_completion_destroy_keeps_twin(self):
+        p = self.probe
+        p.create()
+        serial = p.self.completionistSharedLoaderTwinGO.serial
+        p.destroy()
+        self.assertEqual(p.count(), 1)
+        self.assertEqual(p.self.completionistSharedLoaderTwinGO.serial, serial)
+        p.options.noOriginal = True
+        p.create()
+        self.assertEqual(p.count(), 1)
+        self.assertEqual(p.calls.create, 1)
+
+    def test_teardown_cleanup_once_and_reopen(self):
+        p = self.probe
+        for _ in range(20):
+            p.create()
+            self.assertEqual(p.count(), 2)
+            p.teardown()
+            p.clear()
+            self.assertEqual(p.count(), 0)
+            self.assertIsNone(p.self.completionistSharedLoaderTwinGO)
+        self.assertEqual(p.calls.recycle, 40)
 
 if __name__ == '__main__':
     unittest.main()
