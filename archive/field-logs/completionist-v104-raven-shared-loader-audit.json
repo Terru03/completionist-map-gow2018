@@ -1,0 +1,3232 @@
+{
+  "result": "RAVEN_SHARED_LOADER_FORENSIC_AUDIT",
+  "source_sha256": {
+    "exec/wad/pc_le/r_ui.wad": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
+    "exec/dc/pc_le/wad_r_ui.dcb": "765ef6c08a3c9d52ed9485c184237bc3fdde103feef01c496a6999fdbea8826d",
+    "exec/dc/pc_le/mapmaster.dcb": "b930c51316ca136d9c40ea7cda6a63a051127b357e97f1d4e4eb96a16993d96f",
+    "exec/dc/pc_le/mapcoords.dcb": "945774dbc965f45ad78b8408bb1d2b10a527c6390e4e7c1190e8f2d7538df3cb",
+    "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": "67d069a798417b631c271f48c129fb2083591b81a31859ab94769fbbb8b01c6b",
+    "GoW.exe": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452"
+  },
+  "runtime_facts_from_user": {
+    "distinct_custom_ravens": 1,
+    "latest_stage_a_a2_crash": false,
+    "dock_contamination": false,
+    "original_raven_works": true,
+    "compass_add_replace_remove_work": true,
+    "distinct_twin_visible": false
+  },
+  "counts": {
+    "markers": 383,
+    "unique_marker_uids": 375,
+    "coordinates": 406,
+    "unmatched_marker_uids": []
+  },
+  "field_names_from_pinned_executable": [
+    {
+      "attribute": "0x459a",
+      "type": "0x409",
+      "offset": "0x0",
+      "size": 8,
+      "kind": 4,
+      "name": "uID"
+    },
+    {
+      "attribute": "0x459b",
+      "type": "0x409",
+      "offset": "0x8",
+      "size": 8,
+      "kind": 6,
+      "name": "WadName"
+    },
+    {
+      "attribute": "0x459c",
+      "type": "0x409",
+      "offset": "0x10",
+      "size": 0,
+      "kind": 11,
+      "name": "Position"
+    },
+    {
+      "attribute": "0x45a0",
+      "type": "0x409",
+      "offset": "0x16",
+      "size": 0,
+      "kind": 11,
+      "name": "ForwardDir"
+    },
+    {
+      "attribute": "0x45a4",
+      "type": "0x409",
+      "offset": "0x1c",
+      "size": 4,
+      "kind": 2,
+      "name": "AdvanceRadiusMultiplier"
+    },
+    {
+      "attribute": "0x45a5",
+      "type": "0x409",
+      "offset": "0x20",
+      "size": 4,
+      "kind": 2,
+      "name": "OverrideFuzzRadius"
+    },
+    {
+      "attribute": "0x45a6",
+      "type": "0x409",
+      "offset": "0x24",
+      "size": 4,
+      "kind": 2,
+      "name": "InWorldMarkerDistance"
+    },
+    {
+      "attribute": "0x45a7",
+      "type": "0x40a",
+      "offset": "0x0",
+      "size": 12,
+      "kind": 9,
+      "name": "Coordinates"
+    },
+    {
+      "attribute": "0x45b6",
+      "type": "0x40f",
+      "offset": "0x0",
+      "size": 8,
+      "kind": 4,
+      "name": "uID"
+    },
+    {
+      "attribute": "0x45b7",
+      "type": "0x40f",
+      "offset": "0x8",
+      "size": 8,
+      "kind": 6,
+      "name": "Icon"
+    },
+    {
+      "attribute": "0x45b8",
+      "type": "0x40f",
+      "offset": "0x10",
+      "size": 4,
+      "kind": 0,
+      "name": "LamsName"
+    },
+    {
+      "attribute": "0x45b9",
+      "type": "0x40f",
+      "offset": "0x14",
+      "size": 4,
+      "kind": 0,
+      "name": "LamsDescription"
+    },
+    {
+      "attribute": "0x45ba",
+      "type": "0x40f",
+      "offset": "0x18",
+      "size": 4,
+      "kind": 2,
+      "name": "HeightOffset"
+    },
+    {
+      "attribute": "0x45bb",
+      "type": "0x40f",
+      "offset": "0x1c",
+      "size": 1,
+      "kind": 1,
+      "name": "InitState"
+    },
+    {
+      "attribute": "0x45bc",
+      "type": "0x40f",
+      "offset": "0x20",
+      "size": 12,
+      "kind": 9,
+      "name": "Flags"
+    },
+    {
+      "attribute": "0x45be",
+      "type": "0x40f",
+      "offset": "0x0",
+      "size": 8,
+      "kind": 4,
+      "name": "uID"
+    },
+    {
+      "attribute": "0x45bf",
+      "type": "0x40f",
+      "offset": "0x8",
+      "size": 8,
+      "kind": 6,
+      "name": "Icon"
+    },
+    {
+      "attribute": "0x45c0",
+      "type": "0x40f",
+      "offset": "0x10",
+      "size": 4,
+      "kind": 0,
+      "name": "LamsName"
+    },
+    {
+      "attribute": "0x45c1",
+      "type": "0x40f",
+      "offset": "0x14",
+      "size": 4,
+      "kind": 0,
+      "name": "LamsDescription"
+    },
+    {
+      "attribute": "0x45c2",
+      "type": "0x40f",
+      "offset": "0x18",
+      "size": 4,
+      "kind": 2,
+      "name": "HeightOffset"
+    },
+    {
+      "attribute": "0x45c3",
+      "type": "0x40f",
+      "offset": "0x1c",
+      "size": 1,
+      "kind": 1,
+      "name": "InitState"
+    },
+    {
+      "attribute": "0x45c4",
+      "type": "0x40f",
+      "offset": "0x20",
+      "size": 12,
+      "kind": 9,
+      "name": "Flags"
+    },
+    {
+      "attribute": "0x45c5",
+      "type": "0x410",
+      "offset": "0x30",
+      "size": 8,
+      "kind": 4,
+      "name": "FastTravel"
+    },
+    {
+      "attribute": "0x45c6",
+      "type": "0x410",
+      "offset": "0x38",
+      "size": 4,
+      "kind": 0,
+      "name": "Priority"
+    },
+    {
+      "attribute": "0x45c7",
+      "type": "0x410",
+      "offset": "0x3c",
+      "size": 4,
+      "kind": 2,
+      "name": "Radius"
+    },
+    {
+      "attribute": "0x45c8",
+      "type": "0x410",
+      "offset": "0x40",
+      "size": 4,
+      "kind": 2,
+      "name": "OffsetX"
+    },
+    {
+      "attribute": "0x45c9",
+      "type": "0x410",
+      "offset": "0x44",
+      "size": 4,
+      "kind": 2,
+      "name": "OffsetY"
+    },
+    {
+      "attribute": "0x45d7",
+      "type": "0x40f",
+      "offset": "0x0",
+      "size": 8,
+      "kind": 4,
+      "name": "uID"
+    },
+    {
+      "attribute": "0x45d8",
+      "type": "0x40f",
+      "offset": "0x8",
+      "size": 8,
+      "kind": 6,
+      "name": "Icon"
+    },
+    {
+      "attribute": "0x45d9",
+      "type": "0x40f",
+      "offset": "0x10",
+      "size": 4,
+      "kind": 0,
+      "name": "LamsName"
+    },
+    {
+      "attribute": "0x45da",
+      "type": "0x40f",
+      "offset": "0x14",
+      "size": 4,
+      "kind": 0,
+      "name": "LamsDescription"
+    },
+    {
+      "attribute": "0x45db",
+      "type": "0x40f",
+      "offset": "0x18",
+      "size": 4,
+      "kind": 2,
+      "name": "HeightOffset"
+    },
+    {
+      "attribute": "0x45dc",
+      "type": "0x40f",
+      "offset": "0x1c",
+      "size": 1,
+      "kind": 1,
+      "name": "InitState"
+    },
+    {
+      "attribute": "0x45dd",
+      "type": "0x40f",
+      "offset": "0x20",
+      "size": 12,
+      "kind": 9,
+      "name": "Flags"
+    },
+    {
+      "attribute": "0x45de",
+      "type": "0x413",
+      "offset": "0x30",
+      "size": 2,
+      "kind": 0,
+      "name": "PowerLevel"
+    },
+    {
+      "attribute": "0x45df",
+      "type": "0x413",
+      "offset": "0x38",
+      "size": 12,
+      "kind": 9,
+      "name": "Markers"
+    },
+    {
+      "attribute": "0x45e0",
+      "type": "0x413",
+      "offset": "0x48",
+      "size": 12,
+      "kind": 9,
+      "name": "Wads"
+    },
+    {
+      "attribute": "0x45e1",
+      "type": "0x413",
+      "offset": "0x58",
+      "size": 12,
+      "kind": 9,
+      "name": "Summary"
+    },
+    {
+      "attribute": "0x45e3",
+      "type": "0x40f",
+      "offset": "0x0",
+      "size": 8,
+      "kind": 4,
+      "name": "uID"
+    },
+    {
+      "attribute": "0x45e4",
+      "type": "0x40f",
+      "offset": "0x8",
+      "size": 8,
+      "kind": 6,
+      "name": "Icon"
+    },
+    {
+      "attribute": "0x45e5",
+      "type": "0x40f",
+      "offset": "0x10",
+      "size": 4,
+      "kind": 0,
+      "name": "LamsName"
+    },
+    {
+      "attribute": "0x45e6",
+      "type": "0x40f",
+      "offset": "0x14",
+      "size": 4,
+      "kind": 0,
+      "name": "LamsDescription"
+    },
+    {
+      "attribute": "0x45e7",
+      "type": "0x40f",
+      "offset": "0x18",
+      "size": 4,
+      "kind": 2,
+      "name": "HeightOffset"
+    },
+    {
+      "attribute": "0x45e8",
+      "type": "0x40f",
+      "offset": "0x1c",
+      "size": 1,
+      "kind": 1,
+      "name": "InitState"
+    },
+    {
+      "attribute": "0x45e9",
+      "type": "0x40f",
+      "offset": "0x20",
+      "size": 12,
+      "kind": 9,
+      "name": "Flags"
+    },
+    {
+      "attribute": "0x45ea",
+      "type": "0x414",
+      "offset": "0x30",
+      "size": 12,
+      "kind": 9,
+      "name": "Regions"
+    },
+    {
+      "attribute": "0x45ec",
+      "type": "0x415",
+      "offset": "0x0",
+      "size": 12,
+      "kind": 9,
+      "name": "MapFlags"
+    },
+    {
+      "attribute": "0x45ed",
+      "type": "0x415",
+      "offset": "0x10",
+      "size": 12,
+      "kind": 9,
+      "name": "Realms"
+    }
+  ],
+  "native_repeated_loaders": [
+    {
+      "loader": "goMapIconValkyrie_location",
+      "folded_hash": "838E9A8A4AB303A7",
+      "records": 9,
+      "distinct_uids": 9,
+      "distinct_string_addresses": 9,
+      "resource_definitions": [
+        {
+          "name": "gomapiconvalkyrie_location",
+          "id": "e72207d89696be48b264e893e42e2167",
+          "payload_sha256": "5b6db3d1cdea3c93a3307ed29d2386179c9cea28e0a991bbd8f4ab55a279befe",
+          "embedded_name": "gomapiconvalkyrie_location"
+        }
+      ],
+      "pool_rows": [
+        {
+          "index": 244,
+          "capacity": 9
+        }
+      ],
+      "field_variation": {
+        "+0x00 uID": 9,
+        "+0x10 LamsName": 1,
+        "+0x14 LamsDescription": 9,
+        "+0x18 HeightOffset": 4,
+        "+0x1C InitState": 1,
+        "+0x1D opaque gap": 1,
+        "+0x28 Flags count": 1,
+        "+0x2C opaque gap": 1,
+        "+0x30 FastTravel": 1,
+        "+0x38 Priority": 1,
+        "+0x3C Radius": 1,
+        "+0x40 OffsetX": 1,
+        "+0x44 OffsetY": 1
+      },
+      "flag_value_sets": [
+        [
+          "D4497FD7D6BEDE7A"
+        ]
+      ]
+    },
+    {
+      "loader": "goMapIconVendor",
+      "folded_hash": "B59BCEDC37AD6225",
+      "records": 17,
+      "distinct_uids": 17,
+      "distinct_string_addresses": 17,
+      "resource_definitions": [
+        {
+          "name": "gomapiconvendor",
+          "id": "cfe50fff05fe774592f0039687ad2f6a",
+          "payload_sha256": "2d444fd8563900549c98227fe0c9f84164f5bbb5aca9ea35516226eca20ad979",
+          "embedded_name": "gomapiconvendor"
+        }
+      ],
+      "pool_rows": [
+        {
+          "index": 240,
+          "capacity": 17
+        }
+      ],
+      "field_variation": {
+        "+0x00 uID": 17,
+        "+0x10 LamsName": 1,
+        "+0x14 LamsDescription": 17,
+        "+0x18 HeightOffset": 12,
+        "+0x1C InitState": 1,
+        "+0x1D opaque gap": 1,
+        "+0x28 Flags count": 1,
+        "+0x2C opaque gap": 1,
+        "+0x30 FastTravel": 1,
+        "+0x38 Priority": 1,
+        "+0x3C Radius": 1,
+        "+0x40 OffsetX": 1,
+        "+0x44 OffsetY": 1
+      },
+      "flag_value_sets": [
+        [
+          "5EFB0C30147F2D27"
+        ],
+        [
+          "BD264C36A9156478"
+        ]
+      ],
+      "same_region_pair": {
+        "markers": [
+          {
+            "realm": "7CE593BC21393690",
+            "region": "ED623FA0A76B2934",
+            "uid": "34B4EA16C6E76B5F",
+            "icon": "goMapIconVendor",
+            "flags": [
+              "5EFB0C30147F2D27"
+            ],
+            "offset": 32320,
+            "data_offset": "0x7e40",
+            "file_offset": "0x7f10",
+            "raw_hex": "5f6be7c616eab434d805000000000000d7110000a75500000000000000000000d0050000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "5f6be7c616eab434",
+              "+0x08 Icon relative pointer": "d805000000000000",
+              "+0x10 LamsName": "d7110000",
+              "+0x14 LamsDescription": "a7550000",
+              "+0x18 HeightOffset": "00000000",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "d005000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x8420",
+              "0x20": "0x8430"
+            }
+          },
+          {
+            "realm": "7CE593BC21393690",
+            "region": "ED623FA0A76B2934",
+            "uid": "DF21EF500E47C637",
+            "icon": "goMapIconVendor",
+            "flags": [
+              "5EFB0C30147F2D27"
+            ],
+            "offset": 32464,
+            "data_offset": "0x7ed0",
+            "file_offset": "0x7fa0",
+            "raw_hex": "37c6470e50ef21df7805000000000000d7110000a6550000000000000000000070050000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "37c6470e50ef21df",
+              "+0x08 Icon relative pointer": "7805000000000000",
+              "+0x10 LamsName": "d7110000",
+              "+0x14 LamsDescription": "a6550000",
+              "+0x18 HeightOffset": "00000000",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "7005000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x8450",
+              "0x20": "0x8460"
+            }
+          }
+        ],
+        "coordinates": [
+          {
+            "uid": "34B4EA16C6E76B5F",
+            "wad": "WAD_Peak260_ChimneyLowHall",
+            "position": [
+              -360.5,
+              131.25,
+              806.5
+            ],
+            "offset": 36696,
+            "data_offset": "0x8f58",
+            "file_offset": "0x9028",
+            "raw_hex": "5f6be7c616eab434d5c7ffffffffffffa2dd1a584d6200000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "5f6be7c616eab434",
+              "+0x08 WadName relative pointer": "d5c7ffffffffffff",
+              "+0x10 Position half3": "a2dd1a584d62",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x5735"
+            }
+          },
+          {
+            "uid": "DF21EF500E47C637",
+            "wad": "WAD_Peak780_SummitExit",
+            "position": [
+              -508.5,
+              1182.0,
+              862.0
+            ],
+            "offset": 36816,
+            "data_offset": "0x8fd0",
+            "file_offset": "0x90a0",
+            "raw_hex": "37c6470e50ef21dfa7c7fffffffffffff2df9e64bc6200000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "37c6470e50ef21df",
+              "+0x08 WadName relative pointer": "a7c7ffffffffffff",
+              "+0x10 Position half3": "f2df9e64bc62",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x577f"
+            }
+          }
+        ],
+        "marker_raw_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x08",
+          "0x14",
+          "0x20"
+        ],
+        "marker_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x14"
+        ],
+        "coordinate_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x10",
+          "0x11",
+          "0x12",
+          "0x13",
+          "0x14"
+        ],
+        "flags_equal": true
+      }
+    },
+    {
+      "loader": "goMapIconPrimaryQuest",
+      "folded_hash": "EA011D3796DEE53B",
+      "records": 133,
+      "distinct_uids": 125,
+      "distinct_string_addresses": 133,
+      "resource_definitions": [
+        {
+          "name": "gomapiconprimaryquest",
+          "id": "c418c4b3aabf30458b779348e960c4f6",
+          "payload_sha256": "a3c01f06560e4206f00a46230749e56158bd3c3bb57e500a7d43e02e1ed5a781",
+          "embedded_name": "gomapiconprimaryquest"
+        }
+      ],
+      "pool_rows": [
+        {
+          "index": 234,
+          "capacity": 4
+        }
+      ],
+      "field_variation": {
+        "+0x00 uID": 125,
+        "+0x10 LamsName": 2,
+        "+0x14 LamsDescription": 1,
+        "+0x18 HeightOffset": 44,
+        "+0x1C InitState": 1,
+        "+0x1D opaque gap": 1,
+        "+0x28 Flags count": 1,
+        "+0x2C opaque gap": 1,
+        "+0x30 FastTravel": 10,
+        "+0x38 Priority": 1,
+        "+0x3C Radius": 1,
+        "+0x40 OffsetX": 1,
+        "+0x44 OffsetY": 1
+      },
+      "flag_value_sets": [
+        [
+          "92778ED033D2D514"
+        ],
+        [
+          "A79D07329B408142"
+        ]
+      ],
+      "same_region_pair": {
+        "markers": [
+          {
+            "realm": "7CE593BC21393690",
+            "region": "F7D849FE3C0ADA7F",
+            "uid": "C5206D1BD766D3FE",
+            "icon": "goMapIconPrimaryQuest",
+            "flags": [
+              "92778ED033D2D514"
+            ],
+            "offset": 11672,
+            "data_offset": "0x2d98",
+            "file_offset": "0x2e68",
+            "raw_hex": "fed366d71b6d20c56808000000000000d5110000ffffffffb81e853d0000000068080000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "fed366d71b6d20c5",
+              "+0x08 Icon relative pointer": "6808000000000000",
+              "+0x10 LamsName": "d5110000",
+              "+0x14 LamsDescription": "ffffffff",
+              "+0x18 HeightOffset": "b81e853d",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "6808000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x3608",
+              "0x20": "0x3620"
+            }
+          },
+          {
+            "realm": "7CE593BC21393690",
+            "region": "F7D849FE3C0ADA7F",
+            "uid": "C5206D1BD759BD80",
+            "icon": "goMapIconPrimaryQuest",
+            "flags": [
+              "92778ED033D2D514"
+            ],
+            "offset": 11744,
+            "data_offset": "0x2de0",
+            "file_offset": "0x2eb0",
+            "raw_hex": "80bd59d71b6d20c54008000000000000d5110000ffffffffb81e853d0000000040080000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "80bd59d71b6d20c5",
+              "+0x08 Icon relative pointer": "4008000000000000",
+              "+0x10 LamsName": "d5110000",
+              "+0x14 LamsDescription": "ffffffff",
+              "+0x18 HeightOffset": "b81e853d",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "4008000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x3628",
+              "0x20": "0x3640"
+            }
+          }
+        ],
+        "coordinates": [
+          {
+            "uid": "C5206D1BD766D3FE",
+            "wad": "WAD_Cal130_TempleInt",
+            "position": [
+              -50.03125,
+              7.21875,
+              50.03125
+            ],
+            "offset": 32656,
+            "data_offset": "0x7f90",
+            "file_offset": "0x8060",
+            "raw_hex": "fed366d71b6d20c558cfffffffffffff41d23847415200000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "fed366d71b6d20c5",
+              "+0x08 WadName relative pointer": "58cfffffffffffff",
+              "+0x10 Position half3": "41d238474152",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x4ef0"
+            }
+          },
+          {
+            "uid": "C5206D1BD759BD80",
+            "wad": "WAD_Cal130_TempleInt",
+            "position": [
+              -50.0,
+              7.21875,
+              50.0
+            ],
+            "offset": 32496,
+            "data_offset": "0x7ef0",
+            "file_offset": "0x7fc0",
+            "raw_hex": "80bd59d71b6d20c593cfffffffffffff40d23847405200000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "80bd59d71b6d20c5",
+              "+0x08 WadName relative pointer": "93cfffffffffffff",
+              "+0x10 Position half3": "40d238474052",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x4e8b"
+            }
+          }
+        ],
+        "marker_raw_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x08",
+          "0x20"
+        ],
+        "marker_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02"
+        ],
+        "coordinate_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x10",
+          "0x14"
+        ],
+        "flags_equal": true
+      }
+    },
+    {
+      "loader": "goMapIconAreaEntrance",
+      "folded_hash": "C22E7316BA1D7828",
+      "records": 15,
+      "distinct_uids": 15,
+      "distinct_string_addresses": 15,
+      "resource_definitions": [
+        {
+          "name": "gomapiconareaentrance",
+          "id": "642c1e74c13a1c419e5a62d71ab382e5",
+          "payload_sha256": "0635f9e71d38a95a7d15e3d8f8f8d56692f4e7a4e950f9175a4de7c7a3cd47e1",
+          "embedded_name": "gomapiconareaentrance"
+        }
+      ],
+      "pool_rows": [
+        {
+          "index": 242,
+          "capacity": 18
+        }
+      ],
+      "field_variation": {
+        "+0x00 uID": 15,
+        "+0x10 LamsName": 1,
+        "+0x14 LamsDescription": 14,
+        "+0x18 HeightOffset": 13,
+        "+0x1C InitState": 1,
+        "+0x1D opaque gap": 1,
+        "+0x28 Flags count": 1,
+        "+0x2C opaque gap": 1,
+        "+0x30 FastTravel": 1,
+        "+0x38 Priority": 1,
+        "+0x3C Radius": 1,
+        "+0x40 OffsetX": 1,
+        "+0x44 OffsetY": 1
+      },
+      "flag_value_sets": [
+        [
+          "6B8EF34937F9039A"
+        ],
+        [
+          "A725A9AC312FB0D6"
+        ],
+        [
+          "B8580F7DBB34A4FD"
+        ]
+      ],
+      "same_region_pair": {
+        "markers": [
+          {
+            "realm": "7CE593BC21393690",
+            "region": "7B7F0B522FFA9124",
+            "uid": "7B68011F046BB8E4",
+            "icon": "goMapIconAreaEntrance",
+            "flags": [
+              "6B8EF34937F9039A"
+            ],
+            "offset": 15568,
+            "data_offset": "0x3cd0",
+            "file_offset": "0x3da0",
+            "raw_hex": "e4b86b041f01687b8013000000000000f8600000274900008fc2f5bc0000000080130000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "e4b86b041f01687b",
+              "+0x08 Icon relative pointer": "8013000000000000",
+              "+0x10 LamsName": "f8600000",
+              "+0x14 LamsDescription": "27490000",
+              "+0x18 HeightOffset": "8fc2f5bc",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "8013000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x5058",
+              "0x20": "0x5070"
+            }
+          },
+          {
+            "realm": "7CE593BC21393690",
+            "region": "7B7F0B522FFA9124",
+            "uid": "664B6C45BEB69C7D",
+            "icon": "goMapIconAreaEntrance",
+            "flags": [
+              "6B8EF34937F9039A"
+            ],
+            "offset": 15928,
+            "data_offset": "0x3e38",
+            "file_offset": "0x3f08",
+            "raw_hex": "7d9cb6be456c4b66b812000000000000f8600000444900008fc2f5bd00000000b8120000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "7d9cb6be456c4b66",
+              "+0x08 Icon relative pointer": "b812000000000000",
+              "+0x10 LamsName": "f8600000",
+              "+0x14 LamsDescription": "44490000",
+              "+0x18 HeightOffset": "8fc2f5bd",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "b812000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x50f8",
+              "0x20": "0x5110"
+            }
+          }
+        ],
+        "coordinates": [
+          {
+            "uid": "7B68011F046BB8E4",
+            "wad": "WAD_Cal200_Shore",
+            "position": [
+              -216.0,
+              -20.84375,
+              389.0
+            ],
+            "offset": 30136,
+            "data_offset": "0x75b8",
+            "file_offset": "0x7688",
+            "raw_hex": "e4b86b041f01687b09d4ffffffffffffc0da36cd145e00000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "e4b86b041f01687b",
+              "+0x08 WadName relative pointer": "09d4ffffffffffff",
+              "+0x10 Position half3": "c0da36cd145e",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x49c9"
+            }
+          },
+          {
+            "uid": "664B6C45BEB69C7D",
+            "wad": "WAD_Cal200_Shore",
+            "position": [
+              29.0,
+              -21.0,
+              464.25
+            ],
+            "offset": 30656,
+            "data_offset": "0x77c0",
+            "file_offset": "0x7890",
+            "raw_hex": "7d9cb6be456c4b66ced2ffffffffffff404f40cd415f00000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "7d9cb6be456c4b66",
+              "+0x08 WadName relative pointer": "ced2ffffffffffff",
+              "+0x10 Position half3": "404f40cd415f",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x4a96"
+            }
+          }
+        ],
+        "marker_raw_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x08",
+          "0x09",
+          "0x14",
+          "0x1B",
+          "0x20",
+          "0x21"
+        ],
+        "marker_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x14",
+          "0x1B"
+        ],
+        "coordinate_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x10",
+          "0x11",
+          "0x12",
+          "0x14",
+          "0x15"
+        ],
+        "flags_equal": true
+      }
+    },
+    {
+      "loader": "goMapIconFastTravel",
+      "folded_hash": "D83CE6FDB0A88E09",
+      "records": 45,
+      "distinct_uids": 45,
+      "distinct_string_addresses": 45,
+      "resource_definitions": [
+        {
+          "name": "gomapiconfasttravel",
+          "id": "f196096919bb39418bee35b2a853f8f7",
+          "payload_sha256": "610a05b23c68c54e52e8d33c83421c6a9fe4caa1f2d110921b442c64c85cb1ac",
+          "embedded_name": "gomapiconfasttravel"
+        }
+      ],
+      "pool_rows": [
+        {
+          "index": 237,
+          "capacity": 42
+        }
+      ],
+      "field_variation": {
+        "+0x00 uID": 45,
+        "+0x10 LamsName": 1,
+        "+0x14 LamsDescription": 40,
+        "+0x18 HeightOffset": 19,
+        "+0x1C InitState": 2,
+        "+0x1D opaque gap": 1,
+        "+0x28 Flags count": 1,
+        "+0x2C opaque gap": 1,
+        "+0x30 FastTravel": 44,
+        "+0x38 Priority": 1,
+        "+0x3C Radius": 1,
+        "+0x40 OffsetX": 1,
+        "+0x44 OffsetY": 1
+      },
+      "flag_value_sets": [
+        [
+          "22998929FB117E4A"
+        ],
+        [
+          "3399FDFBD1C901AC"
+        ]
+      ],
+      "same_region_pair": {
+        "markers": [
+          {
+            "realm": "7CE593BC21393690",
+            "region": "4EFD98E8E80E1239",
+            "uid": "5BFC1F87D217D748",
+            "icon": "goMapIconFastTravel",
+            "flags": [
+              "22998929FB117E4A"
+            ],
+            "offset": 29656,
+            "data_offset": "0x73d8",
+            "file_offset": "0x74a8",
+            "raw_hex": "48d717d2871ffc5b7004000000000000d411000024210000295c8f3d0000000070040000000000000100000000000000303b28cc2b0b180000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "48d717d2871ffc5b",
+              "+0x08 Icon relative pointer": "7004000000000000",
+              "+0x10 LamsName": "d4110000",
+              "+0x14 LamsDescription": "24210000",
+              "+0x18 HeightOffset": "295c8f3d",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "7004000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "303b28cc2b0b1800",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x7850",
+              "0x20": "0x7868"
+            }
+          },
+          {
+            "realm": "7CE593BC21393690",
+            "region": "4EFD98E8E80E1239",
+            "uid": "638BB3EFEFB177EF",
+            "icon": "goMapIconFastTravel",
+            "flags": [
+              "22998929FB117E4A"
+            ],
+            "offset": 29728,
+            "data_offset": "0x7420",
+            "file_offset": "0x74f0",
+            "raw_hex": "ef77b1efefb38b634804000000000000d41100004a460000295c8f3d0000000048040000000000000100000000000000303b28cc2b0b180000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "ef77b1efefb38b63",
+              "+0x08 Icon relative pointer": "4804000000000000",
+              "+0x10 LamsName": "d4110000",
+              "+0x14 LamsDescription": "4a460000",
+              "+0x18 HeightOffset": "295c8f3d",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "4804000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "303b28cc2b0b1800",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x7870",
+              "0x20": "0x7888"
+            }
+          }
+        ],
+        "coordinates": [
+          {
+            "uid": "5BFC1F87D217D748",
+            "wad": "WAD_Riv935_FreyaElevator",
+            "position": [
+              -415.0,
+              -20.5,
+              -34.28125
+            ],
+            "offset": 38136,
+            "data_offset": "0x94f8",
+            "file_offset": "0x95c8",
+            "raw_hex": "48d717d2871ffc5b7fc5ffffffffffff7cde20cd49d00080008000bc0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "48d717d2871ffc5b",
+              "+0x08 WadName relative pointer": "7fc5ffffffffffff",
+              "+0x10 Position half3": "7cde20cd49d0",
+              "+0x16 ForwardDir half3": "0080008000bc",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x5a7f"
+            }
+          },
+          {
+            "uid": "638BB3EFEFB177EF",
+            "wad": "WAD_Riv935_FreyaElevator",
+            "position": [
+              -409.25,
+              -4.0,
+              -42.0
+            ],
+            "offset": 38176,
+            "data_offset": "0x9520",
+            "file_offset": "0x95f0",
+            "raw_hex": "ef77b1efefb38b6370c5ffffffffffff65de00c440d170b10000d7bb0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "ef77b1efefb38b63",
+              "+0x08 WadName relative pointer": "70c5ffffffffffff",
+              "+0x10 Position half3": "65de00c440d1",
+              "+0x16 ForwardDir half3": "70b10000d7bb",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x5a98"
+            }
+          }
+        ],
+        "marker_raw_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x08",
+          "0x14",
+          "0x15",
+          "0x20"
+        ],
+        "marker_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x14",
+          "0x15"
+        ],
+        "coordinate_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x10",
+          "0x12",
+          "0x13",
+          "0x14",
+          "0x15",
+          "0x16",
+          "0x17",
+          "0x19",
+          "0x1A",
+          "0x1B"
+        ],
+        "flags_equal": true
+      }
+    },
+    {
+      "loader": "goMapIconFight_location",
+      "folded_hash": "AF47B2F5EDAED9C6",
+      "records": 23,
+      "distinct_uids": 23,
+      "distinct_string_addresses": 23,
+      "resource_definitions": [
+        {
+          "name": "gomapiconfight_location",
+          "id": "bd7f1e8f72e016458ccccbf671f98c80",
+          "payload_sha256": "1a01655ff4efa7cab6bb22d7249e8308e643e1433ac1696010451098b48384f6",
+          "embedded_name": "gomapiconfight_location"
+        }
+      ],
+      "pool_rows": [
+        {
+          "index": 243,
+          "capacity": 23
+        }
+      ],
+      "field_variation": {
+        "+0x00 uID": 23,
+        "+0x10 LamsName": 1,
+        "+0x14 LamsDescription": 6,
+        "+0x18 HeightOffset": 11,
+        "+0x1C InitState": 1,
+        "+0x1D opaque gap": 1,
+        "+0x28 Flags count": 1,
+        "+0x2C opaque gap": 1,
+        "+0x30 FastTravel": 1,
+        "+0x38 Priority": 1,
+        "+0x3C Radius": 1,
+        "+0x40 OffsetX": 1,
+        "+0x44 OffsetY": 1
+      },
+      "flag_value_sets": [
+        [
+          "248F53502A0CE184"
+        ],
+        [
+          "8EEF3CDC31B6E639"
+        ]
+      ],
+      "same_region_pair": {
+        "markers": [
+          {
+            "realm": "7CE593BC21393690",
+            "region": "7B7F0B522FFA9124",
+            "uid": "9638E5A03F4A1B03",
+            "icon": "goMapIconFight_location",
+            "flags": [
+              "8EEF3CDC31B6E639"
+            ],
+            "offset": 16072,
+            "data_offset": "0x3ec8",
+            "file_offset": "0x3f98",
+            "raw_hex": "031b4a3fa0e538966812000000000000176500001a650000b81e85bd0000000068120000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "031b4a3fa0e53896",
+              "+0x08 Icon relative pointer": "6812000000000000",
+              "+0x10 LamsName": "17650000",
+              "+0x14 LamsDescription": "1a650000",
+              "+0x18 HeightOffset": "b81e85bd",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "6812000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x5138",
+              "0x20": "0x5150"
+            }
+          },
+          {
+            "realm": "7CE593BC21393690",
+            "region": "7B7F0B522FFA9124",
+            "uid": "B5B5FE7F2D7042C4",
+            "icon": "goMapIconFight_location",
+            "flags": [
+              "8EEF3CDC31B6E639"
+            ],
+            "offset": 16864,
+            "data_offset": "0x41e0",
+            "file_offset": "0x42b0",
+            "raw_hex": "c442702d7ffeb5b5b010000000000000176500001a650000b81e85bd00000000b0100000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "c442702d7ffeb5b5",
+              "+0x08 Icon relative pointer": "b010000000000000",
+              "+0x10 LamsName": "17650000",
+              "+0x14 LamsDescription": "1a650000",
+              "+0x18 HeightOffset": "b81e85bd",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "b010000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x5298",
+              "0x20": "0x52b0"
+            }
+          }
+        ],
+        "coordinates": [
+          {
+            "uid": "9638E5A03F4A1B03",
+            "wad": "WAD_Cal100_Hub",
+            "position": [
+              110.1875,
+              6.59765625,
+              209.75
+            ],
+            "offset": 28496,
+            "data_offset": "0x6f50",
+            "file_offset": "0x7020",
+            "raw_hex": "031b4a3fa0e53896d8d7ffffffffffffe35699468e5a00000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "031b4a3fa0e53896",
+              "+0x08 WadName relative pointer": "d8d7ffffffffffff",
+              "+0x10 Position half3": "e35699468e5a",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x4730"
+            }
+          },
+          {
+            "uid": "B5B5FE7F2D7042C4",
+            "wad": "WAD_Cal100_Hub",
+            "position": [
+              -210.0,
+              6.15625,
+              -109.5
+            ],
+            "offset": 29016,
+            "data_offset": "0x7158",
+            "file_offset": "0x7228",
+            "raw_hex": "c442702d7ffeb5b5b7d6ffffffffffff90da2846d8d600000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "c442702d7ffeb5b5",
+              "+0x08 WadName relative pointer": "b7d6ffffffffffff",
+              "+0x10 Position half3": "90da2846d8d6",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x4817"
+            }
+          }
+        ],
+        "marker_raw_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x08",
+          "0x09",
+          "0x20",
+          "0x21"
+        ],
+        "marker_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07"
+        ],
+        "coordinate_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x10",
+          "0x11",
+          "0x12",
+          "0x14",
+          "0x15"
+        ],
+        "flags_equal": true
+      }
+    },
+    {
+      "loader": "goMapIconAreaMainQuest",
+      "folded_hash": "9D069AE859C0730F",
+      "records": 16,
+      "distinct_uids": 16,
+      "distinct_string_addresses": 16,
+      "resource_definitions": [
+        {
+          "name": "gomapiconareamainquest",
+          "id": "b29a86e8b303bd4395fd0d620b34b20d",
+          "payload_sha256": "31f54879997b99a855a151105499ddf91779832aed11d3c0fe9d313dd5abf172",
+          "embedded_name": "gomapiconareamainquest"
+        }
+      ],
+      "pool_rows": [
+        {
+          "index": 245,
+          "capacity": 4
+        }
+      ],
+      "field_variation": {
+        "+0x00 uID": 16,
+        "+0x10 LamsName": 1,
+        "+0x14 LamsDescription": 1,
+        "+0x18 HeightOffset": 8,
+        "+0x1C InitState": 1,
+        "+0x1D opaque gap": 1,
+        "+0x28 Flags count": 1,
+        "+0x2C opaque gap": 1,
+        "+0x30 FastTravel": 1,
+        "+0x38 Priority": 1,
+        "+0x3C Radius": 13,
+        "+0x40 OffsetX": 1,
+        "+0x44 OffsetY": 1
+      },
+      "flag_value_sets": [
+        [
+          "92778ED033D2D514",
+          "661DB2C74C7ECC68"
+        ]
+      ],
+      "same_region_pair": {
+        "markers": [
+          {
+            "realm": "7CE593BC21393690",
+            "region": "ED623FA0A76B2934",
+            "uid": "493602D2BB570444",
+            "icon": "goMapIconAreaMainQuest",
+            "flags": [
+              "92778ED033D2D514",
+              "661DB2C74C7ECC68"
+            ],
+            "offset": 33040,
+            "data_offset": "0x8110",
+            "file_offset": "0x81e0",
+            "raw_hex": "440457bbd20236494004000000000000d5110000ffffffff1f85eb3d0000000040040000000000000200000000000000000000000000000000000000000050420000000000000000",
+            "fields": {
+              "+0x00 uID": "440457bbd2023649",
+              "+0x08 Icon relative pointer": "4004000000000000",
+              "+0x10 LamsName": "d5110000",
+              "+0x14 LamsDescription": "ffffffff",
+              "+0x18 HeightOffset": "1f85eb3d",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "4004000000000000",
+              "+0x28 Flags count": "02000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "00005042",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x8558",
+              "0x20": "0x8570"
+            }
+          },
+          {
+            "realm": "7CE593BC21393690",
+            "region": "ED623FA0A76B2934",
+            "uid": "493602D2BF3A9A27",
+            "icon": "goMapIconAreaMainQuest",
+            "flags": [
+              "92778ED033D2D514",
+              "661DB2C74C7ECC68"
+            ],
+            "offset": 33184,
+            "data_offset": "0x81a0",
+            "file_offset": "0x8270",
+            "raw_hex": "279a3abfd20236490004000000000000d5110000ffffffff1f85eb3d0000000000040000000000000200000000000000000000000000000000000000000050420000000000000000",
+            "fields": {
+              "+0x00 uID": "279a3abfd2023649",
+              "+0x08 Icon relative pointer": "0004000000000000",
+              "+0x10 LamsName": "d5110000",
+              "+0x14 LamsDescription": "ffffffff",
+              "+0x18 HeightOffset": "1f85eb3d",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "0004000000000000",
+              "+0x28 Flags count": "02000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "00005042",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x85a8",
+              "0x20": "0x85c0"
+            }
+          }
+        ],
+        "coordinates": [
+          {
+            "uid": "493602D2BB570444",
+            "wad": "WAD_Peak200_ChimneyLow",
+            "position": [
+              -391.0,
+              137.125,
+              793.5
+            ],
+            "offset": 36936,
+            "data_offset": "0x9048",
+            "file_offset": "0x9118",
+            "raw_hex": "440457bbd202364972c7ffffffffffff1cde4958336200000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "440457bbd2023649",
+              "+0x08 WadName relative pointer": "72c7ffffffffffff",
+              "+0x10 Position half3": "1cde49583362",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x57c2"
+            }
+          },
+          {
+            "uid": "493602D2BF3A9A27",
+            "wad": "WAD_Peak300_ChimneyMid",
+            "position": [
+              -391.25,
+              136.0,
+              793.0
+            ],
+            "offset": 37016,
+            "data_offset": "0x9098",
+            "file_offset": "0x9168",
+            "raw_hex": "279a3abfd202364950c7ffffffffffff1dde4058326200000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "279a3abfd2023649",
+              "+0x08 WadName relative pointer": "50c7ffffffffffff",
+              "+0x10 Position half3": "1dde40583262",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x57f0"
+            }
+          }
+        ],
+        "marker_raw_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x08",
+          "0x20"
+        ],
+        "marker_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03"
+        ],
+        "coordinate_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x10",
+          "0x12",
+          "0x14"
+        ],
+        "flags_equal": true
+      }
+    },
+    {
+      "loader": "goMapIconNoRender",
+      "folded_hash": "2F8CE09722C3FEBA",
+      "records": 8,
+      "distinct_uids": 8,
+      "distinct_string_addresses": 8,
+      "resource_definitions": [
+        {
+          "name": "gomapiconnorender",
+          "id": "38712585c8812246b5f5e84578612954",
+          "payload_sha256": "a09c4227751e17af76fbaac864a065cc3cc7ce9fd18ea1a059de51656cc83a38",
+          "embedded_name": "gomapiconnorender"
+        }
+      ],
+      "pool_rows": [
+        {
+          "index": 241,
+          "capacity": 20
+        }
+      ],
+      "field_variation": {
+        "+0x00 uID": 8,
+        "+0x10 LamsName": 8,
+        "+0x14 LamsDescription": 1,
+        "+0x18 HeightOffset": 1,
+        "+0x1C InitState": 1,
+        "+0x1D opaque gap": 1,
+        "+0x28 Flags count": 1,
+        "+0x2C opaque gap": 1,
+        "+0x30 FastTravel": 1,
+        "+0x38 Priority": 1,
+        "+0x3C Radius": 1,
+        "+0x40 OffsetX": 1,
+        "+0x44 OffsetY": 1
+      },
+      "flag_value_sets": [
+        [
+          "99412F74E609C5AF"
+        ]
+      ],
+      "same_region_pair": {
+        "markers": [
+          {
+            "realm": "7CE593BC21393690",
+            "region": "7B7F0B522FFA9124",
+            "uid": "2CFEF5628AA0678F",
+            "icon": "goMapIconNoRender",
+            "flags": [
+              "99412F74E609C5AF"
+            ],
+            "offset": 14848,
+            "data_offset": "0x3a00",
+            "file_offset": "0x3ad0",
+            "raw_hex": "8f67a08a62f5fe2c10150000000000001cac0000ffffffff333333be0000000010150000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "8f67a08a62f5fe2c",
+              "+0x08 Icon relative pointer": "1015000000000000",
+              "+0x10 LamsName": "1cac0000",
+              "+0x14 LamsDescription": "ffffffff",
+              "+0x18 HeightOffset": "333333be",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "1015000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x4f18",
+              "0x20": "0x4f30"
+            }
+          },
+          {
+            "realm": "7CE593BC21393690",
+            "region": "7B7F0B522FFA9124",
+            "uid": "E099080A5B177226",
+            "icon": "goMapIconNoRender",
+            "flags": [
+              "99412F74E609C5AF"
+            ],
+            "offset": 14920,
+            "data_offset": "0x3a48",
+            "file_offset": "0x3b18",
+            "raw_hex": "2672175b0a0899e0e8140000000000001dac0000ffffffff333333be00000000e8140000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "2672175b0a0899e0",
+              "+0x08 Icon relative pointer": "e814000000000000",
+              "+0x10 LamsName": "1dac0000",
+              "+0x14 LamsDescription": "ffffffff",
+              "+0x18 HeightOffset": "333333be",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "e814000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x4f38",
+              "0x20": "0x4f50"
+            }
+          }
+        ],
+        "coordinates": [
+          {
+            "uid": "2CFEF5628AA0678F",
+            "wad": "WAD_Cal100_Hub",
+            "position": [
+              122.5625,
+              35.25,
+              222.5
+            ],
+            "offset": 30296,
+            "data_offset": "0x7658",
+            "file_offset": "0x7728",
+            "raw_hex": "8f67a08a62f5fe2cadd3ffffffffffffa9576850f45a00000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "8f67a08a62f5fe2c",
+              "+0x08 WadName relative pointer": "add3ffffffffffff",
+              "+0x10 Position half3": "a9576850f45a",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x4a0d"
+            }
+          },
+          {
+            "uid": "E099080A5B177226",
+            "wad": "WAD_Cal100_Hub",
+            "position": [
+              -49.90625,
+              34.4375,
+              -194.25
+            ],
+            "offset": 30336,
+            "data_offset": "0x7680",
+            "file_offset": "0x7750",
+            "raw_hex": "2672175b0a0899e094d3ffffffffffff3dd24e5012da00000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "2672175b0a0899e0",
+              "+0x08 WadName relative pointer": "94d3ffffffffffff",
+              "+0x10 Position half3": "3dd24e5012da",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x4a1c"
+            }
+          }
+        ],
+        "marker_raw_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x08",
+          "0x09",
+          "0x10",
+          "0x20",
+          "0x21"
+        ],
+        "marker_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x10"
+        ],
+        "coordinate_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x10",
+          "0x11",
+          "0x12",
+          "0x14",
+          "0x15"
+        ],
+        "flags_equal": true
+      }
+    },
+    {
+      "loader": "goMapIconDock",
+      "folded_hash": "7F41F3489470173E",
+      "records": 47,
+      "distinct_uids": 47,
+      "distinct_string_addresses": 47,
+      "resource_definitions": [
+        {
+          "name": "gomapicondock",
+          "id": "78240cfd16abdf479082d1653f9b6bee",
+          "payload_sha256": "7a28b834decafda16cf4d51f8f0d37b33014334c1c79542c326864a524a14424",
+          "embedded_name": "gomapicondock"
+        }
+      ],
+      "pool_rows": [
+        {
+          "index": 239,
+          "capacity": 40
+        }
+      ],
+      "field_variation": {
+        "+0x00 uID": 47,
+        "+0x10 LamsName": 1,
+        "+0x14 LamsDescription": 22,
+        "+0x18 HeightOffset": 14,
+        "+0x1C InitState": 1,
+        "+0x1D opaque gap": 1,
+        "+0x28 Flags count": 1,
+        "+0x2C opaque gap": 1,
+        "+0x30 FastTravel": 1,
+        "+0x38 Priority": 1,
+        "+0x3C Radius": 1,
+        "+0x40 OffsetX": 1,
+        "+0x44 OffsetY": 1
+      },
+      "flag_value_sets": [
+        [
+          "A9FBE73C1DDFBBC5"
+        ]
+      ],
+      "same_region_pair": {
+        "markers": [
+          {
+            "realm": "7CE593BC21393690",
+            "region": "7B7F0B522FFA9124",
+            "uid": "88EA4B100056A796",
+            "icon": "goMapIconDock",
+            "flags": [
+              "A9FBE73C1DDFBBC5"
+            ],
+            "offset": 18592,
+            "data_offset": "0x48a0",
+            "file_offset": "0x4970",
+            "raw_hex": "96a75600104bea88d00c000000000000fb4d00001cac0000cdccccbc00000000c80c0000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "96a75600104bea88",
+              "+0x08 Icon relative pointer": "d00c000000000000",
+              "+0x10 LamsName": "fb4d0000",
+              "+0x14 LamsDescription": "1cac0000",
+              "+0x18 HeightOffset": "cdccccbc",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "c80c000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x5578",
+              "0x20": "0x5588"
+            }
+          },
+          {
+            "realm": "7CE593BC21393690",
+            "region": "7B7F0B522FFA9124",
+            "uid": "D4F7BCD70DF05DB7",
+            "icon": "goMapIconDock",
+            "flags": [
+              "A9FBE73C1DDFBBC5"
+            ],
+            "offset": 19240,
+            "data_offset": "0x4b28",
+            "file_offset": "0x4bf8",
+            "raw_hex": "b75df00dd7bcf7d4200b000000000000fb4d00001cac0000cdccccbc00000000180b0000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "b75df00dd7bcf7d4",
+              "+0x08 Icon relative pointer": "200b000000000000",
+              "+0x10 LamsName": "fb4d0000",
+              "+0x14 LamsDescription": "1cac0000",
+              "+0x18 HeightOffset": "cdccccbc",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "180b000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x5650",
+              "0x20": "0x5660"
+            }
+          }
+        ],
+        "coordinates": [
+          {
+            "uid": "88EA4B100056A796",
+            "wad": "WAD_Cal100_Hub",
+            "position": [
+              130.875,
+              -20.578125,
+              203.0
+            ],
+            "offset": 29456,
+            "data_offset": "0x7310",
+            "file_offset": "0x73e0",
+            "raw_hex": "96a75600104bea88acd5ffffffffffff175825cd585aaeb90080ae390000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "96a75600104bea88",
+              "+0x08 WadName relative pointer": "acd5ffffffffffff",
+              "+0x10 Position half3": "175825cd585a",
+              "+0x16 ForwardDir half3": "aeb90080ae39",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x48c4"
+            }
+          },
+          {
+            "uid": "D4F7BCD70DF05DB7",
+            "wad": "WAD_Cal100_Hub",
+            "position": [
+              129.125,
+              -3.98828125,
+              204.5
+            ],
+            "offset": 29736,
+            "data_offset": "0x7428",
+            "file_offset": "0x74f8",
+            "raw_hex": "b75df00dd7bcf7d4ffd4ffffffffffff0958fac3645aaeb90080ae390000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "b75df00dd7bcf7d4",
+              "+0x08 WadName relative pointer": "ffd4ffffffffffff",
+              "+0x10 Position half3": "0958fac3645a",
+              "+0x16 ForwardDir half3": "aeb90080ae39",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x492f"
+            }
+          }
+        ],
+        "marker_raw_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x08",
+          "0x09",
+          "0x20",
+          "0x21"
+        ],
+        "marker_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07"
+        ],
+        "coordinate_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x10",
+          "0x12",
+          "0x13",
+          "0x14"
+        ],
+        "flags_equal": true
+      }
+    },
+    {
+      "loader": "goMapIconAreaSideQuest",
+      "folded_hash": "5C54041642F94951",
+      "records": 20,
+      "distinct_uids": 20,
+      "distinct_string_addresses": 20,
+      "resource_definitions": [
+        {
+          "name": "gomapiconareasidequest",
+          "id": "79ef504c7ab0b74fb73dcc4e68547a94",
+          "payload_sha256": "3c4aca2541d8000fbdf1ff4834a62a4ac20de78f5fc46634c97f7c84054a0de4",
+          "embedded_name": "gomapiconareasidequest"
+        }
+      ],
+      "pool_rows": [
+        {
+          "index": 246,
+          "capacity": 20
+        }
+      ],
+      "field_variation": {
+        "+0x00 uID": 20,
+        "+0x10 LamsName": 8,
+        "+0x14 LamsDescription": 15,
+        "+0x18 HeightOffset": 12,
+        "+0x1C InitState": 1,
+        "+0x1D opaque gap": 1,
+        "+0x28 Flags count": 1,
+        "+0x2C opaque gap": 1,
+        "+0x30 FastTravel": 1,
+        "+0x38 Priority": 1,
+        "+0x3C Radius": 11,
+        "+0x40 OffsetX": 1,
+        "+0x44 OffsetY": 1
+      },
+      "flag_value_sets": [
+        [
+          "5F3D393EE595F2F4",
+          "661DB2C74C7ECC68"
+        ]
+      ],
+      "same_region_pair": {
+        "markers": [
+          {
+            "realm": "7CE593BC21393690",
+            "region": "3E2B34150449C7F6",
+            "uid": "A3B225B48D43364A",
+            "icon": "goMapIconAreaSideQuest",
+            "flags": [
+              "5F3D393EE595F2F4",
+              "661DB2C74C7ECC68"
+            ],
+            "offset": 44016,
+            "data_offset": "0xabf0",
+            "file_offset": "0xacc0",
+            "raw_hex": "4a36438db425b2a330010000000000008d0300008f030000713d0a3e0000000030010000000000000200000000000000000000000000000000000000000070410000000000000000",
+            "fields": {
+              "+0x00 uID": "4a36438db425b2a3",
+              "+0x08 Icon relative pointer": "3001000000000000",
+              "+0x10 LamsName": "8d030000",
+              "+0x14 LamsDescription": "8f030000",
+              "+0x18 HeightOffset": "713d0a3e",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "3001000000000000",
+              "+0x28 Flags count": "02000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "00007041",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0xad28",
+              "0x20": "0xad40"
+            }
+          },
+          {
+            "realm": "7CE593BC21393690",
+            "region": "3E2B34150449C7F6",
+            "uid": "A3B225B48D43325D",
+            "icon": "goMapIconAreaSideQuest",
+            "flags": [
+              "5F3D393EE595F2F4",
+              "661DB2C74C7ECC68"
+            ],
+            "offset": 44088,
+            "data_offset": "0xac38",
+            "file_offset": "0xad08",
+            "raw_hex": "5d32438db425b2a310010000000000008d03000091030000713d0a3e0000000010010000000000000200000000000000000000000000000000000000000070410000000000000000",
+            "fields": {
+              "+0x00 uID": "5d32438db425b2a3",
+              "+0x08 Icon relative pointer": "1001000000000000",
+              "+0x10 LamsName": "8d030000",
+              "+0x14 LamsDescription": "91030000",
+              "+0x18 HeightOffset": "713d0a3e",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "1001000000000000",
+              "+0x28 Flags count": "02000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "00007041",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0xad50",
+              "0x20": "0xad68"
+            }
+          }
+        ],
+        "coordinates": [
+          {
+            "uid": "A3B225B48D43364A",
+            "wad": "WAD_Xpl450_HuldraMines",
+            "position": [
+              -499.25,
+              -19.234375,
+              -164.25
+            ],
+            "offset": 33296,
+            "data_offset": "0x8210",
+            "file_offset": "0x82e0",
+            "raw_hex": "4a36438db425b2a345ceffffffffffffcddfcfcc22d900000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "4a36438db425b2a3",
+              "+0x08 WadName relative pointer": "45ceffffffffffff",
+              "+0x10 Position half3": "cddfcfcc22d9",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x505d"
+            }
+          },
+          {
+            "uid": "A3B225B48D43325D",
+            "wad": "WAD_Xpl450_HuldraMines",
+            "position": [
+              -504.0,
+              -23.09375,
+              -149.125
+            ],
+            "offset": 33336,
+            "data_offset": "0x8238",
+            "file_offset": "0x8308",
+            "raw_hex": "5d32438db425b2a334ceffffffffffffe0dfc6cda9d800000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "5d32438db425b2a3",
+              "+0x08 WadName relative pointer": "34ceffffffffffff",
+              "+0x10 Position half3": "e0dfc6cda9d8",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x5074"
+            }
+          }
+        ],
+        "marker_raw_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x08",
+          "0x14",
+          "0x20"
+        ],
+        "marker_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x14"
+        ],
+        "coordinate_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x10",
+          "0x12",
+          "0x13",
+          "0x14",
+          "0x15"
+        ],
+        "flags_equal": true
+      }
+    },
+    {
+      "loader": "goMapIconSecondaryQuest",
+      "folded_hash": "545A08A1975812FD",
+      "records": 47,
+      "distinct_uids": 47,
+      "distinct_string_addresses": 47,
+      "resource_definitions": [
+        {
+          "name": "gomapiconsecondaryquest",
+          "id": "af4dc2957d72ec4b84100090c9fcddd5",
+          "payload_sha256": "d13452a1591eea08f2015b6097ca33f3d8ec757277527132f9c2e74b8b591556",
+          "embedded_name": "gomapiconsecondaryquest"
+        }
+      ],
+      "pool_rows": [
+        {
+          "index": 236,
+          "capacity": 36
+        }
+      ],
+      "field_variation": {
+        "+0x00 uID": 47,
+        "+0x10 LamsName": 18,
+        "+0x14 LamsDescription": 34,
+        "+0x18 HeightOffset": 19,
+        "+0x1C InitState": 1,
+        "+0x1D opaque gap": 1,
+        "+0x28 Flags count": 1,
+        "+0x2C opaque gap": 1,
+        "+0x30 FastTravel": 1,
+        "+0x38 Priority": 1,
+        "+0x3C Radius": 1,
+        "+0x40 OffsetX": 1,
+        "+0x44 OffsetY": 1
+      },
+      "flag_value_sets": [
+        [
+          "5F3D393EE595F2F4"
+        ]
+      ],
+      "same_region_pair": {
+        "markers": [
+          {
+            "realm": "7CE593BC21393690",
+            "region": "0000489975E7755D",
+            "uid": "38ED86CF0BE561EA",
+            "icon": "goMapIconSecondaryQuest",
+            "flags": [
+              "5F3D393EE595F2F4"
+            ],
+            "offset": 47256,
+            "data_offset": "0xb898",
+            "file_offset": "0xb968",
+            "raw_hex": "ea61e50bcf86ed38d8020000000000007226000006a000000000803e00000000d8020000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "ea61e50bcf86ed38",
+              "+0x08 Icon relative pointer": "d802000000000000",
+              "+0x10 LamsName": "72260000",
+              "+0x14 LamsDescription": "06a00000",
+              "+0x18 HeightOffset": "0000803e",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "d802000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0xbb78",
+              "0x20": "0xbb90"
+            }
+          },
+          {
+            "realm": "7CE593BC21393690",
+            "region": "0000489975E7755D",
+            "uid": "B9AD167AB39ED858",
+            "icon": "goMapIconSecondaryQuest",
+            "flags": [
+              "5F3D393EE595F2F4"
+            ],
+            "offset": 47328,
+            "data_offset": "0xb8e0",
+            "file_offset": "0xb9b0",
+            "raw_hex": "58d89eb37a16adb9b0020000000000007226000006a000000000803e00000000b0020000000000000100000000000000000000000000000000000000000080bf0000000000000000",
+            "fields": {
+              "+0x00 uID": "58d89eb37a16adb9",
+              "+0x08 Icon relative pointer": "b002000000000000",
+              "+0x10 LamsName": "72260000",
+              "+0x14 LamsDescription": "06a00000",
+              "+0x18 HeightOffset": "0000803e",
+              "+0x1C InitState": "00",
+              "+0x1D opaque gap": "000000",
+              "+0x20 Flags relative pointer": "b002000000000000",
+              "+0x28 Flags count": "01000000",
+              "+0x2C opaque gap": "00000000",
+              "+0x30 FastTravel": "0000000000000000",
+              "+0x38 Priority": "00000000",
+              "+0x3C Radius": "000080bf",
+              "+0x40 OffsetX": "00000000",
+              "+0x44 OffsetY": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0xbb98",
+              "0x20": "0xbbb0"
+            }
+          }
+        ],
+        "coordinates": [
+          {
+            "uid": "38ED86CF0BE561EA",
+            "wad": "WAD_Xpl100_HTTK",
+            "position": [
+              438.25,
+              -40.4375,
+              -388.0
+            ],
+            "offset": 34216,
+            "data_offset": "0x85a8",
+            "file_offset": "0x8678",
+            "raw_hex": "ea61e50bcf86ed387accffffffffffffd95e0ed110de00000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "ea61e50bcf86ed38",
+              "+0x08 WadName relative pointer": "7accffffffffffff",
+              "+0x10 Position half3": "d95e0ed110de",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x522a"
+            }
+          },
+          {
+            "uid": "B9AD167AB39ED858",
+            "wad": "WAD_Xpl100_HTTK",
+            "position": [
+              326.5,
+              -44.53125,
+              -425.75
+            ],
+            "offset": 34136,
+            "data_offset": "0x8558",
+            "file_offset": "0x8628",
+            "raw_hex": "58d89eb37a16adb9aaccffffffffffff1a5d91d1a7de00000000003c0000803f000080bf00000000",
+            "fields": {
+              "+0x00 uID": "58d89eb37a16adb9",
+              "+0x08 WadName relative pointer": "aaccffffffffffff",
+              "+0x10 Position half3": "1a5d91d1a7de",
+              "+0x16 ForwardDir half3": "00000000003c",
+              "+0x1C AdvanceRadiusMultiplier": "0000803f",
+              "+0x20 OverrideFuzzRadius": "000080bf",
+              "+0x24 InWorldMarkerDistance": "00000000"
+            },
+            "pointer_targets": {
+              "0x8": "0x520a"
+            }
+          }
+        ],
+        "marker_raw_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x08",
+          "0x20"
+        ],
+        "marker_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07"
+        ],
+        "coordinate_canonical_different_offsets": [
+          "0x00",
+          "0x01",
+          "0x02",
+          "0x03",
+          "0x04",
+          "0x05",
+          "0x06",
+          "0x07",
+          "0x10",
+          "0x11",
+          "0x12",
+          "0x14"
+        ],
+        "flags_equal": true
+      }
+    }
+  ],
+  "frozen_raven": {
+    "marker": {
+      "realm": "7CE593BC21393690",
+      "region": "A1845BEF17F0E7BB",
+      "uid": "E15E6BC82AE2773E",
+      "icon": "goMapIconCompletionistRaven",
+      "flags": [
+        "A9FBE73C1DDFBBC5"
+      ],
+      "offset": 67896,
+      "data_offset": "0x10938",
+      "file_offset": "0x10a08",
+      "raw_hex": "3e77e22ac86b5ee140000000000000000000000000000000000000000000000030cbffffffffffff0100000000000000000000000000000000000000000080bf0000000000000000",
+      "fields": {
+        "+0x00 uID": "3e77e22ac86b5ee1",
+        "+0x08 Icon relative pointer": "4000000000000000",
+        "+0x10 LamsName": "00000000",
+        "+0x14 LamsDescription": "00000000",
+        "+0x18 HeightOffset": "00000000",
+        "+0x1C InitState": "00",
+        "+0x1D opaque gap": "000000",
+        "+0x20 Flags relative pointer": "30cbffffffffffff",
+        "+0x28 Flags count": "01000000",
+        "+0x2C opaque gap": "00000000",
+        "+0x30 FastTravel": "0000000000000000",
+        "+0x38 Priority": "00000000",
+        "+0x3C Radius": "000080bf",
+        "+0x40 OffsetX": "00000000",
+        "+0x44 OffsetY": "00000000"
+      },
+      "pointer_targets": {
+        "0x8": "0x10980",
+        "0x20": "0xd488"
+      }
+    },
+    "coordinate": {
+      "uid": "E15E6BC82AE2773E",
+      "wad": "WAD_Xpl200_Funeral",
+      "position": [
+        -64.875,
+        12.984375,
+        787.5
+      ],
+      "offset": 40856,
+      "data_offset": "0x9f98",
+      "file_offset": "0xa068",
+      "raw_hex": "3e77e22ac86b5ee1cfbfffffffffffff0ed47e4a276228b40080c2bb0000803f000080bf00000000",
+      "fields": {
+        "+0x00 uID": "3e77e22ac86b5ee1",
+        "+0x08 WadName relative pointer": "cfbfffffffffffff",
+        "+0x10 Position half3": "0ed47e4a2762",
+        "+0x16 ForwardDir half3": "28b40080c2bb",
+        "+0x1C AdvanceRadiusMultiplier": "0000803f",
+        "+0x20 OverrideFuzzRadius": "000080bf",
+        "+0x24 InWorldMarkerDistance": "00000000"
+      },
+      "pointer_targets": {
+        "0x8": "0x5f6f"
+      }
+    },
+    "region": {
+      "data_offset": "0x1c40",
+      "raw_hex": "bbe7f017ef5b84a1b2b4000000000000e80c0000e90c0000cdcc4c3e00000000a0b40000000000000200000000000000030000000000000038ea0000000000000a0000000000000020b8000000000000060000000000000040b80000000000000800000000000000",
+      "marker_array_field": "0x1c78",
+      "marker_array_target": "0x106b0",
+      "marker_count": 10,
+      "wad_array_qwords": [
+        "4EC230253427B2B0",
+        "676FBA5A36B8BB8D",
+        "86C2A49A378155D0",
+        "9310594DDC2A3F69",
+        "7E70D534C7B07AA1",
+        "1A93014CF70CE775"
+      ],
+      "coordinate_wad_string": "WAD_Xpl200_Funeral",
+      "unprefixed_wad_name": "Xpl200_Funeral",
+      "unprefixed_wad_folded_hash": "4EC230253427B2B0",
+      "unprefixed_wad_hash_present": true
+    }
+  },
+  "stage_a_a2": {
+    "a": {
+      "file_hashes": {
+        "exec/wad/pc_le/r_ui.wad": "86ba2b6a96d869c25f825e5cd64aebae10649d5904f93b5723d53359ed24d0a5",
+        "exec/dc/pc_le/wad_r_ui.dcb": "f0f67e7797456c17d2d8c1671c5998668cf48d1ad3a30d15c540363b4df756ae",
+        "exec/dc/pc_le/mapmaster.dcb": "2acc035529b7078e73957668e987df24775d464a41fc32f9a0622f26786011bf",
+        "exec/dc/pc_le/mapcoords.dcb": "36bd16f8f21c6387b556e156055ea02f5c262b30a6c450cc0efa05734efb1a0c"
+      },
+      "twin": {
+        "realm": "7CE593BC21393690",
+        "region": "A1845BEF17F0E7BB",
+        "uid": "2F530E7F3F156D90",
+        "icon": "goMapIconCompletionistRavenTwin",
+        "flags": [
+          "A9FBE73C1DDFBBC5"
+        ],
+        "offset": 68720,
+        "data_offset": "0x10c70",
+        "file_offset": "0x10d40",
+        "raw_hex": "906d153f7f0e532f400000000000000000000000000000000000000000000000f8c7ffffffffffff0100000000000000000000000000000000000000000080bf0000000000000000",
+        "fields": {
+          "+0x00 uID": "906d153f7f0e532f",
+          "+0x08 Icon relative pointer": "4000000000000000",
+          "+0x10 LamsName": "00000000",
+          "+0x14 LamsDescription": "00000000",
+          "+0x18 HeightOffset": "00000000",
+          "+0x1C InitState": "00",
+          "+0x1D opaque gap": "000000",
+          "+0x20 Flags relative pointer": "f8c7ffffffffffff",
+          "+0x28 Flags count": "01000000",
+          "+0x2C opaque gap": "00000000",
+          "+0x30 FastTravel": "0000000000000000",
+          "+0x38 Priority": "00000000",
+          "+0x3C Radius": "000080bf",
+          "+0x40 OffsetX": "00000000",
+          "+0x44 OffsetY": "00000000"
+        },
+        "pointer_targets": {
+          "0x8": "0x10cb8",
+          "0x20": "0xd488"
+        }
+      },
+      "coordinate": {
+        "uid": "2F530E7F3F156D90",
+        "wad": "WAD_Xpl200_Funeral",
+        "position": [
+          -32.875,
+          12.984375,
+          787.5
+        ],
+        "offset": 57136,
+        "data_offset": "0xdf30",
+        "file_offset": "0xe000",
+        "raw_hex": "906d153f7f0e532f3780ffffffffffff1cd07e4a276228b40080c2bb0000803f000080bf00000000",
+        "fields": {
+          "+0x00 uID": "906d153f7f0e532f",
+          "+0x08 WadName relative pointer": "3780ffffffffffff",
+          "+0x10 Position half3": "1cd07e4a2762",
+          "+0x16 ForwardDir half3": "28b40080c2bb",
+          "+0x1C AdvanceRadiusMultiplier": "0000803f",
+          "+0x20 OverrideFuzzRadius": "000080bf",
+          "+0x24 InWorldMarkerDistance": "00000000"
+        },
+        "pointer_targets": {
+          "0x8": "0x5f6f"
+        }
+      },
+      "canonical_delta_from_raven": [
+        "0x00",
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x05",
+        "0x06",
+        "0x07"
+      ]
+    },
+    "a2": {
+      "file_hashes": {
+        "exec/wad/pc_le/r_ui.wad": "4578112255a95e1d7014d3b42538531093c4e8e1f2ef4933e66b94aab1721d19",
+        "exec/dc/pc_le/wad_r_ui.dcb": "f0f67e7797456c17d2d8c1671c5998668cf48d1ad3a30d15c540363b4df756ae",
+        "exec/dc/pc_le/mapmaster.dcb": "2acc035529b7078e73957668e987df24775d464a41fc32f9a0622f26786011bf",
+        "exec/dc/pc_le/mapcoords.dcb": "36bd16f8f21c6387b556e156055ea02f5c262b30a6c450cc0efa05734efb1a0c"
+      },
+      "twin": {
+        "realm": "7CE593BC21393690",
+        "region": "A1845BEF17F0E7BB",
+        "uid": "2F530E7F3F156D90",
+        "icon": "goMapIconCompletionistRavenTwin",
+        "flags": [
+          "A9FBE73C1DDFBBC5"
+        ],
+        "offset": 68720,
+        "data_offset": "0x10c70",
+        "file_offset": "0x10d40",
+        "raw_hex": "906d153f7f0e532f400000000000000000000000000000000000000000000000f8c7ffffffffffff0100000000000000000000000000000000000000000080bf0000000000000000",
+        "fields": {
+          "+0x00 uID": "906d153f7f0e532f",
+          "+0x08 Icon relative pointer": "4000000000000000",
+          "+0x10 LamsName": "00000000",
+          "+0x14 LamsDescription": "00000000",
+          "+0x18 HeightOffset": "00000000",
+          "+0x1C InitState": "00",
+          "+0x1D opaque gap": "000000",
+          "+0x20 Flags relative pointer": "f8c7ffffffffffff",
+          "+0x28 Flags count": "01000000",
+          "+0x2C opaque gap": "00000000",
+          "+0x30 FastTravel": "0000000000000000",
+          "+0x38 Priority": "00000000",
+          "+0x3C Radius": "000080bf",
+          "+0x40 OffsetX": "00000000",
+          "+0x44 OffsetY": "00000000"
+        },
+        "pointer_targets": {
+          "0x8": "0x10cb8",
+          "0x20": "0xd488"
+        }
+      },
+      "coordinate": {
+        "uid": "2F530E7F3F156D90",
+        "wad": "WAD_Xpl200_Funeral",
+        "position": [
+          -32.875,
+          12.984375,
+          787.5
+        ],
+        "offset": 57136,
+        "data_offset": "0xdf30",
+        "file_offset": "0xe000",
+        "raw_hex": "906d153f7f0e532f3780ffffffffffff1cd07e4a276228b40080c2bb0000803f000080bf00000000",
+        "fields": {
+          "+0x00 uID": "906d153f7f0e532f",
+          "+0x08 WadName relative pointer": "3780ffffffffffff",
+          "+0x10 Position half3": "1cd07e4a2762",
+          "+0x16 ForwardDir half3": "28b40080c2bb",
+          "+0x1C AdvanceRadiusMultiplier": "0000803f",
+          "+0x20 OverrideFuzzRadius": "000080bf",
+          "+0x24 InWorldMarkerDistance": "00000000"
+        },
+        "pointer_targets": {
+          "0x8": "0x5f6f"
+        }
+      },
+      "canonical_delta_from_raven": [
+        "0x00",
+        "0x01",
+        "0x02",
+        "0x03",
+        "0x04",
+        "0x05",
+        "0x06",
+        "0x07"
+      ]
+    }
+  },
+  "history": {
+    "tools/v0.10.4/build-raven-twin-stage-a2-offline.py": {
+      "git_revision": "af65a172ad4df6d2f6fbe1e2a01e095777de679b",
+      "sha256": "8be02ae7886d7502a1446b513bfabbfcd14efa41540cbe7c2825bf1404c1d2d7"
+    },
+    "tools/v0.10.4/raven-twin-stage-a2-runtime.ps1": {
+      "git_revision": "af65a172ad4df6d2f6fbe1e2a01e095777de679b",
+      "sha256": "085025aab7b50d3c43ceee622e2b405282bb68ddb0f63730abf62d638ad4a035"
+    },
+    "archive/field-logs/runtime-captures/raven-twin-stage-a2-20260910-125511/loader_log.txt": {
+      "git_revision": "af65a172ad4df6d2f6fbe1e2a01e095777de679b",
+      "sha256": "6de39a919204eae0e798035ee52471b75fb5f98e20de262dc7d25bb0d10d4dd7",
+      "original_raven_art_results": [
+        "[12:51:50] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false ",
+        "[12:52:06] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false ",
+        "[12:52:23] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false ",
+        "[12:52:31] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false ",
+        "[12:52:37] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false ",
+        "[12:52:42] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false ",
+        "[12:52:47] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false ",
+        "[12:52:56] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false "
+      ],
+      "twin_named_lines": []
+    },
+    "archive/field-logs/runtime-captures/raven-twin-stage-a2-20260910-125511/installed-file-hashes.json": {
+      "git_revision": "af65a172ad4df6d2f6fbe1e2a01e095777de679b",
+      "sha256": "a5f28dfaf3bf05141aafd278c254e0ed3385e99c281d39579a5e6b3631ce4f58"
+    },
+    "archive/field-logs/runtime-captures/raven-twin-stage-a2-20260910-125511/transaction/active.json": {
+      "git_revision": "af65a172ad4df6d2f6fbe1e2a01e095777de679b",
+      "sha256": "13ae2bbfa7bef401ce1aa79b5fae68d0b1e3ff8f26d41e2974fb1e0e74f931a5"
+    }
+  },
+  "native_code": {
+    "sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+    "image_base": "0x140000000",
+    "capstone_version": "5.0.7",
+    "anchors": [
+      {
+        "start_rva": "0x951E40",
+        "bytes": 220,
+        "sha256": "46680b295aac17680c9b93a70f64e3bbae4ac42fca65b72227dadb131c77ea11",
+        "analysis": "Lua CreateMarkerIcon unboxes marker/region, looks up marker, then creates icon.",
+        "checked_instructions": [
+          {
+            "rva": "0x951E8D",
+            "instruction": "call 0x140761fe0"
+          },
+          {
+            "rva": "0x951E9A",
+            "instruction": "call 0x140903f40"
+          }
+        ]
+      },
+      {
+        "start_rva": "0x903F40",
+        "bytes": 149,
+        "sha256": "f718941d1a0726dd8bf8f0064ab2135237b51cf79356c31096588359ce374928",
+        "analysis": "Reads authored token +8 Icon string, case-folds and hashes, calls resource path.",
+        "checked_instructions": [
+          {
+            "rva": "0x903F5E",
+            "instruction": "mov rax, qword ptr [rcx + 0x10]"
+          },
+          {
+            "rva": "0x903F6A",
+            "instruction": "mov r10, qword ptr [rax + 8]"
+          },
+          {
+            "rva": "0x903FA4",
+            "instruction": "imul r9, rax, 0x401"
+          },
+          {
+            "rva": "0x903FC4",
+            "instruction": "call 0x140750920"
+          }
+        ]
+      },
+      {
+        "start_rva": "0x750920",
+        "bytes": 661,
+        "sha256": "1b89f60936c326a5f0944669ccf3ca47401de69cd193cb1ed83cc740c3313d5c",
+        "analysis": "Looks up resource hash in WAD map, dependencies and global map before pool checkout.",
+        "checked_instructions": [
+          {
+            "rva": "0x7509B0",
+            "instruction": "mov r8, qword ptr [r14 + 0x78]"
+          },
+          {
+            "rva": "0x7509C8",
+            "instruction": "cmp rbx, qword ptr [rax]"
+          },
+          {
+            "rva": "0x750A3C",
+            "instruction": "call 0x1404b9020"
+          },
+          {
+            "rva": "0x750B15",
+            "instruction": "call 0x140423100"
+          },
+          {
+            "rva": "0x750B26",
+            "instruction": "call 0x14060eda0"
+          }
+        ]
+      },
+      {
+        "start_rva": "0x672A00",
+        "bytes": 94,
+        "sha256": "03780d10b5c790d1ffce12196f1e3b0a49cc9615f02c522c97bbb48d16a6bc89",
+        "analysis": "GOPool loop resolves Name, reads u16 Cnt, calls pool-add; stride 16.",
+        "checked_instructions": [
+          {
+            "rva": "0x672A0A",
+            "instruction": "movzx ebp, word ptr [rdi + rax + 8]"
+          },
+          {
+            "rva": "0x672A13",
+            "instruction": "call 0x140423100"
+          },
+          {
+            "rva": "0x672A41",
+            "instruction": "movzx r8d, bp"
+          },
+          {
+            "rva": "0x672A48",
+            "instruction": "call 0x14060dd80"
+          },
+          {
+            "rva": "0x672A54",
+            "instruction": "add rdi, 0x10"
+          }
+        ]
+      },
+      {
+        "start_rva": "0x60DD80",
+        "bytes": 460,
+        "sha256": "f302e78e1d96dee4d87d56fb96fcdf943fb9dfa19f7d37fcb18f47465c04dfa3",
+        "analysis": "Pool-add finds same resource pointer, adds capacity, then clones Cnt objects.",
+        "checked_instructions": [
+          {
+            "rva": "0x60DDA4",
+            "instruction": "cmp qword ptr [rbx], rbp"
+          },
+          {
+            "rva": "0x60DDA7",
+            "instruction": "je 0x14060de6b"
+          },
+          {
+            "rva": "0x60DE6B",
+            "instruction": "add dword ptr [rbx + 0x14], edi"
+          },
+          {
+            "rva": "0x60DEBC",
+            "instruction": "call qword ptr [rax + 0x20]"
+          },
+          {
+            "rva": "0x60DEDA",
+            "instruction": "inc dword ptr [rbx + 8]"
+          },
+          {
+            "rva": "0x60DEDD",
+            "instruction": "inc dword ptr [rbx + 0xc]"
+          },
+          {
+            "rva": "0x60DF24",
+            "instruction": "sub r15, 1"
+          },
+          {
+            "rva": "0x60DF28",
+            "instruction": "jne 0x14060dea0"
+          }
+        ]
+      },
+      {
+        "start_rva": "0x60EDA0",
+        "bytes": 299,
+        "sha256": "b4eed5a1fbcaa8a919219822b5055bcfc93f3e07e37c86cba50b8806f4d20a20",
+        "analysis": "Checkout uses resource pointer pool; no pool or exhausted capacity returns null.",
+        "checked_instructions": [
+          {
+            "rva": "0x60EDDC",
+            "instruction": "call 0x14060d8b0"
+          },
+          {
+            "rva": "0x60EDE7",
+            "instruction": "je 0x14060eeb9"
+          },
+          {
+            "rva": "0x60EDF7",
+            "instruction": "cmp dword ptr [rbx + 8], ecx"
+          },
+          {
+            "rva": "0x60EE11",
+            "instruction": "call 0x14060e0b0"
+          },
+          {
+            "rva": "0x60EEBE",
+            "instruction": "xor eax, eax"
+          }
+        ]
+      },
+      {
+        "start_rva": "0x60D8B0",
+        "bytes": 245,
+        "sha256": "4ea3fc19b4abb72c35e7b8c699e130d4ae816228013ba835b72abdee9ec5971b",
+        "analysis": "Pool lookup compares resource pointer, then recurses through dependency WADs.",
+        "checked_instructions": [
+          {
+            "rva": "0x60D8D6",
+            "instruction": "cmp qword ptr [r9], r14"
+          },
+          {
+            "rva": "0x60D972",
+            "instruction": "call 0x14060d8b0"
+          }
+        ]
+      },
+      {
+        "start_rva": "0x673FE0",
+        "bytes": 136,
+        "sha256": "796bfd7d064643881a7f1b2ea659eb5f606b8be6ea2646161b45daa432aef24e",
+        "analysis": "Incremental warmup also iterates every row Cnt times; duplicate rows are not discarded.",
+        "checked_instructions": [
+          {
+            "rva": "0x674004",
+            "instruction": "call 0x14060d4b0"
+          },
+          {
+            "rva": "0x67401E",
+            "instruction": "movzx eax, word ptr [rdi + 8]"
+          },
+          {
+            "rva": "0x674022",
+            "instruction": "cmp ecx, eax"
+          }
+        ]
+      },
+      {
+        "start_rva": "0x5B813D",
+        "bytes": 24,
+        "sha256": "424e7afffae44c74a57c32027febcdec8d6252f4b5a3c3bd618d752137db6076",
+        "analysis": "Separate memory estimate multiplies per-resource work by Cnt.",
+        "checked_instructions": [
+          {
+            "rva": "0x5B813D",
+            "instruction": "movzx eax, word ptr [r14 + 8]"
+          },
+          {
+            "rva": "0x5B8146",
+            "instruction": "imul eax, ebx"
+          },
+          {
+            "rva": "0x5B8149",
+            "instruction": "add esi, eax"
+          }
+        ]
+      }
+    ],
+    "all_anchor_instructions_match": true,
+    "limits": [
+      "Static disassembly only; no live pool sizes measured.",
+      "Full WAD name-map construction and all heap bookkeeping remain untraced.",
+      "No claim that a Name-only DCB rename creates a resource alias."
+    ],
+    "additional_windows": [
+      {
+        "rva": "0x761022",
+        "bytes": 151,
+        "sha256": "71eea92dbae3aebc9e1bc58c360b9ede7d7bcd71cac364410f5698deb98b1410",
+        "label": "marker UID linear scan",
+        "instructions": [
+          "0x761022 test rax, rax",
+          "0x761025 je 0x140761152",
+          "0x76102b movsxd r10, dword ptr [rcx + 0x78]",
+          "0x76102f mov r8d, dword ptr [rcx + 0x7c]",
+          "0x761033 add r8d, r10d",
+          "0x761036 cmp r10d, r8d",
+          "0x761039 jge 0x140761152",
+          "0x76103f mov rcx, qword ptr [r14 + 0x10]",
+          "0x761043 mov rdx, r10",
+          "0x761046 movsxd r11, r8d",
+          "0x761049 mov rbx, qword ptr [rcx + 8]",
+          "0x76104d mov rcx, r10",
+          "0x761050 shl rcx, 7",
+          "0x761054 lea r8, [rbx + 0x10]",
+          "0x761058 add r8, rcx",
+          "0x76105b nop dword ptr [rax + rax]",
+          "0x761060 mov rcx, qword ptr [r8]",
+          "0x761063 cmp qword ptr [rcx], rax",
+          "0x761066 je 0x1407610f2",
+          "0x76106c inc r10d",
+          "0x76106f inc rdx",
+          "0x761072 sub r8, -0x80",
+          "0x761076 cmp rdx, r11",
+          "0x761079 jl 0x140761060",
+          "0x76107b mov rax, r9",
+          "0x76107e mov rbx, qword ptr [rsp + 0x28]",
+          "0x761083 pop r14",
+          "0x761085 ret ",
+          "0x761086 movsxd rcx, r10d",
+          "0x761089 shl rcx, 7",
+          "0x76108d add rcx, rdi",
+          "0x761090 jmp 0x140760fa1",
+          "0x761095 test rax, rax",
+          "0x761098 je 0x14076100e",
+          "0x76109e mov rcx, qword ptr [r14 + 8]",
+          "0x7610a2 mov r10d, r9d",
+          "0x7610a5 movsxd rdx, dword ptr [rcx + 4]",
+          "0x7610a9 test edx, edx",
+          "0x7610ab jle 0x14076100e",
+          "0x7610b1 mov rbx, qword ptr [rcx + 8]",
+          "0x7610b5 mov r11, rdx"
+        ]
+      },
+      {
+        "rva": "0x7617fc",
+        "bytes": 49,
+        "sha256": "6091b300401bffd53bd2f5a4499c400501644740b62b617be603c437b8d2a62b",
+        "label": "coordinate UID linear scan; stride 0x28",
+        "instructions": [
+          "0x7617fc movsxd rdx, dword ptr [r12 + 8]",
+          "0x761801 mov rax, qword ptr [r9 + 0x10]",
+          "0x761805 mov rax, qword ptr [rax]",
+          "0x761808 test edx, edx",
+          "0x76180a jle 0x140761941",
+          "0x761810 mov r8, rdx",
+          "0x761813 mov rdx, qword ptr [r12]",
+          "0x761817 cmp qword ptr [rdx], rax",
+          "0x76181a je 0x14076182d",
+          "0x76181c inc rcx",
+          "0x76181f add rdx, 0x28",
+          "0x761823 cmp rcx, r8",
+          "0x761826 jl 0x140761817",
+          "0x761828 jmp 0x140761941"
+        ]
+      },
+      {
+        "rva": "0x60eded",
+        "bytes": 115,
+        "sha256": "6cfb6e5f8c9cd82fab771548230e432f0155e026674106cef54fdb50f3606dbb",
+        "label": "pool free/allocated/capacity guards",
+        "instructions": [
+          "0x60eded mov eax, dword ptr [rax + 0xc]",
+          "0x60edf0 test eax, eax",
+          "0x60edf2 jg 0x14060ee00",
+          "0x60edf4 mov ecx, dword ptr [rbx + 0x14]",
+          "0x60edf7 cmp dword ptr [rbx + 8], ecx",
+          "0x60edfa jge 0x14060eeb9",
+          "0x60ee00 mov qword ptr [rsp + 0x30], rsi",
+          "0x60ee05 mov rsi, qword ptr [rsp + 0x38]",
+          "0x60ee0a test eax, eax",
+          "0x60ee0c jle 0x14060ee2e",
+          "0x60ee0e mov rdx, rbx",
+          "0x60ee11 call 0x14060e0b0",
+          "0x60ee16 mov rsi, qword ptr [rsp + 0x30]",
+          "0x60ee1b mov rdi, rax",
+          "0x60ee1e mov rbx, qword ptr [rsp + 0x40]",
+          "0x60ee23 mov rbp, qword ptr [rsp + 0x48]",
+          "0x60ee28 add rsp, 0x20",
+          "0x60ee2c pop rdi",
+          "0x60ee2d ret ",
+          "0x60ee2e mov eax, dword ptr [rbx + 0x14]",
+          "0x60ee31 cmp dword ptr [rbx + 8], eax",
+          "0x60ee34 jge 0x14060ee9e",
+          "0x60ee36 mov qword ptr [rsi + 0x400], rdi",
+          "0x60ee3d lea rcx, [rip + 0xc2c78c]",
+          "0x60ee44 movzx eax, byte ptr [rdi]",
+          "0x60ee47 mov rcx, qword ptr [rcx + rax*8]",
+          "0x60ee4b test rcx, rcx",
+          "0x60ee4e jne 0x14060ee55",
+          "0x60ee50 mov rax, rbp",
+          "0x60ee53 jmp 0x14060ee61",
+          "0x60ee55 mov rax, qword ptr [rcx]",
+          "0x60ee58 xor r8d, r8d",
+          "0x60ee5b mov rdx, rdi"
+        ]
+      }
+    ]
+  },
+  "frozen_mapmenu_gates": [
+    {
+      "line": 36,
+      "text": "local markerStates = {"
+    },
+    {
+      "line": 37,
+      "text": "tweaks.eTokenState.kDiscovered,"
+    },
+    {
+      "line": 38,
+      "text": "tweaks.eTokenState.kDiscoveredButLocked"
+    },
+    {
+      "line": 346,
+      "text": "return markerInfo.State == tweaks.eTokenState.kDiscovered and"
+    },
+    {
+      "line": 623,
+      "text": "return Map.CreateMarkerIcon(backing.Id, backing.regionId, \"\")"
+    },
+    {
+      "line": 750,
+      "text": "return Map.CreateMarkerIcon(backing.Id, backing.regionId, \"\")"
+    },
+    {
+      "line": 971,
+      "text": "return Map.CreateMarkerIcon("
+    },
+    {
+      "line": 2211,
+      "text": "local isDiscoveredButLocked = currFastTravelMarkerInfo.State == tweaks.eTokenState.kDiscoveredButLocked"
+    },
+    {
+      "line": 2249,
+      "text": "local isDiscoveredButLocked = markerInfo.State == tweaks.eTokenState.kDiscoveredButLocked"
+    },
+    {
+      "line": 2301,
+      "text": "local isDiscoveredButLocked = markerInfo.State == tweaks.eTokenState.kDiscoveredButLocked"
+    },
+    {
+      "line": 2343,
+      "text": "local isLocked = markerInfo ~= nil and markerInfo.State == tweaks.eTokenState.kDiscoveredButLocked"
+    },
+    {
+      "line": 2354,
+      "text": "local isDiscoveredButLocked = markerInfo.State == tweaks.eTokenState.kDiscoveredButLocked"
+    },
+    {
+      "line": 2368,
+      "text": "if (markerInfo.State == tweaks.eTokenState.kDiscovered or markerInfo.State == tweaks.eTokenState.kDiscoveredButLocked) and Map.MarkerHasAnyFlag(markerInfo.Id, fastTravelMarkerFlags) then"
+    },
+    {
+      "line": 2426,
+      "text": "local isDiscoveredButLocked = markerInfo.State == tweaks.eTokenState.kDiscoveredButLocked"
+    },
+    {
+      "line": 2729,
+      "text": "function MapOn:UpdateIcons()"
+    },
+    {
+      "line": 2732,
+      "text": "if markerInfo.shown and markerInfo.iconGO == nil then"
+    },
+    {
+      "line": 2733,
+      "text": "markerInfo.iconGO = Map.CreateMarkerIcon(markerInfo.Id, markerInfo.regionId, \"\")"
+    },
+    {
+      "line": 2770,
+      "text": "if Map.MarkerHasAnyFlag(markerInfo.Id, alwaysOnMarkerFlags) and mapUtil.MapMarkerInfoHasStates(markerInfo, markerStates) then"
+    },
+    {
+      "line": 2781,
+      "text": "if Map.MarkerHasAnyFlag(markerInfo.Id, self.markerIncludeFlags) and mapUtil.MapMarkerInfoHasStates(markerInfo, markerStates) then"
+    },
+    {
+      "line": 2894,
+      "text": "local isDiscoveredButLocked = currFastTravelMarkerInfo.State == tweaks.eTokenState.kDiscoveredButLocked"
+    },
+    {
+      "line": 3097,
+      "text": "mapUtil.MapMarkerInfoHasStates(markerInfo, markerStates) then"
+    },
+    {
+      "line": 3521,
+      "text": "local candidate = \"Completionist_V103_Veithurgard_Raven_01\""
+    },
+    {
+      "line": 3560,
+      "text": "CompletionistMapV100_CreateMapPin = function(self, currState)"
+    },
+    {
+      "line": 3603,
+      "text": "return Map.CreateMarkerIcon(markerId, regionId, \"\")"
+    },
+    {
+      "line": 3665,
+      "text": "local candidate = \"Completionist_V103_Veithurgard_Raven_01\""
+    },
+    {
+      "line": 3704,
+      "text": "CompletionistMapV100_CreateMapPin = function(self, currState)"
+    },
+    {
+      "line": 3749,
+      "text": "return Map.CreateMarkerIcon(markerId, regionId, \"\")"
+    },
+    {
+      "line": 3812,
+      "text": "local candidate = \"Completionist_V103_Veithurgard_Raven_01\""
+    }
+  ],
+  "conclusions": [
+    "Native distinct UIDs share loader text/hash and one WAD final definition. No per-instance resource is required.",
+    "Native equal loader text occupies separate string addresses; pointer value is not resource identity. Native code hashes text.",
+    "Some same-region marker pairs differ canonically only in UID; flags and all opaque bytes may be equal.",
+    "Stage A/A2 Twin reaches region array and coordinate join offline; InitState remains 0 and frozen Lua only explicitly creates original Raven.",
+    "Automatic map path gates CreateMarkerIcon by state and filter. Missing Twin creation is strongest supported blocker; no live Twin State capture exists.",
+    "Shared Raven has one pool slot. Checkout returns null when no free instance and allocated count reaches capacity.",
+    "Native duplicate GOPool rows add capacity for same resolved resource. Append same Raven hash/capacity 1 to preserve original row.",
+    "Useful no-progression-write probe needs explicit Twin visual creation and one more pooled Raven instance; two DCB rows alone cannot establish two visible icons."
+  ],
+  "ranked_uncertainty": [
+    "1. Twin omitted by state gate / absent visual hook: source evidence strong, live Twin state not captured.",
+    "2. Stage A2 dedicated resource may have further loader issues: untested because no Twin creation evidence; shared-loader probe removes this variable.",
+    "3. Shared resource capacity exhaustion: proven future blocker for two live Raven objects with current capacity 1, not explanation for separate A2 pools.",
+    "4. Position projection, lifecycle, or icon overlap: inspect live distinct objects and positions; 32 world metres does not prove screen separation.",
+    "5. DCB ingest or UID lookup mismatch: offline array/join valid; live Twin lookup still required."
+  ],
+  "game_files_written": false,
+  "source_hashes_unchanged_after_audit": true
+}
