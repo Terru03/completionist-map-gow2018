@@ -37,7 +37,7 @@
       "properties": {
         "key": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
         "display_name": {"type": "string", "minLength": 1},
-        "status": {"enum": ["production_frozen", "offline_candidate", "placeholder", "synthetic_test"]},
+        "status": {"enum": ["production_frozen", "offline_candidate", "historical_failed", "placeholder", "synthetic_test"]},
         "parent_collectible_key": {"type": ["string", "null"]},
         "map_filter_category": {"type": ["string", "null"]},
         "identities": {"type": "object"},

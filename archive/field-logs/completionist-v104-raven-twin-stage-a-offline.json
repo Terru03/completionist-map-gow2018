@@ -1,0 +1,1377 @@
+{
+  "schema": 1,
+  "result": "RAVEN_TWIN_STAGE_A_OFFLINE_PROOF_PASSED",
+  "branch_contract": "codex/v104-raven-production",
+  "expected_head_at_request": "036628c9870d1040b6a4219f7f9fc3cf0a8befef",
+  "source": {
+    "kind": "current frozen runtime-proven Raven implementation",
+    "root": "G:\\SteamLibrary\\steamapps\\common\\GodOfWar",
+    "hashes_before": {
+      "exec/wad/pc_le/r_ui.wad": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
+      "exec/dc/pc_le/wad_r_ui.dcb": "765ef6c08a3c9d52ed9485c184237bc3fdde103feef01c496a6999fdbea8826d",
+      "exec/dc/pc_le/mapmaster.dcb": "b930c51316ca136d9c40ea7cda6a63a051127b357e97f1d4e4eb96a16993d96f",
+      "exec/dc/pc_le/mapcoords.dcb": "945774dbc965f45ad78b8408bb1d2b10a527c6390e4e7c1190e8f2d7538df3cb"
+    },
+    "hashes_after": {
+      "exec/wad/pc_le/r_ui.wad": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
+      "exec/dc/pc_le/wad_r_ui.dcb": "765ef6c08a3c9d52ed9485c184237bc3fdde103feef01c496a6999fdbea8826d",
+      "exec/dc/pc_le/mapmaster.dcb": "b930c51316ca136d9c40ea7cda6a63a051127b357e97f1d4e4eb96a16993d96f",
+      "exec/dc/pc_le/mapcoords.dcb": "945774dbc965f45ad78b8408bb1d2b10a527c6390e4e7c1190e8f2d7538df3cb"
+    },
+    "source_files_byte_identical_after_build": true,
+    "candidate_1_used": false,
+    "candidate_2_used": false,
+    "candidate_3_used": false,
+    "old_nornir_lifecycle_artifacts_used": false
+  },
+  "stage": {
+    "name": "A",
+    "scope": "map-only Raven Twin with Raven artwork",
+    "runtime_question": "Can God of War open the map with original Raven + Raven Twin using two distinct identities but the same proven Raven artwork?",
+    "compass_inworld_added": false,
+    "lifecycle_added": false,
+    "nornir_art_added": false,
+    "mapmenu_modified": false,
+    "mainhud_modified": false,
+    "chest_lua_modified": false
+  },
+  "identities": {
+    "marker_name": "Completionist_V104_Veithurgard_Raven_Twin_01",
+    "marker_uid": "2F530E7F3F156D90",
+    "map_game_object_loader_name": "goMapIconCompletionistRavenTwin",
+    "map_game_object_folded_hash": "3152371298304268"
+  },
+  "field_policy": {
+    "proven_identities": [
+      "WAD resource names",
+      "WAD record IDs used by dependency links",
+      "texture definition/file hash IDs",
+      "texture GPU/user hash IDs",
+      "map GameObject loader name and folded hash",
+      "marker name and marker UID"
+    ],
+    "known_local_references": [
+      "WAD dependency names and IDs",
+      "prototype payload self-ID",
+      "root prototype ID",
+      "texture-definition GPU user hash",
+      "DCB relative pointers and array pointers"
+    ],
+    "opaque_donor_fields": [
+      "material payload +0x10",
+      "material payload +0x20",
+      "all other material payload bytes",
+      "map model payload",
+      "ModelGroup payloads",
+      "unexplained scalar fields"
+    ],
+    "opaque_donor_fields_preserved_byte_for_byte": true
+  },
+  "files": {
+    "exec/wad/pc_le/r_ui.wad": {
+      "bytes": 50077648,
+      "sha256": "86ba2b6a96d869c25f825e5cd64aebae10649d5904f93b5723d53359ed24d0a5"
+    },
+    "exec/dc/pc_le/wad_r_ui.dcb": {
+      "bytes": 4896,
+      "sha256": "f0f67e7797456c17d2d8c1671c5998668cf48d1ad3a30d15c540363b4df756ae"
+    },
+    "exec/dc/pc_le/mapmaster.dcb": {
+      "bytes": 75872,
+      "sha256": "2acc035529b7078e73957668e987df24775d464a41fc32f9a0622f26786011bf"
+    },
+    "exec/dc/pc_le/mapcoords.dcb": {
+      "bytes": 62640,
+      "sha256": "36bd16f8f21c6387b556e156055ea02f5c262b30a6c450cc0efa05734efb1a0c"
+    }
+  },
+  "proofs": {
+    "r_ui_wad": {
+      "source_sha256": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
+      "candidate_sha256": "86ba2b6a96d869c25f825e5cd64aebae10649d5904f93b5723d53359ed24d0a5",
+      "source_bytes": 50057168,
+      "candidate_bytes": 50077648,
+      "resource_ids": {
+        "map_root": "6f180d11ff68c6898595783fe704bad6",
+        "map_proto": "4dd998403d2a808cfa8dea637bc893f8",
+        "map_model": "2be26e25ea5707b3f18ad71fef6ee7e8",
+        "material": "c2a6cfc678dd6f1d1beac86e5f6c4630"
+      },
+      "texture_identities": {
+        "diffuse": {
+          "name": "TX_completionist_raven_twin_diff_1C25CED771C6B311",
+          "file_hash": "1C25CED771C6B311",
+          "definition_id": "5458455400455255d7ce251c11b3c671",
+          "user_hash": "D4DC4EA332F8F1BF",
+          "gpu_id": "0000000000000000a34edcd4bff1f832",
+          "resident_payload_sha256": "b716517b28f4842cf144c7ed18eea293591d0879d2f5380820a64ef2d85e1572",
+          "resident_payload_equal_to_raven": true
+        },
+        "emissive": {
+          "name": "TX_completionist_raven_twin_emis_2F07426F7737EEB1",
+          "file_hash": "2F07426F7737EEB1",
+          "definition_id": "54584554004552556f42072fb1ee3777",
+          "user_hash": "BECA3591D82B3DBE",
+          "gpu_id": "00000000000000009135cabebe3d2bd8",
+          "resident_payload_sha256": "23fb22ee89f21094c2e5c232a0633d274d03bcad797d491e5b028ae0a309b7a1",
+          "resident_payload_equal_to_raven": true
+        }
+      },
+      "opaque_donor_fields": {
+        "material_payload_byte_identical": true,
+        "material_qword_0x10": "1B0989158D4A2908",
+        "material_qword_0x20": "D595197B0961F689",
+        "map_model_payload_byte_identical": true,
+        "model_group_payloads_mutated": false,
+        "unexplained_scalar_fields_changed": false
+      },
+      "accounting": {
+        "before_total": 16805,
+        "after_total": 16813,
+        "payload_delta": 8,
+        "accounted_delta": 8,
+        "type_increments": {
+          "0x20001": 4,
+          "0x2000C": 3,
+          "0xD": 1
+        }
+      },
+      "bookkeeping_ledger": [
+        {
+          "payload": "heap total",
+          "changed_byte_spans_inclusive": [
+            [
+              4,
+              4
+            ]
+          ],
+          "category": "explicitly_justified",
+          "reason": "WAD payload-count/type-range bookkeeping for eight appended map payloads",
+          "unexplained_changed_bytes": []
+        },
+        {
+          "payload": "root/type table",
+          "changed_byte_spans_inclusive": [
+            [
+              28,
+              28
+            ],
+            [
+              72,
+              72
+            ],
+            [
+              80,
+              80
+            ],
+            [
+              92,
+              92
+            ],
+            [
+              104,
+              104
+            ],
+            [
+              116,
+              116
+            ],
+            [
+              128,
+              128
+            ],
+            [
+              140,
+              140
+            ],
+            [
+              152,
+              152
+            ],
+            [
+              164,
+              164
+            ],
+            [
+              176,
+              176
+            ],
+            [
+              188,
+              188
+            ],
+            [
+              200,
+              200
+            ],
+            [
+              212,
+              212
+            ],
+            [
+              224,
+              224
+            ],
+            [
+              236,
+              236
+            ],
+            [
+              240,
+              240
+            ],
+            [
+              248,
+              248
+            ],
+            [
+              252,
+              252
+            ],
+            [
+              260,
+              260
+            ],
+            [
+              272,
+              272
+            ],
+            [
+              284,
+              285
+            ]
+          ],
+          "category": "explicitly_justified",
+          "reason": "WAD payload-count/type-range bookkeeping for eight appended map payloads",
+          "unexplained_changed_bytes": []
+        }
+      ],
+      "raven_to_twin_record_ledger": {
+        "textures": [
+          {
+            "donor_name": "TX_completionist_raven_map_diffuse_19A41F00834C19F3",
+            "twin_name": "TX_completionist_raven_twin_diff_1C25CED771C6B311",
+            "kind": "0x1D",
+            "flags": "0x80A1",
+            "payload_bytes": 9228,
+            "changed_byte_count": 34,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    16,
+                    23
+                  ]
+                ],
+                "field_window_half_open": [
+                  8,
+                  24
+                ],
+                "category": "known_identity",
+                "reason": "new GPU WAD record ID"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    47,
+                    53
+                  ],
+                  [
+                    55,
+                    70
+                  ],
+                  [
+                    72,
+                    74
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_identity",
+                "reason": "new texture record name"
+              }
+            ],
+            "unexplained_changed_bytes": []
+          },
+          {
+            "donor_name": "TX_completionist_raven_map_diffuse_19A41F00834C19F3",
+            "twin_name": "TX_completionist_raven_twin_diff_1C25CED771C6B311",
+            "kind": "0x1",
+            "flags": "0x8021",
+            "payload_bytes": 356,
+            "changed_byte_count": 42,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    16,
+                    23
+                  ]
+                ],
+                "field_window_half_open": [
+                  8,
+                  24
+                ],
+                "category": "known_identity",
+                "reason": "new texture-definition WAD record ID"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    47,
+                    53
+                  ],
+                  [
+                    55,
+                    70
+                  ],
+                  [
+                    72,
+                    74
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_identity",
+                "reason": "new texture record name"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    252,
+                    259
+                  ]
+                ],
+                "field_window_half_open": [
+                  252,
+                  260
+                ],
+                "category": "known_local_reference",
+                "reason": "texture definition points at Twin GPU user hash"
+              }
+            ],
+            "unexplained_changed_bytes": []
+          },
+          {
+            "donor_name": "TX_completionist_raven_map_emissive_63F1E18FF93B9037",
+            "twin_name": "TX_completionist_raven_twin_emis_2F07426F7737EEB1",
+            "kind": "0x1D",
+            "flags": "0x80A1",
+            "payload_bytes": 4620,
+            "changed_byte_count": 35,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    16,
+                    23
+                  ]
+                ],
+                "field_window_half_open": [
+                  8,
+                  24
+                ],
+                "category": "known_identity",
+                "reason": "new GPU WAD record ID"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    47,
+                    54
+                  ],
+                  [
+                    56,
+                    70
+                  ],
+                  [
+                    72,
+                    75
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_identity",
+                "reason": "new texture record name"
+              }
+            ],
+            "unexplained_changed_bytes": []
+          },
+          {
+            "donor_name": "TX_completionist_raven_map_emissive_63F1E18FF93B9037",
+            "twin_name": "TX_completionist_raven_twin_emis_2F07426F7737EEB1",
+            "kind": "0x1",
+            "flags": "0x8021",
+            "payload_bytes": 356,
+            "changed_byte_count": 43,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    16,
+                    23
+                  ]
+                ],
+                "field_window_half_open": [
+                  8,
+                  24
+                ],
+                "category": "known_identity",
+                "reason": "new texture-definition WAD record ID"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    47,
+                    54
+                  ],
+                  [
+                    56,
+                    70
+                  ],
+                  [
+                    72,
+                    75
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_identity",
+                "reason": "new texture record name"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    252,
+                    259
+                  ]
+                ],
+                "field_window_half_open": [
+                  252,
+                  260
+                ],
+                "category": "known_local_reference",
+                "reason": "texture definition points at Twin GPU user hash"
+              }
+            ],
+            "unexplained_changed_bytes": []
+          }
+        ],
+        "material_group": [
+          {
+            "donor_name": "MAT_AE4AD85BB993F040",
+            "twin_name": "MAT_completionistraventwin",
+            "kind": "0x2",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 22,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    28,
+                    49
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_identity",
+                "reason": "WAD record name or dependency name"
+              }
+            ],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 0
+          },
+          {
+            "donor_name": "MAT_AE4AD85BB993F040",
+            "twin_name": "MAT_completionistraventwin",
+            "kind": "0x1",
+            "flags": "0x14",
+            "payload_bytes": 384,
+            "changed_byte_count": 38,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    28,
+                    49
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_identity",
+                "reason": "WAD record name or dependency name"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    8,
+                    23
+                  ]
+                ],
+                "field_window_half_open": [
+                  8,
+                  24
+                ],
+                "category": "known_identity",
+                "reason": "WAD record ID or dependency target ID"
+              }
+            ],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 1
+          },
+          {
+            "donor_name": "TX_completionist_raven_map_diffuse_19A41F00834C19F3",
+            "twin_name": "TX_completionist_raven_twin_diff_1C25CED771C6B311",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 34,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    47,
+                    53
+                  ],
+                  [
+                    55,
+                    70
+                  ],
+                  [
+                    72,
+                    74
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_local_reference",
+                "reason": "WAD record name or dependency name"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    16,
+                    23
+                  ]
+                ],
+                "field_window_half_open": [
+                  8,
+                  24
+                ],
+                "category": "known_local_reference",
+                "reason": "WAD record ID or dependency target ID"
+              }
+            ],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 2
+          },
+          {
+            "donor_name": "TX_rewards_headerbacking_[0_1]_norm_182F0CA0F54A6666",
+            "twin_name": "TX_rewards_headerbacking_[0_1]_norm_182F0CA0F54A6666",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 3
+          },
+          {
+            "donor_name": "TX_mapmarker_vendorlocation_gloss_0F72BB3EB6D02EA3",
+            "twin_name": "TX_mapmarker_vendorlocation_gloss_0F72BB3EB6D02EA3",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 4
+          },
+          {
+            "donor_name": "TX_completionist_raven_map_emissive_63F1E18FF93B9037",
+            "twin_name": "TX_completionist_raven_twin_emis_2F07426F7737EEB1",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 35,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    47,
+                    54
+                  ],
+                  [
+                    56,
+                    70
+                  ],
+                  [
+                    72,
+                    75
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_local_reference",
+                "reason": "WAD record name or dependency name"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    16,
+                    23
+                  ]
+                ],
+                "field_window_half_open": [
+                  8,
+                  24
+                ],
+                "category": "known_local_reference",
+                "reason": "WAD record ID or dependency target ID"
+              }
+            ],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 5
+          },
+          {
+            "donor_name": "0c599dc8dc7e2170_ps_10000207",
+            "twin_name": "0c599dc8dc7e2170_ps_10000207",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 6
+          },
+          {
+            "donor_name": "transp_vs_10000207",
+            "twin_name": "transp_vs_10000207",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 7
+          },
+          {
+            "donor_name": "MAT_AE4AD85BB993F040",
+            "twin_name": "MAT_completionistraventwin",
+            "kind": "0x3",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 22,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    28,
+                    49
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_identity",
+                "reason": "WAD record name or dependency name"
+              }
+            ],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 8
+          }
+        ],
+        "model_group": [
+          {
+            "donor_name": "GroupStart",
+            "twin_name": "GroupStart",
+            "kind": "0x2",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 0
+          },
+          {
+            "donor_name": "MDL_completionistraven",
+            "twin_name": "MDL_completionistraventwin",
+            "kind": "0x1",
+            "flags": "0x8E",
+            "payload_bytes": 80,
+            "changed_byte_count": 20,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    46,
+                    49
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_identity",
+                "reason": "WAD record name or dependency name"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    8,
+                    23
+                  ]
+                ],
+                "field_window_half_open": [
+                  8,
+                  24
+                ],
+                "category": "known_identity",
+                "reason": "WAD record ID or dependency target ID"
+              }
+            ],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 1
+          },
+          {
+            "donor_name": "MAT_F11E51F026F4596B",
+            "twin_name": "MAT_F11E51F026F4596B",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 2
+          },
+          {
+            "donor_name": "MAT_11A6DFE6C38CAD6D",
+            "twin_name": "MAT_11A6DFE6C38CAD6D",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 3
+          },
+          {
+            "donor_name": "MAT_F53695693934397F",
+            "twin_name": "MAT_F53695693934397F",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 4
+          },
+          {
+            "donor_name": "MAT_AE4AD85BB993F040",
+            "twin_name": "MAT_completionistraventwin",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 38,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    28,
+                    49
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_local_reference",
+                "reason": "WAD record name or dependency name"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    8,
+                    23
+                  ]
+                ],
+                "field_window_half_open": [
+                  8,
+                  24
+                ],
+                "category": "known_local_reference",
+                "reason": "WAD record ID or dependency target ID"
+              }
+            ],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 5
+          },
+          {
+            "donor_name": "MG_mapicondock_0",
+            "twin_name": "MG_mapicondock_0",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 6
+          },
+          {
+            "donor_name": "GroupEnd",
+            "twin_name": "GroupEnd",
+            "kind": "0x3",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 7
+          }
+        ],
+        "prototype_group": [
+          {
+            "donor_name": "GroupStart",
+            "twin_name": "GroupStart",
+            "kind": "0x2",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 0
+          },
+          {
+            "donor_name": "goProtoMapIconCompletionistRaven",
+            "twin_name": "goProtoMapIconCompletionistRavenTwin",
+            "kind": "0x1",
+            "flags": "0x3D",
+            "payload_bytes": 1984,
+            "changed_byte_count": 36,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    56,
+                    59
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_identity",
+                "reason": "WAD record name or dependency name"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    8,
+                    23
+                  ]
+                ],
+                "field_window_half_open": [
+                  8,
+                  24
+                ],
+                "category": "known_identity",
+                "reason": "WAD record ID or dependency target ID"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    1672,
+                    1687
+                  ]
+                ],
+                "field_window_half_open": [
+                  1672,
+                  1688
+                ],
+                "category": "known_local_reference",
+                "reason": "prototype payload self-reference uses Twin prototype ID"
+              }
+            ],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 1
+          },
+          {
+            "donor_name": "MDL_completionistraven",
+            "twin_name": "MDL_completionistraventwin",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 20,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    46,
+                    49
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_local_reference",
+                "reason": "WAD record name or dependency name"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    8,
+                    23
+                  ]
+                ],
+                "field_window_half_open": [
+                  8,
+                  24
+                ],
+                "category": "known_local_reference",
+                "reason": "WAD record ID or dependency target ID"
+              }
+            ],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 2
+          },
+          {
+            "donor_name": "ANM_mapicondock",
+            "twin_name": "ANM_mapicondock",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 3
+          },
+          {
+            "donor_name": "0_7_0",
+            "twin_name": "0_7_0",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 4
+          },
+          {
+            "donor_name": "SCP_MapIconDock",
+            "twin_name": "SCP_MapIconDock",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 5
+          },
+          {
+            "donor_name": "SCP_CollidableSphere9",
+            "twin_name": "SCP_CollidableSphere9",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 6
+          },
+          {
+            "donor_name": "SCP_flourishD1",
+            "twin_name": "SCP_flourishD1",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 7
+          },
+          {
+            "donor_name": "GroupEnd",
+            "twin_name": "GroupEnd",
+            "kind": "0x3",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 8
+          }
+        ],
+        "root_group": [
+          {
+            "donor_name": "GroupStart",
+            "twin_name": "GroupStart",
+            "kind": "0x2",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 0
+          },
+          {
+            "donor_name": "gomapiconcompletionistraven",
+            "twin_name": "gomapiconcompletionistraventwin",
+            "kind": "0x1",
+            "flags": "0x3D",
+            "payload_bytes": 164,
+            "changed_byte_count": 40,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    51,
+                    54
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_identity",
+                "reason": "WAD record name or dependency name"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    8,
+                    23
+                  ]
+                ],
+                "field_window_half_open": [
+                  8,
+                  24
+                ],
+                "category": "known_identity",
+                "reason": "WAD record ID or dependency target ID"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    108,
+                    123
+                  ]
+                ],
+                "field_window_half_open": [
+                  108,
+                  124
+                ],
+                "category": "known_local_reference",
+                "reason": "root points at Twin prototype ID"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    151,
+                    154
+                  ]
+                ],
+                "field_window_half_open": [
+                  124,
+                  180
+                ],
+                "category": "known_identity",
+                "reason": "root embeds Twin loader name"
+              }
+            ],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 1
+          },
+          {
+            "donor_name": "GroupEnd",
+            "twin_name": "GroupEnd",
+            "kind": "0x3",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 0,
+            "changes": [],
+            "unexplained_changed_bytes": [],
+            "group_row_index": 2
+          }
+        ],
+        "parent_link": [
+          {
+            "donor_name": "gomapiconcompletionistraven",
+            "twin_name": "gomapiconcompletionistraventwin",
+            "kind": "0x1",
+            "flags": "0x0",
+            "payload_bytes": 0,
+            "changed_byte_count": 20,
+            "changes": [
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    8,
+                    23
+                  ]
+                ],
+                "field_window_half_open": [
+                  8,
+                  24
+                ],
+                "category": "known_local_reference",
+                "reason": "parent link points at Twin root ID"
+              },
+              {
+                "byte_spans_in_serialized_record_inclusive": [
+                  [
+                    51,
+                    54
+                  ]
+                ],
+                "field_window_half_open": [
+                  24,
+                  80
+                ],
+                "category": "known_local_reference",
+                "reason": "parent link names Twin root"
+              }
+            ],
+            "unexplained_changed_bytes": []
+          }
+        ]
+      },
+      "all_twin_record_differences_classified": true,
+      "unexplained_changed_payload_bytes": 0,
+      "preserved_named_records": {
+        "gomapiconcompletionistraven": {
+          "source_record_count": 2,
+          "candidate_record_count": 2,
+          "every_source_record_byte_identical": true
+        },
+        "goProtoMapIconCompletionistRaven": {
+          "source_record_count": 1,
+          "candidate_record_count": 1,
+          "every_source_record_byte_identical": true
+        },
+        "MDL_completionistraven": {
+          "source_record_count": 2,
+          "candidate_record_count": 2,
+          "every_source_record_byte_identical": true
+        },
+        "MAT_AE4AD85BB993F040": {
+          "source_record_count": 5,
+          "candidate_record_count": 5,
+          "every_source_record_byte_identical": true
+        },
+        "TX_completionist_raven_map_diffuse_19A41F00834C19F3": {
+          "source_record_count": 3,
+          "candidate_record_count": 3,
+          "every_source_record_byte_identical": true
+        },
+        "TX_completionist_raven_map_emissive_63F1E18FF93B9037": {
+          "source_record_count": 3,
+          "candidate_record_count": 3,
+          "every_source_record_byte_identical": true
+        },
+        "MAT_0C599DC8DC7E2170": {
+          "source_record_count": 5,
+          "candidate_record_count": 5,
+          "every_source_record_byte_identical": true
+        },
+        "MDL_mapicondock": {
+          "source_record_count": 2,
+          "candidate_record_count": 2,
+          "every_source_record_byte_identical": true
+        },
+        "MG_mapicondock_0": {
+          "source_record_count": 3,
+          "candidate_record_count": 4,
+          "every_source_record_byte_identical": true
+        },
+        "gomapicondock": {
+          "source_record_count": 2,
+          "candidate_record_count": 2,
+          "every_source_record_byte_identical": true
+        },
+        "MDL_boatdock": {
+          "source_record_count": 2,
+          "candidate_record_count": 2,
+          "every_source_record_byte_identical": true
+        },
+        "MG_boatdock_0": {
+          "source_record_count": 3,
+          "candidate_record_count": 3,
+          "every_source_record_byte_identical": true
+        },
+        "goboatdock": {
+          "source_record_count": 2,
+          "candidate_record_count": 2,
+          "every_source_record_byte_identical": true
+        }
+      },
+      "original_raven_records_byte_identical": true,
+      "stock_dock_boatdock_records_byte_identical": true,
+      "parse_serialize_roundtrip_exact": true,
+      "normalized_to_frozen_raven_exact": true
+    },
+    "wad_r_ui_dcb": {
+      "source_sha256": "765ef6c08a3c9d52ed9485c184237bc3fdde103feef01c496a6999fdbea8826d",
+      "candidate_sha256": "f0f67e7797456c17d2d8c1671c5998668cf48d1ad3a30d15c540363b4df756ae",
+      "source_rows": 257,
+      "candidate_rows": 258,
+      "twin_row": {
+        "index": 257,
+        "hash": "3152371298304268",
+        "capacity": 1
+      },
+      "known_identity_changes": [
+        "new folded loader hash GOPool row"
+      ],
+      "explicitly_justified_changes": [
+        "GOPool count",
+        "GOPool tail pointers",
+        "data chunk size"
+      ],
+      "all_existing_rows_byte_identical": true,
+      "raven_row_byte_identical": true,
+      "non_data_chunks_byte_identical": true,
+      "normalized_to_frozen_raven_exact": true,
+      "unexplained_changed_payload_bytes": 0
+    },
+    "mapmaster_dcb": {
+      "source_sha256": "b930c51316ca136d9c40ea7cda6a63a051127b357e97f1d4e4eb96a16993d96f",
+      "candidate_sha256": "2acc035529b7078e73957668e987df24775d464a41fc32f9a0622f26786011bf",
+      "source_marker_count": 383,
+      "candidate_marker_count": 384,
+      "twin": {
+        "name": "Completionist_V104_Veithurgard_Raven_Twin_01",
+        "uid": "2F530E7F3F156D90",
+        "icon": "goMapIconCompletionistRavenTwin",
+        "realm": "7CE593BC21393690",
+        "region": "A1845BEF17F0E7BB",
+        "flags_equal_to_raven": true
+      },
+      "raven_to_twin_record_ledger": [
+        {
+          "field": "+0x00..+0x07",
+          "category": "known_identity",
+          "reason": "new marker UID derived from new marker name"
+        },
+        {
+          "field": "+0x08..+0x0F",
+          "category": "known_local_reference",
+          "reason": "relative pointer to new Twin map GameObject loader name"
+        },
+        {
+          "field": "+0x20..+0x27",
+          "category": "known_local_reference",
+          "reason": "rebased relative pointer to unchanged Raven flag array"
+        },
+        {
+          "field": "appended NUL-terminated string",
+          "category": "known_identity",
+          "reason": "new Twin map GameObject loader name"
+        }
+      ],
+      "explicitly_justified_container_changes": [
+        "region marker-array pointer/count",
+        "rebased pointers in copied array",
+        "data chunk size",
+        "relocation table/count"
+      ],
+      "original_marker_records_semantically_identical": true,
+      "original_marker_records_physical_bytes_at_original_offsets_identical": true,
+      "original_raven_marker_physical_bytes_at_original_offset_identical": true,
+      "original_raven_marker_canonical_bytes_identical": true,
+      "normalized_to_frozen_raven_exact": true,
+      "unexplained_changed_payload_bytes": 0
+    },
+    "mapcoords_dcb": {
+      "source_sha256": "945774dbc965f45ad78b8408bb1d2b10a527c6390e4e7c1190e8f2d7538df3cb",
+      "candidate_sha256": "36bd16f8f21c6387b556e156055ea02f5c262b30a6c450cc0efa05734efb1a0c",
+      "source_coordinate_count": 406,
+      "candidate_coordinate_count": 407,
+      "twin": {
+        "uid": "2F530E7F3F156D90",
+        "wad": "WAD_Xpl200_Funeral",
+        "position": [
+          -32.875,
+          12.984375,
+          787.5
+        ],
+        "position_offset_from_raven_metres": 32.0
+      },
+      "raven_to_twin_record_ledger": [
+        {
+          "field": "+0x00..+0x07",
+          "category": "known_identity",
+          "reason": "new marker UID"
+        },
+        {
+          "field": "+0x08..+0x0F",
+          "category": "known_local_reference",
+          "reason": "rebased pointer to unchanged Raven WAD name"
+        },
+        {
+          "field": "+0x10..+0x15",
+          "category": "marker_position",
+          "reason": "deliberate 32-metre east offset so both map icons can be observed"
+        }
+      ],
+      "explicitly_justified_container_changes": [
+        "coordinate-array pointer/count",
+        "rebased pointers in copied array",
+        "data chunk size",
+        "relocation table/count"
+      ],
+      "original_coordinate_records_semantically_identical": true,
+      "original_coordinate_records_physical_bytes_at_original_offsets_identical": true,
+      "original_raven_coordinate_physical_bytes_at_original_offset_identical": true,
+      "original_raven_coordinate_canonical_bytes_identical": true,
+      "normalized_to_frozen_raven_exact": true,
+      "unexplained_changed_payload_bytes": 0
+    },
+    "exact_normalization_to_frozen_raven_for_all_four_files": true,
+    "original_raven_records_byte_identical": true,
+    "stock_dock_boatdock_records_byte_identical": true,
+    "all_twin_differences_classified": true,
+    "unexplained_changed_payload_bytes": 0
+  },
+  "stage_b_design_only": {
+    "implemented": false,
+    "allowed_future_delta_after_stage_a_runtime_success": [
+      "Twin diffuse resident pixel payload",
+      "Twin emissive resident pixel payload",
+      "matching external texpack stream bytes under unchanged Twin texture identities"
+    ],
+    "topology_and_identity_bytes_must_equal_stage_a": true,
+    "gate": "Do not build Stage B until Stage A runtime success is archived."
+  },
+  "safety": {
+    "god_of_war_launched": false,
+    "installed_game_files_written": false,
+    "save_files_written": false,
+    "progression_state_written": false,
+    "marker_state_written": false,
+    "runtime_installer_executed": false,
+    "linked_output_destinations_rejected": true,
+    "atomic_candidate_and_report_writes": true
+  },
+  "ready_for_transactional_installer_creation": true,
+  "ready_for_runtime_test": true,
+  "runtime_test_performed": false
+}

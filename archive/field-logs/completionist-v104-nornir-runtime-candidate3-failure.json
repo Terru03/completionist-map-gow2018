@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "result": "RUNTIME_NORNIR_CANDIDATE3_MAP_OPEN_CRASH_ROLLED_BACK",
+  "branch": "codex/v104-raven-production",
+  "install_head": "036628c9870d1040b6a4219f7f9fc3cf0a8befef",
+  "transaction_id": "20260910T050816Z-d5f40327",
+  "transaction_timestamps_utc": {
+    "created": "2026-09-10T05:08:17.4845991Z",
+    "installed": "2026-09-10T05:08:21.7265922Z",
+    "rolled_back": "2026-09-10T05:27:56.7519028Z"
+  },
+  "observed_runtime": {
+    "god_of_war_launched_successfully": true,
+    "map_open_attempted": true,
+    "map_open_crash": true,
+    "candidate_immediately_rolled_back": true
+  },
+  "rollback": {
+    "transaction_manifest_status": "rolled-back",
+    "exact_preinstall_state_restored": true,
+    "raven_production_verifier_passed_after_rollback": true,
+    "save_progression_marker_state_modified": false
+  },
+  "transaction_manifest_evidence": {
+    "schema": 2,
+    "status": "rolled-back",
+    "backup_complete_before_first_game_write": true,
+    "source_sha_verified_before_write": true,
+    "automatic_rollback_on_install_failure": true,
+    "game_launched_by_installer": false,
+    "save_files_written_by_installer": false,
+    "progression_state_written_by_installer": false,
+    "marker_state_written_by_installer": false,
+    "entries": [
+      {"path": "exec/wad/pc_le/r_ui.wad", "before_sha256": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60", "candidate_sha256": "90391a2841d3a9ad889b95d5c17fc0ee09de803a57675b6d237a98051b08c660", "final_write_state": "restored"},
+      {"path": "exec/dc/pc_le/wad_r_ui.dcb", "before_sha256": "765ef6c08a3c9d52ed9485c184237bc3fdde103feef01c496a6999fdbea8826d", "candidate_sha256": "93164584bc115b64144bef73680ce5163b7ddf48f74bfd2698fef1b165dc891a", "final_write_state": "restored"},
+      {"path": "exec/dc/pc_le/wad_r_perm.dcb", "before_sha256": "85d33925a10a6d70629a79eb19c51c4c92957f9eb78eda0c1145e585ea5781a5", "candidate_sha256": "be453733a57a27dde5eb33e553973ec34c330e4841f7c632e4f784a8adc34350", "final_write_state": "restored"},
+      {"path": "exec/dc/pc_le/mapmaster.dcb", "before_sha256": "b930c51316ca136d9c40ea7cda6a63a051127b357e97f1d4e4eb96a16993d96f", "candidate_sha256": "6285c824973e760594b7413a79645b931200e40237710600052d964602d9bff4", "final_write_state": "restored"},
+      {"path": "exec/dc/pc_le/mapcoords.dcb", "before_sha256": "945774dbc965f45ad78b8408bb1d2b10a527c6390e4e7c1190e8f2d7538df3cb", "candidate_sha256": "b870adccf66baf0d71dd1c0774d12e5ca503415da1e9270f82d0b77c0f11cd7f", "final_write_state": "restored"},
+      {"path": "exec/dc/pc_le/compassgraph.dcb", "before_sha256": "d0ed78ba4b91813c74dc6088a8521d332ea991e760b1c2600d6eeefc5fe60e68", "candidate_sha256": "8477f6332436959ce06b0c7e84a4871a7ff947421f9e858589e360e2e7c0d45e", "final_write_state": "restored"},
+      {"path": "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua", "before_sha256": "67d069a798417b631c271f48c129fb2083591b81a31859ab94769fbbb8b01c6b", "candidate_sha256": "ac38d76b4eea20b701ab73d3eaf9f2a23f9933b4bd4ddf5a4e9ec7197e5bc8b8", "final_write_state": "restored"},
+      {"path": "mods/lua/gameart/ui/scripts/hud/mainhud.lua", "before_sha256": "f15d1400e8a6f3f9ec17b128a97b790d6ecfa35a8aff69295ca319941e47d4bf", "candidate_sha256": "9f803bba1296c99960764aae161b2118531ba8f02dce60284207424257e01605", "final_write_state": "restored"},
+      {"path": "mods/lua/gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua", "before_sha256": "79a4c9e0c584ae1850f1ea65c054479c363669626ce416cca86e5f7893310c35", "candidate_sha256": "67620fdab2e33186652efdd7c50c7f085e6670964e8d91556804890e382a9c3b", "final_write_state": "restored"},
+      {"path": "mods/lua/gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua", "before_sha256": "da77b852b52c53c75853e4f05d6b554f3885dae6f4166f3c1c3f907ee66670cc", "candidate_sha256": "7b9e1b03bef0f26de9c132241f6a98750c34c6f99dbb324ea37cbcd0347c07f3", "final_write_state": "restored"}
+    ]
+  },
+  "restored_frozen_raven_hashes": {
+    "exec/wad/pc_le/r_ui.wad": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
+    "exec/dc/pc_le/wad_r_ui.dcb": "765ef6c08a3c9d52ed9485c184237bc3fdde103feef01c496a6999fdbea8826d",
+    "exec/dc/pc_le/wad_r_perm.dcb": "85d33925a10a6d70629a79eb19c51c4c92957f9eb78eda0c1145e585ea5781a5",
+    "exec/dc/pc_le/mapmaster.dcb": "b930c51316ca136d9c40ea7cda6a63a051127b357e97f1d4e4eb96a16993d96f",
+    "exec/dc/pc_le/mapcoords.dcb": "945774dbc965f45ad78b8408bb1d2b10a527c6390e4e7c1190e8f2d7538df3cb",
+    "exec/dc/pc_le/compassgraph.dcb": "d0ed78ba4b91813c74dc6088a8521d332ea991e760b1c2600d6eeefc5fe60e68",
+    "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": "67d069a798417b631c271f48c129fb2083591b81a31859ab94769fbbb8b01c6b"
+  },
+  "construction_audit": {
+    "end_to_end_raven_clone_built": false,
+    "files_rebuilt_from_frozen_raven_by_build_nornir_candidate3_offline": [
+      "exec/wad/pc_le/r_ui.wad",
+      "exec/dc/pc_le/wad_r_ui.dcb"
+    ],
+    "files_copied_from_old_nornir_lifecycle_candidate": [
+      "exec/dc/pc_le/wad_r_perm.dcb",
+      "exec/dc/pc_le/mapmaster.dcb",
+      "exec/dc/pc_le/mapcoords.dcb",
+      "exec/dc/pc_le/compassgraph.dcb",
+      "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua",
+      "mods/lua/gameart/ui/scripts/hud/mainhud.lua",
+      "mods/lua/gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua",
+      "mods/lua/gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua"
+    ],
+    "candidate3_retired": true,
+    "permitted_future_use": "historical failure evidence only"
+  },
+  "diagnosis": {
+    "root_cause_proven": false,
+    "root_cause_claim": null,
+    "conclusion": "Candidate 3 failed the map-open runtime gate. Its mixed construction does not isolate an end-to-end Raven-clone variable."
+  },
+  "next_gate": "Build and test a map-only Raven Twin from the current frozen, runtime-proven Raven. Preserve opaque Raven fields and change only established identities, local references, and the deliberately authored marker position."
+}

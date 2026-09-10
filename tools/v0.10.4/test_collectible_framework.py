@@ -12,9 +12,6 @@ import unittest
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 FRAMEWORK_PATH = HERE / "collectible_framework.py"
-EXPECTED_CANDIDATE3_WAD = "90391a2841d3a9ad889b95d5c17fc0ee09de803a57675b6d237a98051b08c660"
-EXPECTED_CANDIDATE3_DCB = "93164584bc115b64144bef73680ce5163b7ddf48f74bfd2698fef1b165dc891a"
-EXPECTED_CANDIDATE3_PERM = "be453733a57a27dde5eb33e553973ec34c330e4841f7c632e4f784a8adc34350"
 RAVEN_HASHES = {
     "exec/wad/pc_le/r_ui.wad": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
     "exec/dc/pc_le/wad_r_ui.dcb": "765ef6c08a3c9d52ed9485c184237bc3fdde103feef01c496a6999fdbea8826d",
@@ -70,11 +67,17 @@ class RegistryTests(unittest.TestCase):
         self.assertEqual(raven["status"], "production_frozen")
         self.assertFalse(raven["build"]["enabled"])
 
+    def test_failed_nornir_candidates_are_not_build_inputs(self):
+        nornir = cf.definition_for(self.registry, "nornir_chest")
+        self.assertEqual(nornir["status"], "historical_failed")
+        self.assertFalse(nornir["build"]["enabled"])
+
     def test_synthetic_resolution_is_deterministic(self):
         again = cf.load_registry()
         left = cf.definition_for(self.registry, "framework_probe")
         right = cf.definition_for(again, "framework_probe")
         self.assertEqual(left, right)
+        self.assertEqual(left["resources"]["material"]["qword_0x10"], "1B0989158D4A2908")
         self.assertEqual(left["resources"]["material"]["qword_0x20"], "D595197B0961F689")
 
     def test_duplicate_resource_name_fails(self):
@@ -93,12 +96,20 @@ class RegistryTests(unittest.TestCase):
         with self.assertRaisesRegex(cf.FrameworkError, "duplicate resource ID"):
             cf.validate_registry(bad)
 
-    def test_material_donor_qword_violation_fails(self):
-        bad = copy.deepcopy(self.registry)
-        cf.definitions_by_key(bad)["framework_probe"]["resources"]["material"]["qword_0x20"] = \
-            "0000000000000000"
-        with self.assertRaisesRegex(cf.FrameworkError, r"material \+0x20"):
-            cf.validate_registry(bad)
+    def test_opaque_material_donor_qword_violations_fail(self):
+        for field in ("qword_0x10", "qword_0x20"):
+            with self.subTest(field=field):
+                bad = copy.deepcopy(self.registry)
+                cf.definitions_by_key(bad)["framework_probe"]["resources"]["material"][field] = \
+                    "0000000000000000"
+                with self.assertRaisesRegex(cf.FrameworkError, "opaque material"):
+                    cf.validate_registry(bad)
+
+    def test_material_qword_uniqueness_is_not_an_identity_rule(self):
+        proof = cf.validate_registry(copy.deepcopy(self.registry))
+        self.assertNotIn("material_q10_unique", proof)
+        self.assertTrue(proof["opaque_material_fields_preserved_from_donor"])
+        self.assertIn("material payload +0x10", proof["opaque_donor_policy"])
 
     def test_model_group_policy_violation_fails(self):
         bad = copy.deepcopy(self.registry)
@@ -199,29 +210,16 @@ class OfflineBuildTests(unittest.TestCase):
         self.assertEqual(proof["raven_hud"]["index"], 256)
         self.assertEqual(proof["raven_hud"]["capacity"], 2)
 
-    def test_candidate3_generic_build_is_byte_exact(self):
-        candidate, proof = cf.build_collectible_wad(
-            self.wad, self.registry, "nornir_chest", self.art)
-        self.assertEqual(cf.sha_bytes(candidate), EXPECTED_CANDIDATE3_WAD)
-        self.assertTrue(proof["parse_serialize_roundtrip_exact"])
-        self.assertTrue(proof["normalized_to_frozen_raven_exact"])
-        self.assertTrue(proof["reverse_reference_ownership_valid"])
-        self.assertTrue(proof["prototype_root_ownership_valid"])
-        self.assertFalse(proof["model_groups"]["opaque_payload_bytes_changed"])
-
-    def test_candidate3_generic_gopool_is_byte_exact(self):
-        candidate, proof = cf.build_collectible_gopool(
-            self.ui, self.registry, "nornir_chest")
-        self.assertEqual(cf.sha_bytes(candidate), EXPECTED_CANDIDATE3_DCB)
-        self.assertTrue(proof["all_existing_rows_byte_identical"])
-        self.assertTrue(proof["normalized_to_frozen_raven_exact"])
-
-    def test_candidate3_generic_compass_inworld_is_byte_exact(self):
-        candidate, proof = cf.build_collectible_compass_inworld(
-            self.perm, self.registry, "nornir_chest")
-        self.assertEqual(cf.sha_bytes(candidate), EXPECTED_CANDIDATE3_PERM)
-        self.assertTrue(proof["normalized_to_frozen_raven_exact"])
-        self.assertTrue(proof["frozen_raven_bytes_preserved"])
+    def test_retired_nornir_build_paths_fail_closed(self):
+        calls = (
+            lambda: cf.build_collectible_wad(self.wad, self.registry, "nornir_chest", self.art),
+            lambda: cf.build_collectible_gopool(self.ui, self.registry, "nornir_chest"),
+            lambda: cf.build_collectible_compass_inworld(self.perm, self.registry, "nornir_chest"),
+        )
+        for call in calls:
+            with self.subTest(call=call):
+                with self.assertRaisesRegex(cf.FrameworkError, "build disabled"):
+                    call()
 
     def test_synthetic_collectible_uses_same_builder_and_is_deterministic(self):
         first, first_proof = cf.build_collectible_wad(

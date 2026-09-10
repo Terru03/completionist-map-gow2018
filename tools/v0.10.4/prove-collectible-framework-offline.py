@@ -20,10 +20,6 @@ RAVEN_HASHES = {
     "exec/dc/pc_le/compassgraph.dcb": "d0ed78ba4b91813c74dc6088a8521d332ea991e760b1c2600d6eeefc5fe60e68",
     "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": "67d069a798417b631c271f48c129fb2083591b81a31859ab94769fbbb8b01c6b",
 }
-EXPECTED_CANDIDATE3_WAD = "90391a2841d3a9ad889b95d5c17fc0ee09de803a57675b6d237a98051b08c660"
-EXPECTED_CANDIDATE3_DCB = "93164584bc115b64144bef73680ce5163b7ddf48f74bfd2698fef1b165dc891a"
-EXPECTED_CANDIDATE3_PERM = "be453733a57a27dde5eb33e553973ec34c330e4841f7c632e4f784a8adc34350"
-EXPECTED_CANDIDATE3_PERM = "be453733a57a27dde5eb33e553973ec34c330e4841f7c632e4f784a8adc34350"
 
 
 def load(name: str, path: Path):
@@ -70,20 +66,6 @@ def main() -> None:
     wad_source = (game / "exec/wad/pc_le/r_ui.wad").read_bytes()
     dcb_source = (game / "exec/dc/pc_le/wad_r_ui.dcb").read_bytes()
     perm_source = (game / "exec/dc/pc_le/wad_r_perm.dcb").read_bytes()
-    art = repo / "build/v0.10.4-nornir-resident-art/offline/nornir-resident-art.json"
-    nornir_wad, nornir_wad_proof = cf.build_collectible_wad(
-        wad_source, registry, "nornir_chest", art)
-    nornir_dcb, nornir_dcb_proof = cf.build_collectible_gopool(
-        dcb_source, registry, "nornir_chest")
-    nornir_perm, nornir_perm_proof = cf.build_collectible_compass_inworld(
-        perm_source, registry, "nornir_chest")
-    if cf.sha_bytes(nornir_wad) != EXPECTED_CANDIDATE3_WAD:
-        raise ValueError("generic Nornir WAD changed Candidate 3")
-    if cf.sha_bytes(nornir_dcb) != EXPECTED_CANDIDATE3_DCB:
-        raise ValueError("generic Nornir GOPool changed Candidate 3")
-    if cf.sha_bytes(nornir_perm) != EXPECTED_CANDIDATE3_PERM:
-        raise ValueError("generic Nornir compass/in-world chain changed Candidate 3")
-
     probe_wad_a, probe_wad_proof = cf.build_collectible_wad(
         wad_source, registry, "framework_probe")
     probe_wad_b, _ = cf.build_collectible_wad(
@@ -102,9 +84,6 @@ def main() -> None:
 
     output.mkdir(parents=True, exist_ok=True)
     outputs = {
-        "nornir_chest/r_ui.wad": nornir_wad,
-        "nornir_chest/wad_r_ui.dcb": nornir_dcb,
-        "nornir_chest/wad_r_perm.dcb": nornir_perm,
         "framework_probe/r_ui.wad": probe_wad_a,
         "framework_probe/wad_r_ui.dcb": probe_dcb_a,
         "framework_probe/wad_r_perm.dcb": probe_perm_a,
@@ -118,16 +97,11 @@ def main() -> None:
             raise ValueError(f"offline output mismatch: {target}")
         manifest[relative] = {"bytes": len(raw), "sha256": cf.sha_bytes(raw)}
 
-    candidate3_report_path = repo / "archive/field-logs/completionist-v104-nornir-candidate3-offline-reconstruction.json"
-    candidate3_report = json.loads(candidate3_report_path.read_text(encoding="utf-8-sig"))
-    candidate3_root = repo / "build/v0.10.4-nornir-candidate3/offline/candidate/game-root"
-    files = candidate3_report["candidate3"]["files"]
-    if len(files) != 10:
-        raise ValueError("Candidate 3 manifest is not ten files")
-    for relative, facts in files.items():
-        target = candidate3_root / relative
-        if cf.sha_file(target) != facts["sha256"] or target.stat().st_size != facts["bytes"]:
-            raise ValueError(f"Candidate 3 manifest mismatch: {relative}")
+    failure_path = repo / "archive/field-logs/completionist-v104-nornir-runtime-candidate3-failure.json"
+    failure = json.loads(failure_path.read_text(encoding="utf-8-sig"))
+    if (failure.get("result") != "RUNTIME_NORNIR_CANDIDATE3_MAP_OPEN_CRASH_ROLLED_BACK"
+            or failure.get("diagnosis", {}).get("root_cause_proven") is not False):
+        raise ValueError("Candidate 3 failure archive is missing or overclaims diagnosis")
 
     service = repo / "tools/v0.10.4/completionist-collectible-service.lua"
     adapters = repo / "tools/v0.10.4/completionist-collectible-lifecycle-adapters.lua"
@@ -157,14 +131,11 @@ def main() -> None:
             "byte_preserved": before == after,
             "production_frozen": True,
         },
-        "nornir_candidate3": {
-            "wad": nornir_wad_proof,
-            "gopool": nornir_dcb_proof,
-            "compass_inworld": nornir_perm_proof,
-            "wad_sha_preserved": True,
-            "ten_file_manifest_exact": True,
-            "runtime_proven": False,
-            "runtime_install_allowed": False,
+        "retired_nornir_candidates": {
+            "candidate3_failure_archive": str(failure_path),
+            "candidate3_map_open_crash_archived": True,
+            "candidate3_root_cause_claimed": False,
+            "construction_use_allowed": False,
         },
         "synthetic_expansion": {
             "collectible_key": "framework_probe",
@@ -200,7 +171,7 @@ def main() -> None:
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(RESULT)
     print(f"  registry types: {registry_proof['collectible_count']}")
-    print(f"  Candidate 3 WAD: {EXPECTED_CANDIDATE3_WAD}")
+    print("  retired Nornir construction used: false")
     print(f"  synthetic WAD: {probe_wad_proof['candidate_sha256']}")
     print("  Raven changed: false")
     print("  game writes: false")

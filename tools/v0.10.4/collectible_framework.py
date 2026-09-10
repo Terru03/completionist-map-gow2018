@@ -21,8 +21,19 @@ REGISTRY_PATH = REPO / "config/collectibles/v0.10.4/collectibles.json"
 FROZEN_RAVEN_WAD_SHA256 = "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60"
 FROZEN_RAVEN_UI_DCB_SHA256 = "765ef6c08a3c9d52ed9485c184237bc3fdde103feef01c496a6999fdbea8826d"
 FROZEN_RAVEN_PERM_DCB_SHA256 = "85d33925a10a6d70629a79eb19c51c4c92957f9eb78eda0c1145e585ea5781a5"
-FROZEN_RAVEN_PERM_DCB_SHA256 = "85d33925a10a6d70629a79eb19c51c4c92957f9eb78eda0c1145e585ea5781a5"
-DONOR_MATERIAL_Q20 = 0xD595197B0961F689
+PROVEN_IDENTITY_FIELDS = (
+    "resource names",
+    "folded loader hashes",
+    "marker/export UIDs",
+    "WAD record IDs used by references",
+)
+OPAQUE_DONOR_FIELDS = (
+    "material payload +0x10",
+    "material payload +0x20",
+    "other unexplained material scalars",
+    "ModelGroup payload fields",
+    "other unexplained payload scalars",
+)
 STOCK_MODEL_GROUPS = {
     "map": ("MG_mapicondock_0", "44b11676af9c4e0ff860108fd46b0b32"),
     "hud": ("MG_boatdock_0", "c3f6b4c5a8270df607ea3e6e7f891292"),
@@ -120,8 +131,10 @@ def _resolved_definition(registry: dict, definition: dict) -> dict:
                 namespace, key, f"resource:{role}", resource["name"])[:16].hex()
     material = resources["material"]
     if material.get("qword_0x10") is None:
-        material["qword_0x10"] = _deterministic_bytes(
-            namespace, key, "material:qword_0x10", material["name"])[:8].hex().upper()
+        donor_key = row.get("donors", {}).get("collectible_key")
+        donors = [item for item in registry["collectibles"] if item.get("key") == donor_key]
+        check(len(donors) == 1, f"{key}: opaque material donor missing")
+        material["qword_0x10"] = donors[0]["resources"]["material"]["qword_0x10"]
     for label in ("diffuse", "emissive"):
         texture = resources[label]
         if texture.get("file_hash") is None:
@@ -188,8 +201,11 @@ def validate_registry(registry: dict) -> dict:
     key_set = set(keys)
     resource_names: list[tuple[str, str]] = []
     resource_ids: list[tuple[str, str]] = []
-    material_q10: list[tuple[str, str]] = []
     gopool_hashes: list[tuple[str, str]] = []
+    complete_by_key = {
+        row["key"]: row for row in rows
+        if set(RESOURCE_ROLES).issubset(row.get("resources", {}))
+    }
 
     for row in rows:
         key = row["key"]
@@ -230,9 +246,14 @@ def validate_registry(registry: dict) -> dict:
             ])
         material = resources["material"]
         _hex64(material.get("qword_0x10"), f"{key}.material.qword_0x10")
-        check(_hex64(material.get("qword_0x20"), f"{key}.material.qword_0x20") == DONOR_MATERIAL_Q20,
-              f"{key}: material +0x20 must preserve donor")
-        material_q10.append((key, material["qword_0x10"]))
+        _hex64(material.get("qword_0x20"), f"{key}.material.qword_0x20")
+        donor_key = row.get("donors", {}).get("collectible_key")
+        if donor_key is not None and donor_key != key:
+            check(donor_key in complete_by_key, f"{key}: complete donor missing: {donor_key}")
+            donor_material = complete_by_key[donor_key]["resources"]["material"]
+            for field in ("qword_0x10", "qword_0x20"):
+                check(material[field].upper() == donor_material[field].upper(),
+                      f"{key}: opaque material {field} must preserve donor")
 
         policy = row.get("model_group_policy", {})
         for side in ("map", "hud"):
@@ -268,14 +289,16 @@ def validate_registry(registry: dict) -> dict:
 
     _collect_unique(resource_names, "resource name")
     _collect_unique(resource_ids, "resource ID")
-    _collect_unique(material_q10, "material +0x10")
     _collect_unique(gopool_hashes, "GOPool hash")
     return {
         "collectible_count": len(rows),
         "build_enabled": [row["key"] for row in rows if row.get("build", {}).get("enabled")],
         "resource_names_unique": True,
         "resource_ids_unique": True,
-        "material_q10_unique": True,
+        "proven_identity_fields_unique": True,
+        "opaque_material_fields_preserved_from_donor": True,
+        "proven_identity_policy": list(PROVEN_IDENTITY_FIELDS),
+        "opaque_donor_policy": list(OPAQUE_DONOR_FIELDS),
         "gopool_hashes_unique": True,
         "unknowns_explicit": True,
     }
@@ -475,7 +498,11 @@ def build_collectible_wad(source_raw: bytes, registry: dict, key: str,
     before_q20 = struct.unpack_from("<Q", material["data"], 0x20)[0]
     q10 = _hex64(resources["material"]["qword_0x10"], f"{key}.material.q10")
     q20 = _hex64(resources["material"]["qword_0x20"], f"{key}.material.q20")
-    check(q20 == DONOR_MATERIAL_Q20, "material +0x20 donor rule changed")
+    donor_material = donor["resources"]["material"]
+    donor_q10 = _hex64(donor_material["qword_0x10"], f"{donor_key}.material.q10")
+    donor_q20 = _hex64(donor_material["qword_0x20"], f"{donor_key}.material.q20")
+    check((q10, q20) == (donor_q10, donor_q20),
+          "opaque material qwords must remain byte-identical to donor")
     struct.pack_into("<Q", material["data"], 0x10, q10)
     struct.pack_into("<Q", material["data"], 0x20, q20)
     candidate = logical.serialize_wad(records)
@@ -579,15 +606,16 @@ def build_collectible_wad(source_raw: bytes, registry: dict, key: str,
     return candidate, {
         "collectible_key": key,
         "source_sha256": sha_bytes(source_raw),
-        "pre_material_rule_sha256": sha_bytes(pre_rule),
+        "pre_opaque_restore_sha256": sha_bytes(pre_rule),
         "candidate_sha256": sha_bytes(candidate),
         "bytes": len(candidate),
         "resource_ids": {role: resources[role]["id"] for role in GROUP_ROLES},
         "material": {
-            "qword_0x10_before_generic_rule": f"{before_q10:016X}",
-            "qword_0x20_before_generic_rule": f"{before_q20:016X}",
+            "qword_0x10_before_opaque_restore": f"{before_q10:016X}",
+            "qword_0x20_before_opaque_restore": f"{before_q20:016X}",
             "qword_0x10": f"{q10:016X}",
             "qword_0x20": f"{q20:016X}",
+            "opaque_qwords_equal_to_donor": True,
             "owners": material_owners,
         },
         "texture_owners": texture_owners,
@@ -602,7 +630,7 @@ def build_collectible_wad(source_raw: bytes, registry: dict, key: str,
         },
         "accounting": legacy_report["accounting"],
         "legacy_compatible_report": legacy_report,
-        "material_rule_diff_offsets": first_diff,
+        "opaque_restore_diff_offsets": first_diff,
         "parse_serialize_roundtrip_exact": True,
         "normalized_to_frozen_raven_exact": True,
         "frozen_raven_records_preserved": True,

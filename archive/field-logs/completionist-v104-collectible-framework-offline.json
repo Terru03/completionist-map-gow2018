@@ -3,16 +3,29 @@
   "result": "COLLECTIBLE_FRAMEWORK_OFFLINE_PROVED",
   "registry": {
     "path": "C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018\\config\\collectibles\\v0.10.4\\collectibles.json",
-    "sha256": "647e2e3c5dfeeb7d3952b64cc56bd68192bd815610698025071019ff0df1ddff",
+    "sha256": "c1746a44f0dd4807d4355a8e13a067f2b2fd68ceb361dfbadf18215a16ed5686",
     "validation": {
       "collectible_count": 9,
       "build_enabled": [
-        "nornir_chest",
         "framework_probe"
       ],
       "resource_names_unique": true,
       "resource_ids_unique": true,
-      "material_q10_unique": true,
+      "proven_identity_fields_unique": true,
+      "opaque_material_fields_preserved_from_donor": true,
+      "proven_identity_policy": [
+        "resource names",
+        "folded loader hashes",
+        "marker/export UIDs",
+        "WAD record IDs used by references"
+      ],
+      "opaque_donor_policy": [
+        "material payload +0x10",
+        "material payload +0x20",
+        "other unexplained material scalars",
+        "ModelGroup payload fields",
+        "other unexplained payload scalars"
+      ],
       "gopool_hashes_unique": true,
       "unknowns_explicit": true
     }
@@ -39,504 +52,19 @@
     "byte_preserved": true,
     "production_frozen": true
   },
-  "nornir_candidate3": {
-    "wad": {
-      "collectible_key": "nornir_chest",
-      "source_sha256": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
-      "pre_material_rule_sha256": "340e0ceccd8d399e39612355b4b05e387c48809a654e765530346b029ba2a16c",
-      "candidate_sha256": "90391a2841d3a9ad889b95d5c17fc0ee09de803a57675b6d237a98051b08c660",
-      "bytes": 50080432,
-      "resource_ids": {
-        "material": "e6e7f5294aef261b3899f785bfc07a13",
-        "map_model": "8df34a0395272bc1ded6f22e357a2188",
-        "map_prototype": "4f57ab1faf5e1018b2018cc0c891ce94",
-        "map_root": "0cd3d77d5358980222fec665082e7eb9",
-        "hud_model": "f114131a824be2d5a10bee929d0a0ad0",
-        "hud_prototype": "fa54df9c2758da779d03f6c46414b144",
-        "hud_root": "6ebb1f850a95179e8f0d9f35f6f39466"
-      },
-      "material": {
-        "qword_0x10_before_generic_rule": "E2265134DFA7BA70",
-        "qword_0x20_before_generic_rule": "E2265134DFA7B641",
-        "qword_0x10": "E2265134DFA7BA70",
-        "qword_0x20": "D595197B0961F689",
-        "owners": [
-          "MDL_completionistnornirchest",
-          "MDL_completionistnornirchesthud"
-        ]
-      },
-      "texture_owners": {
-        "diffuse": [
-          "MAT_completionistnornirchest"
-        ],
-        "emissive": [
-          "MAT_completionistnornirchest"
-        ]
-      },
-      "model_owners": {
-        "map": [
-          "goProtoMapIconCompletionistNornirChest"
-        ],
-        "hud": [
-          "goProtoCompletionistNornirChestHUD"
-        ]
-      },
-      "prototype_payload_owners": {
-        "map": [
-          "goProtoMapIconCompletionistNornirChest",
-          "gomapiconcompletionistnornirchest"
-        ],
-        "hud": [
-          "goProtoCompletionistNornirChestHUD",
-          "gocompletionistnornirchesthud"
-        ]
-      },
-      "ownership": {
-        "valid": true,
-        "expected": {
-          "material": [
-            "MDL_completionistnornirchest",
-            "MDL_completionistnornirchesthud"
-          ],
-          "diffuse": [
-            "MAT_completionistnornirchest"
-          ],
-          "emissive": [
-            "MAT_completionistnornirchest"
-          ],
-          "map_model": [
-            "goProtoMapIconCompletionistNornirChest"
-          ],
-          "hud_model": [
-            "goProtoCompletionistNornirChestHUD"
-          ],
-          "map_prototype_payloads": [
-            "goProtoMapIconCompletionistNornirChest",
-            "gomapiconcompletionistnornirchest"
-          ],
-          "hud_prototype_payloads": [
-            "goProtoCompletionistNornirChestHUD",
-            "gocompletionistnornirchesthud"
-          ]
-        },
-        "evidence": {
-          "material": [
-            "MDL_completionistnornirchest",
-            "MDL_completionistnornirchesthud"
-          ],
-          "diffuse": [
-            "MAT_completionistnornirchest"
-          ],
-          "emissive": [
-            "MAT_completionistnornirchest"
-          ],
-          "map_model": [
-            "goProtoMapIconCompletionistNornirChest"
-          ],
-          "hud_model": [
-            "goProtoCompletionistNornirChestHUD"
-          ],
-          "map_prototype_payloads": [
-            "goProtoMapIconCompletionistNornirChest",
-            "gomapiconcompletionistnornirchest"
-          ],
-          "hud_prototype_payloads": [
-            "goProtoCompletionistNornirChestHUD",
-            "gocompletionistnornirchesthud"
-          ],
-          "map_root_parent_links": 1
-        }
-      },
-      "prototype_root_ownership_valid": true,
-      "model_groups": {
-        "map": {
-          "mode": "share_stock",
-          "name": "MG_mapicondock_0",
-          "id": "44b11676af9c4e0ff860108fd46b0b32",
-          "mutate_payload": false
-        },
-        "hud": {
-          "mode": "share_stock",
-          "name": "MG_boatdock_0",
-          "id": "c3f6b4c5a8270df607ea3e6e7f891292",
-          "mutate_payload": false
-        },
-        "opaque_payload_bytes_changed": false
-      },
-      "accounting": {
-        "before_total": 16805,
-        "after_total": 16816,
-        "payload_delta": 12,
-        "accounted_delta": 11,
-        "direct_index_accounted_payloads": 8,
-        "fallback_type_key_accounted_payloads": 3,
-        "fallback_type_key_counts": {
-          "0x10001": 1,
-          "0x10005": 1,
-          "0x20001": 1
-        },
-        "unaccounted_payload_count": 1,
-        "unaccounted_payload_names": [
-          "MDL_completionistnornirchesthud"
-        ],
-        "hud_accounting_grammar_verified": true,
-        "type_increments": {
-          "0x10001": 1,
-          "0x20001": 5,
-          "0x10005": 1,
-          "0x2000C": 3,
-          "0xD": 1
-        }
-      },
-      "legacy_compatible_report": {
-        "source_sha256": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
-        "candidate_sha256": "340e0ceccd8d399e39612355b4b05e387c48809a654e765530346b029ba2a16c",
-        "source_bytes": 50057168,
-        "candidate_bytes": 50080432,
-        "accounting": {
-          "before_total": 16805,
-          "after_total": 16816,
-          "payload_delta": 12,
-          "accounted_delta": 11,
-          "direct_index_accounted_payloads": 8,
-          "fallback_type_key_accounted_payloads": 3,
-          "fallback_type_key_counts": {
-            "0x10001": 1,
-            "0x10005": 1,
-            "0x20001": 1
-          },
-          "unaccounted_payload_count": 1,
-          "unaccounted_payload_names": [
-            "MDL_completionistnornirchesthud"
-          ],
-          "hud_accounting_grammar_verified": true,
-          "type_increments": {
-            "0x10001": 1,
-            "0x20001": 5,
-            "0x10005": 1,
-            "0x2000C": 3,
-            "0xD": 1
-          }
-        },
-        "resource_ids": {
-          "map_root": "0cd3d77d5358980222fec665082e7eb9",
-          "map_proto": "4f57ab1faf5e1018b2018cc0c891ce94",
-          "map_model": "8df34a0395272bc1ded6f22e357a2188",
-          "material": "e6e7f5294aef261b3899f785bfc07a13",
-          "hud_root": "6ebb1f850a95179e8f0d9f35f6f39466",
-          "hud_proto": "fa54df9c2758da779d03f6c46414b144",
-          "hud_model": "f114131a824be2d5a10bee929d0a0ad0"
-        },
-        "texture_user_hashes": {
-          "diffuse": "4806DF7DA196751C",
-          "emissive": "A01A0B577D244D17"
-        },
-        "material_identity_q10": "E2265134DFA7BA70",
-        "material_identity_q20": "E2265134DFA7B641",
-        "map_prototype_self_id_replacements": 1,
-        "hud_prototype_self_id_replacements": 1,
-        "map_parent_link_cloned": true,
-        "resident_art_injected_exactly": true,
-        "candidate_reparse_roundtrip_exact": true,
-        "normalized_candidate_equals_frozen_raven_wad": true,
-        "raven_records_mutated": false,
-        "texture_header_aliases": {
-          "diffuse": {
-            "art_resource_name": "TX_completionist_nornir_chest_map_diffuse_0A43AEB29D6F80DA",
-            "wad_header_name": "TX_completionist_nornir_chest_diff_0A43AEB29D6F80DA",
-            "wad_header_ascii_bytes": 51,
-            "file_hash": "0A43AEB29D6F80DA"
-          },
-          "emissive": {
-            "art_resource_name": "TX_completionist_nornir_chest_map_emissive_58012A499511A0BB",
-            "wad_header_name": "TX_completionist_nornir_chest_emis_58012A499511A0BB",
-            "wad_header_ascii_bytes": 51,
-            "file_hash": "58012A499511A0BB"
-          }
-        },
-        "all_wad_header_names_fit_55_bytes": true,
-        "texture_record_classification": {
-          "diffuse": {
-            "resource_name": "TX_completionist_nornir_chest_diff_0A43AEB29D6F80DA",
-            "same_name_record_count": 3,
-            "gpu": {
-              "classification": "standalone_gpu_texture",
-              "record_index": 3017,
-              "original_offset": 24235968,
-              "payload_index": 2969,
-              "kind": "0x1D",
-              "flags": "0x80A1",
-              "data_bytes": 9228,
-              "id": "00000000000000007ddf06481c7596a1",
-              "parent_index": null,
-              "parent_kind": null,
-              "parent_name": null,
-              "in_scheduled_nornir_group": false
-            },
-            "definition": {
-              "classification": "standalone_texture_definition",
-              "record_index": 3020,
-              "original_offset": 24246224,
-              "payload_index": 2972,
-              "kind": "0x1",
-              "flags": "0x8021",
-              "data_bytes": 356,
-              "id": "5458455400455255b2ae430ada806f9d",
-              "parent_index": null,
-              "parent_kind": null,
-              "parent_name": null,
-              "in_scheduled_nornir_group": false
-            },
-            "additional_record_count": 1,
-            "additional_records": [
-              {
-                "classification": "zero_data_dependency_link",
-                "record_index": 31827,
-                "original_offset": 40110000,
-                "payload_index": null,
-                "kind": "0x1",
-                "flags": "0x0000",
-                "data_bytes": 0,
-                "id": "5458455400455255b2ae430ada806f9d",
-                "parent_index": 31825,
-                "parent_kind": "0x2",
-                "parent_name": "MAT_completionistnornirchest",
-                "in_scheduled_nornir_group": true
-              }
-            ],
-            "standalone_records_removed_explicitly": true,
-            "all_additional_records_in_scheduled_nornir_groups": true
-          },
-          "emissive": {
-            "resource_name": "TX_completionist_nornir_chest_emis_58012A499511A0BB",
-            "same_name_record_count": 3,
-            "gpu": {
-              "classification": "standalone_gpu_texture",
-              "record_index": 3011,
-              "original_offset": 24211200,
-              "payload_index": 2963,
-              "kind": "0x1D",
-              "flags": "0x80A1",
-              "data_bytes": 4620,
-              "id": "0000000000000000570b1aa0174d247d",
-              "parent_index": null,
-              "parent_kind": null,
-              "parent_name": null,
-              "in_scheduled_nornir_group": false
-            },
-            "definition": {
-              "classification": "standalone_texture_definition",
-              "record_index": 3014,
-              "original_offset": 24216848,
-              "payload_index": 2966,
-              "kind": "0x1",
-              "flags": "0x8021",
-              "data_bytes": 356,
-              "id": "5458455400455255492a0158bba01195",
-              "parent_index": null,
-              "parent_kind": null,
-              "parent_name": null,
-              "in_scheduled_nornir_group": false
-            },
-            "additional_record_count": 1,
-            "additional_records": [
-              {
-                "classification": "zero_data_dependency_link",
-                "record_index": 31830,
-                "original_offset": 40110288,
-                "payload_index": null,
-                "kind": "0x1",
-                "flags": "0x0000",
-                "data_bytes": 0,
-                "id": "5458455400455255492a0158bba01195",
-                "parent_index": 31825,
-                "parent_kind": "0x2",
-                "parent_name": "MAT_completionistnornirchest",
-                "in_scheduled_nornir_group": true
-              }
-            ],
-            "standalone_records_removed_explicitly": true,
-            "all_additional_records_in_scheduled_nornir_groups": true
-          }
-        },
-        "strict_texture_reversibility_verified": true
-      },
-      "material_rule_diff_offsets": [
-        40109648,
-        40109649,
-        40109650,
-        40109651,
-        40109652,
-        40109653,
-        40109654,
-        40109655
-      ],
-      "parse_serialize_roundtrip_exact": true,
-      "normalized_to_frozen_raven_exact": true,
-      "frozen_raven_records_preserved": true,
-      "stock_dock_boatdock_preserved": true,
-      "preserved_named_records": {
-        "MAT_AE4AD85BB993F040": {
-          "source_record_count": 5,
-          "candidate_record_count": 5,
-          "every_source_record_byte_identical": true
-        },
-        "TX_completionist_raven_map_diffuse_19A41F00834C19F3": {
-          "source_record_count": 3,
-          "candidate_record_count": 3,
-          "every_source_record_byte_identical": true
-        },
-        "TX_completionist_raven_map_emissive_63F1E18FF93B9037": {
-          "source_record_count": 3,
-          "candidate_record_count": 3,
-          "every_source_record_byte_identical": true
-        },
-        "MDL_completionistraven": {
-          "source_record_count": 2,
-          "candidate_record_count": 2,
-          "every_source_record_byte_identical": true
-        },
-        "goProtoMapIconCompletionistRaven": {
-          "source_record_count": 1,
-          "candidate_record_count": 1,
-          "every_source_record_byte_identical": true
-        },
-        "gomapiconcompletionistraven": {
-          "source_record_count": 2,
-          "candidate_record_count": 2,
-          "every_source_record_byte_identical": true
-        },
-        "MDL_completionistravenhud": {
-          "source_record_count": 2,
-          "candidate_record_count": 2,
-          "every_source_record_byte_identical": true
-        },
-        "goProtoCompletionistRavenHUD": {
-          "source_record_count": 1,
-          "candidate_record_count": 1,
-          "every_source_record_byte_identical": true
-        },
-        "gocompletionistravenhud": {
-          "source_record_count": 1,
-          "candidate_record_count": 1,
-          "every_source_record_byte_identical": true
-        },
-        "MAT_0C599DC8DC7E2170": {
-          "source_record_count": 5,
-          "candidate_record_count": 5,
-          "every_source_record_byte_identical": true
-        },
-        "MDL_mapicondock": {
-          "source_record_count": 2,
-          "candidate_record_count": 2,
-          "every_source_record_byte_identical": true
-        },
-        "MG_mapicondock_0": {
-          "source_record_count": 3,
-          "candidate_record_count": 4,
-          "every_source_record_byte_identical": true
-        },
-        "gomapicondock": {
-          "source_record_count": 2,
-          "candidate_record_count": 2,
-          "every_source_record_byte_identical": true
-        },
-        "MDL_boatdock": {
-          "source_record_count": 2,
-          "candidate_record_count": 2,
-          "every_source_record_byte_identical": true
-        },
-        "MG_boatdock_0": {
-          "source_record_count": 3,
-          "candidate_record_count": 4,
-          "every_source_record_byte_identical": true
-        },
-        "goboatdock": {
-          "source_record_count": 2,
-          "candidate_record_count": 2,
-          "every_source_record_byte_identical": true
-        }
-      },
-      "reverse_reference_ownership_valid": true,
-      "unexpected_payload_changes": false
-    },
-    "gopool": {
-      "collectible_key": "nornir_chest",
-      "source_sha256": "765ef6c08a3c9d52ed9485c184237bc3fdde103feef01c496a6999fdbea8826d",
-      "candidate_sha256": "93164584bc115b64144bef73680ce5163b7ddf48f74bfd2698fef1b165dc891a",
-      "source_rows": 257,
-      "candidate_rows": 259,
-      "rows": [
-        {
-          "role": "map",
-          "index": 257,
-          "hash": "E14C66C3B90633E0",
-          "capacity": 1
-        },
-        {
-          "role": "hud",
-          "index": 258,
-          "hash": "7DDC11175EBD1E94",
-          "capacity": 2
-        }
-      ],
-      "map_index": 257,
-      "map_capacity": 1,
-      "hud_index": 258,
-      "hud_capacity": 2,
-      "all_existing_rows_byte_identical": true,
-      "raven_map_row_preserved": true,
-      "raven_hud_row_preserved": true,
-      "raven_rows_preserved": true,
-      "memorypools_lua_tail_preserved_after_shift": true,
-      "non_data_chunks_byte_identical": true,
-      "normalized_candidate_equals_frozen_raven_dcb": true,
-      "normalized_to_frozen_raven_exact": true
-    },
-    "compass_inworld": {
-      "collectible_key": "nornir_chest",
-      "source_sha256": "85d33925a10a6d70629a79eb19c51c4c92957f9eb78eda0c1145e585ea5781a5",
-      "candidate_sha256": "be453733a57a27dde5eb33e553973ec34c330e4841f7c632e4f784a8adc34350",
-      "compass_class": {
-        "name": "CompletionistNornirChest",
-        "uid": "8D5A770E0C4272CE",
-        "type_id": "0x11E",
-        "root": "0x4E2DA0",
-        "IconName": "7DDC11175EBD1E94",
-        "RadiusIconName": "0000000000000000",
-        "InWorld_tMPIcon_Name": "32BBE7E267644D93",
-        "cloned_from": "CompletionistRaven",
-        "tail_equal_to_raven": true
-      },
-      "in_world_carrier": {
-        "name": "COMPASS_INWORLD_COMPLETIONIST_NORNIR_CHEST",
-        "uid": "32BBE7E267644D93",
-        "type_id": "0x129",
-        "root": "0x4E2BC8",
-        "IconName": "7DDC11175EBD1E94",
-        "cloned_from": "COMPASS_INWORLD_COMPLETIONIST_RAVEN",
-        "equal_to_raven_except_IconName": true,
-        "relocation_field_relative": "0x10",
-        "relocation_target_relative": "0x90",
-        "relocation_self_contained": true
-      },
-      "parse_rebuild_valid": true,
-      "normalized_to_frozen_raven_exact": true,
-      "frozen_raven_bytes_preserved": true,
-      "runtime_proven": false
-    },
-    "wad_sha_preserved": true,
-    "ten_file_manifest_exact": true,
-    "runtime_proven": false,
-    "runtime_install_allowed": false
+  "retired_nornir_candidates": {
+    "candidate3_failure_archive": "C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018\\archive\\field-logs\\completionist-v104-nornir-runtime-candidate3-failure.json",
+    "candidate3_map_open_crash_archived": true,
+    "candidate3_root_cause_claimed": false,
+    "construction_use_allowed": false
   },
   "synthetic_expansion": {
     "collectible_key": "framework_probe",
     "wad": {
       "collectible_key": "framework_probe",
       "source_sha256": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
-      "pre_material_rule_sha256": "f02d58c9a0ebf6175893b3e24ac0efb6f108ac95075847ecd550c0014cc350c1",
-      "candidate_sha256": "2eec6aec99cbe2bc0787740bdf4cab443525ee3d7f085af997cc6a69c2f34db7",
+      "pre_opaque_restore_sha256": "f02d58c9a0ebf6175893b3e24ac0efb6f108ac95075847ecd550c0014cc350c1",
+      "candidate_sha256": "9392a0a23d1f76b63426febd9cb22c2d1f9f17a3df554438a725f4fd2f3cdf2b",
       "bytes": 50080432,
       "resource_ids": {
         "material": "623a9286e92776f495804be4115e423b",
@@ -548,10 +76,11 @@
         "hud_root": "930d29627d78047cd3809d891b567245"
       },
       "material": {
-        "qword_0x10_before_generic_rule": "E2265134DFA7BA70",
-        "qword_0x20_before_generic_rule": "E2265134DFA7B641",
-        "qword_0x10": "50B261F63F36ED26",
+        "qword_0x10_before_opaque_restore": "E2265134DFA7BA70",
+        "qword_0x20_before_opaque_restore": "E2265134DFA7B641",
+        "qword_0x10": "1B0989158D4A2908",
         "qword_0x20": "D595197B0961F689",
+        "opaque_qwords_equal_to_donor": true,
         "owners": [
           "MDL_completionistframeworkprobe",
           "MDL_completionistframeworkprobehud"
@@ -853,7 +382,7 @@
         },
         "strict_texture_reversibility_verified": true
       },
-      "material_rule_diff_offsets": [
+      "opaque_restore_diff_offsets": [
         40109632,
         40109633,
         40109634,
@@ -1183,21 +712,9 @@
   "offline_outputs": {
     "root": "C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018\\build\\v0.10.4-collectible-framework\\offline",
     "files": {
-      "nornir_chest/r_ui.wad": {
-        "bytes": 50080432,
-        "sha256": "90391a2841d3a9ad889b95d5c17fc0ee09de803a57675b6d237a98051b08c660"
-      },
-      "nornir_chest/wad_r_ui.dcb": {
-        "bytes": 4912,
-        "sha256": "93164584bc115b64144bef73680ce5163b7ddf48f74bfd2698fef1b165dc891a"
-      },
-      "nornir_chest/wad_r_perm.dcb": {
-        "bytes": 5580240,
-        "sha256": "be453733a57a27dde5eb33e553973ec34c330e4841f7c632e4f784a8adc34350"
-      },
       "framework_probe/r_ui.wad": {
         "bytes": 50080432,
-        "sha256": "2eec6aec99cbe2bc0787740bdf4cab443525ee3d7f085af997cc6a69c2f34db7"
+        "sha256": "9392a0a23d1f76b63426febd9cb22c2d1f9f17a3df554438a725f4fd2f3cdf2b"
       },
       "framework_probe/wad_r_ui.dcb": {
         "bytes": 4912,

@@ -41,7 +41,7 @@
     {
       "key": "nornir_chest",
       "display_name": "Nornir Chest",
-      "status": "offline_candidate",
+      "status": "historical_failed",
       "parent_collectible_key": null,
       "map_filter_category": "NORNIR_CHEST_FILTER",
       "identities": {
@@ -53,7 +53,7 @@
         "map_root": {"name": "gomapiconcompletionistnornirchest", "id": "0cd3d77d5358980222fec665082e7eb9"},
         "map_prototype": {"name": "goProtoMapIconCompletionistNornirChest", "id": "4f57ab1faf5e1018b2018cc0c891ce94"},
         "map_model": {"name": "MDL_completionistnornirchest", "id": "8df34a0395272bc1ded6f22e357a2188"},
-        "material": {"name": "MAT_completionistnornirchest", "id": "e6e7f5294aef261b3899f785bfc07a13", "qword_0x10": "E2265134DFA7BA70", "qword_0x20": "D595197B0961F689"},
+        "material": {"name": "MAT_completionistnornirchest", "id": "e6e7f5294aef261b3899f785bfc07a13", "qword_0x10": "1B0989158D4A2908", "qword_0x20": "D595197B0961F689"},
         "diffuse": {"name": "TX_completionist_nornir_chest_diff_0A43AEB29D6F80DA", "definition_id": "5458455400455255b2ae430ada806f9d", "gpu_id": "00000000000000007ddf06481c7596a1", "file_hash": "0A43AEB29D6F80DA", "user_hash": "4806DF7DA196751C"},
         "emissive": {"name": "TX_completionist_nornir_chest_emis_58012A499511A0BB", "definition_id": "5458455400455255492a0158bba01195", "gpu_id": "0000000000000000570b1aa0174d247d", "file_hash": "58012A499511A0BB", "user_hash": "A01A0B577D244D17"},
         "hud_root": {"name": "gocompletionistnornirchesthud", "id": "6ebb1f850a95179e8f0d9f35f6f39466"},
@@ -71,8 +71,8 @@
       ],
       "lifecycle": {"adapter": "parent_puzzle_collectible", "completion_predicate": "authoritative_reward_chest_state_equals_OPENED", "hooks": "offline_proven_target_scoped_publishers"},
       "native_discovery": {"marker_name": "Completionist_V104_Veithurgard_NornirChest_01", "marker_uid": "381B067F07254A25", "status": "offline_only"},
-      "build": {"enabled": true, "mode": "offline_candidate", "art_source": "nornir_candidate3_resident_report", "id_policy": "explicit"},
-      "unresolved": ["Candidate 3 has no runtime proof.", "Material qword +0x20 engine meaning is unknown; donor byte rule is proven."]
+      "build": {"enabled": false, "mode": "historical_failed", "art_source": "nornir_candidate3_resident_report", "id_policy": "explicit"},
+      "unresolved": ["Candidates 1, 2, and 3 failed at runtime and are historical evidence only.", "Material qwords +0x10 and +0x20 have unknown engine meaning and must preserve the proven Raven donor bytes."]
     },
     {
       "key": "nornir_bell",
