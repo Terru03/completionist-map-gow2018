@@ -1,4 +1,4 @@
-"""Offline acceptance checks for the UID-aware shared-Raven compass probe."""
+"""Offline acceptance checks for the UID-aware shared-Raven compass v2 probe."""
 from __future__ import annotations
 
 import importlib.util
@@ -31,6 +31,7 @@ class RavenUidCompassRoutingTests(unittest.TestCase):
         cls.files, cls.proof = cls.p.generate(cls.root)
         cls.shared_files, cls.shared_proof = cls.p.shared.generate(cls.root)
         cls.routing = cls.p.ROUTING_PATH.read_text(encoding="utf-8")
+        cls.twin_hook = cls.p.TWIN_HOOK_PATH.read_text(encoding="utf-8")
 
     def test_scope_is_exact_shared_loader_four_files(self):
         self.assertEqual(set(self.files), set(self.shared_files))
@@ -38,7 +39,7 @@ class RavenUidCompassRoutingTests(unittest.TestCase):
         self.assertNotIn("exec/wad/pc_le/r_ui.wad", self.files)
         self.assertNotIn("exec/dc/pc_le/compassgraph.dcb", self.files)
 
-    def test_binary_candidate_is_byte_identical_to_runtime_proven_shared_loader(self):
+    def test_binary_candidate_is_byte_identical_to_shared_loader_map_base(self):
         for rel in (self.p.shared.MASTER, self.p.shared.COORDS, self.p.shared.UI):
             self.assertEqual(self.files[rel], self.shared_files[rel])
 
@@ -51,6 +52,8 @@ class RavenUidCompassRoutingTests(unittest.TestCase):
     def test_two_native_marker_uids_remain_distinct_and_share_map_loader(self):
         ids = self.proof["identities"]
         self.assertNotEqual(ids["raven_uid"], ids["twin_uid"])
+        self.assertEqual(ids["raven_uid"], "E15E6BC82AE2773E")
+        self.assertEqual(ids["twin_uid"], "2F530E7F3F156D90")
         self.assertEqual(ids["shared_map_loader"], "goMapIconCompletionistRaven")
         self.assertEqual(ids["compass_class"], "CompletionistRaven")
 
@@ -80,14 +83,39 @@ class RavenUidCompassRoutingTests(unittest.TestCase):
         self.assertIn('STOCK_REPLACE_TWIN', self.routing)
         self.assertEqual(self.proof["expected_runtime_matrix"]["maximum_active_user_target"], 1)
 
-    def test_no_resource_identity_or_lifecycle_expansion(self):
+    def test_completion_is_observe_only_and_clears_only_original_route(self):
+        contract = self.proof["routing_contract"]
+        self.assertTrue(contract["lifecycle_observation"])
+        self.assertEqual(contract["completion_oracle"], "CompletionistMapV100_IsRavenCollected")
+        self.assertEqual(contract["completion_cleanup_scope"], "original Raven compass/local routing state only")
+        self.assertFalse(contract["lifecycle_progression_mutation"])
+        self.assertFalse(contract["synthetic_progression_writes"])
+        self.assertIn("CompletionistMapV100_IsRavenCollected", self.routing)
+        self.assertIn("game.Compass.HideMarker(ravenName)", self.routing)
+        self.assertIn("twinTouched=false progressionWrites=false", self.routing)
+        for token in (
+            "SetMarkerState",
+            "challengeComplete",
+            "OPENED",
+            "SetToken",
+            "SetProgress",
+            "CompletionistMapV100_PublishTargetState",
+        ):
+            self.assertNotIn(token, self.routing)
+
+    def test_twin_lifetime_no_longer_requires_live_original_ui_object(self):
+        contract = self.proof["routing_contract"]
+        self.assertTrue(contract["twin_lifetime_independent_of_original_ui_object"])
+        self.assertIn("local originalPresent = original ~= nil", self.twin_hook)
+        self.assertIn('Map.CreateMarkerIcon(info.Id, region, "")', self.twin_hook)
+        self.assertIn("originalPresent=false", self.twin_hook)
+        self.assertNotIn("SKIP reason=original_raven_absent", self.twin_hook)
+
+    def test_no_resource_identity_expansion(self):
         contract = self.proof["routing_contract"]
         self.assertFalse(contract["new_wad_resource_identity"])
         self.assertFalse(contract["compassgraph_changed"])
-        self.assertFalse(contract["lifecycle_changes"])
-        self.assertFalse(contract["synthetic_progression_writes"])
-        for token in ("SetMarkerState", "challengeComplete", "OPENED", "SetToken", "SetProgress"):
-            self.assertNotIn(token, self.routing)
+        self.assertFalse(self.proof["map_title_behavior_changed"])
 
     def test_deterministic_output(self):
         second, second_proof = self.p.generate(self.root)
