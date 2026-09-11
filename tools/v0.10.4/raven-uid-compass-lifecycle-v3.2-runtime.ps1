@@ -65,6 +65,7 @@ $sourceBlobPins = [ordered]@{
     '.gitattributes' = 'af1804dfefb8ba78fe7bd083b4fa4e59b7c496d1'
     'tools/v0.10.4/raven-uid-compass-routing-v3.2.lua' = 'fee7312e32909fcf79290755af794d7d025b38c6'
     'tools/v0.10.4/raven-shared-loader-twin.lua' = '7e20dc7f6c5120760bd9928eebb4bdd97ff53425'
+    'tools/v0.10.4/raven-uid-compass-lifecycle-v3.1-events.lua' = '18e2b1a64e245d79c4eac025abb2ffc9fffcf6d3'
     'tools/v0.10.4/raven-uid-compass-lifecycle-v3.2-events.lua' = '18e2b1a64e245d79c4eac025abb2ffc9fffcf6d3'
     'tools/v0.10.4/build-raven-uid-compass-lifecycle-v3.2.py' = '9f33ff1f97de9519b1b82a3f9cf1dffed192d1ec'
     'tools/v0.10.4/build-raven-shared-loader.py' = '9a59bf573a9773923282f0f9bbb9f842487b67b2'
