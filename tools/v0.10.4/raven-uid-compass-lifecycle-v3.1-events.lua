@@ -35,7 +35,8 @@ do
   end
 
   local function schedule(source, attempt, ticket, sawReal)
-    timers.StartLevelTimer(0.1, function()
+    local scheduleOK, scheduleErr = pcall(function()
+      timers.StartLevelTimer(0.1, function()
       if ticket ~= generation or ravenKilled ~= true then return end
       local shown, queryOK, queryErr, realId = realShown()
       local nextSawReal = sawReal or shown
@@ -64,7 +65,12 @@ do
         return
       end
       schedule(source, attempt + 1, ticket, nextSawReal)
+      end)
     end)
+    if not scheduleOK then
+      log("SCHEDULE_FAILED", "source=" .. tostring(source) ..
+          " attempt=" .. tostring(attempt) .. " error=" .. tostring(scheduleErr))
+    end
   end
 
   local function observe(source)

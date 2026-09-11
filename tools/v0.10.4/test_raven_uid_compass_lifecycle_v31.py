@@ -84,6 +84,11 @@ class RavenUidCompassLifecycleV31Tests(unittest.TestCase):
         self.assertIn('hideStockTargets("raven_uid_replace")', self.routing)
         self.assertIn('STOCK_REPLACE_TWIN', self.routing)
         self.assertEqual(self.proof["expected_runtime_matrix"]["maximum_active_user_target"], 1)
+        self.assertEqual(
+            self.proof["routing_contract"]["replacement_hide_failure_policy"],
+            "refuse replacement; never broaden hide scope",
+        )
+        self.assertIn("return allHidden, hidden", self.routing)
 
     def test_completion_is_observe_only_and_clears_only_original_route(self):
         contract = self.proof["routing_contract"]
@@ -133,6 +138,8 @@ class RavenUidCompassLifecycleV31Tests(unittest.TestCase):
         self.assertIn("game.Compass.FindMarkersByIconClass({ravenClass})", events)
         self.assertIn("game.Compass.HideMarker(ravenName)", events)
         self.assertIn("retryLimit = 20", events)
+        self.assertIn("SCHEDULE_FAILED", events)
+        self.assertTrue(self.proof["routing_contract"]["event_retry_schedule_failure_safe"])
         for token in (
             "CompletionistMapV104ObserveRavenCompletion",
             "CompletionistMapV104UidRavenTrackedName",

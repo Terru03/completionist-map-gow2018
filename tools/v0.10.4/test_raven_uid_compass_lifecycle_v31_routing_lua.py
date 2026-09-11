@@ -13,6 +13,7 @@ SOURCE = HERE / "raven-uid-compass-routing-v3.1.lua"
 PRELUDE = r'''
 local calls = {logs={}, previousShow=0, previousCollision=0, hidden={}}
 local customIds, stockIds = {}, {}
+local hideFailure=false
 local ravenGO, twinGO, stockGO = {kind="raven"}, {kind="twin"}, {kind="stock"}
 local self = {
   mapIconCollision=nil,
@@ -60,6 +61,7 @@ function game.Compass.ShowMarker(name, class)
   customIds={markerInfo[name].Id}
 end
 function game.Compass.HideMarker(target)
+  if hideFailure then error("hide failed") end
   calls.hidden[#calls.hidden+1]=tostring(target)
   if tostring(target)=="Completionist_V103_Veithurgard_Raven_01" or tostring(target)=="-2207208259907848386" then
     if customIds[1]=="-2207208259907848386" then customIds={} end
@@ -106,6 +108,7 @@ return {
   customId=function() return customIds[1] end,
   stock=function() stockIds={"dock-id"}; self.currShownMarkerID="dock-id" end,
   stockId=function() return stockIds[1] end,
+  failHide=function(v) hideFailure=v end,
   logs=function() return table.concat(calls.logs,"\n") end,
 }
 '''
@@ -199,6 +202,23 @@ class RavenUidV31RoutingTests(unittest.TestCase):
             self.p.collide(go)
             self.p.action()
             self.assertEqual(self.p.customId(), uid)
+
+    def test_failed_custom_hide_refuses_replace_and_keeps_one_target(self):
+        self.p.collide(self.p.twinGO)
+        self.p.action()
+        self.p.collide(self.p.ravenGO)
+        self.p.failHide(True)
+        self.p.action()
+        self.assertEqual(self.p.customId(), "3410085282531601808")
+        self.assertEqual(self.p.calls.shownName, "Completionist_V104_Veithurgard_Raven_Twin_01")
+
+    def test_failed_stock_hide_refuses_custom_show(self):
+        self.p.stock()
+        self.p.collide(self.p.twinGO)
+        self.p.failHide(True)
+        self.p.action()
+        self.assertEqual(self.p.stockId(), "dock-id")
+        self.assertIsNone(self.p.calls.shownName)
 
     def test_pending_identity_expires_after_bounded_frames(self):
         self.p.collide(self.p.twinGO)

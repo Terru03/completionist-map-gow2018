@@ -16,6 +16,7 @@ local calls={logs={},hidden={},progress=0,saves=0}
 local customIds, stockIds, queue = {}, {}, {}
 local delayedReal=false
 local hideFailure=false
+local timerFailure=false
 local position={x=-64.850898742676,y=12.987384796143,z=787.30694580078}
 local obj={}
 function obj:GetWorldPosition() return position end
@@ -31,6 +32,7 @@ package.preload["design.LevelDesignLibrary"]=function() return {
   ExtractAndExecuteCallbacksForEvent=function() end,ActivateAndIncrementQuest=function() end,
 } end
 package.preload["level.timer"]=function() return {StartLevelTimer=function(period,fn)
+  if period==0.1 and timerFailure then error("timer failed") end
   if period==0.1 then queue[#queue+1]=fn end
 end} end
 game={Map={},Compass={},QuestManager={},SubObject={},FX={}}
@@ -75,6 +77,7 @@ return {
   customId=function() return customIds[1] end,
   stockId=function() return stockIds[1] end,
   failHide=function(v) hideFailure=v end,
+  failTimer=function(v) timerFailure=v end,
   tick=function() local batch=queue;queue={};for _,fn in ipairs(batch) do fn() end end,
   queueCount=function() return #queue end,
   logs=function() return table.concat(calls.logs,"\n") end,
@@ -145,6 +148,14 @@ class RavenGameplayV31EventsTests(unittest.TestCase):
         self.assertIsNone(self.p.customId())
         self.drain()
         self.assertEqual(self.p.queueCount(), 0)
+
+    def test_timer_start_failure_does_not_break_native_hit(self):
+        self.p.real()
+        self.p.failTimer(True)
+        self.p.hit()
+        self.assertIsNone(self.p.customId())
+        self.assertEqual(self.p.calls.progress, 3)
+        self.assertIn("SCHEDULE_FAILED", self.p.logs())
 
     def test_repeated_true_does_not_repeat_cleanup(self):
         self.p.real()

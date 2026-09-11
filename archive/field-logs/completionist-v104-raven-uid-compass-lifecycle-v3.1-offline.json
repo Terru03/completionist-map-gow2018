@@ -27,12 +27,12 @@
       "bytes": 4896
     },
     "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": {
-      "sha256": "b712a6c30b04b0d1795f9347b2defa68b9426644eb02e4040c50bfeb987069c7",
-      "bytes": 180024
+      "sha256": "0dc6ff41b82020dbb91abdb39d66b928154f1e59ce5b1bd469aed67d03ec6bba",
+      "bytes": 180239
     },
     "mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua": {
-      "sha256": "2c1e491793c5b0e08b8c68e0af47cb851420b8ffda88cc7b34a873effe880748",
-      "bytes": 10314
+      "sha256": "61e6bc8efe1fcb9b2a6e796aa86ce9a5f74fc18e97229aae7cc52b652a565800",
+      "bytes": 10559
     }
   },
   "identities": {
@@ -76,6 +76,7 @@
     "selected_name_routed_to_native_compass": true,
     "selected_uid_used_for_active_target_comparison": true,
     "single_active_custom_target_policy": true,
+    "replacement_hide_failure_policy": "refuse replacement; never broaden hide scope",
     "stock_target_replace_policy_preserved": true,
     "new_wad_resource_identity": false,
     "compassgraph_changed": false,
@@ -91,6 +92,7 @@
     "completion_latch_reversible": true,
     "polling": false,
     "event_retry": "level.timer.StartLevelTimer: 0.1 seconds, at most 20, ticket cancelled by false restore/start",
+    "event_retry_schedule_failure_safe": true,
     "twin_cleanup_hooks": [
       "MapOn.SubmenuExit",
       "MapOn.Exit",

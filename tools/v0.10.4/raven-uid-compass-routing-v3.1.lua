@@ -18,6 +18,7 @@ do
   local knownRavenIdentity = nil
   local completionObserved = nil
   local selectionTicket = 0
+  local routeFrame = 0
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
@@ -95,7 +96,7 @@ do
   local function captureSelection(self, selected, source)
     if self == nil or selected == nil then return nil end
     local old = self.completionistMapV104PendingRavenSelection
-    local frame = self.completionistMapV100Frame or 0
+    local frame = routeFrame
     if old ~= nil and old.IdString == selected.IdString then
       old.CapturedFrame = frame
       old.Source = source
@@ -116,7 +117,7 @@ do
     if self == nil then return nil end
     local selected = self.completionistMapV104PendingRavenSelection
     if selected == nil then return nil end
-    local frame = self.completionistMapV100Frame or 0
+    local frame = routeFrame
     if frame - (selected.CapturedFrame or frame) > selectionTTL then
       clearSelection(self, "ttl_expired")
       return nil
@@ -209,6 +210,7 @@ do
       return false, 0
     end
     local hidden = 0
+    local allHidden = true
     for _, id in ipairs(ids) do
       if exceptIdString == nil or tostring(id) ~= exceptIdString then
         local name = knownNameForId(id)
@@ -218,9 +220,10 @@ do
             " name=" .. tostring(name) .. " ok=" .. tostring(hideOK) ..
             " error=" .. tostring(hideErr))
         if hideOK then hidden = hidden + 1 end
+        if not hideOK then allHidden = false end
       end
     end
-    return true, hidden
+    return allHidden, hidden
   end
 
   local function hideStockTargets(reason)
@@ -231,13 +234,15 @@ do
       return false, 0
     end
     local hidden = 0
+    local allHidden = true
     for _, id in ipairs(ids) do
       local hideOK, hideErr = pcall(function() game.Compass.HideMarker(id) end)
       log("HIDE_STOCK", "reason=" .. tostring(reason) .. " id=" .. tostring(id) ..
           " ok=" .. tostring(hideOK) .. " error=" .. tostring(hideErr))
       if hideOK then hidden = hidden + 1 end
+      if not hideOK then allHidden = false end
     end
-    return true, hidden
+    return allHidden, hidden
   end
 
   local function actionText(lamsId)
@@ -411,6 +416,7 @@ do
       completionObserved = false
       return
     end
+    if completionObserved == true then return end
     local real = identity(ravenName, "real") or knownRavenIdentity
     local shown, queryOK, queryErr = customShown(real)
     local hideAttempted, hideOK, hideErr = false, true, nil
@@ -445,6 +451,7 @@ do
   end
 
   function MapOn:Update(...)
+    routeFrame = routeFrame + 1
     lastMapOnSelf = self
     observeMapCompletion(self)
     local result = previousUpdate(self, ...)
