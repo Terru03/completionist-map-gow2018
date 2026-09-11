@@ -63,7 +63,7 @@ $sharedLoaderBinaryShas = [ordered]@{
 # runtime resource IDs; they are used only to make the local offline build reproducible.
 $sourceBlobPins = [ordered]@{
     '.gitattributes' = 'af1804dfefb8ba78fe7bd083b4fa4e59b7c496d1'
-    'tools/v0.10.4/raven-uid-compass-routing-v3.2.lua' = 'fee7312e32909fcf79290755af794d7d025b38c6'
+    'tools/v0.10.4/raven-uid-compass-routing-v3.2.lua' = 'bca3f74be44c6e5e1accdb9656835a89456a8618'
     'tools/v0.10.4/raven-shared-loader-twin.lua' = '7e20dc7f6c5120760bd9928eebb4bdd97ff53425'
     'tools/v0.10.4/raven-uid-compass-lifecycle-v3.1-events.lua' = '18e2b1a64e245d79c4eac025abb2ffc9fffcf6d3'
     'tools/v0.10.4/raven-uid-compass-lifecycle-v3.2-events.lua' = '18e2b1a64e245d79c4eac025abb2ffc9fffcf6d3'
@@ -73,7 +73,7 @@ $sourceBlobPins = [ordered]@{
     'tools/v0.10.3/inspect-native-markers.py' = '12a1876c56a64be2b7cc1482de62f4e37b0e863e'
     'tools/v0.10.4/verify-raven-production-state.py' = 'a2b848c87756cba650c1967e0fcf78443737ed42'
     'tools/v0.10.4/test_raven_uid_compass_lifecycle_v32.py' = '3bb07d09cc9cc0a00bd865ab88601d091fef69fb'
-    'tools/v0.10.4/test_raven_uid_compass_lifecycle_v32_routing_lua.py' = 'e06a4350d45b2ca8b511853c75cb649dcad9a2e9'
+    'tools/v0.10.4/test_raven_uid_compass_lifecycle_v32_routing_lua.py' = 'c6f4ae60166e65b6e054d2b9fc9fe97fb4ce9dce'
     'tools/v0.10.4/test_raven_uid_compass_lifecycle_v32_events.py' = '46d669f6c27ec6341b16422a0ed0f403470f41a4'
     'tools/v0.10.4/test_raven_shared_loader_lua.py' = '159f154e799599acec3cc1c6b5ff70c49148c150'
     'tools/v0.10.4/nornir-runtime-candidate3.ps1' = 'e66705836f9c0c5578377572d629929b5b330119'
@@ -85,7 +85,7 @@ $candidateShaPins = [ordered]@{
     'mapmaster.dcb' = '1e1d5086815bc8553490bff915fea210a8be4f80ce6c88b418b62d7050690a31'
     'mapcoords.dcb' = '36bd16f8f21c6387b556e156055ea02f5c262b30a6c450cc0efa05734efb1a0c'
     'wad_r_ui.dcb' = '9a434a29ed2e333362e60ac7f224d26855fc9dc86834aa94504a170854e22f2b'
-    'mapmenu.lua' = '882e6244f460a35aedf3e9ff37175a54cff9c51cfb2a8e545d716ef584a4f9c8'
+    'mapmenu.lua' = '99dd919925196833c985a22ee1caef21c776bc91ec9ec462b4d128c39ce6a01e'
     'precisionchallenge.lua' = '61e6bc8efe1fcb9b2a6e796aa86ce9a5f74fc18e97229aae7cc52b652a565800'
 }
 

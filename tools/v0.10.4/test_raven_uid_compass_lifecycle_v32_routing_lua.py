@@ -199,6 +199,11 @@ class RavenUidV32RoutingTests(unittest.TestCase):
         self.assertEqual(self.p.calls.shownClass, "CompletionistRaven")
         self.assertEqual(self.p.customId(), "3410085282531601808")
         self.assertEqual(self.p.calls.previousShow, 0)
+        self.assertIn(
+            "SHOW name=Completionist_V104_Veithurgard_Raven_Twin_01 "
+            "uid=3410085282531601808 class=CompletionistRaven",
+            self.p.logs(),
+        )
 
     def test_real_survives_301_update_frames_and_routes_exact_class(self):
         self.p.collide(self.p.ravenGO)

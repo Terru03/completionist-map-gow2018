@@ -432,6 +432,7 @@ do
       game.Compass.ShowMarker(selected.Name, ravenClass)
     end)
     log("SHOW", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
+        " class=" .. ravenClass ..
         " ok=" .. tostring(showOK) .. " error=" .. tostring(showErr) ..
         " replacedCustomCount=" .. tostring(customCount) ..
         " replacedStockCount=" .. tostring(stockCount))
