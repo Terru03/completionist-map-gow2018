@@ -1,0 +1,127 @@
+{
+  "schema": 4,
+  "result": "RAVEN_UID_COMPASS_LIFECYCLE_V31_OFFLINE_PROOF_PASSED",
+  "branch_contract": "codex/v104-raven-uid-compass-lifecycle-v3.1",
+  "base_head": "7d8997097f5b857f2f52609718d559e898142b37",
+  "shared_loader_runtime_success_head": "e29b841b2e8799ebe90780413c8330755415183f",
+  "source_root": "pinned frozen Raven production baseline (read-only)",
+  "source_sha256": {
+    "exec/wad/pc_le/r_ui.wad": "5d7cb3207275a6cd6d191d2878140d619716499464e4806af632c13172242e60",
+    "exec/dc/pc_le/wad_r_ui.dcb": "765ef6c08a3c9d52ed9485c184237bc3fdde103feef01c496a6999fdbea8826d",
+    "exec/dc/pc_le/mapmaster.dcb": "b930c51316ca136d9c40ea7cda6a63a051127b357e97f1d4e4eb96a16993d96f",
+    "exec/dc/pc_le/mapcoords.dcb": "945774dbc965f45ad78b8408bb1d2b10a527c6390e4e7c1190e8f2d7538df3cb",
+    "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": "67d069a798417b631c271f48c129fb2083591b81a31859ab94769fbbb8b01c6b",
+    "mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua": "c22aa8a649e2380a60040d64c3843a392101fb6dcd733f9078d24141600ad69c"
+  },
+  "files": {
+    "exec/dc/pc_le/mapmaster.dcb": {
+      "sha256": "1e1d5086815bc8553490bff915fea210a8be4f80ce6c88b418b62d7050690a31",
+      "bytes": 75872
+    },
+    "exec/dc/pc_le/mapcoords.dcb": {
+      "sha256": "36bd16f8f21c6387b556e156055ea02f5c262b30a6c450cc0efa05734efb1a0c",
+      "bytes": 62640
+    },
+    "exec/dc/pc_le/wad_r_ui.dcb": {
+      "sha256": "9a434a29ed2e333362e60ac7f224d26855fc9dc86834aa94504a170854e22f2b",
+      "bytes": 4896
+    },
+    "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": {
+      "sha256": "b712a6c30b04b0d1795f9347b2defa68b9426644eb02e4040c50bfeb987069c7",
+      "bytes": 180024
+    },
+    "mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua": {
+      "sha256": "2c1e491793c5b0e08b8c68e0af47cb851420b8ffda88cc7b34a873effe880748",
+      "bytes": 10314
+    }
+  },
+  "identities": {
+    "raven_name": "Completionist_V103_Veithurgard_Raven_01",
+    "raven_uid": "E15E6BC82AE2773E",
+    "twin_name": "Completionist_V104_Veithurgard_Raven_Twin_01",
+    "twin_uid": "2F530E7F3F156D90",
+    "shared_map_loader": "goMapIconCompletionistRaven",
+    "shared_map_resource_hash": "584F31DC8BD6E738",
+    "compass_class": "CompletionistRaven"
+  },
+  "shared_loader_base": {
+    "result": "RAVEN_SHARED_LOADER_OFFLINE_PROOF_PASSED",
+    "candidate_sha256": {
+      "exec/dc/pc_le/mapmaster.dcb": "1e1d5086815bc8553490bff915fea210a8be4f80ce6c88b418b62d7050690a31",
+      "exec/dc/pc_le/mapcoords.dcb": "36bd16f8f21c6387b556e156055ea02f5c262b30a6c450cc0efa05734efb1a0c",
+      "exec/dc/pc_le/wad_r_ui.dcb": "9a434a29ed2e333362e60ac7f224d26855fc9dc86834aa94504a170854e22f2b",
+      "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": "45ed159c137e1ea861e8d657ec8ee54c32757314484f8b86f5958179fe6b9de3"
+    },
+    "binary_candidate_bytes_identical": true,
+    "mapmenu_shared_loader_prefix_exact": true,
+    "map_instance_architecture_runtime_proven": true
+  },
+  "routing_contract": {
+    "selection_identity_source": "MapOn.MapCollisionChangeHandler exact collision table object reference",
+    "selection_fallback": "exact live collision object only when not disproven by newer stock collision",
+    "selection_pending_ttl_frames": 30,
+    "selection_pending_one_shot": true,
+    "selection_invalidation": [
+      "new noncustom collision",
+      "different custom collision replaces identity",
+      "MapOn.SubmenuExit",
+      "MapOn.Exit",
+      "MapOn.ClearIcons",
+      "successful action consumption",
+      "30 frame expiry",
+      "real Raven completion"
+    ],
+    "native_identity_source": "game.Map.GetMarkerInfo(Name).Id",
+    "same_visual_resource_for_both_map_markers": true,
+    "selected_name_routed_to_native_compass": true,
+    "selected_uid_used_for_active_target_comparison": true,
+    "single_active_custom_target_policy": true,
+    "stock_target_replace_policy_preserved": true,
+    "new_wad_resource_identity": false,
+    "compassgraph_changed": false,
+    "lifecycle_observation": true,
+    "gameplay_hook": "precisionchallenge.OnHitByWeapon post-native ravenKilled",
+    "gameplay_cleanup_owner": "persistent precisionchallenge Raven lifecycle",
+    "gameplay_mapmenu_dependency": false,
+    "gameplay_target_match": "CompletionistRaven enumeration plus exact real marker Id",
+    "rearm_hooks": [
+      "OnRestoreCheckpoint",
+      "OnStart"
+    ],
+    "completion_latch_reversible": true,
+    "polling": false,
+    "event_retry": "level.timer.StartLevelTimer: 0.1 seconds, at most 20, ticket cancelled by false restore/start",
+    "twin_cleanup_hooks": [
+      "MapOn.SubmenuExit",
+      "MapOn.Exit",
+      "MapOn.ClearIcons"
+    ],
+    "production_destroy_recycles_twin": false,
+    "completion_oracle": "native precisionchallenge ravenKilled after native callback",
+    "completion_cleanup_scope": "exact real Raven CompletionistRaven target only",
+    "twin_lifetime_independent_of_original_ui_object": true,
+    "lifecycle_progression_mutation": false,
+    "synthetic_progression_writes": false
+  },
+  "expected_runtime_matrix": {
+    "original_click": "Show original Raven through CompletionistRaven",
+    "twin_click": "Show Twin through CompletionistRaven",
+    "original_to_twin": "Twin replaces original",
+    "twin_to_original": "original replaces Twin",
+    "second_click_same_marker": "remove active target",
+    "twin_to_stock": "stock replaces Twin",
+    "stock_to_twin": "Twin replaces stock",
+    "complete_tracked_original": "original custom compass/in-world target clears automatically",
+    "complete_original_while_twin_tracked": "Twin remains active and untouched",
+    "reopen_map_after_original_completion": "Twin is still created without a live original Raven UI object",
+    "maximum_active_user_target": 1
+  },
+  "candidate_file_count": 5,
+  "game_files_written": false,
+  "runtime_test_performed": false,
+  "ready_for_runtime_test": true,
+  "retired_candidates_used": false,
+  "progression_or_marker_state_writes": false,
+  "map_title_behavior_changed": false,
+  "runtime_result": "not tested; human runtime matrix required"
+}
