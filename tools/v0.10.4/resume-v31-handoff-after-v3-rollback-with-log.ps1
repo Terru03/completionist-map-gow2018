@@ -14,6 +14,7 @@ Set-Location $Repo
 $V3Branch = 'codex/v104-raven-uid-compass-lifecycle-v3'
 $V31Branch = 'codex/v104-raven-uid-compass-lifecycle-v3.1'
 $V31CandidateCommit = 'e2b3bb3fe66451539fec60727faf7a517a8fe27b'
+$V31ProofRel = 'archive/field-logs/completionist-v104-raven-uid-compass-lifecycle-v3.1-offline.json'
 $Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $LogRel = "archive/field-logs/runtime-captures/v31-resume-$Stamp"
 $TempLogDir = Join-Path $env:TEMP "completionist-v31-resume-$Stamp"
@@ -63,6 +64,20 @@ function Has-Line($Lines, [string]$Pattern) {
     return @($Lines | Where-Object { $_ -match $Pattern }).Count -gt 0
 }
 
+function Restore-KnownGeneratedV31ProofIfDirty {
+    $dirty = @(& git status --porcelain -- $V31ProofRel)
+    if ($dirty.Count -eq 0) { return }
+    Write-Log ''
+    Write-Log '=== RESTORE GENERATED V3.1 PROOF AFTER FAILED GATE ==='
+    Write-Log "restoring_known_generated_file=$V31ProofRel"
+    Invoke-Captured 'RESTORE V3.1 OFFLINE PROOF TO HEAD' {
+        & git restore --worktree -- $V31ProofRel
+    } | Out-Null
+    if (@(& git status --porcelain -- $V31ProofRel).Count -gt 0) {
+        throw 'Known generated v3.1 proof remained dirty after targeted restore.'
+    }
+}
+
 try {
     Write-Log 'COMPLETIONIST V3.1 HANDOFF RESUME AFTER V3 ROLLBACK'
     Write-Log "time: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss zzz')"
@@ -74,11 +89,16 @@ try {
     if ($current -ne $V31Branch) {
         throw "Expected starting branch '$V31Branch', got '$current'."
     }
+
+    # The prior failed offline gate may have regenerated this tracked proof before
+    # the pin mismatch stopped the run. It is generated output, not user-authored
+    # work, so restore only this exact file before enforcing a clean tree.
+    Restore-KnownGeneratedV31ProofIfDirty
     Assert-TrackedClean
 
     Invoke-Captured 'SYNC V3.1' { & git pull --ff-only origin $V31Branch } | Out-Null
     Assert-V31CandidateAncestor
-    Invoke-Captured 'V3.1 HEAD BEFORE RESUME' { & git log -8 --oneline --decorate } | Out-Null
+    Invoke-Captured 'V3.1 HEAD BEFORE RESUME' { & git log -10 --oneline --decorate } | Out-Null
 
     # Re-check v3 only to prove the prior rollback really reached a safe terminal
     # state. A completed transaction may remain recorded as status: rolled-back;
@@ -105,6 +125,7 @@ try {
     Invoke-Captured 'RETURN TO V3.1' { & git switch $V31Branch } | Out-Null
     Invoke-Captured 'RESYNC V3.1' { & git pull --ff-only origin $V31Branch } | Out-Null
     Assert-V31CandidateAncestor
+    Restore-KnownGeneratedV31ProofIfDirty
     Assert-TrackedClean
 
     Invoke-Captured 'V3.1 OFFLINE GATE' {
