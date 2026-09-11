@@ -12,7 +12,10 @@ if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($Repo)) {
 Set-Location $Repo
 
 $Branch = 'codex/v104-raven-uid-compass-lifecycle-v3.2'
-$KnownDirtyRel = 'archive/field-logs/completionist-v104-raven-uid-compass-lifecycle-v3.2-offline.json'
+$KnownDirtyRels = @(
+    'archive/field-logs/completionist-v104-raven-uid-compass-lifecycle-v3.1-offline.json',
+    'archive/field-logs/completionist-v104-raven-uid-compass-lifecycle-v3.2-offline.json'
+)
 $ProofRel = 'archive/field-logs/completionist-v104-raven-uid-compass-lifecycle-v3.2-offline.json'
 $RuntimeRel = 'tools/v0.10.4/raven-uid-compass-lifecycle-v3.2-runtime.ps1'
 $ActiveRel = 'build/v0.10.4-raven-uid-compass-lifecycle-v3.2/runtime/transaction/active.json'
@@ -70,25 +73,28 @@ function Assert-ExpectedTrackedState {
     if ($staged.Code -ne 0) { throw 'Staged changes exist; runtime capture refused.' }
 
     $other = Invoke-Native 'CHECK UNRELATED TRACKED TREE' {
-        & git diff --quiet --ignore-submodules -- . (":(exclude)$KnownDirtyRel")
+        & git diff --quiet --ignore-submodules -- . ":(exclude)$($KnownDirtyRels[0])" ":(exclude)$($KnownDirtyRels[1])"
     } @(0,1)
     if ($other.Code -ne 0) {
-        throw 'Tracked working-tree changes exist outside the known v3.2 proof line-ending path.'
+        throw 'Tracked working-tree changes exist outside the known v3.1/v3.2 proof line-ending paths.'
     }
 
-    $known = Invoke-Native 'CHECK KNOWN V3.2 PROOF STATE' {
-        & git diff --quiet --ignore-submodules -- $KnownDirtyRel
-    } @(0,1)
-    if ($known.Code -eq 1) {
-        $semantic = Invoke-Native 'VERIFY KNOWN PROOF IS EOL-ONLY' {
-            & git diff --quiet --ignore-space-at-eol --ignore-submodules -- $KnownDirtyRel
+    $dirtyCount = 0
+    foreach ($knownRel in $KnownDirtyRels) {
+        $known = Invoke-Native "CHECK KNOWN PROOF STATE: $knownRel" {
+            & git diff --quiet --ignore-submodules -- $knownRel
         } @(0,1)
-        if ($semantic.Code -ne 0) {
-            throw "Known local proof has substantive changes: $KnownDirtyRel"
+        if ($known.Code -eq 1) {
+            $semantic = Invoke-Native "VERIFY KNOWN PROOF IS EOL-ONLY: $knownRel" {
+                & git diff --quiet --ignore-space-at-eol --ignore-submodules -- $knownRel
+            } @(0,1)
+            if ($semantic.Code -ne 0) {
+                throw "Known local proof has substantive changes: $knownRel"
+            }
+            $dirtyCount++
         }
-        return $true
     }
-    return $false
+    return ($dirtyCount -gt 0)
 }
 
 function Assert-GameClosed {
@@ -186,7 +192,7 @@ try {
         "head_before_capture_commit=$head",
         "transaction_id=$($active.transaction_id)",
         "transaction_status=$($active.status)",
-        "known_v32_eol_state_present=$KnownDirtyPresent",
+        "known_proof_eol_state_present=$KnownDirtyPresent",
         'helper_game_writes=false',
         'helper_save_progression_writes=false'
     ) | Set-Content -LiteralPath $Metadata -Encoding UTF8
@@ -287,7 +293,7 @@ finally {
         "result=$(if ($Succeeded) { 'CAPTURED' } else { 'FAIL' })",
         "time_local=$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss zzz')",
         "game_root=$GameRoot",
-        "known_v32_eol_state_present=$KnownDirtyPresent",
+        "known_proof_eol_state_present=$KnownDirtyPresent",
         "helper_game_writes=false",
         "helper_save_progression_writes=false",
         "failure=$($FailureText -replace "`r?`n", ' | ')"
@@ -298,8 +304,8 @@ finally {
         $current = (& git branch --show-current).Trim()
         if ($current -ne $Branch) { throw "Cannot publish runtime capture from unexpected branch '$current'." }
 
-        # Stage only this capture directory. The known v3.2 EOL-only local state,
-        # if present, remains untouched and unstaged.
+        # Stage only this capture directory. Known v3.1/v3.2 proof EOL-only
+        # working-tree state, if present, remains untouched and unstaged.
         & git add -- $LogRel
         if ($LASTEXITCODE -ne 0) { throw 'Could not stage runtime capture.' }
         & git diff --cached --quiet
