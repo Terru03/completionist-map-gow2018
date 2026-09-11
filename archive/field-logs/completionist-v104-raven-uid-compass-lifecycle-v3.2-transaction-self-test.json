@@ -1,0 +1,31 @@
+{
+    "schema":  1,
+    "result":  "RAVEN_UID_COMPASS_LIFECYCLE_V32_TRANSACTION_SELF_TEST_PASSED",
+    "tested_installer":  "tools/v0.10.4/raven-uid-compass-lifecycle-v3.2-runtime.ps1",
+    "derived_engine":  "tools/v0.10.4/nornir-runtime-candidate3.ps1@036628c",
+    "derived_engine_sha256":  "2be08999fbc529f3ac87f795cea33ac5d2bc16b62049480bd15de60a1be63add",
+    "approved_file_count":  5,
+    "proofs":  {
+                   "exact_036628c_engine_pinned":  true,
+                   "exact_success_install":  true,
+                   "backup_complete_before_first_write":  true,
+                   "exact_success_rollback":  true,
+                   "partial_failure_automatic_rollback":  true,
+                   "all_five_write_boundaries_rollback":  true,
+                   "changed_gameplay_candidate_hash_refused":  true,
+                   "changed_lifecycle_contract_refused":  true,
+                   "mapmenu_dependent_gameplay_contract_refused":  true,
+                   "frame_ttl_selection_contract_refused":  true,
+                   "missing_fifth_payload_refused":  true,
+                   "abrupt_interruption_normal_recovery":  true,
+                   "tampered_install_refused_by_normal_rollback":  true,
+                   "force_rollback_used":  false
+               },
+    "safety":  {
+                   "fake_game_root_only":  true,
+                   "installed_god_of_war_written":  false,
+                   "god_of_war_launched":  false,
+                   "saves_progression_marker_state_written":  false,
+                   "runtime_installer_executed_against_game":  false
+               }
+}
