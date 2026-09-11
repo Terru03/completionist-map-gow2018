@@ -350,8 +350,14 @@ do
         local twinShown, queryOK = customShown(twin)
         if queryOK and twinShown then
           local ok, err = pcall(function() game.Compass.HideMarker(twinName) end)
+          if not ok then
+            log("STOCK_REPLACE_TWIN_REFUSED", "uid=" .. twin.IdString ..
+                " reason=twin_hide_failed error=" .. tostring(err) ..
+                " nativeDelegated=false")
+            return
+          end
           log("STOCK_REPLACE_TWIN", "uid=" .. twin.IdString ..
-              " hideOK=" .. tostring(ok) .. " error=" .. tostring(err))
+              " hideOK=true nativeDelegated=true")
         end
       end
       return previousShow(self, currState)

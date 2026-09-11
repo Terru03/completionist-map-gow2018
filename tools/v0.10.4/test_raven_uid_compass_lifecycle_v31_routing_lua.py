@@ -11,7 +11,7 @@ from lupa.lua51 import LuaRuntime
 SOURCE = HERE / "raven-uid-compass-routing-v3.1.lua"
 
 PRELUDE = r'''
-local calls = {logs={}, previousShow=0, previousCollision=0, hidden={}}
+local calls = {logs={}, previousShow=0, previousCollision=0, hidden={}, customShows=0}
 local customIds, stockIds = {}, {}
 local hideFailure=false
 local ravenGO, twinGO, stockGO = {kind="raven"}, {kind="twin"}, {kind="stock"}
@@ -30,6 +30,7 @@ MapOn = {}
 function MapOn.GetShowOnCompassPrompt(s, menu) return true, "previous-prompt" end
 function MapOn.ShowOnCompass(s, state)
   calls.previousShow=calls.previousShow+1
+  stockIds={"native-stock-id"}
   return "previous-show"
 end
 function MapOn.Update(s)
@@ -58,6 +59,7 @@ function game.Compass.FindMarkersByIconClass(classes)
 end
 function game.Compass.ShowMarker(name, class)
   calls.shownName, calls.shownClass=name, class
+  calls.customShows=calls.customShows+1
   customIds={markerInfo[name].Id}
 end
 function game.Compass.HideMarker(target)
@@ -108,6 +110,7 @@ return {
   customId=function() return customIds[1] end,
   stock=function() stockIds={"dock-id"}; self.currShownMarkerID="dock-id" end,
   stockId=function() return stockIds[1] end,
+  activeCount=function() return #customIds + #stockIds end,
   failHide=function(v) hideFailure=v end,
   logs=function() return table.concat(calls.logs,"\n") end,
 }
@@ -179,7 +182,7 @@ class RavenUidV31RoutingTests(unittest.TestCase):
         self.p.stock()
         self.p.action()
         self.assertIsNone(self.p.calls.shownName)
-        self.assertEqual(self.p.stockId(), "dock-id")
+        self.assertEqual(self.p.stockId(), "native-stock-id")
         self.assertEqual(self.p.calls.previousShow, 1)
 
     def test_exact_names_and_runtime_uid_strings_are_cached(self):
@@ -219,6 +222,33 @@ class RavenUidV31RoutingTests(unittest.TestCase):
         self.p.action()
         self.assertEqual(self.p.stockId(), "dock-id")
         self.assertIsNone(self.p.calls.shownName)
+
+    def test_twin_to_stock_failed_hide_refuses_native_action(self):
+        self.p.collide(self.p.twinGO)
+        self.p.action()
+        self.p.collide(self.p.stockGO)
+        self.p.failHide(True)
+        self.p.action()
+        self.assertEqual(self.p.customId(), "3410085282531601808")
+        self.assertIsNone(self.p.stockId())
+        self.assertEqual(self.p.calls.previousShow, 0)
+        self.assertEqual(self.p.activeCount(), 1)
+        self.assertIn("STOCK_REPLACE_TWIN_REFUSED", self.p.logs())
+
+    def test_twin_to_stock_success_hides_twin_then_delegates_once(self):
+        self.p.collide(self.p.twinGO)
+        self.p.action()
+        self.p.collide(self.p.stockGO)
+        self.assertEqual(self.p.action(), "previous-show")
+        self.assertIsNone(self.p.customId())
+        self.assertEqual(self.p.stockId(), "native-stock-id")
+        self.assertEqual(self.p.calls.previousShow, 1)
+        self.assertEqual(self.p.activeCount(), 1)
+        self.assertEqual(self.p.calls.customShows, 1)
+        self.assertEqual(
+            self.p.calls.shownName,
+            "Completionist_V104_Veithurgard_Raven_Twin_01",
+        )
 
     def test_pending_identity_expires_after_bounded_frames(self):
         self.p.collide(self.p.twinGO)

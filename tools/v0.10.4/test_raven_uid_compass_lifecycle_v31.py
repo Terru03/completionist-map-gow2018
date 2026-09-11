@@ -83,6 +83,7 @@ class RavenUidCompassLifecycleV31Tests(unittest.TestCase):
         self.assertIn('hideCustomTargets("raven_uid_replace", selected.IdString)', self.routing)
         self.assertIn('hideStockTargets("raven_uid_replace")', self.routing)
         self.assertIn('STOCK_REPLACE_TWIN', self.routing)
+        self.assertIn('STOCK_REPLACE_TWIN_REFUSED', self.routing)
         self.assertEqual(self.proof["expected_runtime_matrix"]["maximum_active_user_target"], 1)
         self.assertEqual(
             self.proof["routing_contract"]["replacement_hide_failure_policy"],

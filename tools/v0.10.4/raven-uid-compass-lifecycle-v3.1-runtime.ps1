@@ -63,16 +63,16 @@ $sharedLoaderBinaryShas = [ordered]@{
 # runtime resource IDs; they are used only to make the local offline build reproducible.
 $sourceBlobPins = [ordered]@{
     '.gitattributes' = 'af1804dfefb8ba78fe7bd083b4fa4e59b7c496d1'
-    'tools/v0.10.4/raven-uid-compass-routing-v3.1.lua' = '626eb18636541e97c6ac882b93c46342ae4cf9d6'
+    'tools/v0.10.4/raven-uid-compass-routing-v3.1.lua' = '6bcbf05f24a44af33771a6d1947e9f69f825ecce'
     'tools/v0.10.4/raven-shared-loader-twin.lua' = '7e20dc7f6c5120760bd9928eebb4bdd97ff53425'
     'tools/v0.10.4/raven-uid-compass-lifecycle-v3.1-events.lua' = '18e2b1a64e245d79c4eac025abb2ffc9fffcf6d3'
-    'tools/v0.10.4/build-raven-uid-compass-lifecycle-v3.1.py' = '2ba447a1fd14a431797b78f73f3b46e57d8453cb'
+    'tools/v0.10.4/build-raven-uid-compass-lifecycle-v3.1.py' = 'c1c96948e319724cbc0712d9ed8e4c344a4feca5'
     'tools/v0.10.4/build-raven-shared-loader.py' = '9a59bf573a9773923282f0f9bbb9f842487b67b2'
     'tools/v0.10.4/build-raven-twin-stage-a-offline.py' = '861d5f1f2a867044e6b9b6cca844fb124ec17ee6'
     'tools/v0.10.3/inspect-native-markers.py' = '12a1876c56a64be2b7cc1482de62f4e37b0e863e'
     'tools/v0.10.4/verify-raven-production-state.py' = 'a2b848c87756cba650c1967e0fcf78443737ed42'
-    'tools/v0.10.4/test_raven_uid_compass_lifecycle_v31.py' = '15d64d1862619aceb9937ab2ce58db1957c91e07'
-    'tools/v0.10.4/test_raven_uid_compass_lifecycle_v31_routing_lua.py' = '01b90c7600d64b810fdccc416eccda2f9fc7e951'
+    'tools/v0.10.4/test_raven_uid_compass_lifecycle_v31.py' = 'cfd26d041cbbfe2395fe06374b1edbfa5641d22c'
+    'tools/v0.10.4/test_raven_uid_compass_lifecycle_v31_routing_lua.py' = 'a3811bbb7f05162c011759a46c3de11a52e9d9c6'
     'tools/v0.10.4/test_raven_uid_compass_lifecycle_v31_events.py' = '7395b2cb6caf3b8078d67e1f32a84c3f08754646'
     'tools/v0.10.4/test_raven_shared_loader_lua.py' = '159f154e799599acec3cc1c6b5ff70c49148c150'
     'tools/v0.10.4/nornir-runtime-candidate3.ps1' = 'e66705836f9c0c5578377572d629929b5b330119'
@@ -84,7 +84,7 @@ $candidateShaPins = [ordered]@{
     'mapmaster.dcb' = '1e1d5086815bc8553490bff915fea210a8be4f80ce6c88b418b62d7050690a31'
     'mapcoords.dcb' = '36bd16f8f21c6387b556e156055ea02f5c262b30a6c450cc0efa05734efb1a0c'
     'wad_r_ui.dcb' = '9a434a29ed2e333362e60ac7f224d26855fc9dc86834aa94504a170854e22f2b'
-    'mapmenu.lua' = '0dc6ff41b82020dbb91abdb39d66b928154f1e59ce5b1bd469aed67d03ec6bba'
+    'mapmenu.lua' = '8c14ec4dd256f48501e55ad34b1f7040deb142532e75e6881a8fe1ecf80bcb80'
     'precisionchallenge.lua' = '61e6bc8efe1fcb9b2a6e796aa86ce9a5f74fc18e97229aae7cc52b652a565800'
 }
 

@@ -70,6 +70,7 @@ def generate(root: Path):
         "collision == self.completionistMapV100MapIconGO",
         "completionistMapV104PendingRavenSelection",
         "SELECT_CONSUME",
+        "STOCK_REPLACE_TWIN_REFUSED",
         "new_noncustom_collision",
         "map_teardown:",
         "ttl_expired",
