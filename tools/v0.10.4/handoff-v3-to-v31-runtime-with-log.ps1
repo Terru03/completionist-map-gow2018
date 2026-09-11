@@ -61,6 +61,68 @@ function Assert-V31CandidateAncestor {
     }
 }
 
+function Preserve-V3ProofEdit {
+    $proofStatus = @(& git status --porcelain -- $V3ProofRel)
+    if ($proofStatus.Count -eq 0) { return }
+
+    Write-Log ''
+    Write-Log '=== PRESERVE LOCAL V3 PROOF EDIT ==='
+
+    $stashMessage = "preserve-local-v3-proof-before-v31-handoff-$Stamp"
+    $stashBefore = (& git rev-parse -q --verify refs/stash 2>$null)
+    if ($null -ne $stashBefore) { $stashBefore = $stashBefore.Trim() }
+
+    $oldPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        $stashLines = & git stash push -m $stashMessage -- $V3ProofRel 2>&1 |
+            ForEach-Object { $_.ToString() }
+        $stashCode = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $oldPreference
+    }
+    foreach ($line in $stashLines) { Write-Log $line }
+
+    $stashAfter = (& git rev-parse -q --verify refs/stash 2>$null)
+    if ($null -ne $stashAfter) { $stashAfter = $stashAfter.Trim() }
+    $createdNewStash = -not [string]::IsNullOrWhiteSpace($stashAfter) -and $stashAfter -ne $stashBefore
+    $stashContainsProof = $false
+
+    if ($createdNewStash) {
+        $stashFiles = @(& git stash show --name-only --format= 'stash@{0}' --)
+        if ($LASTEXITCODE -eq 0) {
+            $stashContainsProof = @($stashFiles | Where-Object { $_.Trim() -eq $V3ProofRel }).Count -gt 0
+        }
+    }
+
+    if (-not $createdNewStash -or -not $stashContainsProof) {
+        throw "Could not prove that the local v3 proof edit was preserved in a new stash (git stash exit $stashCode)."
+    }
+
+    $PreservedStash = (& git stash list -1 --format='%gd %s').Trim()
+    Write-Log "preserved_stash=$PreservedStash"
+
+    if ($stashCode -ne 0) {
+        Write-Log "git_stash_exit=$stashCode but preservation is verified; continuing with targeted worktree cleanup."
+    }
+
+    # Git for Windows can create the stash successfully and still return exit 1
+    # while applying its cleanup patch when autocrlf changes line endings. Once we
+    # have proven the new stash contains this exact file, restoring only this file
+    # is safe and prevents a duplicate-stash/failure loop.
+    $proofStillDirty = @(& git status --porcelain -- $V3ProofRel).Count -gt 0
+    if ($proofStillDirty) {
+        Invoke-Captured 'CLEAN PRESERVED V3 PROOF WORKTREE COPY' {
+            & git restore --worktree -- $V3ProofRel
+        } | Out-Null
+    }
+
+    if (@(& git status --porcelain -- $V3ProofRel).Count -gt 0) {
+        throw 'V3 proof edit is preserved in stash but the targeted worktree cleanup did not settle.'
+    }
+}
+
 try {
     Write-Log 'COMPLETIONIST V3 -> V3.1 RUNTIME HANDOFF'
     Write-Log "time: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss zzz')"
@@ -73,17 +135,9 @@ try {
         throw "Expected starting branch '$V31Branch', got '$current'."
     }
 
-    # Preserve the known unrelated local v3 proof edit, if present, without
-    # touching any other local/untracked work. Leave it in the stash after handoff.
-    $proofStatus = @(& git status --porcelain -- $V3ProofRel)
-    if ($proofStatus.Count -gt 0) {
-        Invoke-Captured 'PRESERVE LOCAL V3 PROOF EDIT' {
-            & git stash push -m "preserve-local-v3-proof-before-v31-handoff-$Stamp" -- $V3ProofRel
-        } | Out-Null
-        $PreservedStash = (& git stash list -1 --format='%gd %s').Trim()
-        Write-Log "preserved_stash=$PreservedStash"
-    }
-
+    # Preserve only the known unrelated local proof edit. The verified stash is
+    # deliberately left in place after the handoff so it can be reviewed later.
+    Preserve-V3ProofEdit
     Assert-TrackedClean
 
     Invoke-Captured 'SYNC V3.1' { & git pull --ff-only origin $V31Branch } | Out-Null
