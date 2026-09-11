@@ -4,6 +4,7 @@ from __future__ import annotations
 import importlib.util
 import os
 from pathlib import Path
+import tempfile
 import unittest
 
 HERE = Path(__file__).resolve().parent
@@ -129,9 +130,21 @@ class RavenUidCompassLifecycleV31Tests(unittest.TestCase):
 
     def test_gameplay_native_prefix_unchanged(self):
         source = (self.root/self.p.EVENTS).read_bytes()
-        self.assertEqual(self.files[self.p.EVENTS], source + b"\n" + self.p.EVENTS_PATH.read_bytes())
+        self.assertEqual(
+            self.files[self.p.EVENTS],
+            source + b"\n" + self.p.canonical_lua_bytes(self.p.EVENTS_PATH),
+        )
         self.assertFalse(self.proof["routing_contract"]["polling"])
         self.assertTrue(self.proof["routing_contract"]["completion_latch_reversible"])
+
+    def test_authored_lua_line_endings_are_canonical_across_hosts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            crlf = Path(tmp) / "hook.lua"
+            crlf.write_bytes(b"line1\r\nline2\r\n")
+            self.assertEqual(self.p.canonical_lua_bytes(crlf), b"line1\nline2\n")
+        self.assertNotIn(b"\r", self.p.routing_bytes())
+        self.assertNotIn(b"\r", self.p.shared_hook_bytes())
+        self.assertNotIn(b"\r", self.p.canonical_lua_bytes(self.p.EVENTS_PATH))
 
     def test_gameplay_cleanup_is_exact_and_mapmenu_independent(self):
         events = self.p.EVENTS_PATH.read_text(encoding="utf-8")
@@ -163,8 +176,6 @@ class RavenUidCompassLifecycleV31Tests(unittest.TestCase):
         second, second_proof = self.p.generate(self.root)
         self.assertEqual(self.files, second)
         self.assertEqual(self.proof, second_proof)
-
-
 
     def test_both_complete_candidate_scripts_compile_lua51(self):
         from test_raven_uid_compass_routing_lua import LuaRuntime
