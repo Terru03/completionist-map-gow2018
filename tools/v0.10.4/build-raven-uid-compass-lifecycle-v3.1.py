@@ -38,9 +38,25 @@ EVENTS_SHA = "c22aa8a649e2380a60040d64c3843a392101fb6dcd733f9078d24141600ad69c"
 EVENTS_PATH = HERE / "raven-uid-compass-lifecycle-v3.1-events.lua"
 
 
+def canonical_lua_bytes(path: Path) -> bytes:
+    """Return authored Lua as UTF-8 with canonical LF line endings on every host."""
+    text = path.read_text(encoding="utf-8")
+    return text.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
+
+
+def shared_hook_bytes() -> bytes:
+    return b"\n" + canonical_lua_bytes(TWIN_HOOK_PATH)
+
+
+# build-raven-shared-loader.py historically reads its authored Twin hook with raw
+# read_bytes(), so a Windows checkout with core.autocrlf can generate a different
+# candidate from the exact same Git blob. Override only that hook reader in this
+# v3.1 build path; the runtime-proven shared builder/source itself stays unchanged.
+shared.hook_bytes = shared_hook_bytes
+
 
 def routing_bytes() -> bytes:
-    return b"\n" + ROUTING_PATH.read_bytes()
+    return b"\n" + canonical_lua_bytes(ROUTING_PATH)
 
 
 def generate(root: Path):
@@ -53,7 +69,7 @@ def generate(root: Path):
     outputs[LUA] = routed_lua
     event_source = (root / EVENTS).read_bytes()
     shared.b.check(shared.b.sha_bytes(event_source) == EVENTS_SHA, "Frozen Raven gameplay source differs")
-    event_hook = EVENTS_PATH.read_bytes()
+    event_hook = canonical_lua_bytes(EVENTS_PATH)
     outputs[EVENTS] = event_source + b"\n" + event_hook
     shared.b.check((root / EVENTS).read_bytes() == event_source, "Gameplay source changed during build")
 
