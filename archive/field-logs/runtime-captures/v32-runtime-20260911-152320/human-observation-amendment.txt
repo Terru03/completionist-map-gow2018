@@ -1,0 +1,24 @@
+Completionist Map Raven lifecycle v3.2 runtime observation amendment
+
+Source: user follow-up after the archived human runtime capture.
+
+Original archived answer:
+  twin_tracks_correct_custom_target=Y
+
+Clarification:
+  Twin selected/tracked the Twin target/location, but its in-world target and compass/HUD display still used Dock marker artwork rather than the custom Raven / CompletionistRaven artwork.
+
+Evidence interpretation:
+  The original Y must not be treated as a pass for the full "custom Raven HUD/in-world target" criterion. For artwork/class-routing acceptance, Twin is a runtime FAIL.
+
+Loader correlation:
+  v3.2 captures the exact Twin object/UID, then disarms it as confirmed_native_prompt because currMarkerID equals the Twin UID. No v3.2 SELECT_ARM / SELECT_CONSUME / SHOW ... class=CompletionistRaven chain occurs for Twin. The older stock controller then owns the action, consistent with Dock artwork.
+
+Overall v3.2 runtime verdict:
+  Real Raven routing: PASS
+  Real Raven lifecycle cleanup/rearm: PASS
+  Twin lifetime/isolation: PASS
+  Stock isolation: PASS
+  Twin exact target/location selection: PASS
+  Twin custom Raven compass/HUD/in-world artwork/class routing: FAIL
+  Overall: NOT READY TO MERGE
