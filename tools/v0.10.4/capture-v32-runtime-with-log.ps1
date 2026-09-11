@@ -12,12 +12,7 @@ if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($Repo)) {
 Set-Location $Repo
 
 $Branch = 'codex/v104-raven-uid-compass-lifecycle-v3.2'
-$KnownDirtyRels = @(
-    'archive/field-logs/completionist-v104-raven-uid-compass-lifecycle-v3.1-offline.json',
-    'archive/field-logs/completionist-v104-raven-uid-compass-lifecycle-v3.2-offline.json'
-)
 $ProofRel = 'archive/field-logs/completionist-v104-raven-uid-compass-lifecycle-v3.2-offline.json'
-$RuntimeRel = 'tools/v0.10.4/raven-uid-compass-lifecycle-v3.2-runtime.ps1'
 $ActiveRel = 'build/v0.10.4-raven-uid-compass-lifecycle-v3.2/runtime/transaction/active.json'
 $Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $LogRel = "archive/field-logs/runtime-captures/v32-runtime-$Stamp"
@@ -27,6 +22,7 @@ $Summary = Join-Path $LogDir 'result.txt'
 $Observation = Join-Path $LogDir 'human-observation.txt'
 $Metadata = Join-Path $LogDir 'capture-metadata.txt'
 $HashLog = Join-Path $LogDir 'installed-file-hashes.txt'
+$TrackedStateLog = Join-Path $LogDir 'preexisting-unstaged-tracked.txt'
 $LoaderLog = Join-Path $GameRoot 'mods\loader_log.txt'
 $LoaderCopy = Join-Path $LogDir 'loader_log.txt'
 $LoaderExtract = Join-Path $LogDir 'completionist-loader-extract.txt'
@@ -43,9 +39,9 @@ $ApprovedFiles = [ordered]@{
 
 New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
 $Succeeded = $false
-$Published = $false
 $FailureText = ''
-$KnownDirtyPresent = $false
+$Head = ''
+$PreexistingTracked = @()
 
 function Write-Log([string]$Text = '') {
     $Text | Tee-Object -FilePath $ConsoleLog -Append | Out-Host
@@ -68,33 +64,29 @@ function Invoke-Native([string]$Label, [scriptblock]$Command, [int[]]$AllowedCod
     return [pscustomobject]@{ Code = $code; Lines = @($lines) }
 }
 
-function Assert-ExpectedTrackedState {
-    $staged = Invoke-Native 'CHECK STAGED TREE' { & git diff --cached --quiet --ignore-submodules -- } @(0,1)
-    if ($staged.Code -ne 0) { throw 'Staged changes exist; runtime capture refused.' }
-
-    $other = Invoke-Native 'CHECK UNRELATED TRACKED TREE' {
-        & git diff --quiet --ignore-submodules -- . ":(exclude)$($KnownDirtyRels[0])" ":(exclude)$($KnownDirtyRels[1])"
+function Assert-NoPreexistingStagedChanges {
+    $staged = Invoke-Native 'CHECK STAGED TREE' {
+        & git diff --cached --quiet --ignore-submodules --
     } @(0,1)
-    if ($other.Code -ne 0) {
-        throw 'Tracked working-tree changes exist outside the known v3.1/v3.2 proof line-ending paths.'
+    if ($staged.Code -ne 0) {
+        throw 'Pre-existing staged changes exist; runtime capture refused so unrelated work can never enter the capture commit.'
     }
+}
 
-    $dirtyCount = 0
-    foreach ($knownRel in $KnownDirtyRels) {
-        $known = Invoke-Native "CHECK KNOWN PROOF STATE: $knownRel" {
-            & git diff --quiet --ignore-submodules -- $knownRel
-        } @(0,1)
-        if ($known.Code -eq 1) {
-            $semantic = Invoke-Native "VERIFY KNOWN PROOF IS EOL-ONLY: $knownRel" {
-                & git diff --quiet --ignore-space-at-eol --ignore-submodules -- $knownRel
-            } @(0,1)
-            if ($semantic.Code -ne 0) {
-                throw "Known local proof has substantive changes: $knownRel"
-            }
-            $dirtyCount++
-        }
+function Record-UnstagedTrackedChanges {
+    $state = Invoke-Native 'RECORD UNSTAGED TRACKED TREE' {
+        & git diff --name-status --ignore-submodules --
     }
-    return ($dirtyCount -gt 0)
+    $script:PreexistingTracked = @($state.Lines | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    if ($script:PreexistingTracked.Count -eq 0) {
+        'none' | Set-Content -LiteralPath $TrackedStateLog -Encoding UTF8
+        Write-Log 'preexisting_unstaged_tracked_changes=none'
+    }
+    else {
+        $script:PreexistingTracked | Set-Content -LiteralPath $TrackedStateLog -Encoding UTF8
+        Write-Log "preexisting_unstaged_tracked_changes=$($script:PreexistingTracked.Count)"
+        Write-Log 'These paths are recorded only. They are not staged, restored, or modified by the capture helper.'
+    }
 }
 
 function Assert-GameClosed {
@@ -117,15 +109,21 @@ function Ask([string]$Key, [string]$Prompt) {
     }
 }
 
-function Get-Proof {
-    $path = Join-Path $Repo $ProofRel
-    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw 'v3.2 offline proof is missing.' }
-    $proof = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
+function Get-CanonicalProof([string]$Commit) {
+    $spec = "${Commit}:$ProofRel"
+    $show = Invoke-Native 'READ CANONICAL V3.2 PROOF FROM GIT HEAD' {
+        & git show $spec
+    }
+    $json = ($show.Lines -join "`n")
+    if ([string]::IsNullOrWhiteSpace($json)) {
+        throw 'Committed v3.2 offline proof is empty or unavailable.'
+    }
+    $proof = $json | ConvertFrom-Json
     if ($proof.result -ne 'RAVEN_UID_COMPASS_LIFECYCLE_V32_OFFLINE_PROOF_PASSED' -or
         $proof.ready_for_runtime_test -ne $true -or
         $proof.runtime_test_performed -ne $false -or
         $proof.game_files_written -ne $false) {
-        throw 'v3.2 offline proof gate differs from the approved runtime candidate.'
+        throw 'Committed v3.2 offline proof gate differs from the approved runtime candidate.'
     }
     return $proof
 }
@@ -139,7 +137,9 @@ function Write-And-VerifyInstalledHashes([object]$Proof) {
             throw "Installed file missing: $relative"
         }
         $actual = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
-        $expected = [string]$Proof.files.$name.sha256
+        $property = $Proof.files.PSObject.Properties[$name]
+        if ($null -eq $property) { throw "Committed proof has no candidate entry for: $name" }
+        $expected = [string]$property.Value.sha256
         if ($actual -ne $expected) {
             throw "Installed v3.2 candidate hash differs: $name actual=$actual expected=$expected"
         }
@@ -160,39 +160,40 @@ try {
     $current = (& git branch --show-current).Trim()
     if ($current -ne $Branch) { throw "Expected branch '$Branch', got '$current'." }
 
-    $KnownDirtyPresent = Assert-ExpectedTrackedState
+    Assert-NoPreexistingStagedChanges
+    Record-UnstagedTrackedChanges
     Assert-GameClosed
 
-    $head = (& git rev-parse HEAD).Trim()
-    if ($LASTEXITCODE -ne 0) { throw 'Could not resolve repository HEAD.' }
-    $proof = Get-Proof
-
-    $status = Invoke-Native 'V3.2 RUNTIME STATUS' {
-        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $Repo $RuntimeRel) -Mode Status -GameRoot $GameRoot
+    $Head = (& git rev-parse HEAD).Trim()
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($Head)) {
+        throw 'Could not resolve repository HEAD.'
     }
-    if (@($status.Lines | Where-Object { $_ -match '^\s*status:\s*installed\s*$' }).Count -eq 0) {
-        throw 'v3.2 runtime transaction does not report installed.'
-    }
+    Write-Log "canonical_proof_commit=$Head"
+    $proof = Get-CanonicalProof -Commit $Head
 
     $activePath = Join-Path $Repo $ActiveRel
     if (-not (Test-Path -LiteralPath $activePath -PathType Leaf)) {
         throw 'v3.2 active transaction manifest is missing.'
     }
     $active = Get-Content -LiteralPath $activePath -Raw | ConvertFrom-Json
-    if ([string]$active.status -ne 'installed') { throw "v3.2 transaction status is '$($active.status)', expected installed." }
+    if ([string]$active.status -ne 'installed') {
+        throw "v3.2 transaction status is '$($active.status)', expected installed."
+    }
     Copy-Item -LiteralPath $activePath -Destination $ActiveCopy -Force
+    Write-Log "transaction_id=$($active.transaction_id)"
+    Write-Log "transaction_status=$($active.status)"
 
     Write-Log ''
-    Write-Log '=== INSTALLED V3.2 HASH VERIFICATION ==='
+    Write-Log '=== INSTALLED V3.2 HASH VERIFICATION AGAINST COMMITTED PROOF ==='
     Write-And-VerifyInstalledHashes -Proof $proof
 
     @(
         "capture_time_local=$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss zzz')",
         "branch=$Branch",
-        "head_before_capture_commit=$head",
+        "canonical_proof_commit=$Head",
         "transaction_id=$($active.transaction_id)",
         "transaction_status=$($active.status)",
-        "known_proof_eol_state_present=$KnownDirtyPresent",
+        "preexisting_unstaged_tracked_count=$($PreexistingTracked.Count)",
         'helper_game_writes=false',
         'helper_save_progression_writes=false'
     ) | Set-Content -LiteralPath $Metadata -Encoding UTF8
@@ -239,7 +240,7 @@ try {
         Write-Log 'loader_log_copied=false'
     }
 
-    $since = (Get-Date).AddHours(-4)
+    $since = (Get-Date).AddHours(-6)
     try {
         Get-WinEvent -FilterHashtable @{LogName='Application'; StartTime=$since} -ErrorAction Stop |
             Where-Object {
@@ -260,7 +261,7 @@ try {
     ) | Set-Content -LiteralPath $Observation -Encoding UTF8
 
     Write-Host ''
-    Write-Host 'Answer from the v3.2 human runtime matrix. Use Y, N, or NA.'
+    Write-Host 'Answer from the v3.2 human runtime matrix you already performed. Use Y, N, or NA.'
     Ask 'initial_real_and_twin_visible' 'Before collecting the real Raven, were both real and Twin map markers visible?' | Out-Null
     Ask 'real_tracks_correct_custom_target' 'Did clicking REAL track the real marker using the custom Raven HUD/in-world target?' | Out-Null
     Ask 'twin_tracks_correct_custom_target' 'Did clicking TWIN track Twin itself using the custom Raven HUD/in-world target?' | Out-Null
@@ -293,9 +294,10 @@ finally {
         "result=$(if ($Succeeded) { 'CAPTURED' } else { 'FAIL' })",
         "time_local=$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss zzz')",
         "game_root=$GameRoot",
-        "known_proof_eol_state_present=$KnownDirtyPresent",
-        "helper_game_writes=false",
-        "helper_save_progression_writes=false",
+        "canonical_proof_commit=$Head",
+        "preexisting_unstaged_tracked_count=$($PreexistingTracked.Count)",
+        'helper_game_writes=false',
+        'helper_save_progression_writes=false',
         "failure=$($FailureText -replace "`r?`n", ' | ')"
     ) | Set-Content -LiteralPath $Summary -Encoding UTF8
 
@@ -304,10 +306,19 @@ finally {
         $current = (& git branch --show-current).Trim()
         if ($current -ne $Branch) { throw "Cannot publish runtime capture from unexpected branch '$current'." }
 
-        # Stage only this capture directory. Known v3.1/v3.2 proof EOL-only
-        # working-tree state, if present, remains untouched and unstaged.
+        # Only this capture directory is staged. All pre-existing unstaged
+        # tracked changes remain untouched and cannot enter this commit.
         & git add -- $LogRel
         if ($LASTEXITCODE -ne 0) { throw 'Could not stage runtime capture.' }
+
+        $stagedNames = @(& git diff --cached --name-only)
+        if ($LASTEXITCODE -ne 0) { throw 'Could not enumerate staged capture files.' }
+        foreach ($path in $stagedNames) {
+            if (-not $path.StartsWith(($LogRel -replace '\\','/'))) {
+                throw "Unexpected staged path after capture staging: $path"
+            }
+        }
+
         & git diff --cached --quiet
         if ($LASTEXITCODE -ne 0) {
             $message = if ($Succeeded) {
@@ -319,7 +330,6 @@ finally {
             if ($LASTEXITCODE -ne 0) { throw 'Could not commit runtime capture.' }
             & git push origin HEAD | Out-Host
             if ($LASTEXITCODE -ne 0) { throw 'Could not push runtime capture.' }
-            $Published = $true
         }
     }
     catch {
