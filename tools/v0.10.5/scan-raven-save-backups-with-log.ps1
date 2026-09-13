@@ -13,6 +13,7 @@ $relativeLogDir = "archive/field-logs/save-forensics/raven-backups-$stamp"
 $logDir = Join-Path $repo $relativeLogDir
 New-Item -ItemType Directory -Force -Path $logDir | Out-Null
 $consoleLog = Join-Path $logDir 'console-log.txt'
+$pythonLog = Join-Path $logDir 'python-output.txt'
 $jsonPath = Join-Path $logDir 'backup-forensics.json'
 $textPath = Join-Path $logDir 'backup-forensics.txt'
 $published = $false
@@ -84,8 +85,13 @@ try {
 
     Write-Host "Desktop backups only: $desktop"
     Write-Host 'Active %USERPROFILE%\Saved Games\God of War is explicitly excluded.'
-    & $python.Source $scanner --desktop $desktop --output-json $jsonPath --output-text $textPath
+
+    # Capture stdout and stderr into an artifact as well as the transcript so a
+    # Python failure is diagnosable from GitHub without asking for pasted output.
+    $pythonOutput = @(& $python.Source $scanner --desktop $desktop --output-json $jsonPath --output-text $textPath 2>&1)
     $scanExit = $LASTEXITCODE
+    $pythonOutput | ForEach-Object { $_.ToString() } | Set-Content -LiteralPath $pythonLog -Encoding UTF8
+    foreach ($line in $pythonOutput) { Write-Host $line }
 
     if ($scanExit -eq 0) {
         Write-Host 'SAVE_BACKUP_FORENSICS_PASSED'
