@@ -102,7 +102,7 @@
         "marker": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["name", "uid", "map_resource", "compass_class", "hud_resource", "in_world_resource", "position_world", "map_projection"],
+          "required": ["name", "uid", "map_resource", "compass_class", "hud_resource", "in_world_resource", "position_world", "map_projection", "coordinate_wad"],
           "properties": {
             "name": { "type": "string", "pattern": "^Completionist_" },
             "uid": { "$ref": "#/$defs/hex16" },
@@ -111,7 +111,8 @@
             "hud_resource": { "const": "goCompletionistRavenHUD" },
             "in_world_resource": { "const": "COMPASS_INWORLD_COMPLETIONIST_RAVEN" },
             "position_world": { "$ref": "#/$defs/position" },
-            "map_projection": { "const": "native_mapcoords_world_position" }
+            "map_projection": { "const": "native_mapcoords_world_position" },
+            "coordinate_wad": { "type": "string", "pattern": "^WAD_[A-Za-z0-9_]+$" }
           }
         },
         "progression": {

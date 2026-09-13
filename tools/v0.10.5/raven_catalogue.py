@@ -18,6 +18,7 @@ from typing import Iterable
 
 RAVEN_PARENT_RE = re.compile(rb"RegionSummary_[A-Z0-9]+_Raven_Parent")
 GUID_RE = re.compile(rb"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", re.I)
+WAD_NAME_RE = re.compile(rb"WAD_[A-Za-z0-9_]+")
 EXPECTED_OBJECT_COUNT = 53
 EXPECTED_LABOR_TARGET = 51
 PROVEN_NAME = "Completionist_V103_Veithurgard_Raven_01"
@@ -268,6 +269,19 @@ def read_parent_targets(dcb_root: Path) -> tuple[dict[str, int], dict]:
     return result, quests.evidence()
 
 
+def read_canonical_wad_names(dcb_root: Path) -> tuple[dict[str, str], dict]:
+    result: dict[str, str] = {}
+    evidence = {}
+    for name in ("mapcoords.dcb", "compassgraph.dcb"):
+        path = dcb_root / name
+        raw = path.read_bytes()
+        evidence[name] = {"sha256": digest(raw), "bytes": len(raw)}
+        for match in WAD_NAME_RE.finditer(raw):
+            value = match.group().decode("ascii")
+            result.setdefault(value.lower(), value)
+    return result, evidence
+
+
 def quantize_half(values: Iterable[float]) -> tuple[float, float, float]:
     values = tuple(values)
     return struct.unpack("<3e", struct.pack("<3e", *values))
@@ -277,7 +291,7 @@ def marker_name(instance_guid: str) -> str:
     return f"Completionist_V105_Raven_{instance_guid.replace('-', '')[:16]}"
 
 
-def extract_wad_ravens(wad: Path, region_index: dict[str, dict]) -> list[dict]:
+def extract_wad_ravens(wad: Path, region_index: dict[str, dict], wad_names: dict[str, str]) -> list[dict]:
     raw = wad.read_bytes()
     if not RAVEN_PARENT_RE.search(raw):
         return []
@@ -307,6 +321,8 @@ def extract_wad_ravens(wad: Path, region_index: dict[str, dict]) -> list[dict]:
         check(not is_proven or custom_uid == PROVEN_UID, "proven v3.3 Raven UID changed")
         authored_world = PROVEN_AUTHORED_WORLD if is_proven else quantize_half(native_world)
         region = region_index[quest]
+        wad_key = f"wad_{wad.stem}".lower()
+        check(wad_key in wad_names, f"canonical WAD loader name absent from native route data: {wad.name}")
         entry = {
             "catalogue_id": f"raven_{instance_guid.replace('-', '')}",
             "family": "raven",
@@ -332,6 +348,7 @@ def extract_wad_ravens(wad: Path, region_index: dict[str, dict]) -> list[dict]:
                 "in_world_resource": "COMPASS_INWORLD_COMPLETIONIST_RAVEN",
                 "position_world": list(authored_world),
                 "map_projection": "native_mapcoords_world_position",
+                "coordinate_wad": wad_names[wad_key],
             },
             "realm": region["realm"],
             "realm_id": region["realm_id"],
@@ -420,6 +437,7 @@ def build_catalogue(game_root: Path) -> tuple[dict, dict]:
     check(dcb_root.is_dir() and wad_root.is_dir(), f"unsupported game root: {game_root}")
     region_index, map_evidence = read_region_index(dcb_root)
     parent_targets, quest_evidence = read_parent_targets(dcb_root)
+    wad_names, route_evidence = read_canonical_wad_names(dcb_root)
     check(set(parent_targets) == set(region_index), "mapmaster/quests Raven parent mismatch")
     check(sum(parent_targets.values()) == EXPECTED_LABOR_TARGET, "native Raven parent target sum changed")
     ravens = []
@@ -429,7 +447,7 @@ def build_catalogue(game_root: Path) -> tuple[dict, dict]:
         if not RAVEN_PARENT_RE.search(raw_prefix_test):
             continue
         scanned += 1
-        ravens.extend(extract_wad_ravens(wad, region_index))
+        ravens.extend(extract_wad_ravens(wad, region_index, wad_names))
     ravens.sort(key=lambda row: (row["realm"], row["region"], row["source"]["wad"], row["native"]["instance_guid"]))
     by_parent = collections.Counter(row["progression"]["parent_quest"] for row in ravens)
     surplus = {quest: count - parent_targets[quest] for quest, count in sorted(by_parent.items()) if count != parent_targets[quest]}
@@ -475,7 +493,7 @@ def build_catalogue(game_root: Path) -> tuple[dict, dict]:
         "parent_target_counts": dict(sorted(parent_targets.items())),
         "parent_surplus": surplus,
         "catalogue_validation": summary,
-        "native_evidence": {"mapmaster": map_evidence, "quests": quest_evidence},
+        "native_evidence": {"mapmaster": map_evidence, "quests": quest_evidence, "route_wad_names": route_evidence},
         "blocking_issue": "No proven read-only API can query ravenKilled for an unloaded Raven WAD instance.",
     }
     return catalogue, audit

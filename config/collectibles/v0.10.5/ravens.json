@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "extends": "config/collectibles/v0.10.4/collectibles.json",
+  "family": "raven",
+  "catalogue": "catalogue/odins-ravens.json",
+  "catalogue_schema": "catalogue/odins-ravens.schema.json",
+  "expected_count": 53,
+  "map_resource": "goMapIconCompletionistRaven",
+  "compass_class": "CompletionistRaven",
+  "map_scope": "current_realm_only",
+  "identity_policy": "exact_collision_object_then_exact_marker_uid",
+  "unknown_state_policy": "hide_fail_closed",
+  "state_adapter": "precisionchallenge_checkpoint_ravenKilled",
+  "release_gate": {
+    "ready_for_runtime_test": false,
+    "blocker": "No proven read-only API can query ravenKilled for an unloaded Raven WAD instance."
+  },
+  "writes": {
+    "progression": false,
+    "save": false,
+    "marker_state": false
+  }
+}
