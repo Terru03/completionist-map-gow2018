@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://completionist-map.invalid/schemas/odins-ravens-v2.json",
+  "title": "Completionist Map Odin's Raven catalogue",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "catalogue",
+    "source_authority",
+    "expected_native_object_count",
+    "native_labor_target_count",
+    "read_only_progression",
+    "shared_resources",
+    "state_oracle",
+    "ravens"
+  ],
+  "properties": {
+    "schema_version": { "const": 2 },
+    "catalogue": { "const": "completionist-map-gow2018-odins-ravens" },
+    "source_authority": { "const": "native_pc_game_data" },
+    "expected_native_object_count": { "const": 53 },
+    "native_labor_target_count": { "const": 51 },
+    "read_only_progression": { "const": true },
+    "shared_resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["map", "compass_class", "hud", "in_world"],
+      "properties": {
+        "map": { "const": "goMapIconCompletionistRaven" },
+        "compass_class": { "const": "CompletionistRaven" },
+        "hud": { "const": "goCompletionistRavenHUD" },
+        "in_world": { "const": "COMPASS_INWORLD_COMPLETIONIST_RAVEN" }
+      }
+    },
+    "state_oracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter", "native_field", "native_identity", "writes_progression", "unloaded_instance_query"],
+      "properties": {
+        "adapter": { "const": "precisionchallenge_checkpoint_ravenKilled" },
+        "native_field": { "const": "ravenKilled" },
+        "native_identity": { "const": "WAD object instance GUID" },
+        "writes_progression": { "const": false },
+        "unloaded_instance_query": { "enum": ["unresolved", "proven"] }
+      }
+    },
+    "ravens": {
+      "type": "array",
+      "minItems": 53,
+      "maxItems": 53,
+      "items": { "$ref": "#/$defs/raven" }
+    }
+  },
+  "$defs": {
+    "hex16": { "type": "string", "pattern": "^[0-9A-F]{16}$" },
+    "hex32lower": { "type": "string", "pattern": "^[0-9a-f]{32}$" },
+    "guid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" },
+    "position": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "type": "number", "minimum": -65504, "maximum": 65504 }
+    },
+    "raven": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "catalogue_id", "family", "display_name", "native", "marker", "realm",
+        "realm_id", "region", "region_id", "progression", "source", "special_handling"
+      ],
+      "properties": {
+        "catalogue_id": { "type": "string", "pattern": "^raven_[0-9a-f]{32}$" },
+        "family": { "const": "raven" },
+        "display_name": { "type": "string", "minLength": 1 },
+        "realm": { "enum": ["Midgard", "Alfheim", "Helheim"] },
+        "realm_id": { "$ref": "#/$defs/hex16" },
+        "region": { "type": "string", "minLength": 1 },
+        "region_id": { "$ref": "#/$defs/hex16" },
+        "special_handling": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "native": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "object_name", "override_name", "instance_guid", "script_guid",
+            "override_record_id", "final_record_id", "prototype_id", "parent_prototype_id",
+            "marker_name", "marker_uid"
+          ],
+          "properties": {
+            "object_name": { "type": "string", "minLength": 1 },
+            "override_name": { "type": "string", "minLength": 1 },
+            "instance_guid": { "$ref": "#/$defs/guid" },
+            "script_guid": { "$ref": "#/$defs/guid" },
+            "override_record_id": { "$ref": "#/$defs/hex32lower" },
+            "final_record_id": { "$ref": "#/$defs/hex32lower" },
+            "prototype_id": { "$ref": "#/$defs/hex32lower" },
+            "parent_prototype_id": { "$ref": "#/$defs/hex32lower" },
+            "marker_name": { "type": "null" },
+            "marker_uid": { "type": "null" }
+          }
+        },
+        "marker": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "uid", "map_resource", "compass_class", "hud_resource", "in_world_resource", "position_world", "map_projection"],
+          "properties": {
+            "name": { "type": "string", "pattern": "^Completionist_" },
+            "uid": { "$ref": "#/$defs/hex16" },
+            "map_resource": { "const": "goMapIconCompletionistRaven" },
+            "compass_class": { "const": "CompletionistRaven" },
+            "hud_resource": { "const": "goCompletionistRavenHUD" },
+            "in_world_resource": { "const": "COMPASS_INWORLD_COMPLETIONIST_RAVEN" },
+            "position_world": { "$ref": "#/$defs/position" },
+            "map_projection": { "const": "native_mapcoords_world_position" }
+          }
+        },
+        "progression": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["parent_quest", "state_adapter", "field", "instance_key", "read_only", "unloaded_query"],
+          "properties": {
+            "parent_quest": { "type": "string", "pattern": "^RegionSummary_[A-Z0-9]+_Raven_Parent$" },
+            "state_adapter": { "const": "precisionchallenge_checkpoint_ravenKilled" },
+            "field": { "const": "ravenKilled" },
+            "instance_key": { "$ref": "#/$defs/guid" },
+            "read_only": { "const": true },
+            "unloaded_query": { "enum": ["unresolved", "proven"] }
+          }
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["wad", "wad_sha256", "override_offset", "final_offset", "native_world_position", "world_transform_matrix", "transform_chain"],
+          "properties": {
+            "wad": { "type": "string", "pattern": "^[A-Za-z0-9_]+\\.wad$" },
+            "wad_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "override_offset": { "type": "string", "pattern": "^0x[0-9A-F]+$" },
+            "final_offset": { "type": "string", "pattern": "^0x[0-9A-F]+$" },
+            "native_world_position": { "$ref": "#/$defs/position" },
+            "world_transform_matrix": { "type": "array", "minItems": 9, "maxItems": 9, "items": { "type": "number" } },
+            "transform_chain": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["name", "record_id", "offset"],
+                "properties": {
+                  "name": { "type": "string", "minLength": 1 },
+                  "record_id": { "$ref": "#/$defs/hex32lower" },
+                  "offset": { "type": "string", "pattern": "^0x[0-9A-F]+$" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
