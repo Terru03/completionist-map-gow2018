@@ -11,7 +11,6 @@ import hashlib
 import json
 import math
 from pathlib import Path
-import re
 import sys
 
 VEITHURGARD_INSTANCE_GUID = "642d0d16-4af0-a5d4-076e-77933c549a5d"
@@ -26,6 +25,16 @@ def sha256_file(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def relative_key(path: Path, root: Path) -> str:
+    """Return one canonical cross-platform relative path key.
+
+    pathlib renders Windows relative paths with backslashes.  The forensic report
+    uses POSIX separators so hashes and later per-file records must use the same
+    representation or dictionary lookups fail on Windows.
+    """
+    return path.relative_to(root).as_posix()
 
 
 def windows_guid_bytes(guid: str) -> bytes:
@@ -75,8 +84,7 @@ def printable_context(data: bytes, offset: int, radius: int = 64) -> str:
     start = max(0, offset - radius)
     end = min(len(data), offset + radius)
     blob = data[start:end]
-    text = "".join(chr(b) if 32 <= b < 127 else "." for b in blob)
-    return text
+    return "".join(chr(b) if 32 <= b < 127 else "." for b in blob)
 
 
 def find_all(data: bytes, needle: bytes, limit: int = 20) -> list[int]:
@@ -159,8 +167,8 @@ def main() -> int:
         else:
             raise RuntimeError(f"Refusing active-save overlap: {backup}")
 
-        files = [p for p in backup.rglob("*") if p.is_file()]
-        before = {str(p.relative_to(backup)): sha256_file(p) for p in files}
+        files = sorted((p for p in backup.rglob("*") if p.is_file()), key=lambda p: relative_key(p, backup).lower())
+        before = {relative_key(p, backup): sha256_file(p) for p in files}
         backup_entry = {
             "path": str(backup),
             "name": backup.name,
@@ -174,7 +182,7 @@ def main() -> int:
         lines.append(f"Files: {len(files)}")
 
         for path in files:
-            relative = str(path.relative_to(backup)).replace("\\", "/")
+            relative = relative_key(path, backup)
             data = path.read_bytes()
             hits = []
             for label, needle in search_patterns:
@@ -204,7 +212,7 @@ def main() -> int:
                 for hit in hits:
                     lines.append(f"    {hit['pattern']}: {hit['offsets']}")
 
-        after = {str(p.relative_to(backup)): sha256_file(p) for p in files}
+        after = {relative_key(p, backup): sha256_file(p) for p in files}
         unchanged = before == after
         backup_entry["source_hashes_unchanged"] = unchanged
         if not unchanged:
