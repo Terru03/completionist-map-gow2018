@@ -1,0 +1,15 @@
+Completionist Map - God of War fixed save-slot analysis
+header_size=208 slot_stride=1677512 (0x1998c8) declared_size=33554400
+raven-bearing slots A=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+raven-bearing slots B=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+inferred save slots=16 save_area_end=26840192 (0x1998c80)
+changed save slots=[6]
+tail bytes=6714208 changed_bytes=15561
+
+slot 6: changed_bytes=23349 prefix=4160 suffix=1452741 ravenStreams=2/2
+
+slot 6 unique decompressed streams:
+  A_unique_streams=1
+    rel=206844 bytes=3205 sha=22219a7b8240d054 strings=currentState, Idle, StartLoadoutGiven, availabilityState, ContextBehaviorCurrentIndex, offTheaterPath, previousState, usePOICooldown, shootTargetType, reticle, sonCSMoveAvailable, E3_SpecialArrow, followPlayerParams, Strafe, Speed, dodgeFutureQuadrant, rotateInPlace, previousTargetMode, RegularTarget, slowdownAllowed
+  B_unique_streams=1
+    rel=206220 bytes=3014 sha=085c5e81f2f23910 strings=fireAtAllTargets, currentContextConfig, LoopAnimEvents, kSonLeadTheWayIdle, OneOffAnimEvents, kNavIdleFidgetAdjustQuiver, kNavIdleFidgetGlanceAround, kNavIdleDirectionalGlance, kNavIdleFidgetStretch03, BehaviorContextName, LEAD_THE_WAY_BEHAVIOR_CONTEXT_CONFIG, OneOffTimer, TransitionToComplimentEvent, ExitBanterModeEvent, OneOffAnimEventCount, EnterAnimEvent, OneOffWeightCount, LoopAnimEventCount, ComplimentaryConfigName, EnterBanterModeEvent
