@@ -1,0 +1,14 @@
+Completionist Map - Raven stream envelope analysis
+layout prefix=4160 stride=1677512 slots=20 window=4096
+
+GodOfWar-SaveBackup-2026-09-13_21-53-50: ravenRelatedStreams=36
+GodOfWar-SaveBackup-2026-09-13_22-01-52: ravenRelatedStreams=36
+
+Same decompressed Raven stream across the two frozen backups:
+  slot=6 bytes=877 sha=0ff2a0fee495608c rel=518569/518569 beforeChanged=0 afterChanged=0 zeroOneU32=0
+  slot=6 bytes=79 sha=a20550b246cb5e25 rel=39224/39224 beforeChanged=0 afterChanged=0 zeroOneU32=0
+
+Identical decompressed stream groups with varying envelopes:
+  bytes=877 sha=0ff2a0fee495608c occ=32 beforeVariants=15 afterVariants=15 strings=levelstate, __encounterState, [Area 0]EC: Golem Fight XPL930, previouslyStarted, completed, __subobjs, mapMarkerDiscovered, dockingEnabled
+  bytes=1864 sha=5a9edf84689750e2 occ=8 beforeVariants=4 afterVariants=4 strings=__subobjs, challengeComplete, keysUsed, enable, isDim, frameTable, disabled, dimEnabled
+  bytes=79 sha=a20550b246cb5e25 occ=28 beforeVariants=14 afterVariants=14 strings=__subobjs, mapSummaryComplete, '4%0
