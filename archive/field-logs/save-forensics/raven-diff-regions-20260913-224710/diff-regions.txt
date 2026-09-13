@@ -1,0 +1,37 @@
+Completionist Map - frozen save changed-region analysis
+A: GodOfWar-SaveBackup-2026-09-13_21-53-50 sha256=617dc5867850dc14b6a4791bc116ace132a84a6a188d3165cec5276049d48438
+B: GodOfWar-SaveBackup-2026-09-13_22-01-52 sha256=d1d7b43780ad878e300507d71059347734f96515d2ae3d0cf40e9571216bc63d
+Different 4 KiB blocks: 21
+Groups: 6
+Mirror pairs (+16 MiB): 9
+
+group blocks=2458-2459 count=2 offsets=10067968-10076160
+group blocks=2474-2475 count=2 offsets=10133504-10141696
+group blocks=2506-2512 count=7 offsets=10264576-10293248
+group blocks=6553-6555 count=3 offsets=26841088-26853376
+group blocks=6570-6570 count=1 offsets=26910720-26914816
+group blocks=6602-6607 count=6 offsets=27041792-27066368
+
+Top mirrored-delta similarities:
+  2506 -> 6602 delta=16777216 equal_fraction=0.655762
+  2458 -> 6554 delta=16777216 equal_fraction=0.645752
+  2459 -> 6555 delta=16777216 equal_fraction=0.595215
+  2474 -> 6570 delta=16777216 equal_fraction=0.293457
+  2511 -> 6607 delta=16777216 equal_fraction=0.076904
+  2507 -> 6603 delta=16777216 equal_fraction=0.072021
+  2510 -> 6606 delta=16777216 equal_fraction=0.012451
+  2508 -> 6604 delta=16777216 equal_fraction=0.009277
+  2509 -> 6605 delta=16777216 equal_fraction=0.008789
+
+Zlib streams compared in changed-region windows: 59
+  offset=43363 presentA=True presentB=True same=True
+    A: bytes=116 sha256=faa60c2511aed65e4e7e2dd1211ebc189cd156e138c14a901e888f4d3325b5cb hits=['ravenKilled']
+      ravenKilled_excerpt=__subobjs.ravenKilled.mapSummaryComplete.b@...P.u...'4%0.N.e-.....b@.
+    B: bytes=116 sha256=faa60c2511aed65e4e7e2dd1211ebc189cd156e138c14a901e888f4d3325b5cb hits=['ravenKilled']
+      ravenKilled_excerpt=__subobjs.ravenKilled.mapSummaryComplete.b@...P.u...'4%0.N.e-.....b@.
+  offset=10271292 presentA=False presentB=True same=False
+    B: bytes=3014 sha256=085c5e81f2f23910efe06ff24a6ce2b7f8f63078f9acbc077dd3802503847e69 hits=[]
+  offset=10271916 presentA=True presentB=False same=False
+    A: bytes=3205 sha256=22219a7b8240d054c99c13eee1511f82526dbd5fe453d01c3128dee389834092 hits=[]
+  offset=27046412 presentA=False presentB=True same=False
+    B: bytes=3014 sha256=085c5e81f2f23910efe06ff24a6ce2b7f8f63078f9acbc077dd3802503847e69 hits=[]
