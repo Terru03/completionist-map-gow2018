@@ -1,0 +1,136 @@
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:153: [persistence] -- Conservative persisted-state inference. If the stock aggregate says N
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:156: [persistence] -- be the persisted broken seals. If the numbers do not match, show the
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:165: [persistence] print("[CompletionistMap v0.10.1] NORNIR_PERSISTED_INFER" ..
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:285: [lookup] runeTable[i].runeKey = level:FindSingleGameObject(thisObj:FindLuaTableAttribute("sealBreakable0" .. tostring(i)))
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:351: [checkpoint] function OnSaveCheckpoint(level, go)
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:359: [checkpoint] function OnRestoreCheckpoint(level, go, savedInfo)
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:5: [checkpoint] local checkpointOnOpened = false
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:6: [checkpoint] local checkpointOnOpened_Override
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:7: [checkpoint] local checkpointRequirementDisabled = false
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:105: [checkpoint] checkpointOnOpened = thisObj:GetLuaTableAttribute("CheckpointOnOpened")
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:106: [checkpoint] checkpointOnOpened_Override = thisObj:GetLuaTableAttribute("CheckpointOnOpened_Override")
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:107: [checkpoint] if checkpointOnOpened_Override ~= nil and checkpointOnOpened_Override ~= "" then
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:108: [checkpoint] checkpointOnOpened_Override = GameObjects[checkpointOnOpened_Override]
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:110: [checkpoint] checkpointOnOpened_Override = nil
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:148: [checkpoint] if (onOpenedEvent or interactionOnFinish) and not checkpointOnOpened and not checkpointRequirementDisabled then
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:149: [checkpoint] engine.Warning("Chest Error - " .. LD.GetParentTrace(thisObj) .. " has a callback, but isn't set to save a checkpoint. Check the 'CheckpointOnOpened' option in the toolbox to ensure the chest saves correctly")
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:270: [lookup,quest] local questState = game.QuestManager.GetQuestState(parent)
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:272: [quest] game.QuestManager.StartQuest(parent)
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:274: [lookup,quest] local _, progress = game.QuestManager.GetQuestProgressAndGoal(child)
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:275: [quest] game.QuestManager.IncrementQuestProgress(child, pieces - progress)
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:278: [quest] IncrementQuest("Quest_SonLanguage_Muspelheim_Parent", "Quest_SonLanguage_Muspelheim", game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece"))
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:287: [quest] IncrementQuest("Quest_SonLanguage_Niflheim_Parent", "Quest_SonLanguage_Niflheim", game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece"))
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:288: [lookup,quest] local _, progress = game.QuestManager.GetQuestProgressAndGoal("Quest_SonLanguage_Niflheim")
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:310: [lookup,quest] if game.QuestManager.GetQuestState("Quest_SonLanguage_Muspelheim") == "Complete" and game.QuestManager.GetQuestState("Quest_SonLanguage_Niflheim") == "Complete" then
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:319: [quest] player:RequestInteract(thisObj, {InteractZone = interactZone, LerpObject = lootObject})
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:323: [quest] player:RequestInteract(thisObj, {InteractZone = interactZone, LerpObject = lootObject})
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:441: [quest] LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TyrsVault")
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:443: [quest] LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TheHallofTyr")
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:454: [quest] LD.ActivateAndIncrementQuest("RegionSummary_RunicChest_Parent_TyrsVault")
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:478: [quest] LD.ActivateAndIncrementQuest(regionQuest)
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:532: [checkpoint] if checkpointOnOpened then
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:533: [checkpoint] if checkpointOnOpened_Override ~= nil then
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:534: [checkpoint] if checkpointOnOpened_Override.IsRefNode then
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:535: [checkpoint] checkpointOnOpened_Override = checkpointOnOpened_Override.Child
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:537: [checkpoint] game.World.StoreCheckpoint({OverrideObject = checkpointOnOpened_Override})
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:539: [checkpoint] game.World.StoreCheckpoint()
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:550: [checkpoint] function DisableCheckpointRequirement()
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:551: [checkpoint] checkpointRequirementDisabled = true
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:553: [checkpoint] function OnSaveCheckpoint(level, obj)
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:556: [checkpoint] function OnRestoreCheckpoint(level, obj, savedInfo)
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:657: [lookup] function GetState()
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:660: [lookup] function GetPossibleStates()
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:751: [quest] LD.ActivateQuest("Quest_NiflheimArmorChest_Parent")
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:752: [quest] LD.CompleteQuest("Quest_NiflheimArmorChest_01")
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:769: [checkpoint] if not checkpointOnOpened and not checkpointRequirementDisabled then
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:770: [checkpoint] engine.Warning("Chest Error - " .. LD.GetParentTrace(thisObj) .. " has a callback, but isn't set to save a checkpoint. Check the 'CheckpointOnOpened' option in the toolbox to ensure the chest saves correctly")
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:785: [checkpoint] if not checkpointOnOpened and not checkpointRequirementDisabled then
+gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:786: [checkpoint] engine.Warning("Chest Error - " .. LD.GetParentTrace(thisObj) .. " has a callback, but isn't set to save a checkpoint. Check the 'CheckpointOnOpened' option in the toolbox to ensure the chest saves correctly")
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:4: [raven] local ravenKilled = false
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:8: [raven] -- ravenKilled state and publishes it to the custom map/HUD prototype.
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:30: [lookup] local function CompletionistMapV100_PublishTargetState(killed, source)
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:37: [raven] _G.CompletionistMapV100TargetRavenKilled = collected
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:66: [raven,lookup] CompletionistMapV100_PublishTargetState(ravenKilled, "OnStart")
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:67: [raven] if ravenKilled == true then
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:77: [lookup] CompletionistMapV100_PublishTargetState(true, "OnHitByWeapon")
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:79: [lookup,quest] local questState = game.QuestManager.GetQuestState("Quest_Labor_KillRavens_Parent")
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:81: [quest] game.QuestManager.StartQuest("Quest_Labor_KillRavens_Parent")
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:83: [quest] game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens", 1)
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:84: [quest] game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_25", 1)
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:85: [quest] game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_50", 1)
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:86: [lookup,quest] if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:89: [raven] ravenKilled = true
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:93: [quest] ActivateRegionSummaryQuest()
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:101: [quest] function ActivateRegionSummaryQuest()
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:104: [quest] LD.ActivateAndIncrementQuest(regionSummaryQuest)
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:129: [checkpoint] function OnSaveCheckpoint(level, obj)
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:130: [raven] return {ravenKilled = ravenKilled}
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:132: [checkpoint] function OnRestoreCheckpoint(level, obj, tab)
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:133: [raven] ravenKilled = tab.ravenKilled
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:134: [raven,checkpoint,lookup] CompletionistMapV100_PublishTargetState(ravenKilled, "OnRestoreCheckpoint")
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:164: [raven,persistence] -- Runs inside persistent Raven gameplay script. Read native ravenKilled only.
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:202: [raven] if ticket ~= generation or ravenKilled ~= true then return end
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:241: [raven] local killed = ravenKilled == true
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:281: [checkpoint] local restore = OnRestoreCheckpoint
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:282: [checkpoint] function OnRestoreCheckpoint(...)
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:284: [checkpoint] observe("OnRestoreCheckpoint")
+gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:295: [raven] log("API", "installed=true cleanupOwner=precisionchallenge" ..
+gameart/ui/scripts/hud/mainhud.lua:213: [raven] _G.CompletionistMapV100TargetRavenKilled == true then
+gameart/ui/scripts/hud/mainhud.lua:221: [lookup,quest] return game.QuestManager.GetQuestState(target.regionQuest)
+gameart/ui/scripts/hud/mainhud.lua:226: [raven] _G.CompletionistMapV100TargetRavenKilled = true
+gameart/ui/scripts/hud/mainhud.lua:724: [quest] function MainHUD:EVT_ClearCompassMarkersForQuest(isMainQuest)
+gameart/ui/scripts/hud/mainhud.lua:728: [quest] function MainHUD:EVT_ShowCompassMarkerForQuest(isMainQuest, markerNameHash)
+gameart/ui/scripts/hud/mainhud.lua:730: [lookup] if not game.Compass.MultiCompassTargetQuestSupport then
+gameart/ui/scripts/hud/mainhud.lua:735: [quest] function MainHUD:EVT_HideCompassMarkerForQuest(isMainQuest, markerNameHash)
+gameart/ui/scripts/hud/mainhud.lua:917: [checkpoint] function MainHUD:OnSaveCheckpoint(tab)
+gameart/ui/scripts/hud/mainhud.lua:919: [checkpoint] function MainHUD:OnRestoreCheckpoint(tab)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:68: [raven] regionQuest = "RegionSummary_VF_Raven_Parent",
+gameart/ui/scripts/inworldmenu/mapmenu.lua:199: [raven] if _G.CompletionistMapV100TargetRavenKilled == true then
+gameart/ui/scripts/inworldmenu/mapmenu.lua:204: [lookup,quest] return game.QuestManager.GetQuestState(
+gameart/ui/scripts/inworldmenu/mapmenu.lua:205: [raven] "RegionSummary_VF_Raven_Parent"
+gameart/ui/scripts/inworldmenu/mapmenu.lua:210: [raven] _G.CompletionistMapV100TargetRavenKilled = true
+gameart/ui/scripts/inworldmenu/mapmenu.lua:224: [lookup] print("[CompletionistMap v0.10.1] NORNIR_TARGET_STATE_CHECK" ..
+gameart/ui/scripts/inworldmenu/mapmenu.lua:250: [raven] if _G.CompletionistMapV100TargetRavenKilled == true then
+gameart/ui/scripts/inworldmenu/mapmenu.lua:255: [lookup,quest] return game.QuestManager.GetQuestState(target.regionQuest)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:259: [raven] _G.CompletionistMapV100TargetRavenKilled = true
+gameart/ui/scripts/inworldmenu/mapmenu.lua:444: [persistence] -- pins are deliberately NOT created from this fallback because persisted
+gameart/ui/scripts/inworldmenu/mapmenu.lua:1426: [lookup] self.mapOn = self:GetState("MapOn")
+gameart/ui/scripts/inworldmenu/mapmenu.lua:1445: [lookup] self.mapOff = self:GetState("MapOff")
+gameart/ui/scripts/inworldmenu/mapmenu.lua:1538: [lookup] local newItemArray = self:GetSubStateNames()
+gameart/ui/scripts/inworldmenu/mapmenu.lua:1645: [lookup] function MapOn:GetSubStateNames()
+gameart/ui/scripts/inworldmenu/mapmenu.lua:1671: [lookup] local subState = self:GetState(currentItem)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:1889: [lookup,quest] if GetGlobalVar("ThorStatueBroken") or game.QuestManager.GetQuestState("Quest_UnfinishedBusiness03_Objective_01") == questConsts.QUEST_STATE_COMPLETE then
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2244: [lookup,quest] local hasQuest, questName = questUtil.FindQuestForMarker(markerID)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2271: [lookup] function MapOn:GetMapMarkerTrackingState(markerID)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2273: [lookup,quest] local hasQuest, questID = questUtil.FindQuestForMarker(markerID)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2276: [lookup] trackingState = questUtil.TrackingInfo_GetTrackingState(trackingInfo, questID)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2283: [lookup] function MapOn:GetMapMarkerTrackingStateFromIconGO(goIcon)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2287: [lookup] trackingState = self:GetMapMarkerTrackingState(markerInfo.Id)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2299: [lookup] local trackingState = self:GetMapMarkerTrackingStateFromIconGO(goIcon)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2501: [lookup] local goTerrainCollision = mapUtil.GetMapCollisionInfoGameObject(terrainCollInfo)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2757: [lookup,quest] local hasQuest, questName = questUtil.FindQuestForMarker(markerInfo.Id)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2758: [lookup,quest] if not hasQuest or game.QuestManager.GetQuestState(questName) ~= questConsts.QUEST_STATE_COMPLETE then
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2909: [lookup,quest] local currRootQuestID = questUtil.GetRootQuestID(self.currQuestID)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2944: [lookup,quest] end  local currRootQuestID = questUtil.GetRootQuestID(self.currQuestID)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2974: [lookup] trackedMarker = self.jumpToMarkerIndex == 0 or self:GetMapMarkerTrackingState(self.markers[self.jumpToMarkerIndex].Id) == questConsts.TRACKING_STATE_TRACKED
+gameart/ui/scripts/inworldmenu/mapmenu.lua:2977: [lookup] if self.jumpToMarkerIndex == 0 and not self:ShouldShowPlayerMarker() and mapUtil.GetPlayerRealm() == self.currRealmName and self.markers[1] ~= nil and self:GetMapMarkerTrackingState(self.markers[1].Id) == questConsts.TRACKING_STATE_TRACKED then
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3026: [lookup] if UI.GetEventSenderGameObject() == button then
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3037: [lookup] if markerInfo.iconGO ~= nil and UI.GetEventSenderGameObject() == markerInfo.iconGO then
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3054: [lookup] if UI.GetEventSenderGameObject() == self.playerIconGO then
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3280: [raven] target.regionQuest = "RegionSummary_VF_Raven_Parent"
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3363: [lookup] self.mapOn = self:GetState("MapOn")
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3379: [lookup] self.mapOn = self:GetState("MapOn")
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3395: [lookup] self.mapOn = self:GetState("MapOn")
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3411: [lookup] self.mapOn = self:GetState("MapOn")
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3427: [lookup] self.mapOn = self:GetState("MapOn")
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3443: [lookup] self.mapOn = self:GetState("MapOn")
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3459: [lookup] self.mapOn = self:GetState("MapOn")
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3475: [lookup] self.mapOn = self:GetState("MapOn")
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3491: [lookup] self.mapOn = self:GetState("MapOn")
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3506: [checkpoint] function MapMenu:OnSaveCheckpoint(tab)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3508: [checkpoint] function MapMenu:OnRestoreCheckpoint(tab)
+gameart/ui/scripts/inworldmenu/mapmenu.lua:3661: [persistence] -- collected so artwork can still be inspected. No marker state, save state,
+gameart/ui/scripts/inworldmenu/mapmenu.lua:4624: [checkpoint] -- checkpoint must win over stale quest state. This is read-only for progression.
+gameart/ui/scripts/inworldmenu/mapmenu.lua:4626: [raven] local state = _G.CompletionistMapV100TargetRavenKilled
+gameart/ui/scripts/inworldmenu/mapmenu.lua:4629: [raven,lookup,quest] return game.QuestManager.GetQuestState("RegionSummary_VF_Raven_Parent")
+gameart/ui/scripts/inworldmenu/mapmenu.lua:5137: [raven,persistence] " singleActive=true gameplayCleanup=persistent_precisionchallenge" ..

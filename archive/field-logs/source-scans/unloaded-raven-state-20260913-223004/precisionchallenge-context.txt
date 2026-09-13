@@ -1,0 +1,150 @@
+=== G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua ===
+---
+    1: local LD = require("design.LevelDesignLibrary")
+    2: local timers = require("level.timer")
+    3: local bIsAnimated, thisObj
+    4: local ravenKilled = false
+    5: local BirdMesh, OnKilledCallbacks, regionSummaryQuest
+    6: -- Completionist Map v0.10.1 Raven lifecycle bridge.
+    7: -- Read-only with respect to progression: it only observes the script's own
+    8: -- ravenKilled state and publishes it to the custom map/HUD prototype.
+    9: local function CompletionistMapV100_IsTargetRaven()
+   10:   if thisObj == nil then
+   11:     return false, nil
+---
+   34:   end
+   35: 
+   36:   local collected = killed == true
+   37:   _G.CompletionistMapV100TargetRavenKilled = collected
+   38: 
+   39:   if _G.CompletionistMapV100Target ~= nil and
+   40:       _G.CompletionistMapV100Target.type == "Raven" then
+---
+   48:     " target=true" ..
+   49:     " source=" .. tostring(source) ..
+   50:     " killed=" .. tostring(collected) ..
+   51:     " regionQuest=" .. tostring(regionSummaryQuest) ..
+   52:     " x=" .. tostring(pos and pos.x or "<nil>") ..
+   53:     " y=" .. tostring(pos and pos.y or "<nil>") ..
+   54:     " z=" .. tostring(pos and pos.z or "<nil>"))
+---
+   57:   thisObj = obj
+   58:   OnKilledCallbacks = thisObj:FindLuaTableAttribute("OnKilledEvent")
+   59:   bIsAnimated = thisObj:FindLuaTableAttribute("IsAnimated")
+   60:   regionSummaryQuest = thisObj:FindLuaTableAttribute("regionSummaryQuest")
+   61:   BirdMesh = thisObj:FindSingleGOByName("BirdMesh")
+   62:   SoundInit()
+   63:   game.SubObject.Sleep(obj)
+   64: end
+   65: function OnStart(level, obj)
+   66:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnStart")
+   67:   if ravenKilled == true then
+   68:     HideBird()
+   69:     return
+   70:   elseif BirdMesh ~= nil then
+   71:     BirdMesh:PlayAnimCycle()
+   72:     thisObj:PlayAnimCycle()
+   73:     SoundOnStart()
+   74:   end
+   75: end
+   76: function OnHitByWeapon(level, obj, attacker, weapon)
+   77:   CompletionistMapV100_PublishTargetState(true, "OnHitByWeapon")
+   78:   timers.StartLevelTimer(1.5, HideBird())
+   79:   local questState = game.QuestManager.GetQuestState("Quest_Labor_KillRavens_Parent")
+   80:   if questState == "Inactive" then
+---
+   86:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+   87:     game.UnlockTrophy(25)
+   88:   end
+   89:   ravenKilled = true
+   90:   SpawnFX()
+   91:   PlayDeathSound()
+   92:   OnKilledCallback(level, obj)
+   93:   ActivateRegionSummaryQuest()
+   94:   timers.StartLevelTimer(1, SoftSave)
+   95: end
+   96: function OnKilledCallback(level, obj)
+   97:   if OnKilledCallbacks ~= nil or OnKilledCallbacks ~= "" then
+   98:     LD.ExtractAndExecuteCallbacksForEvent(level, obj, OnKilledCallbacks, "On Killed Event")
+   99:   end
+  100: end
+  101: function ActivateRegionSummaryQuest()
+  102:   if regionSummaryQuest ~= nil and regionSummaryQuest ~= "" then
+  103:     regionSummaryQuest = string.gsub(regionSummaryQuest, "%s+", "")
+  104:     LD.ActivateAndIncrementQuest(regionSummaryQuest)
+  105:   end
+  106: end
+  107: function HideBird()
+---
+  123:     deathFX:SetWorldPosition(thisObj:GetWorldPosition())
+  124:   end
+  125: end
+  126: function SoftSave(level, obj)
+  127:   game.SubObject.SoftSave(thisObj)
+  128: end
+  129: function OnSaveCheckpoint(level, obj)
+  130:   return {ravenKilled = ravenKilled}
+  131: end
+  132: function OnRestoreCheckpoint(level, obj, tab)
+  133:   ravenKilled = tab.ravenKilled
+  134:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnRestoreCheckpoint")
+  135: end
+  136: local emitter
+  137: function SoundInit()
+---
+  146:   IdleLoop = "SND_LOOT_Odins_Ravens_Magic_LP",
+  147:   Death = "SND_LOOT_Odins_Ravens_Explode"
+  148: }
+  149: function SoundOnStart()
+  150:   LD.CallFunctionAfterDelay(PlayIdleLoop, 0.1)
+  151: end
+  152: function DisableIdleLoop()
+---
+  161: end
+  162: 
+  163: -- BEGIN COMPLETIONIST V0.10.4 RAVEN LIFECYCLE V3.1 EVENTS
+  164: -- Runs inside persistent Raven gameplay script. Read native ravenKilled only.
+  165: -- Clean exact real CompletionistRaven compass target. Never touch Twin or stock.
+  166: do
+  167:   local prefix = "[CompletionistMap uid-lifecycle-v3.1] "
+---
+  199:   local function schedule(source, attempt, ticket, sawReal)
+  200:     local scheduleOK, scheduleErr = pcall(function()
+  201:       timers.StartLevelTimer(0.1, function()
+  202:       if ticket ~= generation or ravenKilled ~= true then return end
+  203:       local shown, queryOK, queryErr, realId = realShown()
+  204:       local nextSawReal = sawReal or shown
+  205:       if shown then
+---
+  238:   local function observe(source)
+  239:     local target = CompletionistMapV100_IsTargetRaven()
+  240:     if not target then return end
+  241:     local killed = ravenKilled == true
+  242:     if not killed then
+  243:       generation = generation + 1
+  244:       if observedKilled == true then
+---
+  271:     schedule(source, 1, ticket, sawReal)
+  272:   end
+  273: 
+  274:   local hit = OnHitByWeapon
+  275:   function OnHitByWeapon(...)
+  276:     local result = hit(...)
+  277:     observe("OnHitByWeapon")
+  278:     return result
+  279:   end
+  280: 
+  281:   local restore = OnRestoreCheckpoint
+  282:   function OnRestoreCheckpoint(...)
+  283:     local result = restore(...)
+  284:     observe("OnRestoreCheckpoint")
+  285:     return result
+  286:   end
+  287: 
+  288:   local start = OnStart
+  289:   function OnStart(...)
+  290:     local result = start(...)
+  291:     observe("OnStart")
+  292:     return result
+  293:   end
+  294: 
