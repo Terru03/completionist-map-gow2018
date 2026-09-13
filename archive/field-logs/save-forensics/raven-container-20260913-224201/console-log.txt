@@ -1,0 +1,49 @@
+**********************
+PowerShell transcript start
+Start time: 20260913224201
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\analyze-raven-save-container-with-log.ps1
+Process ID: 35552
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+=== Completionist Map read-only save container structural analysis ===
+Repository: C:/Users/david/Documents/GitHub/completionist-map-gow2018-all-ravens-release-candidate
+Desktop backups only: C:\Users\david\Desktop
+Active %USERPROFILE%\Saved Games\God of War is explicitly excluded.
+SAVE_CONTAINER_STRUCTURE_PASSED
+Completionist Map - God of War save container structural analysis
+Backups analyzed: 2
+Active save directory not opened: true
+Source hashes unchanged: true
+
+=== GodOfWar-SaveBackup-2026-09-13_21-53-50 ===
+bytes=33554400 sha256=617dc5867850dc14b6a4791bc116ace132a84a6a188d3165cec5276049d48438
+entropy=5.3589 zero_fraction=0.565918 printable_fraction=0.152538
+zlib_candidates=2000 attempted=111 successful=50 raven_hits=1
+
+=== GodOfWar-SaveBackup-2026-09-13_22-01-52 ===
+bytes=33554400 sha256=d1d7b43780ad878e300507d71059347734f96515d2ae3d0cf40e9571216bc63d
+entropy=5.3589 zero_fraction=0.565593 printable_fraction=0.152683
+zlib_candidates=2000 attempted=111 successful=50 raven_hits=1
+
+=== DIFF GodOfWar-SaveBackup-2026-09-13_21-53-50 <> GodOfWar-SaveBackup-2026-09-13_22-01-52 ===
+different_bytes=38910 fraction=0.00115961
+common_prefix=10069232 common_suffix=6489437
+diff_runs=3958 max_run=848
+4k_blocks_same=8171 different=21 total=8192
+
+**********************
+PowerShell transcript end
+End time: 20260913224212
+**********************
