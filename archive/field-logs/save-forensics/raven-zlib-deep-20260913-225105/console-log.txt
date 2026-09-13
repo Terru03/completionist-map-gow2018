@@ -1,0 +1,35 @@
+**********************
+PowerShell transcript start
+Start time: 20260913225105
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\inspect-raven-save-changed-zlib-with-log.ps1
+Process ID: 40908
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+=== Completionist Map deep frozen-save zlib inspection ===
+Repository: C:/Users/david/Documents/GitHub/completionist-map-gow2018-all-ravens-release-candidate
+Desktop frozen backups only: C:\Users\david\Desktop
+Active %USERPROFILE%\Saved Games\God of War is explicitly excluded.
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\inspect-raven-save-changed-zlib.py", line 417, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\inspect-raven-save-changed-zlib.py", line 299, in main
+    raise RuntimeError("Unexpected save size; need at least two 16 MiB halves")
+RuntimeError: Unexpected save size; need at least two 16 MiB halves
+SCAN_FAILED: Python deep inspector exited with code 1
+**********************
+PowerShell transcript end
+End time: 20260913225105
+**********************
