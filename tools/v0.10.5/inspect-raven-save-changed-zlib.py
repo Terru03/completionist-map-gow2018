@@ -1,9 +1,10 @@
 """Read-only deep inspection of changed/compressed regions in two frozen GoW saves.
 
 The tool only reads Desktop backup copies. It never opens the active save directory.
-It compares the two 16 MiB halves, exhaustively probes zlib streams near changed
-4 KiB blocks, groups mirrored/duplicate payloads, and emits printable structure for
-small changed streams. It does not write or patch any save data.
+It compares the two 16 MiB banks over their shared byte range, exhaustively probes
+zlib streams near changed 4 KiB blocks, groups mirrored/duplicate payloads, and
+emits printable structure for small changed streams. It does not write or patch
+any save data.
 """
 from __future__ import annotations
 
@@ -11,7 +12,6 @@ import argparse
 import difflib
 import hashlib
 import json
-import math
 from pathlib import Path
 import re
 import sys
@@ -69,8 +69,7 @@ def printable_strings(data: bytes, minimum: int = 4) -> list[dict]:
 
 
 def printable_excerpt(data: bytes, limit: int = 512) -> str:
-    text = "".join(chr(b) if 32 <= b < 127 else "." for b in data[:limit])
-    return text
+    return "".join(chr(b) if 32 <= b < 127 else "." for b in data[:limit])
 
 
 def valid_zlib_header(data: bytes, offset: int) -> bool:
@@ -262,16 +261,28 @@ def duplicate_groups(named_streams: dict[str, list[dict]]) -> list[dict]:
 
 def half_comparison(data: bytes) -> dict:
     first = data[:HALF]
-    second = data[HALF : HALF * 2]
-    if len(first) != len(second):
-        return {"same_length": False}
-    same = sum(a == b for a, b in zip(first, second))
+    second = data[HALF:]
+    overlap = min(len(first), len(second))
+    if overlap <= 0:
+        return {
+            "comparable": False,
+            "first_bytes": len(first),
+            "second_bytes": len(second),
+        }
+    first_overlap = first[:overlap]
+    second_overlap = second[:overlap]
+    same = sum(a == b for a, b in zip(first_overlap, second_overlap))
     return {
-        "same_length": True,
-        "equal_bytes": same,
-        "equal_fraction": round(same / len(first), 8),
-        "first_sha256": sha256_bytes(first),
-        "second_sha256": sha256_bytes(second),
+        "comparable": True,
+        "same_length": len(first) == len(second),
+        "first_bytes": len(first),
+        "second_bytes": len(second),
+        "overlap_bytes": overlap,
+        "trailing_shortfall_bytes": abs(len(first) - len(second)),
+        "equal_bytes_in_overlap": same,
+        "equal_fraction": round(same / overlap, 8),
+        "first_overlap_sha256": sha256_bytes(first_overlap),
+        "second_overlap_sha256": sha256_bytes(second_overlap),
     }
 
 
@@ -295,8 +306,12 @@ def main() -> int:
 
     before = {str(save): sha256_file(save) for _, save in candidates}
     data = [save.read_bytes() for _, save in candidates]
-    if any(len(blob) < HALF * 2 for blob in data):
-        raise RuntimeError("Unexpected save size; need at least two 16 MiB halves")
+    # The observed PC game.sav is 33,554,400 bytes: exactly 32 bytes short of
+    # 32 MiB. The +16 MiB mirrored offsets are still valid throughout the used
+    # region, so compare the two banks over their shared range instead of
+    # requiring two perfectly equal 16 MiB slices.
+    if any(len(blob) <= HALF for blob in data):
+        raise RuntimeError("Unexpected save size; need data beyond the 16 MiB bank boundary")
 
     diff_blocks = changed_blocks(data[0], data[1])
     block_groups = groups(diff_blocks)
@@ -314,7 +329,7 @@ def main() -> int:
     duplicates = duplicate_groups(scans)
 
     report = {
-        "schema": 1,
+        "schema": 2,
         "scan_kind": "read_only_changed_zlib_structure",
         "active_save_directory": str(active),
         "active_save_opened": False,
@@ -324,12 +339,14 @@ def main() -> int:
                 "backup": candidates[0][0].name,
                 "path": str(candidates[0][1]),
                 "sha256": before[str(candidates[0][1])],
+                "bytes": len(data[0]),
                 "half_comparison": half_comparison(data[0]),
             },
             "B": {
                 "backup": candidates[1][0].name,
                 "path": str(candidates[1][1]),
                 "sha256": before[str(candidates[1][1])],
+                "bytes": len(data[1]),
                 "half_comparison": half_comparison(data[1]),
             },
         },
@@ -363,8 +380,8 @@ def main() -> int:
         f"Duplicate payload groups={len(duplicates)}",
         "",
         "Half comparison:",
-        f"  A equal_fraction={report['files']['A']['half_comparison'].get('equal_fraction')}",
-        f"  B equal_fraction={report['files']['B']['half_comparison'].get('equal_fraction')}",
+        f"  A equal_fraction={report['files']['A']['half_comparison'].get('equal_fraction')} shortfall={report['files']['A']['half_comparison'].get('trailing_shortfall_bytes')}",
+        f"  B equal_fraction={report['files']['B']['half_comparison'].get('equal_fraction')} shortfall={report['files']['B']['half_comparison'].get('trailing_shortfall_bytes')}",
         "",
         "Duplicate payloads across save/half:",
     ]
