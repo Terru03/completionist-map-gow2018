@@ -19,6 +19,7 @@ except ImportError:
 
 MODULE = runpy.run_path(str(HERE / "build-unloaded-checkpoint-oracle-probe.py"))
 build = MODULE["build"]
+lua_quote = MODULE["lua_quote"]
 
 
 class ProbeBuildTests(unittest.TestCase):
@@ -65,6 +66,54 @@ class ProbeBuildTests(unittest.TestCase):
         lua = LuaRuntime(unpack_returned_tuples=True)
         loaded = lua.globals().loadstring(output)
         self.assertTrue(callable(loaded), loaded)
+
+    @unittest.skipIf(LuaRuntime is None, "Lua 5.1 test runtime unavailable")
+    def test_environment_root_yields_exact_cold_record_and_unknown_fails_closed(self):
+        cold = next(
+            row for row in self.catalogue["ravens"]
+            if row["source"]["wad"].lower() != "xpl200_funeral.wad"
+        )
+        cold_wad = cold["source"]["wad"].lower()
+        cold_name = cold["native"]["object_name"].lower()
+        prelude = f'''\
+logs = {{}}
+function print(value) logs[#logs + 1] = tostring(value) end
+local current = {{ Level = "Level 'WAD_Xpl200_Funeral'" }}
+function current:GetDebugName() return "precisionchallenge_raven_perch" end
+local cold = {{ Level = "Level 'WAD_{cold_wad[:-4]}'" }}
+function cold:GetDebugName() return {lua_quote(cold_name[2:] if cold_name.startswith("go") else cold_name)} end
+local unknown = {{}}
+local environment = {{
+  __PickleTable = {{ __subobjs = {{
+    [current] = {{ ravenKilled = false }},
+    [cold] = {{ ravenKilled = true }},
+    [unknown] = {{ ravenKilled = true }},
+  }} }},
+}}
+engine = {{
+  CurrentlyExecutingObject = function() return current.Level end,
+  GetAvailableWads = function() return {{}} end,
+  DebugGetSubObjectEnvironmentRoot = function() return {{ environment }} end,
+}}
+game = {{
+  FindLevel = function(name)
+    if string.lower(name) == "wad_xpl200_funeral" then return current.Level end
+    return nil
+  end,
+  QuestManager = {{ GetQuestProgressAndGoal = function() return nil, nil end }},
+}}
+function OnRestoreCheckpoint() return "previous-result" end
+'''
+        lua = LuaRuntime(unpack_returned_tuples=True)
+        lua.execute(prelude)
+        lua.execute(build(self.template, self.catalogue))
+        result = lua.eval("OnRestoreCheckpoint(nil, nil, nil)")
+        log = lua.eval('table.concat(logs, "\\n")')
+        self.assertEqual(result, "previous-result")
+        self.assertIn("ENVIRONMENT_ROOT entries=1", log)
+        self.assertIn(f"EXACT_STATE catalogueId={cold['catalogue_id']}", log)
+        self.assertIn("resident=false", log)
+        self.assertIn("STATE_UNKNOWN reason=exact_identity_unavailable", log)
 
 
 if __name__ == "__main__":

@@ -85,6 +85,24 @@ do
         if ok then addRoot(result, seen, "getfenv(" .. tostring(level) .. ")", value) end
       end
     end
+    if type(engine) == "table" and type(engine.DebugGetSubObjectEnvironmentRoot) == "function" then
+      local ok, environmentRoot = pcall(engine.DebugGetSubObjectEnvironmentRoot)
+      log("ENVIRONMENT_ROOT ok=" .. tostring(ok) .. " type=" .. type(environmentRoot) ..
+          " value=" .. safeToString(environmentRoot))
+      if ok and type(environmentRoot) == "table" then
+        addRoot(result, seen, "DebugGetSubObjectEnvironmentRoot", environmentRoot)
+        local count = 0
+        for key, environment in pairs(environmentRoot) do
+          count = count + 1
+          if count > 10000 then
+            log("ENVIRONMENT_ROOT_REFUSED reason=entry_limit")
+            break
+          end
+          addRoot(result, seen, "DebugGetSubObjectEnvironmentRoot[" .. safeToString(key) .. "]", environment)
+        end
+        log("ENVIRONMENT_ROOT entries=" .. tostring(count) .. " roots=" .. tostring(#result))
+      end
+    end
     return result
   end
 
@@ -96,7 +114,6 @@ do
       log("AVAILABLE_WADS ok=" .. tostring(ok) .. " type=" .. type(values) .. " value=" .. safeToString(values))
       return result
     end
-    result.known = true
     local count = 0
     for key, value in pairs(values) do
       count = count + 1
@@ -108,6 +125,7 @@ do
     local names = {}
     for wad in pairs(result.values) do names[#names + 1] = wad end
     table.sort(names)
+    result.known = #names > 0
     log("AVAILABLE_WADS ok=true entries=" .. tostring(count) .. " normalized=" .. tostring(#names) ..
         " values=" .. table.concat(names, ","))
     return result
@@ -118,6 +136,32 @@ do
     local ok, value = pcall(engine.CurrentlyExecutingObject)
     if not ok then return nil end
     return normalizeWad(safeToString(value))
+  end
+
+  local function wadLevelName(wad)
+    if type(wad) ~= "string" then return nil end
+    local stem = string.match(wad, "^(.-)%.wad$")
+    if stem == nil or stem == "" then return nil end
+    return "WAD_" .. stem
+  end
+
+  local residencyCache = {}
+  local function residentStatus(wad, active, executingWad)
+    if wad == executingWad then return "true" end
+    if active.known then return active.values[wad] and "true" or "false" end
+    if residencyCache[wad] ~= nil then return residencyCache[wad] end
+    local levelName = wadLevelName(wad)
+    if levelName ~= nil and type(game) == "table" and type(game.FindLevel) == "function" then
+      local ok, level = pcall(game.FindLevel, levelName)
+      if ok then
+        local result = level ~= nil and "true" or "false"
+        residencyCache[wad] = result
+        log("RESIDENCY wad=" .. wad .. " source=game.FindLevel level=" .. levelName ..
+            " resident=" .. result .. " value=" .. safeToString(level))
+        return result
+      end
+    end
+    return "unknown"
   end
 
   local function aggregate(parent)
@@ -160,8 +204,7 @@ do
                 local objectName = exactObjectName(object)
                 local lookup = wad ~= nil and objectName ~= nil and string.lower(wad .. "|" .. objectName) or nil
                 local row = lookup ~= nil and exactRows[lookup] or nil
-                local resident = "unknown"
-                if active.known and wad ~= nil then resident = active.values[wad] and "true" or "false" end
+                local resident = residentStatus(wad, active, executingWad)
                 if row ~= nil then
                   local old = matchedById[row.CatalogueId]
                   if old ~= nil and old ~= killed then
@@ -200,7 +243,7 @@ do
         group.seen = group.seen + 1
         if value then group.killed = group.killed + 1 end
         groups[row.ParentQuest] = group
-        if active.known and not active.values[row.Wad] then unloaded = unloaded + 1 end
+        if residentStatus(row.Wad, active, executingWad) == "false" then unloaded = unloaded + 1 end
       end
     end
     for parent, group in pairs(groups) do
