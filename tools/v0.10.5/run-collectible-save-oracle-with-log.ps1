@@ -155,14 +155,14 @@ try {
     if ($scanExit -ne 0) { throw "Collectible save-oracle scanner exited with code $scanExit" }
 
     if (-not (Test-Path -LiteralPath $summaryPath -PathType Leaf)) { throw 'Oracle summary was not produced.' }
-    $summary = Get-Content -LiteralPath $summaryPath -Raw
-    if ($summary -notmatch '(?m)^status=BLOCKED_NO_PROVEN_ORACLE$') {
+    $summaryLines = @(Get-Content -LiteralPath $summaryPath | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne '' })
+    if ($summaryLines -notcontains 'status=BLOCKED_NO_PROVEN_ORACLE') {
         throw 'Unexpected oracle status; this probe is not allowed to auto-open the runtime gate.'
     }
-    if ($summary -notmatch '(?m)^runtime_generation_allowed=false$') {
+    if ($summaryLines -notcontains 'runtime_generation_allowed=false') {
         throw 'Fail-closed runtime gate missing from oracle summary.'
     }
-    if ($summary -notmatch '(?m)^source_hashes_unchanged=true$') {
+    if ($summaryLines -notcontains 'source_hashes_unchanged=true') {
         throw 'Frozen backup hash-preservation proof missing.'
     }
 
