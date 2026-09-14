@@ -1,0 +1,36 @@
+Completionist Map - Lua-state serializer internal TValue tag trace
+gow_exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+function_count=27
+
+TAG-7 CANDIDATES
+  0x7E9190 range=0x7E9190-0x7E9331 near_mask=1 direct_cmp7=1
+    AND_MASK site=0x7E9212 context=08488bcd4c8b4d104d8d41104c8945104983c0f0e855642000488b45108b48f883e10f83f902741383f907740433dbeb13488b58f04883c330eb04488b58f04885db7501cc4883c0e04533d248894510488bc34885db742a660f1f4400004d85
+      TAG7 site=0x7E921A form=cmp_rm32_imm8
+    CMP7 site=0x7E921A form=cmp_rm_7 context=08488bcd4c8b4d104d8d41104c8945104983c0f0e855642000488b45108b48f883e10f83f902741383f907740433dbeb13488b58f04883c330eb04488b58f04885db7501cc4883c0e04533d248894510488bc34885db742a660f1f4400004d85
+  0x9E3F80 range=0x9E3F80-0x9E3FDF near_mask=1 direct_cmp7=1
+    AND_MASK site=0x9E3F91 context=4883ec284c8bd1e894f0ffff8b48088bd183e20f83fa05741683fa077411498b421883e10f488b8cc8a8010000eb07488b00488b48104885c9750733c04883c428c3498b4210488908c7400845000000b8
+      TAG7 site=0x9E3F99 form=cmp_rm32_imm8
+    CMP7 site=0x9E3F99 form=cmp_rm_7 context=4883ec284c8bd1e894f0ffff8b48088bd183e20f83fa05741683fa077411498b421883e10f488b8cc8a8010000eb07488b00488b48104885c9750733c04883c428c3498b4210488908c7400845000000b8
+
+KNOWN INTERSECTIONS
+  0x7E7F10 site=0x7E7F43 -> 0x9E4900 known=lua_type
+  0x7E88F0 site=0x7E89C1 -> 0x9E4900 known=lua_type
+
+RANKED
+  0x7E9190 score=29 tag7=1 cmp7=1 indirect=1 strings=['__codesideluaclass'] known=[]
+  0x9E3F80 score=25 tag7=1 cmp7=1 indirect=0 strings=[] known=[]
+  0x7E7F10 score=6 tag7=0 cmp7=0 indirect=0 strings=['tableref_root', 'tableref_root'] known=['lua_type']
+  0x9C9CC0 score=5 tag7=0 cmp7=0 indirect=5 strings=[] known=[]
+  0x7E8760 score=3 tag7=0 cmp7=0 indirect=0 strings=['tableref_to_classname'] known=[]
+  0x7E88F0 score=3 tag7=0 cmp7=0 indirect=0 strings=['tableref_to_table'] known=['lua_type']
+  0x7E8F80 score=3 tag7=0 cmp7=0 indirect=0 strings=['tableref'] known=[]
+  0x9F3EA0 score=3 tag7=0 cmp7=0 indirect=3 strings=[] known=[]
+  0x7E9340 score=1 tag7=0 cmp7=0 indirect=1 strings=[] known=[]
+  0x9F3BB0 score=1 tag7=0 cmp7=0 indirect=1 strings=[] known=[]
+  0xB3E90 score=1 tag7=0 cmp7=0 indirect=1 strings=[] known=[]
+
+NOTE: tag-7 classification is structural only until the surrounding control flow is manually verified.
+source_hash_unchanged=true
+game_launched=false
+save_opened=false
+progression_written=false
