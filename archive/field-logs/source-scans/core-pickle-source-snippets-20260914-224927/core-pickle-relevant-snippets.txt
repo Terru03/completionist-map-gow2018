@@ -1,0 +1,309 @@
+﻿Completionist Map - focused core.pickle relevant snippets
+source_sha256=756b1745c0dc29e65f8010bad608b4e7b92b9e78771cc74903084bd0c38c71ac
+source_lines=301
+matched_line_count=82
+snippet_windows=9
+full_source_archived=false
+
+--- lines 1-12 ---
+    1: local classlib = require("core.class")
+    2: local table_is_class = function(t)
+    3:   return rawget(t, "CLASS") == t
+    4: end
+    5: local pickle_tableref_add = function(P, t)
+    6:   do
+    7:     local tableref = P.tmp.table_to_tableref[t]
+    8:     assert(tableref == nil, "Trying to replace an existing ref")
+    9:   end
+   10:   local tableref_index = P.tmp.tableref_next_free
+   11:   local tableref_data = {}
+   12:   local tableref = {tableref = tableref_index}
+
+--- lines 14-53 ---
+   14:   P.tmp.tableref_next_free = tableref_index + 1
+   15:   P.tableref_to_table[tableref_index] = tableref_data
+   16:   return tableref, tableref_index, tableref_data
+   17: end
+   18: local pickle_stringref_add = function(P, s)
+   19:   local stringref = P.tmp.string_to_stringref[s]
+   20:   if not stringref then
+   21:     stringref = P.tmp.stringref_next_free
+   22:     P.tmp.stringref_next_free = stringref + 1
+   23:     P.tmp.string_to_stringref[s] = stringref
+   24:     P.stringref_to_string[stringref] = s
+   25:   end
+   26:   return stringref
+   27: end
+   28: local pickle_classref_add = function(P, CLASS)
+   29:   local classref = P.tmp.classname_to_classref[CLASS.CLASSNAME]
+   30:   if not classref then
+   31:     classref = {
+   32:       classref = pickle_stringref_add(P, CLASS.CLASSNAME)
+   33:     }
+   34:     P.tmp.classname_to_classref[CLASS.CLASSNAME] = classref
+   35:   end
+   36:   return classref
+   37: end
+   38: local key_is_allowed_in_pickle = function(k)
+   39:   return k ~= "__identity"
+   40: end
+   41: local pickle_table_pickle
+   42: local pickle_value_pickle = function(P, v)
+   43:   local tt = type(v)
+   44:   if tt == "table" then
+   45:     local tableref = pickle_table_pickle(P, v)
+   46:     return tableref
+   47:   elseif tt == "string" then
+   48:     pickle_stringref_add(P, v)
+   49:     return v
+   50:   elseif tt == "userdata" then
+   51:     if engine.CanPickle and engine.CanPickle(v) then
+   52:       return v
+   53:     end
+
+--- lines 54-93 ---
+   54:   elseif tt ~= "function" then
+   55:     return v
+   56:   end
+   57: end
+   58: function pickle_table_pickle(P, t)
+   59:   do
+   60:     local tableref = P.tmp.table_to_tableref[t]
+   61:     if tableref then
+   62:       return tableref
+   63:     end
+   64:   end
+   65:   if table_is_class(t) then
+   66:     return pickle_classref_add(P, t)
+   67:   end
+   68:   local tableref, tableref_index, tableref_data = pickle_tableref_add(P, t)
+   69:   local mt = getmetatable(t)
+   70:   if type(mt) == "table" and mt.CLASS == mt then
+   71:     pickle_classref_add(P, mt.CLASS)
+   72:     P.tableref_to_classname[tableref_index] = mt.CLASSNAME
+   73:   end
+   74:   for k, v in pairs(t) do
+   75:     if key_is_allowed_in_pickle(k) then
+   76:       local pk, pv = pickle_value_pickle(P, k), pickle_value_pickle(P, v)
+   77:       if pk ~= nil then
+   78:         tableref_data[pk] = pv
+   79:       elseif engine.CanPickle then
+   80:         engine.Warning("Unable to pickle key '", k, "', which is a value of type '", type(v), "'. Script may not correctly restore from checkpoint.")
+   81:       end
+   82:     end
+   83:   end
+   84:   return tableref
+   85: end
+   86: local pickle_init = function()
+   87:   return {
+   88:     tmp = {
+   89:       table_to_tableref = {},
+   90:       tableref_next_free = 1,
+   91:       classname_to_classref = {},
+   92:       string_to_stringref = {},
+   93:       stringref_next_free = 1
+
+--- lines 96-135 ---
+   96:     tableref_to_classname = {},
+   97:     stringref_to_string = {}
+   98:   }
+   99: end
+  100: local pickle_close = function(P)
+  101:   P.tmp = nil
+  102: end
+  103: local unpickle_init = function(P)
+  104:   P.tmp = {
+  105:     tableref_to_fixup = {},
+  106:     refs_to_restore = {}
+  107:   }
+  108: end
+  109: local unpickle_find_fixups
+  110: local unpickle_add_fixup = function(P, t, tref)
+  111:   local tableref = tref.tableref
+  112:   local fixup = P.tmp.tableref_to_fixup[tableref]
+  113:   if fixup then
+  114:     return
+  115:   end
+  116:   P.tmp.tableref_to_fixup[tableref] = t
+  117:   unpickle_find_fixups(P, t, tableref)
+  118: end
+  119: function unpickle_find_fixups(P, existing_table, tableref)
+  120:   local data = P.tableref_to_table[tableref]
+  121:   for k, v in pairs(existing_table) do
+  122:     local vref = data[k]
+  123:     if type(k) ~= "table" and type(v) == "table" and not table_is_class(v) and type(vref) == "table" and vref.tableref ~= nil then
+  124:       unpickle_add_fixup(P, v, vref)
+  125:     end
+  126:   end
+  127: end
+  128: local function unpickle_traverse_refs_to_restore(P, tableref)
+  129:   P.tmp.refs_to_restore[tableref] = true
+  130:   local data = P.tableref_to_table[tableref]
+  131:   for k, v in pairs(data) do
+  132:     if type(k) == "table" and k.tableref and not P.tmp.refs_to_restore[k.tableref] then
+  133:       unpickle_traverse_refs_to_restore(P, k.tableref)
+  134:     end
+  135:     if type(v) == "table" and v.tableref and not P.tmp.refs_to_restore[v.tableref] then
+
+--- lines 136-154 ---
+  136:       unpickle_traverse_refs_to_restore(P, v.tableref)
+  137:     end
+  138:   end
+  139: end
+  140: local unpickle_tableref_for_fixup = function(P, fixup)
+  141:   for tableref, t in pairs(P.tmp.tableref_to_fixup) do
+  142:     if t == fixup then
+  143:       return tableref
+  144:     end
+  145:   end
+  146: end
+  147: local unpickle_prepare_target_table = function(P, tableref)
+  148:   local fixup = P.tmp.tableref_to_fixup[tableref]
+  149:   if fixup then
+  150:     setmetatable(fixup, nil)
+  151:     for k in pairs(fixup) do
+  152:       fixup[k] = nil
+  153:     end
+  154:   else
+
+--- lines 156-195 ---
+  156:     P.tmp.tableref_to_fixup[tableref] = fixup
+  157:   end
+  158:   return fixup
+  159: end
+  160: local unpickle_get_table = function(P, tableref)
+  161:   local t = P.tmp.tableref_to_fixup[tableref]
+  162:   if not t then
+  163:     t = {}
+  164:     P.tmp.tableref_to_fixup[tableref] = t
+  165:   end
+  166:   return t
+  167: end
+  168: local function unpickle_value(P, v)
+  169:   local tt = type(v)
+  170:   if tt == "table" then
+  171:     if v.classref then
+  172:       local CLASSNAME = unpickle_value(v.classref)
+  173:       local CLASS = classlib.lookup(CLASSNAME)
+  174:       return CLASS
+  175:     else
+  176:       return unpickle_get_table(P, v.tableref)
+  177:     end
+  178:   else
+  179:     return v
+  180:   end
+  181: end
+  182: local unpickle_restore_data = function(P, data, fixup)
+  183:   for k, v in pairs(data) do
+  184:     local uk, uv = unpickle_value(P, k), unpickle_value(P, v)
+  185:     fixup[uk] = uv
+  186:   end
+  187: end
+  188: local unpickle_restore = function(P)
+  189:   for tableref in pairs(P.tmp.refs_to_restore) do
+  190:     local data = P.tableref_to_table[tableref]
+  191:     local fixup = unpickle_prepare_target_table(P, tableref)
+  192:     unpickle_restore_data(P, data, fixup)
+  193:   end
+  194: end
+  195: local unpickle_bless = function(P)
+
+--- lines 196-224 ---
+  196:   for tableref in pairs(P.tmp.refs_to_restore) do
+  197:     local fixup = P.tmp.tableref_to_fixup[tableref]
+  198:     local CLASSNAME = P.tableref_to_classname[tableref]
+  199:     if CLASSNAME then
+  200:       local CLASS = classlib.lookup(CLASSNAME)
+  201:       classlib.bless(fixup, CLASS)
+  202:     end
+  203:   end
+  204: end
+  205: local unpickle_finalize = function(P)
+  206:   for tableref in pairs(P.tmp.refs_to_restore) do
+  207:     local fixup = P.tmp.tableref_to_fixup[tableref]
+  208:     local CLASSNAME = P.tableref_to_classname[tableref]
+  209:     if CLASSNAME then
+  210:       local unpickle_fn = fixup.OnUnpickle
+  211:       if unpickle_fn then
+  212:         unpickle_fn(fixup)
+  213:       end
+  214:     end
+  215:   end
+  216: end
+  217: local unpickle_close = function(P)
+  218:   P.tmp = nil
+  219: end
+  220: local indent_strings = {}
+  221: for i = 0, 20 do
+  222:   indent_strings[i] = string.rep("  ", i)
+  223: end
+  224: local val = function(v)
+
+--- lines 238-277 ---
+  238:       end
+  239:     end
+  240:   end
+  241: end
+  242: local pickle, unpickle, unpickle_partial
+  243: local OnPickleInternal = function(go)
+  244:   _G.__new_pickle__ = true
+  245:   local UserPickle = _G.Pickle
+  246:   if not UserPickle then
+  247:     return
+  248:   end
+  249:   local root = UserPickle(go)
+  250:   if not root then
+  251:     return
+  252:   end
+  253:   local P = pickle(root)
+  254:   return P
+  255: end
+  256: local OnUnpickleInternal = function(go, P)
+  257:   local UserPickle = _G.Pickle
+  258:   local UserUnpickle = _G.Unpickle
+  259:   if not UserPickle or not UserUnpickle then
+  260:     return
+  261:   end
+  262:   local root = UserPickle(go)
+  263:   if not root then
+  264:     return
+  265:   end
+  266:   unpickle(P, root)
+  267:   UserUnpickle(go, root)
+  268: end
+  269: local install = function()
+  270:   assert(not _G.OnPickleInternal, "Pickle hook already defined?")
+  271:   assert(not _G.OnUnpickleInternal, "Unpickle hook already defined?")
+  272:   _G.OnPickleInternal = OnPickleInternal
+  273:   _G.OnUnpickleInternal = OnUnpickleInternal
+  274: end
+  275: function pickle(root)
+  276:   local P = pickle_init()
+  277:   P.tableref_root = pickle_table_pickle(P, root).tableref
+
+--- lines 278-301 ---
+  278:   pickle_close(P)
+  279:   return P
+  280: end
+  281: function unpickle(P, root)
+  282:   unpickle_partial(P, root, root)
+  283: end
+  284: function unpickle_partial(P, root, partial_root)
+  285:   unpickle_init(P)
+  286:   unpickle_add_fixup(P, root, {
+  287:     tableref = P.tableref_root
+  288:   })
+  289:   local partial_tableref = unpickle_tableref_for_fixup(P, partial_root)
+  290:   unpickle_traverse_refs_to_restore(P, partial_tableref)
+  291:   unpickle_restore(P)
+  292:   unpickle_bless(P)
+  293:   unpickle_finalize(P)
+  294:   unpickle_close(P)
+  295: end
+  296: return {
+  297:   Pickle = pickle,
+  298:   Unpickle = unpickle,
+  299:   Install = install,
+  300:   dumptable = dumptable
+  301: }
+
