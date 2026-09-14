@@ -7,7 +7,10 @@ runtime markers yet.
    Test known complete and fresh states. Unknown or bad reply must stay hidden.
 2. Find exact reason `quests.dcb` says Ship Head 10 while native data proves 9
    carriers and 9 physical objects. Do not make fake tenth row.
-3. Prove or reject exact link from cal500 placement
+3. Prove exact native binding edges for any of the 21 non-Helheim Nornir
+   candidates. All old 20 joins are now downgraded because source WAD identity
+   plus target existence does not prove object/level-to-target ownership. Also
+   prove or reject exact link from cal500 placement
    `f8548c57-4dc6-7cba-277c-5cb31099648b` to
    `RegionSummary_RunicChest_Parent_TyrsVault`. Current callback/level labels do
    not prove RegionSummary update wire.
@@ -24,6 +27,7 @@ runtime markers yet.
 Current blockers:
 
 - Ship target mismatch: `BLOCKED_EXACT_REASON_UNKNOWN`.
+- All 21 tracked-candidate Nornir bindings: `BLOCKED_EXACT_REASON_UNKNOWN`.
 - cal500 Tyr's Vault binding: `BLOCKED_EXACT_REASON_UNKNOWN`.
 - Exact unloaded per-instance state: `BLOCKED`.
 - Runtime generation: `BLOCKED_FAIL_CLOSED`.

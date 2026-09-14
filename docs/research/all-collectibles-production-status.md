@@ -12,7 +12,7 @@ state makes no marker. No game start. No game, save, or progress write.
 ## Scope
 
 - Branch: `codex/all-collectibles-production-research`
-- Start commit: `d0600d90193c1327119d428983bc0a29fa97af1a`
+- Hardening start commit: `483519b9fdc125c48a455f19c00cc79c096de4b7`
 - Inputs: read-only PC WAD records, `mapmaster.dcb`, `quests.dcb`, and native Lua blobs.
 - Raven code and Raven production behavior: unchanged.
 
@@ -23,7 +23,7 @@ state makes no marker. No game start. No game, save, or progress write.
 | Artefacts | 45 | 45 | 11 all artefacts; 9 Ship Heads | Ship Head 10 | PASS; Ship target gap blocked |
 | Lore Markers | 43 | 43 | 43 | 43 | PASS |
 | Legendary Chests | 64 | 43 | 33 | 33 | PASS raw set; 31 nontracked rows stay raw |
-| Nornir Chests | 22 | 29 | 20 | 21 | PASS static; one tracked join blocked |
+| Nornir Chests | 22 | 29 | 0 exact | 21 | PASS raw static set; all exact joins blocked |
 | Nornir Seals | 30 | child objects | parent links | n/a | PASS |
 | Nornir Bells | 24 | child objects | parent links | n/a | PASS |
 | Nornir Mechanisms | 12 | child objects | parent links | n/a | PASS |
@@ -73,8 +73,48 @@ markers. Treat target 10 as native bookkeeping gap until exact proof exists.
 
 - Physical: 22
 - Native tracked target: 21
-- Exact native level/zone ownership joins: 20
+- Exact native reference-chain joins: 0
+- `PASS_EXACT`: 0
+- `BLOCKED_EXACT_REASON_UNKNOWN`: 22
 - Region/count inference: none
+
+The former 20-row WAD-to-quest table was not independent proof. All 20 source
+WADs contain zero copies of their claimed `RegionSummary_RunicChest` target.
+The extractor now accepts a join only when a machine-readable evidence row is
+`PASS_EXACT`, names native source files, and contains an exact binding-edge
+record. WAD names, filename prefixes, human region labels, map discovery,
+candidate membership, coordinates, ordering, and target counts cannot join.
+
+Each audit row keeps five concepts separate: physical object, exact source
+level/WAD identity, map/region ownership, RegionSummary target, and loaded versus
+unloaded completion-state oracle. Source placement and target records exist for
+the old claims, but the level/object-to-target edge does not. Thus all stay
+blocked.
+
+| WAD | Physical GUID | Proposed RegionSummary target | Native proof checked | Status |
+|---|---|---|---|---|
+| `alf210_lakedarklh.wad` | `e00c75d2-4c76-b498-de4c-1f85c997c65e` | `RegionSummary_RunicChest_Parent_Alfheim` | placement + `wad_alf210_lakedarklh.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `alf320_trenchadark.wad` | `3ec0daa8-4892-2cad-4fb3-0c8bb93c171f` | `RegionSummary_RunicChest_Parent_Alfheim` | placement + `wad_alf320_trenchadark.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `alf340_trenchbdark.wad` | `9a92c243-4083-2c21-07ff-7d997c9fcbda` | `RegionSummary_RunicChest_Parent_Alfheim` | placement + `wad_alf340_trenchbdark.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `alf690_lakelightlh.wad` | `522448bf-4d91-b0f1-9de6-adbd1c77d709` | `RegionSummary_RunicChest_Parent_Alfheim` | placement + `wad_alf690_lakelightlh.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `cal500_runevault.wad` | `f8548c57-4dc6-7cba-277c-5cb31099648b` | `RegionSummary_RunicChest_Parent_TyrsVault` | placement + `wad_cal500_runevault.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `foot100_base.wad` | `a6ac8eeb-4ea2-545a-b05d-f19e8ea6ee8f` | `RegionSummary_RunicChest_Parent_Foothills` | placement + `wad_foot100_base.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `for600_spire.wad` | `6d18634c-4e86-282d-1cfa-0e84f6d5654f` | `RegionSummary_RunicChest_Parent_Forest` | placement + `wad_for600_spire.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `helr100_docks.wad` | `6fc8ac79-4c63-bf63-a137-36b7cd3c7f25` | none; native untracked reward | placement + callback ownership + no Helheim RunicChest target | **BLOCKED_EXACT_REASON_UNKNOWN** binding; **PASS_EXPLAINED** untracked class |
+| `peak140_caverndark.wad` | `f8ac74b9-414e-59e7-64d8-738182c00663` | `RegionSummary_RunicChest_Parent_Peakspass` | placement + `wad_peak140_caverndark.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `peak720_summitascenthub.wad` | `c0cf4119-40ba-d7d0-0042-afa7a46f5514` | `RegionSummary_RunicChest_Parent_Peakspass` | placement + `wad_peak720_summitascenthub.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `riv225_dangerscave.wad` | `45bbcd15-458c-d30c-3338-a7b3dab9b3d9` | `RegionSummary_RunicChest_Parent_Riverpass` | placement + `wad_riv225_dangerscave.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `riv325_dangersexit.wad` | `7d8b4043-40e8-ef8e-db40-96b3a1a1e3fc` | `RegionSummary_RunicChest_Parent_Riverpass` | placement + `wad_riv325_dangersexit.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `riv420_forestboarstart.wad` | `d2cacb84-426f-d68d-504a-11ae125c2b62` | `RegionSummary_RunicChest_Parent_Riverpass` | placement + `wad_riv420_forestboarstart.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `riv475_freyahouseext.wad` | `69780ade-492b-0891-1948-4199e5423527` | `RegionSummary_RunicChest_Parent_Riverpass` | placement + `wad_riv475_freyahouseext.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `riv925_freyacave.wad` | `0f0cc7ca-4842-3bb2-96f6-ddbed87a8f3b` | `RegionSummary_RunicChest_Parent_Riverpass` | placement + `wad_riv925_freyacave.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `xpl100_httk.wad` | `d8e4c774-44fe-09d0-a960-198ab802058e` | `RegionSummary_RunicChest_Parent_HTTK` | placement + `wad_xpl100_httk.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `xpl200_funeral.wad` | `c190d593-4070-6bb7-9925-cb9f2d5867cf` | `RegionSummary_RunicChest_Parent_VikingFuneral` | placement + `wad_xpl200_funeral.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `xpl850_dungeonforest.wad` | `3f3a8e78-44ff-44f5-7da0-24b2efce93dc` | `RegionSummary_RunicChest_Parent_ForestDungeon` | placement + `wad_xpl850_dungeonforest.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `xpl920_islandclimb.wad` | `a336e184-4ac7-c90b-6cd6-288e2cdab274` | `RegionSummary_RunicChest_Parent_IslandClimb` | placement + `wad_xpl920_islandclimb.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `xpl940_beachcave.wad` | `a2cdfc7a-4f0a-b68e-ac21-2bb108cd35b7` | `RegionSummary_RunicChest_Parent_BeachCave` | placement + `wad_xpl940_beachcave.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `xpl950_beachmaze.wad` | `c02f0190-49d5-0ea0-146c-478fd46f4a49` | `RegionSummary_RunicChest_Parent_BeachMaze` | placement + `wad_xpl950_beachmaze.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
+| `xpl970_beachtower.wad` | `6b701107-4e78-df82-ecd5-08b6b1a8444f` | `RegionSummary_RunicChest_Parent_BeachTower` | placement + `wad_xpl970_beachtower.dcb` WAD identity; no binding edge | **BLOCKED_EXACT_REASON_UNKNOWN** |
 
 `cal500_runevault.wad` placement
 `f8548c57-4dc6-7cba-277c-5cb31099648b` stays unjoined.
@@ -111,3 +151,14 @@ off. Unknown state stays hidden.
 - `tools/v0.10.5/collectible_catalogue.py`
 - `tools/v0.10.5/test_collectible_catalogue.py`
 - `NEXT_STEPS.md`
+
+## Verification
+
+- 84 tests passed; 0 failed; 0 skipped.
+- Four Raven Lua 5.1 tests ran with local CPython 3.14 and existing
+  `dist/re-tools/lupa`; none skipped.
+- Two full native generations were byte-identical.
+- Catalogue SHA-256:
+  `e2d7cdc7c9923c586bdcdcae69d4a23e7f7a5f5d5e825ff540bdefe589713bec`.
+- Audit SHA-256:
+  `18b7bd4a3549ef115cc7dc1731e40abee889cc82631219e7a4e23ae1d8e1cf9b`.
