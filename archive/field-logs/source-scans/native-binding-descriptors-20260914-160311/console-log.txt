@@ -1,0 +1,149 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260914160311
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\run-native-binding-descriptor-scan-with-log.ps1
+Process ID: 17776
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+=== Completionist Map native binding descriptor layout scan ===
+Repository: C:/Users/david/Documents/GitHub/completionist-map-gow2018-all-collectibles-production-research
+Game root: G:\SteamLibrary\steamapps\common\GodOfWar
+Read-only GoW.exe descriptor scan. Game/save/progression are not written and the game is not launched.
+NATIVE_BINDING_DESCRIPTOR_SCAN_COMPLETED entries=13
+=== EntityBool candidates=1 ===
+record=0x11C86E0 section=.data
+  stride=24 prev=None next=None
+    +0x0: 0x140E22638 string string='EntityBool'
+    +0x8: 0x14084B3B0 code rva=0x84B3B0
+    +0x10: 0x140E22644 string string='b_s'
+  stride=32 prev='EnableGrapplePoint' next='EntityFloat'
+    +0x0: 0x140E22638 string string='EntityBool'
+    +0x8: 0x14084B3B0 code rva=0x84B3B0
+    +0x10: 0x140E22644 string string='b_s'
+    +0x18: 0x6CB1A63D scalar
+
+=== GetCounter candidates=1 ===
+record=0x11C8CC0 section=.data
+  stride=24 prev=None next=None
+    +0x0: 0x140E22C00 string string='GetCounter'
+    +0x8: 0x140841E50 code rva=0x841E50
+    +0x10: 0x140E229B0 string string='i_s|i_i'
+  stride=32 prev='GetCineNumber' next='GetCounterChild'
+    +0x0: 0x140E22C00 string string='GetCounter'
+    +0x8: 0x140841E50 code rva=0x841E50
+    +0x10: 0x140E229B0 string string='i_s|i_i'
+    +0x18: 0xFCE9660F scalar
+
+=== GetCounterChild candidates=1 ===
+record=0x11C8CE0 section=.data
+  stride=24 prev=None next=None
+    +0x0: 0x140E229B8 string string='GetCounterChild'
+    +0x8: 0x140841CE0 code rva=0x841CE0
+    +0x10: 0x140E22988 string string='i_si|i_ii'
+  stride=32 prev='GetCounter' next='GetCounterChildrenCount'
+    +0x0: 0x140E229B8 string string='GetCounterChild'
+    +0x8: 0x140841CE0 code rva=0x841CE0
+    +0x10: 0x140E22988 string string='i_si|i_ii'
+    +0x18: 0xD9E0012D scalar
+
+=== GetCounterChildrenCount candidates=1 ===
+record=0x11C8D00 section=.data
+  stride=24 prev=None next=None
+    +0x0: 0x140E22998 string string='GetCounterChildrenCount'
+    +0x8: 0x140841D50 code rva=0x841D50
+    +0x10: 0x140E229B0 string string='i_s|i_i'
+  stride=32 prev='GetCounterChild' next='GetCounterCurrency'
+    +0x0: 0x140E22998 string string='GetCounterChildrenCount'
+    +0x8: 0x140841D50 code rva=0x841D50
+    +0x10: 0x140E229B0 string string='i_s|i_i'
+    +0x18: 0x7604A7DF scalar
+
+=== GetCounterName candidates=1 ===
+record=0x11C8DA0 section=.data
+  stride=24 prev=None next=None
+    +0x0: 0x140E22A50 string string='GetCounterName'
+    +0x8: 0x140841A80 code rva=0x841A80
+    +0x10: 0x140E22A60 string string='s_s|s_i'
+  stride=32 prev='GetCounterMin' next='GetCounterThreshold'
+    +0x0: 0x140E22A50 string string='GetCounterName'
+    +0x8: 0x140841A80 code rva=0x841A80
+    +0x10: 0x140E22A60 string string='s_s|s_i'
+    +0x18: 0xC83A14F5 scalar
+
+=== GetRefBool candidates=1 ===
+record=0x11C9180 section=.data
+  stride=24 prev=None next=None
+    +0x0: 0x140E22770 string string='GetRefBool'
+    +0x8: 0x140845700 code rva=0x845700
+    +0x10: 0x140E22644 string string='b_s'
+  stride=32 prev='GetRealm' next='GetRefFloat'
+    +0x0: 0x140E22770 string string='GetRefBool'
+    +0x8: 0x140845700 code rva=0x845700
+    +0x10: 0x140E22644 string string='b_s'
+    +0x18: 0xABB8F952 scalar
+
+=== GetRefFloat candidates=1 ===
+record=0x11C91A0 section=.data
+  stride=24 prev=None next=None
+    +0x0: 0x140E227C8 string string='GetRefFloat'
+    +0x8: 0x1408456E0 code rva=0x8456E0
+    +0x10: 0x140E22634 string string='f_s'
+  stride=32 prev='GetRefBool' next='GetRefInt'
+    +0x0: 0x140E227C8 string string='GetRefFloat'
+    +0x8: 0x1408456E0 code rva=0x8456E0
+    +0x10: 0x140E22634 string string='f_s'
+    +0x18: 0x92374D9B scalar
+
+=== GetRefInt candidates=1 ===
+record=0x11C91C0 section=.data
+  stride=24 prev=None next=None
+    +0x0: 0x140E227D8 string string='GetRefInt'
+    +0x8: 0x1408456C0 code rva=0x8456C0
+    +0x10: 0x140E21E8C string string='i_s'
+  stride=32 prev='GetRefFloat' next='GetRefString'
+    +0x0: 0x140E227D8 string string='GetRefInt'
+    +0x8: 0x1408456C0 code rva=0x8456C0
+    +0x10: 0x140E21E8C string string='i_s'
+    +0x18: 0x71484597 scalar
+
+=== GetRefString candidates=1 ===
+record=0x11C91E0 section=.data
+  stride=24 prev=None next=None
+    +0x0: 0x140E227A8 string string='GetRefString'
+    +0x8: 0x1408456A0 code rva=0x8456A0
+    +0x10: 0x140E22498 string string='s_s'
+  stride=32 prev='GetRefInt' next='GetRegionHash'
+    +0x0: 0x140E227A8 string string='GetRefString'
+    +0x8: 0x1408456A0 code rva=0x8456A0
+    +0x10: 0x140E22498 string string='s_s'
+    +0x18: 0x4073FB1D scalar
+
+=== GetRegionHash candidates=1 ===
+record=0x11C9200 section=.data
+  stride=24 prev=None next=None
+    +0x0: 0x140E227B8 string string='GetRegionHash'
+    +0x8: 0x140847170 code rva=0x847170
+    +0x10: 0x140E21F34 string string='i'
+  stride=32 prev='GetRefString' next='GetSlotCount'
+    +0x0: 0x140E227B8 string string='GetRegionHash'
+    +0x8: 0x140847170 code rva=0x847170
+    +0x10: 0x140E21F34 string string='i'
+    +0x18: 0x19B0B487 scalar
+
+Output: archive/field-logs/source-scans/native-binding-descriptors-20260914-160311
+NATIVE_BINDING_DESCRIPTOR_SCAN_PASSED
+**********************
+Windows PowerShell transcript end
+End time: 20260914160311
+**********************
