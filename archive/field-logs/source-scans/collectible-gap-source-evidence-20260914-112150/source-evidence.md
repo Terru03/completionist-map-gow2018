@@ -1,0 +1,180 @@
+# Collectible gap native-source evidence
+
+Status: **SOURCE_EVIDENCE_ONLY**
+
+- Catalogue Ship Head rows: 7
+- Native Ship Head target total: 10
+- Raw Ship Head carriers: 9
+- Raw Ship Head placement paths: 0
+- Catalogue Nornir rows: 22
+- Native Nornir target total: 21
+- Raw Nornir carriers: 29
+- Raw Nornir placement paths: 0
+- Runtime generation allowed: **false**
+
+## WAD evidence
+
+- `alf150_bridgedark.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `alf200_mazedark.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `alf210_lakedarklh.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `alf320_trenchadark.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `alf325_trenchadarktwr.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `alf340_trenchbdark.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `alf345_trenchbdarktwr.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `alf355_chiseldungeon.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `alf370_moatscripting.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `alf390_templeextlh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `alf440_hiveextlh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `alf600_templeint.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `alf690_lakelightlh.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `alfdgn110_main.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `alfdgn210_main.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `cal100_hub.wad`: shiphead_carriers=2; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `03c3456e-4301-abb5-e829-92b2db44bcbb` paths=0 ids=['RegionSummary_CALS_Shiphead_Parent', 'Ship Head'] error=Unknown format code 'X' for object of type 'str'
+  - Ship Head carrier `ffa95828-42dd-e146-75e3-a39ff3385d8c` paths=0 ids=['RegionSummary_CALS_Shiphead_Parent', 'Ship Head'] error=Unknown format code 'X' for object of type 'str'
+- `cal170_library1.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `cal250_foothillslh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `cal270_stonemasonlh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `cal500_runevault.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `cal700_templeflip.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `cal740_leftwing.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `cal750_rightwing.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `cal820_snakebellymid.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `foot100_base.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `foot200_mid.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `foot250_chiselarena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `foot400_arena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `foot500_top.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `for200_house.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_CALS_Shiphead_Parent']
+- `for260_chiseldungeon.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `for400_intersection.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `for500_forestentry.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `for550_brokenforest.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `for560_wolfpit.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `for600_spire.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `for650_bridge.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `for660_templeinterior.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `for700_deerkill.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `for900_exitclimb.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `hel100_calderaheldressing.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `hel200_entrancedoor.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `hel300_mainbridge.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `hel350_chiselarena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `hel600_guardianarena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `helr100_docks.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `msp100_base.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `nid100_entrance.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `nid150_calderabridge.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `nid200_swhallway.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `nid220_nwhallway.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `nid240_nehallway.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `nid260_sehallway.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `nid300_wroom.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `nid310_nwroom.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `nid320_nroom.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `nid330_neroom.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `nid340_eroom.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `nid400_center.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak100_entrance.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak120_cavescarelh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak140_caverndark.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `peak180_enttochimneylh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak190_chimneyenter.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak200_chimneylow.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `peak205_chiselarena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak210_rollerroomlh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `peak260_chimneylowhall.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak300_chimneymid.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak500_chimneytop.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak720_summitascenthub.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `peak740_summitpeak.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `peak780_summitexit.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `riv100_dangersentrance.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `riv200_dangersmain.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `riv225_dangerscave.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `riv325_dangersexit.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `riv350_calderavista.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_CALS_Shiphead_Parent']
+- `riv400_forestintro.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_CALS_Shiphead_Parent']
+- `riv420_forestboarstart.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `riv430_forestboartrack.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `riv475_freyahouseext.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `riv925_freyacave.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `riv975_chiselarena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn100_entrance.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn110_chiselarena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn150_handunder.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn200_lakeext.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn300_huldracamp.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn350_relicroom.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn400_hammerbase.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn430_hammerclimb.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn550_chasmclimb.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn600_chasmroom.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn750_returnhallway.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn800_shortcut.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl100_httk.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `xpl150_httktemple.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl160_httkcavel.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl200_funeral.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `xpl220_funerallh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl225_funerallh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl250_funeralinterior.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `xpl300_stronghold.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl400_huldramines.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl425_huldramineslh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl450_huldramines.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl475_huldramineslh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl600_masontrail.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl625_masontraillh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl650_masontrailcave.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl850_dungeonforest.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `xpl875_dungeonforestlh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl900_islandarch.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl910_islandshipwreck.wad`: shiphead_carriers=1; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `6f50ac26-45fc-6027-e38f-1bba6b58656c` paths=0 ids=['RegionSummary_ISW_Shiphead_Parent', 'Ship Head'] error=Unknown format code 'X' for object of type 'str'
+- `xpl920_islandclimb.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `xpl930_beachruins.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl940_beachcave.wad`: shiphead_carriers=1; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `30c3bcf5-413a-33e7-f1d3-9f81acd3b99c` paths=0 ids=['RegionSummary_BC_Shiphead_Parent', 'Ship Head'] error=Unknown format code 'X' for object of type 'str'
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `xpl950_beachmaze.wad`: shiphead_carriers=1; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `5bb11ed5-419b-42ca-ba81-3598d29ca473` paths=0 ids=['RegionSummary_BM_Shiphead_Parent', 'Ship Head'] error=Unknown format code 'X' for object of type 'str'
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `xpl960_beachship.wad`: shiphead_carriers=1; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `8b297a23-4c77-552f-71b0-139435292c0f` paths=0 ids=['RegionSummary_CALS_Shiphead_Parent', 'Ship Head'] error=Unknown format code 'X' for object of type 'str'
+- `xpl970_beachtower.wad`: shiphead_carriers=1; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `448f2d37-44a7-34e0-fd7e-6697791822f8` paths=0 ids=['RegionSummary_BT_Shiphead_Parent', 'Ship Head'] error=Unknown format code 'X' for object of type 'str'
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=0 ids=['Runic_Axe', 'RunicChestReward'] error=Unknown format code 'X' for object of type 'str'
+- `xpl980_beachwaterfall.wad`: shiphead_carriers=2; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `cf1ec369-4f86-86ee-1296-57b2574540a5` paths=0 ids=['RegionSummary_BW_Shiphead_Parent', 'Ship Head'] error=Unknown format code 'X' for object of type 'str'
+  - Ship Head carrier `46a6d492-4eae-22cb-cbe8-b4a5d534081a` paths=0 ids=['RegionSummary_CALS_Shiphead_Parent', 'Ship Head'] error=Unknown format code 'X' for object of type 'str'
+
+## Interpretation
+
+This report intentionally stops before changing any catalogue join. A native carrier or placement path must still be tied to the exact tracked quest by native evidence; counts and location similarity are not enough.
