@@ -1,0 +1,94 @@
+Completionist Map - checkpoint pickle return serializer trace
+gow_exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+
+TARGETS
+  pickle_table_builder: entry=0x5AF01C range=0x5AF01C-0x5AF42F size=1043 boundary=pdata calls=23 indirect=1 refs=3
+    string site=0x5AF054 -> 'OnSaveCheckpoint'
+    string site=0x5AF162 -> '__subobjs'
+    string site=0x5AF294 -> '__subobjs'
+    CALL site=0x5AF05B -> 0xE4AA0
+    CALL site=0x5AF074 -> 0x5A71E0
+    CALL site=0x5AF0D1 -> 0x9F3280
+    CALL site=0x5AF0D9 -> 0x9ECE90
+    CALL site=0x5AF0F5 -> 0x9ECE90
+    CALL site=0x5AF112 -> 0x9F3280
+    CALL site=0x5AF12E -> 0x9ECE90
+    CALL site=0x5AF157 -> 0x9ECF00
+    CALL site=0x5AF16C -> 0x9E38D0
+    CALL site=0x5AF18F -> 0x9F3280
+    CALL site=0x5AF1AB -> 0x9ECE90
+    CALL site=0x5AF220 -> 0x5AC760
+    CALL site=0x5AF234 -> 0x5AC760
+    CALL site=0x5AF254 -> 0x5AF4E0
+    CALL site=0x5AF264 -> 0x9E4930
+    CALL site=0x5AF29E -> 0x9E38D0
+    CALL site=0x5AF2AE -> 0x9ED520
+    CALL site=0x5AF30B -> 0x9ED120
+    CALL site=0x5AF34F -> 0x9E3020
+    CALL site=0x5AF35B -> 0x9ED520
+    CALL site=0x5AF37B -> 0x9E4900
+    JMP site=0x5AF38C -> 0x5AF300
+    CALL site=0x5AF400 -> 0x9E44B0
+    JMP site=0x5AF405 -> 0x5AF2F1
+    CALL site=0x5AF420 -> 0x9E44B0
+    INDIRECT_CALL site=0x5AF207 bytes=ff5068488b1d57c4c800488d4c244848
+  pickle_driver: entry=0x5AF8AD range=0x5AF8AD-0x5AFB7C size=719 boundary=pdata calls=19 indirect=0 refs=7
+    string site=0x5AF937 -> 'core.pickle'
+    string site=0x5AF979 -> 'Pickle'
+    string site=0x5AFA6C -> "Failed to pickle Lua state '%s'"
+    string site=0x5AFADF -> "Failed to pickle Lua state '%s' (no data written)"
+    string site=0x5AFAF7 -> "Pickled Lua state '%s', used %d bytes."
+    string site=0x5AFB12 -> "Failed to pickle Lua state '%s'. Pickle size is %d, but buffer is only %d."
+    string site=0x5AFB31 -> 'Error Pickle returned value is not a table'
+    CALL site=0x5AF8C9 -> 0x9F4CF0
+    CALL site=0x5AF8EC -> 0x9EF660
+    CALL site=0x5AF905 -> 0x9F4CF0
+    CALL site=0x5AF92E -> 0x9EF660
+    CALL site=0x5AF947 -> 0x9F4CF0
+    CALL site=0x5AF970 -> 0x9EF660
+    CALL site=0x5AF989 -> 0x9F4CF0
+    CALL site=0x5AF9B2 -> 0x9EF660
+    CALL site=0x5AF9BD -> 0x9E3020
+    CALL site=0x5AFA27 -> 0x9EAE10
+    CALL site=0x5AFA33 -> 0x9EDFC0
+    CALL site=0x5AFA77 -> 0x5AFB90
+    JMP site=0x5AFA88 -> 0x5AFB45
+    CALL site=0x5AFAB0 -> 0x7E7F10
+    CALL site=0x5AFAE6 -> 0x5AFB90
+    CALL site=0x5AFB03 -> 0x544C40
+    CALL site=0x5AFB19 -> 0x5AFB90
+    CALL site=0x5AFB3B -> 0x5AFB90
+    CALL site=0x5AFB68 -> 0x9E91A0
+    CALL site=0x5AFB76 -> 0x9EB890
+  on_pickle_internal: entry=0x5B2130 range=0x5B2130-0x5B2171 size=65 boundary=pdata calls=1 indirect=0 refs=1
+    string site=0x5B214E -> 'OnPickleInternal'
+    CALL site=0x5B215C -> 0xFA040
+
+LOGICAL CONTINUATION CANDIDATES
+  0x5AF42F range=0x5AF42F-0x5AF49B calls=1 indirect=0
+  0x5AF49B range=0x5AF49B-0x5AF4CC calls=1 indirect=0
+  0x5AF4E0 range=0x5AF4E0-0x5AF7F8 calls=13 indirect=0
+    string site=0x5AF59E -> '__SoftPickleTablePrev'
+    string site=0x5AF5B3 -> '__SoftPickleTablePrev'
+    string site=0x5AF5EE -> '__subobjs'
+    string site=0x5AF7C5 -> '__SoftPickleTablePrev'
+  0x5AFB90 range=0x5AFB90-0x5AFC24 calls=3 indirect=1
+  0x5AFC30 range=0x5AFC30-0x5AFC57 calls=0 indirect=0
+  0x5AFC57 range=0x5AFC57-0x5AFD7C calls=3 indirect=0
+
+RANKED ONE-HOP CONSUMERS
+  0x5AF4E0 score=24 indirect=0 strings=['__SoftPickleTablePrev', '__SoftPickleTablePrev', '__subobjs', '__SoftPickleTablePrev']
+    known lua_gameobject_unbox site=0x5AF698 -> 0x5F9350
+  0x5AC760 score=8 indirect=0 strings=['OnSaveCheckpoint', 'OnSaveCheckpoint']
+  0x9EB890 score=3 indirect=3 strings=[]
+  0x5AFB90 score=1 indirect=1 strings=[]
+  0x9ECF00 score=1 indirect=1 strings=[]
+
+KNOWN INTERSECTIONS
+  one_hop:0x5AF4E0 site=0x5AF698 -> 0x5F9350 known=lua_gameobject_unbox
+
+NOTE: candidate ranking is structural only; it does not claim dataflow until manually verified.
+source_hash_unchanged=true
+game_launched=false
+save_opened=false
+progression_written=false
