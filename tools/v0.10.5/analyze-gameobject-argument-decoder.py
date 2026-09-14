@@ -1,12 +1,16 @@
 """Identify GoW's native Lua GameObject argument decoder by call intersection.
 
 The Lua binding table gives us many independently-known GameObject handlers such
-as GetDebugName, GetDebugPath, Level, GetCreature and GetBreakable.  Each handler
+as GetDebugName, GetDebugPath, Level, GetCreature and GetBreakable. Each handler
 must turn the Lua-side opaque GameObject value back into a native object before
-it can perform its operation.  This read-only, version-locked scanner recovers
-exact x64 function boundaries for representative handlers, inventories their
-direct CALL/JMP targets, ranks targets shared across handlers, and emits the
-candidate helper functions with bounded bytes/strings/callers.
+it can perform its operation. This read-only, version-locked scanner inventories
+direct CALL/JMP targets from representative handlers and ranks targets shared
+across handlers.
+
+Some tiny x64 leaf/thunk handlers intentionally have no .pdata unwind entry.
+For those, the scanner uses the exact registration-table entry RVA plus a tightly
+bounded per-handler end hint. This avoids rejecting valid leaf functions while
+keeping the scan deterministic and read-only.
 
 No game launch and no save I/O.
 """
@@ -15,7 +19,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from collections import Counter, defaultdict
+from collections import defaultdict
 from pathlib import Path
 import struct
 
@@ -24,22 +28,24 @@ IMAGE_BASE = 0x140000000
 IMAGE_SCN_MEM_EXECUTE = 0x20000000
 TOKEN_PACKER_RVA = 0x60B9C0
 
-# Read-only / type-query GameObject bindings already recovered from the native
-# GameObject registration table.  Use several unrelated methods so a helper
-# shared by them is much more likely to be the common Lua -> GameObject decoder
-# than method-specific implementation code.
+# Exact handler RVAs recovered from the native GameObject registration table.
+# End hints are the next known binding entry (or a conservative short bound)
+# and are only used if x64 .pdata has no entry covering the handler RVA.
 HANDLERS = {
-    "GetDebugName": 0x18F2A0,
-    "GetDebugPath": 0x18F350,
-    "Level": 0x195360,
-    "GetCreature": 0x18F420,
-    "GetBreakable": 0x18F500,
-    "IsEffect": 0x18F5D0,
-    "GetWorldPosition": 0x6056B0,
-    "Parent": 0x6041C0,
-    "Children": 0x6043C0,
-    "IsCreature": 0x6084E0,
+    "GetDebugName": (0x18F2A0, 0x18F350),
+    "GetDebugPath": (0x18F350, 0x18F420),
+    "GetCreature": (0x18F420, 0x18F500),
+    "GetBreakable": (0x18F500, 0x18F5D0),
+    "IsEffect": (0x18F5D0, 0x18F6D0),
+    "Level": (0x195360, 0x195470),
+    "Parent": (0x6041C0, 0x6043C0),
+    "Children": (0x6043C0, 0x604490),
+    "GetWorldPosition": (0x6056B0, 0x6057A0),
+    "IsCreature": (0x6084E0, 0x608530),
 }
+
+MAX_FALLBACK_FUNCTION_BYTES = 0x200
+MAX_CANDIDATE_BYTES = 0x200
 
 
 def sha256(path: Path) -> str:
@@ -77,8 +83,11 @@ class PE:
             vsize, rva, rawsize, raw = struct.unpack_from("<IIII", data, o + 8)
             ch = struct.unpack_from("<I", data, o + 36)[0]
             self.sections.append({
-                "name": name, "vsize": vsize, "rva": rva,
-                "rawsize": rawsize, "raw": raw,
+                "name": name,
+                "vsize": vsize,
+                "rva": rva,
+                "rawsize": rawsize,
+                "raw": raw,
                 "exec": bool(ch & IMAGE_SCN_MEM_EXECUTE),
             })
         self.runtime_functions = self._runtime_functions()
@@ -116,11 +125,25 @@ class PE:
         row = self.runtime_functions[lo - 1]
         return row if row["begin"] <= rva < row["end"] else None
 
+    def bounded_function(self, begin: int, end_hint: int | None = None):
+        """Use pdata when available, otherwise return a conservative code window."""
+        fn = self.function_for(begin)
+        if fn is not None:
+            return {**fn, "boundary_source": "pdata"}
+        end = begin + MAX_FALLBACK_FUNCTION_BYTES
+        if end_hint is not None and end_hint > begin:
+            end = min(end, end_hint)
+        end = min(end, self.size_of_image)
+        if end <= begin:
+            raise RuntimeError(f"invalid fallback boundary for {begin:#x}")
+        return {"begin": begin, "end": end, "unwind": None, "boundary_source": "registration_hint"}
+
     def bytes_for(self, fn):
         off = self.rva_to_file(fn["begin"])
         if off is None:
             return b""
-        return self.data[off:off + fn["end"] - fn["begin"]]
+        size = max(0, fn["end"] - fn["begin"])
+        return self.data[off:off + size]
 
     def ascii_at_rva(self, rva: int, cap: int = 120):
         off = self.rva_to_file(rva)
@@ -139,7 +162,7 @@ class PE:
 
 
 def direct_edges(pe: PE, fn):
-    """Collect direct near CALL (E8) and JMP (E9) targets within the image."""
+    """Collect direct near CALL (E8) and JMP (E9) targets in a bounded code region."""
     blob = pe.bytes_for(fn)
     base = fn["begin"]
     out = []
@@ -178,6 +201,18 @@ def rip_ascii_refs(pe: PE, fn):
     return out
 
 
+def candidate_region(pe: PE, begin: int):
+    fn = pe.function_for(begin)
+    if fn is not None:
+        return {**fn, "boundary_source": "pdata"}
+    return {
+        "begin": begin,
+        "end": min(begin + MAX_CANDIDATE_BYTES, pe.size_of_image),
+        "unwind": None,
+        "boundary_source": "target_window",
+    }
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--game-root", type=Path, required=True)
@@ -195,22 +230,21 @@ def main() -> int:
     target_to_handlers = defaultdict(set)
     target_edge_sites = defaultdict(list)
 
-    for name, entry in HANDLERS.items():
-        fn = pe.function_for(entry)
-        if fn is None:
-            raise RuntimeError(f"No pdata function for {name} @ {entry:#x}")
+    for name, (entry, end_hint) in HANDLERS.items():
+        fn = pe.bounded_function(entry, end_hint)
         edges = direct_edges(pe, fn)
         for edge in edges:
-            begin = edge["target_function_begin"]
-            if begin is None:
-                continue
-            target_to_handlers[begin].add(name)
-            target_edge_sites[begin].append({"handler": name, **edge})
+            # If the target has pdata, normalize to its function begin. If it is
+            # another leaf helper, its exact direct destination remains the key.
+            key = edge["target_function_begin"] if edge["target_function_begin"] is not None else edge["dest"]
+            target_to_handlers[key].add(name)
+            target_edge_sites[key].append({"handler": name, **edge})
         handler_rows.append({
             "name": name,
             "entry_rva": entry,
             "function_begin": fn["begin"],
             "function_end": fn["end"],
+            "boundary_source": fn["boundary_source"],
             "size": fn["end"] - fn["begin"],
             "edges": edges,
             "ascii_refs": rip_ascii_refs(pe, fn),
@@ -220,17 +254,13 @@ def main() -> int:
     ranked = sorted(target_to_handlers.items(), key=lambda kv: (-len(kv[1]), kv[0]))
     candidates = []
     for begin, names in ranked:
-        # Shared by at least two representative GameObject handlers.  Include all
-        # such helpers so the report can distinguish generic Lua helpers from the
-        # actual GameObject decoder by callers, strings and byte shape.
         if len(names) < 2:
             continue
-        fn = pe.function_for(begin)
-        if fn is None:
-            continue
+        fn = candidate_region(pe, begin)
         candidates.append({
             "begin": fn["begin"],
             "end": fn["end"],
+            "boundary_source": fn["boundary_source"],
             "size": fn["end"] - fn["begin"],
             "handler_count": len(names),
             "handlers": sorted(names),
@@ -246,7 +276,7 @@ def main() -> int:
         raise RuntimeError("GoW.exe changed during scan")
 
     report = {
-        "schema": 1,
+        "schema": 2,
         "analysis": "gameobject_lua_argument_decoder",
         "exe_sha256": before,
         "handlers": handler_rows,
@@ -272,16 +302,16 @@ def main() -> int:
     ]
     for row in handler_rows:
         lines.append(
-            f"  {row['name']} entry=0x{row['entry_rva']:X} fn=0x{row['function_begin']:X}-0x{row['function_end']:X} size={row['size']}"
+            f"  {row['name']} entry=0x{row['entry_rva']:X} fn=0x{row['function_begin']:X}-0x{row['function_end']:X} size={row['size']} boundary={row['boundary_source']}"
         )
         for edge in row["edges"]:
-            target = f"0x{edge['target_function_begin']:X}" if edge["target_function_begin"] is not None else "none"
+            target = f"0x{edge['target_function_begin']:X}" if edge["target_function_begin"] is not None else "leaf/exact"
             lines.append(f"    {edge['kind'].upper()} 0x{edge['site']:X} -> 0x{edge['dest']:X} targetFn={target}")
     lines.append("")
     lines.append("SHARED CANDIDATES")
     for c in candidates:
         lines.append(
-            f"  FUNCTION 0x{c['begin']:X}-0x{c['end']:X} size={c['size']} handlers={c['handler_count']} tokenPacker={str(c['is_token_packer']).lower()} names={','.join(c['handlers'])}"
+            f"  FUNCTION 0x{c['begin']:X}-0x{c['end']:X} size={c['size']} boundary={c['boundary_source']} handlers={c['handler_count']} tokenPacker={str(c['is_token_packer']).lower()} names={','.join(c['handlers'])}"
         )
         for s in c["ascii_refs"]:
             lines.append(f"    STR 0x{s['site']:X} {s['text']!r}")
