@@ -3,7 +3,7 @@ param()
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-$expectedBranch = 'codex/all-ravens-release-candidate'
+$expectedBranch = 'codex/all-collectibles-production-research'
 $repo = (& git rev-parse --show-toplevel 2>$null).Trim()
 if ([string]::IsNullOrWhiteSpace($repo)) { throw 'Not inside the Completionist Map repository.' }
 Set-Location $repo
