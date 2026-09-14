@@ -1,0 +1,358 @@
+diff --git a/catalogue/odins-ravens.json b/catalogue/odins-ravens.json
+index ebdee6e..2ff9384 100644
+--- a/catalogue/odins-ravens.json
++++ b/catalogue/odins-ravens.json
+@@ -1252,7 +1252,7 @@
+         ]
+       },
+       "special_handling": [
+-        "parent_has_one_hidden_surplus_raven"
++        "parent_contains_one_bonus_untracked_raven"
+       ]
+     },
+     {
+@@ -1338,7 +1338,7 @@
+         ]
+       },
+       "special_handling": [
+-        "parent_has_one_hidden_surplus_raven"
++        "parent_contains_one_bonus_untracked_raven"
+       ]
+     },
+     {
+@@ -3544,7 +3544,7 @@
+         ]
+       },
+       "special_handling": [
+-        "parent_has_one_hidden_surplus_raven"
++        "parent_contains_one_bonus_untracked_raven"
+       ]
+     },
+     {
+@@ -3625,7 +3625,7 @@
+         ]
+       },
+       "special_handling": [
+-        "parent_has_one_hidden_surplus_raven"
++        "parent_contains_one_bonus_untracked_raven"
+       ]
+     },
+     {
+@@ -3706,7 +3706,7 @@
+         ]
+       },
+       "special_handling": [
+-        "parent_has_one_hidden_surplus_raven"
++        "parent_contains_one_bonus_untracked_raven"
+       ]
+     },
+     {
+@@ -3787,7 +3787,7 @@
+         ]
+       },
+       "special_handling": [
+-        "parent_has_one_hidden_surplus_raven"
++        "parent_contains_one_bonus_untracked_raven"
+       ]
+     },
+     {
+@@ -3868,7 +3868,7 @@
+         ]
+       },
+       "special_handling": [
+-        "parent_has_one_hidden_surplus_raven"
++        "parent_contains_one_bonus_untracked_raven"
+       ]
+     },
+     {
+@@ -3949,7 +3949,7 @@
+         ]
+       },
+       "special_handling": [
+-        "parent_has_one_hidden_surplus_raven"
++        "parent_contains_one_bonus_untracked_raven"
+       ]
+     },
+     {
+@@ -4035,7 +4035,7 @@
+         ]
+       },
+       "special_handling": [
+-        "parent_has_one_hidden_surplus_raven"
++        "parent_contains_one_bonus_untracked_raven"
+       ]
+     },
+     {
+diff --git a/docs/research/all-ravens-release-gate.md b/docs/research/all-ravens-release-gate.md
+index db6f215..d9dbc9a 100644
+--- a/docs/research/all-ravens-release-gate.md
++++ b/docs/research/all-ravens-release-gate.md
+@@ -22,17 +22,34 @@ No native read-only API has been proven for reading individual `ravenKilled` sta
+ from an unloaded Raven WAD instance. The loaded-instance adapter cannot populate all
+ 53 rows when a user opens a map, especially for Ravens killed before mod install.
+ 
+-## Exact next runtime probe
+-
+-Build a read-only diagnostic that receives one catalogue instance GUID and queries
+-the native checkpoint/object-state store without loading or mutating that Raven.
+-Run it against two legitimate saves with opposite state for the same Raven. Prove:
+-
+-1. The unloaded Raven returns `false` on the uncollected save.
+-2. The same unloaded Raven returns `true` on the collected save.
+-3. The query works before visiting its region.
+-4. Checkpoint restore changes the observed value back when expected.
+-5. No save, quest, marker, collectible, or progression bytes change.
+-
+-Only after this passes should the adapter populate all catalogue rows and the full
+-human map/compass matrix begin.
++## Native Lua persistence investigation
++
++Offline PE registration-table analysis of the shipped PC executable proved that the
++Lua-facing `game.SubObject` table exposes exactly these seven methods in the relevant
++registration block:
++
++- `Sleep`
++- `Wake`
++- `SetRetainOnCheckpoint`
++- `SetForgetOnCheckpoint`
++- `SoftSave`
++- `SetEntityZoneHandler`
++- `SetUpdateDisableDistance`
++
++`LoadSubObject` exists as an internal engine string but is not registered as a Lua
++method. The registered object lookup APIs operate on loaded game objects; the scan
++found no read/restore/GUID API for querying checkpoint state of an unloaded subobject.
++Evidence is archived under
++`archive/field-logs/source-scans/lua-registration-tables-20260914-065951/`.
++
++For release purposes, the supported Lua/native API route is therefore considered
++closed unless new concrete engine evidence appears. This does **not** prove that the
++compiled engine lacks an internal mechanism; it means the mod has no proven callable,
++read-only Lua oracle for it. Unknown per-Raven state remains hidden/fail-closed.
++
++## Runtime gate remains closed
++
++Do not populate static Raven pins from aggregate regional counts, actor absence, map
++discovery, or synthetic completion state. `ready_for_runtime_test` remains `false`
++until an exact individual unloaded-state oracle is proven. Loaded Raven lifecycle
++observation remains valid but cannot establish pre-install kills for all 53 entries.
+diff --git a/tools/v0.10.5/all-ravens-map-runtime.lua b/tools/v0.10.5/all-ravens-map-runtime.lua
+index b1badc4..bc69134 100644
+--- a/tools/v0.10.5/all-ravens-map-runtime.lua
++++ b/tools/v0.10.5/all-ravens-map-runtime.lua
+@@ -15,6 +15,8 @@ do
+     byCatalogueId[row.CatalogueId] = row
+   end
+ 
++  local byMarkerId = {}
++
+   local states = _G.CompletionistMapV105RavenState or {}
+   _G.CompletionistMapV105RavenState = states
+   local previousPrompt = MapOn.GetShowOnCompassPrompt
+@@ -27,12 +29,30 @@ do
+     print(prefix .. category .. " " .. fields)
+   end
+ 
++  local function rememberMarkerId(name, info)
++    if type(name) ~= "string" or type(info) ~= "table" or info.Id == nil then return end
++    byMarkerId[tostring(info.Id)] = name
++  end
++
+   local function markerInfo(name)
+     local ok, info = pcall(function() return game.Map.GetMarkerInfo(name) end)
+-    if not ok or info == nil or info.Id == nil then return nil end
++    if not ok or type(info) ~= "table" or info.Id == nil then return nil end
++    rememberMarkerId(name, info)
+     return info
+   end
+ 
++  local function knownNameForId(id)
++    if id == nil then return nil end
++    local key = tostring(id)
++    local cached = byMarkerId[key]
++    if cached ~= nil then return cached end
++    for name, _ in pairs(byName) do
++      local info = markerInfo(name)
++      if info ~= nil and tostring(info.Id) == key then return name end
++    end
++    return nil
++  end
++
+   local function recycle(go)
+     if go == nil then return true end
+     local ok = pcall(function() Map.RecycleIcon(go) end)
+@@ -90,8 +110,8 @@ do
+     for _, row in ipairs(rows) do
+       if row.Realm == realm and states[row.CatalogueId] == false and icons[row.Name] == nil then
+         local ok, value = pcall(function()
+-          local info = game.Map.GetMarkerInfo(row.Name)
+-          if info == nil or info.Id == nil then return nil, "marker_info" end
++          local info = markerInfo(row.Name)
++          if info == nil then return nil, "marker_info" end
+           local found, region = Map.FindRegionFromMarker(info.Id)
+           if found ~= true or region == nil then return nil, "region" end
+           return Map.CreateMarkerIcon(info.Id, region, ""), nil
+@@ -205,7 +225,8 @@ do
+     local hidden = 0
+     for _, id in ipairs(ids) do
+       if exceptIdString == nil or tostring(id) ~= exceptIdString then
+-        local hideOK = pcall(function() game.Compass.HideMarker(id) end)
++        local target = knownNameForId(id) or id
++        local hideOK = pcall(function() game.Compass.HideMarker(target) end)
+         if not hideOK then return false, hidden, "hide_failed:" .. tostring(id) end
+         hidden = hidden + 1
+       end
+diff --git a/tools/v0.10.5/raven_catalogue.py b/tools/v0.10.5/raven_catalogue.py
+index ec077e6..dd2ad3c 100644
+--- a/tools/v0.10.5/raven_catalogue.py
++++ b/tools/v0.10.5/raven_catalogue.py
+@@ -455,7 +455,7 @@ def build_catalogue(game_root: Path) -> tuple[dict, dict]:
+           f"unexpected native Raven object/target difference: {surplus}")
+     for row in ravens:
+         if row["progression"]["parent_quest"] in surplus:
+-            row["special_handling"].append("parent_has_one_hidden_surplus_raven")
++            row["special_handling"].append("parent_contains_one_bonus_untracked_raven")
+     catalogue = {
+         "schema_version": 2,
+         "catalogue": "completionist-map-gow2018-odins-ravens",
+diff --git a/tools/v0.10.5/raven_runtime_model.py b/tools/v0.10.5/raven_runtime_model.py
+index 1f5d791..0791a12 100644
+--- a/tools/v0.10.5/raven_runtime_model.py
++++ b/tools/v0.10.5/raven_runtime_model.py
+@@ -61,12 +61,20 @@ class RavenRuntimeModel:
+ 
+     def collide(self, object_token: str):
+         row = self.by_object.get(object_token)
+-        if row is None or row["catalogue_id"] not in self.map_icons:
++        if row is None:
++            # Incidental/non-custom collision callbacks do not replace an exact Raven
++            # candidate. Ownership is resolved later by the exact prompt UID.
++            return None
++        if row["catalogue_id"] not in self.map_icons:
+             self.selection = None
+             return None
+         self.selection = row["catalogue_id"]
+         return self.selection
+ 
++    def incidental_collision(self) -> None:
++        """Model collision noise that must not expire an exact Raven candidate."""
++        return None
++
+     def confirm_prompt(self, curr_marker_uid: str | None, legacy_proven_bridge: bool = False) -> bool:
+         if self.selection is None:
+             return False
+diff --git a/tools/v0.10.5/test_all_ravens_lua.py b/tools/v0.10.5/test_all_ravens_lua.py
+index 8a6c5a6..db661d0 100644
+--- a/tools/v0.10.5/test_all_ravens_lua.py
++++ b/tools/v0.10.5/test_all_ravens_lua.py
+@@ -29,6 +29,17 @@ MAP_PRELUDE = r'''
+ calls={logs={},previousShow=0,recycled=0}
+ customIds={}
+ stockIds={}
++local markerIds={}
++local markerNamesById={}
++local nextMarkerId=10000
++local function markerId(name)
++  if markerIds[name]==nil then
++    markerIds[name]=nextMarkerId
++    markerNamesById[nextMarkerId]=name
++    nextMarkerId=nextMarkerId+1
++  end
++  return markerIds[name]
++end
+ print=function(s) calls.logs[#calls.logs+1]=s end
+ enabledShowOnCompassMarkerFlags={"stock"}
+ lamsConsts={RemoveFromCompass="remove",ReplaceInCompass="replace",AddToCompass="add"}
+@@ -51,15 +62,21 @@ function Map.CreateMarkerIcon(id,region,label)
+ end
+ function Map.RecycleIcon(go) calls.recycled=calls.recycled+1; go.recycled=true end
+ game={Map={},Compass={}}
+-function game.Map.GetMarkerInfo(name) return {Id=name,X=1,Y=2,Z=3} end
++function game.Map.GetMarkerInfo(name) return {Id=markerId(name),X=1,Y=2,Z=3} end
+ function game.Compass.FindMarkersByIconClass(classes)
+   if classes[1]=="CompletionistRaven" then return customIds end
+   return stockIds
+ end
+-function game.Compass.ShowMarker(name,class) customIds={name}; calls.shown=name; calls.class=class end
++function game.Compass.ShowMarker(name,class) customIds={markerId(name)}; calls.shown=name; calls.class=class end
+ function game.Compass.HideMarker(target)
++  if type(target)=="number" and markerNamesById[target]~=nil then
++    error("raw custom numeric ID rejected")
++  end
+   local next={}
+-  for _,id in ipairs(customIds) do if tostring(id)~=tostring(target) then next[#next+1]=id end end
++  for _,id in ipairs(customIds) do
++    local customName=markerNamesById[id]
++    if tostring(id)~=tostring(target) and customName~=target then next[#next+1]=id end
++  end
+   customIds=next
+   local nextStock={}
+   for _,id in ipairs(stockIds) do if tostring(id)~=tostring(target) then nextStock[#nextStock+1]=id end end
+@@ -91,6 +108,7 @@ end
+ function probe.customCount() return #customIds end
+ function probe.stockCount() return #stockIds end
+ function probe.customAt(i) return customIds[i] end
++function probe.markerId(name) return markerId(name) end
+ function probe.tracked() return CompletionistMapV105TrackedCatalogueId end
+ function probe.teardown() MapOn.ClearIcons(self) end
+ function probe.reset() return CompletionistMapV105ResetRavenStates("save_load") end
+@@ -114,9 +132,9 @@ class AllRavensMapLuaTests(unittest.TestCase):
+         self.probe.open()
+         self.assertEqual(self.probe.iconCount(), 2)
+         self.probe.click(self.a["marker"]["name"])
+-        self.assertEqual(self.probe.customAt(1), self.a["marker"]["name"])
++        self.assertEqual(self.probe.customAt(1), self.probe.markerId(self.a["marker"]["name"]))
+         self.probe.click(self.b["marker"]["name"])
+-        self.assertEqual(self.probe.customAt(1), self.b["marker"]["name"])
++        self.assertEqual(self.probe.customAt(1), self.probe.markerId(self.b["marker"]["name"]))
+         self.probe.click(self.b["marker"]["name"])
+         self.assertEqual(self.probe.customCount(), 0)
+         self.probe.click(self.a["marker"]["name"])
+diff --git a/tools/v0.10.5/test_raven_catalogue.py b/tools/v0.10.5/test_raven_catalogue.py
+index 7d85365..ee88f23 100644
+--- a/tools/v0.10.5/test_raven_catalogue.py
++++ b/tools/v0.10.5/test_raven_catalogue.py
+@@ -76,7 +76,7 @@ class NativeCatalogueTests(unittest.TestCase):
+         surplus_parents = set(self.audit["parent_surplus"])
+         for row in self.catalogue["ravens"]:
+             if row["progression"]["parent_quest"] in surplus_parents:
+-                self.assertIn("parent_has_one_hidden_surplus_raven", row["special_handling"])
++                self.assertIn("parent_contains_one_bonus_untracked_raven", row["special_handling"])
+ 
+     def test_every_row_has_position_and_state_source(self):
+         validation = self.audit["catalogue_validation"]
+diff --git a/tools/v0.10.5/test_raven_runtime_model.py b/tools/v0.10.5/test_raven_runtime_model.py
+index 3603181..2a02e52 100644
+--- a/tools/v0.10.5/test_raven_runtime_model.py
++++ b/tools/v0.10.5/test_raven_runtime_model.py
+@@ -107,6 +107,30 @@ class RavenRuntimeTests(unittest.TestCase):
+         self.assertEqual(model.click_raven("stock-uid"), "delegate")
+         self.assertIsNone(model.active_target)
+ 
++    def test_incidental_collision_noise_preserves_exact_candidate_until_uid_resolution(self):
++        model = self.model()
++        model.observe(self.a["catalogue_id"], False)
++        model.open_map(self.a["realm"])
++        self.arm(model, self.a)
++
++        # Real map callbacks can contain unrelated collision churn between the exact
++        # Raven collision and the human click. There is deliberately no TTL.
++        for _ in range(5):
++            model.incidental_collision()
++            self.assertIsNone(model.collide("stock:incidental-noise"))
++            self.assertEqual(model.selection, self.a["catalogue_id"])
++
++        self.assertEqual(model.click_raven(self.a["marker"]["uid"]), "shown")
++        self.assertEqual(model.active_target, ("raven", self.a["catalogue_id"]))
++
++        # A genuinely different prompt UID must disarm/delegate instead of letting a
++        # stale Raven candidate hijack a stock target.
++        self.arm(model, self.a)
++        model.incidental_collision()
++        self.assertEqual(model.click_raven("stock-uid"), "delegate")
++        self.assertIsNone(model.selection)
++        self.assertEqual(model.active_target, ("raven", self.a["catalogue_id"]))
++
+     def test_marker_id_alone_never_infers_raven(self):
+         model = self.model()
+         model.observe(self.a["catalogue_id"], False)

@@ -1,0 +1,53 @@
+**********************
+PowerShell transcript start
+Start time: 20260914073714
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\run-all-ravens-hardening-with-log.ps1
+Process ID: 11628
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+=== Completionist Map v0.10.5 all-Ravens hardening ===
+Repository: C:/Users/david/Documents/GitHub/completionist-map-gow2018-all-ravens-release-candidate
+Offline/source-only run. God of War is not launched and active saves are not opened.
+=== APPLY GUARDED PATCH ===
+CHANGED tools/v0.10.5/all-ravens-map-runtime.lua
+CHANGED tools/v0.10.5/test_all_ravens_lua.py
+CHANGED tools/v0.10.5/raven_runtime_model.py
+CHANGED tools/v0.10.5/test_raven_runtime_model.py
+CHANGED catalogue/odins-ravens.json
+CHANGED tools/v0.10.5/raven_catalogue.py
+CHANGED tools/v0.10.5/test_raven_catalogue.py
+CHANGED docs/research/all-ravens-release-gate.md
+ALL_RAVENS_HARDENING_PATCH_APPLIED changed=8 catalogue_rows=53
+game_written=false save_or_progression_written=false game_launched=false
+warning: in the working copy of 'catalogue/odins-ravens.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/research/all-ravens-release-gate.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/all-ravens-map-runtime.lua', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/raven_catalogue.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/raven_runtime_model.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/test_all_ravens_lua.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/test_raven_catalogue.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/test_raven_runtime_model.py', LF will be replaced by CRLF the next time Git touches it
+=== TEST raven-catalogue ===
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\test_raven_catalogue.py", line 12, in <module>
+    import jsonschema
+ModuleNotFoundError: No module named 'jsonschema'
+PS>TerminatingError(): "Test 'raven-catalogue' failed with exit code 1"
+ALL_RAVENS_HARDENING_FAILED: Test 'raven-catalogue' failed with exit code 1
+
+**********************
+PowerShell transcript end
+End time: 20260914073714
+**********************
