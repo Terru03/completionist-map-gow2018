@@ -1,11 +1,11 @@
 """Build a reusable, version-locked static research index for God of War (2018).
 
-This replaces repeated whole-EXE micro-scans with one local SQLite index.  It
-indexes the supported GoW.exe using Capstone, the extracted Lua source tree when
-present, and a lightweight game-file manifest.  It also emits compact hot-path
-reports that are safe to archive in Git for remote inspection.
+This replaces repeated whole-EXE micro-scans with one local SQLite index. It
+indexes the supported GoW.exe with a real x86-64 disassembler (Capstone), the
+extracted Lua source tree when present, and a lightweight whole-install file
+manifest. It also emits compact hot-path reports safe to archive in Git.
 
-Read-only with respect to the game install and saves.  The SQLite database is
+Read-only with respect to the game install and saves. The SQLite database is
 local working data and is intentionally not committed by the runner.
 """
 from __future__ import annotations
@@ -18,12 +18,10 @@ import os
 from pathlib import Path
 import re
 import sqlite3
-import struct
-import sys
-import time
 
 EXPECTED_SHA256 = "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452"
 IMAGE_BASE = 0x140000000
+INDEX_SCHEMA = 2
 KNOWN_ANCHORS = {
     "gameobject_token_resolver": 0x4EF0B0,
     "lua_gameobject_unbox": 0x5F9350,
@@ -113,12 +111,8 @@ def va_to_rva(pe, value: int) -> int | None:
     return None
 
 
-def exact_string_or_none(strings: dict[int, str], target: int) -> str | None:
-    return strings.get(target)
-
-
 def index_native(con: sqlite3.Connection, pe, strings: dict[int, str], capstone_mod):
-    from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_AC_WRITE
+    from capstone import Cs, CS_ARCH_X86, CS_MODE_64
     from capstone.x86 import X86_OP_IMM, X86_OP_MEM, X86_OP_REG, X86_REG_RIP
 
     md = Cs(CS_ARCH_X86, CS_MODE_64)
@@ -130,11 +124,10 @@ def index_native(con: sqlite3.Connection, pe, strings: dict[int, str], capstone_
         [(s["name"], s["rva"], s["vsize"], s["raw"], s["rawsize"], 1 if s["exec"] else 0) for s in pe.sections],
     )
     con.executemany("INSERT INTO strings(rva,text) VALUES(?,?)", sorted(strings.items()))
-
-    frows = []
-    for fn in pe.runtime_functions:
-        frows.append((fn["begin"], fn["end"], fn["end"] - fn["begin"], section_name(pe, fn["begin"])))
-    con.executemany("INSERT INTO functions(begin,end,size,section) VALUES(?,?,?,?)", frows)
+    con.executemany(
+        "INSERT INTO functions(begin,end,size,section) VALUES(?,?,?,?)",
+        [(fn["begin"], fn["end"], fn["end"] - fn["begin"], section_name(pe, fn["begin"])) for fn in pe.runtime_functions],
+    )
     con.commit()
 
     edge_rows = []
@@ -145,6 +138,19 @@ def index_native(con: sqlite3.Connection, pe, strings: dict[int, str], capstone_
     instruction_count = 0
     decoded_functions = 0
 
+    def flush():
+        if edge_rows:
+            con.executemany("INSERT INTO edges VALUES(?,?,?,?,?)", edge_rows); edge_rows.clear()
+        if indirect_rows:
+            con.executemany("INSERT INTO indirect_calls VALUES(?,?,?,?,?,?,?,?)", indirect_rows); indirect_rows.clear()
+        if rip_rows:
+            con.executemany("INSERT INTO rip_refs VALUES(?,?,?,?,?,?)", rip_rows); rip_rows.clear()
+        if mem_rows:
+            con.executemany("INSERT INTO mem_refs VALUES(?,?,?,?,?,?,?,?,?)", mem_rows); mem_rows.clear()
+        if imm_rows:
+            con.executemany("INSERT INTO imm_refs VALUES(?,?,?,?,?)", imm_rows); imm_rows.clear()
+        con.commit()
+
     for n, fn in enumerate(pe.runtime_functions, 1):
         blob = pe.bytes_for(fn)
         if not blob:
@@ -152,6 +158,9 @@ def index_native(con: sqlite3.Connection, pe, strings: dict[int, str], capstone_
         decoded_functions += 1
         src_fn = fn["begin"]
         for insn in md.disasm(blob, pe.image_base + src_fn):
+            # Capstone skip-data pseudo instructions have id==0 and no detail.
+            if insn.id == 0:
+                continue
             instruction_count += 1
             site = insn.address - pe.image_base
             mnem = insn.mnemonic.lower()
@@ -172,7 +181,7 @@ def index_native(con: sqlite3.Connection, pe, strings: dict[int, str], capstone_
                     elif op.type == X86_OP_MEM:
                         base = insn.reg_name(op.mem.base) if op.mem.base else None
                         idx = insn.reg_name(op.mem.index) if op.mem.index else None
-                        scale = op.mem.scale
+                        scale = int(op.mem.scale)
                         disp = int(op.mem.disp)
                     indirect_rows.append((site, src_fn, mnem, reg, base, idx, scale, disp))
 
@@ -187,7 +196,7 @@ def index_native(con: sqlite3.Connection, pe, strings: dict[int, str], capstone_
                         target_va = insn.address + insn.size + disp
                         target = va_to_rva(pe, target_va)
                         if target is not None:
-                            rip_rows.append((site, src_fn, mnem, target, section_name(pe, target), exact_string_or_none(strings, target)))
+                            rip_rows.append((site, src_fn, mnem, target, section_name(pe, target), strings.get(target)))
                     elif -0x4000 <= disp <= 0x4000:
                         mem_rows.append((site, src_fn, mnem, oi, base, idx, scale, disp, access))
                 elif op.type == X86_OP_IMM:
@@ -196,25 +205,15 @@ def index_native(con: sqlite3.Connection, pe, strings: dict[int, str], capstone_
                         imm_rows.append((site, src_fn, mnem, rva, section_name(pe, rva)))
 
         if len(edge_rows) + len(indirect_rows) + len(rip_rows) + len(mem_rows) + len(imm_rows) >= 100000:
-            con.executemany("INSERT INTO edges VALUES(?,?,?,?,?)", edge_rows); edge_rows.clear()
-            con.executemany("INSERT INTO indirect_calls VALUES(?,?,?,?,?,?,?,?)", indirect_rows); indirect_rows.clear()
-            con.executemany("INSERT INTO rip_refs VALUES(?,?,?,?,?,?)", rip_rows); rip_rows.clear()
-            con.executemany("INSERT INTO mem_refs VALUES(?,?,?,?,?,?,?,?,?)", mem_rows); mem_rows.clear()
-            con.executemany("INSERT INTO imm_refs VALUES(?,?,?,?,?)", imm_rows); imm_rows.clear()
-            con.commit()
+            flush()
         if n % 10000 == 0:
             print(f"native_progress functions={n}/{len(pe.runtime_functions)} instructions={instruction_count}", flush=True)
 
-    if edge_rows: con.executemany("INSERT INTO edges VALUES(?,?,?,?,?)", edge_rows)
-    if indirect_rows: con.executemany("INSERT INTO indirect_calls VALUES(?,?,?,?,?,?,?,?)", indirect_rows)
-    if rip_rows: con.executemany("INSERT INTO rip_refs VALUES(?,?,?,?,?,?)", rip_rows)
-    if mem_rows: con.executemany("INSERT INTO mem_refs VALUES(?,?,?,?,?,?,?,?,?)", mem_rows)
-    if imm_rows: con.executemany("INSERT INTO imm_refs VALUES(?,?,?,?,?)", imm_rows)
-    con.commit()
-
+    flush()
     con.executescript(
         """
         CREATE INDEX IF NOT EXISTS idx_edges_dest ON edges(dest);
+        CREATE INDEX IF NOT EXISTS idx_edges_target_fn ON edges(target_fn);
         CREATE INDEX IF NOT EXISTS idx_edges_src ON edges(src_fn);
         CREATE INDEX IF NOT EXISTS idx_indirect_src ON indirect_calls(src_fn);
         CREATE INDEX IF NOT EXISTS idx_rip_target ON rip_refs(target);
@@ -254,10 +253,13 @@ def index_lua(con: sqlite3.Connection, game_root: Path):
                 hits += 1
         if len(batch_files) >= 500:
             con.executemany("INSERT INTO lua_files VALUES(?,?,?,?)", batch_files); batch_files.clear()
-            con.executemany("INSERT INTO lua_hits VALUES(?,?,?)", batch_hits); batch_hits.clear()
+            if batch_hits:
+                con.executemany("INSERT INTO lua_hits VALUES(?,?,?)", batch_hits); batch_hits.clear()
             con.commit()
-    if batch_files: con.executemany("INSERT INTO lua_files VALUES(?,?,?,?)", batch_files)
-    if batch_hits: con.executemany("INSERT INTO lua_hits VALUES(?,?,?)", batch_hits)
+    if batch_files:
+        con.executemany("INSERT INTO lua_files VALUES(?,?,?,?)", batch_files)
+    if batch_hits:
+        con.executemany("INSERT INTO lua_hits VALUES(?,?,?)", batch_hits)
     con.commit()
     return {"present": True, "files": files, "hits": hits}
 
@@ -275,13 +277,13 @@ def index_game_files(con: sqlite3.Connection, game_root: Path):
             except OSError:
                 continue
             rel = str(path.relative_to(game_root)).replace("\\", "/")
-            ext = path.suffix.lower()
-            rows.append((rel, size, ext))
+            rows.append((rel, size, path.suffix.lower()))
             count += 1
             total += size
             if len(rows) >= 5000:
                 con.executemany("INSERT INTO game_files VALUES(?,?,?)", rows); rows.clear(); con.commit()
-    if rows: con.executemany("INSERT INTO game_files VALUES(?,?,?)", rows)
+    if rows:
+        con.executemany("INSERT INTO game_files VALUES(?,?,?)", rows)
     con.commit()
     return {"files": count, "bytes": total}
 
@@ -290,13 +292,115 @@ def table_count(con, table: str) -> int:
     return int(con.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0])
 
 
-def function_window(pe, capstone_mod, begin: int, hot_sites: set[int], radius: int = 14):
+def disassemble_function(pe, begin: int):
     from capstone import Cs, CS_ARCH_X86, CS_MODE_64
-    md = Cs(CS_ARCH_X86, CS_MODE_64); md.detail = True; md.skipdata = True
+    md = Cs(CS_ARCH_X86, CS_MODE_64)
+    md.detail = True
+    md.skipdata = True
     fn = pe.function_for(begin)
     if not fn:
+        return fn, []
+    insns = []
+    for ins in md.disasm(pe.bytes_for(fn), pe.image_base + fn["begin"]):
+        if ins.id != 0:
+            insns.append(ins)
+    return fn, insns
+
+
+def source_trace_for_store(pe, insns, store_index: int, source_reg: int):
+    """Conservative backwards register trace for class+0xB8 callback stores."""
+    from capstone.x86 import X86_OP_IMM, X86_OP_MEM, X86_OP_REG, X86_REG_RIP
+
+    tracked = source_reg
+    trail = []
+    lo = max(0, store_index - 40)
+    for j in range(store_index - 1, lo - 1, -1):
+        ins = insns[j]
+        ops = list(ins.operands)
+        if not ops or ops[0].type != X86_OP_REG or ops[0].reg != tracked:
+            continue
+        m = ins.mnemonic.lower()
+        row = {"site": ins.address - pe.image_base, "mnemonic": ins.mnemonic, "op_str": ins.op_str}
+        if m == "lea" and len(ops) >= 2 and ops[1].type == X86_OP_MEM and ops[1].mem.base == X86_REG_RIP:
+            target_va = ins.address + ins.size + int(ops[1].mem.disp)
+            target = va_to_rva(pe, target_va)
+            row.update({"kind": "lea_rip", "target_rva": target, "target_section": section_name(pe, target)})
+            trail.append(row)
+            return row, trail
+        if m in ("mov", "movabs") and len(ops) >= 2:
+            src = ops[1]
+            if src.type == X86_OP_IMM:
+                value = int(src.imm) & 0xFFFFFFFFFFFFFFFF
+                target = va_to_rva(pe, value)
+                row.update({"kind": "mov_imm", "value": value, "target_rva": target, "target_section": section_name(pe, target)})
+                trail.append(row)
+                return row, trail
+            if src.type == X86_OP_MEM and src.mem.base == X86_REG_RIP:
+                slot_va = ins.address + ins.size + int(src.mem.disp)
+                slot = va_to_rva(pe, slot_va)
+                row.update({"kind": "mov_rip", "slot_rva": slot, "slot_section": section_name(pe, slot)})
+                if slot is not None:
+                    off = pe.rva_to_file(slot)
+                    if off is not None and off + 8 <= len(pe.data):
+                        value = int.from_bytes(pe.data[off:off+8], "little")
+                        target = va_to_rva(pe, value)
+                        row.update({"slot_value": value, "deref_rva": target, "deref_section": section_name(pe, target)})
+                trail.append(row)
+                return row, trail
+            if src.type == X86_OP_REG:
+                trail.append({**row, "kind": "reg_copy", "from": ins.reg_name(src.reg), "to": ins.reg_name(tracked)})
+                tracked = src.reg
+                continue
+        if m == "xor" and len(ops) >= 2 and ops[1].type == X86_OP_REG and ops[1].reg == tracked:
+            row.update({"kind": "zero"})
+            trail.append(row)
+            return row, trail
+        row.update({"kind": "unhandled_write"})
+        trail.append(row)
+        return row, trail
+    return None, trail
+
+
+def analyze_b8_writes(pe, fn_begin: int):
+    from capstone import CS_AC_WRITE
+    from capstone.x86 import X86_OP_MEM, X86_OP_REG
+
+    fn, insns = disassemble_function(pe, fn_begin)
+    if not fn:
         return []
-    insns = list(md.disasm(pe.bytes_for(fn), pe.image_base + fn["begin"]))
+    out = []
+    for idx, ins in enumerate(insns):
+        ops = list(ins.operands)
+        for oi, op in enumerate(ops):
+            if op.type != X86_OP_MEM or int(op.mem.disp) != 0xB8:
+                continue
+            access = int(getattr(op, "access", 0) or 0)
+            inferred_write = oi == 0 and ins.mnemonic.lower() in (
+                "mov", "movabs", "xchg", "cmpxchg", "add", "sub", "and", "or", "xor", "inc", "dec"
+            )
+            if not (access & CS_AC_WRITE) and not inferred_write:
+                continue
+            row = {
+                "site": ins.address - pe.image_base,
+                "mnemonic": ins.mnemonic,
+                "op_str": ins.op_str,
+                "base": ins.reg_name(op.mem.base) if op.mem.base else None,
+                "access": access,
+                "source": None,
+                "trace": [],
+            }
+            if ins.mnemonic.lower() in ("mov", "movabs") and oi == 0 and len(ops) >= 2:
+                src = ops[1]
+                if src.type == X86_OP_REG:
+                    row["source"], row["trace"] = source_trace_for_store(pe, insns, idx, src.reg)
+                else:
+                    row["source"] = {"kind": "direct_nonregister", "op_str": ins.op_str}
+            out.append(row)
+    return out
+
+
+def function_window(pe, begin: int, hot_sites: set[int], radius: int = 14):
+    _, insns = disassemble_function(pe, begin)
     by_idx = {ins.address - pe.image_base: i for i, ins in enumerate(insns)}
     out = []
     used = set()
@@ -316,25 +420,28 @@ def function_window(pe, capstone_mod, begin: int, hot_sites: set[int], radius: i
     return out
 
 
-def hot_report(con: sqlite3.Connection, pe, capstone_mod):
-    from capstone import CS_AC_WRITE
+def hot_report(con: sqlite3.Connection, pe):
     exact_go = [r[0] for r in con.execute("SELECT rva FROM strings WHERE text='GameObject'")]
     go_rva = exact_go[0] if exact_go else None
-
     candidates = {}
-    for disp, field in PROVEN_CLASS_FIELDS.items():
-        for site, src_fn, mnem, access in con.execute(
-            "SELECT site,src_fn,mnemonic,access FROM mem_refs WHERE disp=?", (disp,)
+
+    for disp in PROVEN_CLASS_FIELDS:
+        for site, src_fn, mnem, operand_index, access in con.execute(
+            "SELECT site,src_fn,mnemonic,operand_index,access FROM mem_refs WHERE disp=?", (disp,)
         ):
-            c = candidates.setdefault(src_fn, {"begin": src_fn, "fields": set(), "sites": [], "writes_b8": [], "gameobject_refs": 0, "known_calls": []})
+            c = candidates.setdefault(src_fn, {
+                "begin": src_fn, "fields": set(), "sites": [], "writes_b8": [],
+                "gameobject_refs": 0, "known_calls": [], "b8_details": [],
+            })
             c["fields"].add(disp)
             c["sites"].append(site)
-            if disp == 0xB8 and (access & CS_AC_WRITE):
-                c["writes_b8"].append(site)
 
     if go_rva is not None:
         for src_fn, cnt in con.execute("SELECT src_fn,COUNT(*) FROM rip_refs WHERE target=? GROUP BY src_fn", (go_rva,)):
-            c = candidates.setdefault(src_fn, {"begin": src_fn, "fields": set(), "sites": [], "writes_b8": [], "gameobject_refs": 0, "known_calls": []})
+            c = candidates.setdefault(src_fn, {
+                "begin": src_fn, "fields": set(), "sites": [], "writes_b8": [],
+                "gameobject_refs": 0, "known_calls": [], "b8_details": [],
+            })
             c["gameobject_refs"] = cnt
 
     anchor_by_rva = {v: k for k, v in KNOWN_ANCHORS.items()}
@@ -344,31 +451,52 @@ def hot_report(con: sqlite3.Connection, pe, capstone_mod):
 
     ranked = []
     for c in candidates.values():
-        if not c["writes_b8"]:
+        details = analyze_b8_writes(pe, c["begin"])
+        if not details:
             continue
-        score = 100 * len(c["writes_b8"])
+        c["b8_details"] = details
+        c["writes_b8"] = [d["site"] for d in details]
+        exec_sources = 0
+        for d in details:
+            src = d.get("source") or {}
+            target = src.get("target_rva")
+            deref = src.get("deref_rva")
+            if section_name(pe, target) and pe.section_for_rva(target)["exec"]:
+                exec_sources += 1
+            elif section_name(pe, deref) and pe.section_for_rva(deref)["exec"]:
+                exec_sources += 1
+        score = 100 * len(details)
         if 0x48 in c["fields"]: score += 80
         if 0xA4 in c["fields"]: score += 80
         if {0x48, 0xA4, 0xB8}.issubset(c["fields"]): score += 150
         score += 120 * c["gameobject_refs"]
         score += 100 * len(c["known_calls"])
+        score += 300 * exec_sources
         c["score"] = score
+        c["exec_source_count"] = exec_sources
         c["fields"] = sorted(c["fields"])
         fn = pe.function_for(c["begin"])
         c["end"] = fn["end"] if fn else None
-        c["window"] = function_window(pe, capstone_mod, c["begin"], set(c["writes_b8"] + c["sites"][:20]))
+        c["window"] = function_window(pe, c["begin"], set(c["writes_b8"] + c["sites"][:30]))
         ranked.append(c)
     ranked.sort(key=lambda x: (-x["score"], x["begin"]))
 
     anchors = {}
     for name, rva in KNOWN_ANCHORS.items():
         fn = pe.function_for(rva)
+        fb = fn["begin"] if fn else rva
         anchors[name] = {
             "rva": rva,
             "function_begin": fn["begin"] if fn else None,
             "function_end": fn["end"] if fn else None,
-            "callers": [dict(site=row[0], src_fn=row[1]) for row in con.execute("SELECT site,src_fn FROM edges WHERE dest=? ORDER BY site", (rva,))],
-            "callees": [dict(site=row[0], dest=row[1], target_fn=row[2]) for row in con.execute("SELECT site,dest,target_fn FROM edges WHERE src_fn=? ORDER BY site", (fn["begin"] if fn else rva,))],
+            "callers": [
+                {"site": row[0], "src_fn": row[1]}
+                for row in con.execute("SELECT site,src_fn FROM edges WHERE dest=? OR target_fn=? ORDER BY site", (rva, fb))
+            ],
+            "callees": [
+                {"site": row[0], "dest": row[1], "target_fn": row[2]}
+                for row in con.execute("SELECT site,dest,target_fn FROM edges WHERE src_fn=? ORDER BY site", (fb,))
+            ],
         }
 
     term_refs = {}
@@ -376,7 +504,10 @@ def hot_report(con: sqlite3.Connection, pe, capstone_mod):
         rows = list(con.execute("SELECT rva FROM strings WHERE text=?", (term,)))
         refs = []
         for (srva,) in rows:
-            refs.extend({"string_rva": srva, "site": site, "src_fn": src_fn} for site, src_fn in con.execute("SELECT site,src_fn FROM rip_refs WHERE target=?", (srva,)))
+            refs.extend(
+                {"string_rva": srva, "site": site, "src_fn": src_fn}
+                for site, src_fn in con.execute("SELECT site,src_fn FROM rip_refs WHERE target=?", (srva,))
+            )
         if rows or refs:
             term_refs[term] = refs
 
@@ -387,6 +518,7 @@ def write_hot_text(path: Path, report: dict, counts: dict, digest: str, capstone
     lines = [
         "Completionist Map - reusable God of War static research index",
         f"gow_exe_sha256={digest}",
+        f"index_schema={INDEX_SCHEMA}",
         f"capstone_version={capstone_version}",
         f"local_index={db_path}",
         f"functions={counts['functions']} strings={counts['strings']} edges={counts['edges']} indirect_calls={counts['indirect_calls']}",
@@ -402,16 +534,21 @@ def write_hot_text(path: Path, report: dict, counts: dict, digest: str, capstone
         lines.append(
             f"#{i} fn=0x{c['begin']:X}-0x{(c['end'] or 0):X} score={c['score']} "
             f"fields={[hex(x) for x in c['fields']]} b8_writes={len(c['writes_b8'])} "
-            f"gameobject_refs={c['gameobject_refs']} known_calls={c['known_calls']}"
+            f"exec_sources={c['exec_source_count']} gameobject_refs={c['gameobject_refs']} known_calls={c['known_calls']}"
         )
-        for w in c["writes_b8"][:12]:
-            lines.append(f"  B8_WRITE 0x{w:X}")
-        for ins in c["window"][:80]:
+        for d in c["b8_details"][:12]:
+            lines.append(f"  B8_WRITE 0x{d['site']:X}: {d['mnemonic']} {d['op_str']}")
+            if d.get("source"):
+                lines.append("    SOURCE " + json.dumps(d["source"], sort_keys=True))
+        for ins in c["window"][:100]:
             marker = " *" if ins["rva"] in c["writes_b8"] else ""
             lines.append(f"    0x{ins['rva']:X}: {ins['mnemonic']} {ins['op_str']}{marker}")
     lines += ["", "KNOWN ANCHORS"]
     for name, a in report["anchors"].items():
-        lines.append(f"{name}=0x{a['rva']:X} fn=0x{(a['function_begin'] or 0):X} callers={len(a['callers'])} callees={len(a['callees'])}")
+        lines.append(
+            f"{name}=0x{a['rva']:X} fn=0x{(a['function_begin'] or 0):X} "
+            f"callers={len(a['callers'])} callees={len(a['callees'])}"
+        )
     lines += [
         "",
         "NOTE: this is a reusable static index. Candidate ranking is evidence, not proof of GameObject class ownership.",
@@ -458,7 +595,12 @@ def main():
 
     con = connect_db(db_path)
     old = dict(con.execute("SELECT key,value FROM meta"))
-    can_reuse = old.get("gow_exe_sha256") == digest and old.get("index_complete") == "1" and not args.rebuild
+    can_reuse = (
+        old.get("gow_exe_sha256") == digest
+        and old.get("index_complete") == "1"
+        and old.get("index_schema") == str(INDEX_SCHEMA)
+        and not args.rebuild
+    )
     if can_reuse:
         print("REUSING_EXISTING_NATIVE_INDEX", flush=True)
     else:
@@ -469,6 +611,7 @@ def main():
         meta = {
             "gow_exe_sha256": digest,
             "index_complete": "1",
+            "index_schema": str(INDEX_SCHEMA),
             "capstone_version": getattr(capstone, "__version__", "unknown"),
             "native_decoded_functions": str(native["decoded_functions"]),
             "native_instruction_count": str(native["instruction_count"]),
@@ -485,10 +628,10 @@ def main():
         "functions", "strings", "edges", "indirect_calls", "rip_refs", "mem_refs",
         "imm_refs", "lua_files", "lua_hits", "game_files",
     )}
-    report = hot_report(con, pe, capstone)
+    report = hot_report(con, pe)
     cap_ver = getattr(capstone, "__version__", "unknown")
     manifest = {
-        "schema": 1,
+        "schema": INDEX_SCHEMA,
         "analysis": "gow_reusable_static_research_index",
         "gow_exe_sha256": digest,
         "capstone_version": cap_ver,
