@@ -1,0 +1,45 @@
+Completionist Map - engine.CanPickle logical control-flow trace
+gow_exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+region=0x5AA350-0x5AA560
+
+PDATA BOUNDARIES
+  0x5AA350-0x5AA3B3 size=99
+  0x5AA3B3-0x5AA405 size=82
+  0x5AA405-0x5AA472 size=109
+
+BRANCHES
+  jcc8_74 site=0x5AA368 -> 0x5AA380
+  jcc8_74 site=0x5AA36D -> 0x5AA380
+  jmp8 site=0x5AA37E -> 0x5AA388
+  jcc8_75 site=0x5AA38B -> 0x5AA394
+  jmp site=0x5AA38F -> 0x5AA459 label=CanPickle_false/shared_tail
+  jcc8_7C site=0x5AA3BE -> 0x5AA3E4
+  call site=0x5AA3C1 -> 0x9F4CF0
+  call site=0x5AA3EA -> 0x9EF660
+  jcc8_71 site=0x5AA3EB -> 0x5AA43F
+  jcc8_7C site=0x5AA3F5 -> 0x5AA41B
+  jcc8_74 site=0x5AA403 -> 0x5AA40A
+  jcc8_75 site=0x5AA408 -> 0x5AA417
+  jcc8_74 site=0x5AA410 -> 0x5AA425
+  jcc8_74 site=0x5AA415 -> 0x5AA41B
+  jmp8 site=0x5AA419 -> 0x5AA451
+  jmp8 site=0x5AA423 -> 0x5AA429
+  jcc8_74 site=0x5AA42E -> 0x5AA451
+  jcc8_75 site=0x5AA436 -> 0x5AA451
+  jcc8_75 site=0x5AA43F -> 0x5AA44C
+  jcc8_75 site=0x5AA448 -> 0x5AA430
+  jmp8 site=0x5AA44A -> 0x5AA451
+
+RIP REFERENCES
+  lea site=0x5AA3AC -> 0xDF6660 section=.rdata exec=False string='__codesideluaclass'
+  lea site=0x5AA3AD -> 0xDF6660 section=.rdata exec=False string='__codesideluaclass'
+
+ENTRY DESCRIPTIONS
+  CanPickle: rva=0x5AA350 section=.text string=None bytes32=40564883ec20488b5110488bf18b4af88bc183e00f83f805741683f807741148
+  CanPickle_fallthrough: rva=0x5AA3B3 section=.text string=None bytes32=48895c2430488b5e1048897c2438e82aa94400488903488d53f00fb6480883c9
+  CanPickle_false/shared_tail: rva=0x5AA459 section=.text string=None bytes32=890ab801000000c742080100000048834610104883c4205ec3cccccccccccccc
+
+source_hash_unchanged=true
+game_launched=false
+save_opened=false
+progression_written=false

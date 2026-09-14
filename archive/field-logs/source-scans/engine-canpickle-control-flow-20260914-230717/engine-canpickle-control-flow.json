@@ -1,0 +1,383 @@
+{
+  "schema": 1,
+  "analysis": "engine_canpickle_logical_control_flow",
+  "gow_exe_sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+  "trace": {
+    "region_start": 5940048,
+    "region_end": 5940576,
+    "region_hex": "40564883ec20488b5110488bf18b4af88bc183e00f83f805741683f8077411488b461883e10f4c8b84c8a8010000eb08488b42f04c8b40104d85c0750733c9e9c50000004c8902488bcec742084500000041b8120000004883461010488d15adc2840048895c2430488b5e1048897c2438e82aa94400488903488d53f00fb6480883c940894b08488bce4c8b4e104d8d41104c8946104983c0f0e871524400488b5610488b7c2438488b5c24308b42f883f847740583f802750d83e00f83f802741383f807740433c9eb36488b42f04883c030eb04488b42f033c94885c074213888a40000007519483988b8000000750b488b40484885c075e6eb05b9010000004883c2e048895610890ab801000000c742080100000048834610104883c4205ec3cccccccccccccccccccccccccccc488b4110c70000000000c7400803000000b8010000004883411010c3cccccccccccccccccccccccccccccccccccccccc33c0c3cccccccccccccccccccccccccc488b4110c70000000000c7400803000000b8010000004883411010c3cccccccccccccccccccccccccccccccccccccccc33c0c3cccccccccccccccccccccccccc488b4110c70000000000c7400803000000b8010000004883411010c3cccccccccccccccccccccccccccccccccccccccc33c0c3cccccccccccccccccccccccccc488b4110c700000080bfc7400803000000b8010000004883411010c3cccccccc",
+    "pdata_boundaries": [
+      {
+        "begin": 5940048,
+        "end": 5940147,
+        "size": 99
+      },
+      {
+        "begin": 5940147,
+        "end": 5940229,
+        "size": 82
+      },
+      {
+        "begin": 5940229,
+        "end": 5940338,
+        "size": 109
+      }
+    ],
+    "branches": [
+      {
+        "kind": "jcc8_74",
+        "site": 5940072,
+        "dest": 5940096,
+        "label": null
+      },
+      {
+        "kind": "jcc8_74",
+        "site": 5940077,
+        "dest": 5940096,
+        "label": null
+      },
+      {
+        "kind": "jmp8",
+        "site": 5940094,
+        "dest": 5940104,
+        "label": null
+      },
+      {
+        "kind": "jcc8_75",
+        "site": 5940107,
+        "dest": 5940116,
+        "label": null
+      },
+      {
+        "kind": "jmp",
+        "site": 5940111,
+        "dest": 5940313,
+        "label": "CanPickle_false/shared_tail",
+        "target_function_begin": 5940229,
+        "target_function_end": 5940338
+      },
+      {
+        "kind": "jcc8_7C",
+        "site": 5940158,
+        "dest": 5940196,
+        "label": null
+      },
+      {
+        "kind": "call",
+        "site": 5940161,
+        "dest": 10439920,
+        "label": null,
+        "target_function_begin": 10439920,
+        "target_function_end": 10439976
+      },
+      {
+        "kind": "call",
+        "site": 5940202,
+        "dest": 10417760,
+        "label": null,
+        "target_function_begin": 10417760,
+        "target_function_end": 10418138
+      },
+      {
+        "kind": "jcc8_71",
+        "site": 5940203,
+        "dest": 5940287,
+        "label": null
+      },
+      {
+        "kind": "jcc8_7C",
+        "site": 5940213,
+        "dest": 5940251,
+        "label": null
+      },
+      {
+        "kind": "jcc8_74",
+        "site": 5940227,
+        "dest": 5940234,
+        "label": null
+      },
+      {
+        "kind": "jcc8_75",
+        "site": 5940232,
+        "dest": 5940247,
+        "label": null
+      },
+      {
+        "kind": "jcc8_74",
+        "site": 5940240,
+        "dest": 5940261,
+        "label": null
+      },
+      {
+        "kind": "jcc8_74",
+        "site": 5940245,
+        "dest": 5940251,
+        "label": null
+      },
+      {
+        "kind": "jmp8",
+        "site": 5940249,
+        "dest": 5940305,
+        "label": null
+      },
+      {
+        "kind": "jmp8",
+        "site": 5940259,
+        "dest": 5940265,
+        "label": null
+      },
+      {
+        "kind": "jcc8_74",
+        "site": 5940270,
+        "dest": 5940305,
+        "label": null
+      },
+      {
+        "kind": "jcc8_75",
+        "site": 5940278,
+        "dest": 5940305,
+        "label": null
+      },
+      {
+        "kind": "jcc8_75",
+        "site": 5940287,
+        "dest": 5940300,
+        "label": null
+      },
+      {
+        "kind": "jcc8_75",
+        "site": 5940296,
+        "dest": 5940272,
+        "label": null
+      },
+      {
+        "kind": "jmp8",
+        "site": 5940298,
+        "dest": 5940305,
+        "label": null
+      }
+    ],
+    "rip_refs": [
+      {
+        "site": 5940140,
+        "opcode": "lea",
+        "target": 14640736,
+        "target_description": {
+          "rva": 14640736,
+          "section": ".rdata",
+          "executable": false,
+          "string": "__codesideluaclass",
+          "bytes32": "5f5f636f6465736964656c7561636c6173730000486f6f6b0000000000000000",
+          "qwords": [
+            {
+              "delta": 0,
+              "value": 7598528478344077151
+            },
+            {
+              "delta": 8,
+              "value": 7020095189396776292
+            },
+            {
+              "delta": 16,
+              "value": 7741528639501529971
+            },
+            {
+              "delta": 24,
+              "value": 0
+            },
+            {
+              "delta": 32,
+              "value": 7084008717753147732
+            },
+            {
+              "delta": 40,
+              "value": 1952671082
+            },
+            {
+              "delta": 48,
+              "value": 8389772276570485313
+            },
+            {
+              "delta": 56,
+              "value": 0
+            }
+          ]
+        }
+      },
+      {
+        "site": 5940141,
+        "opcode": "lea",
+        "target": 14640736,
+        "target_description": {
+          "rva": 14640736,
+          "section": ".rdata",
+          "executable": false,
+          "string": "__codesideluaclass",
+          "bytes32": "5f5f636f6465736964656c7561636c6173730000486f6f6b0000000000000000",
+          "qwords": [
+            {
+              "delta": 0,
+              "value": 7598528478344077151
+            },
+            {
+              "delta": 8,
+              "value": 7020095189396776292
+            },
+            {
+              "delta": 16,
+              "value": 7741528639501529971
+            },
+            {
+              "delta": 24,
+              "value": 0
+            },
+            {
+              "delta": 32,
+              "value": 7084008717753147732
+            },
+            {
+              "delta": 40,
+              "value": 1952671082
+            },
+            {
+              "delta": 48,
+              "value": 8389772276570485313
+            },
+            {
+              "delta": 56,
+              "value": 0
+            }
+          ]
+        }
+      }
+    ],
+    "entry_descriptions": {
+      "CanPickle": {
+        "rva": 5940048,
+        "section": ".text",
+        "executable": true,
+        "string": null,
+        "bytes32": "40564883ec20488b5110488bf18b4af88bc183e00f83f805741683f807741148",
+        "qwords": [
+          {
+            "delta": 0,
+            "value": 10036307969782076992
+          },
+          {
+            "delta": 8,
+            "value": 17891266339222851665
+          },
+          {
+            "delta": 16,
+            "value": 430237868628361611
+          },
+          {
+            "delta": 24,
+            "value": 5193059422917826164
+          },
+          {
+            "delta": 32,
+            "value": 10037415130743457419
+          },
+          {
+            "delta": 40,
+            "value": 642607371858266244
+          },
+          {
+            "delta": 48,
+            "value": 1171089065680997192
+          },
+          {
+            "delta": 56,
+            "value": 16846051988289389901
+          }
+        ]
+      },
+      "CanPickle_fallthrough": {
+        "rva": 5940147,
+        "section": ".text",
+        "executable": true,
+        "string": null,
+        "bytes32": "48895c2430488b5e1048897c2438e82aa94400488903488d53f00fb6480883c9",
+        "qwords": [
+          {
+            "delta": 0,
+            "value": 6812618232933681480
+          },
+          {
+            "delta": 8,
+            "value": 3091782873549195280
+          },
+          {
+            "delta": 16,
+            "value": 10180390845824386217
+          },
+          {
+            "delta": 24,
+            "value": 14520458731957776467
+          },
+          {
+            "delta": 32,
+            "value": 5534514133577992512
+          },
+          {
+            "delta": 40,
+            "value": 5480952821649002123
+          },
+          {
+            "delta": 48,
+            "value": 16785127481308890761
+          },
+          {
+            "delta": 56,
+            "value": 1177281493962347121
+          }
+        ]
+      },
+      "CanPickle_false/shared_tail": {
+        "rva": 5940313,
+        "section": ".text",
+        "executable": true,
+        "string": null,
+        "bytes32": "890ab801000000c742080100000048834610104883c4205ec3cccccccccccccc",
+        "qwords": [
+          {
+            "delta": 0,
+            "value": 14339461213576497801
+          },
+          {
+            "delta": 8,
+            "value": 9459811017291794498
+          },
+          {
+            "delta": 16,
+            "value": 6782637106948739142
+          },
+          {
+            "delta": 24,
+            "value": 14757395258967641283
+          },
+          {
+            "delta": 32,
+            "value": 5245792845961153740
+          },
+          {
+            "delta": 40,
+            "value": 3339731339
+          },
+          {
+            "delta": 48,
+            "value": 13023364864
+          },
+          {
+            "delta": 56,
+            "value": 4720695999251612088
+          }
+        ]
+      }
+    }
+  },
+  "game_launched": false,
+  "save_opened": false,
+  "progression_written": false
+}
