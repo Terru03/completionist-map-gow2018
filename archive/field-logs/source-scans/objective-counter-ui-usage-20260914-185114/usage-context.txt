@@ -1,0 +1,3066 @@
+Completionist Map - objective/counter UI usage source contexts
+timestamp=20260914-185114
+lua_files_scanned=499
+
+================================================================================================
+FILE lua_source\gameart\scripts\characters\heroa00\main.lua
+MATCH line=6140 terms=GetQuestState
+    6130:   local rotateion = -syncObj:GetWorldLeft()
+    6131:   local position = syncObj:GetWorldPosition()
+    6132:   MotionWarp(ai, rotateion, position)
+    6133: end
+    6134: function LuaHook_WarpTroll00Arena(ai, data)
+    6135: end
+    6136: function LuaHook_GiveEvadeTimer()
+    6137:   playerCreature:PickupAcquire("EvadeRollTimer", 0)
+    6138: end
+    6139: local ShouldDoRiftTutorial = function()
+>>  6140:   if game.QuestManager.GetQuestState("Quest_Labor_RiftPockets_Bronze") == "Complete" then
+    6141:     return false
+    6142:   else
+    6143:     return true
+    6144:   end
+    6145: end
+    6146: function LuaHook_PocketRiftCombatStarted()
+    6147:   riftEncounterStarted = true
+    6148:   if game.Wallets.GetResourceValue("HERO", "RiftDeathCounter") >= 5 and ShouldDoRiftTutorial() == true and game.Wallets.GetResourceValue("HERO", "RiftTutorial") < 0 then
+    6149:     game.Wallets.AddResource("HERO", "RiftTutorial", 1, "NO_TELEMETRY")
+    6150:     uiCalls.SendSidebarDesignerMessage({
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\caldera\realmcontrollerobject.lua
+MATCH line=1790 terms=GetQuestState
+    1780:   },
+    1781:   {
+    1782:     ActiveQuest = "Quest_Caldera_Objective670",
+    1783:     RequiredRealm = "Midgard",
+    1784:     Action = "Complete"
+    1785:   }
+    1786: }
+    1787: function EvaluateQuestObjectives(realm)
+    1788:   for _, v in ipairs(ObjectiveActions) do
+    1789:     if v ~= nil and v.ActiveQuest ~= nil and realm == v.RequiredRealm then
+>>  1790:       local questState = game.QuestManager.GetQuestState(v.ActiveQuest)
+    1791:       if questState == "Active" then
+    1792:         game.QuestManager.ProposeQuestState(v.ActiveQuest, v.Action)
+    1793:       end
+    1794:     end
+    1795:   end
+    1796:   if LD.GetEntityVariable("CompletedCineNumber") < 195 or LD.GetEntityVariable("CompletedCineNumber") > 210 and JotunheimFailStateConditionsMet() == false then
+    1797:     game.Compass.SetDesignerForcedHide(false)
+    1798:   end
+    1799: end
+    1800: function OnSaveCheckpoint(level, obj)
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\caldera\cal100_hub\objects\btr_caldera_bridge.lua
+MATCH line=132 terms=GetQuestState
+     122:   GameObjects.ZoneEvents_Cal10:Show()
+     123: end
+     124: function PlayJotunheimOrBust()
+     125:   timers.StartLevelTimer(7, function()
+     126:     game.Audio.PlayBanter("010_JotunheimOrBust")
+     127:   end)
+     128:   GameObjects.ZoneEvents_Cal10:Hide()
+     129:   GameObjects.ZoneEvents_JotunheimOrBust.LuaObjectScript.Disable()
+     130: end
+     131: function Can020_TempleFlipOffCriticalPlay()
+>>   132:   return LD.GetCurrentRealm() == "Midgard" and game.Level.GetVariable("CompletedCineNumber") == 510 and game.QuestManager.GetQuestState("Quest_Caldera_Objective700") ~= "Complete"
+     133: end
+     134: function ApproachLockedFlipTempleDoor()
+     135:   local completedCineNumber = game.Level.GetVariable("CompletedCineNumber")
+     136:   if cp.IsTempleDoorLocked then
+     137:     keyLockTempleDoor.LuaObjectScript.EnableCinematicTrigger()
+     138:     if completedCineNumber == 510 then
+     139:       cp.IsTempleDoorLocked = false
+     140:       GameObjects.POI_TempleFlip_Unlock.LuaObjectScript.AttemptSeq()
+     141:     elseif not cp.firstAttemptAtTempleDoor then
+     142:       cp.firstAttemptAtTempleDoor = true
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\caldera\cal100_hub\objects\poi_realmtravelrestored_script.lua
+MATCH line=74 terms=GetQuestState
+      64:   game.QuestManager.ProposeQuestState("Quest_Caldera_Objective742", "Complete")
+      65:   LD.ActivateQuest("Quest_JotunheimInReach_Parent")
+      66: end
+      67: function BOOKMARK_32_Underworld_020_CalderaReturn()
+      68:   local bookmarks = require("design.Bookmarks")
+      69:   local tableEntry = bookmarks["BOOKMARK_" .. "32_Underworld_020_CalderaReturn"]
+      70:   tableEntry.OverrideObject = GameObjects.CO_BOOKMARK_32_Underworld_020_CalderaReturn
+      71:   game.World.StoreCheckpointAndBookmark(tableEntry)
+      72: end
+      73: function CheckBrazierQuest()
+>>    74:   local questState = game.QuestManager.GetQuestState("Quest_Labor_LightBrazier_Parent")
+      75:   if questState == "Active" then
+      76:     game.Audio.PlayBanter("010_SeenItAll_Contd")
+      77:   end
+      78: end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua
+MATCH line=1014 terms=GetQuestState
+    1004: end
+    1005: function QueenVisibility()
+    1006:   if game.Wallets.HasResource("HERO", "DisplayQueenHelm") then
+    1007:     GameObjects.ValkyrieDropShop:Show()
+    1008:   else
+    1009:     GameObjects.ValkyrieDropShop:Hide()
+    1010:   end
+    1011: end
+    1012: function MuspelheimDiscVisability()
+    1013:   local musDisk = GameObjects.Muspelheim_Disc
+>>  1014:   if game.QuestManager.GetQuestState("Quest_SonLanguage_Muspelheim") == "Complete" then
+    1015:     musDisk:Show()
+    1016:     print("Show Mus Disk")
+    1017:   else
+    1018:     musDisk:Hide()
+    1019:     print("Hide Mus Disk")
+    1020:   end
+    1021: end
+    1022: function NiflheimDiscVisability()
+    1023:   local nifDisk = GameObjects.Niflheim_Disk
+    1024:   if game.QuestManager.GetQuestState("Quest_SonLanguage_Niflheim") == "Complete" then
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua
+MATCH line=1024 terms=GetQuestState
+    1014:   if game.QuestManager.GetQuestState("Quest_SonLanguage_Muspelheim") == "Complete" then
+    1015:     musDisk:Show()
+    1016:     print("Show Mus Disk")
+    1017:   else
+    1018:     musDisk:Hide()
+    1019:     print("Hide Mus Disk")
+    1020:   end
+    1021: end
+    1022: function NiflheimDiscVisability()
+    1023:   local nifDisk = GameObjects.Niflheim_Disk
+>>  1024:   if game.QuestManager.GetQuestState("Quest_SonLanguage_Niflheim") == "Complete" then
+    1025:     nifDisk:Show()
+    1026:     print("Show Nif Disk")
+    1027:   else
+    1028:     nifDisk:Hide()
+    1029:     print("Hide Nif Disk")
+    1030:   end
+    1031: end
+    1032: function CreateBridgeSound()
+    1033:   GameObjects.AirlockBifrostCrystal.Child.LuaObjectScript.PlaySoundActivateCrystal()
+    1034: end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua
+MATCH line=1253 terms=GetQuestState
+    1243: end
+    1244: function PlayerArrivedFromFastTravel()
+    1245:   print("I just arrived from fast traveling!")
+    1246:   EvaluateQuestObjectives_FastTravel()
+    1247:   EvaluateBanter_OnFastTravelArrival()
+    1248:   EvaluateSound_OnFastTravelArrival()
+    1249: end
+    1250: function Complete_Quest_StoneMason_Objective700()
+    1251:   LD.CompleteQuest("Quest_StoneMason_Objective700")
+    1252:   LD.CompleteQuest("Quest_StoneMason_Objective800")
+>>  1253:   local questState = game.QuestManager.GetQuestState("Quest_StoneMason_Objective800")
+    1254:   if questState == "Complete" then
+    1255:     game.SubObject.SoftSave()
+    1256:   end
+    1257: end
+    1258: local ObjectiveActions = {
+    1259:   {
+    1260:     ActiveQuest = "Quest_StoneMason_Objective800",
+    1261:     StateRequirement = "Active",
+    1262:     Action = "Complete"
+    1263:   },
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua
+MATCH line=1273 terms=GetQuestState
+    1263:   },
+    1264:   {
+    1265:     ActiveQuest = "Quest_Helheim_Objective000",
+    1266:     StateRequirement = "Active",
+    1267:     Action = "Complete"
+    1268:   }
+    1269: }
+    1270: function EvaluateQuestObjectives_FastTravel()
+    1271:   for _, v in ipairs(ObjectiveActions) do
+    1272:     if v ~= nil and v.ActiveQuest ~= nil then
+>>  1273:       local questState = game.QuestManager.GetQuestState(v.ActiveQuest)
+    1274:       if questState == v.StateRequirement then
+    1275:         game.QuestManager.ProposeQuestState(v.ActiveQuest, v.Action)
+    1276:       end
+    1277:     end
+    1278:   end
+    1279: end
+    1280: function QuestStoneFixup()
+    1281:   local questState = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_02")
+    1282:   local entryStone = game.Wallets.GetResourceValue("HERO_SAVEONLY", "EntryStoneForestDungeon")
+    1283:   if (entryStone == 0 or entryStone == -1) and questState == "Active" then
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua
+MATCH line=1281 terms=GetQuestState
+    1271:   for _, v in ipairs(ObjectiveActions) do
+    1272:     if v ~= nil and v.ActiveQuest ~= nil then
+    1273:       local questState = game.QuestManager.GetQuestState(v.ActiveQuest)
+    1274:       if questState == v.StateRequirement then
+    1275:         game.QuestManager.ProposeQuestState(v.ActiveQuest, v.Action)
+    1276:       end
+    1277:     end
+    1278:   end
+    1279: end
+    1280: function QuestStoneFixup()
+>>  1281:   local questState = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_02")
+    1282:   local entryStone = game.Wallets.GetResourceValue("HERO_SAVEONLY", "EntryStoneForestDungeon")
+    1283:   if (entryStone == 0 or entryStone == -1) and questState == "Active" then
+    1284:     game.Wallets.AddResource("HERO_SAVEONLY", "EntryStoneForestDungeon", 1)
+    1285:   end
+    1286:   local questState2 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_01")
+    1287:   local entryStone2 = game.Wallets.GetResourceValue("HERO_SAVEONLY", "EntryStoneVolundr")
+    1288:   if (entryStone2 == 0 or entryStone2 == -1) and questState2 == "Active" then
+    1289:     game.Wallets.AddResource("HERO_SAVEONLY", "EntryStoneVolundr", 1)
+    1290:   end
+    1291:   local questState3 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_01")
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua
+MATCH line=1286 terms=GetQuestState
+    1276:       end
+    1277:     end
+    1278:   end
+    1279: end
+    1280: function QuestStoneFixup()
+    1281:   local questState = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_02")
+    1282:   local entryStone = game.Wallets.GetResourceValue("HERO_SAVEONLY", "EntryStoneForestDungeon")
+    1283:   if (entryStone == 0 or entryStone == -1) and questState == "Active" then
+    1284:     game.Wallets.AddResource("HERO_SAVEONLY", "EntryStoneForestDungeon", 1)
+    1285:   end
+>>  1286:   local questState2 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_01")
+    1287:   local entryStone2 = game.Wallets.GetResourceValue("HERO_SAVEONLY", "EntryStoneVolundr")
+    1288:   if (entryStone2 == 0 or entryStone2 == -1) and questState2 == "Active" then
+    1289:     game.Wallets.AddResource("HERO_SAVEONLY", "EntryStoneVolundr", 1)
+    1290:   end
+    1291:   local questState3 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_01")
+    1292:   local entryStone3 = game.Wallets.GetResourceValue("HERO_SAVEONLY", "EntryStoneHuldra3")
+    1293:   if (entryStone3 == 0 or entryStone3 == -1) and questState3 == "Active" then
+    1294:     game.Wallets.AddResource("HERO_SAVEONLY", "EntryStoneHuldra3", 1)
+    1295:   end
+    1296:   local questState4 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_02")
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua
+MATCH line=1291 terms=GetQuestState
+    1281:   local questState = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_02")
+    1282:   local entryStone = game.Wallets.GetResourceValue("HERO_SAVEONLY", "EntryStoneForestDungeon")
+    1283:   if (entryStone == 0 or entryStone == -1) and questState == "Active" then
+    1284:     game.Wallets.AddResource("HERO_SAVEONLY", "EntryStoneForestDungeon", 1)
+    1285:   end
+    1286:   local questState2 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_01")
+    1287:   local entryStone2 = game.Wallets.GetResourceValue("HERO_SAVEONLY", "EntryStoneVolundr")
+    1288:   if (entryStone2 == 0 or entryStone2 == -1) and questState2 == "Active" then
+    1289:     game.Wallets.AddResource("HERO_SAVEONLY", "EntryStoneVolundr", 1)
+    1290:   end
+>>  1291:   local questState3 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_01")
+    1292:   local entryStone3 = game.Wallets.GetResourceValue("HERO_SAVEONLY", "EntryStoneHuldra3")
+    1293:   if (entryStone3 == 0 or entryStone3 == -1) and questState3 == "Active" then
+    1294:     game.Wallets.AddResource("HERO_SAVEONLY", "EntryStoneHuldra3", 1)
+    1295:   end
+    1296:   local questState4 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_02")
+    1297:   local entryStone4 = game.Wallets.GetResourceValue("HERO_SAVEONLY", "EntryStoneHuldra2")
+    1298:   if (entryStone4 == 0 or entryStone4 == -1) and questState4 == "Active" then
+    1299:     game.Wallets.AddResource("HERO_SAVEONLY", "EntryStoneHuldra2", 1)
+    1300:   end
+    1301: end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua
+MATCH line=1296 terms=GetQuestState
+    1286:   local questState2 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_01")
+    1287:   local entryStone2 = game.Wallets.GetResourceValue("HERO_SAVEONLY", "EntryStoneVolundr")
+    1288:   if (entryStone2 == 0 or entryStone2 == -1) and questState2 == "Active" then
+    1289:     game.Wallets.AddResource("HERO_SAVEONLY", "EntryStoneVolundr", 1)
+    1290:   end
+    1291:   local questState3 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_01")
+    1292:   local entryStone3 = game.Wallets.GetResourceValue("HERO_SAVEONLY", "EntryStoneHuldra3")
+    1293:   if (entryStone3 == 0 or entryStone3 == -1) and questState3 == "Active" then
+    1294:     game.Wallets.AddResource("HERO_SAVEONLY", "EntryStoneHuldra3", 1)
+    1295:   end
+>>  1296:   local questState4 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_02")
+    1297:   local entryStone4 = game.Wallets.GetResourceValue("HERO_SAVEONLY", "EntryStoneHuldra2")
+    1298:   if (entryStone4 == 0 or entryStone4 == -1) and questState4 == "Active" then
+    1299:     game.Wallets.AddResource("HERO_SAVEONLY", "EntryStoneHuldra2", 1)
+    1300:   end
+    1301: end
+    1302: local BanterOnArrival = {
+    1303:   {
+    1304:     BanterName = "010_LandSnakes!",
+    1305:     MinCine = 330,
+    1306:     MaxCine = 340
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\caldera\cal120_airlock\objects\btr_cal120_script.lua
+MATCH line=62 terms=GetQuestState
+      52:     end
+      53:   end
+      54: end
+      55: function CanStraightBackToMidgardPlay()
+      56:   return LD.GetCurrentRealm() == "Helheim" and game.Level.GetVariable("CompletedCineNumber") == 387
+      57: end
+      58: function CanFastTravelTinkerPlay()
+      59:   return LD.GetCurrentRealm() == "Midgard" and game.Level.GetVariable("CompletedCineNumber") == 387
+      60: end
+      61: function Can020_TempleFlipOffCriticalPlay()
+>>    62:   return LD.GetCurrentRealm() == "Midgard" and game.Level.GetVariable("CompletedCineNumber") == 510 and game.QuestManager.GetQuestState("Quest_Caldera_Objective700") ~= "Complete"
+      63: end
+      64: function SetFastTravelStage2()
+      65:   game.Audio.SetBanterFact("040_fastTravel_Increment", 0)
+      66:   if game.Level.GetVariable("CompletedCineNumber") == 387 then
+      67:     LD.GiveFastTravelStageTwo()
+      68:   end
+      69: end
+      70: function CanFastTravelTinker_02_Play()
+      71:   return LD.GetCurrentRealm() == "Midgard" and game.Level.GetVariable("CompletedCineNumber") == 387
+      72: end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\forest\for000_sky\for000_sky.lua
+MATCH line=330 terms=GetQuestState
+     320:       Speed = 4.25,
+     321:       LeaderDistance_Wait = 12,
+     322:       LeaderDistance_Continue = 8,
+     323:       LeaderDistance_Backtrack = 18,
+     324:       LeaderDistance_BacktrackDone = 12
+     325:     }
+     326:     GameObjects.LTW_TempleInterior.Child.LuaObjectScript.UpdateLeadTheWayParams(templeParams)
+     327:   end
+     328: end
+     329: function RemindQuestHome()
+>>   330:   local questState = game.QuestManager.GetQuestState("Quest_Forest_Objective800")
+     331:   if questState == "Active" then
+     332:     uiCalls.UI_Event_SendMsgToQuestLog({
+     333:       Category = 10250,
+     334:       Header = 4616,
+     335:       Body = 5349,
+     336:       MessageType = tweaks.tQuestUiMessage.eMessageType.kQMS_Default,
+     337:       Quest = "Quest_Forest_Objective800"
+     338:     })
+     339:   end
+     340: end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=95 terms=GetQuestState
+      85:   safetyExitTimer = timer.StartLevelTimer(safetyExitTimerDelay, TriggerCharacterExit)
+      86:   safetyExitTimer:Stop()
+      87:   ambientBanterTimer = timer.StartLevelTimer(ambientBanterDelay, CheckForStoryTimeBanter)
+      88:   ambientBanterTimer:Stop()
+      89:   brokAmbientBanterTimer = timer.StartLevelTimer(ambientBanterDelay, CheckForBrokStoryTimeBanter)
+      90:   brokAmbientBanterTimer:Stop()
+      91:   local mainQuestModule = obj.Parent.Parent
+      92:   goQuestCamera = mainQuestModule:FindSingleGOByName("HuldraBrothersCamera")
+      93: end
+      94: function QuestStateCheck()
+>>    95:   sindriQuestParent01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Parent")
+      96:   sindriQuestParent02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Parent")
+      97:   sindriReturn01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_Return")
+      98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+      99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+     100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+     101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+     103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+     104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+     105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=96 terms=GetQuestState
+      86:   safetyExitTimer:Stop()
+      87:   ambientBanterTimer = timer.StartLevelTimer(ambientBanterDelay, CheckForStoryTimeBanter)
+      88:   ambientBanterTimer:Stop()
+      89:   brokAmbientBanterTimer = timer.StartLevelTimer(ambientBanterDelay, CheckForBrokStoryTimeBanter)
+      90:   brokAmbientBanterTimer:Stop()
+      91:   local mainQuestModule = obj.Parent.Parent
+      92:   goQuestCamera = mainQuestModule:FindSingleGOByName("HuldraBrothersCamera")
+      93: end
+      94: function QuestStateCheck()
+      95:   sindriQuestParent01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Parent")
+>>    96:   sindriQuestParent02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Parent")
+      97:   sindriReturn01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_Return")
+      98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+      99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+     100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+     101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+     103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+     104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+     105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+     106:   sindriNiflheim02 = game.QuestManager.GetQuestState("Quest_NiflheimArmorChest")
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=97 terms=GetQuestState
+      87:   ambientBanterTimer = timer.StartLevelTimer(ambientBanterDelay, CheckForStoryTimeBanter)
+      88:   ambientBanterTimer:Stop()
+      89:   brokAmbientBanterTimer = timer.StartLevelTimer(ambientBanterDelay, CheckForBrokStoryTimeBanter)
+      90:   brokAmbientBanterTimer:Stop()
+      91:   local mainQuestModule = obj.Parent.Parent
+      92:   goQuestCamera = mainQuestModule:FindSingleGOByName("HuldraBrothersCamera")
+      93: end
+      94: function QuestStateCheck()
+      95:   sindriQuestParent01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Parent")
+      96:   sindriQuestParent02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Parent")
+>>    97:   sindriReturn01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_Return")
+      98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+      99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+     100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+     101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+     103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+     104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+     105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+     106:   sindriNiflheim02 = game.QuestManager.GetQuestState("Quest_NiflheimArmorChest")
+     107:   sindriNiflheim03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Parent")
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=98 terms=GetQuestState
+      88:   ambientBanterTimer:Stop()
+      89:   brokAmbientBanterTimer = timer.StartLevelTimer(ambientBanterDelay, CheckForBrokStoryTimeBanter)
+      90:   brokAmbientBanterTimer:Stop()
+      91:   local mainQuestModule = obj.Parent.Parent
+      92:   goQuestCamera = mainQuestModule:FindSingleGOByName("HuldraBrothersCamera")
+      93: end
+      94: function QuestStateCheck()
+      95:   sindriQuestParent01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Parent")
+      96:   sindriQuestParent02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Parent")
+      97:   sindriReturn01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_Return")
+>>    98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+      99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+     100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+     101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+     103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+     104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+     105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+     106:   sindriNiflheim02 = game.QuestManager.GetQuestState("Quest_NiflheimArmorChest")
+     107:   sindriNiflheim03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Parent")
+     108:   sindriReturnNif03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Objective_Return")
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=99 terms=GetQuestState
+      89:   brokAmbientBanterTimer = timer.StartLevelTimer(ambientBanterDelay, CheckForBrokStoryTimeBanter)
+      90:   brokAmbientBanterTimer:Stop()
+      91:   local mainQuestModule = obj.Parent.Parent
+      92:   goQuestCamera = mainQuestModule:FindSingleGOByName("HuldraBrothersCamera")
+      93: end
+      94: function QuestStateCheck()
+      95:   sindriQuestParent01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Parent")
+      96:   sindriQuestParent02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Parent")
+      97:   sindriReturn01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_Return")
+      98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+>>    99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+     100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+     101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+     103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+     104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+     105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+     106:   sindriNiflheim02 = game.QuestManager.GetQuestState("Quest_NiflheimArmorChest")
+     107:   sindriNiflheim03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Parent")
+     108:   sindriReturnNif03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Objective_Return")
+     109:   niflheim = game.FindLevel("Nid100_Entrance")
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=100 terms=GetQuestState
+      90:   brokAmbientBanterTimer:Stop()
+      91:   local mainQuestModule = obj.Parent.Parent
+      92:   goQuestCamera = mainQuestModule:FindSingleGOByName("HuldraBrothersCamera")
+      93: end
+      94: function QuestStateCheck()
+      95:   sindriQuestParent01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Parent")
+      96:   sindriQuestParent02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Parent")
+      97:   sindriReturn01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_Return")
+      98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+      99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+>>   100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+     101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+     103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+     104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+     105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+     106:   sindriNiflheim02 = game.QuestManager.GetQuestState("Quest_NiflheimArmorChest")
+     107:   sindriNiflheim03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Parent")
+     108:   sindriReturnNif03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Objective_Return")
+     109:   niflheim = game.FindLevel("Nid100_Entrance")
+     110:   muspelheim = game.FindLevel("Msp100_Base")
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=101 terms=GetQuestState
+      91:   local mainQuestModule = obj.Parent.Parent
+      92:   goQuestCamera = mainQuestModule:FindSingleGOByName("HuldraBrothersCamera")
+      93: end
+      94: function QuestStateCheck()
+      95:   sindriQuestParent01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Parent")
+      96:   sindriQuestParent02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Parent")
+      97:   sindriReturn01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_Return")
+      98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+      99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+     100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+>>   101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+     103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+     104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+     105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+     106:   sindriNiflheim02 = game.QuestManager.GetQuestState("Quest_NiflheimArmorChest")
+     107:   sindriNiflheim03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Parent")
+     108:   sindriReturnNif03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Objective_Return")
+     109:   niflheim = game.FindLevel("Nid100_Entrance")
+     110:   muspelheim = game.FindLevel("Msp100_Base")
+     111:   if sindriQuestParent01 == "Active" or sindriQuestParent02 == "Active" or httkParent == "Active" then
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=102 terms=GetQuestState
+      92:   goQuestCamera = mainQuestModule:FindSingleGOByName("HuldraBrothersCamera")
+      93: end
+      94: function QuestStateCheck()
+      95:   sindriQuestParent01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Parent")
+      96:   sindriQuestParent02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Parent")
+      97:   sindriReturn01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_Return")
+      98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+      99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+     100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+     101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+>>   102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+     103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+     104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+     105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+     106:   sindriNiflheim02 = game.QuestManager.GetQuestState("Quest_NiflheimArmorChest")
+     107:   sindriNiflheim03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Parent")
+     108:   sindriReturnNif03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Objective_Return")
+     109:   niflheim = game.FindLevel("Nid100_Entrance")
+     110:   muspelheim = game.FindLevel("Msp100_Base")
+     111:   if sindriQuestParent01 == "Active" or sindriQuestParent02 == "Active" or httkParent == "Active" then
+     112:     sindriQuestInProgress = true
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=103 terms=GetQuestState
+      93: end
+      94: function QuestStateCheck()
+      95:   sindriQuestParent01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Parent")
+      96:   sindriQuestParent02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Parent")
+      97:   sindriReturn01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_Return")
+      98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+      99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+     100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+     101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+>>   103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+     104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+     105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+     106:   sindriNiflheim02 = game.QuestManager.GetQuestState("Quest_NiflheimArmorChest")
+     107:   sindriNiflheim03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Parent")
+     108:   sindriReturnNif03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Objective_Return")
+     109:   niflheim = game.FindLevel("Nid100_Entrance")
+     110:   muspelheim = game.FindLevel("Msp100_Base")
+     111:   if sindriQuestParent01 == "Active" or sindriQuestParent02 == "Active" or httkParent == "Active" then
+     112:     sindriQuestInProgress = true
+     113:   else
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=104 terms=GetQuestState
+      94: function QuestStateCheck()
+      95:   sindriQuestParent01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Parent")
+      96:   sindriQuestParent02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Parent")
+      97:   sindriReturn01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_Return")
+      98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+      99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+     100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+     101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+     103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+>>   104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+     105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+     106:   sindriNiflheim02 = game.QuestManager.GetQuestState("Quest_NiflheimArmorChest")
+     107:   sindriNiflheim03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Parent")
+     108:   sindriReturnNif03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Objective_Return")
+     109:   niflheim = game.FindLevel("Nid100_Entrance")
+     110:   muspelheim = game.FindLevel("Msp100_Base")
+     111:   if sindriQuestParent01 == "Active" or sindriQuestParent02 == "Active" or httkParent == "Active" then
+     112:     sindriQuestInProgress = true
+     113:   else
+     114:     sindriQuestInProgress = false
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=105 terms=GetQuestState
+      95:   sindriQuestParent01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Parent")
+      96:   sindriQuestParent02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Parent")
+      97:   sindriReturn01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_Return")
+      98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+      99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+     100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+     101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+     103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+     104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+>>   105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+     106:   sindriNiflheim02 = game.QuestManager.GetQuestState("Quest_NiflheimArmorChest")
+     107:   sindriNiflheim03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Parent")
+     108:   sindriReturnNif03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Objective_Return")
+     109:   niflheim = game.FindLevel("Nid100_Entrance")
+     110:   muspelheim = game.FindLevel("Msp100_Base")
+     111:   if sindriQuestParent01 == "Active" or sindriQuestParent02 == "Active" or httkParent == "Active" then
+     112:     sindriQuestInProgress = true
+     113:   else
+     114:     sindriQuestInProgress = false
+     115:   end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=106 terms=GetQuestState
+      96:   sindriQuestParent02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Parent")
+      97:   sindriReturn01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_Return")
+      98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+      99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+     100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+     101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+     103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+     104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+     105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+>>   106:   sindriNiflheim02 = game.QuestManager.GetQuestState("Quest_NiflheimArmorChest")
+     107:   sindriNiflheim03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Parent")
+     108:   sindriReturnNif03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Objective_Return")
+     109:   niflheim = game.FindLevel("Nid100_Entrance")
+     110:   muspelheim = game.FindLevel("Msp100_Base")
+     111:   if sindriQuestParent01 == "Active" or sindriQuestParent02 == "Active" or httkParent == "Active" then
+     112:     sindriQuestInProgress = true
+     113:   else
+     114:     sindriQuestInProgress = false
+     115:   end
+     116:   if VendorQuestInterruptQueue:HasInterrupt(0) then
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=107 terms=GetQuestState
+      97:   sindriReturn01 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_01_Objective_Return")
+      98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+      99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+     100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+     101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+     103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+     104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+     105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+     106:   sindriNiflheim02 = game.QuestManager.GetQuestState("Quest_NiflheimArmorChest")
+>>   107:   sindriNiflheim03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Parent")
+     108:   sindriReturnNif03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Objective_Return")
+     109:   niflheim = game.FindLevel("Nid100_Entrance")
+     110:   muspelheim = game.FindLevel("Msp100_Base")
+     111:   if sindriQuestParent01 == "Active" or sindriQuestParent02 == "Active" or httkParent == "Active" then
+     112:     sindriQuestInProgress = true
+     113:   else
+     114:     sindriQuestInProgress = false
+     115:   end
+     116:   if VendorQuestInterruptQueue:HasInterrupt(0) then
+     117:     armorQuestInProgress = true
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=108 terms=GetQuestState
+      98:   sindriReturn02 = game.QuestManager.GetQuestState("Quest_Sindri_Epic_02_Objective_Return")
+      99:   brokQuestParent01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Parent")
+     100:   brokQuestParent02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Parent")
+     101:   brokReturn01 = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     102:   brokReturn02 = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_Return")
+     103:   httkParent = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Parent")
+     104:   httkReturn = game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return")
+     105:   sindriNiflheim01 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Parent")
+     106:   sindriNiflheim02 = game.QuestManager.GetQuestState("Quest_NiflheimArmorChest")
+     107:   sindriNiflheim03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Parent")
+>>   108:   sindriReturnNif03 = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim03_Objective_Return")
+     109:   niflheim = game.FindLevel("Nid100_Entrance")
+     110:   muspelheim = game.FindLevel("Msp100_Base")
+     111:   if sindriQuestParent01 == "Active" or sindriQuestParent02 == "Active" or httkParent == "Active" then
+     112:     sindriQuestInProgress = true
+     113:   else
+     114:     sindriQuestInProgress = false
+     115:   end
+     116:   if VendorQuestInterruptQueue:HasInterrupt(0) then
+     117:     armorQuestInProgress = true
+     118:   else
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=327 terms=GetQuestState
+     317:           CheckSindriHTTKCheckIn()
+     318:         end
+     319:       end
+     320:     elseif characterIndex == 1 then
+     321:       if brokQuestInProgress == false then
+     322:         CheckBriefingDialogueType()
+     323:       elseif brokQuestInProgress == true then
+     324:         if triggerBrokCinematic == false then
+     325:           CheckQuestCompleteDialogueType()
+     326:         elseif triggerBrokCinematic == true then
+>>   327:           local questState = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_01")
+     328:           if questState == "Active" then
+     329:             return not CheckBriefingBrok02CineDialogue()
+     330:           end
+     331:         end
+     332:       end
+     333:     end
+     334:   elseif armorQuestInProgress == true then
+     335:     CheckQuestCompleteDialogueType()
+     336:   end
+     337:   return true
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=474 terms=GetQuestState
+     464:       return
+     465:     end
+     466:     if game.Combat.GetCombatStatus() == true then
+     467:       print("you are in combat, abort AttemptToTriggerGreeting")
+     468:       return
+     469:     end
+     470:     if player:IsInVehicle() == true then
+     471:       print("you are in a boat, abort AttemptToTriggerGreeting")
+     472:       return
+     473:     end
+>>   474:     local questState = game.QuestManager.GetQuestState("Quest_PeaksPass_Objective830")
+     475:     if questState == "Active" then
+     476:       print("you're in the henge cine, abort AttemptToTriggerGreeting")
+     477:       return
+     478:     end
+     479:     if characterIndex == 0 then
+     480:       SindriPromptEnableCheck()
+     481:     elseif characterIndex == 1 then
+     482:       BrokPromptEnableCheck()
+     483:     end
+     484:     if questGiverAvailable == false then
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=559 terms=GetQuestState
+     549:           return
+     550:         end
+     551:       elseif brokQuestInProgress == true then
+     552:         if checkInHasPlayed == false and banterInProgress == false then
+     553:           CheckInProgressDialogueType()
+     554:         elseif checkInHasPlayed and readyForTurnIn then
+     555:           ambientBanterEnabled = false
+     556:           EnableInteract()
+     557:           return
+     558:         elseif checkInHasPlayed and readyForTurnIn == false and banterInProgress == false then
+>>   559:           local questStateBrokCine = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_01")
+     560:           local questStateBrokReturn = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     561:           if questStateBrokCine == "Active" and thisLevel == game.FindLevel("Xpl475_HuldraMinesLH") then
+     562:             EnableInteract()
+     563:             GameObjects.Smallshop.LuaObjectScript.DisableVendorInteract()
+     564:             return
+     565:           end
+     566:           if questStateBrokReturn == "Active" and thisLevel == game.FindLevel("Xpl425_HuldraMinesLH") then
+     567:             ambientBanterEnabled = false
+     568:             EnableInteract()
+     569:             return
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=560 terms=GetQuestState
+     550:         end
+     551:       elseif brokQuestInProgress == true then
+     552:         if checkInHasPlayed == false and banterInProgress == false then
+     553:           CheckInProgressDialogueType()
+     554:         elseif checkInHasPlayed and readyForTurnIn then
+     555:           ambientBanterEnabled = false
+     556:           EnableInteract()
+     557:           return
+     558:         elseif checkInHasPlayed and readyForTurnIn == false and banterInProgress == false then
+     559:           local questStateBrokCine = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_01")
+>>   560:           local questStateBrokReturn = game.QuestManager.GetQuestState("Quest_Brok_Epic_01_Objective_Return")
+     561:           if questStateBrokCine == "Active" and thisLevel == game.FindLevel("Xpl475_HuldraMinesLH") then
+     562:             EnableInteract()
+     563:             GameObjects.Smallshop.LuaObjectScript.DisableVendorInteract()
+     564:             return
+     565:           end
+     566:           if questStateBrokReturn == "Active" and thisLevel == game.FindLevel("Xpl425_HuldraMinesLH") then
+     567:             ambientBanterEnabled = false
+     568:             EnableInteract()
+     569:             return
+     570:           end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=750 terms=GetQuestState
+     740:         local mistEchoes = game.Wallets.GetResourceValue("HERO", "NiflheimCurrency")
+     741:         if mistEchoes < mistEchoesNeeded then
+     742:           TriggerCheckInStartedEvent()
+     743:           if game.Audio.CanBanterConversationPlay("Nifl_CheckIn") then
+     744:             game.Audio.PlayBanterNonCritical("Nifl_CheckIn", CheckInTriggered)
+     745:           else
+     746:             CheckInTriggered()
+     747:           end
+     748:         elseif mistEchoes >= mistEchoesNeeded then
+     749:           TriggerCheckInStartedEvent()
+>>   750:           local mistEchoQuest = game.QuestManager.GetQuestState("Quest_Sindri_Niflheim_Objective01a")
+     751:           if mistEchoQuest == "Active" then
+     752:             game.QuestManager.ProposeQuestState("Quest_Sindri_Niflheim_Objective01a", "Complete")
+     753:             game.Wallets.AddRecipe("HERO", "Recipe_EntryStoneNiflheim")
+     754:             game.World.StoreCheckpoint()
+     755:           end
+     756:           if game.Audio.CanBanterConversationPlay("Nifl_CheckInComplete") then
+     757:             game.Audio.PlayBanterNonCritical("Nifl_CheckInComplete", Nif01CheckInCompleteTriggered)
+     758:           else
+     759:             Nif01CheckInCompleteTriggered()
+     760:           end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=855 terms=GetQuestState
+     845:       else
+     846:         TriggerCheckInStartedEvent()
+     847:         if game.Audio.CanBanterConversationPlay("Sindri_Global_Checkin03") then
+     848:           game.Audio.PlayBanterNonCritical("Sindri_Global_Checkin03", CheckInTriggered)
+     849:         else
+     850:           CheckInTriggered()
+     851:         end
+     852:       end
+     853:     end
+     854:   elseif characterIndex == 1 then
+>>   855:     local questStateBrokCine = game.QuestManager.GetQuestState("Quest_Brok_Epic_02_Objective_01")
+     856:     if questStateBrokCine == "Active" and thisLevel == game.FindLevel("Xpl475_HuldraMinesLH") then
+     857:       EnableInteract()
+     858:       TriggerCheckInStartedEvent()
+     859:       game.Interact.DisableTags("NotInQuestBanter")
+     860:       game.Audio.PlayBanter("Brok_02Cine_Checkin", BrokCineCheckInTriggered)
+     861:       GameObjects.Smallshop.LuaObjectScript.DisableVendorInteract()
+     862:     elseif brokReturn01 == "Active" then
+     863:       EnableInteract()
+     864:       readyForTurnIn = true
+     865:       checkInHasPlayed = true
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=1286 terms=GetQuestState
+    1276:   VendorQuestInterruptQueue:AddInterrupt(golemInterrupt)
+    1277: end
+    1278: function VendorQuestInterruptQueue:HasInterrupt(characterIndex)
+    1279:   if self.m_queue == nil then
+    1280:     return false
+    1281:   end
+    1282:   if self.m_queue[characterIndex] == nil then
+    1283:     return false
+    1284:   end
+    1285:   for _, inter in pairs(self.m_queue[characterIndex]) do
+>>  1286:     local questState = game.QuestManager.GetQuestState(inter.questName .. "_Parent")
+    1287:     if questState == "Active" then
+    1288:       return true
+    1289:     end
+    1290:   end
+    1291:   return false
+    1292: end
+    1293: function VendorQuestInterruptQueue:GetCurrent(characterIndex)
+    1294:   if not self:HasInterrupt(characterIndex) then
+    1295:     return nil
+    1296:   end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=1302 terms=GetQuestState
+    1292: end
+    1293: function VendorQuestInterruptQueue:GetCurrent(characterIndex)
+    1294:   if not self:HasInterrupt(characterIndex) then
+    1295:     return nil
+    1296:   end
+    1297:   if self.m_current == nil then
+    1298:     self.m_current = {}
+    1299:   end
+    1300:   if self.m_current[characterIndex] == nil then
+    1301:     for _, inter in pairs(self.m_queue[characterIndex]) do
+>>  1302:       local questState = game.QuestManager.GetQuestState(inter.questName .. "_Parent")
+    1303:       if questState == "Active" then
+    1304:         self.m_current[characterIndex] = inter
+    1305:         break
+    1306:       end
+    1307:     end
+    1308:   end
+    1309:   return self.m_current[characterIndex]
+    1310: end
+    1311: function VendorQuestInterruptQueue:AddInterrupt(newInterrupt)
+    1312:   if self.m_queue == nil then
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=1646 terms=GetQuestState
+    1636:       EnableInteract()
+    1637:       print("Storytime passed")
+    1638:     else
+    1639:       ambientBanterEnabled = false
+    1640:       DisableInteract()
+    1641:       print("Storytime failed")
+    1642:     end
+    1643:   end
+    1644: end
+    1645: function StoryTimeBanterAvailable()
+>>  1646:   local questState = game.QuestManager.GetQuestState("Quest_Alfheim_Objective100")
+    1647:   if questState == "Active" then
+    1648:     return false
+    1649:   end
+    1650:   if game.Audio.CanBanterConversationPlay("SindriStoryTimeBanter") and CheckIsInteracting() == false then
+    1651:     return true
+    1652:   else
+    1653:     if ambientBanterTimer then
+    1654:       ambientBanterTimer:Start()
+    1655:     end
+    1656:     return false
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\calthorstatue.lua
+MATCH line=11 terms=GetQuestState
+       1: local thisObj
+       2: local banterPlayed = false
+       3: local timesHit = 0
+       4: function OnScriptLoaded(level, obj)
+       5:   game.SubObject.Sleep(obj)
+       6:   game.SubObject.SetForgetOnCheckpoint(obj)
+       7: end
+       8: function OnFirstStart(level, obj)
+       9: end
+      10: function OnHitByWeapon(level, obj, attacker, hitGameObject)
+>>    11:   local questState = game.QuestManager.GetQuestState("Quest_UnfinishedBusiness03_Objective_01")
+      12:   if questState == "Active" then
+      13:     timesHit = timesHit + 1
+      14:     if 5 < timesHit then
+      15:       banterPlayed = false
+      16:       timesHit = 0
+      17:     end
+      18:   end
+      19:   if questState == "Active" and banterPlayed == false then
+      20:     game.Audio.PlayBanter("UB_TR_NotThatStatue")
+      21:     banterPlayed = true
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=216 terms=GetQuestState
+     206:       typeSpecificData.FX_Inner:ClearAllAnimCallbacks()
+     207:       typeSpecificData.FX_Inner:JumpAnimToFrame(650)
+     208:       typeSpecificData.FX_Inner:PlayAnimToFrame(700)
+     209:     end
+     210:     function typeSpecificCallbacks.OnOpened()
+     211:       typeSpecificData.PreAwardMuspCount = game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece")
+     212:       typeSpecificData.PreAwardNifCount = game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece")
+     213:     end
+     214:     function typeSpecificCallbacks.AwardLoot()
+     215:       local IncrementQuest = function(parent, child, pieces)
+>>   216:         local questState = game.QuestManager.GetQuestState(parent)
+     217:         if questState == "Inactive" then
+     218:           game.QuestManager.StartQuest(parent)
+     219:         end
+     220:         local _, progress = game.QuestManager.GetQuestProgressAndGoal(child)
+     221:         game.QuestManager.IncrementQuestProgress(child, pieces - progress)
+     222:       end
+     223:       if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") > typeSpecificData.PreAwardMuspCount then
+     224:         IncrementQuest("Quest_SonLanguage_Muspelheim_Parent", "Quest_SonLanguage_Muspelheim", game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece"))
+     225:         if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") == 4 then
+     226:           game.Audio.PlayBanterNonCritical("Musp_Disc_Complete")
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=256 terms=GetQuestState
+     246:     reward = ""
+     247:     openFX = "Chest_Legendary_Open_Effect_Root"
+     248:   elseif chestType == "Custom_MimirsEye" then
+     249:     branchName = "BRA_MimirsEye"
+     250:     animName = "poiMimirEye010Scene"
+     251:     reward = ""
+     252:     openFX = "Chest_Legendary_Open_Effect_Root"
+     253:   end
+     254: end
+     255: function TrophyCheck()
+>>   256:   if game.QuestManager.GetQuestState("Quest_SonLanguage_Muspelheim") == "Complete" and game.QuestManager.GetQuestState("Quest_SonLanguage_Niflheim") == "Complete" then
+     257:     AwardTrophy()
+     258:   end
+     259:   if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") == 4 and game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece") == 4 then
+     260:     AwardTrophy()
+     261:   end
+     262: end
+     263: function OnUseWorld(level, obj)
+     264:   if interactZone:PlayerCanInteract() then
+     265:     player:RequestInteract(thisObj, {InteractZone = interactZone, LerpObject = lootObject})
+     266:   end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=386 terms=RegionSummary_
+     376:   end
+     377:   if typeSpecificCallbacks.OnOpened then
+     378:     typeSpecificCallbacks.OnOpened()
+     379:   end
+     380:   if chestType == "Legendary" then
+     381:     local found, currentRegion = game.Map.FindPlayerRegion()
+     382:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+     383:     if found and comparisonString ~= "TyrsVault" and comparisonString ~= "TheHallofTyr" then
+     384:       UpdateRegionSummary(currentRegion, "LegendaryChest")
+     385:     elseif found and comparisonString == "TyrsVault" then
+>>   386:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TyrsVault")
+     387:     elseif found and comparisonString == "TheHallofTyr" then
+     388:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TheHallofTyr")
+     389:     else
+     390:       print("RegionSummary Check: no region found for player")
+     391:     end
+     392:   end
+     393:   if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+     394:     local found, currentRegion = game.Map.FindPlayerRegion()
+     395:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+     396:     if found and comparisonString ~= "TyrsVault" then
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=388 terms=RegionSummary_
+     378:     typeSpecificCallbacks.OnOpened()
+     379:   end
+     380:   if chestType == "Legendary" then
+     381:     local found, currentRegion = game.Map.FindPlayerRegion()
+     382:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+     383:     if found and comparisonString ~= "TyrsVault" and comparisonString ~= "TheHallofTyr" then
+     384:       UpdateRegionSummary(currentRegion, "LegendaryChest")
+     385:     elseif found and comparisonString == "TyrsVault" then
+     386:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TyrsVault")
+     387:     elseif found and comparisonString == "TheHallofTyr" then
+>>   388:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TheHallofTyr")
+     389:     else
+     390:       print("RegionSummary Check: no region found for player")
+     391:     end
+     392:   end
+     393:   if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+     394:     local found, currentRegion = game.Map.FindPlayerRegion()
+     395:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+     396:     if found and comparisonString ~= "TyrsVault" then
+     397:       UpdateRegionSummary(currentRegion, "RunicChest")
+     398:     elseif found and comparisonString == "TyrsVault" then
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=399 terms=RegionSummary_
+     389:     else
+     390:       print("RegionSummary Check: no region found for player")
+     391:     end
+     392:   end
+     393:   if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+     394:     local found, currentRegion = game.Map.FindPlayerRegion()
+     395:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+     396:     if found and comparisonString ~= "TyrsVault" then
+     397:       UpdateRegionSummary(currentRegion, "RunicChest")
+     398:     elseif found and comparisonString == "TyrsVault" then
+>>   399:       LD.ActivateAndIncrementQuest("RegionSummary_RunicChest_Parent_TyrsVault")
+     400:     else
+     401:       print("RegionSummary Check: no region found for player")
+     402:     end
+     403:     if game.Loot.AlertTripleChestOpened ~= nil then
+     404:       game.Loot.AlertTripleChestOpened()
+     405:     end
+     406:   end
+     407:   if chestType == "Coffin" and not trapChest then
+     408:     game.Audio.PlayBanterNonCritical("ca_first_coffin", nil, nil, false)
+     409:   end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=421 terms=RegionSummary_
+     411:     PlayLootIdleSound()
+     412:   end
+     413: end
+     414: function UpdateRegionSummary(regionID, categoryName)
+     415:   local regionStringName = LD.RegionInfo_GetName(regionID)
+     416:   local regionSummaryInfo = game.Map.GetRegionSummaryInfo(regionID)
+     417:   for _, summaryInfo in ipairs(regionSummaryInfo) do
+     418:     local categoryID = summaryInfo.CategoryStr
+     419:     if categoryID ~= nil then
+     420:       if categoryID == categoryName then
+>>   421:         local regionQuest = tostring("RegionSummary_" .. categoryName .. "_Parent_" .. regionStringName)
+     422:         print("DOING LEGENDARY QUEST....", regionQuest)
+     423:         LD.ActivateAndIncrementQuest(regionQuest)
+     424:       end
+     425:     else
+     426:       print("string value not present")
+     427:     end
+     428:   end
+     429: end
+     430: function PickUp()
+     431:   if lootObject then
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_loot_artifact.lua
+MATCH line=156 terms=GetQuestState
+     146:     typeSpecificData.resource = "ShipHead"
+     147:   elseif artifactType == "Toy" then
+     148:     typeSpecificData.questState = "Quest_Artifacts_LostToys_Parent"
+     149:     typeSpecificData.recipe = "Recipe_Artifacts_Toys"
+     150:     typeSpecificData.questProgress = "Quest_Artifacts_LostToys"
+     151:     typeSpecificData.resource = "LostToy"
+     152:   end
+     153: end
+     154: function IncrementCounter(level, obj)
+     155:   SetTypeData()
+>>   156:   local questState = game.QuestManager.GetQuestState(typeSpecificData.questState)
+     157:   local audioPlayed = false
+     158:   if questState == "Inactive" then
+     159:     game.QuestManager.StartQuest(typeSpecificData.questState)
+     160:     game.Wallets.AddRecipe("HERO", typeSpecificData.recipe)
+     161:     if son:IsAvailableInLevel() and game.Audio.CanBanterConversationPlay("Artifact_FirstCollected") then
+     162:       game.Audio.PlayBanterNonCritical("Artifact_FirstCollected")
+     163:       audioPlayed = true
+     164:     end
+     165:   end
+     166:   ActivateRegionSummaryQuest()
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_loot_artifact.lua
+MATCH line=178 terms=GetQuestState
+     168:   if CheckAllArtifactQuestStatus() == true then
+     169:     AwardTrophy()
+     170:   end
+     171:   game.Wallets.AddResource("HERO", typeSpecificData.resource, 1, LootObject:GetName(), "Artifact")
+     172:   game.Wallets.AddResource("HERO", uniqueResource, 1, LootObject:GetName(), "Artifact")
+     173:   state = states.ACQUIRED
+     174:   SoftSave()
+     175:   if audioPlayed == false then
+     176:     CheckQuestStatus(typeSpecificData.questState)
+     177:   end
+>>   178:   if game.QuestManager.GetQuestState("Quest_Artifacts_ShipHeads") == "Complete" then
+     179:     FixupShipHeadRegion()
+     180:   end
+     181: end
+     182: function CheckQuestStatus(questInfo)
+     183:   if son:IsAvailableInLevel() then
+     184:     local questState = game.QuestManager.GetQuestState(questInfo)
+     185:     if questState == "Complete" then
+     186:       game.Audio.PlayBanterNonCritical("Artifact_Complete")
+     187:     else
+     188:       game.Audio.PlayBanterNonCritical("Artifact_Subsequent")
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_loot_artifact.lua
+MATCH line=184 terms=GetQuestState
+     174:   SoftSave()
+     175:   if audioPlayed == false then
+     176:     CheckQuestStatus(typeSpecificData.questState)
+     177:   end
+     178:   if game.QuestManager.GetQuestState("Quest_Artifacts_ShipHeads") == "Complete" then
+     179:     FixupShipHeadRegion()
+     180:   end
+     181: end
+     182: function CheckQuestStatus(questInfo)
+     183:   if son:IsAvailableInLevel() then
+>>   184:     local questState = game.QuestManager.GetQuestState(questInfo)
+     185:     if questState == "Complete" then
+     186:       game.Audio.PlayBanterNonCritical("Artifact_Complete")
+     187:     else
+     188:       game.Audio.PlayBanterNonCritical("Artifact_Subsequent")
+     189:     end
+     190:   end
+     191: end
+     192: function CheckAllArtifactQuestStatus()
+     193:   if game.QuestManager.GetQuestState("Quest_Artifacts_Alfheim") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_Brooches") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_OrnateCups") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_VikingHorns") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_NorseMasks") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_ShipHeads") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_LostToys") == "Complete" then
+     194:     return true
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_loot_artifact.lua
+MATCH line=193 terms=GetQuestState
+     183:   if son:IsAvailableInLevel() then
+     184:     local questState = game.QuestManager.GetQuestState(questInfo)
+     185:     if questState == "Complete" then
+     186:       game.Audio.PlayBanterNonCritical("Artifact_Complete")
+     187:     else
+     188:       game.Audio.PlayBanterNonCritical("Artifact_Subsequent")
+     189:     end
+     190:   end
+     191: end
+     192: function CheckAllArtifactQuestStatus()
+>>   193:   if game.QuestManager.GetQuestState("Quest_Artifacts_Alfheim") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_Brooches") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_OrnateCups") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_VikingHorns") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_NorseMasks") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_ShipHeads") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_LostToys") == "Complete" then
+     194:     return true
+     195:   end
+     196:   return false
+     197: end
+     198: function ActivateRegionSummaryQuest()
+     199:   if regionSummaryQuest ~= nil and regionSummaryQuest ~= "" then
+     200:     regionSummaryQuest = string.gsub(regionSummaryQuest, "%s+", "")
+     201:     LD.ActivateAndIncrementQuest(regionSummaryQuest)
+     202:   end
+     203: end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_loot_artifact.lua
+MATCH line=214 terms=RegionSummary_
+     204: function AwardTrophy()
+     205:   print("Award Trophy: My Precious")
+     206:   game.UnlockTrophy(24)
+     207: end
+     208: function SoftSave(level, obj)
+     209:   print("soft save occurred")
+     210:   game.SubObject.SoftSave(thisObj)
+     211: end
+     212: function FixupShipHeadRegion()
+     213:   print("FIXING UP SHIP HEAD")
+>>   214:   LD.ActivateAndIncrementQuest("RegionSummary_CALS_Shiphead_Parent")
+     215: end
+     216: function Enable()
+     217:   if state ~= states.ACQUIRED then
+     218:     state = states.ENABLED
+     219:     frontInteractZone:Enable()
+     220:   end
+     221: end
+     222: function Disable()
+     223:   if state ~= states.ACQUIRED then
+     224:     state = states.DISABLED
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_loot_pocketrift.lua
+MATCH line=402 terms=GetQuestState
+     392:     lootObject:Hide()
+     393:   end
+     394:   if thisObj:FindLuaTableAttribute("onOpenedEvent") ~= nil then
+     395:     LD.ExecuteCallbacksForEvent(thisLevel, thisObj, onOpenedEvent, "onOpenedEvent")
+     396:   end
+     397:   local rewardName = "MISC_LEGENDARY_TIER"
+     398:   LD.RollContainerConditionLoot(rewardName, RewardTier, WADName, RewardTierIndex, thisObj:GetName())
+     399:   CheckQuestState()
+     400: end
+     401: function CheckQuestState()
+>>   402:   local questState = game.QuestManager.GetQuestState("Quest_Labor_RiftPockets_Parent")
+     403:   if questState == "Inactive" then
+     404:     game.QuestManager.StartQuest("Quest_Labor_RiftPockets_Parent")
+     405:   end
+     406:   local questStateBronze = game.QuestManager.GetQuestState("Quest_Labor_RiftPockets_Bronze")
+     407:   local questStateSilver = game.QuestManager.GetQuestState("Quest_Labor_RiftPockets_Silver")
+     408:   game.QuestManager.IncrementQuestProgress("Quest_Labor_RiftPockets", 1)
+     409:   if questStateBronze == "Active" then
+     410:     game.QuestManager.IncrementQuestProgress("Quest_Labor_RiftPockets_Bronze", 1)
+     411:   end
+     412:   if questStateSilver == "Active" then
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_loot_pocketrift.lua
+MATCH line=406 terms=GetQuestState
+     396:   end
+     397:   local rewardName = "MISC_LEGENDARY_TIER"
+     398:   LD.RollContainerConditionLoot(rewardName, RewardTier, WADName, RewardTierIndex, thisObj:GetName())
+     399:   CheckQuestState()
+     400: end
+     401: function CheckQuestState()
+     402:   local questState = game.QuestManager.GetQuestState("Quest_Labor_RiftPockets_Parent")
+     403:   if questState == "Inactive" then
+     404:     game.QuestManager.StartQuest("Quest_Labor_RiftPockets_Parent")
+     405:   end
+>>   406:   local questStateBronze = game.QuestManager.GetQuestState("Quest_Labor_RiftPockets_Bronze")
+     407:   local questStateSilver = game.QuestManager.GetQuestState("Quest_Labor_RiftPockets_Silver")
+     408:   game.QuestManager.IncrementQuestProgress("Quest_Labor_RiftPockets", 1)
+     409:   if questStateBronze == "Active" then
+     410:     game.QuestManager.IncrementQuestProgress("Quest_Labor_RiftPockets_Bronze", 1)
+     411:   end
+     412:   if questStateSilver == "Active" then
+     413:     game.QuestManager.IncrementQuestProgress("Quest_Labor_RiftPockets_Silver", 1)
+     414:   end
+     415:   if regionSummaryQuest ~= nil and regionSummaryQuest ~= "" then
+     416:     regionSummaryQuest = string.gsub(regionSummaryQuest, "%s+", "")
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_loot_pocketrift.lua
+MATCH line=407 terms=GetQuestState
+     397:   local rewardName = "MISC_LEGENDARY_TIER"
+     398:   LD.RollContainerConditionLoot(rewardName, RewardTier, WADName, RewardTierIndex, thisObj:GetName())
+     399:   CheckQuestState()
+     400: end
+     401: function CheckQuestState()
+     402:   local questState = game.QuestManager.GetQuestState("Quest_Labor_RiftPockets_Parent")
+     403:   if questState == "Inactive" then
+     404:     game.QuestManager.StartQuest("Quest_Labor_RiftPockets_Parent")
+     405:   end
+     406:   local questStateBronze = game.QuestManager.GetQuestState("Quest_Labor_RiftPockets_Bronze")
+>>   407:   local questStateSilver = game.QuestManager.GetQuestState("Quest_Labor_RiftPockets_Silver")
+     408:   game.QuestManager.IncrementQuestProgress("Quest_Labor_RiftPockets", 1)
+     409:   if questStateBronze == "Active" then
+     410:     game.QuestManager.IncrementQuestProgress("Quest_Labor_RiftPockets_Bronze", 1)
+     411:   end
+     412:   if questStateSilver == "Active" then
+     413:     game.QuestManager.IncrementQuestProgress("Quest_Labor_RiftPockets_Silver", 1)
+     414:   end
+     415:   if regionSummaryQuest ~= nil and regionSummaryQuest ~= "" then
+     416:     regionSummaryQuest = string.gsub(regionSummaryQuest, "%s+", "")
+     417:     LD.ActivateAndIncrementQuest(regionSummaryQuest)
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\vendor.lua
+MATCH line=112 terms=GetQuestState
+     102:     local spaceGemLost = game.Wallets.GetResourceValue("LOST_ITEMS", "RuneCreator_Unique_Hellheim")
+     103:     if spaceGem ~= nil and #spaceGem <= 0 and spaceGemLost == -1 then
+     104:       game.Wallets.GenerateRune("LOST_ITEMS", "RuneCreator_Unique_Hellheim")
+     105:       game.Wallets.AddResource("LOST_ITEMS", "RuneCreator_Unique_Hellheim", 1, "NO_TELEMETRY")
+     106:     end
+     107:   end
+     108:   if 570 <= cineNumber then
+     109:     local glacialCatalystObtained = game.Wallets.GetResourceValue("HERO", "GlacialCatalyst")
+     110:     local glacialCatalystLost = game.Wallets.GetResourceValue("LOST_ITEMS", "GlacialCatalyst")
+     111:     if glacialCatalystObtained == 2 and glacialCatalystLost == -1 then
+>>   112:       local treasureMapBlink = game.QuestManager.GetQuestState("Quest_TreasureMap_BlackBreath_Parent")
+     113:       local treasureMapOars = game.QuestManager.GetQuestState("Quest_TreasureMap_Oarsmen_Parent")
+     114:       if treasureMapBlink == "Complete" and treasureMapOars == "Complete" then
+     115:         game.Wallets.AddResource("LOST_ITEMS", "GlacialCatalyst", 1, "NO_TELEMETRY")
+     116:       end
+     117:     end
+     118:   end
+     119: end
+     120: function DisableLights()
+     121:   if storeLightParent ~= nil then
+     122:     for _, desc in pairs(storeLightParent.Descendants) do
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\vendor.lua
+MATCH line=113 terms=GetQuestState
+     103:     if spaceGem ~= nil and #spaceGem <= 0 and spaceGemLost == -1 then
+     104:       game.Wallets.GenerateRune("LOST_ITEMS", "RuneCreator_Unique_Hellheim")
+     105:       game.Wallets.AddResource("LOST_ITEMS", "RuneCreator_Unique_Hellheim", 1, "NO_TELEMETRY")
+     106:     end
+     107:   end
+     108:   if 570 <= cineNumber then
+     109:     local glacialCatalystObtained = game.Wallets.GetResourceValue("HERO", "GlacialCatalyst")
+     110:     local glacialCatalystLost = game.Wallets.GetResourceValue("LOST_ITEMS", "GlacialCatalyst")
+     111:     if glacialCatalystObtained == 2 and glacialCatalystLost == -1 then
+     112:       local treasureMapBlink = game.QuestManager.GetQuestState("Quest_TreasureMap_BlackBreath_Parent")
+>>   113:       local treasureMapOars = game.QuestManager.GetQuestState("Quest_TreasureMap_Oarsmen_Parent")
+     114:       if treasureMapBlink == "Complete" and treasureMapOars == "Complete" then
+     115:         game.Wallets.AddResource("LOST_ITEMS", "GlacialCatalyst", 1, "NO_TELEMETRY")
+     116:       end
+     117:     end
+     118:   end
+     119: end
+     120: function DisableLights()
+     121:   if storeLightParent ~= nil then
+     122:     for _, desc in pairs(storeLightParent.Descendants) do
+     123:       desc:JumpAnimToFrame(45)
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\vendor.lua
+MATCH line=847 terms=GetQuestState
+     837:     if son ~= nil then
+     838:       son:TriggerMoveEvent("ExitCrafting")
+     839:     end
+     840:     vendorIsActive = false
+     841:   else
+     842:     tutorialActive = false
+     843:     player:TriggerMoveEvent("ExitCraftingTutorial")
+     844:     LD.SetMarkerState("RP_300_VendorLocation", 1)
+     845:     LD.UpdateMap("RP_300_VendorLocation", 0)
+     846:   end
+>>   847:   if game.QuestManager.GetQuestState("Quest_TravelerArmor_Parent") == "Inactive" and 0 < game.Wallets.GetResourceValue("HERO", "TravelerLoot") then
+     848:     LD.ActivateQuest("Quest_TravelerArmor_Parent")
+     849:   end
+     850: end
+     851: function LuaHook_ExitAnimDone()
+     852:   StopVendorFX()
+     853:   if vendorExitRequested then
+     854:     print("Vendor Exit requested")
+     855:     LD.ExecuteCallbacksForEvent(thisObj.Level, thisObj, vendorExitRequested, "Vendor Exit Requested")
+     856:   end
+     857: end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\vendor.lua
+MATCH line=1327 terms=GetQuestState
+    1317:   }
+    1318:   local sonQuiverUpgrades = {
+    1319:     "Recipe_ReinforcementQuiver_Tier02",
+    1320:     "Recipe_ReinforcementQuiver_Tier03",
+    1321:     "Recipe_ReinforcementQuiver_Tier04"
+    1322:   }
+    1323:   FixupRecipesByStage(sonBowUpgrades, sonBowStage)
+    1324:   FixupRecipesByStage(sonQuiverUpgrades, sonQuiverStage)
+    1325: end
+    1326: function CheckQuestFailSafes()
+>>  1327:   if game.Wallets.GetResourceValue("LOST_ITEMS", "GolemLoot_Tracker1") == 1 and game.QuestManager.GetQuestState("Quest_GolemArmor_Parent") == "Inactive" then
+    1328:     LD.ActivateQuest("Quest_GolemArmor_Parent")
+    1329:   end
+    1330:   if game.Wallets.GetResourceValue("LOST_ITEMS", "TravelerLoot_Tracker1") == 1 and game.QuestManager.GetQuestState("Quest_TravelerArmor_Parent") == "Inactive" then
+    1331:     LD.ActivateQuest("Quest_TravelerArmor_Parent")
+    1332:   end
+    1333:   local golem, amount = game.QuestManager.GetQuestProgressAndGoal("Quest_Labor_AncientKills")
+    1334:   if 1 > game.Wallets.GetResourceValue("HERO", "GolemFailsafe") and 0 < amount then
+    1335:     VerifyGolemContent()
+    1336:   end
+    1337:   local _, progress = game.QuestManager.GetQuestProgressAndGoal("Quest_Labor_TravelerKills")
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\vendor.lua
+MATCH line=1330 terms=GetQuestState
+    1320:     "Recipe_ReinforcementQuiver_Tier03",
+    1321:     "Recipe_ReinforcementQuiver_Tier04"
+    1322:   }
+    1323:   FixupRecipesByStage(sonBowUpgrades, sonBowStage)
+    1324:   FixupRecipesByStage(sonQuiverUpgrades, sonQuiverStage)
+    1325: end
+    1326: function CheckQuestFailSafes()
+    1327:   if game.Wallets.GetResourceValue("LOST_ITEMS", "GolemLoot_Tracker1") == 1 and game.QuestManager.GetQuestState("Quest_GolemArmor_Parent") == "Inactive" then
+    1328:     LD.ActivateQuest("Quest_GolemArmor_Parent")
+    1329:   end
+>>  1330:   if game.Wallets.GetResourceValue("LOST_ITEMS", "TravelerLoot_Tracker1") == 1 and game.QuestManager.GetQuestState("Quest_TravelerArmor_Parent") == "Inactive" then
+    1331:     LD.ActivateQuest("Quest_TravelerArmor_Parent")
+    1332:   end
+    1333:   local golem, amount = game.QuestManager.GetQuestProgressAndGoal("Quest_Labor_AncientKills")
+    1334:   if 1 > game.Wallets.GetResourceValue("HERO", "GolemFailsafe") and 0 < amount then
+    1335:     VerifyGolemContent()
+    1336:   end
+    1337:   local _, progress = game.QuestManager.GetQuestProgressAndGoal("Quest_Labor_TravelerKills")
+    1338:   if 1 > game.Wallets.GetResourceValue("HERO", "TravelerFailSafe") and 0 < progress then
+    1339:     VerifyTravelerContent()
+    1340:   end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\progression\vendor.lua
+MATCH line=1341 terms=GetQuestState
+    1331:     LD.ActivateQuest("Quest_TravelerArmor_Parent")
+    1332:   end
+    1333:   local golem, amount = game.QuestManager.GetQuestProgressAndGoal("Quest_Labor_AncientKills")
+    1334:   if 1 > game.Wallets.GetResourceValue("HERO", "GolemFailsafe") and 0 < amount then
+    1335:     VerifyGolemContent()
+    1336:   end
+    1337:   local _, progress = game.QuestManager.GetQuestProgressAndGoal("Quest_Labor_TravelerKills")
+    1338:   if 1 > game.Wallets.GetResourceValue("HERO", "TravelerFailSafe") and 0 < progress then
+    1339:     VerifyTravelerContent()
+    1340:   end
+>>  1341:   if 0 > game.Wallets.GetResourceValue("LOST_ITEMS", "LeiptrAlloy") and game.QuestManager.GetQuestState("Quest_StoneMason_Objective400") == "Complete" then
+    1342:     game.Wallets.AddResource("LOST_ITEMS", "LeiptrAlloy", 1)
+    1343:   end
+    1344: end
+    1345: function VerifyGolemContent()
+    1346:   local _, progress = game.QuestManager.GetQuestProgressAndGoal("Quest_Labor_AncientKills")
+    1347:   if game.Wallets.GetResourceValue("LOST_ITEMS", "GolemLoot_Tracker1") < 1 and 1 <= progress then
+    1348:     game.Wallets.AddResource("LOST_ITEMS", "GolemLoot", 5)
+    1349:     game.Wallets.AddResource("LOST_ITEMS", "EnhancedGolemLoot", 1)
+    1350:     game.Wallets.AddResource("LOST_ITEMS", "GolemLoot_Tracker1", 1)
+    1351:   end
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\soninteracts\langcheckruneread.lua
+MATCH line=114 terms=GetQuestState
+     104: end
+     105: function FreyaCheck()
+     106:   if game.Level.GetVariable("FreyaLTWStage") > 0 and game.Level.GetVariable("FreyaLTWStage") < 500 then
+     107:     return true
+     108:   else
+     109:     return false
+     110:   end
+     111: end
+     112: function CheckForFailureType()
+     113:   local cineNumber = game.Level.GetVariable("CompletedCineNumber")
+>>   114:   local lo9Quest = game.QuestManager.GetQuestState("Quest_UnfinishedBusiness05_Parent")
+     115:   local muspCipherQuest = game.QuestManager.GetQuestState("Quest_SonLanguage_Muspelheim")
+     116:   local nifCipherQuest = game.QuestManager.GetQuestState("Quest_SonLanguage_Niflheim")
+     117:   local firstMimirRead = game.Level.GetVariable("MimirBrazierRead")
+     118:   local lo9InProgressRead = game.Level.GetVariable("BrazierInProgressRead")
+     119:   if firstMimirRead == false and 330 <= cineNumber then
+     120:     game.Audio.PlayBanter("Brazier_Mimir_Indecipherable", PartiallyFailInteract)
+     121:     game.Level.SetVariable("MimirBrazierRead", true)
+     122:   elseif lo9Quest ~= "Inactive" and lo9InProgressRead == false then
+     123:     game.Audio.PlayBanter("Brazier_Indecipherable_OneLit", PartiallyFailInteract)
+     124:     game.Level.SetVariable("BrazierInProgressRead", true)
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\soninteracts\langcheckruneread.lua
+MATCH line=115 terms=GetQuestState
+     105: function FreyaCheck()
+     106:   if game.Level.GetVariable("FreyaLTWStage") > 0 and game.Level.GetVariable("FreyaLTWStage") < 500 then
+     107:     return true
+     108:   else
+     109:     return false
+     110:   end
+     111: end
+     112: function CheckForFailureType()
+     113:   local cineNumber = game.Level.GetVariable("CompletedCineNumber")
+     114:   local lo9Quest = game.QuestManager.GetQuestState("Quest_UnfinishedBusiness05_Parent")
+>>   115:   local muspCipherQuest = game.QuestManager.GetQuestState("Quest_SonLanguage_Muspelheim")
+     116:   local nifCipherQuest = game.QuestManager.GetQuestState("Quest_SonLanguage_Niflheim")
+     117:   local firstMimirRead = game.Level.GetVariable("MimirBrazierRead")
+     118:   local lo9InProgressRead = game.Level.GetVariable("BrazierInProgressRead")
+     119:   if firstMimirRead == false and 330 <= cineNumber then
+     120:     game.Audio.PlayBanter("Brazier_Mimir_Indecipherable", PartiallyFailInteract)
+     121:     game.Level.SetVariable("MimirBrazierRead", true)
+     122:   elseif lo9Quest ~= "Inactive" and lo9InProgressRead == false then
+     123:     game.Audio.PlayBanter("Brazier_Indecipherable_OneLit", PartiallyFailInteract)
+     124:     game.Level.SetVariable("BrazierInProgressRead", true)
+     125:   elseif muspCipherQuest == "Inactive" and nifCipherQuest == "Inactive" then
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\soninteracts\langcheckruneread.lua
+MATCH line=116 terms=GetQuestState
+     106:   if game.Level.GetVariable("FreyaLTWStage") > 0 and game.Level.GetVariable("FreyaLTWStage") < 500 then
+     107:     return true
+     108:   else
+     109:     return false
+     110:   end
+     111: end
+     112: function CheckForFailureType()
+     113:   local cineNumber = game.Level.GetVariable("CompletedCineNumber")
+     114:   local lo9Quest = game.QuestManager.GetQuestState("Quest_UnfinishedBusiness05_Parent")
+     115:   local muspCipherQuest = game.QuestManager.GetQuestState("Quest_SonLanguage_Muspelheim")
+>>   116:   local nifCipherQuest = game.QuestManager.GetQuestState("Quest_SonLanguage_Niflheim")
+     117:   local firstMimirRead = game.Level.GetVariable("MimirBrazierRead")
+     118:   local lo9InProgressRead = game.Level.GetVariable("BrazierInProgressRead")
+     119:   if firstMimirRead == false and 330 <= cineNumber then
+     120:     game.Audio.PlayBanter("Brazier_Mimir_Indecipherable", PartiallyFailInteract)
+     121:     game.Level.SetVariable("MimirBrazierRead", true)
+     122:   elseif lo9Quest ~= "Inactive" and lo9InProgressRead == false then
+     123:     game.Audio.PlayBanter("Brazier_Indecipherable_OneLit", PartiallyFailInteract)
+     124:     game.Level.SetVariable("BrazierInProgressRead", true)
+     125:   elseif muspCipherQuest == "Inactive" and nifCipherQuest == "Inactive" then
+     126:     game.Audio.PlayBanter("Brazier_Indecipherable_None", FailInteract)
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\soninteracts\towerbraziers.lua
+MATCH line=152 terms=GetQuestState
+     142: function OnBrazierReadingFinished()
+     143:   print("Test Stage 3")
+     144:   local _, progress = game.QuestManager.GetQuestProgressAndGoal("Quest_Labor_LightBrazier")
+     145:   local firstTime = progress < 1
+     146:   Disable()
+     147:   LightFires()
+     148:   PlaySoundOnBrazierIgnition()
+     149:   if endInteractionCallbacks then
+     150:     LD.ExecuteCallbacksForEvent(thisLevel, thisObj, endInteractionCallbacks)
+     151:   end
+>>   152:   local questState = game.QuestManager.GetQuestState("Quest_Labor_LightBrazier_Parent")
+     153:   if questState == "Inactive" then
+     154:     game.QuestManager.StartQuest("Quest_Labor_LightBrazier_Parent")
+     155:   end
+     156:   game.QuestManager.IncrementQuestProgress("Quest_Labor_LightBrazier", 1)
+     157:   state = states.INTERACTED
+     158:   SoftSave()
+     159:   if firstTime then
+     160:     game.Audio.PlayBanter("Brazier_Light_First_Lit", FirstTImeFollowupOne)
+     161:   else
+     162:     SubsequentBraziersLit()
+
+================================================================================================
+FILE lua_source\gameart\scripts\levels\gameplaymodules\soninteracts\towerbraziers.lua
+MATCH line=240 terms=GetQuestState
+     230:     end
+     231:   elseif progress == 8 then
+     232:     FinalBrazierCheck()
+     233:   end
+     234: end
+     235: function PreJotunheimBanter()
+     236:   game.Audio.PlayBanter("Brazier_Light_Subsequent_Mimir")
+     237: end
+     238: function FinalBrazierCheck()
+     239:   local _, progress = game.QuestManager.GetQuestProgressAndGoal("Quest_Valkyrie_Sisters_Objective02")
+>>   240:   local queenState = game.QuestManager.GetQuestState("Quest_Valkyrie_Queen_Kill")
+     241:   if progress < 1 then
+     242:     game.Audio.PlayBanter("Brazier_Complete_None")
+     243:   elseif 0 < progress and progress < 8 then
+     244:     game.Audio.PlayBanter("Brazier_Complete_Some")
+     245:   end
+     246:   if queenState == "Complete" then
+     247:     game.Audio.PlayBanter("Brazier_Complete_All")
+     248:   end
+     249: end
+     250: function SetRequiresCriticalBanterComplete()
+
+================================================================================================
+FILE lua_source\gameart\scripts\libraries\design\boatbanterlibrary.lua
+MATCH line=200 terms=GetQuestState
+     190:     game.Level.SetVariable("QuestBanterIndex", -1)
+     191:     engine.Warning("Warning in BoatBanterLibrary.lua: QuestBanter Index " .. tostring(index) .. " does not exist in questBanterIndexTable")
+     192:     return
+     193:   else
+     194:     objectiveName = questBanterIndexTable[index]
+     195:   end
+     196:   if questBanterOnBoatEnter[objectiveName] == nil then
+     197:     engine.Error("Error in BoatBanterLibrary.lua: QuestName " .. tostring(objectiveName) .. " does not exist in questBanterIndexTable")
+     198:     return
+     199:   end
+>>   200:   if game.QuestManager.GetQuestState(objectiveName) ~= "Active" then
+     201:     game.Level.SetVariable("QuestBanterIndex", -1)
+     202:     engine.Warning("Warning in BoatBanterLibrary.lua: QuestName " .. tostring(objectiveName) .. [[
+     203:  is not active. OnBoatEnter Quest Banter wont play. Resetting QuestBanterIndex.
+     204: Make sure LD.SetRecentlyActivatedQuest( questName ) was called previosuly]])
+     205:     return
+     206:   end
+     207:   if questBanterOnBoatEnter[objectiveName].questType == QUEST_TYPE.PROGRESSIVE then
+     208:     local _, progressCount = game.QuestManager.GetQuestProgressAndGoal(objectiveName)
+     209:     local questBanterToPlay = questBanterOnBoatEnter[objectiveName].banterName[progressCount]
+     210:     game.Audio.PlayBanterNonCritical(questBanterToPlay, nil, nil, true, function()
+
+================================================================================================
+FILE lua_source\gameart\scripts\libraries\design\mayaluatableslibrary.lua
+MATCH line=65 terms=GetQuestState
+      55:       end
+      56:       visitorFn(level, obj, eventAttr, debugEventName, mockFunc, ...)
+      57:     elseif colonIndex ~= nil then
+      58:       local objName = string.sub(functionToTrigger, 1, colonIndex - 1)
+      59:       local functionName = string.sub(functionToTrigger, colonIndex + 1)
+      60:       if string.sub(objName, 1, 6) == "_Quest" then
+      61:         local questName = functionName
+      62:         local mockFunc
+      63:         if objName == "_QuestStart" then
+      64:           function mockFunc(t, ...)
+>>    65:             if game.QuestManager.GetQuestState(questName) == "Inactive" then
+      66:               game.QuestManager.StartQuest(questName)
+      67:             end
+      68:           end
+      69:         elseif objName == "_QuestComplete" then
+      70:           function mockFunc(t, ...)
+      71:             if game.QuestManager.GetQuestState(questName) == "Active" then
+      72:               game.QuestManager.ProposeQuestCompleted(questName)
+      73:             end
+      74:           end
+      75:         end
+
+================================================================================================
+FILE lua_source\gameart\scripts\libraries\design\mayaluatableslibrary.lua
+MATCH line=71 terms=GetQuestState
+      61:         local questName = functionName
+      62:         local mockFunc
+      63:         if objName == "_QuestStart" then
+      64:           function mockFunc(t, ...)
+      65:             if game.QuestManager.GetQuestState(questName) == "Inactive" then
+      66:               game.QuestManager.StartQuest(questName)
+      67:             end
+      68:           end
+      69:         elseif objName == "_QuestComplete" then
+      70:           function mockFunc(t, ...)
+>>    71:             if game.QuestManager.GetQuestState(questName) == "Active" then
+      72:               game.QuestManager.ProposeQuestCompleted(questName)
+      73:             end
+      74:           end
+      75:         end
+      76:         visitorFn(level, obj, eventAttr, debugEventName, mockFunc, ...)
+      77:       else
+      78:         local objRef
+      79:         if objName == "_Parent" then
+      80:           if obj.Parent.IsRefNode then
+      81:             objRef = obj.Parent.Parent
+
+================================================================================================
+FILE lua_source\gameart\scripts\libraries\design\mayaluatableslibrary.lua
+MATCH line=167 terms=GetQuestState
+     157:             if execute then
+     158:               level:CallScript(function_name, ...)
+     159:             end
+     160:             if store then
+     161:               callbackList[key] = function(t, ...)
+     162:                 level:CallScript(function_name, ...)
+     163:               end
+     164:             end
+     165:           elseif mode == 3 then
+     166:             local quest_name = target.quest_name
+>>   167:             if execute and game.QuestManager.GetQuestStateInt(quest_name) == 0 then
+     168:               game.QuestManager.StartQuest(quest_name)
+     169:             end
+     170:             if store then
+     171:               callbackList[key] = function(t, ...)
+     172:                 if game.QuestManager.GetQuestStateInt(quest_name) == 0 then
+     173:                   game.QuestManager.StartQuest(quest_name)
+     174:                 end
+     175:               end
+     176:             end
+     177:           elseif mode == 4 then
+
+================================================================================================
+FILE lua_source\gameart\scripts\libraries\design\mayaluatableslibrary.lua
+MATCH line=172 terms=GetQuestState
+     162:                 level:CallScript(function_name, ...)
+     163:               end
+     164:             end
+     165:           elseif mode == 3 then
+     166:             local quest_name = target.quest_name
+     167:             if execute and game.QuestManager.GetQuestStateInt(quest_name) == 0 then
+     168:               game.QuestManager.StartQuest(quest_name)
+     169:             end
+     170:             if store then
+     171:               callbackList[key] = function(t, ...)
+>>   172:                 if game.QuestManager.GetQuestStateInt(quest_name) == 0 then
+     173:                   game.QuestManager.StartQuest(quest_name)
+     174:                 end
+     175:               end
+     176:             end
+     177:           elseif mode == 4 then
+     178:             local quest_name = target.quest_name
+     179:             if execute and game.QuestManager.GetQuestStateInt(quest_name) == 1 then
+     180:               game.QuestManager.ProposeQuestCompleted(quest_name)
+     181:             end
+     182:             if store then
+
+================================================================================================
+FILE lua_source\gameart\scripts\libraries\design\mayaluatableslibrary.lua
+MATCH line=179 terms=GetQuestState
+     169:             end
+     170:             if store then
+     171:               callbackList[key] = function(t, ...)
+     172:                 if game.QuestManager.GetQuestStateInt(quest_name) == 0 then
+     173:                   game.QuestManager.StartQuest(quest_name)
+     174:                 end
+     175:               end
+     176:             end
+     177:           elseif mode == 4 then
+     178:             local quest_name = target.quest_name
+>>   179:             if execute and game.QuestManager.GetQuestStateInt(quest_name) == 1 then
+     180:               game.QuestManager.ProposeQuestCompleted(quest_name)
+     181:             end
+     182:             if store then
+     183:               callbackList[key] = function(t, ...)
+     184:                 if game.QuestManager.GetQuestStateInt(quest_name) == 1 then
+     185:                   game.QuestManager.ProposeQuestCompleted(quest_name)
+     186:                 end
+     187:               end
+     188:             end
+     189:           end
+
+================================================================================================
+FILE lua_source\gameart\scripts\libraries\design\mayaluatableslibrary.lua
+MATCH line=184 terms=GetQuestState
+     174:                 end
+     175:               end
+     176:             end
+     177:           elseif mode == 4 then
+     178:             local quest_name = target.quest_name
+     179:             if execute and game.QuestManager.GetQuestStateInt(quest_name) == 1 then
+     180:               game.QuestManager.ProposeQuestCompleted(quest_name)
+     181:             end
+     182:             if store then
+     183:               callbackList[key] = function(t, ...)
+>>   184:                 if game.QuestManager.GetQuestStateInt(quest_name) == 1 then
+     185:                   game.QuestManager.ProposeQuestCompleted(quest_name)
+     186:                 end
+     187:               end
+     188:             end
+     189:           end
+     190:         end
+     191:       end
+     192:     end
+     193:   end
+     194: end
+
+================================================================================================
+FILE lua_source\gameart\scripts\libraries\design\questlibrary.lua
+MATCH line=4 terms=GetQuestState
+       1: local profile = require("core.profile")
+       2: local ActivateQuest = function(questName)
+       3:   if questName ~= nil then
+>>     4:     local questState = game.QuestManager.GetQuestState(questName)
+       5:     if questState == "Inactive" then
+       6:       game.QuestManager.StartQuest(questName)
+       7:     else
+       8:       print("Attempting to activate a quest that is not marked as inactive. Quest: " .. questName .. ", QuestState: " .. questState)
+       9:       return false
+      10:     end
+      11:   else
+      12:     error("No quest name passed to ActivateQuest")
+      13:     return false
+      14:   end
+
+================================================================================================
+FILE lua_source\gameart\scripts\libraries\design\questlibrary.lua
+MATCH line=19 terms=GetQuestState
+       9:       return false
+      10:     end
+      11:   else
+      12:     error("No quest name passed to ActivateQuest")
+      13:     return false
+      14:   end
+      15:   return true
+      16: end
+      17: local CompleteQuest = function(questName)
+      18:   if questName ~= nil then
+>>    19:     local questState = game.QuestManager.GetQuestState(questName)
+      20:     if questState == "Active" then
+      21:       game.QuestManager.ProposeQuestState(questName, "Complete")
+      22:     else
+      23:       print("Attempting to complete a quest that is not marked as active. Quest: " .. questName .. ", QuestState: " .. questState)
+      24:       return false
+      25:     end
+      26:   else
+      27:     error("No quest name passed to CompleteQuest")
+      28:     return false
+      29:   end
+
+================================================================================================
+FILE lua_source\gameart\scripts\libraries\design\questlibrary.lua
+MATCH line=34 terms=GetQuestState
+      24:       return false
+      25:     end
+      26:   else
+      27:     error("No quest name passed to CompleteQuest")
+      28:     return false
+      29:   end
+      30:   return true
+      31: end
+      32: local ActivateAndIncrementQuest = function(questName)
+      33:   if questName ~= nil then
+>>    34:     local questState = game.QuestManager.GetQuestState(questName)
+      35:     if questState == "Inactive" then
+      36:       game.QuestManager.StartQuest(questName)
+      37:       game.QuestManager.IncrementQuestProgress(questName, 1)
+      38:     elseif questState == "Active" then
+      39:       game.QuestManager.IncrementQuestProgress(questName, 1)
+      40:     else
+      41:       print("Attempting to activate or increment a quest that is not in a supported state. Quest: " .. questName .. ", QuestState: " .. questState)
+      42:     end
+      43:     return false
+      44:   end
+
+================================================================================================
+FILE lua_source\gameart\scripts\loot\lootobject_scoop.lua
+MATCH line=258 terms=GetQuestState
+     248: end
+     249: function StartTravelerArmorQuest()
+     250:   LD.ActivateQuest("Quest_TravelerArmor_Parent")
+     251:   timers.StartLevelTimer(1, SoftSave)
+     252: end
+     253: function StartGolemArmorQuest()
+     254:   LD.ActivateQuest("Quest_GolemArmor_Parent")
+     255:   timers.StartLevelTimer(1, SoftSave)
+     256: end
+     257: function CheckSecretBusinessQuest()
+>>   258:   local questState = game.QuestManager.GetQuestState("Quest_SecretBusiness01_Parent")
+     259:   if questState == "Inactive" then
+     260:     game.Audio.PlayBanter("UB1_SecretEnding", StartSecretBusiness)
+     261:     timers.StartLevelTimer(1, SoftSave)
+     262:   end
+     263: end
+     264: function CheckSecretBusinessQuest02()
+     265:   local questState = game.QuestManager.GetQuestState("Quest_SecretBusiness02_Parent")
+     266:   if questState == "Inactive" then
+     267:     game.Audio.PlayBanter("Sindri02_FoundDiary", StartSecretBusiness02)
+     268:   end
+
+================================================================================================
+FILE lua_source\gameart\scripts\loot\lootobject_scoop.lua
+MATCH line=265 terms=GetQuestState
+     255:   timers.StartLevelTimer(1, SoftSave)
+     256: end
+     257: function CheckSecretBusinessQuest()
+     258:   local questState = game.QuestManager.GetQuestState("Quest_SecretBusiness01_Parent")
+     259:   if questState == "Inactive" then
+     260:     game.Audio.PlayBanter("UB1_SecretEnding", StartSecretBusiness)
+     261:     timers.StartLevelTimer(1, SoftSave)
+     262:   end
+     263: end
+     264: function CheckSecretBusinessQuest02()
+>>   265:   local questState = game.QuestManager.GetQuestState("Quest_SecretBusiness02_Parent")
+     266:   if questState == "Inactive" then
+     267:     game.Audio.PlayBanter("Sindri02_FoundDiary", StartSecretBusiness02)
+     268:   end
+     269: end
+     270: function CheckBrok01Quest()
+     271:   thisLevel:CallScript("PlayBanterObjective04")
+     272: end
+     273: function StartSecretBusiness()
+     274:   LD.ActivateQuest("Quest_SecretBusiness01_Parent")
+     275:   timers.StartLevelTimer(1, SoftSave)
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=94 terms=GetQuestState
+      84:     if regionState ~= tweaks.eTokenState.kDiscovered then
+      85:       trueCheck = false
+      86:     end
+      87:   end
+      88:   if trueCheck == true then
+      89:     game.UnlockTrophy(12)
+      90:   end
+      91:   if game.Wallets.HasResource("HERO", "FrostSpecialAxeTossRail") then
+      92:     game.UnlockTrophy(13)
+      93:   end
+>>    94:   if game.QuestManager.GetQuestState("Quest_SonLanguage_Muspelheim") == "Complete" and game.QuestManager.GetQuestState("Quest_SonLanguage_Niflheim") == "Complete" then
+      95:     game.UnlockTrophy(14)
+      96:   end
+      97:   if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") == 4 and game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece") == 4 then
+      98:     game.UnlockTrophy(14)
+      99:   end
+     100:   if game.Wallets.HasResource("HERO", "ArmorUpgradeTutorial") then
+     101:     game.UnlockTrophy(15)
+     102:   end
+     103:   if game.Wallets.HasResource("HERO", "FrostSpecialAxeQuickClear") then
+     104:     game.UnlockTrophy(16)
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=132 terms=GetQuestState
+     122:     "SonArmorDefense03"
+     123:   }
+     124:   for _, pickups in ipairs(armor.pickups) do
+     125:     if game.Wallets.HasResource("HERO", pickups) then
+     126:       game.UnlockTrophy(19)
+     127:     end
+     128:   end
+     129:   if resourceUtil.HasResource("EnchantmentTutorial") then
+     130:     game.UnlockTrophy(20)
+     131:   end
+>>   132:   if game.QuestManager.GetQuestState("Quest_Labor_EnemyKills") == "Complete" then
+     133:     game.UnlockTrophy(21)
+     134:   end
+     135:   if game.QuestManager.GetQuestState("Quest_WorldDragon_Objective_01") == "Complete" then
+     136:     game.UnlockTrophy(22)
+     137:   end
+     138:   if game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return") == "Complete" then
+     139:     game.UnlockTrophy(23)
+     140:   end
+     141:   if game.QuestManager.GetQuestState("Quest_Artifacts_Alfheim") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_Brooches") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_OrnateCups") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_VikingHorns") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_NorseMasks") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_ShipHeads") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_LostToys") == "Complete" then
+     142:     game.UnlockTrophy(24)
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=135 terms=GetQuestState
+     125:     if game.Wallets.HasResource("HERO", pickups) then
+     126:       game.UnlockTrophy(19)
+     127:     end
+     128:   end
+     129:   if resourceUtil.HasResource("EnchantmentTutorial") then
+     130:     game.UnlockTrophy(20)
+     131:   end
+     132:   if game.QuestManager.GetQuestState("Quest_Labor_EnemyKills") == "Complete" then
+     133:     game.UnlockTrophy(21)
+     134:   end
+>>   135:   if game.QuestManager.GetQuestState("Quest_WorldDragon_Objective_01") == "Complete" then
+     136:     game.UnlockTrophy(22)
+     137:   end
+     138:   if game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return") == "Complete" then
+     139:     game.UnlockTrophy(23)
+     140:   end
+     141:   if game.QuestManager.GetQuestState("Quest_Artifacts_Alfheim") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_Brooches") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_OrnateCups") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_VikingHorns") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_NorseMasks") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_ShipHeads") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_LostToys") == "Complete" then
+     142:     game.UnlockTrophy(24)
+     143:   end
+     144:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+     145:     game.UnlockTrophy(25)
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=138 terms=GetQuestState
+     128:   end
+     129:   if resourceUtil.HasResource("EnchantmentTutorial") then
+     130:     game.UnlockTrophy(20)
+     131:   end
+     132:   if game.QuestManager.GetQuestState("Quest_Labor_EnemyKills") == "Complete" then
+     133:     game.UnlockTrophy(21)
+     134:   end
+     135:   if game.QuestManager.GetQuestState("Quest_WorldDragon_Objective_01") == "Complete" then
+     136:     game.UnlockTrophy(22)
+     137:   end
+>>   138:   if game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return") == "Complete" then
+     139:     game.UnlockTrophy(23)
+     140:   end
+     141:   if game.QuestManager.GetQuestState("Quest_Artifacts_Alfheim") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_Brooches") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_OrnateCups") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_VikingHorns") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_NorseMasks") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_ShipHeads") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_LostToys") == "Complete" then
+     142:     game.UnlockTrophy(24)
+     143:   end
+     144:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+     145:     game.UnlockTrophy(25)
+     146:   end
+     147:   local weapons = {}
+     148:   weapons.pickups = {
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=141 terms=GetQuestState
+     131:   end
+     132:   if game.QuestManager.GetQuestState("Quest_Labor_EnemyKills") == "Complete" then
+     133:     game.UnlockTrophy(21)
+     134:   end
+     135:   if game.QuestManager.GetQuestState("Quest_WorldDragon_Objective_01") == "Complete" then
+     136:     game.UnlockTrophy(22)
+     137:   end
+     138:   if game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return") == "Complete" then
+     139:     game.UnlockTrophy(23)
+     140:   end
+>>   141:   if game.QuestManager.GetQuestState("Quest_Artifacts_Alfheim") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_Brooches") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_OrnateCups") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_VikingHorns") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_NorseMasks") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_ShipHeads") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_LostToys") == "Complete" then
+     142:     game.UnlockTrophy(24)
+     143:   end
+     144:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+     145:     game.UnlockTrophy(25)
+     146:   end
+     147:   local weapons = {}
+     148:   weapons.pickups = {
+     149:     "FrostSpecialAxeSpin",
+     150:     "FrostSpecialAxeLeap",
+     151:     "FrostSpecialAxeSweep",
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=144 terms=GetQuestState
+     134:   end
+     135:   if game.QuestManager.GetQuestState("Quest_WorldDragon_Objective_01") == "Complete" then
+     136:     game.UnlockTrophy(22)
+     137:   end
+     138:   if game.QuestManager.GetQuestState("Quest_Brothers_Epic_03_Objective_Return") == "Complete" then
+     139:     game.UnlockTrophy(23)
+     140:   end
+     141:   if game.QuestManager.GetQuestState("Quest_Artifacts_Alfheim") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_Brooches") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_OrnateCups") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_VikingHorns") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_NorseMasks") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_ShipHeads") == "Complete" and game.QuestManager.GetQuestState("Quest_Artifacts_LostToys") == "Complete" then
+     142:     game.UnlockTrophy(24)
+     143:   end
+>>   144:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+     145:     game.UnlockTrophy(25)
+     146:   end
+     147:   local weapons = {}
+     148:   weapons.pickups = {
+     149:     "FrostSpecialAxeSpin",
+     150:     "FrostSpecialAxeLeap",
+     151:     "FrostSpecialAxeSweep",
+     152:     "FrostSpecialAxeQuickClear",
+     153:     "FrostSpecialAxeSwipeCharge",
+     154:     "FrostSpecialAxeUpwardSlice",
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=199 terms=GetQuestState
+     189:   local zealotLegs = game.Wallets.HasResource("HERO", "KratosArmorLegs_TravelerSet_Tier06") == true or game.Wallets.HasResource("HERO", "KratosArmorLegs_TravelerSet_Tier06_NGP") == true
+     190:   if zealotChest and zealotWrist and zealotLegs then
+     191:     game.UnlockTrophy(29)
+     192:   end
+     193:   local primordialChest = game.Wallets.HasResource("HERO", "KratosArmorChest_ElementalSet_Tier06") == true or game.Wallets.HasResource("HERO", "KratosArmorChest_ElementalSet_Tier06_NGP") == true
+     194:   local primordialWrist = game.Wallets.HasResource("HERO", "KratosArmorWrist_ElementalSet_Tier06") == true or game.Wallets.HasResource("HERO", "KratosArmorWrist_ElementalSet_Tier06_NGP") == true
+     195:   local primordialLegs = game.Wallets.HasResource("HERO", "KratosArmorLegs_ElementalSet_Tier06") == true or game.Wallets.HasResource("HERO", "KratosArmorLegs_ElementalSet_Tier06_NGP") == true
+     196:   if primordialChest and primordialWrist and primordialLegs then
+     197:     game.UnlockTrophy(30)
+     198:   end
+>>   199:   if game.QuestManager.GetQuestState("Quest_UnfinishedBusiness02_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_UnfinishedBusiness03_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_UnfinishedBusiness04_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_UnfinishedBusiness05_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_SecretBusiness02_Parent") == "Complete" then
+     200:     game.UnlockTrophy(31)
+     201:   end
+     202:   if game.QuestManager.GetQuestState("Quest_TreasureMap01_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_ThorStatue_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_Shipwreck_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_Oarsmen_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_VF_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_Stronghold_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_ForestDungeon_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_IslandClimb_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_ValkyrieArena_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_BlackBreath_Parent") == "Complete" then
+     203:     game.UnlockTrophy(32)
+     204:   end
+     205:   if game.Wallets.GetResourceValue("HERO", "TryptichMarker") == 12 then
+     206:     game.UnlockTrophy(33)
+     207:   end
+     208:   if game.QuestManager.GetQuestState("Quest_Muspelheim_Arena06_Gold_Objective_01") == "Complete" then
+     209:     game.UnlockTrophy(34)
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=202 terms=GetQuestState
+     192:   end
+     193:   local primordialChest = game.Wallets.HasResource("HERO", "KratosArmorChest_ElementalSet_Tier06") == true or game.Wallets.HasResource("HERO", "KratosArmorChest_ElementalSet_Tier06_NGP") == true
+     194:   local primordialWrist = game.Wallets.HasResource("HERO", "KratosArmorWrist_ElementalSet_Tier06") == true or game.Wallets.HasResource("HERO", "KratosArmorWrist_ElementalSet_Tier06_NGP") == true
+     195:   local primordialLegs = game.Wallets.HasResource("HERO", "KratosArmorLegs_ElementalSet_Tier06") == true or game.Wallets.HasResource("HERO", "KratosArmorLegs_ElementalSet_Tier06_NGP") == true
+     196:   if primordialChest and primordialWrist and primordialLegs then
+     197:     game.UnlockTrophy(30)
+     198:   end
+     199:   if game.QuestManager.GetQuestState("Quest_UnfinishedBusiness02_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_UnfinishedBusiness03_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_UnfinishedBusiness04_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_UnfinishedBusiness05_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_SecretBusiness02_Parent") == "Complete" then
+     200:     game.UnlockTrophy(31)
+     201:   end
+>>   202:   if game.QuestManager.GetQuestState("Quest_TreasureMap01_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_ThorStatue_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_Shipwreck_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_Oarsmen_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_VF_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_Stronghold_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_ForestDungeon_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_IslandClimb_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_ValkyrieArena_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_BlackBreath_Parent") == "Complete" then
+     203:     game.UnlockTrophy(32)
+     204:   end
+     205:   if game.Wallets.GetResourceValue("HERO", "TryptichMarker") == 12 then
+     206:     game.UnlockTrophy(33)
+     207:   end
+     208:   if game.QuestManager.GetQuestState("Quest_Muspelheim_Arena06_Gold_Objective_01") == "Complete" then
+     209:     game.UnlockTrophy(34)
+     210:   end
+     211:   if game.Wallets.GetResourceValue("HERO", "NiflheimTrophyTracker") == 27 then
+     212:     game.UnlockTrophy(35)
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=208 terms=GetQuestState
+     198:   end
+     199:   if game.QuestManager.GetQuestState("Quest_UnfinishedBusiness02_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_UnfinishedBusiness03_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_UnfinishedBusiness04_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_UnfinishedBusiness05_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_SecretBusiness02_Parent") == "Complete" then
+     200:     game.UnlockTrophy(31)
+     201:   end
+     202:   if game.QuestManager.GetQuestState("Quest_TreasureMap01_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_ThorStatue_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_Shipwreck_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_Oarsmen_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_VF_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_Stronghold_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_ForestDungeon_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_IslandClimb_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_ValkyrieArena_Parent") == "Complete" and game.QuestManager.GetQuestState("Quest_TreasureMap_BlackBreath_Parent") == "Complete" then
+     203:     game.UnlockTrophy(32)
+     204:   end
+     205:   if game.Wallets.GetResourceValue("HERO", "TryptichMarker") == 12 then
+     206:     game.UnlockTrophy(33)
+     207:   end
+>>   208:   if game.QuestManager.GetQuestState("Quest_Muspelheim_Arena06_Gold_Objective_01") == "Complete" then
+     209:     game.UnlockTrophy(34)
+     210:   end
+     211:   if game.Wallets.GetResourceValue("HERO", "NiflheimTrophyTracker") == 27 then
+     212:     game.UnlockTrophy(35)
+     213:   end
+     214:   if game.QuestManager.GetQuestState("Quest_Valkyrie_Queen_Kill") == "Complete" then
+     215:     game.UnlockTrophy(36)
+     216:   end
+     217: end
+     218: TextLog.EVT_GAME_START = TextLog.Enter
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=214 terms=GetQuestState
+     204:   end
+     205:   if game.Wallets.GetResourceValue("HERO", "TryptichMarker") == 12 then
+     206:     game.UnlockTrophy(33)
+     207:   end
+     208:   if game.QuestManager.GetQuestState("Quest_Muspelheim_Arena06_Gold_Objective_01") == "Complete" then
+     209:     game.UnlockTrophy(34)
+     210:   end
+     211:   if game.Wallets.GetResourceValue("HERO", "NiflheimTrophyTracker") == 27 then
+     212:     game.UnlockTrophy(35)
+     213:   end
+>>   214:   if game.QuestManager.GetQuestState("Quest_Valkyrie_Queen_Kill") == "Complete" then
+     215:     game.UnlockTrophy(36)
+     216:   end
+     217: end
+     218: TextLog.EVT_GAME_START = TextLog.Enter
+     219: TextLog.EVT_Restart = TextLog.Enter
+     220: function TextLog:EVT_VENDOR_MENU_OPEN()
+     221:   vendorOpen = true
+     222: end
+     223: function TextLog:EVT_VENDOR_MENU_CLOSED()
+     224:   vendorOpen = false
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=315 terms=SuppressLastQuestIncrement
+     305: function TextOn:Clear()
+     306:   self.logManager:Clear()
+     307:   self.subLogManager:Clear()
+     308: end
+     309: function TextOn:EVT_Journal_Log_Pause()
+     310:   self.logManager._uiPaused = true
+     311: end
+     312: function TextOn:EVT_Journal_Log_Unpause()
+     313:   self.logManager._uiPaused = false
+     314: end
+>>   315: function SuppressLastQuestIncrement(questID)
+     316:   local shouldSuppress = false
+     317:   local progressInfo = questUtil.GetProgressInfo(questID)
+     318:   if progressInfo ~= nil then
+     319:     local progress = questUtil.GetProgressInfoProgress(progressInfo)
+     320:     local goal = questUtil.GetProgressInfoGoal(progressInfo)
+     321:     shouldSuppress = progress >= goal
+     322:     if questUtil.HasFlag(questID, "DismissFirstIncrement") then
+     323:       shouldSuppress = shouldSuppress or false
+     324:     end
+     325:   end
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=328 terms=FormatProgressAndGoalIntoBody
+     318:   if progressInfo ~= nil then
+     319:     local progress = questUtil.GetProgressInfoProgress(progressInfo)
+     320:     local goal = questUtil.GetProgressInfoGoal(progressInfo)
+     321:     shouldSuppress = progress >= goal
+     322:     if questUtil.HasFlag(questID, "DismissFirstIncrement") then
+     323:       shouldSuppress = shouldSuppress or false
+     324:     end
+     325:   end
+     326:   return shouldSuppress
+     327: end
+>>   328: function FormatProgressAndGoalIntoBody(questID, bodyLams)
+     329:   if bodyLams == nil or bodyLams == 0 then
+     330:     return "LAMS ID " .. tostring(bodyLams) .. " Not Found"
+     331:   end
+     332:   local info = questUtil.GetProgressInfo(questID)
+     333:   if info ~= nil then
+     334:     if questUtil.HasFlag(questID, "DismissFirstIncrement") and info.Progress == 0 and game.QuestManager.GetQuestState(questID) == "Activate" then
+     335:       info.Progress = 1
+     336:       if questUtil.HasFlag(questID, "Artifacts") then
+     337:         local newSetStr = util.FormatLAMSString(37825)
+     338:         local setInfoStr = util.FormatLAMSString(bodyLams, info.Progress, info.Goal)
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=334 terms=GetQuestState
+     324:     end
+     325:   end
+     326:   return shouldSuppress
+     327: end
+     328: function FormatProgressAndGoalIntoBody(questID, bodyLams)
+     329:   if bodyLams == nil or bodyLams == 0 then
+     330:     return "LAMS ID " .. tostring(bodyLams) .. " Not Found"
+     331:   end
+     332:   local info = questUtil.GetProgressInfo(questID)
+     333:   if info ~= nil then
+>>   334:     if questUtil.HasFlag(questID, "DismissFirstIncrement") and info.Progress == 0 and game.QuestManager.GetQuestState(questID) == "Activate" then
+     335:       info.Progress = 1
+     336:       if questUtil.HasFlag(questID, "Artifacts") then
+     337:         local newSetStr = util.FormatLAMSString(37825)
+     338:         local setInfoStr = util.FormatLAMSString(bodyLams, info.Progress, info.Goal)
+     339:         return newSetStr .. "\n" .. setInfoStr
+     340:       end
+     341:     end
+     342:     return util.FormatLAMSString(bodyLams, info.Progress, info.Goal)
+     343:   else
+     344:     return util.GetLAMSMsg(bodyLams)
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=350 terms=SuppressLastQuestIncrement
+     340:       end
+     341:     end
+     342:     return util.FormatLAMSString(bodyLams, info.Progress, info.Goal)
+     343:   else
+     344:     return util.GetLAMSMsg(bodyLams)
+     345:   end
+     346: end
+     347: function InternalAddQuestLogMessage(logManager, args)
+     348:   local messageType = args.MessageType
+     349:   if messageType == tweaks.tQuestUiMessage.eMessageType.kQMS_Default then
+>>   350:     if SuppressLastQuestIncrement(args.Quest) then
+     351:       return
+     352:     end
+     353:     args.BodyStr = FormatProgressAndGoalIntoBody(args.Quest, args.Body)
+     354:     local questStages = questSequence.CreateSequenceStages(args)
+     355:     logManager:QueueMessage("Quest", questStages, logPriorities.Quest)
+     356:   elseif messageType == tweaks.tQuestUiMessage.eMessageType.kQMS_StartSpecial then
+     357:     local questStages = questStartSequence.CreateSequenceStages(args)
+     358:     logManager:QueueMessage("QuestSpecialStart", questStages, logPriorities.QuestSpecial)
+     359:   elseif messageType == tweaks.tQuestUiMessage.eMessageType.kQMS_CompleteSpecial then
+     360:     local questStages = questCompleteSequence.CreateSequenceStages(args)
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=353 terms=FormatProgressAndGoalIntoBody
+     343:   else
+     344:     return util.GetLAMSMsg(bodyLams)
+     345:   end
+     346: end
+     347: function InternalAddQuestLogMessage(logManager, args)
+     348:   local messageType = args.MessageType
+     349:   if messageType == tweaks.tQuestUiMessage.eMessageType.kQMS_Default then
+     350:     if SuppressLastQuestIncrement(args.Quest) then
+     351:       return
+     352:     end
+>>   353:     args.BodyStr = FormatProgressAndGoalIntoBody(args.Quest, args.Body)
+     354:     local questStages = questSequence.CreateSequenceStages(args)
+     355:     logManager:QueueMessage("Quest", questStages, logPriorities.Quest)
+     356:   elseif messageType == tweaks.tQuestUiMessage.eMessageType.kQMS_StartSpecial then
+     357:     local questStages = questStartSequence.CreateSequenceStages(args)
+     358:     logManager:QueueMessage("QuestSpecialStart", questStages, logPriorities.QuestSpecial)
+     359:   elseif messageType == tweaks.tQuestUiMessage.eMessageType.kQMS_CompleteSpecial then
+     360:     local questStages = questCompleteSequence.CreateSequenceStages(args)
+     361:     logManager:QueueMessage("QuestSpecialComplete", questStages, logPriorities.QuestSpecial)
+     362:   elseif messageType == tweaks.tQuestUiMessage.eMessageType.kQMS_Journal or messageType == tweaks.tQuestUiMessage.eMessageType.kQMS_Journal_NoTracking then
+     363:     if game.UI.GetUserGameplayNotificationsSetting and not game.UI.GetUserGameplayNotificationsSetting() then
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=366 terms=SuppressLastQuestIncrement
+     356:   elseif messageType == tweaks.tQuestUiMessage.eMessageType.kQMS_StartSpecial then
+     357:     local questStages = questStartSequence.CreateSequenceStages(args)
+     358:     logManager:QueueMessage("QuestSpecialStart", questStages, logPriorities.QuestSpecial)
+     359:   elseif messageType == tweaks.tQuestUiMessage.eMessageType.kQMS_CompleteSpecial then
+     360:     local questStages = questCompleteSequence.CreateSequenceStages(args)
+     361:     logManager:QueueMessage("QuestSpecialComplete", questStages, logPriorities.QuestSpecial)
+     362:   elseif messageType == tweaks.tQuestUiMessage.eMessageType.kQMS_Journal or messageType == tweaks.tQuestUiMessage.eMessageType.kQMS_Journal_NoTracking then
+     363:     if game.UI.GetUserGameplayNotificationsSetting and not game.UI.GetUserGameplayNotificationsSetting() then
+     364:       return
+     365:     end
+>>   366:     if messageType ~= tweaks.tQuestUiMessage.eMessageType.kQMS_Journal_NoTracking and SuppressLastQuestIncrement(args.Quest) then
+     367:       return
+     368:     end
+     369:     if messageType ~= tweaks.tQuestUiMessage.eMessageType.kQMS_Journal_NoTracking then
+     370:       args.EventData = {
+     371:         args.Quest
+     372:       }
+     373:       args.Event = "EVT_GO_TO_QUEST"
+     374:     end
+     375:     args.BodyStr = FormatProgressAndGoalIntoBody(args.Quest, args.Body)
+     376:     args.Sound = "SND_UX_HUD_Updates_Journal"
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=375 terms=FormatProgressAndGoalIntoBody
+     365:     end
+     366:     if messageType ~= tweaks.tQuestUiMessage.eMessageType.kQMS_Journal_NoTracking and SuppressLastQuestIncrement(args.Quest) then
+     367:       return
+     368:     end
+     369:     if messageType ~= tweaks.tQuestUiMessage.eMessageType.kQMS_Journal_NoTracking then
+     370:       args.EventData = {
+     371:         args.Quest
+     372:       }
+     373:       args.Event = "EVT_GO_TO_QUEST"
+     374:     end
+>>   375:     args.BodyStr = FormatProgressAndGoalIntoBody(args.Quest, args.Body)
+     376:     args.Sound = "SND_UX_HUD_Updates_Journal"
+     377:     args.ShowText = "ShowJournal"
+     378:     local journalStages = journalSequence.CreateSequenceStages(args)
+     379:     logManager:QueueMessage("Journal", journalStages, logPriorities.Journal)
+     380:   end
+     381: end
+     382: function InternalAddJournalMessage(logManager, args)
+     383:   if game.UI.GetUserGameplayNotificationsSetting and not game.UI.GetUserGameplayNotificationsSetting() then
+     384:     return
+     385:   end
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\inworldmenu\mapmenu.lua
+MATCH line=532 terms=GetQuestState
+     522:     goSummit_gateTree:Hide()
+     523:   end
+     524:   local goThorStatue1 = util.GetUiObjByName("thorStatue1")
+     525:   if 340 <= completedCineNumber then
+     526:     goThorStatue1:Hide()
+     527:   else
+     528:     goThorStatue1:Show()
+     529:   end
+     530:   local goMidgard = goMap:FindSingleGOByName("Midgard")
+     531:   local jid_smallThorStatue = goMidgard:GetJointIndex("smallThorStatue")
+>>   532:   if GetGlobalVar("ThorStatueBroken") or game.QuestManager.GetQuestState("Quest_UnfinishedBusiness03_Objective_01") == questConsts.QUEST_STATE_COMPLETE then
+     533:     goMidgard:HideJoint(jid_smallThorStatue)
+     534:   else
+     535:     goMidgard:ShowJoint(jid_smallThorStatue)
+     536:   end
+     537:   self:UpdateSnakeState(completedCineNumber)
+     538:   self:UpdateHelheimBoat()
+     539:   self:UpdateWaterLevel()
+     540:   self:AnimateFog()
+     541: end
+     542: function MapOn:CheckForTutorial()
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\inworldmenu\mapmenu.lua
+MATCH line=1264 terms=GetQuestState
+    1254:   self.realmMarkerInfo = {}
+    1255:   if self.currRealmName == nil then
+    1256:     return
+    1257:   end
+    1258:   local regionInfoTable = mapUtil.GetAllRegionInfoInRealm(self.currRealmName)
+    1259:   for _, regionInfo in ipairs(regionInfoTable) do
+    1260:     local regionMarkerInfoTable = Map.GetMarkersInfoTable(regionInfo.Id)
+    1261:     for i = 1, #regionMarkerInfoTable do
+    1262:       local markerInfo = regionMarkerInfoTable[i]
+    1263:       local hasQuest, questName = questUtil.FindQuestForMarker(markerInfo.Id)
+>>  1264:       if not hasQuest or game.QuestManager.GetQuestState(questName) ~= questConsts.QUEST_STATE_COMPLETE then
+    1265:         markerInfo.regionId = regionInfo.Id
+    1266:         self.realmMarkerInfo[#self.realmMarkerInfo + 1] = regionMarkerInfoTable[i]
+    1267:       end
+    1268:     end
+    1269:   end
+    1270:   self:UpdateFilterButtonMapping()
+    1271: end
+    1272: function MapOn:GetAlwaysOnMarkers()
+    1273:   self:ClearMarkers(true)
+    1274:   for i = 1, #self.realmMarkerInfo do
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua
+MATCH line=58 terms=GetObjectiveInfo
+      48:   self:TurnOff()
+      49: end
+      50: function QuestsMenu:TurnOff()
+      51:   self:Goto("QuestsOff")
+      52: end
+      53: function QuestsMenu:EVT_PAUSE_MENU_OPEN()
+      54:   self.pauseMenuOpened = true
+      55: end
+      56: QuestsMenu.EVT_GAME_OVER = QuestsMenu.TurnOff
+      57: QuestsMenu.EVT_Restart = QuestsMenu.TurnOff
+>>    58: function GetObjectiveInfo(activeChildQuestId)
+      59:   local questDesc = ""
+      60:   local rewardDesc = ""
+      61:   local rewardsHeader = ""
+      62:   local childTrackingInfo = questUtil.GetTrackingInfo(activeChildQuestId)
+      63:   local childQuestInfo = questUtil.CreateQuestInfo(activeChildQuestId, 0, childTrackingInfo)
+      64:   if childQuestInfo.ProgressInfo ~= nil then
+      65:     local progressInfo = childQuestInfo.ProgressInfo
+      66:     local descLamsId = QuestManager.GetQuestDescriptionLams(activeChildQuestId)
+      67:     local progress_text = util.FormatLAMSString(descLamsId, questUtil.GetProgressInfoProgress(progressInfo), questUtil.GetProgressInfoGoal(progressInfo))
+      68:     questDesc = progress_text
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua
+MATCH line=203 terms=GetQuestState
+     193: function QuestsOn:UpdateQuestsList(questList, currCategory, forceSetSelectedToLast)
+     194:   assert(questList ~= nil, "Quest list inside of journalMenu.lua was nil, this should never occur")
+     195:   local questInfoTable_displayQuests = {}
+     196:   local category_quests = {}
+     197:   for _, category in ipairs(questConsts.QUEST_INCLUDE_FLAGS[currCategory]) do
+     198:     category_quests[category] = {}
+     199:   end
+     200:   category_quests[questConsts.QUEST_STATE_COMPLETE] = {}
+     201:   local rootQuests = QuestManager.GetActiveRootQuestIds()
+     202:   for _, questId in ipairs(QuestManager.GetActiveRootQuestIds()) do
+>>   203:     local state = QuestManager.GetQuestState(questId)
+     204:     local trackingInfo = questUtil.GetTrackingInfo(questId)
+     205:     local questInfo = questUtil.CreateQuestInfo(questId, 0, trackingInfo)
+     206:     local category
+     207:     for _, categoryFlag in ipairs(questConsts.QUEST_INCLUDE_FLAGS[currCategory]) do
+     208:       if QuestManager.QuestHasFlag(questId, categoryFlag) then
+     209:         category = categoryFlag
+     210:         break
+     211:       end
+     212:     end
+     213:     if category ~= nil then
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua
+MATCH line=342 terms=GetObjectiveInfo
+     332:   end
+     333:   local itemGetTextFunc = function(questInfo)
+     334:     return questUtil.GetQuestInfoTitle(questInfo)
+     335:   end
+     336:   subQuestsList:SetSelectedButton(subQuestIndex, true)
+     337:   subQuestsList:Refresh(newItemArray, showList, useOnGainFocus, itemDetermineFocusabilityFunc, itemGetTextFunc)
+     338:   subQuestsList:SetSelectedButton(subQuestIndex, true)
+     339:   self:UpdateFooterButtonPrompt(currState.menu)
+     340: end
+     341: function QuestsOn:UpdateObjectiveInfo(activeChildQuestId)
+>>   342:   local questDesc, rewardDesc, rewardsHeader = GetObjectiveInfo(activeChildQuestId)
+     343:   UI.SetText(self.thQuestDesc, questDesc)
+     344:   UI.SetText(self.thQuestRewardDesc, rewardDesc)
+     345:   UI.SetText(self.thQuestRewardsHeader, rewardsHeader)
+     346: end
+     347: function QuestsOn:UpdateTrackingText(trackingState)
+     348:   local trackingText = ""
+     349:   if trackingState == questConsts.TRACKING_STATE_TRACKED then
+     350:     trackingText = "[AdvanceButton] " .. util.GetLAMSMsg(lamsIDs.Untrack)
+     351:   elseif trackingState == questConsts.TRACKING_STATE_NOT_TRACKED then
+     352:     trackingText = "[AdvanceButton] " .. util.GetLAMSMsg(lamsIDs.Track)
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua
+MATCH line=951 terms=GetObjectiveInfo
+     941:         self.showing = false
+     942:       end)
+     943:     end
+     944:     self:StartTimer("fadeIn", 0.5, fadeIn)
+     945:   else
+     946:     self:StartTimer("fadeIn", 0.2, fadeIn)
+     947:   end
+     948:   UI.SetText(self.thArtifactsTitle, questUtil.GetQuestInfoTitle(questInfo))
+     949:   local activeChildQuestId = questUtil.GetFocusQuestStepFromParent(questInfo.QuestID)
+     950:   if activeChildQuestId ~= nil then
+>>   951:     local questDesc, rewardDesc = GetObjectiveInfo(activeChildQuestId)
+     952:     UI.SetText(self.thArtifactsDesc, questDesc)
+     953:     UI.SetText(self.thArtifactsRewardDesc, rewardDesc)
+     954:   end
+     955: end
+     956: function Artifacts:UpdateFooterButtonPrompt()
+     957:   self.questsOn:UpdateFooterButtonPrompt(self.menu)
+     958: end
+     959: function Labors:Setup()
+     960:   self.questsOn = self:GetState("QuestsOn")
+     961:   self.questsOn:SubmenuSetup(self)
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua
+MATCH line=1087 terms=GetObjectiveInfo
+    1077:       end)
+    1078:     end
+    1079:     self:StartTimer("fadeIn", 0.5, fadeIn)
+    1080:   else
+    1081:     self:StartTimer("fadeIn", 0.2, fadeIn)
+    1082:   end
+    1083:   UI.SetText(self.thTreasureMapTitle, questUtil.GetQuestInfoTitle(questInfo))
+    1084:   UI.SetText(self.thTreasureMapDesc, questInfo.Desc)
+    1085:   local activeChildQuestId = questUtil.GetFocusQuestStepFromParent(questInfo.QuestID)
+    1086:   if activeChildQuestId ~= nil then
+>>  1087:     local questDesc, rewardDesc, rewardsHeader = GetObjectiveInfo(activeChildQuestId)
+    1088:     UI.SetText(self.thTreasureMapRewardDesc, rewardDesc)
+    1089:   end
+    1090: end
+    1091: function TreasureMaps:UpdateFooterButtonPrompt()
+    1092:   self.questsOn:UpdateFooterButtonPrompt(self.menu)
+    1093: end
+    1094: function QuestsMenu:OnSaveCheckpoint(tab)
+    1095: end
+    1096: function QuestsMenu:OnRestoreCheckpoint(tab)
+    1097: end
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\util\questutil.lua
+MATCH line=86 terms=GetQuestState
+      76:           break
+      77:         end
+      78:       end
+      79:     end
+      80:   end
+      81:   return desiredQuestID
+      82: end
+      83: local TrackingInfo_GetTrackingState = function(trackingInfo, questID)
+      84:   local trackedState = questConsts.TRACKING_STATE_NONE
+      85:   if trackingInfo ~= nil then
+>>    86:     local questState = QuestManager.GetQuestState(questID)
+      87:     if questState == questConsts.QUEST_STATE_COMPLETE then
+      88:       trackedState = questConsts.TRACKING_STATE_FULLY_COMPLETE
+      89:     else
+      90:       local questTable = TrackingInfo_GetQuestTable(trackingInfo, questID)
+      91:       if questTable ~= nil then
+      92:         local isActive = QuestTable_GetIsActive(questTable)
+      93:         trackedState = isActive and questConsts.TRACKING_STATE_TRACKED or questConsts.TRACKING_STATE_NOT_TRACKED
+      94:       end
+      95:     end
+      96:   end
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\util\questutil.lua
+MATCH line=171 terms=GetQuestState
+     161:   if TrackingInfo_IsValid(trackingInfo) then
+     162:     rootQuestID = TrackingInfo_GetRootQuestID(trackingInfo)
+     163:   end
+     164:   return rootQuestID
+     165: end
+     166: local GetStatesByCategory = function(category)
+     167:   return questConsts.QUEST_INCLUDE_STATES[category]
+     168: end
+     169: local HasAnyStateInTable = function(questID, states)
+     170:   local hasState = false
+>>   171:   local currState = QuestManager.GetQuestState(questID)
+     172:   for _, state in ipairs(states) do
+     173:     if currState == state then
+     174:       hasState = true
+     175:       break
+     176:     end
+     177:   end
+     178:   return hasState
+     179: end
+     180: local GetFlagsByCategory = function(category)
+     181:   return questConsts.QUEST_INCLUDE_FLAGS[category]
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\util\questutil.lua
+MATCH line=286 terms=GetQuestState
+     276: end
+     277: local GetQuestDescriptionFromID = function(questID)
+     278:   local descLamsID = QuestManager.GetQuestDescriptionLams(questID)
+     279:   return util.GetLAMSMsg(descLamsID)
+     280: end
+     281: local CreateQuestInfo = function(questID, level, trackingInfo)
+     282:   local quest = {
+     283:     QuestID = questID,
+     284:     Title = GetQuestTitleFromID(questID),
+     285:     Desc = GetQuestDescriptionFromID(questID),
+>>   286:     State = QuestManager.GetQuestState(questID),
+     287:     Level = level,
+     288:     ProgressInfo = GetProgressInfo(questID),
+     289:     TrackingState = TrackingInfo_GetTrackingState(trackingInfo, questID)
+     290:   }
+     291:   return quest
+     292: end
+     293: local GetQuestInfoQuestID = function(questInfo)
+     294:   return questInfo.QuestID
+     295: end
+     296: local GetQuestInfoTitle = function(questInfo)
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\util\questutil.lua
+MATCH line=325 terms=GetQuestState
+     315: local GetQuestInfoGetTrackingState = function(questInfo)
+     316:   return questInfo.TrackingState
+     317: end
+     318: local GetQuestInfoColor = function(questInfo)
+     319:   return colors.QUEST_STATES[GetQuestInfoState(questInfo)]
+     320: end
+     321: local QuestIsComplete = function(questInfo)
+     322:   return GetQuestInfoState(questInfo) == questConsts.QUEST_STATE_COMPLETE
+     323: end
+     324: local QuestIsActive = function(questId)
+>>   325:   local questState = QuestManager.GetQuestState(questId)
+     326:   return questState == questConsts.QUEST_STATE_ACTIVE
+     327: end
+     328: local GetQuestInfoProgressInfoText = function(questInfo)
+     329:   local text = ""
+     330:   if questInfo ~= nil then
+     331:     local progressInfo = GetQuestInfoProgressInfo(questInfo)
+     332:     if progressInfo ~= nil then
+     333:       text = GetProgressInfoProgress(progressInfo) .. " / " .. GetProgressInfoGoal(progressInfo)
+     334:     end
+     335:   end
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\util\questutil.lua
+MATCH line=394 terms=GetQuestState
+     384:   local trackingState = questConsts.TRACKING_STATE_NONE
+     385:   for _, questInfo in ipairs(questInfoTable) do
+     386:     if GetQuestInfoQuestID(questInfo) == questID then
+     387:       trackingState = GetQuestInfoGetTrackingState(questInfo)
+     388:     end
+     389:   end
+     390:   return trackingState
+     391: end
+     392: local GetFocusQuestStepFromParent = function(parentQuestId)
+     393:   assert(QuestManager.IsActiveRootQuestId(parentQuestId), "Quest Id passed into QuestUtil:GetFocusQuestStepFromParent is not a parent quest!")
+>>   394:   if QuestManager.GetQuestState(parentQuestId) == questConsts.QUEST_STATE_COMPLETE then
+     395:     local childrenQuestIds = QuestManager.GetChildrenQuestIds(parentQuestId)
+     396:     local currentQuestId = childrenQuestIds[1]
+     397:     if currentQuestId ~= nil then
+     398:       while QuestManager.GetQuestState(currentQuestId) == questConsts.QUEST_STATE_COMPLETE do
+     399:         childrenQuestIds = QuestManager.GetChildrenQuestIds(currentQuestId)
+     400:         if childrenQuestIds[1] == nil then
+     401:           break
+     402:         end
+     403:         currentQuestId = childrenQuestIds[1]
+     404:       end
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\util\questutil.lua
+MATCH line=398 terms=GetQuestState
+     388:     end
+     389:   end
+     390:   return trackingState
+     391: end
+     392: local GetFocusQuestStepFromParent = function(parentQuestId)
+     393:   assert(QuestManager.IsActiveRootQuestId(parentQuestId), "Quest Id passed into QuestUtil:GetFocusQuestStepFromParent is not a parent quest!")
+     394:   if QuestManager.GetQuestState(parentQuestId) == questConsts.QUEST_STATE_COMPLETE then
+     395:     local childrenQuestIds = QuestManager.GetChildrenQuestIds(parentQuestId)
+     396:     local currentQuestId = childrenQuestIds[1]
+     397:     if currentQuestId ~= nil then
+>>   398:       while QuestManager.GetQuestState(currentQuestId) == questConsts.QUEST_STATE_COMPLETE do
+     399:         childrenQuestIds = QuestManager.GetChildrenQuestIds(currentQuestId)
+     400:         if childrenQuestIds[1] == nil then
+     401:           break
+     402:         end
+     403:         currentQuestId = childrenQuestIds[1]
+     404:       end
+     405:     end
+     406:     return currentQuestId
+     407:   end
+     408:   if not QuestIsActive(parentQuestId) then
+
+================================================================================================
+FILE lua_source\gameart\ui\scripts\util\questutil.lua
+MATCH line=535 terms=GetQuestState
+     525:   return GetActiveRootQuestsByCategory(questConsts.QUEST_CATEGORY_SIDE)
+     526: end
+     527: local FindCurrentlyTrackedSideQuestID = function()
+     528:   return FindCurrentlyTrackedRootQuestIDByCategory(questConsts.QUEST_CATEGORY_SIDE)
+     529: end
+     530: local UntrackSideQuest = function(questID)
+     531:   local trackingInfo = QuestManager.GetTrackingInfo(questID)
+     532:   QuestManager.UntrackQuest(trackingInfo.RootQuest)
+     533: end
+     534: local TrackSideQuest = function(questID)
+>>   535:   if QuestManager.GetQuestStateInt(questID) ~= tweaks.eQstState.kQS_Active then
+     536:     return
+     537:   end
+     538:   local curTrackedQuest = FindCurrentlyTrackedSideQuestID()
+     539:   if IsValidID(curTrackedQuest) then
+     540:     UntrackSideQuest(curTrackedQuest)
+     541:   end
+     542:   local trackingInfo = QuestManager.GetTrackingInfo(questID)
+     543:   QuestManager.TrackQuest(trackingInfo.RootQuest)
+     544:   if QuestManager.AddMarkersToCompass ~= nil then
+     545:     QuestManager.AddMarkersToCompass(questID)
+
+================================================================================================
+FILE lua\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=270 terms=GetQuestState
+     260:       typeSpecificData.FX_Inner:ClearAllAnimCallbacks()
+     261:       typeSpecificData.FX_Inner:JumpAnimToFrame(650)
+     262:       typeSpecificData.FX_Inner:PlayAnimToFrame(700)
+     263:     end
+     264:     function typeSpecificCallbacks.OnOpened()
+     265:       typeSpecificData.PreAwardMuspCount = game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece")
+     266:       typeSpecificData.PreAwardNifCount = game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece")
+     267:     end
+     268:     function typeSpecificCallbacks.AwardLoot()
+     269:       local IncrementQuest = function(parent, child, pieces)
+>>   270:         local questState = game.QuestManager.GetQuestState(parent)
+     271:         if questState == "Inactive" then
+     272:           game.QuestManager.StartQuest(parent)
+     273:         end
+     274:         local _, progress = game.QuestManager.GetQuestProgressAndGoal(child)
+     275:         game.QuestManager.IncrementQuestProgress(child, pieces - progress)
+     276:       end
+     277:       if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") > typeSpecificData.PreAwardMuspCount then
+     278:         IncrementQuest("Quest_SonLanguage_Muspelheim_Parent", "Quest_SonLanguage_Muspelheim", game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece"))
+     279:         if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") == 4 then
+     280:           game.Audio.PlayBanterNonCritical("Musp_Disc_Complete")
+
+================================================================================================
+FILE lua\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=310 terms=GetQuestState
+     300:     reward = ""
+     301:     openFX = "Chest_Legendary_Open_Effect_Root"
+     302:   elseif chestType == "Custom_MimirsEye" then
+     303:     branchName = "BRA_MimirsEye"
+     304:     animName = "poiMimirEye010Scene"
+     305:     reward = ""
+     306:     openFX = "Chest_Legendary_Open_Effect_Root"
+     307:   end
+     308: end
+     309: function TrophyCheck()
+>>   310:   if game.QuestManager.GetQuestState("Quest_SonLanguage_Muspelheim") == "Complete" and game.QuestManager.GetQuestState("Quest_SonLanguage_Niflheim") == "Complete" then
+     311:     AwardTrophy()
+     312:   end
+     313:   if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") == 4 and game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece") == 4 then
+     314:     AwardTrophy()
+     315:   end
+     316: end
+     317: function OnUseWorld(level, obj)
+     318:   if interactZone:PlayerCanInteract() then
+     319:     player:RequestInteract(thisObj, {InteractZone = interactZone, LerpObject = lootObject})
+     320:   end
+
+================================================================================================
+FILE lua\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=441 terms=RegionSummary_
+     431:   end
+     432:   if typeSpecificCallbacks.OnOpened then
+     433:     typeSpecificCallbacks.OnOpened()
+     434:   end
+     435:   if chestType == "Legendary" then
+     436:     local found, currentRegion = game.Map.FindPlayerRegion()
+     437:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+     438:     if found and comparisonString ~= "TyrsVault" and comparisonString ~= "TheHallofTyr" then
+     439:       UpdateRegionSummary(currentRegion, "LegendaryChest")
+     440:     elseif found and comparisonString == "TyrsVault" then
+>>   441:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TyrsVault")
+     442:     elseif found and comparisonString == "TheHallofTyr" then
+     443:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TheHallofTyr")
+     444:     else
+     445:       print("RegionSummary Check: no region found for player")
+     446:     end
+     447:   end
+     448:   if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+     449:     local found, currentRegion = game.Map.FindPlayerRegion()
+     450:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+     451:     if found and comparisonString ~= "TyrsVault" then
+
+================================================================================================
+FILE lua\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=443 terms=RegionSummary_
+     433:     typeSpecificCallbacks.OnOpened()
+     434:   end
+     435:   if chestType == "Legendary" then
+     436:     local found, currentRegion = game.Map.FindPlayerRegion()
+     437:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+     438:     if found and comparisonString ~= "TyrsVault" and comparisonString ~= "TheHallofTyr" then
+     439:       UpdateRegionSummary(currentRegion, "LegendaryChest")
+     440:     elseif found and comparisonString == "TyrsVault" then
+     441:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TyrsVault")
+     442:     elseif found and comparisonString == "TheHallofTyr" then
+>>   443:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TheHallofTyr")
+     444:     else
+     445:       print("RegionSummary Check: no region found for player")
+     446:     end
+     447:   end
+     448:   if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+     449:     local found, currentRegion = game.Map.FindPlayerRegion()
+     450:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+     451:     if found and comparisonString ~= "TyrsVault" then
+     452:       UpdateRegionSummary(currentRegion, "RunicChest")
+     453:     elseif found and comparisonString == "TyrsVault" then
+
+================================================================================================
+FILE lua\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=454 terms=RegionSummary_
+     444:     else
+     445:       print("RegionSummary Check: no region found for player")
+     446:     end
+     447:   end
+     448:   if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+     449:     local found, currentRegion = game.Map.FindPlayerRegion()
+     450:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+     451:     if found and comparisonString ~= "TyrsVault" then
+     452:       UpdateRegionSummary(currentRegion, "RunicChest")
+     453:     elseif found and comparisonString == "TyrsVault" then
+>>   454:       LD.ActivateAndIncrementQuest("RegionSummary_RunicChest_Parent_TyrsVault")
+     455:     else
+     456:       print("RegionSummary Check: no region found for player")
+     457:     end
+     458:     if game.Loot.AlertTripleChestOpened ~= nil then
+     459:       game.Loot.AlertTripleChestOpened()
+     460:     end
+     461:   end
+     462:   if chestType == "Coffin" and not trapChest then
+     463:     game.Audio.PlayBanterNonCritical("ca_first_coffin", nil, nil, false)
+     464:   end
+
+================================================================================================
+FILE lua\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=476 terms=RegionSummary_
+     466:     PlayLootIdleSound()
+     467:   end
+     468: end
+     469: function UpdateRegionSummary(regionID, categoryName)
+     470:   local regionStringName = LD.RegionInfo_GetName(regionID)
+     471:   local regionSummaryInfo = game.Map.GetRegionSummaryInfo(regionID)
+     472:   for _, summaryInfo in ipairs(regionSummaryInfo) do
+     473:     local categoryID = summaryInfo.CategoryStr
+     474:     if categoryID ~= nil then
+     475:       if categoryID == categoryName then
+>>   476:         local regionQuest = tostring("RegionSummary_" .. categoryName .. "_Parent_" .. regionStringName)
+     477:         print("DOING LEGENDARY QUEST....", regionQuest)
+     478:         LD.ActivateAndIncrementQuest(regionQuest)
+     479:       end
+     480:     else
+     481:       print("string value not present")
+     482:     end
+     483:   end
+     484: end
+     485: function PickUp()
+     486:   if lootObject then
+
+================================================================================================
+FILE lua\gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua
+MATCH line=79 terms=GetQuestState
+      69:     return
+      70:   elseif BirdMesh ~= nil then
+      71:     BirdMesh:PlayAnimCycle()
+      72:     thisObj:PlayAnimCycle()
+      73:     SoundOnStart()
+      74:   end
+      75: end
+      76: function OnHitByWeapon(level, obj, attacker, weapon)
+      77:   CompletionistMapV100_PublishTargetState(true, "OnHitByWeapon")
+      78:   timers.StartLevelTimer(1.5, HideBird())
+>>    79:   local questState = game.QuestManager.GetQuestState("Quest_Labor_KillRavens_Parent")
+      80:   if questState == "Inactive" then
+      81:     game.QuestManager.StartQuest("Quest_Labor_KillRavens_Parent")
+      82:   end
+      83:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens", 1)
+      84:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_25", 1)
+      85:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_50", 1)
+      86:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+      87:     game.UnlockTrophy(25)
+      88:   end
+      89:   ravenKilled = true
+
+================================================================================================
+FILE lua\gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua
+MATCH line=86 terms=GetQuestState
+      76: function OnHitByWeapon(level, obj, attacker, weapon)
+      77:   CompletionistMapV100_PublishTargetState(true, "OnHitByWeapon")
+      78:   timers.StartLevelTimer(1.5, HideBird())
+      79:   local questState = game.QuestManager.GetQuestState("Quest_Labor_KillRavens_Parent")
+      80:   if questState == "Inactive" then
+      81:     game.QuestManager.StartQuest("Quest_Labor_KillRavens_Parent")
+      82:   end
+      83:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens", 1)
+      84:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_25", 1)
+      85:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_50", 1)
+>>    86:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+      87:     game.UnlockTrophy(25)
+      88:   end
+      89:   ravenKilled = true
+      90:   SpawnFX()
+      91:   PlayDeathSound()
+      92:   OnKilledCallback(level, obj)
+      93:   ActivateRegionSummaryQuest()
+      94:   timers.StartLevelTimer(1, SoftSave)
+      95: end
+      96: function OnKilledCallback(level, obj)
+
+================================================================================================
+FILE lua\gameart\ui\scripts\hud\mainhud.lua
+MATCH line=221 terms=GetQuestState
+     211:   if target ~= nil then
+     212:     if target.type == "Raven" and
+     213:         _G.CompletionistMapV100TargetRavenKilled == true then
+     214:       target.collected = true
+     215:     end
+     216: 
+     217:     if target.type == "Raven" and
+     218:         not target.collected and
+     219:         target.regionQuest ~= nil then
+     220:       local stateOK, state = pcall(function()
+>>   221:         return game.QuestManager.GetQuestState(target.regionQuest)
+     222:       end)
+     223: 
+     224:       if stateOK and tostring(state) == "Complete" then
+     225:         target.collected = true
+     226:         _G.CompletionistMapV100TargetRavenKilled = true
+     227:       end
+     228:     end
+     229: 
+     230:     if (target.type == "NornirPuzzle" or
+     231:         target.type == "NornirChest") and
+
+================================================================================================
+FILE lua\gameart\ui\scripts\inworldmenu\mapmenu.lua
+MATCH line=68 terms=RegionSummary_
+      58: 
+      59: if _G.CompletionistMapV100PlayerMarkerVisible == nil then
+      60:   _G.CompletionistMapV100PlayerMarkerVisible = true
+      61: end
+      62: 
+      63: _G.CompletionistMapV100Target = _G.CompletionistMapV100Target or {
+      64:   active = false,
+      65:   collected = false,
+      66:   type = "Raven",
+      67:   realm = "Midgard",
+>>    68:   regionQuest = "RegionSummary_VF_Raven_Parent",
+      69:   x = -64.850898742676,
+      70:   y = 12.987384796143,
+      71:   z = 787.30694580078,
+      72:   mapX = 3.2117712497711,
+      73:   mapZ = 0.8695997595787
+      74: }
+      75: 
+      76: local CompletionistMapV100_GetNornirRegistry
+      77: local CompletionistMapV100_ApplyZoomAdaptiveIconScale
+      78: 
+
+================================================================================================
+FILE lua\gameart\ui\scripts\inworldmenu\mapmenu.lua
+MATCH line=204 terms=GetQuestState
+     194:   if keyType == "MemoryChest" then return "nornir_mechanism" end
+     195:   return "remaining_collectible"
+     196: end
+     197: 
+     198: local function CompletionistMapV100_IsRavenCollected()
+     199:   if _G.CompletionistMapV100TargetRavenKilled == true then
+     200:     return true
+     201:   end
+     202: 
+     203:   local stateOK, state = pcall(function()
+>>   204:     return game.QuestManager.GetQuestState(
+     205:       "RegionSummary_VF_Raven_Parent"
+     206:     )
+     207:   end)
+     208: 
+     209:   if stateOK and tostring(state) == "Complete" then
+     210:     _G.CompletionistMapV100TargetRavenKilled = true
+     211:     return true
+     212:   end
+     213: 
+     214:   return false
+
+================================================================================================
+FILE lua\gameart\ui\scripts\inworldmenu\mapmenu.lua
+MATCH line=205 terms=RegionSummary_
+     195:   return "remaining_collectible"
+     196: end
+     197: 
+     198: local function CompletionistMapV100_IsRavenCollected()
+     199:   if _G.CompletionistMapV100TargetRavenKilled == true then
+     200:     return true
+     201:   end
+     202: 
+     203:   local stateOK, state = pcall(function()
+     204:     return game.QuestManager.GetQuestState(
+>>   205:       "RegionSummary_VF_Raven_Parent"
+     206:     )
+     207:   end)
+     208: 
+     209:   if stateOK and tostring(state) == "Complete" then
+     210:     _G.CompletionistMapV100TargetRavenKilled = true
+     211:     return true
+     212:   end
+     213: 
+     214:   return false
+     215: end
+
+================================================================================================
+FILE lua\gameart\ui\scripts\inworldmenu\mapmenu.lua
+MATCH line=255 terms=GetQuestState
+     245:     end
+     246:     if target.collected then target.active = false end
+     247:     return target.collected == true
+     248:   end
+     249: 
+     250:   if _G.CompletionistMapV100TargetRavenKilled == true then
+     251:     target.collected = true
+     252:   end
+     253:   if not target.collected and target.regionQuest ~= nil then
+     254:     local stateOK, state = pcall(function()
+>>   255:       return game.QuestManager.GetQuestState(target.regionQuest)
+     256:     end)
+     257:     if stateOK and tostring(state) == "Complete" then
+     258:       target.collected = true
+     259:       _G.CompletionistMapV100TargetRavenKilled = true
+     260:     end
+     261:   end
+     262:   if target.collected then target.active = false end
+     263:   return target.collected
+     264: end
+     265: 
+
+================================================================================================
+FILE lua\gameart\ui\scripts\inworldmenu\mapmenu.lua
+MATCH line=1889 terms=GetQuestState
+    1879:     goSummit_gateTree:Hide()
+    1880:   end
+    1881:   local goThorStatue1 = util.GetUiObjByName("thorStatue1")
+    1882:   if 340 <= completedCineNumber then
+    1883:     goThorStatue1:Hide()
+    1884:   else
+    1885:     goThorStatue1:Show()
+    1886:   end
+    1887:   local goMidgard = goMap:FindSingleGOByName("Midgard")
+    1888:   local jid_smallThorStatue = goMidgard:GetJointIndex("smallThorStatue")
+>>  1889:   if GetGlobalVar("ThorStatueBroken") or game.QuestManager.GetQuestState("Quest_UnfinishedBusiness03_Objective_01") == questConsts.QUEST_STATE_COMPLETE then
+    1890:     goMidgard:HideJoint(jid_smallThorStatue)
+    1891:   else
+    1892:     goMidgard:ShowJoint(jid_smallThorStatue)
+    1893:   end
+    1894:   self:UpdateSnakeState(completedCineNumber)
+    1895:   self:UpdateHelheimBoat()
+    1896:   self:UpdateWaterLevel()
+    1897:   self:AnimateFog()
+    1898: end
+    1899: function MapOn:CheckForTutorial()
+
+================================================================================================
+FILE lua\gameart\ui\scripts\inworldmenu\mapmenu.lua
+MATCH line=2758 terms=GetQuestState
+    2748:   self.realmMarkerInfo = {}
+    2749:   if self.currRealmName == nil then
+    2750:     return
+    2751:   end
+    2752:   local regionInfoTable = mapUtil.GetAllRegionInfoInRealm(self.currRealmName)
+    2753:   for _, regionInfo in ipairs(regionInfoTable) do
+    2754:     local regionMarkerInfoTable = Map.GetMarkersInfoTable(regionInfo.Id)
+    2755:     for i = 1, #regionMarkerInfoTable do
+    2756:       local markerInfo = regionMarkerInfoTable[i]
+    2757:       local hasQuest, questName = questUtil.FindQuestForMarker(markerInfo.Id)
+>>  2758:       if not hasQuest or game.QuestManager.GetQuestState(questName) ~= questConsts.QUEST_STATE_COMPLETE then
+    2759:         markerInfo.regionId = regionInfo.Id
+    2760:         self.realmMarkerInfo[#self.realmMarkerInfo + 1] = regionMarkerInfoTable[i]
+    2761:       end
+    2762:     end
+    2763:   end
+    2764:   self:UpdateFilterButtonMapping()
+    2765: end
+    2766: function MapOn:GetAlwaysOnMarkers()
+    2767:   self:ClearMarkers(true)
+    2768:   for i = 1, #self.realmMarkerInfo do
+
+================================================================================================
+FILE lua\gameart\ui\scripts\inworldmenu\mapmenu.lua
+MATCH line=3280 terms=RegionSummary_
+    3270:     end
+    3271: 
+    3272:     local sameTarget = target ~= nil and target.type == "Raven"
+    3273: 
+    3274:     if sameTarget and target.active then
+    3275:       target.active = false
+    3276:       Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
+    3277:     else
+    3278:       target.type = "Raven"
+    3279:       target.realm = "Midgard"
+>>  3280:       target.regionQuest = "RegionSummary_VF_Raven_Parent"
+    3281:       target.registryKey = nil
+    3282:       target.keyIndex = nil
+    3283:       target.x = COMPLETIONIST_RAVEN_WORLD_X
+    3284:       target.y = COMPLETIONIST_RAVEN_WORLD_Y
+    3285:       target.z = COMPLETIONIST_RAVEN_WORLD_Z
+    3286:       target.mapX = COMPLETIONIST_RAVEN_MAP_X
+    3287:       target.mapZ = COMPLETIONIST_RAVEN_MAP_Z
+    3288:       target.collected = false
+    3289:       target.active = true
+    3290:       _G.CompletionistMapV100TargetCollectedNornirLogged = false
+
+================================================================================================
+FILE lua\gameart\ui\scripts\inworldmenu\mapmenu.lua
+MATCH line=4629 terms=GetQuestState,RegionSummary_
+    4619:     if name == ravenName then knownRavenIdentity = result end
+    4620:     return result
+    4621:   end
+    4622: 
+    4623:   -- Production bridge publishes native Raven state. False from an older restored
+    4624:   -- checkpoint must win over stale quest state. This is read-only for progression.
+    4625:   CompletionistMapV100_IsRavenCollected = function()
+    4626:     local state = _G.CompletionistMapV100TargetRavenKilled
+    4627:     if type(state) == "boolean" then return state end
+    4628:     local ok, quest = pcall(function()
+>>  4629:       return game.QuestManager.GetQuestState("RegionSummary_VF_Raven_Parent")
+    4630:     end)
+    4631:     if not ok or quest == nil then return nil end
+    4632:     return tostring(quest) == "Complete"
+    4633:   end
+    4634: 
+    4635:   local function originalCollected()
+    4636:     local ok, value = pcall(CompletionistMapV100_IsRavenCollected)
+    4637:     if not ok or type(value) ~= "boolean" then return nil end
+    4638:     return value
+    4639:   end
+
