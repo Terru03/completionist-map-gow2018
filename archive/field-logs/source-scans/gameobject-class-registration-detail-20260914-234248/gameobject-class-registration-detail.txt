@@ -1,0 +1,41 @@
+Completionist Map - GameObject class registration detail
+gow_exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+target=0x822C40-0x8234D8
+gameobject_ref_site=0x822F28
+window=0x822E68-0x823030
+
+WINDOW RIP REFERENCES
+  0x822E8C lea -> 0xE1B670 text='Follow'
+  0x822ECF lea -> 0xD9E6B0
+  0x822F28 lea -> 0xE061D8 text='GameObject'
+  0x822F85 lea -> 0xD9E6B0
+  0x822F99 lea -> 0xE1B660 text='EffectCreator'
+  0x822FF9 lea -> 0xD9E6B0
+  0x82300D lea -> 0xE1B654 text='Joint'
+
+WINDOW CALLS
+  CALL 0x822E96 -> 0x9F4CF0
+  CALL 0x822EBE -> 0x9EF660
+  CALL 0x822F32 -> 0x9F4CF0
+  CALL 0x822F5A -> 0x9EF660
+  CALL 0x822F64 -> 0x5F9350 known=lua_gameobject_unbox
+  CALL 0x822FA3 -> 0x9F4CF0
+  CALL 0x822FCB -> 0x9EF660
+  CALL 0x822FD5 -> 0x5F9350 known=lua_gameobject_unbox
+  CALL 0x823017 -> 0x9F4CF0
+
+WINDOW +0xB8 STORES
+  (none in exact window)
+
+RANKED WINDOW CALLEES
+  0x5F9350 score=17 b8=0 exec_refs=0 indirect=1 strings=[]
+    known 0x5F9407 -> 0x4EF0B0 gameobject_token_resolver
+    known 0x5F94C6 -> 0x4EF0B0 gameobject_token_resolver
+  0x9EF660 score=0 b8=0 exec_refs=0 indirect=0 strings=[]
+  0x9F4CF0 score=0 b8=0 exec_refs=0 indirect=0 strings=[]
+
+NOTE: +0xB8 write/function-pointer results are structural candidates until register dataflow is manually verified.
+source_hash_unchanged=true
+game_launched=false
+save_opened=false
+progression_written=false
