@@ -51,7 +51,7 @@ def load_base():
 def sha256(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as f:
-        for block in iter(lambda: f.read(1024 * 1024, b""), b""):
+        for block in iter(lambda: f.read(1024 * 1024), b""):
             h.update(block)
     return h.hexdigest()
 
@@ -119,7 +119,6 @@ def rip_refs(pe, begin: int, blob: bytes, strings):
     out = []
     n = len(blob)
     for i in range(max(0, n - 7)):
-        # Common x64 RIP-relative MOV/LEA forms used throughout this binary.
         if not (0x40 <= blob[i] <= 0x4F):
             continue
         op = blob[i + 1]
@@ -184,7 +183,6 @@ def b8_stores(begin: int, blob: bytes):
 
 
 def executable_immediates(pe, begin: int, blob: bytes):
-    """Find literal image VAs in a narrow window that point to executable code."""
     out = []
     for i in range(max(0, len(blob) - 8)):
         val = struct.unpack_from("<Q", blob, i)[0]
@@ -194,7 +192,6 @@ def executable_immediates(pe, begin: int, blob: bytes):
         sec = pe.section_for_rva(rv)
         if sec and sec["exec"]:
             out.append({"site": begin+i, "value": val, "rva": rv, "section": sec["name"]})
-    # De-duplicate overlapping byte-shift false positives by exact (site,rva).
     return out
 
 
@@ -256,8 +253,6 @@ def main():
         "executable_immediates": executable_immediates(pe, ws, wb),
     }
 
-    # Trace only direct call targets in the exact GameObject window. This keeps
-    # the result compact while exposing registration helpers and callback setup.
     one_hop = {}
     for edge in window["direct_edges"]:
         if edge["kind"] != "call":
@@ -269,8 +264,6 @@ def main():
         if key not in one_hop:
             one_hop[key] = trace_fn(pe, fb, strings)
 
-    # Rank callees by +0xB8 writes, executable refs, interesting strings and
-    # proven GameObject helper intersections.
     ranked = []
     for key, tr in one_hop.items():
         if not tr:
