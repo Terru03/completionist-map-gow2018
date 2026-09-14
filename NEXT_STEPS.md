@@ -1,24 +1,32 @@
 # Next Steps
 
-Current branch has a complete offline static research catalogue. Do not install
-or generate runtime markers yet.
+Static native catalogue now has all 9 proved Ship Heads. Do not build or install
+runtime markers yet.
 
-1. Prove one read-only, unloaded per-instance state lookup using the catalogue's
-   exact native composite keys. Test it first on an already-completed save and a
-   fresh save. Unknown, missing, or malformed responses must stay hidden.
-2. Resolve the one Nornir tracked-target gap: native `quests.dcb` totals 21, while
-   20 fixed parents join unambiguously to a RunicChest region target. Do not use a
-   guide coordinate or nearest-object match.
-3. Resolve the Ship Head gap: target total is 10, while 9 physical placements join
-   unambiguously. Keep the 45 state carriers versus 43 placements distinction.
-4. Prove how Niflheim procedural chest instances expose stable runtime identity
-   and generated XYZ. Never emit the 56 Legendary or 7 Nornir template expansions
-   as fixed markers.
-5. For Breakable seals, prove exact unloaded individual state. Bells and
-   MemoryChest mechanisms have no durable individual completion in current
-   evidence; keep them visible only while their parent is exactly known unopened.
-6. Only after steps 1-5 pass, generate a fully reversible offline Lua/native
-   candidate. Reuse Raven ownership, UID normalization, filter, teardown, and
-   transaction invariants. Keep families disabled by default.
-7. Run runtime static checks, deterministic build twice, rollback proof, then set
-   `ready_for_runtime_test` true. Only then ask for a manual gameplay test.
+1. Prove read-only unloaded per-object state lookup with exact catalogue keys.
+   Test known complete and fresh states. Unknown or bad reply must stay hidden.
+2. Find exact reason `quests.dcb` says Ship Head 10 while native data proves 9
+   carriers and 9 physical objects. Do not make fake tenth row.
+3. Prove or reject exact link from cal500 placement
+   `f8548c57-4dc6-7cba-277c-5cb31099648b` to
+   `RegionSummary_RunicChest_Parent_TyrsVault`. Current callback/level labels do
+   not prove RegionSummary update wire.
+4. Classify 31 nontracked Legendary-path chests only from exact native reward or
+   quest wire. Keep raw rows even when not production eligible.
+5. Prove stable runtime ID and world point for Niflheim procedural chest spawn.
+   Do not emit 56 Legendary or 7 Nornir templates as fixed markers.
+6. Prove unloaded individual state for Breakable seals. Bell and MemoryChest
+   children stay tied to exact known-unopened parent.
+7. Only after state gate passes, make reversible offline runtime build. Families
+   stay off by default. Run static checks, two deterministic builds, rollback
+   proof, then ask for game test.
+
+Current blockers:
+
+- Ship target mismatch: `BLOCKED_EXACT_REASON_UNKNOWN`.
+- cal500 Tyr's Vault binding: `BLOCKED_EXACT_REASON_UNKNOWN`.
+- Exact unloaded per-instance state: `BLOCKED`.
+- Runtime generation: `BLOCKED_FAIL_CLOSED`.
+
+Helheim extra Nornir is explained: `PASS_EXPLAINED`,
+`level_scripted_untracked_triple_chest_reward`.

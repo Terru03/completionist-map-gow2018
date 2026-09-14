@@ -2,131 +2,112 @@
 
 ## Decision
 
-Static catalogue: **PASS**.
+Static native catalogue: **PASS**.
 
 Runtime generation: **BLOCKED, FAIL CLOSED**.
 
-Gameplay test: **NOT RUN**. The exact unloaded, per-instance completion oracle is
-not proven for these families. The generated catalogue therefore stays offline;
-unknown state must create no marker. No God of War process was launched and no
-game, save, or progression file was written.
+Game test: **NOT RUN**. Exact unloaded per-object state still not proved. Unknown
+state makes no marker. No game start. No game, save, or progress write.
 
-## Scope and baseline
+## Scope
 
-- Base branch: `codex/all-ravens-release-candidate`
-- Base commit: `abbeb1bc6a559336c2d92743e8bb70cd3ae15728`
-- Work branch: `codex/all-collectibles-production-research`
-- Native inputs: PC WAD records, `mapmaster.dcb`, `quests.dcb`, and decompiled
-  Lua state/save code under the local God of War tree.
-- Existing 53-entry Raven catalogue, Raven implementation, and Raven tests were
-  not changed.
+- Branch: `codex/all-collectibles-production-research`
+- Start commit: `d0600d90193c1327119d428983bc0a29fa97af1a`
+- Inputs: read-only PC WAD records, `mapmaster.dcb`, `quests.dcb`, and native Lua blobs.
+- Raven code and Raven production behavior: unchanged.
 
-## Static result
+## Static count
 
-| Family | Native result | Tracked target evidence | Status |
-|---|---:|---:|---|
-| Artefacts | 45 state carriers, 43 physical placements | 9 Ship Head placements vs target 10 | PASS with explicit carrier/placement discrepancy |
-| Lore Markers | 40 direct component carriers plus 3 level-script carriers = 43 | target 43 | PASS |
-| Legendary Chests | 64 fixed physical objects | 33 map-summary objects vs target 33 | PASS; 31 story/trial extras kept and labelled |
-| Nornir Chests | 22 fixed physical parents | 20 joined targets vs target 21 | PASS with one unresolved tracked join |
-| Nornir Seals | 30 exact children | 10 Breakable parents x 3 | PASS |
-| Nornir Bells | 24 exact children | 8 Bell parents x 3 | PASS |
-| Nornir Mechanisms | 12 exact children | 4 MemoryChest parents x 3 | PASS |
+| Family | Physical rows | Raw state carriers | Tracked rows | Native target | Result |
+|---|---:|---:|---:|---:|---|
+| Artefacts | 45 | 45 | 11 all artefacts; 9 Ship Heads | Ship Head 10 | PASS; Ship target gap blocked |
+| Lore Markers | 43 | 43 | 43 | 43 | PASS |
+| Legendary Chests | 64 | 43 | 33 | 33 | PASS raw set; 31 nontracked rows stay raw |
+| Nornir Chests | 22 | 29 | 20 | 21 | PASS static; one tracked join blocked |
+| Nornir Seals | 30 | child objects | parent links | n/a | PASS |
+| Nornir Bells | 24 | child objects | parent links | n/a | PASS |
+| Nornir Mechanisms | 12 | child objects | parent links | n/a | PASS |
 
-Niflheim procedural data is not emitted as fixed markers. The audit records 56
-Legendary and 7 Nornir template-placement expansions as excluded procedural
-templates. `Lambs Cress` shares the artefact script but has no artefact type and
-is explicitly excluded.
+Niflheim procedural rows stay out: 56 Legendary and 7 Nornir template paths.
+`Lambs Cress` stays out because native row has no artefact type.
 
-Every fixed Nornir parent has exactly three child records. Association comes from
-the parent's native Lua-table reference names, then exact object-name lookup in
-the same WAD. No nearest-object or distance association is used. Native KeyType
-values are only `Breakable`, `Bell`, and `MemoryChest`; catalogue UI families are
-Seal, Bell, and Mechanism.
+## Ship Head extraction
 
-## Identity, location, and grouping
+Result: **PASS** for physical extraction.
 
-Each row records native object/component identity, exact WAD and SHA-256, record
-offsets, full transform chain, world XYZ, realm, region, map-summary quest when
-joined, deterministic marker name, and deterministic 64-bit marker UID. Midgard
-rows include the solved affine map projection; other realms retain exact world
-XYZ and explicit projection metadata.
+- State carriers: 9
+- Exact transform paths: 13
+- Distinct physical placements: 9
+- Native tracked target: 10
+- Numbered native object proof: 01 through 09
 
-Prefab definitions can fan out to several placed objects. Extraction expands
-every native transform branch, selects exact prefab names where stock child IDs
-are shared, and uses outer native composite placement keys. Streamed or alternate
-carriers remain distinguishable by native WAD/record identity. Nornir groups use
-explicit `parent_catalogue_id` links.
+Extractor now walks every native transform parent. No record-distance, nearest
+offset, nearest coordinate, or order pick remains. Shared child IDs fan out. Rows
+merge only on same physical identity and same world point. Each merged row keeps
+all exact carrier GUIDs and full carrier-to-placement transform paths.
 
-## Exact state evidence
+| No. | WAD | Physical GUID | World XYZ | RegionSummary parent |
+|---:|---|---|---|---|
+| 01 | `xpl910_islandshipwreck.wad` | `fda83783-4b36-1579-d4a2-9194810c3d09` | `[-170.124322, 2.533906, -225.885511]` | `RegionSummary_ISW_Shiphead_Parent` |
+| 02 | `xpl970_beachtower.wad` | `01a8ba24-409b-5fb4-9a1c-18b43669fe44` | `[-260.666945, -4.169471, 183.629049]` | `RegionSummary_BT_Shiphead_Parent` |
+| 03 | `xpl980_beachwaterfall.wad` | `379728fc-47e4-a966-be1f-c9926011184b` | `[125.732797, -0.652341, 394.715973]` | `RegionSummary_BW_Shiphead_Parent` |
+| 04 | `xpl950_beachmaze.wad` | `5bb11ed5-419b-42ca-ba81-3598d29ca473` | `[-182.692799, -0.495932, 312.858455]` | `RegionSummary_BM_Shiphead_Parent` |
+| 05 | `cal100_hub.wad` | `4a3d3149-42f1-87f6-9ee5-b78302e118fe` | `[189.612320, 6.012498, 55.892853]` | `RegionSummary_CALS_Shiphead_Parent` |
+| 06 | `xpl940_beachcave.wad` | `7d8a35dc-4d6a-abf8-065e-1ead0c470fcc` | `[100.532954, 2.020625, -176.915965]` | `RegionSummary_BC_Shiphead_Parent` |
+| 07 | `xpl980_beachwaterfall.wad` | `6cffc988-4efa-77b4-24ba-f987adfdba6a` | `[115.259514, 5.969724, 223.703513]` | `RegionSummary_BW_Shiphead_Parent` |
+| 08 | `cal100_hub.wad` | `f7fbfc3f-4499-1b3d-a378-71879e6de737` | `[22.059830, -4.013092, 110.690048]` | `RegionSummary_CALS_Shiphead_Parent` |
+| 09 | `xpl960_beachship.wad` | `bd9a46a3-4b8f-d466-0be2-129e27fa4004` | `[-223.796620, 5.981133, -115.035329]` | `RegionSummary_CALS_Shiphead_Parent` |
 
-| Family | Exact loaded/checkpoint oracle | Limit |
-|---|---|---|
-| Artefact | `interact_loot_artifact.lua`: `ACQUIRED = 3`; checkpoint persists `state`; pickup sets `state = ACQUIRED` | No proven read-only unloaded lookup by native instance key |
-| Lore Marker | `langcheckruneread.lua`: successful summary update sets `mapSummaryComplete = true`; checkpoint persists/restores it | Three level-script carriers use `bRuneReadStarted` or `wellRead`; no generic unloaded query |
-| Legendary Chest | `interact_chest_standard.lua`: `OPENED = 4`; open sets `state = OPENED`; checkpoint persists/restores `state` | No proven read-only unloaded lookup by composite instance key |
-| Nornir parent | Actual reward chest uses the same exact `state == OPENED` oracle | `keysUsed` and `challengeComplete` are puzzle progress, not chest-open proof, and are never used to infer completion |
-| Breakable seal | Loaded object can prove exact child state through destroyed breakable state or disabled rune visual | Unloaded/pre-install individual seal state is unresolved |
-| Bell | Bell ringing/cooldown state is transient | No durable individual completion; child stays tied to exact known-unopened parent |
-| Memory mechanism | Current rune/mechanism state is puzzle state | No durable individual completion; child stays tied to exact known-unopened parent |
+Full catalogue IDs, state carrier GUIDs, record IDs, native object evidence, and
+exact transform paths live in `all-collectibles.json`.
 
-The local `interact_chest_runic.lua` copy contains old diagnostic additions. This
-research uses its native attribute names, checkpoint fields, and direct object
-references only. It does not copy the old aggregate inference logic.
+## Ship Head target 10 vs physical 9
 
-## Runtime architecture proof
+Result: **BLOCKED_EXACT_REASON_UNKNOWN**.
 
-`collectible_runtime_model.py` is a pure offline oracle, not shipped Lua. It
-proves these rules:
+Native data proves 9 carriers, 13 branch paths, and 9 objects. It does not prove
+a tenth carrier, cut object, legacy object, or quest duplicate. Keep 9 physical
+markers. Treat target 10 as native bookkeeping gap until exact proof exists.
 
-- unknown state creates no marker;
-- exact collision plus normalized exact UID owns a custom click;
-- custom-to-custom and custom-to-stock target replacement works both ways;
-- a second click removes only the same target;
-- realm and family filters gate visibility;
-- Nornir children require an exact known-unopened parent;
-- Breakable seals also require exact individual loaded state;
-- save change clears all cached state and UI ownership;
-- teardown removes UI state, retry is bounded, and no permanent polling exists.
+## Nornir join
 
-No production Lua or native WAD build was generated because the state gate is
-blocked. This is deliberate: static identity and position proof does not justify
-showing already-completed collectibles on an existing save.
+- Physical: 22
+- Native tracked target: 21
+- Exact native level/zone ownership joins: 20
+- Region/count inference: none
 
-## Files
+`cal500_runevault.wad` placement
+`f8548c57-4dc6-7cba-277c-5cb31099648b` stays unjoined.
+
+Result: **BLOCKED_EXACT_REASON_UNKNOWN**.
+
+Exact placement has `RuneChestOpened` callback into `cal500_runevault` level
+script. Level script names `chest_locked_tier4_cal500_1`, `bRuneChestOpened`, and
+`TyrsVault`. But target name only appears in shared `interact_chest_standard`
+blob. No exact callback-to-RegionSummary update, GUID chain, or quest reference
+binds this object to `RegionSummary_RunicChest_Parent_TyrsVault`.
+
+Helheim placement `6fc8ac79-4c63-bf63-a137-36b7cd3c7f25`:
+**PASS_EXPLAINED**. Placement and `helr100_docks` level script share
+`HelR100_TripleChest_Callback`. Native quest data has no Helheim RunicChest
+target. Class: `level_scripted_untracked_triple_chest_reward`.
+
+## Legendary user class
+
+Raw 64 physical rows stay. 33 map-summary rows stay tracked. Remaining 31 stay
+unresolved nontracked raw research. No new production eligibility guess made.
+Production marker eligibility stays separate from raw physical membership.
+
+## Runtime gate
+
+Loaded state proof still holds. Exact unloaded/pre-install lookup by catalogue
+instance key does not. Nornir child limits still hold. Runtime generation stays
+off. Unknown state stays hidden.
+
+## Output
 
 - `config/collectibles/v0.10.5/all-collectibles.json`
-- `config/collectibles/v0.10.5/all-collectibles.schema.json`
-- `tools/v0.10.5/collectible_catalogue.py`
-- `tools/v0.10.5/collectible_runtime_model.py`
-- `tools/v0.10.5/test_collectible_catalogue.py`
-- `tools/v0.10.5/test_collectible_runtime_model.py`
 - `docs/research/all-collectibles-native-audit.json`
-- `docs/superpowers/plans/2026-09-14-all-collectibles-production-research.md`
+- `tools/v0.10.5/collectible_catalogue.py`
+- `tools/v0.10.5/test_collectible_catalogue.py`
 - `NEXT_STEPS.md`
-
-## Verification
-
-Focused catalogue tests: 14 passed, including atomic output success and injected
-pre-replace failure rollback.
-
-Focused runtime-model tests: 13 passed.
-
-Raven regression tests: 42 passed. Four Lua 5.1 tests skipped because that runtime
-is unavailable. Two catalogue generations produced byte-identical SHA-256
-`8F86BF3C669258E71EA655C6212320C948E40AD3FC8595F690A7373F8591FCF8`.
-
-The inherited fake-game Raven transaction test could not start because
-`archive/all-ravens/all-ravens-release-candidate-offline.json` is absent from the
-base checkout. It made no installed-game write. This branch's catalogue output
-boundary is covered by the focused atomic-write rollback test instead.
-
-## Gate summary
-
-- Static extraction and schema: **PASS**
-- Exact native Nornir parent-child association: **PASS**
-- Loaded/checkpoint state semantics: **PASS WITH CHILD LIMITS**
-- Exact unloaded/pre-install state: **BLOCKED**
-- Safe runtime generation: **BLOCKED**
-- Gameplay readiness: **NO**
-- Game/save/progression writes: **NONE**
