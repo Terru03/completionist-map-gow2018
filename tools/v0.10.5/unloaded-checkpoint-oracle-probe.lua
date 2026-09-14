@@ -40,6 +40,52 @@ do
     return nil
   end
 
+  local function safeCall(label, fn)
+    local ok, value = pcall(fn)
+    if ok then return label .. "=" .. safeToString(value) end
+    return label .. "=<error:" .. safeToString(value) .. ">"
+  end
+
+  local function binaryHex(value, limit)
+    if type(value) ~= "string" then return nil end
+    local parts = {}
+    local count = math.min(#value, limit)
+    for i = 1, count do parts[#parts + 1] = string.format("%02x", string.byte(value, i)) end
+    local suffix = #value > limit and "..." or ""
+    return table.concat(parts) .. suffix .. ":bytes=" .. tostring(#value)
+  end
+
+  local function logObjectIdentity(value, killed)
+    local fields = {
+      "ravenKilled=" .. tostring(killed),
+      "tostring=" .. safeToString(value),
+      safeCall("GetName", function() return value:GetName() end),
+      safeCall("GetDebugName", function() return value:GetDebugName() end),
+      safeCall("GetDebugPath", function() return value:GetDebugPath() end),
+      safeCall("Level", function() return value.Level end),
+    }
+    if type(engine) == "table" and type(engine.CanPickle) == "function" then
+      fields[#fields + 1] = safeCall("CanPickle", function() return engine.CanPickle(value) end)
+    end
+    if type(cmsgpack) == "table" and type(cmsgpack.pack) == "function" then
+      local ok, packed = pcall(cmsgpack.pack, value)
+      fields[#fields + 1] = "cmsgpackOk=" .. tostring(ok)
+      fields[#fields + 1] = "cmsgpack=" .. safeToString(binaryHex(packed, 128))
+      if not ok then fields[#fields + 1] = "cmsgpackError=" .. safeToString(packed) end
+    end
+    if type(debug) == "table" and type(debug.getmetatable) == "function" then
+      local ok, mt = pcall(debug.getmetatable, value)
+      local names = {}
+      if ok and type(mt) == "table" then
+        for key, member in pairs(mt) do names[#names + 1] = safeToString(key) .. ":" .. type(member) end
+        table.sort(names)
+      end
+      fields[#fields + 1] = "metatableOk=" .. tostring(ok)
+      fields[#fields + 1] = "metatable=" .. table.concat(names, ",")
+    end
+    log("IDENTITY_DIAGNOSTIC " .. table.concat(fields, " "))
+  end
+
   local function exactObjectWad(value)
     if value == nil then return nil end
     local attempts = {
@@ -245,7 +291,8 @@ do
           if type(subobjects) == "table" then
             for object, savedInfo in pairs(subobjects) do
               subobjectRecords = subobjectRecords + 1
-              local killed = type(savedInfo) == "table" and rawget(savedInfo, "ravenKilled") or nil
+              local killed = nil
+              if type(savedInfo) == "table" then killed = rawget(savedInfo, "ravenKilled") end
               if type(killed) == "boolean" then
                 local wad = exactObjectWad(object)
                 local objectName = exactObjectName(object)
@@ -268,6 +315,7 @@ do
                   end
                 else
                   unknown = unknown + 1
+                  logObjectIdentity(object, killed)
                   log("STATE_UNKNOWN reason=exact_identity_unavailable wad=" .. safeToString(wad) ..
                       " object=" .. safeToString(objectName) .. " resident=" .. resident ..
                       " objectValue=" .. safeToString(object))
