@@ -1,0 +1,180 @@
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:208 [wad_api] ===
+   205:   local sendOK, sendErr = pcall(function()
+   206:     engine.SendHook(
+   207:       "UI_CALL_EVENT",
+>  208:       engine.GetUIWad(),
+   209:       "EVT_COMPLETIONIST_NORNIR_STATE",
+   210:       entry
+   211:     )
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:285 [object_lookup] ===
+   282:     if keyType == "MemoryChest" then
+   283:       runeTable[i].successRune = thisObj:GetLuaTableAttribute("SuccessRune_0" .. tostring(i))
+   284:     end
+>  285:     runeTable[i].runeKey = level:FindSingleGameObject(thisObj:FindLuaTableAttribute("sealBreakable0" .. tostring(i)))
+   286:     runeTable[i].runeVisual = thisObj:FindSingleGOByName("keyRune0" .. tostring(i))
+   287:     runeTable[i].onBreakableDestroyed = thisObj:FindLuaTableAttribute("Event_Breakable0" .. tostring(i) .. "Destroyed")
+   288:     if runeTable[i].onBreakableDestroyed ~= nil then
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:293 [subobject_api] ===
+   290:     end
+   291:   end
+   292:   chestScript = thisObj:FindSingleGOByName("ChestScript_RN").Child.LuaObjectScript
+>  293:   game.SubObject.Sleep(go)
+   294: end
+   295: function OnPreStart(level, obj)
+   296:   for i = 1, 3 do
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:428 [subobject_api,checkpoint_retention] ===
+   425:   return frontInteractZone
+   426: end
+   427: function RunicSoftSave()
+>  428:   game.SubObject.SoftSave(thisObj)
+   429:   if keyType == "MemoryChest" then
+   430:     for i = 1, 3 do
+   431:       if runeTable[i].runeKey then
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:432 [checkpoint_retention] ===
+   429:   if keyType == "MemoryChest" then
+   430:     for i = 1, 3 do
+   431:       if runeTable[i].runeKey then
+>  432:         runeTable[i].runeKey.LuaObjectScript.SoftSave()
+   433:       end
+   434:     end
+   435:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:66 [wad_api] ===
+    63:   local sendOK, sendErr = pcall(function()
+    64:     engine.SendHook(
+    65:       "UI_CALL_EVENT",
+>   66:       engine.GetUIWad(),
+    67:       "EVT_COMPLETIONIST_NORNIR_OPENED",
+    68:       payload
+    69:     )
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:108 [gameobjects_registry] ===
+   105:   checkpointOnOpened = thisObj:GetLuaTableAttribute("CheckpointOnOpened")
+   106:   checkpointOnOpened_Override = thisObj:GetLuaTableAttribute("CheckpointOnOpened_Override")
+   107:   if checkpointOnOpened_Override ~= nil and checkpointOnOpened_Override ~= "" then
+>  108:     checkpointOnOpened_Override = GameObjects[checkpointOnOpened_Override]
+   109:   else
+   110:     checkpointOnOpened_Override = nil
+   111:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:129 [subobject_api] ===
+   126:   typeSpecificData = {}
+   127:   typeSpecificCallbacks = {}
+   128:   SoundInit()
+>  129:   game.SubObject.Sleep(obj)
+   130:   local levelName = level.Name
+   131:   if string.find(levelName, "Nid") == nil and string.find(levelName, "Msp") == nil then
+   132:     idleFX:SetInhibitSave()
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:398 [subobject_api,checkpoint_retention] ===
+   395:   FireOnInteractStartCallbacks()
+   396: end
+   397: function TrapChestSoftSave()
+>  398:   game.SubObject.SoftSave(thisObj)
+   399: end
+   400: function OnInteractAbort(level, obj, creature)
+   401: end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:542 [subobject_api,checkpoint_retention] ===
+   539:       game.World.StoreCheckpoint()
+   540:     end
+   541:   else
+>  542:     if game.SubObject.SoftSave then
+   543:       game.SubObject.SoftSave(thisObj)
+   544:     end
+   545:     if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:543 [subobject_api,checkpoint_retention] ===
+   540:     end
+   541:   else
+   542:     if game.SubObject.SoftSave then
+>  543:       game.SubObject.SoftSave(thisObj)
+   544:     end
+   545:     if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+   546:       thisObj.Parent.Parent.LuaObjectScript.RunicSoftSave()
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:753 [subobject_api,checkpoint_retention] ===
+   750:     game.Audio.PlayBanter("Niflheim_Armor_Quest")
+   751:     LD.ActivateQuest("Quest_NiflheimArmorChest_Parent")
+   752:     LD.CompleteQuest("Quest_NiflheimArmorChest_01")
+>  753:     game.SubObject.SoftSave(thisObj)
+   754:   end
+   755:   if MaxHealthUpgradePiece or MaxHealthUpgrade then
+   756:     player:MeterSetValue("Health", player:MeterGetMax("Health"))
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:63 [subobject_api] ===
+    60:   regionSummaryQuest = thisObj:FindLuaTableAttribute("regionSummaryQuest")
+    61:   BirdMesh = thisObj:FindSingleGOByName("BirdMesh")
+    62:   SoundInit()
+>   63:   game.SubObject.Sleep(obj)
+    64: end
+    65: function OnStart(level, obj)
+    66:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnStart")
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:94 [checkpoint_retention] ===
+    91:   PlayDeathSound()
+    92:   OnKilledCallback(level, obj)
+    93:   ActivateRegionSummaryQuest()
+>   94:   timers.StartLevelTimer(1, SoftSave)
+    95: end
+    96: function OnKilledCallback(level, obj)
+    97:   if OnKilledCallbacks ~= nil or OnKilledCallbacks ~= "" then
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:126 [checkpoint_retention] ===
+   123:     deathFX:SetWorldPosition(thisObj:GetWorldPosition())
+   124:   end
+   125: end
+>  126: function SoftSave(level, obj)
+   127:   game.SubObject.SoftSave(thisObj)
+   128: end
+   129: function OnSaveCheckpoint(level, obj)
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:127 [subobject_api,checkpoint_retention] ===
+   124:   end
+   125: end
+   126: function SoftSave(level, obj)
+>  127:   game.SubObject.SoftSave(thisObj)
+   128: end
+   129: function OnSaveCheckpoint(level, obj)
+   130:   return {ravenKilled = ravenKilled}
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:68 [exact_target] ===
+    65:   collected = false,
+    66:   type = "Raven",
+    67:   realm = "Midgard",
+>   68:   regionQuest = "RegionSummary_VF_Raven_Parent",
+    69:   x = -64.850898742676,
+    70:   y = 12.987384796143,
+    71:   z = 787.30694580078,
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:205 [exact_target] ===
+   202: 
+   203:   local stateOK, state = pcall(function()
+   204:     return game.QuestManager.GetQuestState(
+>  205:       "RegionSummary_VF_Raven_Parent"
+   206:     )
+   207:   end)
+   208: 
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3280 [exact_target] ===
+  3277:     else
+  3278:       target.type = "Raven"
+  3279:       target.realm = "Midgard"
+> 3280:       target.regionQuest = "RegionSummary_VF_Raven_Parent"
+  3281:       target.registryKey = nil
+  3282:       target.keyIndex = nil
+  3283:       target.x = COMPLETIONIST_RAVEN_WORLD_X
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:4629 [exact_target] ===
+  4626:     local state = _G.CompletionistMapV100TargetRavenKilled
+  4627:     if type(state) == "boolean" then return state end
+  4628:     local ok, quest = pcall(function()
+> 4629:       return game.QuestManager.GetQuestState("RegionSummary_VF_Raven_Parent")
+  4630:     end)
+  4631:     if not ok or quest == nil then return nil end
+  4632:     return tostring(quest) == "Complete"
+
