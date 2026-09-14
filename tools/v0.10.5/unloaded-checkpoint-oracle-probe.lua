@@ -103,6 +103,53 @@ do
         log("ENVIRONMENT_ROOT entries=" .. tostring(count) .. " roots=" .. tostring(#result))
       end
     end
+    if type(debug) == "table" and type(debug.getfenv) == "function" then
+      local candidates = {
+        { "engine.CurrentlyExecutingObject", type(engine) == "table" and engine.CurrentlyExecutingObject or nil },
+        { "engine.DebugGetSubObjectEnvironmentRoot", type(engine) == "table" and engine.DebugGetSubObjectEnvironmentRoot or nil },
+        { "game.FindLevel", type(game) == "table" and game.FindLevel or nil },
+      }
+      for _, candidate in ipairs(candidates) do
+        if type(candidate[2]) == "function" then
+          local ok, value = pcall(debug.getfenv, candidate[2])
+          log("DEBUG_GETFENV target=" .. candidate[1] .. " ok=" .. tostring(ok) ..
+              " type=" .. type(value) .. " value=" .. safeToString(value))
+          if ok then addRoot(result, seen, "debug.getfenv(" .. candidate[1] .. ")", value) end
+        end
+      end
+    end
+    if type(debug) == "table" and type(debug.getregistry) == "function" then
+      local ok, registry = pcall(debug.getregistry)
+      log("DEBUG_REGISTRY ok=" .. tostring(ok) .. " type=" .. type(registry) ..
+          " value=" .. safeToString(registry))
+      if ok and type(registry) == "table" then
+        local queue = { { Label = "debug.registry", Value = registry, Depth = 0 } }
+        local queued = { [registry] = true }
+        local index, edges = 1, 0
+        while index <= #queue and #queue < 20000 do
+          local item = queue[index]
+          index = index + 1
+          addRoot(result, seen, item.Label, item.Value)
+          if item.Depth < 3 then
+            for key, value in pairs(item.Value) do
+              edges = edges + 1
+              if edges > 100000 then break end
+              if type(value) == "table" and not queued[value] then
+                queued[value] = true
+                queue[#queue + 1] = {
+                  Label = item.Label .. "[" .. safeToString(key) .. "]",
+                  Value = value,
+                  Depth = item.Depth + 1,
+                }
+              end
+            end
+          end
+          if edges > 100000 then break end
+        end
+        log("DEBUG_REGISTRY_GRAPH tables=" .. tostring(#queue) .. " edges=" .. tostring(edges) ..
+            " roots=" .. tostring(#result) .. " bounded=true")
+      end
+    end
     return result
   end
 
