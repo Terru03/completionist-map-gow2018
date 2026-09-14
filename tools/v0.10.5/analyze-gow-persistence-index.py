@@ -25,6 +25,8 @@ KNOWN = {
 }
 FOCUS_INITIALIZER = 0x406820
 FOCUS_CALLBACK = 0x409FC0
+CS_AC_READ = 1
+CS_AC_WRITE = 2
 
 
 def rows(cur):
@@ -95,13 +97,14 @@ def executable_rip_sources_near(con: sqlite3.Connection, fn_begin: int, site: in
 def rank_b8_functions(con: sqlite3.Connection):
     candidates = []
     fns = rows(con.execute(
-        "SELECT DISTINCT src_fn FROM mem_refs WHERE disp=184 AND access LIKE '%W%' ORDER BY src_fn"
+        "SELECT DISTINCT src_fn FROM mem_refs WHERE disp=184 AND (access & ?) != 0 ORDER BY src_fn",
+        (CS_AC_WRITE,),
     ))
     for row in fns:
         fn = row["src_fn"]
         writes = rows(con.execute(
             "SELECT site,mnemonic,operand_index,base,idx,scale,disp,access FROM mem_refs "
-            "WHERE src_fn=? AND disp=184 AND access LIKE '%W%' ORDER BY site", (fn,)
+            "WHERE src_fn=? AND disp=184 AND (access & ?) != 0 ORDER BY site", (fn, CS_AC_WRITE)
         ))
         fields = {r[0] for r in con.execute(
             "SELECT DISTINCT disp FROM mem_refs WHERE src_fn=? AND disp IN (72,164,184)", (fn,)
@@ -189,7 +192,7 @@ def main():
     init_graph = graph_neighborhood(con, FOCUS_INITIALIZER, 2)
 
     result = {
-        "schema": 1,
+        "schema": 2,
         "analysis": "persistence_index_followup",
         "database": str(db),
         "focus_initializer": initializer,
@@ -212,6 +215,7 @@ def main():
         "exe_rescanned=false",
         f"focus_initializer=0x{FOCUS_INITIALIZER:X}",
         f"focus_callback=0x{FOCUS_CALLBACK:X}",
+        "write_filter=Capstone CS_AC_WRITE numeric bit 2",
         "",
         "FOCUS INITIALIZER",
         json.dumps(initializer, indent=2),
