@@ -1,0 +1,143 @@
+Completionist Map - SerializeHook Lua usage inspection
+gow_exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+files_scanned=493
+hit_count=15
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=25 terms=SerializeHook
+  22: thunk.Install("__OnSetMPIconText", MPIconSetTextCallback)
+  23: thunk.Install("__OnSetMPIconMaterialSwap", MPIconMaterialSwapCallback)
+  24: local Create = function(iconName, jointName)
+  25:   engine.SerializeHook("__OnMPIconCallback", "MP_ICON_TWEAK", iconName, jointName)
+  26: end
+  27: local Show = function(iconName)
+  28:   engine.SerializeHook("__OnMPIconCallback", "MP_ICON_VIS_ON", iconName)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=28 terms=SerializeHook
+  25:   engine.SerializeHook("__OnMPIconCallback", "MP_ICON_TWEAK", iconName, jointName)
+  26: end
+  27: local Show = function(iconName)
+  28:   engine.SerializeHook("__OnMPIconCallback", "MP_ICON_VIS_ON", iconName)
+  29: end
+  30: local Hide = function(iconName)
+  31:   engine.SerializeHook("__OnMPIconCallback", "MP_ICON_VIS_OFF", iconName)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=31 terms=SerializeHook
+  28:   engine.SerializeHook("__OnMPIconCallback", "MP_ICON_VIS_ON", iconName)
+  29: end
+  30: local Hide = function(iconName)
+  31:   engine.SerializeHook("__OnMPIconCallback", "MP_ICON_VIS_OFF", iconName)
+  32: end
+  33: local Off = function(iconName)
+  34:   engine.SerializeHook("__OnMPIconCallback", "MP_ICON_OFF", iconName)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=34 terms=SerializeHook
+  31:   engine.SerializeHook("__OnMPIconCallback", "MP_ICON_VIS_OFF", iconName)
+  32: end
+  33: local Off = function(iconName)
+  34:   engine.SerializeHook("__OnMPIconCallback", "MP_ICON_OFF", iconName)
+  35: end
+  36: local Parent = function(iconName, parentName)
+  37:   engine.SerializeHook("__OnMPIconCallback", "MP_ICON_PARENT", iconName, parentName)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=37 terms=SerializeHook
+  34:   engine.SerializeHook("__OnMPIconCallback", "MP_ICON_OFF", iconName)
+  35: end
+  36: local Parent = function(iconName, parentName)
+  37:   engine.SerializeHook("__OnMPIconCallback", "MP_ICON_PARENT", iconName, parentName)
+  38: end
+  39: local level = {
+  40:   Create = function(go, iconName, jointName)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=41 terms=SerializeHook
+  38: end
+  39: local level = {
+  40:   Create = function(go, iconName, jointName)
+  41:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_TWEAK", iconName, jointName)
+  42:   end,
+  43:   Show = function(go, iconName)
+  44:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_VIS_ON", iconName)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=44 terms=SerializeHook
+  41:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_TWEAK", iconName, jointName)
+  42:   end,
+  43:   Show = function(go, iconName)
+  44:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_VIS_ON", iconName)
+  45:   end,
+  46:   Hide = function(go, iconName)
+  47:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_VIS_OFF", iconName)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=47 terms=SerializeHook
+  44:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_VIS_ON", iconName)
+  45:   end,
+  46:   Hide = function(go, iconName)
+  47:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_VIS_OFF", iconName)
+  48:   end,
+  49:   Off = function(go, iconName)
+  50:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_OFF", iconName)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=50 terms=SerializeHook
+  47:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_VIS_OFF", iconName)
+  48:   end,
+  49:   Off = function(go, iconName)
+  50:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_OFF", iconName)
+  51:   end,
+  52:   Parent = function(go, iconName, parentName)
+  53:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_PARENT", iconName, parentName)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=53 terms=SerializeHook
+  50:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_OFF", iconName)
+  51:   end,
+  52:   Parent = function(go, iconName, parentName)
+  53:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_PARENT", iconName, parentName)
+  54:   end,
+  55:   PlayAnimation = function(go, iconName, style, animName, animRate, startTime, endTime, seekDuration)
+  56:     engine.SerializeHook("__OnPlayMPIconAnim", go, iconName, style, animName, animRate, startTime, endTime, seekDuration)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=56 terms=SerializeHook
+  53:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_PARENT", iconName, parentName)
+  54:   end,
+  55:   PlayAnimation = function(go, iconName, style, animName, animRate, startTime, endTime, seekDuration)
+  56:     engine.SerializeHook("__OnPlayMPIconAnim", go, iconName, style, animName, animRate, startTime, endTime, seekDuration)
+  57:   end,
+  58:   FadeIn = function(go, iconName, jointName)
+  59:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_FADE_IN", iconName, jointName)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=59 terms=SerializeHook
+  56:     engine.SerializeHook("__OnPlayMPIconAnim", go, iconName, style, animName, animRate, startTime, endTime, seekDuration)
+  57:   end,
+  58:   FadeIn = function(go, iconName, jointName)
+  59:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_FADE_IN", iconName, jointName)
+  60:   end,
+  61:   FadeOut = function(go, iconName, jointName)
+  62:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_FADE_OUT", iconName, jointName)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=62 terms=SerializeHook
+  59:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_FADE_IN", iconName, jointName)
+  60:   end,
+  61:   FadeOut = function(go, iconName, jointName)
+  62:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_FADE_OUT", iconName, jointName)
+  63:   end,
+  64:   SetTextObjectText = function(go, iconName, textObjectName, text)
+  65:     engine.SerializeHook("__OnSetMPIconText", go, iconName, textObjectName, text)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=65 terms=SerializeHook
+  62:     engine.SerializeHook("__OnMPIconLevelCallback", go, "MP_ICON_FADE_OUT", iconName, jointName)
+  63:   end,
+  64:   SetTextObjectText = function(go, iconName, textObjectName, text)
+  65:     engine.SerializeHook("__OnSetMPIconText", go, iconName, textObjectName, text)
+  66:   end,
+  67:   SetMaterialSwap = function(go, iconName, materialSwapName)
+  68:     engine.SerializeHook("__OnSetMPIconMaterialSwap", go, iconName, materialSwapName)
+
+FILE mods\lua_source\gameart\scripts\libraries\ui\mpicon.lua line=68 terms=SerializeHook
+  65:     engine.SerializeHook("__OnSetMPIconText", go, iconName, textObjectName, text)
+  66:   end,
+  67:   SetMaterialSwap = function(go, iconName, materialSwapName)
+  68:     engine.SerializeHook("__OnSetMPIconMaterialSwap", go, iconName, materialSwapName)
+  69:   end
+  70: }
+  71: return {
+
+game_launched=false
+save_opened=false
+progression_written=false
