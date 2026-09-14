@@ -57,7 +57,7 @@ try {
               break
             }
           }
-          [void]$methodSamples[$method].Add("$rel:$($i+1): $($lines[$i].Trim())")
+          [void]$methodSamples[$method].Add("${rel}:$($i+1): $($lines[$i].Trim())")
         }
       }
     }
