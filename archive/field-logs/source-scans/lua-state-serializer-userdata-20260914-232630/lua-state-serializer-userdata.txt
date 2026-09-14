@@ -1,0 +1,32 @@
+Completionist Map - Lua-state serializer userdata trace
+gow_exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+serializer=0x7E7F10
+function_count=38
+
+USERDATA TYPE-7 CANDIDATES
+  (none from direct lua_type+cmp7 pattern; inspect ranked/call graph)
+
+KNOWN GAMEOBJECT/LUA INTERSECTIONS
+  0x7E7F10 site=0x7E7F43 -> 0x9E4900 lua_type
+  0x7E88F0 site=0x7E89C1 -> 0x9E4900 lua_type
+
+RANKED CANDIDATES
+  0x7E7F10 score=18 strings=['tableref_root', 'tableref_root'] userdata7=0 indirect=0
+    known site=0x7E7F43 -> 0x9E4900 lua_type
+  0x7E88F0 score=14 strings=['tableref_to_table'] userdata7=0 indirect=0
+    known site=0x7E89C1 -> 0x9E4900 lua_type
+  0x9C9CC0 score=5 strings=[] userdata7=0 indirect=5
+  0x7E8760 score=4 strings=['tableref_to_classname'] userdata7=0 indirect=0
+  0x7E8F80 score=4 strings=['tableref'] userdata7=0 indirect=0
+  0x9EF660 score=4 strings=['loop in gettable'] userdata7=0 indirect=0
+  0x9F3EA0 score=3 strings=[] userdata7=0 indirect=3
+  0x7E9190 score=1 strings=[] userdata7=0 indirect=1
+  0x7E9340 score=1 strings=[] userdata7=0 indirect=1
+  0x9F3BB0 score=1 strings=[] userdata7=0 indirect=1
+  0xB3E90 score=1 strings=[] userdata7=0 indirect=1
+
+NOTE: type-7 detection is structural; manual disassembly is required before claiming userdata semantics.
+source_hash_unchanged=true
+game_launched=false
+save_opened=false
+progression_written=false
