@@ -1,0 +1,41 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260914221542
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\trace-gameobject-token-allocator-with-log.ps1
+Process ID: 51212
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+=== Completionist Map GameObject token allocator trace ===
+Focused, version-locked, read-only static GoW.exe analysis. Game is not launched; saves are not opened.
+python.exe : Traceback (most recent call last):
+At C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\trace-g
+ameobject-token-allocator-with-log.ps1:70 char:9
++         & python $scanner --game-root $GameRoot --output-json $json - ...
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\tr
+ace-gameobject-token-allocator.py", line 366, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\tr
+ace-gameobject-token-allocator.py", line 303, in main
+    raise RuntimeError(f"runtime function missing for {name} {entry:#x}")
+RuntimeError: runtime function missing for token_resolver 0x4ef0b0
+TRACE_FAILED: Tracer exited 1. Full Python output archived in C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\archive\field-logs\source-scans\gameobject-token-allocator-trace-20260914-221542\python-output.txt
+**********************
+Windows PowerShell transcript end
+End time: 20260914221543
+**********************
