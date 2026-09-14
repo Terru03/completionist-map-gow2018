@@ -1,0 +1,3930 @@
+﻿Completionist Map - core.save/load callback usage contexts
+timestamp=20260914-194637
+lua_files_scanned=499
+matches=181
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\levels\caldera\cal100_hub\entities\objects\ceb.lua
+MATCH line=31 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      23:   game.SubObject.Sleep(thisObj)
+      24: end
+      25: function OnFirstStart(level, obj)
+      26:   GameObjects.PocketRiftdbang.LuaObjectScript.Disable()
+      27: end
+      28: function OnSaveCheckpoint(level, obj)
+      29:   return {completed = completed}
+      30: end
+>>    31: function OnRestoreCheckpoint(level, obj, savedInfo)
+      32:   completed = savedInfo.completed
+      33: end
+      34: function OnUpdate(level, obj)
+      35:   if phase == 1 then
+      36:     ConditionsRight(1, 1, viewingTemple)
+      37:     ConditionsWrong(1, 1, viewingTemple)
+      38:     ConditionsRight(1, 2, viewingBrazierLeft)
+      39:     ConditionsWrong(1, 2, viewingBrazierLeft)
+      40:     ConditionsRight(1, 3, viewingTemple)
+      41:     ConditionsWrong(1, 3, viewingTemple)
+      42:     ConditionsRight(1, 4, viewingBrazierRight)
+      43:     ConditionsWrong(1, 4, viewingBrazierRight)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_aiming.lua
+MATCH line=33 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      25: end
+      26: function OnTeardown(level, camera)
+      27:   camera.TiltUp = camera.initial.TiltUp
+      28:   camera.TiltDown = camera.initial.TiltDown
+      29:   camera.Position.X = camera.initial.Position.X
+      30: end
+      31: function OnSaveCheckpoint(level)
+      32: end
+>>    33: function OnRestoreCheckpoint(level, go, tab)
+      34: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_aimingcombat.lua
+MATCH line=38 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      30:     end
+      31:   end
+      32:   VFSPrevVal = gVFSAimOldVersion.value
+      33: end
+      34: function OnTeardown(level, camera)
+      35: end
+      36: function OnSaveCheckpoint(level)
+      37: end
+>>    38: function OnRestoreCheckpoint(level, go, tab)
+      39: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_aimingnav.lua
+MATCH line=38 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      30:     end
+      31:   end
+      32:   VFSPrevVal = gVFSAimOldVersion.value
+      33: end
+      34: function OnTeardown(level, camera)
+      35: end
+      36: function OnSaveCheckpoint(level)
+      37: end
+>>    38: function OnRestoreCheckpoint(level, go, tab)
+      39: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_aimingthrowable.lua
+MATCH line=24 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      16:   CL.CameraUpdateAttribute(camera, orbitElevation, -40, 0, "tilt", 0)
+      17:   CL.CameraUpdateAttribute(camera, orbitElevation, 10, 40, "tilt", -10)
+      18:   CL.CameraUpdateAttribute(camera, orbitElevation, 10, 40, "Y", 1.8)
+      19: end
+      20: function OnTeardown(level, camera)
+      21: end
+      22: function OnSaveCheckpoint(level)
+      23: end
+>>    24: function OnRestoreCheckpoint(level, go, tab)
+      25: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_basicenemyframing.lua
+MATCH line=74 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      66:     camera.FStop = targetFStop
+      67:   elseif hitBlurTimer.fired == true and camera.FStop < originalFStop then
+      68:     camera.FStop = camera.FStop + 0.1
+      69:   end
+      70:   bPrevFrameCritical = bCriticalHealth
+      71: end
+      72: function OnSaveCheckpoint(level)
+      73: end
+>>    74: function OnRestoreCheckpoint(level, go, tab)
+      75: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_beatdown.lua
+MATCH line=72 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      64: end
+      65: function submitCombatWideShot(camera)
+      66:   if camera.name == "CBT_BeatDown" or camera.name == "CBT_BeatDown_Wide" then
+      67:     game.Camera.SubmitCameraByName("CBT_BeatDown_Wide")
+      68:   end
+      69: end
+      70: function OnSaveCheckpoint(level)
+      71: end
+>>    72: function OnRestoreCheckpoint(level, go, tab)
+      73: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_combatshell.lua
+MATCH line=12 terms=OnRestoreCheckpoint,RestoreCheckpoint
+       4: function OnScriptLoaded(level, camera)
+       5: end
+       6: function OnUpdate(level, camera)
+       7: end
+       8: function OnTeardown(level, camera)
+       9: end
+      10: function OnSaveCheckpoint(level)
+      11: end
+>>    12: function OnRestoreCheckpoint(level, go, tab)
+      13: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_crackclimb.lua
+MATCH line=19 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      11: end
+      12: function OnUpdate(level, camera)
+      13:   orbitElevation = game.Camera.GetOrbitElevation()
+      14:   CL.CameraUpdateAttribute(camera, orbitElevation, 8, 60, "tilt", 10)
+      15:   CL.CameraUpdateAttribute(camera, orbitElevation, -8, -70, "tilt", -10)
+      16: end
+      17: function OnSaveCheckpoint(level)
+      18: end
+>>    19: function OnRestoreCheckpoint(level, go, tab)
+      20: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_criticalhealth.lua
+MATCH line=47 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      39:     end
+      40:   elseif hitBlurTimer.fired == true and camera.FStop < originalFStop then
+      41:     camera.FStop = camera.FStop + 0.1
+      42:   end
+      43:   bLastHealthCritical = bCriticalHealth
+      44: end
+      45: function OnSaveCheckpoint(level)
+      46: end
+>>    47: function OnRestoreCheckpoint(level, go, tab)
+      48: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_dragoncam.lua
+MATCH line=209 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     201:     end
+     202:   end
+     203: end
+     204: function OnTeardown(level, camera)
+     205:   EL.Reset()
+     206: end
+     207: function OnSaveCheckpoint(level)
+     208: end
+>>   209: function OnRestoreCheckpoint(level, go, tab)
+     210: end
+     211: function DoneBlendingCallback()
+     212:   bDoneBlending = true
+     213: end
+     214: function AddMoveToCooldownTable(creaturetype, movename)
+     215:   local move = movename
+     216:   local cooldownDuration = MoveDatabase[creaturetype][move].cooldownDuration
+     217:   if CooldownTimer[move] == nil then
+     218:     local timer_Cooldown = timer.StartLevelTimer(cooldownDuration)
+     219:     AddTimerToTable(timer_Cooldown, move)
+     220:     timer_Cooldown:Start()
+     221:   else
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_elevationupdate.lua
+MATCH line=241 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     233:     end
+     234:   end
+     235: end
+     236: function OnTeardown(level, camera)
+     237:   EL.Reset()
+     238: end
+     239: function OnSaveCheckpoint(level)
+     240: end
+>>   241: function OnRestoreCheckpoint(level, go, tab)
+     242: end
+     243: function DoneBlendingCallback()
+     244:   bDoneBlending = true
+     245: end
+     246: function AddMoveToCooldownTable(creaturetype, movename)
+     247:   local move = movename
+     248:   local cooldownDuration = MoveDatabase[creaturetype][move].cooldownDuration
+     249:   if CooldownTimer[move] == nil then
+     250:     local timer_Cooldown = timer.StartLevelTimer(cooldownDuration)
+     251:     AddTimerToTable(timer_Cooldown, move)
+     252:     timer_Cooldown:Start()
+     253:   else
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_enemyassist.lua
+MATCH line=46 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      38:     EL.SetProgress(m_ConstraintBlendTableClosed, false)
+      39:     bConstraintOpened = true
+      40:   end
+      41:   EL.EaseEverything(level, m_ConstraintBlendTableClosed, camera, "InAndOut", "Quad")
+      42:   EL.EaseEverything(level, m_ConstraintBlendTableOpen, camera, "InAndOut", "Cubic")
+      43: end
+      44: function OnSaveCheckpoint(level)
+      45: end
+>>    46: function OnRestoreCheckpoint(level, go, tab)
+      47: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_navattackdamping.lua
+MATCH line=58 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      50: end
+      51: function OnTeardown(level, camera)
+      52:   if camera ~= nil and fOriginalDamping ~= nil then
+      53:     camera.BoomDamping = fOriginalDamping
+      54:   end
+      55: end
+      56: function OnSaveCheckpoint(level)
+      57: end
+>>    58: function OnRestoreCheckpoint(level, go, tab)
+      59: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\camera\camera_trollpitch.lua
+MATCH line=20 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      12:   orbitElevation = game.Camera.GetOrbitElevation()
+      13:   CL.ElevationAdjust(camera, 0, 24, orbitElevation, 1.8, 72, nil, nil, nil, 32, nil, nil, -0.55, -0.55, 0.15, 0.15)
+      14:   CL.ElevationAdjust(camera, 0, 24, orbitElevation, 3.1, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+      15: end
+      16: function OnTeardown(level, camera)
+      17: end
+      18: function OnSaveCheckpoint(level)
+      19: end
+>>    20: function OnRestoreCheckpoint(level, go, tab)
+      21: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levelobjects\interactables\boatdock.lua
+MATCH line=514 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     506:     enabled = enabled,
+     507:     mapMarkerDiscovered = mapMarkerDiscovered,
+     508:     dockingEnabled = dockingEnabled,
+     509:     lastBoatPos = lastBoatPos,
+     510:     lastBoatDir = lastBoatDir,
+     511:     playerInZone = playerInZone
+     512:   }
+     513: end
+>>   514: function OnRestoreCheckpoint(level, obj, savedInfo)
+     515:   enabled = savedInfo.enabled
+     516:   mapMarkerDiscovered = savedInfo.mapMarkerDiscovered
+     517:   dockingEnabled = savedInfo.dockingEnabled
+     518:   lastBoatPos = savedInfo.lastBoatPos
+     519:   lastBoatDir = savedInfo.lastBoatDir
+     520:   playerInZone = savedInfo.playerInZone or false
+     521: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levelobjects\interactables\leadthewayspline.lua
+MATCH line=112 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     104:     curves = curves,
+     105:     rangeTest = luaTable.rangeTest ~= "Off",
+     106:     params = GetLeadTheWayParams()
+     107:   })
+     108: end
+     109: function OnSaveCheckpoint(level, obj)
+     110:   return {enabled = enabled}
+     111: end
+>>   112: function OnRestoreCheckpoint(level, obj, savedInfo)
+     113:   checkpoint = savedInfo
+     114: end
+     115: function Enable()
+     116:   enabled = true
+     117:   game.SubObject.Wake(thisObj)
+     118: end
+     119: function Disable()
+     120:   enabled = false
+     121:   game.SubObject.Sleep(thisObj)
+     122: end
+     123: function GetCharacter()
+     124:   if luaTable.character == "Son" then
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levelobjects\interactables\playernavcurve.lua
+MATCH line=24 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      16: function OnStart(level, obj)
+      17:   if enabled then
+      18:     Enable()
+      19:   end
+      20: end
+      21: function OnSaveCheckpoint(level, obj)
+      22:   return {enabled = enabled}
+      23: end
+>>    24: function OnRestoreCheckpoint(level, obj, savedInfo)
+      25:   enabled = savedInfo.enabled
+      26: end
+      27: function Enable()
+      28:   local curve = thisLevel:FindSingleNavCurve(splineName)
+      29:   if player and curve then
+      30:     enabled = true
+      31:     locomotion.FollowNavCurve(player, curve, settings)
+      32:   end
+      33: end
+      34: function Disable()
+      35:   if player then
+      36:     enabled = false
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levelobjects\prototype\squirrelscript.lua
+MATCH line=42 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      34:   ObjectLooted()
+      35: end
+      36: function OnLootSpawn(level, go, spawnedObject)
+      37:   lootAcquired = true
+      38: end
+      39: function OnSaveCheckpoint(level)
+      40:   return {lootAcquired = lootAcquired}
+      41: end
+>>    42: function OnRestoreCheckpoint(level, savedInfo)
+      43:   lootAcquired = savedInfo.lootAcquired
+      44: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\realmcontrollerfxsequencing.lua
+MATCH line=979 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     971: function OnSaveCheckpoint(level, obj)
+     972:   return {
+     973:     lastDome = lastDome,
+     974:     firstActivated = firstActivated,
+     975:     alfheimLightingUpdated = alfheimLightingUpdated,
+     976:     helheimLightingUpdated = helheimLightingUpdated
+     977:   }
+     978: end
+>>   979: function OnRestoreCheckpoint(level, obj, savedInfo)
+     980:   lastDome = savedInfo.lastDome
+     981:   firstActivated = savedInfo.firstActivated
+     982:   alfheimLightingUpdated = savedInfo.alfheimLightingUpdated
+     983:   helheimLightingUpdated = savedInfo.helheimLightingUpdated
+     984: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\realmcontrollerobject.lua
+MATCH line=1808 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1800: function OnSaveCheckpoint(level, obj)
+    1801:   return {
+    1802:     currentPressurePlate = currentPressurePlate,
+    1803:     firstJotunheimAttempt = firstJotunheimAttempt,
+    1804:     jotReveal = jotReveal,
+    1805:     narrativeLock = narrativeLock
+    1806:   }
+    1807: end
+>>  1808: function OnRestoreCheckpoint(level, obj, savedInfo)
+    1809:   currentPressurePlate = savedInfo.currentPressurePlate
+    1810:   firstJotunheimAttempt = savedInfo.firstJotunheimAttempt
+    1811:   jotReveal = savedInfo.jotReveal or false
+    1812:   narrativeLock = savedInfo.narrativeLock or false
+    1813: end
+    1814: local soundEmitter
+    1815: local playedOnOnce = false
+    1816: local playedOffOnce = false
+    1817: function SoundInit()
+    1818:   soundEmitter = thisObj:FindSingleSoundEmitterByName("SNDRealmTravelTable")
+    1819: end
+    1820: function PlayNameOnSound()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal050_sound\cal050_sound.lua
+MATCH line=251 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     243:   if sonSickActive then
+     244:     sonSickActive = false
+     245:     GameObjects.SNDZnCalSonSickExit:HideSoundEmitterVolume()
+     246:   end
+     247: end
+     248: function OnSaveCheckpoint(level)
+     249:   return {sonSickActive = sonSickActive}
+     250: end
+>>   251: function OnRestoreCheckpoint(level, savedInfo)
+     252:   sonSickActive = savedInfo.sonSickActive or false
+     253: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal100_hub\cal100_hub.lua
+MATCH line=1232 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1224:     jotumheimTowerICShouldHide = jotumheimTowerICShouldHide,
+    1225:     bTempleFlipKeyUsed = bTempleFlipKeyUsed,
+    1226:     RuneVaultState = RuneVaultState,
+    1227:     TempleFlipState = TempleFlipState,
+    1228:     insideRuneVault = insideRuneVault
+    1229:   }
+    1230:   return tab
+    1231: end
+>>  1232: function OnRestoreCheckpoint(level, tab)
+    1233:   checkpoint.Restore(tab.levelstate)
+    1234:   jotumheimTowerICShouldHide = tab.jotumheimTowerICShouldHide
+    1235:   bTempleFlipKeyUsed = tab.bTempleFlipKeyUsed
+    1236:   RuneVaultState = tab.RuneVaultState
+    1237:   TempleFlipState = tab.TempleFlipState
+    1238:   insideRuneVault = tab.insideRuneVault
+    1239: end
+    1240: function SaveCheckpoint()
+    1241:   game.World.StoreCheckpoint()
+    1242: end
+    1243: function ShowJotTower()
+    1244:   GameObjects.JotunheimTowerCollision:Show()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal100_hub\objects\btr_caldera_bridge.lua
+MATCH line=20 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      12:   GameObjects.BanterZone_JotunOffCrit.LuaObjectScript.Disable()
+      13:   GameObjects.BanterZone_120_IntoTheBelly_01.LuaObjectScript.Disable()
+      14:   GameObjects.EntZone_DisableBoatLore_InWad:Hide()
+      15:   GameObjects.BtrZone_Cal11_EnterMidgard.LuaObjectScript.Disable()
+      16: end
+      17: function OnSaveCheckpoint(level, obj)
+      18:   return cp
+      19: end
+>>    20: function OnRestoreCheckpoint(level, obj, savedInfo)
+      21:   cp = savedInfo
+      22: end
+      23: function OnEnterBoat_Cal_Bridge_L()
+      24:   local completedCineNum = game.Level.GetVariable("CompletedCineNumber")
+      25:   PlayBanter_HeadEnchantReminder(completedCineNum)
+      26:   if completedCineNum == 183 then
+      27:     game.Audio.PlayBanter("055_HelpingBrok", nil, nil, false)
+      28:   elseif CanPlayStonemasonDirections_01_02(completedCineNum) then
+      29:     PlayStonemasonDirections_01(completedCineNum)
+      30:   elseif Can020_TempleFlipOffCriticalPlay() then
+      31:     PlayTempleFlipOffCritical()
+      32:   end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal100_hub\objects\btr_magicbowstringbanter_script.lua
+MATCH line=185 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     177:   freActor:GetCreature():TriggerMoveEvent("LE_BridgePushFinished")
+     178: end
+     179: function SleepSelf()
+     180:   game.SubObject.Sleep(thisObj)
+     181: end
+     182: function OnSaveCheckpoint(level, obj)
+     183:   return {seqState = seqState}
+     184: end
+>>   185: function OnRestoreCheckpoint(level, obj, savedInfo)
+     186:   seqState = savedInfo.seqState
+     187: end
+     188: function LingerBanter()
+     189:   if not boolLingerHidden then
+     190:     game.Audio.PlayBanter("MagicBowstring_Linger")
+     191:   end
+     192: end
+     193: function WarpFreyaAndLTW()
+     194: end
+     195: function DisableFreyaLTW()
+     196:   local calFre100 = game.FindLevel("FreyaLTW")
+     197:   if calFre100 ~= nil then
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal100_hub\objects\jotunheimrealmtower_fx.lua
+MATCH line=88 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      80:     return angle <= boatFOV / 2
+      81:   else
+      82:     return false
+      83:   end
+      84: end
+      85: function OnSaveCheckpoint(level, obj)
+      86:   return {isFirstFlickerInBoat = isFirstFlickerInBoat}
+      87: end
+>>    88: function OnRestoreCheckpoint(level, obj, savedInfo)
+      89:   isFirstFlickerInBoat = savedInfo.isFirstFlickerInBoat or false
+      90: end
+      91: local towerEmitter
+      92: function SoundInit()
+      93:   towerEmitter = thisObj:FindSingleSoundEmitterByName("SNDJotunTower")
+      94: end
+      95: function PlayTowerVanishSound()
+      96:   LD.PlaySound(towerEmitter, "SND_AMB_EMIT_Jotunheim_Tower_Vanishes")
+      97: end
+      98: function DestroyCamera()
+      99:   game.SubObject.Sleep(thisObj)
+     100:   cameraOneShotObjectTempleVista = nil
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua
+MATCH line=1325 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1317:     LD.SetEntityVariable("NAR_RoadLoreAllowed", true)
+    1318:   end
+    1319: end
+    1320: function OnSaveCheckpoint(level)
+    1321:   return {
+    1322:     levelstate = checkpoint.Save()
+    1323:   }
+    1324: end
+>>  1325: function OnRestoreCheckpoint(level, savedInfo)
+    1326:   checkpoint.Restore(savedInfo.levelstate)
+    1327:   local appVersion, masterVersion = level:GetAppMasterVersion()
+    1328:   if appVersion == 256 then
+    1329:     local player = game.Player.FindPlayer()
+    1330:     local son = game.AI.FindSon()
+    1331:     local savedAvailState = son:GetAvailabilityStateRequestByName("LevelDesignScript")
+    1332:     if savedAvailState ~= nil and savedAvailState.Unoccupied == false then
+    1333:       local vendorCheckpointPos = engine.Vector.New(-97.141, 5.966, 85.891)
+    1334:       if player:GetWorldPosition():Distance(vendorCheckpointPos) < 2 then
+    1335:         son:RemoveAvailabilityRequest("LevelDesignScript")
+    1336:         if savedAvailState.AvailableForSync == false or savedAvailState.AvailableForBanter == false or savedAvailState.AvailableInLevel == false or savedAvailState.AvailableForCombat == false then
+    1337:           savedAvailState.Unoccupied = true
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal120_airlock\objects\poi_bowstringgift_script.lua
+MATCH line=32 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      24:   if not bowstringGiftCompleted and game.Level.GetVariable("CompletedCineNumber") == 195 then
+      25:     BuildBowstringGiftSeq()
+      26:   end
+      27: end
+      28: function OnSaveCheckpoint(level, obj)
+      29:   local savedInfo = {bowstringGiftCompleted = bowstringGiftCompleted}
+      30:   return savedInfo
+      31: end
+>>    32: function OnRestoreCheckpoint(level, obj, savedInfo)
+      33:   bowstringGiftCompleted = savedInfo.bowstringGiftCompleted
+      34: end
+      35: function SetupProps()
+      36:   arrowProp = GameObjects.arrowProp.Child
+      37:   HideProps()
+      38: end
+      39: function HideProps()
+      40:   arrowProp:Hide()
+      41: end
+      42: function ShowProps()
+      43:   arrowProp:Show()
+      44: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal120_airlock\objects\spreaddoor_realmhelper.lua
+MATCH line=11 terms=OnRestoreCheckpoint,RestoreCheckpoint
+       3: function OnScriptLoaded(level, obj)
+       4:   doorObj = GameObjects.SpreadDoor_Caldera_AirLock
+       5:   realm = LD.GetCurrentRealm()
+       6:   game.SubObject.Sleep(obj)
+       7: end
+       8: function OnSaveCheckpoint(level, obj)
+       9:   return {previousRealm = previousRealm}
+      10: end
+>>    11: function OnRestoreCheckpoint(level, obj, savedInfo)
+      12:   previousRealm = savedInfo.previousRealm
+      13: end
+      14: local realmDoorSounds = {
+      15:   Helheim = {
+      16:     OnInteractForward_Center = "SND_WIND_Caldera_Helheim_Door_Open_01",
+      17:     OnInteractBackward_Center = "SND_WIND_Caldera_Helheim_Door_Open_01"
+      18:   },
+      19:   Alfheim = nil,
+      20:   default = {OnInteractForward_Center = "", OnInteractBackward_Center = ""}
+      21: }
+      22: function UpdateRealm(mRealm)
+      23:   print("SpreadDoor_RealmHelper received the updated realm: ", mRealm, " previous Realm: ", previousRealm)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal130_templeint\cal130_banter.lua
+MATCH line=14 terms=OnRestoreCheckpoint,RestoreCheckpoint
+       6: end
+       7: function OnStart(level, obj)
+       8:   GameObjects.BtrComp_030_EnteringMidgard12.LuaObjectScript.DisableConsoleError("030_EnteringMidgard12")
+       9: end
+      10: function OnSaveCheckpoint(level, obj)
+      11:   local savedInfo = {banterPlayed = banterPlayed}
+      12:   return savedInfo
+      13: end
+>>    14: function OnRestoreCheckpoint(level, obj, savedInfo)
+      15:   if savedInfo ~= nil then
+      16:     banterPlayed = savedInfo.banterPlayed
+      17:   end
+      18: end
+      19: function UpsideDown1A_Finished()
+      20:   timers.StartLevelTimer(3, UpsideDown1B_Banter)
+      21:   banterPlayed.UpsideDown1A = true
+      22: end
+      23: function UpsideDown1B_Banter()
+      24:   if not banterPlayed.UpsideDown1B then
+      25:     game.Audio.PlayBanterNonCritical("020_UpsideDown1B", function()
+      26:       timers.StartLevelTimer(15, UpsideDown1C_Banter)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal130_templeint\cal130_templeint.lua
+MATCH line=418 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     410:   game.Compass.SetGatewayMarkerIsOpen("CALT_130_Helper_011x1", false)
+     411: end
+     412: function LoadCheckCal120()
+     413:   game.UI.LoadCheck("Cal120_Airlock", "Cal120_AI_BrokShop", "Cal120_AI_BrokCares", "Cal120_AI_BrokSavesCat")
+     414: end
+     415: function OnSaveCheckpoint(level)
+     416:   return {bAmuletCollected = bAmuletCollected}
+     417: end
+>>   418: function OnRestoreCheckpoint(level, tab)
+     419:   bAmuletCollected = tab.bAmuletCollected
+     420: end
+     421: function TalismanCheckpoint()
+     422:   local bookmarks = require("design.Bookmarks")
+     423:   local tableEntry = bookmarks["BOOKMARK_" .. "31_TempleFlip_060_WhiteRunestoneAcquired"]
+     424:   game.World.StoreCheckpointAndBookmark(tableEntry)
+     425: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal130_templeint\objects\btr_realmtraveltable_script.lua
+MATCH line=15 terms=OnRestoreCheckpoint,RestoreCheckpoint
+       7:   travelToHel = false
+       8: }
+       9: function OnScriptLoaded(level, obj)
+      10:   game.SubObject.Sleep(obj)
+      11: end
+      12: function OnSaveCheckpoint(level, obj)
+      13:   return {played = playBtr}
+      14: end
+>>    15: function OnRestoreCheckpoint(level, obj, savedInfo)
+      16:   playBtr = savedInfo.played
+      17: end
+      18: function PlayBifrostBubble()
+      19:   if not playBtr.bifrostBubble and game.Level.GetVariable("CompletedCineNumber") >= 190 and game.Level.GetVariable("CompletedCineNumber") < 210 then
+      20:     timers.StartLevelTimer(2, function()
+      21:       game.Audio.PlayBanter("FreyaBifrostBubble")
+      22:     end)
+      23:     playBtr.bifrostBubble = true
+      24:   end
+      25: end
+      26: function PlayBanter_OnInteractStart()
+      27:   timers.StartLevelTimer(0.1, function()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal130_templeint\objects\cine_realmtravelintro_script.lua
+MATCH line=43 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      35:   end
+      36:   if LTWStage == 70 and bStartOnSpawn then
+      37:     SetupRealmTravelIntro()
+      38:   end
+      39: end
+      40: function OnSaveCheckpoint(level, obj)
+      41:   return {bStartOnSpawn = bStartOnSpawn}
+      42: end
+>>    43: function OnRestoreCheckpoint(level, obj, tab)
+      44:   bStartOnSpawn = tab.bStartOnSpawn
+      45: end
+      46: function SpawnFreya()
+      47:   local freObj = LD.FindFreya()
+      48:   if freObj == nil then
+      49:     local freWad = game.FindLevel("FreyaLvl100_Global")
+      50:     local jointFace = thisObj:GetWorldJointForward(thisObj:GetJointIndex("RealmTravelIntroEnter_FreyaStart"))
+      51:     local jointPos = thisObj:GetWorldJointPosition(thisObj:GetJointIndex("RealmTravelIntroEnter_FreyaStart"))
+      52:     freObj = game.AI.Spawn(freWad, jointPos, jointFace, "CRT_Freya00")
+      53:   end
+      54:   return freObj
+      55: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal200_shore\cal200_shore.lua
+MATCH line=46 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      38:     end
+      39:   end
+      40:   SetBridgeGatewayMarkers()
+      41:   SoundInit()
+      42: end
+      43: function OnSaveCheckpoint(level)
+      44:   return {snakeBellyZonesActive = snakeBellyZonesActive, camBoatZoneSnakeBellyEnterActive = camBoatZoneSnakeBellyEnterActive}
+      45: end
+>>    46: function OnRestoreCheckpoint(level, savedInfo)
+      47:   camBoatZoneSnakeBellyEnterActive = savedInfo.camBoatZoneSnakeBellyEnterActive
+      48:   snakeBellyZonesActive = savedInfo.snakeBellyZonesActive or false
+      49: end
+      50: function OnFirstStart(level)
+      51:   SnakeBellyVolumeOff()
+      52:   snakeLoad2:HideEntityVolume()
+      53:   GameObjects.chainVikingGate00:StartAnim("chainAnim")
+      54:   game.GameObject.AnimSync(GameObjects.chainVikingGate00, GameObjects.VikingFuneralDoor)
+      55:   GameObjects.chainVikingGate00:PauseAnim()
+      56:   snakeBellySwitch:HideEntityVolume()
+      57:   DisableSonSickBlockers()
+      58:   GameObjects.PreAlfheimFog:Hide()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal200_shore\objects\cal200_banter_script.lua
+MATCH line=41 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      33: function CanThorStatue_w02_01Play()
+      34:   local LD = require("design.LevelDesignLibrary")
+      35:   local cineNum = LD.GetEntityVariable("CompletedCineNumber")
+      36:   return 340 <= cineNum and not DuringSonSick()
+      37: end
+      38: function OnSaveCheckpoint(level, obj)
+      39:   return {banterplayed_BigLake = banterplayed_BigLake}
+      40: end
+>>    41: function OnRestoreCheckpoint(level, obj, savedInfo)
+      42:   if savedInfo.banterplayed_BigLake ~= nil then
+      43:     banterplayed_BigLake = savedInfo.banterplayed_BigLake
+      44:   end
+      45: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal200_shore\objects\cal200_xpl980_vfgate.lua
+MATCH line=43 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      35:     OnEnd = "SND_DOOR_Viking_Funeral_Close"
+      36:   }
+      37:   rightsidedcrank.LuaObjectScript.DrivenObjectSoundSetup(VFGateOverrides)
+      38:   game.SubObject.Sleep(obj)
+      39: end
+      40: function OnSaveCheckpoint(level, obj)
+      41:   return {VF_Gate_Unlocked = VF_Gate_Unlocked}
+      42: end
+>>    43: function OnRestoreCheckpoint(level, obj, savedInfo)
+      44:   VF_Gate_Unlocked = savedInfo.VF_Gate_Unlocked
+      45: end
+      46: function Enable_CAs_LakeLookOut()
+      47:   if VF_Gate_Unlocked == false then
+      48:     GameObjects.ContextAction_LakeLookOut.LuaObjectScript.Enable()
+      49:   end
+      50: end
+      51: function Disable_CAs_LakeLookOut()
+      52:   GameObjects.ContextAction_LakeLookOut.LuaObjectScript.Disable()
+      53: end
+      54: function SetVFXLevel()
+      55:   if LD.GetCurrentWaterLevel() == 1 then
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal200_shore\objects\cbt_cal200.lua
+MATCH line=29 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      21:   end
+      22:   if game.Level.GetVariable("CompletedCineNumber") >= 430 and Area_0_Encounter_1:WasRunning() then
+      23:     Area_0_Encounter_1:Start()
+      24:   end
+      25: end
+      26: function OnSaveCheckpoint(level, obj)
+      27:   return {}
+      28: end
+>>    29: function OnRestoreCheckpoint(level, obj, savedInfo)
+      30: end
+      31: function TurnOffSpawnZones()
+      32:   GameObjects.EntZn_Arena_Spawn_0:HideEntityVolume()
+      33: end
+      34: function Area_0_Fight_1()
+      35:   Area_0_Encounter_1 = EC.NewEncounter(thisLevel, "[Area 1]EC:1 Troll Spawn Beach Boat", {
+      36:     CheckpointOnComplete = true,
+      37:     LeashZone = "LeashZoneTroll",
+      38:     LoadCheck = false,
+      39:     LodLow = 160,
+      40:     LodHigh = 190
+      41:   })
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\caldera\cal500_runevault\objects\dispelsphere.lua
+MATCH line=74 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      66:   thisObj:Hide()
+      67: end
+      68: function ShowSphere()
+      69:   thisObj:Show()
+      70: end
+      71: function OnSaveCheckpoint(level, obj)
+      72:   return {enabled = enabled}
+      73: end
+>>    74: function OnRestoreCheckpoint(level, obj, savedInfo)
+      75:   enabled = savedInfo.enabled
+      76: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\exploration\xpl910_islandshipwreck\objects\zipelinelifts.lua
+MATCH line=92 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      84:     flipperModule.LuaObjectScript.DisableCCWRotation()
+      85:     thisObj:Hide()
+      86:   end
+      87:   flipperModule.LuaObjectScript.EnableReaction()
+      88: end
+      89: function OnSaveCheckpoint(level, obj)
+      90:   return {CurrentLevel = CurrentLevel}
+      91: end
+>>    92: function OnRestoreCheckpoint(level, obj, savedInfo)
+      93:   CurrentLevel = savedInfo.CurrentLevel
+      94: end
+      95: function setLevel_toInitial()
+      96:   local initialLevel = thisObj:GetLuaTableAttribute("InitialLevel")
+      97:   setLevel(initialLevel, true)
+      98:   thisObj:Show()
+      99: end
+     100: function setLevel(num, jump)
+     101:   if num == 1 then
+     102:     flipperModule.LuaObjectScript.DisableCCWRotation()
+     103:     flipperModule.LuaObjectScript.EnableCWRotation()
+     104:     thisObjectAnim_Wobble:ClearAllAnimationCallbacks()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\forest\for000_sky\objects\inputmask_intro.lua
+MATCH line=113 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     105: end
+     106: function OnSaveCheckpoint(level, obj)
+     107:   local savedInfo = {
+     108:     levelstate = checkpoint.Save(),
+     109:     inputMaskPhase = inputMaskPhase
+     110:   }
+     111:   return savedInfo
+     112: end
+>>   113: function OnRestoreCheckpoint(level, obj, savedInfo)
+     114:   inputMaskPhase = savedInfo.inputMaskPhase
+     115: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\forest\for075_lighting\for075_lighting.lua
+MATCH line=12 terms=OnRestoreCheckpoint,RestoreCheckpoint
+       4: local thisLevel, player, son, lightingVarMonitor
+       5: function OnScriptLoaded(level)
+       6: end
+       7: function OnStart(level)
+       8: end
+       9: function OnSaveCheckpoint(level)
+      10:   return {}
+      11: end
+>>    12: function OnRestoreCheckpoint(level, savedInfo)
+      13: end
+      14: function AnimateLight_FirstStage()
+      15:   GameObjects.For075_Dir_Morning_01:PlayAnimToFrame(120)
+      16: end
+      17: function AnimateLight_SecondStage()
+      18:   GameObjects.For075_Dir_Morning_01:PlayAnimToEnd(240)
+      19: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\forest\for100_river\for100_river.lua
+MATCH line=39 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      31:   end
+      32: end
+      33: function StartQuest_Boat2House()
+      34:   LD.ActivateQuest("Quest_Forest_Parent01")
+      35: end
+      36: function OnSaveCheckpoint(level)
+      37:   return {}
+      38: end
+>>    39: function OnRestoreCheckpoint(level, savedInfo)
+      40: end
+      41: function ShowBoatRope()
+      42:   GameObjects.BoatRope_Root:ShowModel()
+      43: end
+      44: function HideBoatRope()
+      45:   GameObjects.BoatRope_Root:HideModel()
+      46: end
+      47: function FinishBoatRope()
+      48:   HideBoatRope()
+      49: end
+      50: function UnparentLanternAndRope()
+      51:   GameObjects.BoatRope_Main:Unparent()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\forest\for100_river\objects\cine_logboatenter_script.lua
+MATCH line=32 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      24:     cineEnterLogBoatForceEarlyBoat:Update()
+      25:   end
+      26: end
+      27: function OnSaveCheckpoint(level, obj)
+      28:   local savedInfo = {}
+      29:   savedInfo.LevelState = checkpoint.Save()
+      30:   return savedInfo
+      31: end
+>>    32: function OnRestoreCheckpoint(level, obj, savedInfo)
+      33:   checkpoint.Restore(savedInfo.LevelState)
+      34: end
+      35: function InitializeProps()
+      36:   boatNoose = GameObjects.boatNoose00Top.Child
+      37:   boatRope10_1 = GameObjects.boatRope10_1.Child
+      38:   boatRope10_2 = GameObjects.boatRope10_2.Child
+      39:   boatRope30 = GameObjects.boatRope30Top.Child
+      40:   boatNoose:StartAnim("narForLogBoatEnter000CineScene")
+      41:   boatRope10_1:StartAnim("narForLogBoatEnter000CineScene")
+      42:   boatRope10_2:StartAnim("narForLogBoatEnter000CineScene1")
+      43:   boatRope30:StartAnim("narForLogBoatEnter000CineScene")
+      44:   boatNoose:JumpAnimToFrame(0)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\forest\for100_river\objects\cine_opening_script.lua
+MATCH line=87 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      79:     game.SubObject.Sleep(obj)
+      80:   end
+      81: end
+      82: function OnSaveCheckpoint(level, obj)
+      83:   local savedInfo = {playedSceneBool = boolBoatReminder}
+      84:   savedInfo.LevelState = checkpoint.Save()
+      85:   return savedInfo
+      86: end
+>>    87: function OnRestoreCheckpoint(level, obj, savedInfo)
+      88:   checkpoint.Restore(savedInfo.LevelState)
+      89:   boolBoatReminder = savedInfo.playedSceneBool
+      90:   restart = true
+      91: end
+      92: function CreateActors()
+      93:   kraActor = actor.Actor.New("OPENING: Kratos Actor", game.Player.FindPlayer)
+      94:   sonActor = actor.Actor.New("OPENING: Son Actor", game.AI.FindSon)
+      95:   logActor = actor.Actor.New("OPENING: Log Actor")
+      96: end
+      97: function SetSpawnFunctions()
+      98:   logActor:SetSpawnFunction(function()
+      99:     return game.AI.Spawn(thisLevel, engine.Vector.New(-392, 41, -800), engine.Vector.New(1, 0, 0), "CRT_Log00")
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\forest\for101_rivertohouse\for101_rivertohouse.lua
+MATCH line=39 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      31:     end
+      32:   end
+      33: end
+      34: function ResetBoatSpeed()
+      35: end
+      36: function OnSaveCheckpoint(level)
+      37:   return {}
+      38: end
+>>    39: function OnRestoreCheckpoint(level, savedInfo)
+      40: end
+      41: function OnEvaluateLoadGroup_Cinematic()
+      42:   local cineNum = game.Level.GetVariable("CompletedCineNumber")
+      43:   if cineNum < 20 then
+      44:     return "MothersKnifeCine"
+      45:   elseif cineNum < 72 and 20 <= cineNum then
+      46:     return "NoCine_BeforeBaldur"
+      47:   elseif cineNum < 78 and 72 <= cineNum then
+      48:     return "AshesGatheredCine"
+      49:   elseif cineNum < 80 and 78 <= cineNum then
+      50:     return "BaldurIntroCine"
+      51:   elseif cineNum < 100 and 80 <= cineNum then
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\forest\for101_rivertohouse\objects\cine_logboatexit_script.lua
+MATCH line=30 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      22:   GameObjects.LTW_BoatToHouse.LuaObjectScript.Disable()
+      23:   GameObjects.CA_Idle_PreMothersKnife.LuaObjectScript.Disable()
+      24: end
+      25: function OnSaveCheckpoint(level, obj)
+      26:   local savedInfo = {}
+      27:   savedInfo.LevelState = checkpoint.Save()
+      28:   return savedInfo
+      29: end
+>>    30: function OnRestoreCheckpoint(level, obj, savedInfo)
+      31:   checkpoint.Restore(savedInfo.LevelState)
+      32: end
+      33: function InitializeProps()
+      34:   boatNoose = GameObjects.boatNoose00Top2.Child
+      35:   boatRope30 = GameObjects.boatRope30Top.Child
+      36:   boatRope31 = GameObjects.boatRope31.Child
+      37:   boatRope32 = GameObjects.boatRope32.Child
+      38:   boatNoose:StartAnim("narForLogBoatExit000CineScene")
+      39:   boatRope30:StartAnim("narForLogBoatExit000CineScene")
+      40:   boatRope31:StartAnim("narForLogBoatExit000CineScene1")
+      41:   boatRope32:StartAnim("narForLogBoatExit000CineScene2")
+      42:   boatNoose:JumpAnimToFrame(0)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\forest\for200_house\for200_house.lua
+MATCH line=229 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     221: function OnSaveCheckpoint(level)
+     222:   local savedInfo = {
+     223:     levelstate = checkpoint.Save(),
+     224:     varClimbPathUnblocked = varClimbPathUnblocked,
+     225:     var5mDropLearned = var5mDropLearned
+     226:   }
+     227:   return savedInfo
+     228: end
+>>   229: function OnRestoreCheckpoint(level, savedInfo)
+     230:   checkpoint.Restore(savedInfo.levelstate)
+     231:   varClimbPathUnblocked = savedInfo.varClimbPathUnblocked or false
+     232:   var5mDropLearned = savedInfo.var5mDropLearned or false
+     233: end
+     234: function CheckPlayerProgression()
+     235:   local CineNum = game.Level.GetVariable("CompletedCineNumber")
+     236:   if 30 <= CineNum then
+     237:     if CineNum < 400 then
+     238:       GameObjects.Gates_Into_Forest:JumpAnimToFrame(1)
+     239:       GameObjects.Gates_Into_Forest:PauseAnim()
+     240:     else
+     241:       GameObjects.Gates_Into_Forest:JumpAnimToFrame(0)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\forest\for200_house\objects\cine_mothersknife_script.lua
+MATCH line=41 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      33:     SetBodyOnPyre()
+      34:   end
+      35: end
+      36: function OnSaveCheckpoint(level, obj)
+      37:   local savedInfo = {}
+      38:   savedInfo.LevelState = checkpoint.Save()
+      39:   return savedInfo
+      40: end
+>>    41: function OnRestoreCheckpoint(level, obj, savedInfo)
+      42:   checkpoint.Restore(savedInfo.LevelState)
+      43: end
+      44: function CreateActors()
+      45:   kratosActor = actor.Actor.New("Kratos", game.Player.FindPlayer)
+      46:   sonActor = actor.Actor.New("Son", game.AI.FindSon)
+      47:   logActor = actor.Actor.New("Log", FindLog)
+      48: end
+      49: function FindLog()
+      50:   local logObjs = game.World.FindGameObjectsByMarker("log00")
+      51:   if logObjs then
+      52:     return logObjs[1]
+      53:   else
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\forest\for400_intersection\objects\btr_deertracks_script.lua
+MATCH line=36 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      28:   kraActor = actor.Actor.New("Kratos", game.Player.FindPlayer)
+      29:   sonActor = actor.Actor.New("Son", game.AI.FindSon)
+      30: end
+      31: function OnSaveCheckpoint(level, obj)
+      32:   local savedInfo = {playedSetupBool_MissedTracks = boolMissedTracks}
+      33:   savedInfo.LevelState = checkpoint.Save()
+      34:   return savedInfo
+      35: end
+>>    36: function OnRestoreCheckpoint(level, obj, savedInfo)
+      37:   checkpoint.Restore(savedInfo.LevelState)
+      38:   boolMissedTracks = savedInfo.playedSetupBool_MissedTracks
+      39: end
+      40: function BuildSequences()
+      41:   BuildTracksSeq("Missed Tracks POI", "BRA_MissedTracksEnter", "MissedTracks_SynchJoint", "POIZone_MissedTracks", btrMissedTracks, boolMissedTracks, kraActor)
+      42: end
+      43: function BuildTracksSeq(poiTitle, seqBranch, seqSynchJoint, entZoneGO, banterString, boolBanterPlayed, triggeringActor)
+      44:   if boolBanterPlayed then
+      45:     return
+      46:   end
+      47:   local seq = ND.CreateCineSequence(thisLevel, thisObj, poiTitle)
+      48:   seq:WaitForActorInZone(triggeringActor, entZoneGO)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\bookmarks\bookmarkzone.lua
+MATCH line=80 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      72:     Disable()
+      73:     DumpBookmarkAlert("Saving Official Bookmark using a Bookmark Zone.")
+      74:     game.World.StoreCheckpointAndBookmark(tableEntry)
+      75:   end
+      76: end
+      77: function OnSaveCheckpoint(level, obj)
+      78:   return {bFired = bFired}
+      79: end
+>>    80: function OnRestoreCheckpoint(level, obj, savedInfo)
+      81:   bFired = savedInfo.bFired
+      82: end
+      83: function GetDumpFunction(bError)
+      84:   if bError then
+      85:     return engine.Error
+      86:   else
+      87:     return engine.Print
+      88:   end
+      89: end
+      90: function DumpBookmarkAlert(msg, bError)
+      91:   if engine.IsDebug() then
+      92:     GetDumpFunction(bError)([[
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\breakables\shook_breakable.lua
+MATCH line=21 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      13:   breakEventAttr = obj:FindLuaTableAttribute("Event_OnBroken")
+      14:   game.SubObject.Sleep(obj)
+      15:   SoundInit()
+      16:   AddAxeTarget()
+      17: end
+      18: function OnSaveCheckpoint(level, obj)
+      19:   return {enabled = enabled}
+      20: end
+>>    21: function OnRestoreCheckpoint(level, obj, savedInfo)
+      22:   enabled = savedInfo.enabled
+      23: end
+      24: function OnBroken(fn)
+      25:   if luaCallbacks == nil then
+      26:     luaCallbacks = {}
+      27:   end
+      28:   luaCallbacks[#luaCallbacks + 1] = fn
+      29: end
+      30: function ExecuteLuaCallbacks()
+      31:   if luaCallbacks ~= nil and enabled then
+      32:     for _, callback in pairs(luaCallbacks) do
+      33:       callback()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\contextactions\contextaction_basemodule.lua
+MATCH line=15 terms=OnRestoreCheckpoint,RestoreCheckpoint
+       7:   persistentState.enabled = attributes.EnabledAtLevelStart or nil
+       8:   if attributes.Props then
+       9:     for _, v in pairs(attributes.Props) do
+      10:       v:Hide()
+      11:     end
+      12:   end
+      13:   game.SubObject.Sleep(thisObj)
+      14: end
+>>    15: function OnRestoreCheckpoint(level, obj, data)
+      16:   persistentState = data
+      17: end
+      18: function OnSaveCheckpoint(level, obj)
+      19:   return persistentState
+      20: end
+      21: function OnStart(level, obj)
+      22:   if persistentState.enabled then
+      23:     Enable()
+      24:   end
+      25: end
+      26: function OnUpdate(level, obj)
+      27:   if persistentState.enabled and puppeteer ~= nil then
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\flippables\flippablecomponent.lua
+MATCH line=98 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      90:     bReactionEnabled = bReactionEnabled,
+      91:     bRotationEnabled = bRotationEnabled,
+      92:     bCWRotationEnabled = bCWRotationEnabled,
+      93:     bCCWRotationEnabled = bCCWRotationEnabled,
+      94:     currentStep_CW = currentStep_CW,
+      95:     currentStep_CCW = currentStep_CCW
+      96:   }
+      97: end
+>>    98: function OnRestoreCheckpoint(level, obj, savedInfo)
+      99:   bIdleEnabled = savedInfo.bIdleEnabled
+     100:   bReactionEnabled = savedInfo.bReactionEnabled
+     101:   bRotationEnabled = savedInfo.bRotationEnabled
+     102:   bCWRotationEnabled = savedInfo.bCWRotationEnabled
+     103:   bCCWRotationEnabled = savedInfo.bCCWRotationEnabled
+     104:   currentStep_CW = savedInfo.currentStep_CW
+     105:   currentStep_CCW = savedInfo.currentStep_CCW
+     106: end
+     107: function OnStart(level, obj)
+     108:   if bIdleEnabled then
+     109:     EnableIdle()
+     110:   else
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\hazards\combatcollisionmanager.lua
+MATCH line=12 terms=OnRestoreCheckpoint,RestoreCheckpoint
+       4:   thisObj = obj
+       5:   tCollisionDefinition = thisObj:GetLuaTableAttribute("tCollisionDefinition")
+       6:   bEnabled = thisObj:GetLuaTableAttribute("bEnabledOnStart")
+       7:   game.SubObject.Sleep(thisObj)
+       8: end
+       9: function OnSaveCheckpoint(level, obj)
+      10:   return {bEnabled = bEnabled, tCollisionDefinition = tCollisionDefinition}
+      11: end
+>>    12: function OnRestoreCheckpoint(level, obj, savedInfo)
+      13:   bEnabled = savedInfo.bEnabled
+      14:   tCollisionDefinition = savedInfo.tCollisionDefinition
+      15: end
+      16: local UpdateCombatCollision = function()
+      17:   if bEnabled then
+      18:     game.Combat.AddSubObjectCombatCollision(thisObj, tCollisionDefinition)
+      19:   else
+      20:     game.Combat.RemoveSubObjectCombatCollision(thisObj, tCollisionDefinition)
+      21:   end
+      22: end
+      23: function OnStart(level, obj)
+      24:   UpdateCombatCollision()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\basicelevator.lua
+MATCH line=167 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     159: end
+     160: function OnSaveCheckpoint(level, obj)
+     161:   return {
+     162:     state = elevatorState,
+     163:     isEnabled = enabled,
+     164:     bottomFloorFrame = bottomFloorFrame
+     165:   }
+     166: end
+>>   167: function OnRestoreCheckpoint(level, obj, savedInfo)
+     168:   elevatorState = savedInfo.state
+     169:   enabled = savedInfo.isEnabled
+     170:   bottomFloorFrame = savedInfo.bottomFloorFrame
+     171: end
+     172: function IsEnabled()
+     173:   return enabled
+     174: end
+     175: function GetState()
+     176:   return elevatorState
+     177: end
+     178: function GetStartFrame()
+     179:   return startFrame
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\basicswitch.lua
+MATCH line=371 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     363: function OnSaveCheckpoint(level, obj)
+     364:   return {
+     365:     switchState = switchState,
+     366:     toggleable = toggleable,
+     367:     enabled = enabled,
+     368:     locked = locked
+     369:   }
+     370: end
+>>   371: function OnRestoreCheckpoint(level, obj, savedInfo)
+     372:   switchState = savedInfo.switchState
+     373:   toggleable = savedInfo.toggleable
+     374:   enabled = savedInfo.enabled
+     375:   locked = savedInfo.locked
+     376: end
+     377: function LuaHook_RunCallbacks_SwitchedOn()
+     378:   LD.ExecuteCallbacksForEvent(thisObj.Level, thisObj, switchedOn_OnStart, "Interaction Event - SwitchedOn OnStart")
+     379:   ExecuteSwitchOnOffCallbacks()
+     380:   PlaySwitchForwardSound()
+     381: end
+     382: function LuaHook_RunCallbacks_SwitchedOff()
+     383:   LD.ExecuteCallbacksForEvent(thisObj.Level, thisObj, switchedOff_OnStart, "Interaction Event - SwitchedOff OnStart")
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\calderarealmtower_elevator.lua
+MATCH line=43 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      35:   end
+      36:   elevatorManager.LuaObjectScript.UpdateCallSpeed(0.75, 0.75)
+      37:   ElevatorReachFloor()
+      38:   SoundOnStart()
+      39: end
+      40: function OnSaveCheckpoint(level, obj)
+      41:   return {isActivated = isActivated}
+      42: end
+>>    43: function OnRestoreCheckpoint(level, obj, savedInfo)
+      44:   isActivated = savedInfo.isActivated
+      45: end
+      46: function StartLocked()
+      47:   isActivated = false
+      48:   bottomSwitch.LuaObjectScript.Disable(true)
+      49: end
+      50: function UnlockElevator()
+      51:   if isActivated == false then
+      52:     isActivated = true
+      53:     local topSwitch = elevatorManager.LuaObjectScript.GetTopFloorCallSwitch()
+      54:     local elevatorState = elevatorManager.LuaObjectScript.GetState()
+      55:     if elevatorState == "Top" then
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\interactzone.lua
+MATCH line=116 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     108:   end
+     109:   return input
+     110: end
+     111: function OnSaveCheckpoint(level, obj)
+     112:   return {
+     113:     bEnabled = interactZone:IsEnabled()
+     114:   }
+     115: end
+>>   116: function OnRestoreCheckpoint(level, obj, savedInfo)
+     117:   bEnabled = savedInfo.bEnabled
+     118: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua
+MATCH line=1676 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1668:   end
+    1669: end
+    1670: function Checkpoint()
+    1671:   game.World.StoreCheckpoint()
+    1672: end
+    1673: function OnSaveCheckpoint(level, obj)
+    1674:   return {}
+    1675: end
+>>  1676: function OnRestoreCheckpoint(level, obj, tab)
+    1677: end
+    1678: function DisableSpeedZone()
+    1679:   if goQuestCamera == nil then
+    1680:     return
+    1681:   end
+    1682:   goQuestCamera.Child.LuaObjectScript:DisableSpeedZone()
+    1683: end
+    1684: function EnableSpeedZone()
+    1685:   if goQuestCamera == nil then
+    1686:     return
+    1687:   end
+    1688:   goQuestCamera.Child.LuaObjectScript:EnableSpeedZone()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\bifrostcrystals\bifrosttemporal_intact.lua
+MATCH line=268 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     260: function OnSaveCheckpoint(level, obj)
+     261:   print("Crystal  - Saving")
+     262:   return {
+     263:     crystalActive = crystalActive,
+     264:     socketed = socketed,
+     265:     enabled = enabled
+     266:   }
+     267: end
+>>   268: function OnRestoreCheckpoint(level, obj, savedInfo)
+     269:   enabled = savedInfo.enabled
+     270:   crystalActive = savedInfo.crystalActive
+     271:   socketed = savedInfo.socketed
+     272:   print("Crystal - Restore Checkpoint", crystalActive, socketed)
+     273:   if crystalActive then
+     274:     SetCrystalObjectStates(2)
+     275:   elseif not crystalActive and socketed then
+     276:     SetCrystalObjectStates(1)
+     277:   else
+     278:     SetCrystalObjectStates(0)
+     279:   end
+     280: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\bifrostcrystals\bifrostvibrate_fractured.lua
+MATCH line=212 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     204:     return true
+     205:   else
+     206:     return false
+     207:   end
+     208: end
+     209: function OnSaveCheckpoint(level)
+     210:   return {enabled = enabled, temp_crystalDestroyed = crystalDestroyed}
+     211: end
+>>   212: function OnRestoreCheckpoint(level, obj, tab)
+     213:   crystalDestroyed = tab.temp_crystalDestroyed
+     214:   enabled = tab.enabled or enabled
+     215:   if crystalDestroyed then
+     216:     TriggerAffectedObjects()
+     217:   end
+     218: end
+     219: local soundEmitter
+     220: local soundEvents = {
+     221:   isLooping = false,
+     222:   IdleLoop = "SND_WPN_Bifrost_Bomb_Idle_LP",
+     223:   OnVibrate = "SND_WPN_Bifrost_Bomb_Explo_Build_Up_LP"
+     224: }
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\bifrostcrystals\bifrostvibrate_intact.lua
+MATCH line=280 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     272:   if mainObj ~= nil then
+     273:     mainObj:JumpAnimToFrame(60)
+     274:     mainObj:PauseAnim()
+     275:   end
+     276: end
+     277: function OnSaveCheckpoint(level, obj)
+     278:   return {crystalDead = crystalDead}
+     279: end
+>>   280: function OnRestoreCheckpoint(level, obj, savedInfo)
+     281:   crystalDead = savedInfo.crystalDead
+     282: end
+     283: local soundEmitter
+     284: local soundEvents = {
+     285:   isLooping = false,
+     286:   IdleLoop = "SND_WPN_Bifrost_Bomb_Idle_LP",
+     287:   OnBreak = "SND_WPN_Bifrost_Bomb_Explo",
+     288:   OnVibrate = "SND_WPN_Bifrost_Bomb_Explo_Build_Up_LP"
+     289: }
+     290: function SoundInit()
+     291:   soundEmitter = thisObj:FindSingleSoundEmitterByName("SNDBifrostVibrate")
+     292:   LD.PlayRestartableSoundLoop(soundEmitter, soundEvents.IdleLoop)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\bifrostcrystals\temporalobject.lua
+MATCH line=41 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      33:   end
+      34: end
+      35: function OnSaveCheckpoint(level, obj)
+      36:   if UseGlobalVariable and game.Level.GetVariable(GlobalVariableName) then
+      37:     IsEnabled = true
+      38:   end
+      39:   return {IsEnabled = IsEnabled}
+      40: end
+>>    41: function OnRestoreCheckpoint(level, obj, savedInfo)
+      42:   IsEnabled = savedInfo.IsEnabled
+      43: end
+      44: function Enable()
+      45:   IsEnabled = true
+      46:   thisObj:ShowCollision()
+      47:   thisObj:Show()
+      48:   thisObj:StartAnimation({Animation = "TO_Idle"})
+      49:   thisObj:JumpAnimationToFrame(0)
+      50:   thisObj:PlayAnimationCycle()
+      51: end
+      52: function Disable()
+      53:   IsEnabled = false
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\calderarealmtower\calderarealmtower_elevatorlv1.lua
+MATCH line=37 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      29:   switchInteractZone[1]:SetCameraFrontAngle(0, 80)
+      30:   switchInteractZone[1]:SetCameraFrontAngleWeight(1)
+      31:   elevatorManager.LuaObjectScript.UpdateCallSpeed(0.75, 0.75)
+      32:   ElevatorReachFloor()
+      33: end
+      34: function OnSaveCheckpoint(level, obj)
+      35:   return {isActivated = isActivated}
+      36: end
+>>    37: function OnRestoreCheckpoint(level, obj, savedInfo)
+      38:   isActivated = savedInfo.isActivated
+      39: end
+      40: function UnlockElevator()
+      41:   if isActivated == false then
+      42:     isActivated = true
+      43:     local topSwitch = elevatorManager.LuaObjectScript.GetTopFloorCallSwitch()
+      44:     local elevatorState = elevatorManager.LuaObjectScript.GetState()
+      45:     if elevatorState == "Top" then
+      46:       bottomSwitch.LuaObjectScript.Enable()
+      47:       topSwitch.LuaObjectScript.Disable(true)
+      48:     elseif elevatorState == "Bottom" then
+      49:       bottomSwitch.LuaObjectScript.Disable(true)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\calderarealmtower\calderarealmtower_lv2.lua
+MATCH line=58 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      50:       bottomSwitch.LuaObjectScript.Disable(true)
+      51:     end
+      52:     elevatorManager.LuaObjectScript.GetElevatorSwitch().LuaObjectScript.Disable(true)
+      53:   end
+      54: end
+      55: function OnSaveCheckpoint(level, obj)
+      56:   return {isActivated = isActivated, isHidden = isHidden}
+      57: end
+>>    58: function OnRestoreCheckpoint(level, obj, savedInfo)
+      59:   isActivated = savedInfo.isActivated
+      60:   isHidden = savedInfo.isHidden
+      61: end
+      62: function StartLocked()
+      63:   isActivated = false
+      64:   bottomSwitch.LuaObjectScript.Disable(true)
+      65: end
+      66: function UnlockElevator()
+      67:   if isActivated == false then
+      68:     isActivated = true
+      69:     local topSwitch = elevatorManager.LuaObjectScript.GetTopFloorCallSwitch()
+      70:     local elevatorState = elevatorManager.LuaObjectScript.GetState()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\cranks\crankscriptofficial.lua
+MATCH line=2492 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    2484:     animSynchedObjectNames = animSynchedObjectNames,
+    2485:     gearObjectNames = gearObjectNames,
+    2486:     cycleStopFrames = cycleStopFrames,
+    2487:     pausePositions = pausePositions,
+    2488:     totalRewindTime = totalRewindTime,
+    2489:     tableCamera = tableCamera
+    2490:   }
+    2491: end
+>>  2492: function OnRestoreCheckpoint(level, obj, savedInfo)
+    2493:   state = savedInfo.state
+    2494:   crankType = savedInfo.crankType
+    2495:   crankSolved = savedInfo.crankSolved
+    2496:   crankSubType = savedInfo.crankSubType
+    2497:   drivenObject = savedInfo.drivenObject
+    2498:   drivenObjFrameChangePerInterval = savedInfo.drivenObjFrameChangePerInterval
+    2499:   currentCycle = savedInfo.currentCycle
+    2500:   numPausePositions = savedInfo.numPausePositions
+    2501:   minStopCycle = savedInfo.minStopCycle
+    2502:   maxStopCycle = savedInfo.maxStopCycle
+    2503:   minStopCycleStart = savedInfo.minStopCycleStart
+    2504:   maxStopCycleStart = savedInfo.maxStopCycleStart
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\doorsandblockers\chiselblocker.lua
+MATCH line=281 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     273: end
+     274: function OnSaveCheckpoint(level, obj)
+     275:   return {
+     276:     runePuzzleSolved = runePuzzleSolved,
+     277:     interactLocked = interactLocked,
+     278:     sonDisplayedBlood = DifficultyTable.BlackRuneCine.sonDisplayedBlood
+     279:   }
+     280: end
+>>   281: function OnRestoreCheckpoint(level, obj, savedInfo)
+     282:   runePuzzleSolved = savedInfo.runePuzzleSolved
+     283:   interactLocked = savedInfo.interactLocked
+     284:   DifficultyTable.BlackRuneCine.sonDisplayedBlood = savedInfo.sonDisplayedBlood
+     285: end
+     286: function StartSonInteraction()
+     287:   if PlayerHasGear() then
+     288:     gearCheckPassed = true
+     289:   end
+     290:   son:RequestInteract(thisObj)
+     291: end
+     292: function OnUseWorld(level, obj)
+     293:   if interactZone:PlayerCanInteract() then
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\doorsandblockers\realmtravel_door.lua
+MATCH line=197 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     189:   end
+     190: end
+     191: function OnInteractDone()
+     192:   thisObj:ShowNavObstacle()
+     193: end
+     194: function OnSaveCheckpoint(level, obj)
+     195:   return {isLocked = isLocked, isOpen = isOpen}
+     196: end
+>>   197: function OnRestoreCheckpoint(level, obj, savedInfo)
+     198:   isLocked = savedInfo.isLocked
+     199:   isOpen = savedInfo.isOpen
+     200: end
+     201: function PerformInteraction()
+     202:   LD.ExecuteCallbacksForEvent(thisObj.Level, thisObj, interactionTriggers, "Interaction Event")
+     203:   if interactionTriggers_SideA then
+     204:     LD.ExecuteCallbacksForEvent(thisObj.Level, thisObj, interactionTriggers_SideA, "Interaction Event (Side A)")
+     205:   end
+     206:   if triggerCinematic == false then
+     207:     if game.AI.FindSon() ~= nil and includeSon then
+     208:       LD.PlaySingleSynchMove_KratosSonObject(thisObj, synchJointName, "RealmTravelDoor_WithSon_" .. thisObj:GetName(), exitBranch, exitBranch, objectAnimName, interactZonePair, false, nil, nil, {completion_percentage = 0.7})
+     209:     else
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\flammable\flammablebramble.lua
+MATCH line=323 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     315:     game.Level.SetVariable("TUT_BurnableTutorialDone", true)
+     316:     tutorialDone = true
+     317:     tutorialActive = false
+     318:   end
+     319: end
+     320: function OnSaveCheckpoint(level)
+     321:   return {ignited = ignited, burnedOut = burnedOut}
+     322: end
+>>   323: function OnRestoreCheckpoint(level, obj, savedInfo)
+     324:   ignited = savedInfo.ignited
+     325:   burnedOut = savedInfo.burnedOut
+     326: end
+     327: local soundEmitter
+     328: local soundEvents = {
+     329:   isLooping = false,
+     330:   LoopIdle = "SND_BRK_Bramble_Idle_LP",
+     331:   OnBurn = "SND_BRK_Bramble_Hit_Burn",
+     332:   OnBurnIdle = "SND_BRK_Bramble_Burn_Glow_LP",
+     333:   OnBurnMusic = ""
+     334: }
+     335: local flammableType
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\templatescripts\interactiveobject_oneway.lua
+MATCH line=590 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     582:   engine.DrawPoint(syncFrontPos, frontColor, duration)
+     583: end
+     584: function OnSaveCheckpoint(level, obj)
+     585:   return {
+     586:     enabled = interactZone:IsEnabled(),
+     587:     isLocked = isLocked
+     588:   }
+     589: end
+>>   590: function OnRestoreCheckpoint(level, obj, savedInfo)
+     591:   startEnabled = savedInfo.enabled
+     592:   isLocked = savedInfo.isLocked
+     593: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\templatescripts\interactiveobject_twoway.lua
+MATCH line=131 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     123: end
+     124: function OnSaveCheckpoint(level, obj)
+     125:   return {
+     126:     enableFront = enableFront,
+     127:     enableBack = enableBack,
+     128:     isLocked = isLocked
+     129:   }
+     130: end
+>>   131: function OnRestoreCheckpoint(level, obj, savedInfo)
+     132:   enableFront = savedInfo.enableFront
+     133:   enableBack = savedInfo.enableBack
+     134:   isLocked = savedInfo.isLocked
+     135: end
+     136: function OnStart(level, obj)
+     137:   if not enableFront then
+     138:     DisableFront()
+     139:   else
+     140:     EnableFront()
+     141:   end
+     142:   if not enableBack then
+     143:     DisableBack()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\travel\fasttravelcontroller.lua
+MATCH line=694 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     686: end
+     687: function OnSaveCheckpoint(level, obj)
+     688:   return {
+     689:     isLocked = isLocked,
+     690:     calDiscovered = calDiscovered,
+     691:     ftPointIsDiscovered = ftPointIsDiscovered
+     692:   }
+     693: end
+>>   694: function OnRestoreCheckpoint(level, obj, savedInfo)
+     695:   isLocked = savedInfo.isLocked
+     696:   calDiscovered = savedInfo.calDiscovered
+     697:   ftPointIsDiscovered = savedInfo.ftPointIsDiscovered
+     698: end
+     699: local fastTravelGateEmitter
+     700: local sound_SelectionCanceledFXPlaying = false
+     701: local fastTravelGateSounds = {
+     702:   Discover = "SND_MECH_Fast_Travel_Gate_Reveal",
+     703:   GateLoop = "SND_MECH_Fast_Travel_Gate_LP",
+     704:   Build = "SND_MECH_Fast_Travel_Gate_Build",
+     705:   Cancel = "SND_MECH_Fast_Travel_Gate_Build_Cancel",
+     706:   DestroyDoor = "SND_MECH_Fast_Travel_Gate_Destroy_Door",
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\narrative\_scenetools\waitgate.lua
+MATCH line=140 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     132: end
+     133: function OnSaveCheckpoint(level, obj)
+     134:   return {
+     135:     sonLeashingSuppressed = sonLeashingSuppressed,
+     136:     currentSpeed = currentSpeed,
+     137:     disabled = disabled
+     138:   }
+     139: end
+>>   140: function OnRestoreCheckpoint(level, obj, savedInfo)
+     141:   sonLeashingSuppressed = savedInfo.sonLeashingSuppressed
+     142:   currentSpeed = savedInfo.currentSpeed
+     143:   disabled = savedInfo.disabled
+     144: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\narrative\_scenetools\youshallnotpass.lua
+MATCH line=41 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      33: function OnStart(level, obj)
+      34:   if startEnabled then
+      35:     Enable()
+      36:   end
+      37: end
+      38: function OnSaveCheckpoint(level, obj)
+      39:   return {enabled = enabled}
+      40: end
+>>    41: function OnRestoreCheckpoint(level, obj, savedInfo)
+      42:   startEnabled = savedInfo.enabled
+      43: end
+      44: function OnUpdate(level, obj)
+      45:   if leadingCharacter == nil then
+      46:     Disable()
+      47:   end
+      48: end
+      49: function Enable()
+      50:   if not enabled then
+      51:     if leadingCharacter == "Son" then
+      52:       leadingCharacter = game.AI.FindSon()
+      53:     elseif leadingCharacter == "Freya" then
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\progression\boatpickup.lua
+MATCH line=124 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     116:   enabled = true
+     117:   thisObj:Show()
+     118:   frontInteractZone:Enable()
+     119:   EnableAllSonAwareness()
+     120: end
+     121: function OnSaveCheckpoint(level, obj)
+     122:   return {enabled = enabled}
+     123: end
+>>   124: function OnRestoreCheckpoint(level, obj, savedInfo)
+     125:   enabled = savedInfo.enabled
+     126: end
+     127: function OnAwarenessZoneEnter()
+     128:   local keepBanterOnCooldown = math.random(0, 10) <= 3
+     129:   if keepBanterOnCooldown then
+     130:     game.Audio.SetBanterFact("boatLootCooldown", keepBanterOnCooldown, 75)
+     131:   end
+     132:   game.Audio.PlayBanterNonCritical("ca_boatloot_notice")
+     133: end
+     134: function DisableAllSonAwareness()
+     135:   lookAtEmitter.LuaObjectScript.DisableEventEmitter()
+     136: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\progression\boatpluck.lua
+MATCH line=45 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      37:   end
+      38:   if enableLight then
+      39:     treeVisual:ShowLights()
+      40:   end
+      41: end
+      42: function OnSaveCheckpoint(level, obj)
+      43:   return {enabled = enabled}
+      44: end
+>>    45: function OnRestoreCheckpoint(level, obj, savedInfo)
+      46:   enabled = savedInfo.enabled
+      47: end
+      48: function Disable()
+      49:   local marker = thisObj:FindSingleGOByName("PluckMarker")
+      50:   if marker then
+      51:     marker:Destroy()
+      52:   end
+      53:   enabled = false
+      54:   DisableAllSonAwareness()
+      55: end
+      56: function LuaHook_StartInteract()
+      57:   pluckedObject:RegisterAsProp("pluckObject")
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=501 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     493:   end
+     494: end
+     495: function DisableCheckpointRequirement()
+     496:   checkpointRequirementDisabled = true
+     497: end
+     498: function OnSaveCheckpoint(level, obj)
+     499:   return {state = state}
+     500: end
+>>   501: function OnRestoreCheckpoint(level, obj, savedInfo)
+     502:   state = savedInfo.state
+     503: end
+     504: function AwardTrophy()
+     505:   print("Trophy Awarded: Trilingual")
+     506:   game.UnlockTrophy(14)
+     507: end
+     508: function Enable()
+     509:   if state ~= states.OPENED then
+     510:     state = states.ENABLED
+     511:     interactZone:Enable()
+     512:     LD.ShowFX(idleFX)
+     513:     PlaySoundChestIdle()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_loot_artifact.lua
+MATCH line=49 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      41:   end
+      42:   typeSpecificData = {}
+      43:   game.SubObject.Sleep(obj)
+      44:   SoundInit()
+      45: end
+      46: function OnSaveCheckpoint(level, obj)
+      47:   return {state = state}
+      48: end
+>>    49: function OnRestoreCheckpoint(level, obj, tab)
+      50:   state = tab.state
+      51: end
+      52: function OnStart(level, obj)
+      53:   if state == states.ACQUIRED then
+      54:     Disable()
+      55:     HideAllFX()
+      56:     LootObject:Hide()
+      57:     return
+      58:   elseif state == states.ENABLED then
+      59:     Enable()
+      60:   else
+      61:     Disable()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_loot_corpse.lua
+MATCH line=190 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     182:     LD.ActivateQuest("Quest_NiflheimArmorChest_Parent")
+     183:     LD.CompleteQuest("Quest_NiflheimArmorChest_01")
+     184:     game.SubObject.SoftSave(thisObj)
+     185:   end
+     186: end
+     187: function OnSaveCheckpoint(level)
+     188:   return {state = state}
+     189: end
+>>   190: function OnRestoreCheckpoint(level, go, savedInfo)
+     191:   state = savedInfo.state
+     192: end
+     193: local soundEmitter
+     194: local soundEvents = {
+     195:   Blue_Idle = "SND_LOOT_Silver_Collect_LP",
+     196:   Blue_Pickup = "SND_LOOT_Silver_Collect_Pickup",
+     197:   Orange_Idle = "SND_LOOT_Silver_Collect_LP",
+     198:   Orange_Pickup = "SND_LOOT_Silver_Collect_Pickup",
+     199:   Purple_Idle = "SND_LOOT_Silver_Collect_LP",
+     200:   Purple_Pickup = "SND_LOOT_Silver_Collect_Pickup",
+     201:   White_Idle = "SND_LOOT_Silver_Collect_LP",
+     202:   White_Pickup = "SND_LOOT_Silver_Collect_Pickup"
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_loot_pocketrift.lua
+MATCH line=435 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     427: function OnSaveCheckpoint(level, obj)
+     428:   return {
+     429:     enabled = enabled,
+     430:     hasOpened = hasOpened,
+     431:     combatIntiatesFromInteract = combatIntiatesFromInteract,
+     432:     isCombatRift = isCombatRift
+     433:   }
+     434: end
+>>   435: function OnRestoreCheckpoint(level, obj, tab)
+     436:   enabled = tab.enabled
+     437:   hasOpened = tab.hasOpened
+     438:   combatIntiatesFromInteract = tab.combatIntiatesFromInteract
+     439:   isCombatRift = tab.isCombatRift
+     440: end
+     441: function CameraApproach()
+     442:   game.Camera.Recenter({
+     443:     TimeStart = 0,
+     444:     TimeDuration = 2,
+     445:     LockRecenter = 1,
+     446:     YawRange = -1,
+     447:     TriggerLeft = 0,
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\progression\vendor.lua
+MATCH line=1472 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1464: end
+    1465: function CameraDestroyAndSleepScript()
+    1466:   cameraOneShotApproach = nil
+    1467:   game.SubObject.Sleep(thisObj)
+    1468: end
+    1469: function OnSaveCheckpoint(level, obj)
+    1470:   return {hasFixedUp = hasFixedUp}
+    1471: end
+>>  1472: function OnRestoreCheckpoint(level, obj, savedInfo)
+    1473:   hasFixedUp = savedInfo.hasFixedUp or false
+    1474: end
+    1475: function TrophyCheck()
+    1476:   if game.Wallets.GetResourceValue("HERO", "ReinforcementAxe_Tier06") == 1 then
+    1477:     game.UnlockTrophy(27)
+    1478:   end
+    1479:   if game.Wallets.GetResourceValue("HERO", "ReinforcementBlades_Tier05") == 1 then
+    1480:     game.UnlockTrophy(28)
+    1481:   end
+    1482: end
+    1483: function SpecificArmorCheck()
+    1484:   local zealotChest = game.Wallets.HasResource("HERO", "KratosArmorChest_TravelerSet_Tier06") == true or game.Wallets.HasResource("HERO", "KratosArmorChest_TravelerSet_Tier06_NGP") == true
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\scriptcomponents\banterlookat.lua
+MATCH line=132 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     124: function OnSaveCheckpoint(level, obj)
+     125:   return {
+     126:     hasBanterFired = hasBanterFired,
+     127:     gameTimeLastBanterPlayed = gameTimeLastBanterPlayed,
+     128:     completeTable = completeTable,
+     129:     waitingForCombatToEnd = waitingForCombatToEnd
+     130:   }
+     131: end
+>>   132: function OnRestoreCheckpoint(level, obj, savedInfo)
+     133:   hasBanterFired = savedInfo.hasBanterFired
+     134:   gameTimeLastBanterPlayed = savedInfo.gameTimeLastBanterPlayed
+     135:   completeTable = savedInfo.completeTable
+     136:   waitingForCombatToEnd = savedInfo.waitingForCombatToEnd
+     137: end
+     138: function OnFirstStart(level, obj)
+     139:   if startZoneHidden then
+     140:     HideEntityZones()
+     141:     engine.Print("Zone hidden initially: '", zoneObj:GetName(), "' in level '", level.Name, "' (", LD.GetParentTrace(zoneObj), ")")
+     142:   end
+     143: end
+     144: function OnStart(level, obj)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\scriptcomponents\bantertimedsequence.lua
+MATCH line=96 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      88: end
+      89: function OnSaveCheckpoint(level, obj)
+      90:   return {
+      91:     banterIndex = banterIndex,
+      92:     isPaused = isPaused,
+      93:     waitingForCombatToEnd = waitingForCombatToEnd
+      94:   }
+      95: end
+>>    96: function OnRestoreCheckpoint(level, obj, savedInfo)
+      97:   banterIndex = savedInfo.banterIndex
+      98:   isPaused = savedInfo.isPaused
+      99:   waitingForCombatToEnd = savedInfo.waitingForCombatToEnd
+     100:   if isPaused then
+     101:     Cancel()
+     102:     banterIndex = 1
+     103:   elseif 1 < banterIndex and banterIndex <= #banterName then
+     104:     Start()
+     105:   end
+     106: end
+     107: function OnFirstStart(level, obj)
+     108:   if triggerOnZones and hideZoneInitially then
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\scriptcomponents\banterzone.lua
+MATCH line=123 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     115: function OnSaveCheckpoint(level, obj)
+     116:   return {
+     117:     completeTable = completeTable,
+     118:     gameTimeLastBanterPlayed = gameTimeLastBanterPlayed,
+     119:     numTriggeredEver = numTriggeredEver,
+     120:     waitingForCombatToEnd = waitingForCombatToEnd
+     121:   }
+     122: end
+>>   123: function OnRestoreCheckpoint(level, obj, savedInfo)
+     124:   completeTable = savedInfo.completeTable
+     125:   numTriggeredEver = savedInfo.numTriggeredEver
+     126:   gameTimeLastBanterPlayed = savedInfo.gameTimeLastBanterPlayed
+     127:   waitingForCombatToEnd = savedInfo.waitingForCombatToEnd
+     128: end
+     129: function OnStart(level, obj)
+     130:   if completeTable == nil then
+     131:     completeTable = {}
+     132:     for i = 1, #banterName do
+     133:       completeTable[i] = false
+     134:     end
+     135:   end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\scriptcomponents\boatspeedcontrolzone.lua
+MATCH line=54 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      46:     end
+      47:   else
+      48:     zone:Hide()
+      49:   end
+      50: end
+      51: function OnSaveCheckpoint(level, obj)
+      52:   return {bEnabled = bEnabled}
+      53: end
+>>    54: function OnRestoreCheckpoint(level, obj, savedInfo)
+      55:   bEnabled = savedInfo.bEnabled
+      56: end
+      57: function Enable()
+      58:   bEnabled = true
+      59:   OnStart()
+      60: end
+      61: function Disable()
+      62:   bEnabled = false
+      63:   OnStart()
+      64:   if bActive then
+      65:     SetInactive()
+      66:   end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\scriptcomponents\directionalentityzoneevents.lua
+MATCH line=159 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     151:     timeRemaining_Exit = callbackDelayTimer_Exit:GetRemainingTime()
+     152:   end
+     153:   return {
+     154:     enabled = enabled,
+     155:     timeRemaining_Enter = timeRemaining_Enter,
+     156:     timeRemaining_Exit = timeRemaining_Exit
+     157:   }
+     158: end
+>>   159: function OnRestoreCheckpoint(level, obj, savedInfo)
+     160:   enabled = savedInfo.enabled
+     161:   timeRemaining_Enter = savedInfo.timeRemaining_Enter
+     162:   timeRemaining_Exit = savedInfo.timeRemaining_Exit
+     163: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\scriptcomponents\weaponsubscriber.lua
+MATCH line=166 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     158:   saveAxeState = bool
+     159: end
+     160: function OnSaveCheckpoint(level, obj)
+     161:   if not saveAxeState then
+     162:     axeEmbedded = nil
+     163:   end
+     164:   return {axeEmbedded = axeEmbedded}
+     165: end
+>>   166: function OnRestoreCheckpoint(level, obj, savedInfo)
+     167:   axeEmbedded = savedInfo.axeEmbedded
+     168: end
+     169: function OnStart(level, obj)
+     170:   if saveAxeState and axeEmbedded and obj:IsAxeEmbedded() == false then
+     171:     if OnWeaponUnembedStartCallbacks ~= nil then
+     172:       for i = 1, #OnWeaponUnembedStartCallbacks do
+     173:         OnWeaponUnembedStartCallbacks[i](level, obj, nil, nil)
+     174:       end
+     175:     end
+     176:     if OnWeaponUnembedCallbacks ~= nil then
+     177:       for i = 1, #OnWeaponUnembedCallbacks do
+     178:         OnWeaponUnembedCallbacks[i](level, obj, nil, nil)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\soninteracts\langcheckruneread.lua
+MATCH line=195 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     187:   interactObj.LuaObjectScript.Disable()
+     188: end
+     189: function Enable()
+     190:   interactObj.LuaObjectScript.Enable()
+     191: end
+     192: function OnSaveCheckpoint(level, obj)
+     193:   return {mapSummaryComplete = mapSummaryComplete}
+     194: end
+>>   195: function OnRestoreCheckpoint(level, obj, tab)
+     196:   mapSummaryComplete = tab.mapSummaryComplete
+     197: end
+     198: local wallRuneReadOverride = {
+     199:   SoundEmitter = nil,
+     200:   SNDFXLP = "SND_MAG_Rune_Read_Burn_Away_LP",
+     201:   StartFrame = 35,
+     202:   EndFrame = 178
+     203: }
+     204: local loreMarkerOverride = {
+     205:   SoundEmitter = nil,
+     206:   SNDFXLP = "SND_MAG_Rune_Read_Burn_Away_LP",
+     207:   StartFrame = 45,
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\soninteracts\towerbraziers.lua
+MATCH line=69 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      61:   attributes.PartialFailLanguageCheckCallbacks = nil
+      62:   attributes.LeftRune_FXObject = nil
+      63:   attributes.RightRune_FXObject = nil
+      64:   SoundInit()
+      65: end
+      66: function OnSaveCheckpoint(level, obj)
+      67:   return {state = state}
+      68: end
+>>    69: function OnRestoreCheckpoint(level, obj, savedInfo)
+      70:   state = savedInfo.state
+      71: end
+      72: function SoftSave(level, obj)
+      73:   if noSoftSave ~= true then
+      74:     print("soft save occurred")
+      75:     game.SubObject.SoftSave(thisObj)
+      76:   end
+      77: end
+      78: function OnStart(level, obj)
+      79:   if state == states.INTERACTED then
+      80:     Disable()
+      81:     LightFires()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\soninteracts\templatescripts\genericsoninteract.lua
+MATCH line=631 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     623:   end
+     624: end
+     625: function GetSonPuppeteer()
+     626:   return sonPuppeteer
+     627: end
+     628: function OnSaveCheckpoint(level)
+     629:   return {objectInteractState = objectInteractState, forceSaveEnabled = forceSaveEnabled}
+     630: end
+>>   631: function OnRestoreCheckpoint(level, go, tab)
+     632:   objectInteractState = tab.objectInteractState
+     633:   forceSaveEnabled = tab.forceSaveEnabled
+     634:   if objectInteractState ~= STATE_DONE then
+     635:     objectInteractState = STATE_INIT
+     636:     if forceSaveEnabled then
+     637:       Enable()
+     638:     end
+     639:   end
+     640: end
+     641: function InteractAbort()
+     642:   if not son:HasMarker("exitingInteract") then
+     643:     if not son:PickupIsAcquired("InteractAbort") then
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\levels\gameplaymodules\vehicles\spawners\vehiclespawner.lua
+MATCH line=21 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      13:   obj:HideJoint(obj:GetJointIndex("boatMesh"))
+      14:   awarenessTable.lookAt = thisObj:FindSingleGOByName("_LookAtEmitter")
+      15:   awarenessTable.pointEvent = thisObj:FindSingleGOByName("_PointEvent")
+      16:   game.SubObject.Sleep(obj)
+      17: end
+      18: function OnSaveCheckpoint(level, obj)
+      19:   return {discoveredDock = discoveredDock}
+      20: end
+>>    21: function OnRestoreCheckpoint(level, obj, savedInfo)
+      22:   discoveredDock = savedInfo.discoveredDock
+      23: end
+      24: function SpawnVehicle(spawnWad, pos, dir)
+      25:   spawnWad = spawnWad or thisLevel
+      26:   pos = pos or thisObj:GetWorldPosition()
+      27:   dir = dir or thisObj:GetWorldForward()
+      28:   if spawnedVehicle == nil then
+      29:     if game.AI.PoolCount(spawnWad, vehicleToSpawn) <= 0 then
+      30:       engine.Error("Pool capacity exceeded for " .. vehicleToSpawn .. ". A new " .. vehicleToSpawn .. " will not be spawned. Try increasing the memory allocation in your .dcs file")
+      31:     end
+      32:     spawnedVehicle = game.AI.Spawn(spawnWad, pos, dir, vehicleToSpawn, spawnBranch)
+      33:   end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\combat\boss\boss_statemachine.lua
+MATCH line=38 terms=AddSaveObjectCallback
+      30:     self:OnStart(...)
+      31:   end)
+      32:   thunk.Install("OnFirstStart", function(...)
+      33:     self:OnFirstStart(...)
+      34:   end)
+      35: end
+      36: function BossStateMachine:OnScriptLoaded(level)
+      37:   self.level = level
+>>    38:   saveLib.AddSaveObjectCallback(self.level, self, OnBossStateSaveCallback)
+      39:   saveLib.AddLoadObjectCallback(self.level, self, OnBossStateLoadCallback)
+      40:   saveLib.CreateSaveState(self.level, "__bossState")
+      41: end
+      42: function BossStateMachine:OnFirstStart(level)
+      43:   self:SpawnBoss()
+      44:   self.currentState = "firstInit"
+      45: end
+      46: function BossStateMachine:OnStart(level)
+      47:   if self.currentState == "init" then
+      48:     self:SpawnBoss()
+      49:   end
+      50:   self:GotoState(self.activeIndex)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\combat\boss\boss_statemachine.lua
+MATCH line=39 terms=AddLoadObjectCallback
+      31:   end)
+      32:   thunk.Install("OnFirstStart", function(...)
+      33:     self:OnFirstStart(...)
+      34:   end)
+      35: end
+      36: function BossStateMachine:OnScriptLoaded(level)
+      37:   self.level = level
+      38:   saveLib.AddSaveObjectCallback(self.level, self, OnBossStateSaveCallback)
+>>    39:   saveLib.AddLoadObjectCallback(self.level, self, OnBossStateLoadCallback)
+      40:   saveLib.CreateSaveState(self.level, "__bossState")
+      41: end
+      42: function BossStateMachine:OnFirstStart(level)
+      43:   self:SpawnBoss()
+      44:   self.currentState = "firstInit"
+      45: end
+      46: function BossStateMachine:OnStart(level)
+      47:   if self.currentState == "init" then
+      48:     self:SpawnBoss()
+      49:   end
+      50:   self:GotoState(self.activeIndex)
+      51: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\combat\boss\boss_statemachine.lua
+MATCH line=40 terms=CreateSaveState
+      32:   thunk.Install("OnFirstStart", function(...)
+      33:     self:OnFirstStart(...)
+      34:   end)
+      35: end
+      36: function BossStateMachine:OnScriptLoaded(level)
+      37:   self.level = level
+      38:   saveLib.AddSaveObjectCallback(self.level, self, OnBossStateSaveCallback)
+      39:   saveLib.AddLoadObjectCallback(self.level, self, OnBossStateLoadCallback)
+>>    40:   saveLib.CreateSaveState(self.level, "__bossState")
+      41: end
+      42: function BossStateMachine:OnFirstStart(level)
+      43:   self:SpawnBoss()
+      44:   self.currentState = "firstInit"
+      45: end
+      46: function BossStateMachine:OnStart(level)
+      47:   if self.currentState == "init" then
+      48:     self:SpawnBoss()
+      49:   end
+      50:   self:GotoState(self.activeIndex)
+      51: end
+      52: function OnBossStateSaveCallback(level, bossState)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\combat\boss\boss_statemachine.lua
+MATCH line=53 terms=GetSaveState
+      45: end
+      46: function BossStateMachine:OnStart(level)
+      47:   if self.currentState == "init" then
+      48:     self:SpawnBoss()
+      49:   end
+      50:   self:GotoState(self.activeIndex)
+      51: end
+      52: function OnBossStateSaveCallback(level, bossState)
+>>    53:   local saveInfo = saveLib.GetSaveState(level, "__bossState")
+      54:   saveInfo.activeIndex = bossState.activeIndex
+      55:   saveInfo.previousIndex = bossState.previousIndex
+      56: end
+      57: function OnBossStateLoadCallback(level, bossState)
+      58:   local saveInfo = saveLib.GetSaveState(level, "__bossState")
+      59:   bossState.activeIndex = saveInfo.activeIndex
+      60:   bossState.previousIndex = saveInfo.previousIndex
+      61: end
+      62: function BossStateMachine:Update(level)
+      63:   if engine.IsDebug() then
+      64:     self:UpdateDebug()
+      65:   end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\combat\boss\boss_statemachine.lua
+MATCH line=58 terms=GetSaveState
+      50:   self:GotoState(self.activeIndex)
+      51: end
+      52: function OnBossStateSaveCallback(level, bossState)
+      53:   local saveInfo = saveLib.GetSaveState(level, "__bossState")
+      54:   saveInfo.activeIndex = bossState.activeIndex
+      55:   saveInfo.previousIndex = bossState.previousIndex
+      56: end
+      57: function OnBossStateLoadCallback(level, bossState)
+>>    58:   local saveInfo = saveLib.GetSaveState(level, "__bossState")
+      59:   bossState.activeIndex = saveInfo.activeIndex
+      60:   bossState.previousIndex = saveInfo.previousIndex
+      61: end
+      62: function BossStateMachine:Update(level)
+      63:   if engine.IsDebug() then
+      64:     self:UpdateDebug()
+      65:   end
+      66:   if self.bVFS_ShowDebug.value then
+      67:     self:UpdateDebugInput()
+      68:   end
+      69:   if self.activeState == nil then
+      70:     engine.Error("no valid active state in boss statemachine!")
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=2 terms=object_savestate
+       1: local WEAK_MT = {}
+>>     2: local object_savestate = setmetatable({}, WEAK_MT)
+       3: _G.__object_savestate = object_savestate
+       4: local save_system_callbacks = setmetatable({}, WEAK_MT)
+       5: _G.__save_system_callbacks = save_system_callbacks
+       6: local load_system_callbacks = setmetatable({}, WEAK_MT)
+       7: _G.__load_system_callbacks = load_system_callbacks
+       8: local save_object_callbacks = setmetatable({}, WEAK_MT)
+       9: _G.__save_object_callbacks = save_object_callbacks
+      10: local load_object_callbacks = setmetatable({}, WEAK_MT)
+      11: _G.__load_object_callbacks = load_object_callbacks
+      12: local create_path = function(obj, ...)
+      13:   local n = select("#", ...)
+      14:   local parent = obj
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=3 terms=object_savestate
+       1: local WEAK_MT = {}
+       2: local object_savestate = setmetatable({}, WEAK_MT)
+>>     3: _G.__object_savestate = object_savestate
+       4: local save_system_callbacks = setmetatable({}, WEAK_MT)
+       5: _G.__save_system_callbacks = save_system_callbacks
+       6: local load_system_callbacks = setmetatable({}, WEAK_MT)
+       7: _G.__load_system_callbacks = load_system_callbacks
+       8: local save_object_callbacks = setmetatable({}, WEAK_MT)
+       9: _G.__save_object_callbacks = save_object_callbacks
+      10: local load_object_callbacks = setmetatable({}, WEAK_MT)
+      11: _G.__load_object_callbacks = load_object_callbacks
+      12: local create_path = function(obj, ...)
+      13:   local n = select("#", ...)
+      14:   local parent = obj
+      15:   for i = 1, n do
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=6 terms=load_system
+       1: local WEAK_MT = {}
+       2: local object_savestate = setmetatable({}, WEAK_MT)
+       3: _G.__object_savestate = object_savestate
+       4: local save_system_callbacks = setmetatable({}, WEAK_MT)
+       5: _G.__save_system_callbacks = save_system_callbacks
+>>     6: local load_system_callbacks = setmetatable({}, WEAK_MT)
+       7: _G.__load_system_callbacks = load_system_callbacks
+       8: local save_object_callbacks = setmetatable({}, WEAK_MT)
+       9: _G.__save_object_callbacks = save_object_callbacks
+      10: local load_object_callbacks = setmetatable({}, WEAK_MT)
+      11: _G.__load_object_callbacks = load_object_callbacks
+      12: local create_path = function(obj, ...)
+      13:   local n = select("#", ...)
+      14:   local parent = obj
+      15:   for i = 1, n do
+      16:     local k = select(i, ...)
+      17:     obj = parent[k]
+      18:     if not obj then
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=7 terms=load_system
+       1: local WEAK_MT = {}
+       2: local object_savestate = setmetatable({}, WEAK_MT)
+       3: _G.__object_savestate = object_savestate
+       4: local save_system_callbacks = setmetatable({}, WEAK_MT)
+       5: _G.__save_system_callbacks = save_system_callbacks
+       6: local load_system_callbacks = setmetatable({}, WEAK_MT)
+>>     7: _G.__load_system_callbacks = load_system_callbacks
+       8: local save_object_callbacks = setmetatable({}, WEAK_MT)
+       9: _G.__save_object_callbacks = save_object_callbacks
+      10: local load_object_callbacks = setmetatable({}, WEAK_MT)
+      11: _G.__load_object_callbacks = load_object_callbacks
+      12: local create_path = function(obj, ...)
+      13:   local n = select("#", ...)
+      14:   local parent = obj
+      15:   for i = 1, n do
+      16:     local k = select(i, ...)
+      17:     obj = parent[k]
+      18:     if not obj then
+      19:       obj = setmetatable({}, WEAK_MT)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=10 terms=load_object
+       2: local object_savestate = setmetatable({}, WEAK_MT)
+       3: _G.__object_savestate = object_savestate
+       4: local save_system_callbacks = setmetatable({}, WEAK_MT)
+       5: _G.__save_system_callbacks = save_system_callbacks
+       6: local load_system_callbacks = setmetatable({}, WEAK_MT)
+       7: _G.__load_system_callbacks = load_system_callbacks
+       8: local save_object_callbacks = setmetatable({}, WEAK_MT)
+       9: _G.__save_object_callbacks = save_object_callbacks
+>>    10: local load_object_callbacks = setmetatable({}, WEAK_MT)
+      11: _G.__load_object_callbacks = load_object_callbacks
+      12: local create_path = function(obj, ...)
+      13:   local n = select("#", ...)
+      14:   local parent = obj
+      15:   for i = 1, n do
+      16:     local k = select(i, ...)
+      17:     obj = parent[k]
+      18:     if not obj then
+      19:       obj = setmetatable({}, WEAK_MT)
+      20:       parent[k] = obj
+      21:     end
+      22:     parent = obj
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=11 terms=load_object
+       3: _G.__object_savestate = object_savestate
+       4: local save_system_callbacks = setmetatable({}, WEAK_MT)
+       5: _G.__save_system_callbacks = save_system_callbacks
+       6: local load_system_callbacks = setmetatable({}, WEAK_MT)
+       7: _G.__load_system_callbacks = load_system_callbacks
+       8: local save_object_callbacks = setmetatable({}, WEAK_MT)
+       9: _G.__save_object_callbacks = save_object_callbacks
+      10: local load_object_callbacks = setmetatable({}, WEAK_MT)
+>>    11: _G.__load_object_callbacks = load_object_callbacks
+      12: local create_path = function(obj, ...)
+      13:   local n = select("#", ...)
+      14:   local parent = obj
+      15:   for i = 1, n do
+      16:     local k = select(i, ...)
+      17:     obj = parent[k]
+      18:     if not obj then
+      19:       obj = setmetatable({}, WEAK_MT)
+      20:       parent[k] = obj
+      21:     end
+      22:     parent = obj
+      23:   end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=26 terms=GetSaveState
+      18:     if not obj then
+      19:       obj = setmetatable({}, WEAK_MT)
+      20:       parent[k] = obj
+      21:     end
+      22:     parent = obj
+      23:   end
+      24:   return obj
+      25: end
+>>    26: local GetSaveState = function(keyObject, ...)
+      27:   local savestate = object_savestate[keyObject] or setmetatable({}, WEAK_MT)
+      28:   object_savestate[keyObject] = savestate
+      29:   if (...) then
+      30:     savestate = create_path(savestate, ...)
+      31:   end
+      32:   return savestate
+      33: end
+      34: local Save = function()
+      35:   local hasSaveState = next(object_savestate)
+      36:   if hasSaveState then
+      37:     for callbackFn, keyObjectList in pairs(save_system_callbacks) do
+      38:       local _, ok = next(keyObjectList)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=27 terms=object_savestate
+      19:       obj = setmetatable({}, WEAK_MT)
+      20:       parent[k] = obj
+      21:     end
+      22:     parent = obj
+      23:   end
+      24:   return obj
+      25: end
+      26: local GetSaveState = function(keyObject, ...)
+>>    27:   local savestate = object_savestate[keyObject] or setmetatable({}, WEAK_MT)
+      28:   object_savestate[keyObject] = savestate
+      29:   if (...) then
+      30:     savestate = create_path(savestate, ...)
+      31:   end
+      32:   return savestate
+      33: end
+      34: local Save = function()
+      35:   local hasSaveState = next(object_savestate)
+      36:   if hasSaveState then
+      37:     for callbackFn, keyObjectList in pairs(save_system_callbacks) do
+      38:       local _, ok = next(keyObjectList)
+      39:       if ok then
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=28 terms=object_savestate
+      20:       parent[k] = obj
+      21:     end
+      22:     parent = obj
+      23:   end
+      24:   return obj
+      25: end
+      26: local GetSaveState = function(keyObject, ...)
+      27:   local savestate = object_savestate[keyObject] or setmetatable({}, WEAK_MT)
+>>    28:   object_savestate[keyObject] = savestate
+      29:   if (...) then
+      30:     savestate = create_path(savestate, ...)
+      31:   end
+      32:   return savestate
+      33: end
+      34: local Save = function()
+      35:   local hasSaveState = next(object_savestate)
+      36:   if hasSaveState then
+      37:     for callbackFn, keyObjectList in pairs(save_system_callbacks) do
+      38:       local _, ok = next(keyObjectList)
+      39:       if ok then
+      40:         callbackFn()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=35 terms=object_savestate
+      27:   local savestate = object_savestate[keyObject] or setmetatable({}, WEAK_MT)
+      28:   object_savestate[keyObject] = savestate
+      29:   if (...) then
+      30:     savestate = create_path(savestate, ...)
+      31:   end
+      32:   return savestate
+      33: end
+      34: local Save = function()
+>>    35:   local hasSaveState = next(object_savestate)
+      36:   if hasSaveState then
+      37:     for callbackFn, keyObjectList in pairs(save_system_callbacks) do
+      38:       local _, ok = next(keyObjectList)
+      39:       if ok then
+      40:         callbackFn()
+      41:       end
+      42:     end
+      43:     for keyObject, callbackList in pairs(save_object_callbacks) do
+      44:       for fn, callbackObjects in pairs(callbackList) do
+      45:         for callbackObject in pairs(callbackObjects) do
+      46:           fn(keyObject, callbackObject)
+      47:         end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=51 terms=object_savestate
+      43:     for keyObject, callbackList in pairs(save_object_callbacks) do
+      44:       for fn, callbackObjects in pairs(callbackList) do
+      45:         for callbackObject in pairs(callbackObjects) do
+      46:           fn(keyObject, callbackObject)
+      47:         end
+      48:       end
+      49:     end
+      50:   end
+>>    51:   return hasSaveState and object_savestate or nil
+      52: end
+      53: local IsTableEmpty = function(T)
+      54:   local count = 0
+      55:   for _ in pairs(T) do
+      56:     count = count + 1
+      57:     if 0 < count then
+      58:       return false
+      59:     end
+      60:   end
+      61:   return true
+      62: end
+      63: local Restore = function(savestate)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=70 terms=object_savestate
+      62: end
+      63: local Restore = function(savestate)
+      64:   if not savestate then
+      65:     return
+      66:   end
+      67:   if IsTableEmpty(savestate) then
+      68:     return
+      69:   end
+>>    70:   object_savestate = setmetatable(savestate, WEAK_MT)
+      71:   _G.__object_savestate = object_savestate
+      72:   for callbackFn, keyObjectList in pairs(load_system_callbacks) do
+      73:     local _, ok = next(keyObjectList)
+      74:     if ok then
+      75:       callbackFn()
+      76:     end
+      77:   end
+      78:   for keyObject, callbackList in pairs(load_object_callbacks) do
+      79:     for fn, callbackObjects in pairs(callbackList) do
+      80:       for callbackObject in pairs(callbackObjects) do
+      81:         fn(keyObject, callbackObject)
+      82:       end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=71 terms=object_savestate
+      63: local Restore = function(savestate)
+      64:   if not savestate then
+      65:     return
+      66:   end
+      67:   if IsTableEmpty(savestate) then
+      68:     return
+      69:   end
+      70:   object_savestate = setmetatable(savestate, WEAK_MT)
+>>    71:   _G.__object_savestate = object_savestate
+      72:   for callbackFn, keyObjectList in pairs(load_system_callbacks) do
+      73:     local _, ok = next(keyObjectList)
+      74:     if ok then
+      75:       callbackFn()
+      76:     end
+      77:   end
+      78:   for keyObject, callbackList in pairs(load_object_callbacks) do
+      79:     for fn, callbackObjects in pairs(callbackList) do
+      80:       for callbackObject in pairs(callbackObjects) do
+      81:         fn(keyObject, callbackObject)
+      82:       end
+      83:     end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=72 terms=load_system
+      64:   if not savestate then
+      65:     return
+      66:   end
+      67:   if IsTableEmpty(savestate) then
+      68:     return
+      69:   end
+      70:   object_savestate = setmetatable(savestate, WEAK_MT)
+      71:   _G.__object_savestate = object_savestate
+>>    72:   for callbackFn, keyObjectList in pairs(load_system_callbacks) do
+      73:     local _, ok = next(keyObjectList)
+      74:     if ok then
+      75:       callbackFn()
+      76:     end
+      77:   end
+      78:   for keyObject, callbackList in pairs(load_object_callbacks) do
+      79:     for fn, callbackObjects in pairs(callbackList) do
+      80:       for callbackObject in pairs(callbackObjects) do
+      81:         fn(keyObject, callbackObject)
+      82:       end
+      83:     end
+      84:   end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=78 terms=load_object
+      70:   object_savestate = setmetatable(savestate, WEAK_MT)
+      71:   _G.__object_savestate = object_savestate
+      72:   for callbackFn, keyObjectList in pairs(load_system_callbacks) do
+      73:     local _, ok = next(keyObjectList)
+      74:     if ok then
+      75:       callbackFn()
+      76:     end
+      77:   end
+>>    78:   for keyObject, callbackList in pairs(load_object_callbacks) do
+      79:     for fn, callbackObjects in pairs(callbackList) do
+      80:       for callbackObject in pairs(callbackObjects) do
+      81:         fn(keyObject, callbackObject)
+      82:       end
+      83:     end
+      84:   end
+      85: end
+      86: local AddSaveSystemCallback = function(keyObject, fn)
+      87:   local callbackList = create_path(save_system_callbacks, fn)
+      88:   callbackList[keyObject] = true
+      89: end
+      90: local AddLoadSystemCallback = function(keyObject, fn)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=86 terms=AddSaveSystemCallback
+      78:   for keyObject, callbackList in pairs(load_object_callbacks) do
+      79:     for fn, callbackObjects in pairs(callbackList) do
+      80:       for callbackObject in pairs(callbackObjects) do
+      81:         fn(keyObject, callbackObject)
+      82:       end
+      83:     end
+      84:   end
+      85: end
+>>    86: local AddSaveSystemCallback = function(keyObject, fn)
+      87:   local callbackList = create_path(save_system_callbacks, fn)
+      88:   callbackList[keyObject] = true
+      89: end
+      90: local AddLoadSystemCallback = function(keyObject, fn)
+      91:   local callbackList = create_path(load_system_callbacks, fn)
+      92:   callbackList[keyObject] = true
+      93: end
+      94: local AddSaveObjectCallback = function(keyObject, saveObject, fn)
+      95:   local callbackList = create_path(save_object_callbacks, keyObject, fn)
+      96:   callbackList[saveObject] = true
+      97: end
+      98: local AddLoadObjectCallback = function(keyObject, saveObject, fn)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=90 terms=AddLoadSystemCallback
+      82:       end
+      83:     end
+      84:   end
+      85: end
+      86: local AddSaveSystemCallback = function(keyObject, fn)
+      87:   local callbackList = create_path(save_system_callbacks, fn)
+      88:   callbackList[keyObject] = true
+      89: end
+>>    90: local AddLoadSystemCallback = function(keyObject, fn)
+      91:   local callbackList = create_path(load_system_callbacks, fn)
+      92:   callbackList[keyObject] = true
+      93: end
+      94: local AddSaveObjectCallback = function(keyObject, saveObject, fn)
+      95:   local callbackList = create_path(save_object_callbacks, keyObject, fn)
+      96:   callbackList[saveObject] = true
+      97: end
+      98: local AddLoadObjectCallback = function(keyObject, saveObject, fn)
+      99:   local callbackList = create_path(load_object_callbacks, keyObject, fn)
+     100:   callbackList[saveObject] = true
+     101: end
+     102: return {
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=91 terms=load_system
+      83:     end
+      84:   end
+      85: end
+      86: local AddSaveSystemCallback = function(keyObject, fn)
+      87:   local callbackList = create_path(save_system_callbacks, fn)
+      88:   callbackList[keyObject] = true
+      89: end
+      90: local AddLoadSystemCallback = function(keyObject, fn)
+>>    91:   local callbackList = create_path(load_system_callbacks, fn)
+      92:   callbackList[keyObject] = true
+      93: end
+      94: local AddSaveObjectCallback = function(keyObject, saveObject, fn)
+      95:   local callbackList = create_path(save_object_callbacks, keyObject, fn)
+      96:   callbackList[saveObject] = true
+      97: end
+      98: local AddLoadObjectCallback = function(keyObject, saveObject, fn)
+      99:   local callbackList = create_path(load_object_callbacks, keyObject, fn)
+     100:   callbackList[saveObject] = true
+     101: end
+     102: return {
+     103:   AddSaveSystemCallback = AddSaveSystemCallback,
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=94 terms=AddSaveObjectCallback
+      86: local AddSaveSystemCallback = function(keyObject, fn)
+      87:   local callbackList = create_path(save_system_callbacks, fn)
+      88:   callbackList[keyObject] = true
+      89: end
+      90: local AddLoadSystemCallback = function(keyObject, fn)
+      91:   local callbackList = create_path(load_system_callbacks, fn)
+      92:   callbackList[keyObject] = true
+      93: end
+>>    94: local AddSaveObjectCallback = function(keyObject, saveObject, fn)
+      95:   local callbackList = create_path(save_object_callbacks, keyObject, fn)
+      96:   callbackList[saveObject] = true
+      97: end
+      98: local AddLoadObjectCallback = function(keyObject, saveObject, fn)
+      99:   local callbackList = create_path(load_object_callbacks, keyObject, fn)
+     100:   callbackList[saveObject] = true
+     101: end
+     102: return {
+     103:   AddSaveSystemCallback = AddSaveSystemCallback,
+     104:   AddLoadSystemCallback = AddLoadSystemCallback,
+     105:   AddSaveObjectCallback = AddSaveObjectCallback,
+     106:   AddLoadObjectCallback = AddLoadObjectCallback,
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=98 terms=AddLoadObjectCallback
+      90: local AddLoadSystemCallback = function(keyObject, fn)
+      91:   local callbackList = create_path(load_system_callbacks, fn)
+      92:   callbackList[keyObject] = true
+      93: end
+      94: local AddSaveObjectCallback = function(keyObject, saveObject, fn)
+      95:   local callbackList = create_path(save_object_callbacks, keyObject, fn)
+      96:   callbackList[saveObject] = true
+      97: end
+>>    98: local AddLoadObjectCallback = function(keyObject, saveObject, fn)
+      99:   local callbackList = create_path(load_object_callbacks, keyObject, fn)
+     100:   callbackList[saveObject] = true
+     101: end
+     102: return {
+     103:   AddSaveSystemCallback = AddSaveSystemCallback,
+     104:   AddLoadSystemCallback = AddLoadSystemCallback,
+     105:   AddSaveObjectCallback = AddSaveObjectCallback,
+     106:   AddLoadObjectCallback = AddLoadObjectCallback,
+     107:   CreateSaveState = GetSaveState,
+     108:   GetSaveState = GetSaveState,
+     109:   Save = Save,
+     110:   Restore = Restore
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=99 terms=load_object
+      91:   local callbackList = create_path(load_system_callbacks, fn)
+      92:   callbackList[keyObject] = true
+      93: end
+      94: local AddSaveObjectCallback = function(keyObject, saveObject, fn)
+      95:   local callbackList = create_path(save_object_callbacks, keyObject, fn)
+      96:   callbackList[saveObject] = true
+      97: end
+      98: local AddLoadObjectCallback = function(keyObject, saveObject, fn)
+>>    99:   local callbackList = create_path(load_object_callbacks, keyObject, fn)
+     100:   callbackList[saveObject] = true
+     101: end
+     102: return {
+     103:   AddSaveSystemCallback = AddSaveSystemCallback,
+     104:   AddLoadSystemCallback = AddLoadSystemCallback,
+     105:   AddSaveObjectCallback = AddSaveObjectCallback,
+     106:   AddLoadObjectCallback = AddLoadObjectCallback,
+     107:   CreateSaveState = GetSaveState,
+     108:   GetSaveState = GetSaveState,
+     109:   Save = Save,
+     110:   Restore = Restore
+     111: }
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=103 terms=AddSaveSystemCallback
+      95:   local callbackList = create_path(save_object_callbacks, keyObject, fn)
+      96:   callbackList[saveObject] = true
+      97: end
+      98: local AddLoadObjectCallback = function(keyObject, saveObject, fn)
+      99:   local callbackList = create_path(load_object_callbacks, keyObject, fn)
+     100:   callbackList[saveObject] = true
+     101: end
+     102: return {
+>>   103:   AddSaveSystemCallback = AddSaveSystemCallback,
+     104:   AddLoadSystemCallback = AddLoadSystemCallback,
+     105:   AddSaveObjectCallback = AddSaveObjectCallback,
+     106:   AddLoadObjectCallback = AddLoadObjectCallback,
+     107:   CreateSaveState = GetSaveState,
+     108:   GetSaveState = GetSaveState,
+     109:   Save = Save,
+     110:   Restore = Restore
+     111: }
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=104 terms=AddLoadSystemCallback
+      96:   callbackList[saveObject] = true
+      97: end
+      98: local AddLoadObjectCallback = function(keyObject, saveObject, fn)
+      99:   local callbackList = create_path(load_object_callbacks, keyObject, fn)
+     100:   callbackList[saveObject] = true
+     101: end
+     102: return {
+     103:   AddSaveSystemCallback = AddSaveSystemCallback,
+>>   104:   AddLoadSystemCallback = AddLoadSystemCallback,
+     105:   AddSaveObjectCallback = AddSaveObjectCallback,
+     106:   AddLoadObjectCallback = AddLoadObjectCallback,
+     107:   CreateSaveState = GetSaveState,
+     108:   GetSaveState = GetSaveState,
+     109:   Save = Save,
+     110:   Restore = Restore
+     111: }
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=105 terms=AddSaveObjectCallback
+      97: end
+      98: local AddLoadObjectCallback = function(keyObject, saveObject, fn)
+      99:   local callbackList = create_path(load_object_callbacks, keyObject, fn)
+     100:   callbackList[saveObject] = true
+     101: end
+     102: return {
+     103:   AddSaveSystemCallback = AddSaveSystemCallback,
+     104:   AddLoadSystemCallback = AddLoadSystemCallback,
+>>   105:   AddSaveObjectCallback = AddSaveObjectCallback,
+     106:   AddLoadObjectCallback = AddLoadObjectCallback,
+     107:   CreateSaveState = GetSaveState,
+     108:   GetSaveState = GetSaveState,
+     109:   Save = Save,
+     110:   Restore = Restore
+     111: }
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=106 terms=AddLoadObjectCallback
+      98: local AddLoadObjectCallback = function(keyObject, saveObject, fn)
+      99:   local callbackList = create_path(load_object_callbacks, keyObject, fn)
+     100:   callbackList[saveObject] = true
+     101: end
+     102: return {
+     103:   AddSaveSystemCallback = AddSaveSystemCallback,
+     104:   AddLoadSystemCallback = AddLoadSystemCallback,
+     105:   AddSaveObjectCallback = AddSaveObjectCallback,
+>>   106:   AddLoadObjectCallback = AddLoadObjectCallback,
+     107:   CreateSaveState = GetSaveState,
+     108:   GetSaveState = GetSaveState,
+     109:   Save = Save,
+     110:   Restore = Restore
+     111: }
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=107 terms=GetSaveState,CreateSaveState
+      99:   local callbackList = create_path(load_object_callbacks, keyObject, fn)
+     100:   callbackList[saveObject] = true
+     101: end
+     102: return {
+     103:   AddSaveSystemCallback = AddSaveSystemCallback,
+     104:   AddLoadSystemCallback = AddLoadSystemCallback,
+     105:   AddSaveObjectCallback = AddSaveObjectCallback,
+     106:   AddLoadObjectCallback = AddLoadObjectCallback,
+>>   107:   CreateSaveState = GetSaveState,
+     108:   GetSaveState = GetSaveState,
+     109:   Save = Save,
+     110:   Restore = Restore
+     111: }
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+MATCH line=108 terms=GetSaveState
+     100:   callbackList[saveObject] = true
+     101: end
+     102: return {
+     103:   AddSaveSystemCallback = AddSaveSystemCallback,
+     104:   AddLoadSystemCallback = AddLoadSystemCallback,
+     105:   AddSaveObjectCallback = AddSaveObjectCallback,
+     106:   AddLoadObjectCallback = AddLoadObjectCallback,
+     107:   CreateSaveState = GetSaveState,
+>>   108:   GetSaveState = GetSaveState,
+     109:   Save = Save,
+     110:   Restore = Restore
+     111: }
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\design\encounter.lua
+MATCH line=398 terms=GetSaveState
+     390:     end
+     391:   end
+     392:   myEncounter:AddToTracking()
+     393:   myEncounter:AddDependents()
+     394:   myEncounter:EnableUpdate()
+     395:   return myEncounter
+     396: end
+     397: local OnEncounterSaveCallback = function(level, encounter)
+>>   398:   local saveInfo = savelib.GetSaveState(level, "__encounterState", encounter.id)
+     399:   saveInfo.completed = encounter.completed and not encounter.repopulateEncounter
+     400:   saveInfo.previouslyStarted = encounter.previouslyStarted
+     401: end
+     402: local OnEncounterLoadCallback = function(level, encounter)
+     403:   local saveInfo = savelib.GetSaveState(level, "__encounterState", encounter.id)
+     404:   encounter.completed = saveInfo.completed or false
+     405:   encounter.previouslyStarted = saveInfo.previouslyStarted or false
+     406:   if encounter.repopulateEncounter == true and game.Encounters.CanSpawnRepopulationEncounter(encounter.Name) == true and encounter:VerifyMustHaveCompletedList() == true then
+     407:     encounter:EnableAllZoneMonitors()
+     408:   end
+     409:   if encounter:WasRunning() then
+     410:     if encounter.autoResetOnReload then
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\design\encounter.lua
+MATCH line=403 terms=GetSaveState
+     395:   return myEncounter
+     396: end
+     397: local OnEncounterSaveCallback = function(level, encounter)
+     398:   local saveInfo = savelib.GetSaveState(level, "__encounterState", encounter.id)
+     399:   saveInfo.completed = encounter.completed and not encounter.repopulateEncounter
+     400:   saveInfo.previouslyStarted = encounter.previouslyStarted
+     401: end
+     402: local OnEncounterLoadCallback = function(level, encounter)
+>>   403:   local saveInfo = savelib.GetSaveState(level, "__encounterState", encounter.id)
+     404:   encounter.completed = saveInfo.completed or false
+     405:   encounter.previouslyStarted = saveInfo.previouslyStarted or false
+     406:   if encounter.repopulateEncounter == true and game.Encounters.CanSpawnRepopulationEncounter(encounter.Name) == true and encounter:VerifyMustHaveCompletedList() == true then
+     407:     encounter:EnableAllZoneMonitors()
+     408:   end
+     409:   if encounter:WasRunning() then
+     410:     if encounter.autoResetOnReload then
+     411:       encounter:Start()
+     412:     end
+     413:   elseif encounter.completed then
+     414:     encounter:RemoveFromTracking()
+     415:     encounter:DisableAllZoneMonitors()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\design\encounter.lua
+MATCH line=419 terms=AddSaveObjectCallback
+     411:       encounter:Start()
+     412:     end
+     413:   elseif encounter.completed then
+     414:     encounter:RemoveFromTracking()
+     415:     encounter:DisableAllZoneMonitors()
+     416:   end
+     417: end
+     418: function Encounter:MarkForSave()
+>>   419:   savelib.AddSaveObjectCallback(self.level, self, OnEncounterSaveCallback)
+     420:   savelib.AddLoadObjectCallback(self.level, self, OnEncounterLoadCallback)
+     421:   savelib.CreateSaveState(self.level, "__encounterState", self.id)
+     422: end
+     423: function Encounter:AddWave(args, queueCall)
+     424:   if queueCall == nil then
+     425:     queueCall = self.queuedData.deque_active
+     426:   end
+     427:   if queueCall == true then
+     428:     table.insert(self.queuedData.queued_Waves, 1, args)
+     429:   else
+     430:     local nextWave = {
+     431:       requiredWaveCompletion = args.requiredWaveCompletion or 100,
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\design\encounter.lua
+MATCH line=420 terms=AddLoadObjectCallback
+     412:     end
+     413:   elseif encounter.completed then
+     414:     encounter:RemoveFromTracking()
+     415:     encounter:DisableAllZoneMonitors()
+     416:   end
+     417: end
+     418: function Encounter:MarkForSave()
+     419:   savelib.AddSaveObjectCallback(self.level, self, OnEncounterSaveCallback)
+>>   420:   savelib.AddLoadObjectCallback(self.level, self, OnEncounterLoadCallback)
+     421:   savelib.CreateSaveState(self.level, "__encounterState", self.id)
+     422: end
+     423: function Encounter:AddWave(args, queueCall)
+     424:   if queueCall == nil then
+     425:     queueCall = self.queuedData.deque_active
+     426:   end
+     427:   if queueCall == true then
+     428:     table.insert(self.queuedData.queued_Waves, 1, args)
+     429:   else
+     430:     local nextWave = {
+     431:       requiredWaveCompletion = args.requiredWaveCompletion or 100,
+     432:       waveComplete = false,
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\design\encounter.lua
+MATCH line=421 terms=CreateSaveState
+     413:   elseif encounter.completed then
+     414:     encounter:RemoveFromTracking()
+     415:     encounter:DisableAllZoneMonitors()
+     416:   end
+     417: end
+     418: function Encounter:MarkForSave()
+     419:   savelib.AddSaveObjectCallback(self.level, self, OnEncounterSaveCallback)
+     420:   savelib.AddLoadObjectCallback(self.level, self, OnEncounterLoadCallback)
+>>   421:   savelib.CreateSaveState(self.level, "__encounterState", self.id)
+     422: end
+     423: function Encounter:AddWave(args, queueCall)
+     424:   if queueCall == nil then
+     425:     queueCall = self.queuedData.deque_active
+     426:   end
+     427:   if queueCall == true then
+     428:     table.insert(self.queuedData.queued_Waves, 1, args)
+     429:   else
+     430:     local nextWave = {
+     431:       requiredWaveCompletion = args.requiredWaveCompletion or 100,
+     432:       waveComplete = false,
+     433:       waveStarted = false,
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\design\utilitylibrary.lua
+MATCH line=26 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      18:     "OnCreatureUpdate",
+      19:     "OnStartGameFromThisLevel",
+      20:     "OnLevelUpdate",
+      21:     "OnLevelShutdown",
+      22:     "OnInit",
+      23:     "OnUpdate",
+      24:     "OnTeardown",
+      25:     "OnSaveCheckpoint",
+>>    26:     "OnRestoreCheckpoint",
+      27:     "OnBeforeRestart",
+      28:     "OnGOCreateLuaState",
+      29:     "IsDeathAllowed",
+      30:     "OnBreakableBroken",
+      31:     "OnDeath",
+      32:     "OnHitGameObject",
+      33:     "OnWeaponHitGameObject",
+      34:     "OnHitByWeapon",
+      35:     "OnMarkerEnterZone",
+      36:     "OnMarkerExitZone",
+      37:     "OnSequenceSkipped",
+      38:     "OnTokenDropped",
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\level\checkpoint.lua
+MATCH line=5 terms=RestoreCheckpoint
+       1: local savelib = require("core.save")
+       2: local SaveCheckpoint = function()
+       3:   return savelib.Save()
+       4: end
+>>     5: local RestoreCheckpoint = function(data)
+       6:   savelib.Restore(data)
+       7: end
+       8: return {Save = SaveCheckpoint, Restore = RestoreCheckpoint}
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\level\checkpoint.lua
+MATCH line=8 terms=RestoreCheckpoint
+       1: local savelib = require("core.save")
+       2: local SaveCheckpoint = function()
+       3:   return savelib.Save()
+       4: end
+       5: local RestoreCheckpoint = function(data)
+       6:   savelib.Restore(data)
+       7: end
+>>     8: return {Save = SaveCheckpoint, Restore = RestoreCheckpoint}
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\level\entityzoneeventslibrary.lua
+MATCH line=346 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     338:   end
+     339:   return {
+     340:     entryTriggersEnabled = self.entryTriggersEnabled,
+     341:     exitTriggersEnabled = self.exitTriggersEnabled,
+     342:     timeRemaining_Enter = self.timeRemaining_Enter,
+     343:     timeRemaining_Exit = self.timeRemaining_Exit
+     344:   }
+     345: end
+>>   346: function EntityZoneEvents:OnRestoreCheckpoint(level, obj, savedInfo)
+     347:   self.entryTriggersEnabled = savedInfo.entryTriggersEnabled
+     348:   self.exitTriggersEnabled = savedInfo.exitTriggersEnabled
+     349:   self.timeRemaining_Enter = savedInfo.timeRemaining_Enter
+     350:   self.timeRemaining_Exit = savedInfo.timeRemaining_Exit
+     351: end
+     352: local New = function(_ENV)
+     353:   local self = EntityZoneEvents.New()
+     354:   for functionName in _ENV.pairs(EntityZoneEvents) do
+     355:     _ENV[functionName] = function(...)
+     356:       return self[functionName](self, ...)
+     357:     end
+     358:   end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\level\monitors\entityzonemonitor.lua
+MATCH line=16 terms=GetSaveState
+       8: end
+       9: function EntityZoneMonitor:OnExit(fn, ...)
+      10:   self:OnValue(false, callEnterOrExitCallback, self, fn, ...)
+      11: end
+      12: local AddEntityZoneMonitor = function(go, zoneNameOrGameObject)
+      13:   return EntityZoneMonitor.New(go, zoneNameOrGameObject)
+      14: end
+      15: local OnMonitorSaveCallback = function(saveKey, zoneMonitor)
+>>    16:   local saveState = savelib.GetSaveState(saveKey, "__entityZoneMonitorState", zoneMonitor.go)
+      17:   saveState[zoneMonitor.zoneNameOrGameObject] = {
+      18:     zoneMonitor.value,
+      19:     zoneMonitor.triggerCount
+      20:   }
+      21: end
+      22: local OnMonitorLoadCallback = function(saveKey, zoneMonitor)
+      23:   local saveInfo = savelib.GetSaveState(saveKey, "__entityZoneMonitorState", zoneMonitor.go)
+      24:   local value = saveInfo and saveInfo[zoneMonitor.zoneNameOrGameObject]
+      25:   if value ~= nil then
+      26:     zoneMonitor.value, zoneMonitor.triggerCount = value[1], value[2]
+      27:     if zoneMonitor.triggerCountLimit and zoneMonitor.triggerCount >= zoneMonitor.triggerCountLimit then
+      28:       zoneMonitor:Stop()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\level\monitors\entityzonemonitor.lua
+MATCH line=23 terms=GetSaveState
+      15: local OnMonitorSaveCallback = function(saveKey, zoneMonitor)
+      16:   local saveState = savelib.GetSaveState(saveKey, "__entityZoneMonitorState", zoneMonitor.go)
+      17:   saveState[zoneMonitor.zoneNameOrGameObject] = {
+      18:     zoneMonitor.value,
+      19:     zoneMonitor.triggerCount
+      20:   }
+      21: end
+      22: local OnMonitorLoadCallback = function(saveKey, zoneMonitor)
+>>    23:   local saveInfo = savelib.GetSaveState(saveKey, "__entityZoneMonitorState", zoneMonitor.go)
+      24:   local value = saveInfo and saveInfo[zoneMonitor.zoneNameOrGameObject]
+      25:   if value ~= nil then
+      26:     zoneMonitor.value, zoneMonitor.triggerCount = value[1], value[2]
+      27:     if zoneMonitor.triggerCountLimit and zoneMonitor.triggerCount >= zoneMonitor.triggerCountLimit then
+      28:       zoneMonitor:Stop()
+      29:     end
+      30:   end
+      31: end
+      32: function EntityZoneMonitor:MarkForSave()
+      33:   savelib.AddSaveObjectCallback(self.saveKey, self, OnMonitorSaveCallback)
+      34:   savelib.AddLoadObjectCallback(self.saveKey, self, OnMonitorLoadCallback)
+      35:   savelib.CreateSaveState(self.saveKey, "__entityZoneMonitorState", self.go)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\level\monitors\entityzonemonitor.lua
+MATCH line=33 terms=AddSaveObjectCallback
+      25:   if value ~= nil then
+      26:     zoneMonitor.value, zoneMonitor.triggerCount = value[1], value[2]
+      27:     if zoneMonitor.triggerCountLimit and zoneMonitor.triggerCount >= zoneMonitor.triggerCountLimit then
+      28:       zoneMonitor:Stop()
+      29:     end
+      30:   end
+      31: end
+      32: function EntityZoneMonitor:MarkForSave()
+>>    33:   savelib.AddSaveObjectCallback(self.saveKey, self, OnMonitorSaveCallback)
+      34:   savelib.AddLoadObjectCallback(self.saveKey, self, OnMonitorLoadCallback)
+      35:   savelib.CreateSaveState(self.saveKey, "__entityZoneMonitorState", self.go)
+      36: end
+      37: function EntityZoneMonitor:ManualLoadFromCheckpoint()
+      38:   OnMonitorLoadCallback(nil, self)
+      39: end
+      40: function callEnterOrExitCallback(value, self, fn, ...)
+      41:   self:dprint("Entity Zone Monitor triggered: '" .. tostring(self.go) .. "' in zone '" .. tostring(self.zoneNameOrGameObject) .. "': " .. tostring(value))
+      42:   fn(self, self.go, self.zoneNameOrGameObject, ...)
+      43:   return true
+      44: end
+      45: function EntityZoneMonitor:init(go, zoneNameOrGameObject)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\level\monitors\entityzonemonitor.lua
+MATCH line=34 terms=AddLoadObjectCallback
+      26:     zoneMonitor.value, zoneMonitor.triggerCount = value[1], value[2]
+      27:     if zoneMonitor.triggerCountLimit and zoneMonitor.triggerCount >= zoneMonitor.triggerCountLimit then
+      28:       zoneMonitor:Stop()
+      29:     end
+      30:   end
+      31: end
+      32: function EntityZoneMonitor:MarkForSave()
+      33:   savelib.AddSaveObjectCallback(self.saveKey, self, OnMonitorSaveCallback)
+>>    34:   savelib.AddLoadObjectCallback(self.saveKey, self, OnMonitorLoadCallback)
+      35:   savelib.CreateSaveState(self.saveKey, "__entityZoneMonitorState", self.go)
+      36: end
+      37: function EntityZoneMonitor:ManualLoadFromCheckpoint()
+      38:   OnMonitorLoadCallback(nil, self)
+      39: end
+      40: function callEnterOrExitCallback(value, self, fn, ...)
+      41:   self:dprint("Entity Zone Monitor triggered: '" .. tostring(self.go) .. "' in zone '" .. tostring(self.zoneNameOrGameObject) .. "': " .. tostring(value))
+      42:   fn(self, self.go, self.zoneNameOrGameObject, ...)
+      43:   return true
+      44: end
+      45: function EntityZoneMonitor:init(go, zoneNameOrGameObject)
+      46:   self.go = go
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\level\monitors\entityzonemonitor.lua
+MATCH line=35 terms=CreateSaveState
+      27:     if zoneMonitor.triggerCountLimit and zoneMonitor.triggerCount >= zoneMonitor.triggerCountLimit then
+      28:       zoneMonitor:Stop()
+      29:     end
+      30:   end
+      31: end
+      32: function EntityZoneMonitor:MarkForSave()
+      33:   savelib.AddSaveObjectCallback(self.saveKey, self, OnMonitorSaveCallback)
+      34:   savelib.AddLoadObjectCallback(self.saveKey, self, OnMonitorLoadCallback)
+>>    35:   savelib.CreateSaveState(self.saveKey, "__entityZoneMonitorState", self.go)
+      36: end
+      37: function EntityZoneMonitor:ManualLoadFromCheckpoint()
+      38:   OnMonitorLoadCallback(nil, self)
+      39: end
+      40: function callEnterOrExitCallback(value, self, fn, ...)
+      41:   self:dprint("Entity Zone Monitor triggered: '" .. tostring(self.go) .. "' in zone '" .. tostring(self.zoneNameOrGameObject) .. "': " .. tostring(value))
+      42:   fn(self, self.go, self.zoneNameOrGameObject, ...)
+      43:   return true
+      44: end
+      45: function EntityZoneMonitor:init(go, zoneNameOrGameObject)
+      46:   self.go = go
+      47:   self.zoneNameOrGameObject = zoneNameOrGameObject
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\ui\fsm.lua
+MATCH line=747 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     739:     for _, child in ipairs(s._children) do
+     740:       states[1 + #states] = child
+     741:     end
+     742:   end
+     743: end
+     744: function UIState:OnSaveCheckpoint(tab)
+     745:   assert(self:IsRoot(), "OnSaveCheckpoint called on non-root state '" .. self.name .. "'")
+     746: end
+>>   747: function UIState:OnRestoreCheckpoint(tab)
+     748:   assert(self:IsRoot(), "OnRestoreCheckpoint called on non-root state '" .. self.name .. "'")
+     749: end
+     750: local HandleEvent = function(name, ...)
+     751:   DoLateInitIfNeeded()
+     752:   for _, fsm in ipairs(fsmList) do
+     753:     fsm:_handleEvent(name, ...)
+     754:   end
+     755: end
+     756: local HandleRestart = function()
+     757:   HandleEvent("EVT_Restart")
+     758: end
+     759: local HandleGameQuit = function()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\ui\fsm.lua
+MATCH line=748 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     740:       states[1 + #states] = child
+     741:     end
+     742:   end
+     743: end
+     744: function UIState:OnSaveCheckpoint(tab)
+     745:   assert(self:IsRoot(), "OnSaveCheckpoint called on non-root state '" .. self.name .. "'")
+     746: end
+     747: function UIState:OnRestoreCheckpoint(tab)
+>>   748:   assert(self:IsRoot(), "OnRestoreCheckpoint called on non-root state '" .. self.name .. "'")
+     749: end
+     750: local HandleEvent = function(name, ...)
+     751:   DoLateInitIfNeeded()
+     752:   for _, fsm in ipairs(fsmList) do
+     753:     fsm:_handleEvent(name, ...)
+     754:   end
+     755: end
+     756: local HandleRestart = function()
+     757:   HandleEvent("EVT_Restart")
+     758: end
+     759: local HandleGameQuit = function()
+     760:   HandleEvent("EVT_GAME_OVER")
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\ui\fsm.lua
+MATCH line=867 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     859:   local fsmTab = {}
+     860:   tab.fsm = fsmTab
+     861:   for _, fsm in ipairs(fsmList) do
+     862:     local t = {}
+     863:     fsmTab[fsm.name] = t
+     864:     fsm:OnSaveCheckpoint(t)
+     865:   end
+     866: end
+>>   867: local OnRestoreCheckpoint = function(tab)
+     868:   local fsmTab = tab.fsm
+     869:   if fsmTab then
+     870:     DoLateInitIfNeeded()
+     871:     for _, fsm in ipairs(fsmList) do
+     872:       local t = fsmTab[fsm.name]
+     873:       fsm:OnRestoreCheckpoint(t)
+     874:     end
+     875:   end
+     876: end
+     877: if not game.UI.EnumerateScripterDefinedEventName then
+     878:   local HandleSendHookToMachine = function(evtName, machineIndex)
+     879:     local fsm = hooks.GetFSMAtMachineIndex(machineIndex)
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\ui\fsm.lua
+MATCH line=873 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     865:   end
+     866: end
+     867: local OnRestoreCheckpoint = function(tab)
+     868:   local fsmTab = tab.fsm
+     869:   if fsmTab then
+     870:     DoLateInitIfNeeded()
+     871:     for _, fsm in ipairs(fsmList) do
+     872:       local t = fsmTab[fsm.name]
+>>   873:       fsm:OnRestoreCheckpoint(t)
+     874:     end
+     875:   end
+     876: end
+     877: if not game.UI.EnumerateScripterDefinedEventName then
+     878:   local HandleSendHookToMachine = function(evtName, machineIndex)
+     879:     local fsm = hooks.GetFSMAtMachineIndex(machineIndex)
+     880:     fsm:_handleEvent(evtName)
+     881:   end
+     882:   thunk.Install("SendHookToMachine", function(_, ...)
+     883:     HandleSendHookToMachine(...)
+     884:   end)
+     885: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\ui\fsm.lua
+MATCH line=909 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     901:   HandleGetMachineAndStateName(...)
+     902: end)
+     903: return {
+     904:   GetScriptVarSliType = GetScriptVarSliType,
+     905:   GetScriptVar = GetScriptVar,
+     906:   GetFSMByName = GetFSMByName,
+     907:   UIState = UIState,
+     908:   OnSaveCheckpoint = OnSaveCheckpoint,
+>>   909:   OnRestoreCheckpoint = OnRestoreCheckpoint,
+     910:   Update = Update,
+     911:   HandleEvent = HandleEvent,
+     912:   HandleRestart = HandleRestart,
+     913:   HandleGameQuit = HandleGameQuit,
+     914:   runList = runList
+     915: }
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\loot\consumableobject_scoop.lua
+MATCH line=295 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     287: function OnUpdate(level, obj)
+     288:   if CallDeferredFunction() then
+     289:     game.SubObject.Sleep(thisObj)
+     290:   end
+     291: end
+     292: function OnSaveCheckpoint(level, obj)
+     293:   return {consumed = consumed}
+     294: end
+>>   295: function OnRestoreCheckpoint(level, obj, savedInfo)
+     296:   consumed = savedInfo.consumed
+     297: end
+     298: function Enable()
+     299:   interactZone:Enable()
+     300:   lootObject:Show()
+     301: end
+     302: function Disable()
+     303:   interactZone:Disable()
+     304:   lootObject:Hide()
+     305: end
+     306: function DisableInteractZone()
+     307:   interactZone:Disable()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\loot\lootobject_scoop.lua
+MATCH line=307 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     299:   end
+     300:   for i = 2, #result do
+     301:     game.Wallets.ExchangeRune("HERO", "LOST_ITEMS", result[i])
+     302:   end
+     303: end
+     304: function OnSaveCheckpoint(level, obj)
+     305:   return {isLooted = isLooted}
+     306: end
+>>   307: function OnRestoreCheckpoint(level, obj, savedInfo)
+     308:   isLooted = savedInfo.isLooted
+     309: end
+     310: function SoftSave(level, go)
+     311:   game.SubObject.SoftSave(thisObj)
+     312: end
+     313: function LostItemAwardInWallet(wallet)
+     314:   if DT.LostItemCleanUpTable[overrideReward].IsRune then
+     315:     local resultList = game.Wallets.GetRunesWithFlags(wallet, {
+     316:       DT.LostItemCleanUpTable.GetName(overrideReward)
+     317:     })
+     318:     return 0 < #resultList
+     319:   end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\ui\sys\main.lua
+MATCH line=45 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      37:     fsm.HandleGameQuit()
+      38:   end
+      39: end
+      40: function OnSaveCheckpoint(level)
+      41:   local tab = {}
+      42:   fsm.OnSaveCheckpoint(tab)
+      43:   return tab
+      44: end
+>>    45: function OnRestoreCheckpoint(level, tab)
+      46:   fsm.OnRestoreCheckpoint(tab)
+      47: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\ui\sys\main.lua
+MATCH line=46 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      38:   end
+      39: end
+      40: function OnSaveCheckpoint(level)
+      41:   local tab = {}
+      42:   fsm.OnSaveCheckpoint(tab)
+      43:   return tab
+      44: end
+      45: function OnRestoreCheckpoint(level, tab)
+>>    46:   fsm.OnRestoreCheckpoint(tab)
+      47: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\misc.lua
+MATCH line=44 terms=OnRestoreCheckpoint,RestoreCheckpoint
+      36:     UI.FadeIn(defaultTimer)
+      37:   else
+      38:     UI.FadeIn(time)
+      39:   end
+      40:   self:Goto("FadeIdle")
+      41: end
+      42: function FadeBlack:OnSaveCheckpoint(tab)
+      43: end
+>>    44: function FadeBlack:OnRestoreCheckpoint(tab)
+      45: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\hud\combathud.lua
+MATCH line=233 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     225: function HealthMeter:EVT_Item_Acquired()
+     226:   local sender = UI.GetEventSenderGameObject()
+     227:   if sender ~= nil and sender.GetPlayer ~= nil and sender:GetPlayer() ~= nil then
+     228:     self:EVT_REFRESH_HUD()
+     229:   end
+     230: end
+     231: function HealthMeter:OnSaveCheckpoint(tab)
+     232: end
+>>   233: function HealthMeter:OnRestoreCheckpoint(tab)
+     234: end
+     235: local RageMeter = classlib.Class("RageMeter", fsm.UIState)
+     236: local RMOff = RageMeter:StateClass("RMOff", fsm.UIState)
+     237: local RMOn = RageMeter:StateClass("RMOn", fsm.UIState)
+     238: local rageMeter = RageMeter.New("rageMeter", {RMOff, RMOn})
+     239: function RageMeter:Setup()
+     240: end
+     241: function RageMeter:Enter()
+     242:   self:Goto("RMOn")
+     243: end
+     244: function RageMeter:Reset()
+     245:   self:Goto("RMOff")
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\hud\combathud.lua
+MATCH line=467 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     459:     local rmOn = self:GetState("RMOn")
+     460:     self:StartTimer("TimerUpdateDelay", 0, function()
+     461:       rmOn:UpdateRageButtonsVisibility()
+     462:     end)
+     463:   end
+     464: end
+     465: function RageMeter:OnSaveCheckpoint(tab)
+     466: end
+>>   467: function RageMeter:OnRestoreCheckpoint(tab)
+     468: end
+     469: local SonHUD = classlib.Class("SonHUD", fsm.UIState)
+     470: local SonHUDOff = SonHUD:StateClass("SonHUDOff", fsm.UIState)
+     471: local SonHUDOn = SonHUD:StateClass("SonHUDOn", fsm.UIState)
+     472: local SonHUDGrabbed = SonHUD:StateClass("SonHUDGrabbed", fsm.UIState)
+     473: local SonHUDKnockedDown = SonHUD:StateClass("SonHUDKnockedDown", fsm.UIState)
+     474: local SonHUDBusy = SonHUD:StateClass("SonHUDBusy", fsm.UIState)
+     475: local sonHUD = SonHUD.New("sonHUD", {
+     476:   SonHUDOff,
+     477:   SonHUDOn,
+     478:   SonHUDGrabbed,
+     479:   SonHUDKnockedDown,
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\hud\combathud.lua
+MATCH line=886 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     878:   UI.Anim(self.busy, consts.AS_ForwardCycle_NoReset, "", 0.1)
+     879:   self:SendEventToUIFsm("mainHUD", "EVT_PlayHUDSound", "SND_UX_HUD_Arrows_Son_Unavailable_Disabled", true)
+     880: end
+     881: function SonHUDBusy:Exit()
+     882:   self.busy:Hide()
+     883: end
+     884: function SonHUD:OnSaveCheckpoint(tab)
+     885: end
+>>   886: function SonHUD:OnRestoreCheckpoint(tab)
+     887: end
+     888: local SpecialMeters = classlib.Class("SpecialMeters", fsm.UIState)
+     889: local SMOff = SpecialMeters:StateClass("SMOff", fsm.UIState)
+     890: local SMOn = SpecialMeters:StateClass("SMOn", fsm.UIState)
+     891: local specialMeters = SpecialMeters.New("specialMeters", {SMOff, SMOn})
+     892: function SpecialMeters:Enter()
+     893:   self:WantPadEvents(true)
+     894:   self:Goto("SMOn")
+     895: end
+     896: function SpecialMeters:Reset()
+     897:   self:Goto("SMOff")
+     898:   self:Enter()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\hud\combathud.lua
+MATCH line=1346 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1338:       end
+    1339:     end
+    1340:   end
+    1341:   self:UpdateCooldownMeters()
+    1342:   tablex.Clear(self.vendorLastCooldowns)
+    1343: end
+    1344: function SpecialMeters:OnSaveCheckpoint(tab)
+    1345: end
+>>  1346: function SpecialMeters:OnRestoreCheckpoint(tab)
+    1347: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\hud\designermessages.lua
+MATCH line=1009 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1001:   self:WantPadEvents(false)
+    1002:   self.wantedPadEvents = false
+    1003: end
+    1004: function DMAdvanceHoldButton:AdvanceDialog()
+    1005:   self:Goto("DMTextOff")
+    1006: end
+    1007: function DesignerMessage:OnSaveCheckpoint(tab)
+    1008: end
+>>  1009: function DesignerMessage:OnRestoreCheckpoint(tab)
+    1010: end
+    1011: local __MessageTable = {
+    1012:   MaxRageUpgradePiece = {
+    1013:     {
+    1014:       MessageVariant = uiCalls.msgParam.SPLASHSCREEN_LANDSCAPE_SMALL,
+    1015:       Title = 8264,
+    1016:       Text = 40875,
+    1017:       ImageMaterialName = "bloodmead",
+    1018:       AdvanceType = uiCalls.msgParam.ADVANCE_PRESS
+    1019:     }
+    1020:   },
+    1021:   MaxHealthUpgradePiece = {
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\hud\discovermessages.lua
+MATCH line=256 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     248:   UI.Anim("DiscoverText", consts.AS_Reverse, "", 4)
+     249:   UI.AlphaFade("DiscoverText", 0, 0.25)
+     250:   self:StartTimer("HoldTranslation", 1, function()
+     251:     self:AfterDMTimer()
+     252:   end)
+     253: end
+     254: function DiscoverMessage:OnSaveCheckpoint(tab)
+     255: end
+>>   256: function DiscoverMessage:OnRestoreCheckpoint(tab)
+     257: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\hud\mainhud.lua
+MATCH line=540 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     532:   if creature and creature.GetPlayer and creature:GetPlayer() then
+     533:     self:EVT_TEMP_OFF()
+     534:   end
+     535: end
+     536: MainHUD.EVT_PlayerDamaged = MainHUD.EVT_TEMP_ON
+     537: MainHUD.EVT_GAME_START = MainHUD.EVT_REFRESH_HUD
+     538: function MainHUD:OnSaveCheckpoint(tab)
+     539: end
+>>   540: function MainHUD:OnRestoreCheckpoint(tab)
+     541: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\hud\photomodehud.lua
+MATCH line=1869 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1861: HideUI.EVT_Up_Release = HideUI.EVT_Back_Release
+    1862: HideUI.EVT_Right_Release = HideUI.EVT_Back_Release
+    1863: HideUI.EVT_Down_Release = HideUI.EVT_Back_Release
+    1864: HideUI.EVT_Left_Release = HideUI.EVT_Back_Release
+    1865: HideUI.EVT_L1_Release = HideUI.EVT_Back_Release
+    1866: HideUI.EVT_R1_Release = HideUI.EVT_Back_Release
+    1867: function PhotoModeHUD:OnSaveCheckpoint(tab)
+    1868: end
+>>  1869: function PhotoModeHUD:OnRestoreCheckpoint(tab)
+    1870: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\hud\reticle.lua
+MATCH line=190 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     182:   self:UpdateReticle(self.currReticleState)
+     183: end
+     184: function RetOn:EVT_AIM_END()
+     185:   self.aimState = false
+     186:   self:UpdateReticle(self.currReticleState)
+     187: end
+     188: function Reticle:OnSaveCheckpoint(tab)
+     189: end
+>>   190: function Reticle:OnRestoreCheckpoint(tab)
+     191: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\hud\textlog.lua
+MATCH line=597 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     589: function TextOn:EVT_TOUCH_STARTED()
+     590:   self:BuffLogTimerVis()
+     591: end
+     592: function TextOn:EVT_TOUCH_ENDED()
+     593:   self:BuffLogTimerVis()
+     594: end
+     595: function TextLog:OnSaveCheckpoint(tab)
+     596: end
+>>   597: function TextLog:OnRestoreCheckpoint(tab)
+     598: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\inworldmenu\globalmenu.lua
+MATCH line=1169 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1161:   self.globalMenuOn:Submenu_Exit("GlobalRealmTable")
+    1162:   self:SendEventToUIFsm("realmTableMenu", "EVT_TURN_OFF_REALM_TABLE_MENU")
+    1163: end
+    1164: function GlobalRealmTable:EVT_Back_Press()
+    1165:   self.globalMenu.waitForRelease = true
+    1166: end
+    1167: function GlobalMenu:OnSaveCheckpoint(tab)
+    1168: end
+>>  1169: function GlobalMenu:OnRestoreCheckpoint(tab)
+    1170: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\inworldmenu\inworldmenu.lua
+MATCH line=671 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     663: end
+     664: function Resources:Exit()
+     665:   self:SendEventToUIFsm("resourcesMenu", "EVT_TURN_OFF_RESOURCES_MENU")
+     666:   StopUniqueMenuScreenSound("resourcesMenu")
+     667:   util.Hide("XPandHS")
+     668: end
+     669: function InWorldMenu:OnSaveCheckpoint(tab)
+     670: end
+>>   671: function InWorldMenu:OnRestoreCheckpoint(tab)
+     672: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\inworldmenu\journalmenu.lua
+MATCH line=711 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     703: function Bestiary:Bestiary_Button_Update(button)
+     704:   assert(button ~= nil, "Attempted to call Bestiary_Button_Update without a Button!")
+     705:   local fadeAlpha = 1
+     706:   local fadeTime = 0
+     707:   button:AlphaFade(fadeAlpha, fadeTime)
+     708: end
+     709: function JournalMenu:OnSaveCheckpoint(tab)
+     710: end
+>>   711: function JournalMenu:OnRestoreCheckpoint(tab)
+     712: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\inworldmenu\mapmenu.lua
+MATCH line=1754 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1746: function Asgard:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+    1747:   self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Asgard")
+    1748: end
+    1749: function Asgard:EVT_MOUSE_CLICKED()
+    1750:   self.mapOn:MouseClickHandler(self)
+    1751: end
+    1752: function MapMenu:OnSaveCheckpoint(tab)
+    1753: end
+>>  1754: function MapMenu:OnRestoreCheckpoint(tab)
+    1755: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua
+MATCH line=1096 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1088:     UI.SetText(self.thTreasureMapRewardDesc, rewardDesc)
+    1089:   end
+    1090: end
+    1091: function TreasureMaps:UpdateFooterButtonPrompt()
+    1092:   self.questsOn:UpdateFooterButtonPrompt(self.menu)
+    1093: end
+    1094: function QuestsMenu:OnSaveCheckpoint(tab)
+    1095: end
+>>  1096: function QuestsMenu:OnRestoreCheckpoint(tab)
+    1097: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\inworldmenu\recipesmenu.lua
+MATCH line=500 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     492: end
+     493: function RecipesUpgrade:SubList_R2ReleaseHandler()
+     494: end
+     495: function RecipesUpgrade:SubList_R3ReleaseHandler()
+     496:   self.recipesOn:SubList_R3ReleaseHandler(self)
+     497: end
+     498: function RecipesMenu:OnSaveCheckpoint(tab)
+     499: end
+>>   500: function RecipesMenu:OnRestoreCheckpoint(tab)
+     501: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\inworldmenu\resourcesmenu.lua
+MATCH line=417 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     409:   local buttonList = self.menu:GetList("item"):GetButtons()
+     410:   for i = 1, #buttonList do
+     411:     buttonList[i]:SetText("text_rightAligned", "")
+     412:   end
+     413:   self.resourcesOn:SubmenuExit(self)
+     414: end
+     415: function ResourcesMenu:OnSaveCheckpoint(tab)
+     416: end
+>>   417: function ResourcesMenu:OnRestoreCheckpoint(tab)
+     418: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\inworldmenu\settingsmenu.lua
+MATCH line=8968 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    8960:   self:SendEventToUIFsm("globalMenu", "EVT_TURN_OFF_GLOBAL_MENU")
+    8961: end
+    8962: function ScreenScale:EVT_Back_Release()
+    8963: end
+    8964: function ScreenScale:EVT_Options_Release()
+    8965: end
+    8966: function SettingsMenu:OnSaveCheckpoint(tab)
+    8967: end
+>>  8968: function SettingsMenu:OnRestoreCheckpoint(tab)
+    8969: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\inworldmenu\skilltreemenu.lua
+MATCH line=918 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     910:     if button:HasItem(item) then
+     911:       Camera.PointAtGO(selected)
+     912:       break
+     913:     end
+     914:   end
+     915: end
+     916: function SkillTreeMenu:OnSaveCheckpoint(tab)
+     917: end
+>>   918: function SkillTreeMenu:OnRestoreCheckpoint(tab)
+     919: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\inworldmenu\statsmenu.lua
+MATCH line=1217 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1209:   self:SendEventToUIFsm("upgradeMenu", "EVT_TURN_ON_UPGRADE_MENU", self.statsOn.pickupBeingUpgraded, self.statsOn._exitedFromSublist, self.statsOn.menu:get_instructionEntries(), self.statsOn.menu:get_instructionArgs())
+    1210:   self.statsOn._exitedFromSublist = false
+    1211: end
+    1212: function Upgrade:Exit()
+    1213:   self:SendEventToUIFsm("upgradeMenu", "EVT_TURN_OFF_UPGRADE_MENU")
+    1214: end
+    1215: function StatsMenu:OnSaveCheckpoint(tab)
+    1216: end
+>>  1217: function StatsMenu:OnRestoreCheckpoint(tab)
+    1218: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\inworldmenu\upgrademenu.lua
+MATCH line=898 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     890:       currRuneList:ReselectSelectedItem(true)
+     891:       self._onGainFocusWhenAttributesUpdated = false
+     892:     end
+     893:     self._waitingForEquippedAttributes = false
+     894:   end
+     895: end
+     896: function UpgradeMenu:OnSaveCheckpoint(tab)
+     897: end
+>>   898: function UpgradeMenu:OnRestoreCheckpoint(tab)
+     899: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\inworldmenu\weaponmenu.lua
+MATCH line=1199 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1191: function SonBow:SubList_BackReleaseHandler(weaponUpgradeSlotName)
+    1192:   self.weaponOn:SubList_BackReleaseHandler(self, weaponUpgradeSlotName)
+    1193: end
+    1194: function SonBow:EVT_Square_Press()
+    1195:   self.weaponOn:Submenu_SquarePressHandler(self)
+    1196: end
+    1197: function WeaponMenu:OnSaveCheckpoint(tab)
+    1198: end
+>>  1199: function WeaponMenu:OnRestoreCheckpoint(tab)
+    1200: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\tutorial\tutorialmode.lua
+MATCH line=354 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     346: end
+     347: function TMAdvance:Exit()
+     348:   local currentMessage = tutorialUtil.GetCurrentMessage()
+     349:   currentMessage:Deactivate()
+     350:   self:WantPadEvents(false)
+     351: end
+     352: function TutorialMode:OnSaveCheckpoint(tab)
+     353: end
+>>   354: function TutorialMode:OnRestoreCheckpoint(tab)
+     355: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\vendor\realmtablemenu.lua
+MATCH line=125 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     117:   self:UpdateInfo(self.selectedRealmInfo)
+     118: end
+     119: function RealmTableOn:EVT_SET_EXIT_NOT_ALLOWED()
+     120:   self.exitAllowed = false
+     121:   self:UpdateInfo(self.selectedRealmInfo)
+     122: end
+     123: function RealmTableMenu:OnSaveCheckpoint(tab)
+     124: end
+>>   125: function RealmTableMenu:OnRestoreCheckpoint(tab)
+     126: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\ui\scripts\vendor\vendormenu.lua
+MATCH line=1820 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    1812: function VendorLostItems:SubList_R2PressHandler()
+    1813: end
+    1814: function VendorLostItems:SubList_R2ReleaseHandler()
+    1815: end
+    1816: function VendorLostItems:SubList_R3ReleaseHandler(subList)
+    1817: end
+    1818: function VendorMenu:OnSaveCheckpoint(tab)
+    1819: end
+>>  1820: function VendorMenu:OnRestoreCheckpoint(tab)
+    1821: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua
+MATCH line=359 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     351: function OnSaveCheckpoint(level, go)
+     352:   return {
+     353:     state = state,
+     354:     keysUsed = keysUsed,
+     355:     challengeComplete = challengeComplete,
+     356:     interactAvailable = interactAvailable
+     357:   }
+     358: end
+>>   359: function OnRestoreCheckpoint(level, go, savedInfo)
+     360:   state = savedInfo.state
+     361:   keysUsed = savedInfo.keysUsed
+     362:   challengeComplete = savedInfo.challengeComplete
+     363:   interactAvailable = savedInfo.interactAvailable
+     364: end
+     365: function OnUseWorld(level, go)
+     366:   if frontInteractZone:PlayerCanInteract() then
+     367:     PerformKratosInteraction_Locked()
+     368:   end
+     369: end
+     370: function OnInteractStart(level, obj, creature)
+     371:   interactFunction()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua
+MATCH line=556 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     548:   end
+     549: end
+     550: function DisableCheckpointRequirement()
+     551:   checkpointRequirementDisabled = true
+     552: end
+     553: function OnSaveCheckpoint(level, obj)
+     554:   return {state = state}
+     555: end
+>>   556: function OnRestoreCheckpoint(level, obj, savedInfo)
+     557:   state = savedInfo.state
+     558: end
+     559: function AwardTrophy()
+     560:   print("Trophy Awarded: Trilingual")
+     561:   game.UnlockTrophy(14)
+     562: end
+     563: function Enable()
+     564:   if state ~= states.OPENED then
+     565:     state = states.ENABLED
+     566:     interactZone:Enable()
+     567:     LD.ShowFX(idleFX)
+     568:     PlaySoundChestIdle()
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua
+MATCH line=132 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     124:   end
+     125: end
+     126: function SoftSave(level, obj)
+     127:   game.SubObject.SoftSave(thisObj)
+     128: end
+     129: function OnSaveCheckpoint(level, obj)
+     130:   return {ravenKilled = ravenKilled}
+     131: end
+>>   132: function OnRestoreCheckpoint(level, obj, tab)
+     133:   ravenKilled = tab.ravenKilled
+     134:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnRestoreCheckpoint")
+     135: end
+     136: local emitter
+     137: function SoundInit()
+     138:   print(string.upper(thisObj:GetName()))
+     139:   if BirdMesh ~= nil then
+     140:     emitter = BirdMesh:FindSingleSoundEmitterByName("SNDRaven")
+     141:   else
+     142:     emitter = thisObj:FindSingleSoundEmitterByName("SNDRaven")
+     143:   end
+     144: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua
+MATCH line=134 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     126: function SoftSave(level, obj)
+     127:   game.SubObject.SoftSave(thisObj)
+     128: end
+     129: function OnSaveCheckpoint(level, obj)
+     130:   return {ravenKilled = ravenKilled}
+     131: end
+     132: function OnRestoreCheckpoint(level, obj, tab)
+     133:   ravenKilled = tab.ravenKilled
+>>   134:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnRestoreCheckpoint")
+     135: end
+     136: local emitter
+     137: function SoundInit()
+     138:   print(string.upper(thisObj:GetName()))
+     139:   if BirdMesh ~= nil then
+     140:     emitter = BirdMesh:FindSingleSoundEmitterByName("SNDRaven")
+     141:   else
+     142:     emitter = thisObj:FindSingleSoundEmitterByName("SNDRaven")
+     143:   end
+     144: end
+     145: local soundEvents = {
+     146:   IdleLoop = "SND_LOOT_Odins_Ravens_Magic_LP",
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua
+MATCH line=281 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     273: 
+     274:   local hit = OnHitByWeapon
+     275:   function OnHitByWeapon(...)
+     276:     local result = hit(...)
+     277:     observe("OnHitByWeapon")
+     278:     return result
+     279:   end
+     280: 
+>>   281:   local restore = OnRestoreCheckpoint
+     282:   function OnRestoreCheckpoint(...)
+     283:     local result = restore(...)
+     284:     observe("OnRestoreCheckpoint")
+     285:     return result
+     286:   end
+     287: 
+     288:   local start = OnStart
+     289:   function OnStart(...)
+     290:     local result = start(...)
+     291:     observe("OnStart")
+     292:     return result
+     293:   end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua
+MATCH line=282 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     274:   local hit = OnHitByWeapon
+     275:   function OnHitByWeapon(...)
+     276:     local result = hit(...)
+     277:     observe("OnHitByWeapon")
+     278:     return result
+     279:   end
+     280: 
+     281:   local restore = OnRestoreCheckpoint
+>>   282:   function OnRestoreCheckpoint(...)
+     283:     local result = restore(...)
+     284:     observe("OnRestoreCheckpoint")
+     285:     return result
+     286:   end
+     287: 
+     288:   local start = OnStart
+     289:   function OnStart(...)
+     290:     local result = start(...)
+     291:     observe("OnStart")
+     292:     return result
+     293:   end
+     294: 
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua
+MATCH line=284 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     276:     local result = hit(...)
+     277:     observe("OnHitByWeapon")
+     278:     return result
+     279:   end
+     280: 
+     281:   local restore = OnRestoreCheckpoint
+     282:   function OnRestoreCheckpoint(...)
+     283:     local result = restore(...)
+>>   284:     observe("OnRestoreCheckpoint")
+     285:     return result
+     286:   end
+     287: 
+     288:   local start = OnStart
+     289:   function OnStart(...)
+     290:     local result = start(...)
+     291:     observe("OnStart")
+     292:     return result
+     293:   end
+     294: 
+     295:   log("API", "installed=true cleanupOwner=precisionchallenge" ..
+     296:       " exactMarker=" .. ravenName .. " compassClass=" .. ravenClass ..
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\gameart\ui\scripts\hud\mainhud.lua
+MATCH line=919 terms=OnRestoreCheckpoint,RestoreCheckpoint
+     911:   if creature and creature.GetPlayer and creature:GetPlayer() then
+     912:     self:EVT_TEMP_OFF()
+     913:   end
+     914: end
+     915: MainHUD.EVT_PlayerDamaged = MainHUD.EVT_TEMP_ON
+     916: MainHUD.EVT_GAME_START = MainHUD.EVT_REFRESH_HUD
+     917: function MainHUD:OnSaveCheckpoint(tab)
+     918: end
+>>   919: function MainHUD:OnRestoreCheckpoint(tab)
+     920: end
+
+====================================================================================================
+FILE G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua\gameart\ui\scripts\inworldmenu\mapmenu.lua
+MATCH line=3508 terms=OnRestoreCheckpoint,RestoreCheckpoint
+    3500: function Asgard:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+    3501:   self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Asgard")
+    3502: end
+    3503: function Asgard:EVT_MOUSE_CLICKED()
+    3504:   self.mapOn:MouseClickHandler(self)
+    3505: end
+    3506: function MapMenu:OnSaveCheckpoint(tab)
+    3507: end
+>>  3508: function MapMenu:OnRestoreCheckpoint(tab)
+    3509: end
+    3510: 
+    3511: 
+    3512: 
+    3513: -- BEGIN COMPLETIONIST V0.10.4 RAVEN REGISTERED CLASS RUNTIME PROOF
+    3514: --
+    3515: -- Field proof for the corrected, grown r_ui.wad candidate. The authored Raven
+    3516: -- marker points directly at goMapIconCompletionistRaven. No Dock map proxy is
+    3517: -- created. The visual payload still carries cloned stock Dock pixels at this
+    3518: -- gate on purpose; custom Raven texpack artwork is a separate later variable.
+    3519: do
+    3520:   local prefix = "[CompletionistMap v0.10.4-raven-registered-runtime] "
+

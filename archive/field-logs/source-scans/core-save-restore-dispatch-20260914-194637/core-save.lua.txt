@@ -1,0 +1,116 @@
+﻿Completionist Map - core.save full source
+timestamp=20260914-194637
+source=G:\SteamLibrary\steamapps\common\GodOfWar\mods\lua_source\gameart\scripts\libraries\core\save.lua
+line_count=111
+
+   1: local WEAK_MT = {}
+   2: local object_savestate = setmetatable({}, WEAK_MT)
+   3: _G.__object_savestate = object_savestate
+   4: local save_system_callbacks = setmetatable({}, WEAK_MT)
+   5: _G.__save_system_callbacks = save_system_callbacks
+   6: local load_system_callbacks = setmetatable({}, WEAK_MT)
+   7: _G.__load_system_callbacks = load_system_callbacks
+   8: local save_object_callbacks = setmetatable({}, WEAK_MT)
+   9: _G.__save_object_callbacks = save_object_callbacks
+  10: local load_object_callbacks = setmetatable({}, WEAK_MT)
+  11: _G.__load_object_callbacks = load_object_callbacks
+  12: local create_path = function(obj, ...)
+  13:   local n = select("#", ...)
+  14:   local parent = obj
+  15:   for i = 1, n do
+  16:     local k = select(i, ...)
+  17:     obj = parent[k]
+  18:     if not obj then
+  19:       obj = setmetatable({}, WEAK_MT)
+  20:       parent[k] = obj
+  21:     end
+  22:     parent = obj
+  23:   end
+  24:   return obj
+  25: end
+  26: local GetSaveState = function(keyObject, ...)
+  27:   local savestate = object_savestate[keyObject] or setmetatable({}, WEAK_MT)
+  28:   object_savestate[keyObject] = savestate
+  29:   if (...) then
+  30:     savestate = create_path(savestate, ...)
+  31:   end
+  32:   return savestate
+  33: end
+  34: local Save = function()
+  35:   local hasSaveState = next(object_savestate)
+  36:   if hasSaveState then
+  37:     for callbackFn, keyObjectList in pairs(save_system_callbacks) do
+  38:       local _, ok = next(keyObjectList)
+  39:       if ok then
+  40:         callbackFn()
+  41:       end
+  42:     end
+  43:     for keyObject, callbackList in pairs(save_object_callbacks) do
+  44:       for fn, callbackObjects in pairs(callbackList) do
+  45:         for callbackObject in pairs(callbackObjects) do
+  46:           fn(keyObject, callbackObject)
+  47:         end
+  48:       end
+  49:     end
+  50:   end
+  51:   return hasSaveState and object_savestate or nil
+  52: end
+  53: local IsTableEmpty = function(T)
+  54:   local count = 0
+  55:   for _ in pairs(T) do
+  56:     count = count + 1
+  57:     if 0 < count then
+  58:       return false
+  59:     end
+  60:   end
+  61:   return true
+  62: end
+  63: local Restore = function(savestate)
+  64:   if not savestate then
+  65:     return
+  66:   end
+  67:   if IsTableEmpty(savestate) then
+  68:     return
+  69:   end
+  70:   object_savestate = setmetatable(savestate, WEAK_MT)
+  71:   _G.__object_savestate = object_savestate
+  72:   for callbackFn, keyObjectList in pairs(load_system_callbacks) do
+  73:     local _, ok = next(keyObjectList)
+  74:     if ok then
+  75:       callbackFn()
+  76:     end
+  77:   end
+  78:   for keyObject, callbackList in pairs(load_object_callbacks) do
+  79:     for fn, callbackObjects in pairs(callbackList) do
+  80:       for callbackObject in pairs(callbackObjects) do
+  81:         fn(keyObject, callbackObject)
+  82:       end
+  83:     end
+  84:   end
+  85: end
+  86: local AddSaveSystemCallback = function(keyObject, fn)
+  87:   local callbackList = create_path(save_system_callbacks, fn)
+  88:   callbackList[keyObject] = true
+  89: end
+  90: local AddLoadSystemCallback = function(keyObject, fn)
+  91:   local callbackList = create_path(load_system_callbacks, fn)
+  92:   callbackList[keyObject] = true
+  93: end
+  94: local AddSaveObjectCallback = function(keyObject, saveObject, fn)
+  95:   local callbackList = create_path(save_object_callbacks, keyObject, fn)
+  96:   callbackList[saveObject] = true
+  97: end
+  98: local AddLoadObjectCallback = function(keyObject, saveObject, fn)
+  99:   local callbackList = create_path(load_object_callbacks, keyObject, fn)
+ 100:   callbackList[saveObject] = true
+ 101: end
+ 102: return {
+ 103:   AddSaveSystemCallback = AddSaveSystemCallback,
+ 104:   AddLoadSystemCallback = AddLoadSystemCallback,
+ 105:   AddSaveObjectCallback = AddSaveObjectCallback,
+ 106:   AddLoadObjectCallback = AddLoadObjectCallback,
+ 107:   CreateSaveState = GetSaveState,
+ 108:   GetSaveState = GetSaveState,
+ 109:   Save = Save,
+ 110:   Restore = Restore
+ 111: }
