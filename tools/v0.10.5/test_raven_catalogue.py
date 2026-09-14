@@ -6,10 +6,14 @@ from collections import Counter
 import json
 import math
 from pathlib import Path
+import re
 import sys
 import unittest
 
-import jsonschema
+try:
+    import jsonschema as _jsonschema
+except ModuleNotFoundError:
+    _jsonschema = None
 
 
 HERE = Path(__file__).resolve().parent
@@ -18,6 +22,94 @@ import raven_catalogue as rc
 
 
 GAME = Path("G:/SteamLibrary/steamapps/common/GodOfWar")
+
+
+def _resolve_local_ref(root: dict, ref: str):
+    if not ref.startswith("#/"):
+        raise AssertionError(f"fallback schema validator only supports local refs: {ref}")
+    node = root
+    for token in ref[2:].split("/"):
+        token = token.replace("~1", "/").replace("~0", "~")
+        node = node[token]
+    return node
+
+
+def _fallback_schema_validate(value, schema: dict, *, root: dict, path: str = "$") -> None:
+    if "$ref" in schema:
+        return _fallback_schema_validate(value, _resolve_local_ref(root, schema["$ref"]), root=root, path=path)
+
+    if "const" in schema and value != schema["const"]:
+        raise AssertionError(f"{path}: expected const {schema['const']!r}, got {value!r}")
+    if "enum" in schema and value not in schema["enum"]:
+        raise AssertionError(f"{path}: {value!r} not in enum {schema['enum']!r}")
+
+    type_name = schema.get("type")
+    if type_name == "object":
+        if not isinstance(value, dict):
+            raise AssertionError(f"{path}: expected object")
+        required = schema.get("required", [])
+        missing = [key for key in required if key not in value]
+        if missing:
+            raise AssertionError(f"{path}: missing required keys {missing!r}")
+        properties = schema.get("properties", {})
+        if schema.get("additionalProperties") is False:
+            extras = sorted(set(value) - set(properties))
+            if extras:
+                raise AssertionError(f"{path}: unexpected keys {extras!r}")
+        for key, child_schema in properties.items():
+            if key in value:
+                _fallback_schema_validate(value[key], child_schema, root=root, path=f"{path}.{key}")
+        return
+
+    if type_name == "array":
+        if not isinstance(value, list):
+            raise AssertionError(f"{path}: expected array")
+        if "minItems" in schema and len(value) < schema["minItems"]:
+            raise AssertionError(f"{path}: too few items")
+        if "maxItems" in schema and len(value) > schema["maxItems"]:
+            raise AssertionError(f"{path}: too many items")
+        if schema.get("uniqueItems"):
+            encoded = [json.dumps(item, sort_keys=True, separators=(",", ":")) for item in value]
+            if len(encoded) != len(set(encoded)):
+                raise AssertionError(f"{path}: duplicate array items")
+        if "items" in schema:
+            for index, item in enumerate(value):
+                _fallback_schema_validate(item, schema["items"], root=root, path=f"{path}[{index}]")
+        return
+
+    if type_name == "string":
+        if not isinstance(value, str):
+            raise AssertionError(f"{path}: expected string")
+        if "minLength" in schema and len(value) < schema["minLength"]:
+            raise AssertionError(f"{path}: string too short")
+        if "pattern" in schema and re.search(schema["pattern"], value) is None:
+            raise AssertionError(f"{path}: string {value!r} does not match {schema['pattern']!r}")
+        return
+
+    if type_name == "number":
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise AssertionError(f"{path}: expected number")
+        if "minimum" in schema and value < schema["minimum"]:
+            raise AssertionError(f"{path}: number below minimum")
+        if "maximum" in schema and value > schema["maximum"]:
+            raise AssertionError(f"{path}: number above maximum")
+        return
+
+    if type_name == "null":
+        if value is not None:
+            raise AssertionError(f"{path}: expected null")
+        return
+
+    if type_name is not None:
+        raise AssertionError(f"{path}: unsupported fallback schema type {type_name!r}")
+
+
+def validate_against_schema(value, schema: dict) -> None:
+    """Use jsonschema when installed; otherwise enforce the schema subset used by this repo."""
+    if _jsonschema is not None:
+        _jsonschema.Draft202012Validator(schema).validate(value)
+        return
+    _fallback_schema_validate(value, schema, root=schema)
 
 
 class TransformTests(unittest.TestCase):
@@ -44,7 +136,7 @@ class NativeCatalogueTests(unittest.TestCase):
 
     def test_catalogue_matches_json_schema(self):
         schema = json.loads((HERE.parent.parent / "catalogue" / "odins-ravens.schema.json").read_text(encoding="utf-8"))
-        jsonschema.Draft202012Validator(schema).validate(self.catalogue)
+        validate_against_schema(self.catalogue, schema)
 
     def test_unique_identities_and_uids(self):
         rows = self.catalogue["ravens"]
