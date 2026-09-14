@@ -1,0 +1,713 @@
+﻿Completionist Map - native binding registration-context scan
+exe=G:\SteamLibrary\steamapps\common\GodOfWar\GoW.exe
+sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+known_function_descriptor_count=309
+known_property_descriptor_count=86
+descriptor_stride=32
+function_table_va=0x1411CA300
+function_registration_callback_va=0x1407BA4D0
+property_registration_callback_va=0x1407BA4A0
+
+=== registration_thunk_and_callbacks 0x1407BA420-0x1407BA560 ===
+
+G:\SteamLibrary\steamapps\common\GodOfWar\GoW.exe:     file format pei-x86-64
+
+
+Disassembly of section .text:
+
+00000001407ba420 <.text+0x7b9420>:
+   1407ba420:	a0 53 d1 02 89 94 81 	movabs al,ds:0xa62081948902d153
+   1407ba427:	20 a6 
+   1407ba429:	2e 02 89 94 81 d0 a5 	cs add cl,BYTE PTR [rcx-0x5a2f7e6c]
+   1407ba430:	2e 02 48 ff          	cs add cl,BYTE PTR [rax-0x1]
+   1407ba434:	c0 48 83 f8          	ror    BYTE PTR [rax-0x7d],0xf8
+   1407ba438:	10 7c d8 48          	adc    BYTE PTR [rax+rbx*8+0x48],bh
+   1407ba43c:	83 c4 28             	add    esp,0x28
+   1407ba43f:	c3                   	ret
+   1407ba440:	e8 57 23 c3 ff       	call   0x1403ec79c
+   1407ba445:	cc                   	int3
+   1407ba446:	cc                   	int3
+   1407ba447:	cc                   	int3
+   1407ba448:	cc                   	int3
+   1407ba449:	cc                   	int3
+   1407ba44a:	cc                   	int3
+   1407ba44b:	cc                   	int3
+   1407ba44c:	cc                   	int3
+   1407ba44d:	cc                   	int3
+   1407ba44e:	cc                   	int3
+   1407ba44f:	cc                   	int3
+   1407ba450:	48 83 ec 28          	sub    rsp,0x28
+   1407ba454:	4c 8d 0d 75 00 00 00 	lea    r9,[rip+0x75]        # 0x1407ba4d0
+   1407ba45b:	ba 35 01 00 00       	mov    edx,0x135
+   1407ba460:	41 b8 20 00 00 00    	mov    r8d,0x20
+   1407ba466:	48 8d 0d 93 fe a0 00 	lea    rcx,[rip+0xa0fe93]        # 0x1411ca300
+   1407ba46d:	ff 15 ed eb 58 00    	call   QWORD PTR [rip+0x58ebed]        # 0x140d49060
+   1407ba473:	ba 56 00 00 00       	mov    edx,0x56
+   1407ba478:	4c 8d 0d 21 00 00 00 	lea    r9,[rip+0x21]        # 0x1407ba4a0
+   1407ba47f:	48 8d 0d 1a 25 a1 00 	lea    rcx,[rip+0xa1251a]        # 0x1411cc9a0
+   1407ba486:	44 8d 42 ca          	lea    r8d,[rdx-0x36]
+   1407ba48a:	48 83 c4 28          	add    rsp,0x28
+   1407ba48e:	48 ff 25 cb eb 58 00 	rex.W jmp QWORD PTR [rip+0x58ebcb]        # 0x140d49060
+   1407ba495:	cc                   	int3
+   1407ba496:	cc                   	int3
+   1407ba497:	cc                   	int3
+   1407ba498:	cc                   	int3
+   1407ba499:	cc                   	int3
+   1407ba49a:	cc                   	int3
+   1407ba49b:	cc                   	int3
+   1407ba49c:	cc                   	int3
+   1407ba49d:	cc                   	int3
+   1407ba49e:	cc                   	int3
+   1407ba49f:	cc                   	int3
+   1407ba4a0:	44 8b 41 1c          	mov    r8d,DWORD PTR [rcx+0x1c]
+   1407ba4a4:	8b 4a 1c             	mov    ecx,DWORD PTR [rdx+0x1c]
+   1407ba4a7:	44 3b c1             	cmp    r8d,ecx
+   1407ba4aa:	73 06                	jae    0x1407ba4b2
+   1407ba4ac:	b8 ff ff ff ff       	mov    eax,0xffffffff
+   1407ba4b1:	c3                   	ret
+   1407ba4b2:	33 c0                	xor    eax,eax
+   1407ba4b4:	44 3b c1             	cmp    r8d,ecx
+   1407ba4b7:	0f 97 c0             	seta   al
+   1407ba4ba:	c3                   	ret
+   1407ba4bb:	cc                   	int3
+   1407ba4bc:	cc                   	int3
+   1407ba4bd:	cc                   	int3
+   1407ba4be:	cc                   	int3
+   1407ba4bf:	cc                   	int3
+   1407ba4c0:	cc                   	int3
+   1407ba4c1:	cc                   	int3
+   1407ba4c2:	cc                   	int3
+   1407ba4c3:	cc                   	int3
+   1407ba4c4:	cc                   	int3
+   1407ba4c5:	cc                   	int3
+   1407ba4c6:	cc                   	int3
+   1407ba4c7:	cc                   	int3
+   1407ba4c8:	cc                   	int3
+   1407ba4c9:	cc                   	int3
+   1407ba4ca:	cc                   	int3
+   1407ba4cb:	cc                   	int3
+   1407ba4cc:	cc                   	int3
+   1407ba4cd:	cc                   	int3
+   1407ba4ce:	cc                   	int3
+   1407ba4cf:	cc                   	int3
+   1407ba4d0:	44 8b 41 18          	mov    r8d,DWORD PTR [rcx+0x18]
+   1407ba4d4:	8b 4a 18             	mov    ecx,DWORD PTR [rdx+0x18]
+   1407ba4d7:	44 3b c1             	cmp    r8d,ecx
+   1407ba4da:	73 06                	jae    0x1407ba4e2
+   1407ba4dc:	b8 ff ff ff ff       	mov    eax,0xffffffff
+   1407ba4e1:	c3                   	ret
+   1407ba4e2:	33 c0                	xor    eax,eax
+   1407ba4e4:	44 3b c1             	cmp    r8d,ecx
+   1407ba4e7:	0f 97 c0             	seta   al
+   1407ba4ea:	c3                   	ret
+   1407ba4eb:	cc                   	int3
+   1407ba4ec:	cc                   	int3
+   1407ba4ed:	cc                   	int3
+   1407ba4ee:	cc                   	int3
+   1407ba4ef:	cc                   	int3
+   1407ba4f0:	cc                   	int3
+   1407ba4f1:	cc                   	int3
+   1407ba4f2:	cc                   	int3
+   1407ba4f3:	cc                   	int3
+   1407ba4f4:	cc                   	int3
+   1407ba4f5:	cc                   	int3
+   1407ba4f6:	cc                   	int3
+   1407ba4f7:	cc                   	int3
+   1407ba4f8:	cc                   	int3
+   1407ba4f9:	cc                   	int3
+   1407ba4fa:	cc                   	int3
+   1407ba4fb:	cc                   	int3
+   1407ba4fc:	cc                   	int3
+   1407ba4fd:	cc                   	int3
+   1407ba4fe:	cc                   	int3
+   1407ba4ff:	cc                   	int3
+   1407ba500:	8b 81 70 02 00 00    	mov    eax,DWORD PTR [rcx+0x270]
+   1407ba506:	c1 e8 16             	shr    eax,0x16
+   1407ba509:	f6 d0                	not    al
+   1407ba50b:	24 01                	and    al,0x1
+   1407ba50d:	88 02                	mov    BYTE PTR [rdx],al
+   1407ba50f:	c3                   	ret
+   1407ba510:	cc                   	int3
+   1407ba511:	cc                   	int3
+   1407ba512:	cc                   	int3
+   1407ba513:	cc                   	int3
+   1407ba514:	cc                   	int3
+   1407ba515:	cc                   	int3
+   1407ba516:	cc                   	int3
+   1407ba517:	cc                   	int3
+   1407ba518:	cc                   	int3
+   1407ba519:	cc                   	int3
+   1407ba51a:	cc                   	int3
+   1407ba51b:	cc                   	int3
+   1407ba51c:	cc                   	int3
+   1407ba51d:	cc                   	int3
+   1407ba51e:	cc                   	int3
+   1407ba51f:	cc                   	int3
+   1407ba520:	44 8b 81 70 02 00 00 	mov    r8d,DWORD PTR [rcx+0x270]
+   1407ba527:	41 8b c0             	mov    eax,r8d
+   1407ba52a:	0f ba e8 16          	bts    eax,0x16
+   1407ba52e:	41 0f ba f0 16       	btr    r8d,0x16
+   1407ba533:	84 d2                	test   dl,dl
+   1407ba535:	44 0f 44 c0          	cmove  r8d,eax
+   1407ba539:	44 89 81 70 02 00 00 	mov    DWORD PTR [rcx+0x270],r8d
+   1407ba540:	c3                   	ret
+   1407ba541:	cc                   	int3
+   1407ba542:	cc                   	int3
+   1407ba543:	cc                   	int3
+   1407ba544:	cc                   	int3
+   1407ba545:	cc                   	int3
+   1407ba546:	cc                   	int3
+   1407ba547:	cc                   	int3
+   1407ba548:	cc                   	int3
+   1407ba549:	cc                   	int3
+   1407ba54a:	cc                   	int3
+   1407ba54b:	cc                   	int3
+   1407ba54c:	cc                   	int3
+   1407ba54d:	cc                   	int3
+   1407ba54e:	cc                   	int3
+   1407ba54f:	cc                   	int3
+   1407ba550:	48 8d 05 39 d5 63 00 	lea    rax,[rip+0x63d539]        # 0x140df7a90
+   1407ba557:	48 85 c9             	test   rcx,rcx
+   1407ba55a:	74 04                	je     0x1407ba560
+   1407ba55c:	48 8b 41 38          	mov    rax,QWORD PTR [rcx+0x38]
+
+=== first_registration_caller 0x1407B98D0-0x1407B9A30 ===
+
+G:\SteamLibrary\steamapps\common\GodOfWar\GoW.exe:     file format pei-x86-64
+
+
+Disassembly of section .text:
+
+00000001407b98d0 <.text+0x7b88d0>:
+   1407b98d0:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+   1407b98d3:	b9 06 00 00 00       	mov    ecx,0x6
+   1407b98d8:	48 8b 50 08          	mov    rdx,QWORD PTR [rax+0x8]
+   1407b98dc:	48 85 d2             	test   rdx,rdx
+   1407b98df:	48 8d 42 0e          	lea    rax,[rdx+0xe]
+   1407b98e3:	48 0f 44 c1          	cmove  rax,rcx
+   1407b98e7:	0f b7 08             	movzx  ecx,WORD PTR [rax]
+   1407b98ea:	48 8b 05 e7 1c a8 00 	mov    rax,QWORD PTR [rip+0xa81ce7]        # 0x14123b5d8
+   1407b98f1:	48 8b 8c c8 30 33 00 	mov    rcx,QWORD PTR [rax+rcx*8+0x3330]
+   1407b98f8:	00 
+   1407b98f9:	48 8b 41 40          	mov    rax,QWORD PTR [rcx+0x40]
+   1407b98fd:	8b 88 3c 0c 00 00    	mov    ecx,DWORD PTR [rax+0xc3c]
+   1407b9903:	41 89 08             	mov    DWORD PTR [r8],ecx
+   1407b9906:	85 c9                	test   ecx,ecx
+   1407b9908:	78 03                	js     0x1407b990d
+   1407b990a:	33 c0                	xor    eax,eax
+   1407b990c:	c3                   	ret
+   1407b990d:	b8 01 00 00 00       	mov    eax,0x1
+   1407b9912:	c3                   	ret
+   1407b9913:	cc                   	int3
+   1407b9914:	cc                   	int3
+   1407b9915:	cc                   	int3
+   1407b9916:	cc                   	int3
+   1407b9917:	cc                   	int3
+   1407b9918:	cc                   	int3
+   1407b9919:	cc                   	int3
+   1407b991a:	cc                   	int3
+   1407b991b:	cc                   	int3
+   1407b991c:	cc                   	int3
+   1407b991d:	cc                   	int3
+   1407b991e:	cc                   	int3
+   1407b991f:	cc                   	int3
+   1407b9920:	4c 8b dc             	mov    r11,rsp
+   1407b9923:	49 89 6b 10          	mov    QWORD PTR [r11+0x10],rbp
+   1407b9927:	49 89 73 18          	mov    QWORD PTR [r11+0x18],rsi
+   1407b992b:	57                   	push   rdi
+   1407b992c:	48 83 ec 50          	sub    rsp,0x50
+   1407b9930:	33 ed                	xor    ebp,ebp
+   1407b9932:	45 89 43 f0          	mov    DWORD PTR [r11-0x10],r8d
+   1407b9936:	49 8b f9             	mov    rdi,r9
+   1407b9939:	49 89 6b d8          	mov    QWORD PTR [r11-0x28],rbp
+   1407b993d:	48 8b f2             	mov    rsi,rdx
+   1407b9940:	49 89 6b e0          	mov    QWORD PTR [r11-0x20],rbp
+   1407b9944:	48 8d 05 85 0b 00 00 	lea    rax,[rip+0xb85]        # 0x1407ba4d0
+   1407b994b:	49 89 6b e8          	mov    QWORD PTR [r11-0x18],rbp
+   1407b994f:	44 8d 4d 20          	lea    r9d,[rbp+0x20]
+   1407b9953:	49 89 43 c8          	mov    QWORD PTR [r11-0x38],rax
+   1407b9957:	41 b8 35 01 00 00    	mov    r8d,0x135
+   1407b995d:	48 8d 15 9c 09 a1 00 	lea    rdx,[rip+0xa1099c]        # 0x1411ca300
+   1407b9964:	49 8d 4b d8          	lea    rcx,[r11-0x28]
+   1407b9968:	ff 15 ea f6 58 00    	call   QWORD PTR [rip+0x58f6ea]        # 0x140d49058
+   1407b996e:	4c 8b c0             	mov    r8,rax
+   1407b9971:	48 85 c0             	test   rax,rax
+   1407b9974:	75 13                	jne    0x1407b9989
+   1407b9976:	8d 45 08             	lea    eax,[rbp+0x8]
+   1407b9979:	48 8b 6c 24 68       	mov    rbp,QWORD PTR [rsp+0x68]
+   1407b997e:	48 8b 74 24 70       	mov    rsi,QWORD PTR [rsp+0x70]
+   1407b9983:	48 83 c4 50          	add    rsp,0x50
+   1407b9987:	5f                   	pop    rdi
+   1407b9988:	c3                   	ret
+   1407b9989:	ff 8e 78 02 00 00    	dec    DWORD PTR [rsi+0x278]
+   1407b998f:	48 8b d7             	mov    rdx,rdi
+   1407b9992:	8b 86 78 02 00 00    	mov    eax,DWORD PTR [rsi+0x278]
+   1407b9998:	48 8b ce             	mov    rcx,rsi
+   1407b999b:	48 89 5c 24 60       	mov    QWORD PTR [rsp+0x60],rbx
+   1407b99a0:	8b 5c c6 38          	mov    ebx,DWORD PTR [rsi+rax*8+0x38]
+   1407b99a4:	89 9e 7c 02 00 00    	mov    DWORD PTR [rsi+0x27c],ebx
+   1407b99aa:	48 89 2f             	mov    QWORD PTR [rdi],rbp
+   1407b99ad:	41 ff 50 08          	call   QWORD PTR [r8+0x8]
+   1407b99b1:	8b e8                	mov    ebp,eax
+   1407b99b3:	85 db                	test   ebx,ebx
+   1407b99b5:	74 56                	je     0x1407b9a0d
+   1407b99b7:	66 0f 1f 84 00 00 00 	nop    WORD PTR [rax+rax*1+0x0]
+   1407b99be:	00 00 
+   1407b99c0:	8b 8e 78 02 00 00    	mov    ecx,DWORD PTR [rsi+0x278]
+   1407b99c6:	ff cb                	dec    ebx
+   1407b99c8:	ff c9                	dec    ecx
+   1407b99ca:	80 bc 31 38 02 00 00 	cmp    BYTE PTR [rcx+rsi*1+0x238],0x3
+   1407b99d1:	03 
+   1407b99d2:	89 8e 78 02 00 00    	mov    DWORD PTR [rsi+0x278],ecx
+   1407b99d8:	75 2f                	jne    0x1407b9a09
+   1407b99da:	48 8b 7c ce 38       	mov    rdi,QWORD PTR [rsi+rcx*8+0x38]
+   1407b99df:	48 8b 05 f2 be b0 01 	mov    rax,QWORD PTR [rip+0x1b0bef2]        # 0x1422c58d8
+   1407b99e6:	48 8b d7             	mov    rdx,rdi
+   1407b99e9:	48 8b c8             	mov    rcx,rax
+   1407b99ec:	ff 50 78             	call   QWORD PTR [rax+0x78]
+   1407b99ef:	84 c0                	test   al,al
+   1407b99f1:	74 16                	je     0x1407b9a09
+   1407b99f3:	80 47 ff ff          	add    BYTE PTR [rdi-0x1],0xff
+   1407b99f7:	48 8d 57 ff          	lea    rdx,[rdi-0x1]
+   1407b99fb:	75 0c                	jne    0x1407b9a09
+   1407b99fd:	48 8b 0d d4 be b0 01 	mov    rcx,QWORD PTR [rip+0x1b0bed4]        # 0x1422c58d8
+   1407b9a04:	e8 87 1c c5 ff       	call   0x14040b690
+   1407b9a09:	85 db                	test   ebx,ebx
+   1407b9a0b:	75 b3                	jne    0x1407b99c0
+   1407b9a0d:	48 8b 5c 24 60       	mov    rbx,QWORD PTR [rsp+0x60]
+   1407b9a12:	8b c5                	mov    eax,ebp
+   1407b9a14:	48 8b 6c 24 68       	mov    rbp,QWORD PTR [rsp+0x68]
+   1407b9a19:	48 8b 74 24 70       	mov    rsi,QWORD PTR [rsp+0x70]
+   1407b9a1e:	48 83 c4 50          	add    rsp,0x50
+   1407b9a22:	5f                   	pop    rdi
+   1407b9a23:	c3                   	ret
+   1407b9a24:	cc                   	int3
+   1407b9a25:	cc                   	int3
+   1407b9a26:	cc                   	int3
+   1407b9a27:	cc                   	int3
+   1407b9a28:	cc                   	int3
+   1407b9a29:	cc                   	int3
+   1407b9a2a:	cc                   	int3
+   1407b9a2b:	cc                   	int3
+   1407b9a2c:	cc                   	int3
+   1407b9a2d:	cc                   	int3
+   1407b9a2e:	cc                   	int3
+   1407b9a2f:	cc                   	int3
+
+=== startup_registration_caller 0x1407BE560-0x1407BE730 ===
+
+G:\SteamLibrary\steamapps\common\GodOfWar\GoW.exe:     file format pei-x86-64
+
+
+Disassembly of section .text:
+
+00000001407be560 <.text+0x7bd560>:
+   1407be560:	eb 13                	jmp    0x1407be575
+   1407be562:	48 63 fb             	movsxd rdi,ebx
+   1407be565:	48 c1 e7 05          	shl    rdi,0x5
+   1407be569:	49 03 ff             	add    rdi,r15
+   1407be56c:	48 85 ff             	test   rdi,rdi
+   1407be56f:	0f 85 7b ff ff ff    	jne    0x1407be4f0
+   1407be575:	48 8b 15 3c cc 86 04 	mov    rdx,QWORD PTR [rip+0x486cc3c]        # 0x14502b1b8
+   1407be57c:	48 8b cd             	mov    rcx,rbp
+   1407be57f:	ff 55 78             	call   QWORD PTR [rbp+0x78]
+   1407be582:	4c 8b 7c 24 20       	mov    r15,QWORD PTR [rsp+0x20]
+   1407be587:	4c 8b 74 24 28       	mov    r14,QWORD PTR [rsp+0x28]
+   1407be58c:	48 8b 7c 24 40       	mov    rdi,QWORD PTR [rsp+0x40]
+   1407be591:	48 8b 74 24 60       	mov    rsi,QWORD PTR [rsp+0x60]
+   1407be596:	48 8b 6c 24 58       	mov    rbp,QWORD PTR [rsp+0x58]
+   1407be59b:	48 8b 5c 24 50       	mov    rbx,QWORD PTR [rsp+0x50]
+   1407be5a0:	84 c0                	test   al,al
+   1407be5a2:	74 09                	je     0x1407be5ad
+   1407be5a4:	48 83 c4 48          	add    rsp,0x48
+   1407be5a8:	e9 33 f6 ff ff       	jmp    0x1407bdbe0
+   1407be5ad:	48 83 c4 48          	add    rsp,0x48
+   1407be5b1:	c3                   	ret
+   1407be5b2:	cc                   	int3
+   1407be5b3:	cc                   	int3
+   1407be5b4:	cc                   	int3
+   1407be5b5:	cc                   	int3
+   1407be5b6:	cc                   	int3
+   1407be5b7:	cc                   	int3
+   1407be5b8:	cc                   	int3
+   1407be5b9:	cc                   	int3
+   1407be5ba:	cc                   	int3
+   1407be5bb:	cc                   	int3
+   1407be5bc:	cc                   	int3
+   1407be5bd:	cc                   	int3
+   1407be5be:	cc                   	int3
+   1407be5bf:	cc                   	int3
+   1407be5c0:	40 53                	rex push rbx
+   1407be5c2:	56                   	push   rsi
+   1407be5c3:	57                   	push   rdi
+   1407be5c4:	41 54                	push   r12
+   1407be5c6:	41 57                	push   r15
+   1407be5c8:	48 83 ec 30          	sub    rsp,0x30
+   1407be5cc:	45 33 ff             	xor    r15d,r15d
+   1407be5cf:	84 c9                	test   cl,cl
+   1407be5d1:	0f 84 0a 01 00 00    	je     0x1407be6e1
+   1407be5d7:	48 8d 05 da fd 9f 00 	lea    rax,[rip+0x9ffdda]        # 0x1411be3b8
+   1407be5de:	ba 35 01 00 00       	mov    edx,0x135
+   1407be5e3:	4c 8d 0d e6 be ff ff 	lea    r9,[rip+0xffffffffffffbee6]        # 0x1407ba4d0
+   1407be5ea:	48 89 05 6f f3 ae 01 	mov    QWORD PTR [rip+0x1aef36f],rax        # 0x1422ad960
+   1407be5f1:	45 8d 47 20          	lea    r8d,[r15+0x20]
+   1407be5f5:	48 89 05 f4 9b 82 04 	mov    QWORD PTR [rip+0x4829bf4],rax        # 0x144fe81f0
+   1407be5fc:	48 8d 0d fd bc a0 00 	lea    rcx,[rip+0xa0bcfd]        # 0x1411ca300
+   1407be603:	ff 15 57 aa 58 00    	call   QWORD PTR [rip+0x58aa57]        # 0x140d49060
+   1407be609:	4c 8d 0d 90 be ff ff 	lea    r9,[rip+0xffffffffffffbe90]        # 0x1407ba4a0
+   1407be610:	41 8d 57 56          	lea    edx,[r15+0x56]
+   1407be614:	45 8d 47 20          	lea    r8d,[r15+0x20]
+   1407be618:	48 8d 0d 81 e3 a0 00 	lea    rcx,[rip+0xa0e381]        # 0x1411cc9a0
+   1407be61f:	ff 15 3b aa 58 00    	call   QWORD PTR [rip+0x58aa3b]        # 0x140d49060
+   1407be625:	65 48 8b 04 25 58 00 	mov    rax,QWORD PTR gs:0x58
+   1407be62c:	00 00 
+   1407be62e:	48 8b 10             	mov    rdx,QWORD PTR [rax]
+   1407be631:	b8 0c 00 00 00       	mov    eax,0xc
+   1407be636:	48 63 04 10          	movsxd rax,DWORD PTR [rax+rdx*1]
+   1407be63a:	85 c0                	test   eax,eax
+   1407be63c:	79 05                	jns    0x1407be643
+   1407be63e:	41 8b ff             	mov    edi,r15d
+   1407be641:	eb 0f                	jmp    0x1407be652
+   1407be643:	48 8b c8             	mov    rcx,rax
+   1407be646:	b8 f0 00 00 00       	mov    eax,0xf0
+   1407be64b:	48 03 c2             	add    rax,rdx
+   1407be64e:	48 8b 3c c8          	mov    rdi,QWORD PTR [rax+rcx*8]
+   1407be652:	be 08 00 00 00       	mov    esi,0x8
+   1407be657:	ba 48 e0 00 00       	mov    edx,0xe048
+   1407be65c:	44 8b c6             	mov    r8d,esi
+   1407be65f:	48 8b cf             	mov    rcx,rdi
+   1407be662:	e8 a9 d8 c4 ff       	call   0x14040bf10
+   1407be667:	48 8b d8             	mov    rbx,rax
+   1407be66a:	ff 15 d8 9d 58 00    	call   QWORD PTR [rip+0x589dd8]        # 0x140d48448
+   1407be670:	4c 89 7b 10          	mov    QWORD PTR [rbx+0x10],r15
+   1407be674:	ba ff 01 00 00       	mov    edx,0x1ff
+   1407be679:	8b c8                	mov    ecx,eax
+   1407be67b:	48 8b c3             	mov    rax,rbx
+   1407be67e:	48 89 0b             	mov    QWORD PTR [rbx],rcx
+   1407be681:	48 f7 d8             	neg    rax
+   1407be684:	83 e0 07             	and    eax,0x7
+   1407be687:	c7 43 08 18 28 18 27 	mov    DWORD PTR [rbx+0x8],0x27182818
+   1407be68e:	48 8d 4b 40          	lea    rcx,[rbx+0x40]
+   1407be692:	4c 89 7b 18          	mov    QWORD PTR [rbx+0x18],r15
+   1407be696:	48 03 c8             	add    rcx,rax
+   1407be699:	48 89 7b 20          	mov    QWORD PTR [rbx+0x20],rdi
+   1407be69d:	c7 43 30 70 00 00 00 	mov    DWORD PTR [rbx+0x30],0x70
+   1407be6a4:	89 73 34             	mov    DWORD PTR [rbx+0x34],esi
+   1407be6a7:	c7 43 0c 00 e0 00 00 	mov    DWORD PTR [rbx+0xc],0xe000
+   1407be6ae:	66 44 89 7b 38       	mov    WORD PTR [rbx+0x38],r15w
+   1407be6b3:	44 89 7b 28          	mov    DWORD PTR [rbx+0x28],r15d
+   1407be6b7:	48 89 4b 10          	mov    QWORD PTR [rbx+0x10],rcx
+   1407be6bb:	0f 1f 44 00 00       	nop    DWORD PTR [rax+rax*1+0x0]
+   1407be6c0:	48 8d 41 70          	lea    rax,[rcx+0x70]
+   1407be6c4:	48 89 01             	mov    QWORD PTR [rcx],rax
+   1407be6c7:	48 8b c8             	mov    rcx,rax
+   1407be6ca:	48 83 ea 01          	sub    rdx,0x1
+   1407be6ce:	75 f0                	jne    0x1407be6c0
+   1407be6d0:	4c 89 38             	mov    QWORD PTR [rax],r15
+   1407be6d3:	48 89 1d ae ce b2 01 	mov    QWORD PTR [rip+0x1b2ceae],rbx        # 0x1422eb588
+   1407be6da:	44 88 3d 95 b6 b2 01 	mov    BYTE PTR [rip+0x1b2b695],r15b        # 0x1422e9d76
+   1407be6e1:	49 8b c7             	mov    rax,r15
+   1407be6e4:	4c 8d 25 15 19 84 ff 	lea    r12,[rip+0xffffffffff841915]        # 0x140000000
+   1407be6eb:	48 83 f8 64          	cmp    rax,0x64
+   1407be6ef:	0f 83 99 03 00 00    	jae    0x1407bea8e
+   1407be6f5:	66 46 89 bc 20 90 ae 	mov    WORD PTR [rax+r12*1+0x22eae90],r15w
+   1407be6fc:	2e 02 
+   1407be6fe:	48 83 c0 02          	add    rax,0x2
+   1407be702:	48 83 f8 64          	cmp    rax,0x64
+   1407be706:	7c e7                	jl     0x1407be6ef
+   1407be708:	0f 57 c0             	xorps  xmm0,xmm0
+   1407be70b:	4c 89 74 24 20       	mov    QWORD PTR [rsp+0x20],r14
+   1407be710:	0f 57 d2             	xorps  xmm2,xmm2
+   1407be713:	f3 0f 11 05 25 00 af 	movss  DWORD PTR [rip+0x1af0025],xmm0        # 0x1422ae740
+   1407be71a:	01 
+   1407be71b:	0f 57 c0             	xorps  xmm0,xmm0
+   1407be71e:	f3 0f 11 15 26 00 af 	movss  DWORD PTR [rip+0x1af0026],xmm2        # 0x1422ae74c
+   1407be725:	01 
+   1407be726:	0f 57 c9             	xorps  xmm1,xmm1
+   1407be729:	0f c6 c2 aa          	shufps xmm0,xmm2,0xaa
+   1407be72d:	0f                   	.byte 0xf
+   1407be72e:	c6                   	(bad)
+   1407be72f:	ca                   	.byte 0xca
+
+=== referenced printable strings ===
+va=0x140DF7A90 section=.rdata file=0xDF6490 string=<null>
+
+=== import/IAT context ===
+Entry 5 000000000516f000 0002fbbc Base Relocation Directory [.reloc]
+Entry 6 0000000000f10060 00000054 Debug Directory
+Entry 7 0000000000000000 00000000 Description Directory
+Entry 8 0000000000000000 00000000 Special Directory
+Entry 9 0000000000f101c0 00000028 Thread Storage Directory [.tls]
+
+	00d48b38  <none>  001a  realloc
+
+ 01055058	010562a8 00000000 00000000 010570ec 00d49058
+
+	DLL Name: api-ms-win-crt-utility-l1-1-0.dll
+
+	DLL Name: api-ms-win-crt-utility-l1-1-0.dll
+	vma:     Ordinal  Hint  Member-Name  Bound-To
+	00d49058  <none>  0010  bsearch
+	00d49060  <none>  0019  qsort
+	00d49068  <none>  001b  rand
+
+	vma:     Ordinal  Hint  Member-Name  Bound-To
+	00d49058  <none>  0010  bsearch
+	00d49060  <none>  0019  qsort
+	00d49068  <none>  001b  rand
+	00d49070  <none>  001d  srand
+
+[Ordinal/Name Pointer] Table -- Ordinal Base 1
+	          Ordinal   Hint Name
+	[   0] +base[   1]  0000 ?ffxFsr2ContextCreate@@YAHPEAUFfxFsr2Context@@PEBUFfxFsr2ContextDescription@@@Z
+	[   1] +base[   2]  0001 ?ffxFsr2ContextDestroy@@YAHPEAUFfxFsr2Context@@@Z
+	[   2] +base[   3]  0002 ?ffxFsr2ContextDispatch@@YAHPEAUFfxFsr2Context@@PEBUFfxFsr2DispatchDescription@@@Z
+
+	[   0] +base[   1]  0000 ?ffxFsr2ContextCreate@@YAHPEAUFfxFsr2Context@@PEBUFfxFsr2ContextDescription@@@Z
+	[   1] +base[   2]  0001 ?ffxFsr2ContextDestroy@@YAHPEAUFfxFsr2Context@@@Z
+	[   2] +base[   3]  0002 ?ffxFsr2ContextDispatch@@YAHPEAUFfxFsr2Context@@PEBUFfxFsr2DispatchDescription@@@Z
+	[   3] +base[   4]  0003 ?ffxFsr2ContextGetUavResource@@YA?AUFfxResource@@PEAUFfxFsr2Context@@I@Z
+	[   4] +base[   5]  0004 ?ffxFsr2GetJitterOffset@@YAHPEAM0HH@Z
+
+	[  10] +base[  11]  000a NVSDK_NGX_D3D11_CreateFeature
+	[  11] +base[  12]  000b NVSDK_NGX_D3D11_DestroyParameters
+	[  12] +base[  13]  000c NVSDK_NGX_D3D11_EvaluateFeature
+	[  13] +base[  14]  000d NVSDK_NGX_D3D11_EvaluateFeature_C
+	[  14] +base[  15]  000e NVSDK_NGX_D3D11_GetCapabilityParameters
+
+	[  11] +base[  12]  000b NVSDK_NGX_D3D11_DestroyParameters
+	[  12] +base[  13]  000c NVSDK_NGX_D3D11_EvaluateFeature
+	[  13] +base[  14]  000d NVSDK_NGX_D3D11_EvaluateFeature_C
+	[  14] +base[  15]  000e NVSDK_NGX_D3D11_GetCapabilityParameters
+	[  15] +base[  16]  000f NVSDK_NGX_D3D11_GetParameters
+
+=== shipped Lua representative call forms ===
+lua_files_scanned=499
+mods\lua\gameart\ui\scripts\hud\mainhud.lua:562 expr=StartTimer text=self:StartTimer("TimerToUpdateCompass", 0.1, function()
+mods\lua\gameart\ui\scripts\hud\mainhud.lua:592 expr=StartTimer text=self:StartTimer("TimerToTurnOffCompass", self.compassTimerTurnOffDelay, function()
+mods\lua\gameart\ui\scripts\hud\mainhud.lua:660 expr=StartTimer text=self:StartTimer("TimerToTurnOffCombatHUD", self.combatHUDTurnOffDelay, function()
+mods\lua\gameart\ui\scripts\hud\mainhud.lua:814 expr=StartTimer text=self:StartTimer("MaxHealthRageHelper", 5, function()
+mods\lua\gameart\ui\scripts\inworldmenu\mapmenu.lua:2813 expr=StartTimer text=self:StartTimer("FogShowDelayTimer", 0.25, function()
+mods\lua_source\gameart\scripts\characters\heroa00\perks.lua:1030 expr=engine.Hash text=if runeInfo and (runeInfo.Pickup and runeInfo.Pickup == engine.Hash("KratosArmorTrinket_Gauntlet") or runeInfo.Pickup == engine.Hash("KratosArmorTrinket_Gauntlet_NGP")) then
+mods\lua_source\gameart\scripts\characters\heroa00\perks.lua:1030 expr=engine.Hash text=if runeInfo and (runeInfo.Pickup and runeInfo.Pickup == engine.Hash("KratosArmorTrinket_Gauntlet") or runeInfo.Pickup == engine.Hash("KratosArmorTrinket_Gauntlet_NGP")) then
+mods\lua_source\gameart\scripts\levels\gameplaymodules\ambientwildlife\ambientwildlifeglobal.lua:97 expr=Random text=local randomRange = Random(luaTable.minRange, luaTable.maxRange)
+mods\lua_source\gameart\scripts\levels\gameplaymodules\ambientwildlife\ambientwildlifeglobal.lua:98 expr=Random text=local randomAngle = Random(-angle, angle)
+mods\lua_source\gameart\scripts\levels\gameplaymodules\ambientwildlife\ambientwildlifeglobal.lua:147 expr=Random text=return engine.Vector.New(0, 0, -1):RotateXZ(Random(360))
+mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\travel\fasttravelcontroller.lua:475 expr=engine.Hash text=uiCalls.UI_Event_Open_Map_Menu_FastTravel("", engine.Hash(mapMarkerID))
+mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\travel\fasttravelcontroller.lua:478 expr=engine.Hash text=uiCalls.UI_Event_Open_Map_Menu_FastTravel("", engine.Hash("CALT_120_MUSP_FT"))
+mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\travel\fasttravelcontroller.lua:480 expr=engine.Hash text=uiCalls.UI_Event_Open_Map_Menu_FastTravel("", engine.Hash("CALT_120_ALF_FT"))
+mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\travel\fasttravelcontroller.lua:482 expr=engine.Hash text=uiCalls.UI_Event_Open_Map_Menu_FastTravel("", engine.Hash("CALT_120_HELHEIM_FT"))
+mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\travel\fasttravelcontroller.lua:484 expr=engine.Hash text=uiCalls.UI_Event_Open_Map_Menu_FastTravel("", engine.Hash("CALT_120_NID_FT"))
+mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\travel\fasttravelcontroller.lua:486 expr=engine.Hash text=uiCalls.UI_Event_Open_Map_Menu_FastTravel("", engine.Hash(mapMarkerID))
+mods\lua_source\gameart\scripts\levels\gameplaymodules\interactive\travel\fasttravelcontroller.lua:553 expr=engine.Hash text=local finaleComparisonHash = engine.Hash(finaleMarkerName)
+mods\lua_source\gameart\scripts\levels\gameplaymodules\narrative\_scenetools\youshallnotpass.lua:24 expr=Hash text=Please remove the 'Hash('SpeedControlZone')' entity marker from these zones,
+mods\lua_source\gameart\scripts\libraries\design\encounter.lua:276 expr=engine.Hash text=myEncounter.hashid = engine.Hash(Name)
+mods\lua_source\gameart\scripts\libraries\design\encounter.lua:379 expr=engine.Hash text=table.insert(myEncounter.mustHaveCompletedList, engine.Hash(argsTable.MustHaveCompletedList[mhi]))
+mods\lua_source\gameart\scripts\libraries\design\encounter.lua:1546 expr=engine.Hash text=table.insert(endedParam.dependents, engine.Hash(""))
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:45 expr=engine.Hash text=[tostring(engine.Hash(REGION_FOOTHILLS))] = REGION_FOOTHILLS,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:46 expr=engine.Hash text=[tostring(engine.Hash(REGION_FOREST))] = REGION_FOREST,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:47 expr=engine.Hash text=[tostring(engine.Hash(REGION_CALDERATEMPLE))] = REGION_CALDERATEMPLE,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:48 expr=engine.Hash text=[tostring(engine.Hash(REGION_CALDERASHORES))] = REGION_CALDERASHORES,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:49 expr=engine.Hash text=[tostring(engine.Hash(REGION_CALDERASHORESA))] = REGION_CALDERASHORESA,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:50 expr=engine.Hash text=[tostring(engine.Hash(REGION_CALDERASHORESB))] = REGION_CALDERASHORESB,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:51 expr=engine.Hash text=[tostring(engine.Hash(REGION_CALDERASHORESC))] = REGION_CALDERASHORESC,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:52 expr=engine.Hash text=[tostring(engine.Hash(REGION_CALDERASHORESD))] = REGION_CALDERASHORESD,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:53 expr=engine.Hash text=[tostring(engine.Hash(REGION_CALDERASHORESE))] = REGION_CALDERASHORESE,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:54 expr=engine.Hash text=[tostring(engine.Hash(REGION_CALDERASHORESF))] = REGION_CALDERASHORESF,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:55 expr=engine.Hash text=[tostring(engine.Hash(REGION_CALDERASHORESG))] = REGION_CALDERASHORESG,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:56 expr=engine.Hash text=[tostring(engine.Hash(REGION_CALDERASHORESH))] = REGION_CALDERASHORESH,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:57 expr=engine.Hash text=[tostring(engine.Hash(REGION_STONEMASON))] = REGION_STONEMASON,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:58 expr=engine.Hash text=[tostring(engine.Hash(REGION_RIVERPASS))] = REGION_RIVERPASS,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:59 expr=engine.Hash text=[tostring(engine.Hash(REGION_PEAKSPASS))] = REGION_PEAKSPASS,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:60 expr=engine.Hash text=[tostring(engine.Hash(REGION_BEACHCAVE))] = REGION_BEACHCAVE,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:61 expr=engine.Hash text=[tostring(engine.Hash(REGION_BEACHTOWER))] = REGION_BEACHTOWER,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:62 expr=engine.Hash text=[tostring(engine.Hash(REGION_BEACHWATERFALL))] = REGION_BEACHWATERFALL,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:63 expr=engine.Hash text=[tostring(engine.Hash(REGION_BEACHSHIPWRECK))] = REGION_BEACHSHIPWRECK,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:64 expr=engine.Hash text=[tostring(engine.Hash(REGION_BEACHRUINS))] = REGION_BEACHRUINS,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:65 expr=engine.Hash text=[tostring(engine.Hash(REGION_BEACHMAZE))] = REGION_BEACHMAZE,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:66 expr=engine.Hash text=[tostring(engine.Hash(REGION_FORESTDUNGEON))] = REGION_FORESTDUNGEON,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:67 expr=engine.Hash text=[tostring(engine.Hash(REGION_HULDRAMINE01))] = REGION_HULDRAMINE01,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:68 expr=engine.Hash text=[tostring(engine.Hash(REGION_HULDRAMINE02))] = REGION_HULDRAMINE02,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:69 expr=engine.Hash text=[tostring(engine.Hash(REGION_HULDRASTRONGHOLD))] = REGION_HULDRASTRONGHOLD,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:70 expr=engine.Hash text=[tostring(engine.Hash(REGION_HTTK))] = REGION_HTTK,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:71 expr=engine.Hash text=[tostring(engine.Hash(REGION_ISLANDARCH))] = REGION_ISLANDARCH,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:72 expr=engine.Hash text=[tostring(engine.Hash(REGION_ISLANDCLIMB))] = REGION_ISLANDCLIMB,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:73 expr=engine.Hash text=[tostring(engine.Hash(REGION_ISLANDSHIPWRECK))] = REGION_ISLANDSHIPWRECK,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:74 expr=engine.Hash text=[tostring(engine.Hash(REGION_MASONTRAIL))] = REGION_MASONTRAIL,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:75 expr=engine.Hash text=[tostring(engine.Hash(REGION_HELHEIM))] = REGION_HELHEIM,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:76 expr=engine.Hash text=[tostring(engine.Hash(REGION_HELHEIMRETURN))] = REGION_HELHEIMRETURN,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:77 expr=engine.Hash text=[tostring(engine.Hash(REGION_LIGHTTEMPLE))] = REGION_LIGHTTEMPLE,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:78 expr=engine.Hash text=[tostring(engine.Hash(REGION_NIFLHEIMMAIN))] = REGION_NIFLHEIMMAIN,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:79 expr=engine.Hash text=[tostring(engine.Hash(REGION_MUSPELHEIM))] = REGION_MUSPELHEIM,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:80 expr=engine.Hash text=[tostring(engine.Hash(REGION_ALFHEIM))] = REGION_ALFHEIM,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:81 expr=engine.Hash text=[tostring(engine.Hash(REGION_VIKINGFUNERAL))] = REGION_VIKINGFUNERAL,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:82 expr=engine.Hash text=[tostring(engine.Hash(REGION_TYRSVAULT))] = REGION_TYRSVAULT,
+mods\lua_source\gameart\scripts\libraries\design\systemsdesignlibrary.lua:83 expr=engine.Hash text=[tostring(engine.Hash(REGION_THEHALLOFTYR))] = REGION_THEHALLOFTYR
+mods\lua_source\gameart\scripts\libraries\ui\fsm.lua:602 expr=StartTimer text=function UIState:StartTimer(name, duration, callback, ...)
+mods\lua_source\gameart\scripts\libraries\ui\fsm.lua:614 expr=StartTimer text=return self:StartTimer(name, duration, function(timer, ...)
+mods\lua_source\gameart\scripts\libraries\ui\fsm.lua:652 expr=QueryTimer text=function UIState:QueryTimer(name)
+mods\lua_source\gameart\scripts\lookat\lookatutil.lua:20 expr=engine.Hash text=targetTypeTable[typeName] = engine.Hash(typeName)
+mods\lua_source\gameart\ui\scripts\classes\log.lua:130 expr=StartTimer text=self._state:StartTimer(self._timerName, message:GetDisplayTime(consts.LOG_MODE_ANIM_IN), function()
+mods\lua_source\gameart\ui\scripts\classes\log.lua:143 expr=StartTimer text=self._state:StartTimer(self._timerName, animOutTime, function()
+mods\lua_source\gameart\ui\scripts\classes\log.lua:155 expr=StartTimer text=self._state:StartTimer(self._timerName, self._fadeOutTime, function()
+mods\lua_source\gameart\ui\scripts\classes\logmanager.lua:100 expr=StartTimer text=self._fsmState:StartTimer(self._timerID, self._timer, function()
+mods\lua_source\gameart\ui\scripts\classes\logmanager.lua:107 expr=StartTimer text=self._fsmState:StartTimer(self._unlockTimerID, self._unlockTimer, function()
+mods\lua_source\gameart\ui\scripts\classes\logtimer.lua:242 expr=StartTimer text=self._state:StartTimer(self._timerName, self._fadeOutTime, function()
+mods\lua_source\gameart\ui\scripts\classes\logtimer.lua:249 expr=StartTimer text=self._state:StartTimer(self._timerName, self._fadeOutTime, function()
+mods\lua_source\gameart\ui\scripts\classes\message.lua:263 expr=StartTimer text=self._state:StartTimer(self:GetTimerName(), self:GetDisplayTime(consts.LOG_MODE_HEADER), function()
+mods\lua_source\gameart\ui\scripts\classes\message.lua:283 expr=StartTimer text=self._state:StartTimer(self:GetTimerName(), self:GetDisplayTime(consts.LOG_MODE_BODY), function()
+mods\lua_source\gameart\ui\scripts\classes\messagerequest.lua:281 expr=StartTimer text=self._state:StartTimer(timerName, self._fadeInDelay, function()
+mods\lua_source\gameart\ui\scripts\classes\messagerow.lua:149 expr=StartTimer text=self._state:StartTimer(currMessage:GetTimerName(), oldDisplayTime, function()
+mods\lua_source\gameart\ui\scripts\classes\meter.lua:58 expr=engine.Hash text=local fillAnimNameHashString = tostring(engine.Hash(self._fillAnimName))
+mods\lua_source\gameart\ui\scripts\classes\meter.lua:64 expr=engine.Hash text=local flourishAnimNameHashString = tostring(engine.Hash(self._flourishAnimName))
+mods\lua_source\gameart\ui\scripts\classes\animation\animationmodule_kratos.lua:189 expr=StartTimer text=self:StartTimer(timerName, delay, callback)
+mods\lua_source\gameart\ui\scripts\classes\animation\animationmodule_kratos.lua:248 expr=StartTimer text=self:StartTimer("TransitionTimer", currAnimTime, function()
+mods\lua_source\gameart\ui\scripts\classes\animation\animationmodule_son.lua:138 expr=StartTimer text=self:StartTimer("TransitionTimer", currAnimTime, function()
+mods\lua_source\gameart\ui\scripts\classes\infocards\attributecard.lua:354 expr=StartTimer text=self._state:StartTimer(timerName, delay, function()
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:73 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_ALFHEIM))] = mapConsts.REGION_ALFHEIM,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:74 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_ALFHEIMB))] = mapConsts.REGION_ALFHEIMB,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:75 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_FOOTHILLS))] = mapConsts.REGION_FOOTHILLS,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:76 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_FOREST))] = mapConsts.REGION_FOREST,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:77 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_CALDERATEMPLE))] = mapConsts.REGION_CALDERATEMPLE,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:78 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_CALDERASHORES))] = mapConsts.REGION_CALDERASHORES,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:79 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_CALDERASHORESA))] = mapConsts.REGION_CALDERASHORESA,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:80 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_CALDERASHORESB))] = mapConsts.REGION_CALDERASHORESB,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:81 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_CALDERASHORESC))] = mapConsts.REGION_CALDERASHORESC,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:82 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_CALDERASHORESD))] = mapConsts.REGION_CALDERASHORESD,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:83 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_CALDERASHORESE))] = mapConsts.REGION_CALDERASHORESE,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:84 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_CALDERASHORESF))] = mapConsts.REGION_CALDERASHORESF,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:85 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_CALDERASHORESG))] = mapConsts.REGION_CALDERASHORESG,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:86 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_CALDERASHORESH))] = mapConsts.REGION_CALDERASHORESH,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:87 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_STONEMASON))] = mapConsts.REGION_STONEMASON,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:88 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_RIVERPASS))] = mapConsts.REGION_RIVERPASS,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:89 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_RIVERPASSB))] = mapConsts.REGION_RIVERPASSB,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:90 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_PEAKSPASS))] = mapConsts.REGION_PEAKSPASS,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:91 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_PEAKSPASSB))] = mapConsts.REGION_PEAKSPASSB,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:92 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_BEACHCAVE))] = mapConsts.REGION_BEACHCAVE,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:93 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_BEACHTOWER))] = mapConsts.REGION_BEACHTOWER,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:94 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_BEACHWATERFALL))] = mapConsts.REGION_BEACHWATERFALL,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:95 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_BEACHSHIPWRECK))] = mapConsts.REGION_BEACHSHIPWRECK,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:96 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_BEACHRUINS))] = mapConsts.REGION_BEACHRUINS,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:97 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_BEACHMAZE))] = mapConsts.REGION_BEACHMAZE,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:98 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_FORESTDUNGEON))] = mapConsts.REGION_FORESTDUNGEON,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:99 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_HULDRAMINE01))] = mapConsts.REGION_HULDRAMINE01,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:100 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_HULDRAMINE02))] = mapConsts.REGION_HULDRAMINE02,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:101 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_HULDRASTRONGHOLD))] = mapConsts.REGION_HULDRASTRONGHOLD,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:102 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_HTTK))] = mapConsts.REGION_HTTK,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:103 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_ISLANDARCH))] = mapConsts.REGION_ISLANDARCH,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:104 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_ISLANDCLIMB))] = mapConsts.REGION_ISLANDCLIMB,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:105 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_ISLANDSHIPWRECK))] = mapConsts.REGION_ISLANDSHIPWRECK,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:106 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_MASONTRAIL))] = mapConsts.REGION_MASONTRAIL,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:107 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_STONEMASONCONNECTOR))] = mapConsts.REGION_STONEMASONCONNECTOR,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:108 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_HELHEIM))] = mapConsts.REGION_HELHEIM,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:109 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_HELHEIMRETURN))] = mapConsts.REGION_HELHEIMRETURN,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:110 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_LIGHTTEMPLE))] = mapConsts.REGION_LIGHTTEMPLE,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:111 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_NIFLHEIMMAIN))] = mapConsts.REGION_NIFLHEIMMAIN,
+mods\lua_source\gameart\ui\scripts\consts\mapconsts.lua:112 expr=engine.Hash text=[tostring(engine.Hash(mapConsts.REGION_VIKINGFUNERAL))] = mapConsts.REGION_VIKINGFUNERAL
+mods\lua_source\gameart\ui\scripts\consts\pickupconsts.lua:391 expr=engine.Hash text=pickupConsts.PowerLevelHash = tostring(engine.Hash("PowerLevel"))
+mods\lua_source\gameart\ui\scripts\consts\skilltreeconsts.lua:222 expr=engine.Hash text=[tostring(engine.Hash("Damage"))] = lamsConsts.GemAttribute1,
+mods\lua_source\gameart\ui\scripts\consts\skilltreeconsts.lua:223 expr=engine.Hash text=[tostring(engine.Hash("Runic"))] = lamsConsts.GemAttribute2,
+mods\lua_source\gameart\ui\scripts\consts\skilltreeconsts.lua:224 expr=engine.Hash text=[tostring(engine.Hash("Stun"))] = lamsConsts.GemAttribute3,
+mods\lua_source\gameart\ui\scripts\consts\skilltreeconsts.lua:225 expr=engine.Hash text=[tostring(engine.Hash("Impact"))] = lamsConsts.GemAttribute4,
+mods\lua_source\gameart\ui\scripts\consts\skilltreeconsts.lua:226 expr=engine.Hash text=[tostring(engine.Hash("Range"))] = lamsConsts.GemAttribute5,
+mods\lua_source\gameart\ui\scripts\consts\skilltreeconsts.lua:227 expr=engine.Hash text=[tostring(engine.Hash("Frost"))] = lamsConsts.Frost,
+mods\lua_source\gameart\ui\scripts\consts\skilltreeconsts.lua:228 expr=engine.Hash text=[tostring(engine.Hash("Burn"))] = lamsConsts.Burn
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:54 expr=StartTimer text=self:StartTimer("MaxHealthRageDelayHelper", 0.3, function()
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:61 expr=StartTimer text=self:StartTimer("MaxHealthLoopSoundEndHelper", 1, function()
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:98 expr=engine.Hash text=IDHash = engine.Hash(hudConsts.METER_HEALTH),
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:220 expr=StartTimer text=self:StartTimer("UpdateDelay", 0, function()
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:265 expr=StartTimer text=self:StartTimer("MaxHealthRageDelayHelper", 0.3, function()
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:273 expr=StartTimer text=self:StartTimer("MaxRageLoopSoundEndHelper", 1, function()
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:312 expr=engine.Hash text=IDHash = engine.Hash(hudConsts.METER_BLOOD),
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:437 expr=StartTimer text=self:StartTimer("UpdateDelay", 0, function()
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:450 expr=StartTimer text=self:StartTimer("TimerUpdateDelay", 0, function()
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:460 expr=StartTimer text=self:StartTimer("TimerUpdateDelay", 0, function()
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:495 expr=engine.Hash text=local incapCtx = engine.Hash("INCAPACITATED")
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:616 expr=engine.Hash text=IDHash = engine.Hash(hudConsts.METER_ARROWS),
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:851 expr=engine.Hash text=local enemyHoldCtx = engine.Hash("SONREACT_ENEMYHOLD")
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:852 expr=engine.Hash text=local incapCtx = engine.Hash("INCAPACITATED")
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:942 expr=engine.Hash text=IDHash = engine.Hash("Focus"),
+mods\lua_source\gameart\ui\scripts\hud\combathud.lua:1002 expr=engine.Hash text=IDHash = engine.Hash(meterID),
+mods\lua_source\gameart\ui\scripts\hud\designermessages.lua:368 expr=StartTimer text=self:StartTimer("DesignerMessageInitializationTimer", 0.1, function()
+mods\lua_source\gameart\ui\scripts\hud\designermessages.lua:397 expr=StartTimer text=self:StartTimer("HideDecalTimer", 0.5, function()
+mods\lua_source\gameart\ui\scripts\hud\designermessages.lua:577 expr=StartTimer text=self:StartTimer("MessagePreparedTimer", tickTime, function()
+mods\lua_source\gameart\ui\scripts\hud\designermessages.lua:604 expr=StartTimer text=self:StartTimer("MessageDelayTimer", messageDelay, function()
+mods\lua_source\gameart\ui\scripts\hud\designermessages.lua:618 expr=StartTimer text=self:StartTimer("AdvanceHelperTimer", fullDelayTime, function()
+mods\lua_source\gameart\ui\scripts\hud\designermessages.lua:647 expr=StartTimer text=self:StartTimer("DMTimer", exitDelay, function()
+mods\lua_source\gameart\ui\scripts\hud\designermessages.lua:1086 expr=StartTimer text=self:StartTimer("__ResourceInitHelper__" .. name, 0.5, function()
+mods\lua_source\gameart\ui\scripts\hud\dialogmessage.lua:300 expr=StartTimer text=self:StartTimer("HoldExit", 0.1, function()
+mods\lua_source\gameart\ui\scripts\hud\dialogmessage.lua:407 expr=StartTimer text=self:StartTimer("DelayButtons", delay, function()
+mods\lua_source\gameart\ui\scripts\hud\dialogmessage.lua:419 expr=StartTimer text=self:StartTimer("BackTimer", time, function()
+mods\lua_source\gameart\ui\scripts\hud\dialogmessage.lua:615 expr=StartTimer text=self:StartTimer("HoldExit", 0.1, function()
+mods\lua_source\gameart\ui\scripts\hud\dialogmessage.lua:662 expr=StartTimer text=self:StartTimer("HoldExit", 0.1, function()
+mods\lua_source\gameart\ui\scripts\hud\discovermessages.lua:120 expr=StartTimer text=self:StartTimer("HoldTranslation", 2.5, function()
+mods\lua_source\gameart\ui\scripts\hud\discovermessages.lua:125 expr=StartTimer text=self:StartTimer("DiscoverTimer", 8, function()
+mods\lua_source\gameart\ui\scripts\hud\discovermessages.lua:144 expr=StartTimer text=self:StartTimer("TranslateTimer", 1, function()
+mods\lua_source\gameart\ui\scripts\hud\discovermessages.lua:223 expr=StartTimer text=self:StartTimer("holdForFade", 0.2, function()
+mods\lua_source\gameart\ui\scripts\hud\discovermessages.lua:242 expr=StartTimer text=self:StartTimer("HoldTranslation", 2, function()
+mods\lua_source\gameart\ui\scripts\hud\discovermessages.lua:250 expr=StartTimer text=self:StartTimer("HoldTranslation", 1, function()
+mods\lua_source\gameart\ui\scripts\hud\mainhud.lua:183 expr=StartTimer text=self:StartTimer("TimerToUpdateCompass", 0.1, function()
+mods\lua_source\gameart\ui\scripts\hud\mainhud.lua:213 expr=StartTimer text=self:StartTimer("TimerToTurnOffCompass", self.compassTimerTurnOffDelay, function()
+mods\lua_source\gameart\ui\scripts\hud\mainhud.lua:281 expr=StartTimer text=self:StartTimer("TimerToTurnOffCombatHUD", self.combatHUDTurnOffDelay, function()
+mods\lua_source\gameart\ui\scripts\hud\mainhud.lua:435 expr=StartTimer text=self:StartTimer("MaxHealthRageHelper", 5, function()
+mods\lua_source\gameart\ui\scripts\hud\mechanicshud.lua:91 expr=engine.Hash text=self.activeMeter:SetIDHash(engine.Hash(meterName))
+mods\lua_source\gameart\ui\scripts\hud\mechanicshud.lua:133 expr=StartTimer text=self:StartTimer("RageHelper", timeToDisplayFor, function()
+mods\lua_source\gameart\ui\scripts\hud\mechanicshud.lua:146 expr=StartTimer text=self:StartTimer("NonRageHelper", timeToDisplayFor, function()
+mods\lua_source\gameart\ui\scripts\hud\sequence_itemcard.lua:23 expr=StartTimer text=sequence._fsmState:StartTimer("ItemCardPreStreamTimer", 0, function()
+mods\lua_source\gameart\ui\scripts\hud\sequence_journal.lua:121 expr=StartTimer text=sequence._fsmState:StartTimer("GoToJournalFlourishDelay", 0.5, function()
+mods\lua_source\gameart\ui\scripts\hud\sequence_quest.lua:136 expr=StartTimer text=sequence._fsmState:StartTimer("GoToJournalFlourishDelay", 0.5, function()
+mods\lua_source\gameart\ui\scripts\hud\textlog.lua:291 expr=StartTimer text=self:StartTimer("ResourceLogInitializationTimer", timeUntilResourcesLogsAreAllowed, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\inworldmenu.lua:115 expr=StartTimer text=self:StartTimer("MenuExitVideoUnloadTimer", 0.5, UI.VideoUnload)
+mods\lua_source\gameart\ui\scripts\inworldmenu\inworldmenu.lua:205 expr=StartTimer text=self:StartTimer("PickupUICreatureDelayTimer", consts.SingleFrameDelayTime, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\inworldmenu.lua:493 expr=StartTimer text=self:StartTimer("RefreshEquippedAttributesDelayTimer", consts.SingleFrameDelayTime, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\inworldmenu.lua:503 expr=StartTimer text=self:StartTimer("RefreshEquippedAttributesDelayTimer", consts.SingleFrameDelayTime, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\inworldmenu.lua:514 expr=StartTimer text=self:StartTimer("RefreshEquippedAttributesDelayTimer", consts.SingleFrameDelayTime, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\inworldmenu.lua:525 expr=StartTimer text=self:StartTimer("RefreshAttributesDelayTimer", consts.SingleFrameDelayTime, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\inworldmenu.lua:543 expr=StartTimer text=self:StartTimer("ClearAttributesDelayTimer", consts.SingleFrameDelayTime, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\journalmenu.lua:123 expr=StartTimer text=self:StartTimer("hideDecal", 0.5, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\journalmenu.lua:173 expr=StartTimer text=self:StartTimer("setShowing", 0.6666667, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\journalmenu.lua:194 expr=StartTimer text=self:StartTimer("delayedFadeIn", 0, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\journalmenu.lua:213 expr=StartTimer text=self:StartTimer("clearShowing", 0.5, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\journalmenu.lua:217 expr=StartTimer text=self:StartTimer("fadeIn", 0.5, fadeIn)
+mods\lua_source\gameart\ui\scripts\inworldmenu\journalmenu.lua:219 expr=StartTimer text=self:StartTimer("fadeIn", 0.2, fadeIn)
+mods\lua_source\gameart\ui\scripts\inworldmenu\mapmenu.lua:1315 expr=StartTimer text=self:StartTimer("FogShowDelayTimer", 0.25, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:788 expr=StartTimer text=self:StartTimer("hideDecal", 0.5, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:878 expr=StartTimer text=self:StartTimer("setShowing", 0.6666667, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:918 expr=StartTimer text=self:StartTimer("delayedFadeIn", 0, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:940 expr=StartTimer text=self:StartTimer("clearShowing", 0.5, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:944 expr=StartTimer text=self:StartTimer("fadeIn", 0.5, fadeIn)
+mods\lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:946 expr=StartTimer text=self:StartTimer("fadeIn", 0.2, fadeIn)
+mods\lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:1025 expr=StartTimer text=self:StartTimer("hideDecal", 0.5, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:1034 expr=StartTimer text=self:StartTimer("setShowing", 0.6666667, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:1056 expr=StartTimer text=self:StartTimer("delayedFadeIn", 0, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:1075 expr=StartTimer text=self:StartTimer("clearShowing", 0.5, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:1079 expr=StartTimer text=self:StartTimer("fadeIn", 0.5, fadeIn)
+mods\lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:1081 expr=StartTimer text=self:StartTimer("fadeIn", 0.2, fadeIn)
+mods\lua_source\gameart\ui\scripts\inworldmenu\settingsmenu.lua:1110 expr=SaveGame text=function SaveLoad:SaveGame(saveData)
+mods\lua_source\gameart\ui\scripts\inworldmenu\settingsmenu.lua:1126 expr=saveUtil.SaveGame text=saveUtil.SaveGame(currSaveData)
+mods\lua_source\gameart\ui\scripts\inworldmenu\settingsmenu.lua:1148 expr=StartTimer text=self:StartTimer("CheckCloseSaveMenu", self.min_time_wait, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\settingsmenu.lua:1159 expr=StartTimer text=self:StartTimer("AfterMaxSaveMenu", self.max_time_wait, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\settingsmenu.lua:1202 expr=SaveGame text=self:SaveGame(currSaveData)
+mods\lua_source\gameart\ui\scripts\inworldmenu\settingsmenu.lua:1343 expr=SaveGame text=self:SaveGame()
+mods\lua_source\gameart\ui\scripts\inworldmenu\settingsmenu.lua:7770 expr=StartTimer text=self:StartTimer("Stream", 0.03, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\settingsmenu.lua:7787 expr=StartTimer text=self:StartTimer("Swap", 0.03, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\skilltreemenu.lua:604 expr=StartTimer text=self:StartTimer("unlockFlourishDelay", unlockFlourishDelay, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\skilltreemenu.lua:618 expr=StartTimer text=self:StartTimer("UnlockFlourishSFXDelay", 0.5, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\statsmenu.lua:848 expr=StartTimer text=self:StartTimer("ClearPowerLevelOnEquipDelay", consts.SingleFrameDelayTime, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\upgrademenu.lua:428 expr=engine.Hash text=self._allRuneInfoTables[i].Pickup = engine.Hash("")
+mods\lua_source\gameart\ui\scripts\inworldmenu\upgrademenu.lua:737 expr=StartTimer text=self:StartTimer("UpgradeMenuReturnAnimationDelay", animTime, function()
+mods\lua_source\gameart\ui\scripts\inworldmenu\upgrademenu.lua:786 expr=StartTimer text=self:StartTimer("UpgradePreviewClearDelay", consts.SingleFrameDelayTime, function()
+mods\lua_source\gameart\ui\scripts\tutorial\tutorialmode.lua:42 expr=StartTimer text=self:StartTimer("TMInitializationTimer", consts.SingleFrameDelayTime, function()
+mods\lua_source\gameart\ui\scripts\tutorial\tutorialmode.lua:142 expr=StartTimer text=self:StartTimer("MessageDelayTimer", messageDelay, function()
+mods\lua_source\gameart\ui\scripts\tutorial\tutorialmode.lua:156 expr=StartTimer text=self:StartTimer("AdvanceHelperTimer", fullDelayTime, function()
+mods\lua_source\gameart\ui\scripts\tutorial\tutorialmode.lua:164 expr=StartTimer text=self:StartTimer("TMTimer", messageTime, function()
+mods\lua_source\gameart\ui\scripts\tutorial\tutorialmode.lua:177 expr=StartTimer text=self:StartTimer("TMTimer", exitDelay, function()
+mods\lua_source\gameart\ui\scripts\util\attributeutil.lua:210 expr=StartTimer text=currState:StartTimer("UpdateAttributesDelayTimer", consts.SingleFrameDelayTime, postTimerCallback)
+mods\lua_source\gameart\ui\scripts\util\maputil.lua:183 expr=engine.Hash text=local fastTravelRealmHash = engine.Hash(mapConsts.REALM_FASTTRAVEL)
+mods\lua_source\gameart\ui\scripts\util\maputil.lua:194 expr=engine.Hash text=if realmNameHash == engine.Hash(currentRealmName) then
+mods\lua_source\gameart\ui\scripts\util\runeutil.lua:111 expr=engine.Hash text=local attributeHash = engine.Hash(attributeName)
+mods\lua_source\gameart\ui\scripts\util\runeutil.lua:157 expr=engine.Hash text=local pickupNameHash = engine.Hash(pickupName)
+mods\lua_source\gameart\ui\scripts\vendor\vendormenu.lua:1101 expr=engine.Hash text=local messageHash = engine.Hash("message")
+representative_call_hits=225
+
+source_hashes_unchanged=true active_save_opened=false game_written=false save_or_progression_written=false game_launched=false
