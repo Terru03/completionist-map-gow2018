@@ -17,7 +17,6 @@ using PushString = void(__fastcall*)(void* state, const char* value);
 
 constexpr std::uintptr_t kPushStringRva = 0x9E4360;
 constexpr std::uint32_t kEngineObjectTag = 2;
-constexpr std::uint32_t kCFunctionTag = 0x16;
 
 const unsigned char kPushStringPrefix[] = {
     0x48, 0x89, 0x5C, 0x24, 0x08, 0x57, 0x48, 0x83, 0xEC, 0x20,
@@ -45,18 +44,27 @@ bool supported_binary() {
          bytes_equal(base + 0x5AA21E, kFirstArgumentLayout, sizeof(kFirstArgumentLayout));
 }
 
-TValue* first_argument(void* state) {
-  const auto raw = reinterpret_cast<std::uintptr_t>(state);
-  auto* top = *reinterpret_cast<TValue**>(raw + 0x10);
-  const auto call_info = *reinterpret_cast<std::uintptr_t*>(raw + 0x20);
-  if (top == nullptr || call_info == 0) return nullptr;
-  auto* function_slot = *reinterpret_cast<TValue**>(call_info);
-  if (function_slot == nullptr || function_slot + 1 >= top) return nullptr;
-  return function_slot + 1;
+TValue* stack_top(void* state) {
+  if (state == nullptr) return nullptr;
+  return *reinterpret_cast<TValue**>(reinterpret_cast<std::uintptr_t>(state) + 0x10);
 }
 
-int __fastcall read_object_token(void* state) {
-  if (!supported_binary()) return 0;
+TValue* function_slot(void* state) {
+  if (state == nullptr) return nullptr;
+  const auto raw = reinterpret_cast<std::uintptr_t>(state);
+  const auto call_info = *reinterpret_cast<std::uintptr_t*>(raw + 0x20);
+  if (call_info == 0) return nullptr;
+  return *reinterpret_cast<TValue**>(call_info);
+}
+
+TValue* first_argument(void* state) {
+  auto* top = stack_top(state);
+  auto* fn = function_slot(state);
+  if (top == nullptr || fn == nullptr || fn + 1 >= top) return nullptr;
+  return fn + 1;
+}
+
+int read_object_token(void* state) {
   const TValue* argument = first_argument(state);
   if (argument == nullptr || (argument->tag & 0xF) != kEngineObjectTag ||
       (argument->value & 1) == 0) {
@@ -70,16 +78,25 @@ int __fastcall read_object_token(void* state) {
   return 1;
 }
 
+int return_self(void* state) {
+  auto* top = stack_top(state);
+  const auto* fn = function_slot(state);
+  if (top == nullptr || fn == nullptr) return 0;
+  *top = *fn;
+  *reinterpret_cast<TValue**>(reinterpret_cast<std::uintptr_t>(state) + 0x10) = top + 1;
+  return 1;
+}
+
 }  // namespace
 
 extern "C" __declspec(dllexport) int luaopen_completionist_object_token(void* state) {
   if (!supported_binary() || state == nullptr) return 0;
-  const auto raw = reinterpret_cast<std::uintptr_t>(state);
-  auto* top = *reinterpret_cast<TValue**>(raw + 0x10);
-  if (top == nullptr) return 0;
-  top->value = reinterpret_cast<std::uint64_t>(&read_object_token);
-  top->tag = kCFunctionTag;
-  top->padding = 0;
-  *reinterpret_cast<TValue**>(raw + 0x10) = top + 1;
-  return 1;
+
+  // package.loadlib returns this exported function.  The probe calls it once
+  // with no arguments to obtain a reusable reader function.  Reuse the exact
+  // function TValue Lua already created rather than manufacturing a C-function
+  // TValue ourselves.  This avoids depending on an inferred function tag.
+  if (first_argument(state) == nullptr) return return_self(state);
+
+  return read_object_token(state);
 }
