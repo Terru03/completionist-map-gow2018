@@ -78,10 +78,7 @@ def compact_path(matrix, world, chain, raw_chain, records) -> dict:
     return {
         "world": list(world),
         "placement": placement,
-        "chain": [
-            {"name": row["name"], "offset": f"0x{row['offset']:X}", "record_id": row["id"].hex()}
-            for row in chain
-        ],
+        "chain": chain,
         "safe_chain_identifiers": safe_strings(chain_values(raw_chain, records)),
     }
 
