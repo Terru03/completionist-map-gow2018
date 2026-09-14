@@ -7,7 +7,9 @@ import json
 import math
 from pathlib import Path
 import sys
+import tempfile
 import unittest
+from unittest import mock
 
 import jsonschema
 
@@ -123,6 +125,19 @@ class CollectibleCatalogueTests(unittest.TestCase):
             catalogue_tool.safe_repo_output("../outside.json")
         with self.assertRaises(ValueError):
             catalogue_tool.safe_repo_output(str(catalogue_tool.GAME / "bad.json"))
+
+    def test_atomic_output_success_and_failure_rollback(self):
+        build_root = REPO / "build"
+        build_root.mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="collectible-output-test-", dir=build_root) as root:
+            target = Path(root) / "catalogue.json"
+            catalogue_tool.write_atomic(target, "old")
+            self.assertEqual(target.read_text(encoding="utf-8"), "old")
+            with mock.patch.object(Path, "replace", side_effect=OSError("injected boundary failure")):
+                with self.assertRaises(OSError):
+                    catalogue_tool.write_atomic(target, "new")
+            self.assertEqual(target.read_text(encoding="utf-8"), "old")
+            self.assertEqual(list(Path(root).glob("*.tmp")), [])
 
 
 if __name__ == "__main__":

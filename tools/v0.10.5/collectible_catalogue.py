@@ -815,6 +815,17 @@ def safe_repo_output(value: str) -> Path:
     return path
 
 
+def write_atomic(path: Path, content: str) -> None:
+    """Replace one repository output atomically; remove partial temp on failure."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
+    try:
+        temporary.write_text(content, encoding="utf-8")
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--game-root", type=Path, default=GAME)
@@ -826,11 +837,9 @@ if __name__ == "__main__":
         canonical_json(catalogue).encode("utf-8")).hexdigest()
     if args.output:
         output = safe_repo_output(args.output)
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(canonical_json(catalogue), encoding="utf-8")
+        write_atomic(output, canonical_json(catalogue))
     if args.audit:
         audit_output = safe_repo_output(args.audit)
-        audit_output.parent.mkdir(parents=True, exist_ok=True)
-        audit_output.write_text(canonical_json(audit), encoding="utf-8")
+        write_atomic(audit_output, canonical_json(audit))
     if not args.output and not args.audit:
         print(canonical_json(audit), end="")
