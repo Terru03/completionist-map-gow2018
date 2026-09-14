@@ -1,0 +1,24 @@
+Completionist Map - native object checkpoint dispatch
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+
+Verified restore chain:
+  __PickleTable/__SoftPickleTable
+  -> field __subobjs
+  -> exact key from subobject+0x28 GameObject pointer
+  -> opaque object token packed at RVA 0x60B9C0
+  -> savedInfo table
+  -> OnRestoreCheckpoint(level, subobject, savedInfo)
+  -> record consumed from __subobjs after callback
+
+Verified save symmetry:
+  same subobject+0x28 GameObject token -> OnSaveCheckpoint result
+
+Stable-key conclusion:
+  engine persists an exact object reference, not coordinates, order, filename, or RegionSummary count
+  runtime token is opaque and must not be equated with WAD GUID without separate proof
+
+Cold-query status:
+  candidate is unresolved __subobjs entries in root pickle table
+  runtime proof still required; fail closed
+
+source_hash_unchanged=true game_launched=false save_opened=false progression_written=false

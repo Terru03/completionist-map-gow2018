@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "analysis": "native_object_checkpoint_dispatch",
+  "exe": "G:\\SteamLibrary\\steamapps\\common\\GodOfWar\\GoW.exe",
+  "exe_sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+  "strings": {
+    "OnRestoreCheckpoint": {
+      "rva": "0xE032E0",
+      "va": "0x140E032E0"
+    },
+    "OnSaveCheckpoint": {
+      "rva": "0xE03308",
+      "va": "0x140E03308"
+    },
+    "__prevunpickle": {
+      "rva": "0xE03D10",
+      "va": "0x140E03D10"
+    },
+    "__PickleTable": {
+      "rva": "0xE03E38",
+      "va": "0x140E03E38"
+    },
+    "__SoftPickleTable": {
+      "rva": "0xE03E48",
+      "va": "0x140E03E48"
+    },
+    "__subobjs": {
+      "rva": "0xE03E60",
+      "va": "0x140E03E60"
+    }
+  },
+  "verified_sites": {
+    "restore_get_root": {
+      "rva": "0x5AD4BE",
+      "va": "0x1405AD4BE",
+      "bytes": "488b4958498bd0450fb6f9e862744300"
+    },
+    "restore_get_subobjs": {
+      "rva": "0x5AD51F",
+      "va": "0x1405AD51F",
+      "bytes": "41b809000000488d1534698500488bcbe8bc774400"
+    },
+    "restore_push_object_key": {
+      "rva": "0x5AD597",
+      "va": "0x1405AD597",
+      "bytes": "488b562848897c2430c644243801e816e40500"
+    },
+    "restore_dispatch_callback": {
+      "rva": "0x5AD5F3",
+      "va": "0x1405AD5F3",
+      "bytes": "41b9010000004c8d05e05c8500488d542430488bcee8d366ffff"
+    },
+    "restore_consume_object_record": {
+      "rva": "0x5AD6B8",
+      "va": "0x1405AD6B8",
+      "bytes": "488b5628488b4f58e8fbe20500"
+    },
+    "save_push_object_key": {
+      "rva": "0x174B78",
+      "va": "0x140174B78",
+      "bytes": "488b07488b184885db7406488b5b58eb03488bdd488b5228488bcbe8286e4900"
+    },
+    "save_dispatch_callback": {
+      "rva": "0x174B98",
+      "va": "0x140174B98",
+      "bytes": "4c8b374c8d0566e7c800498bd6c7442420010000004533c9488bcee898f04200"
+    },
+    "object_token_packer": {
+      "rva": "0x60B9C0",
+      "va": "0x14060B9C0",
+      "bytes": "4c8bc24885d2750d488b41108950084883411010c333d241f68078020000017436418b8078020000418b908402000081e2ffff0f00c1e8034803d283e001480bd0410fb7808002000048c1e210480bd04803d24883ca01e944c0f3ff"
+    }
+  },
+  "gameobject_identity_methods": {
+    "GetDebugName": {
+      "entry_rva": "0x11BC880",
+      "handler_rva": "0x18F2A0",
+      "mutates_progression": false
+    },
+    "GetDebugPath": {
+      "entry_rva": "0x11BC898",
+      "handler_rva": "0x18F350",
+      "mutates_progression": false
+    },
+    "Level": {
+      "entry_rva": "0x11BC618",
+      "handler_rva": "0x195360",
+      "mutates_progression": false
+    }
+  },
+  "findings": {
+    "restore_root": "__PickleTable or __SoftPickleTable",
+    "record_table": "root.__subobjs",
+    "lookup_key_source": "subobject +0x28 GameObject pointer",
+    "lookup_key_lua_form": "opaque object token packed by RVA 0x60B9C0",
+    "lookup_operation": "root.__subobjs[exact GameObject token]",
+    "dispatch": "OnRestoreCheckpoint(level, subobject, savedInfo)",
+    "post_dispatch": "consumes root.__subobjs[exact GameObject token]",
+    "save_symmetry": "OnSaveCheckpoint result stored under same exact GameObject token",
+    "cold_query_hypothesis": "enumerate unresolved root.__subobjs records before streaming consumes them",
+    "cold_query_proved": false
+  },
+  "safety": {
+    "read_only": true,
+    "game_launched": false,
+    "save_opened": false,
+    "game_written": false,
+    "progression_written": false,
+    "source_hash_unchanged": true
+  }
+}

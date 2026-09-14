@@ -1,0 +1,74 @@
+"""Fill exact Raven catalogue rows into the read-only Lua oracle probe."""
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+
+
+PLACEHOLDER = "-- @@RAVEN_ORACLE_ROWS@@"
+
+
+def lua_quote(value: str) -> str:
+    return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
+def build(template: str, catalogue: dict) -> str:
+    rows = catalogue["ravens"]
+    identities: set[tuple[str, str]] = set()
+    runtime_identities: dict[tuple[str, str], str] = {}
+    rendered = []
+    for row in rows:
+        wad = row["source"]["wad"].lower()
+        object_name = row["native"]["object_name"].lower()
+        identity = (wad, object_name)
+        if identity in identities:
+            raise ValueError(f"duplicate exact WAD/object identity: {identity!r}")
+        identities.add(identity)
+        runtime_names = [object_name]
+        if object_name.startswith("go"):
+            runtime_names.append(object_name[2:])
+        for runtime_name in runtime_names:
+            runtime_identity = (wad, runtime_name)
+            previous = runtime_identities.get(runtime_identity)
+            if previous is not None and previous != row["catalogue_id"]:
+                raise ValueError(
+                    "duplicate runtime WAD/object identity: "
+                    f"{runtime_identity!r} maps to {previous!r} and {row['catalogue_id']!r}"
+                )
+            runtime_identities[runtime_identity] = row["catalogue_id"]
+        rendered.append(
+            "    { CatalogueId = %s, Wad = %s, ObjectName = %s, ParentQuest = %s },"
+            % tuple(
+                lua_quote(value)
+                for value in (
+                    row["catalogue_id"], wad, object_name,
+                    row["progression"]["parent_quest"],
+                )
+            )
+        )
+    if len(rows) != 53:
+        raise ValueError(f"expected 53 Raven rows, found {len(rows)}")
+    if template.count(PLACEHOLDER) != 1:
+        raise ValueError("probe template placeholder missing or duplicated")
+    return template.replace(PLACEHOLDER, "\n".join(rendered))
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--template", type=Path, required=True)
+    parser.add_argument("--catalogue", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    output = build(
+        args.template.read_text(encoding="utf-8"),
+        json.loads(args.catalogue.read_text(encoding="utf-8")),
+    )
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(output, encoding="utf-8", newline="\n")
+    print("UNLOADED_CHECKPOINT_ORACLE_PROBE_BUILT rows=53")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
