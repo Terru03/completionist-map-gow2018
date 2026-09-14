@@ -25,7 +25,7 @@ $mapRelative = 'mods\lua\gameart\ui\scripts\inworldmenu\mapmenu.lua'
 $probeRelative = 'tools\v0.10.5\generic-counter-runtime-probe.lua'
 $mapPath = Join-Path $GameRoot $mapRelative
 $probePath = Join-Path $repo $probeRelative
-$loaderLogPath = Join-Path $GameRoot 'loader_log.txt'
+$loaderLogPath = Join-Path $GameRoot 'mods\loader_log.txt'
 $exePath = Join-Path $GameRoot 'GoW.exe'
 $tempBackup = Join-Path $env:TEMP ("completionist-mapmenu-$stamp.bak")
 
@@ -74,6 +74,15 @@ function Restore-MapMenu {
     }
 }
 
+function Wait-ForConfirmedGameExit {
+    while ($true) {
+        Read-Host 'After God of War has fully exited, press Enter to capture the log and restore mapmenu.lua' | Out-Null
+        $running = @(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -in @('GoW','GodOfWar') })
+        if ($running.Count -eq 0) { return }
+        Write-Host 'God of War is still running. Quit the game completely before continuing.' -ForegroundColor Yellow
+    }
+}
+
 try {
     Start-Transcript -LiteralPath $consoleLog -Force | Out-Null
     $transcriptStarted = $true
@@ -81,6 +90,7 @@ try {
     Write-Host '=== Completionist Map generic counter runtime probe ==='
     Write-Host "Repository: $repo"
     Write-Host "Game root: $GameRoot"
+    Write-Host "Loader log: $loaderLogPath"
     Write-Host 'Probe behavior: read-only API introspection and counter reads only. No setters, SaveGame, quest writes, or progression writes.'
 
     $branch = (& git branch --show-current).Trim()
@@ -126,11 +136,12 @@ try {
     Write-Host 'The probe is installed temporarily.'
     Write-Host 'In the game: load your existing save, open the world map, move the map cursor once, then quit God of War completely.' -ForegroundColor Cyan
     Write-Host 'Do not collect/kill/open anything during this probe.' -ForegroundColor Cyan
+    Write-Host 'The runner will keep mapmenu.lua patched until YOU press Enter after the game is fully closed.' -ForegroundColor Cyan
     Write-Host ''
 
-    $proc = Start-Process -FilePath $exePath -WorkingDirectory $GameRoot -PassThru
+    Start-Process -FilePath $exePath -WorkingDirectory $GameRoot | Out-Null
     $gameLaunched = $true
-    Wait-Process -Id $proc.Id
+    Wait-ForConfirmedGameExit
 
     if (Test-Path -LiteralPath $loaderLogPath -PathType Leaf) {
         Copy-Item -LiteralPath $loaderLogPath -Destination (Join-Path $logDir 'loader_log.txt') -Force
@@ -141,7 +152,7 @@ try {
             Write-Host "Captured $($probeLines.Count) probe log lines."
         } else {
             'NO_COMPLETIONIST_COUNTER_PROBE_LINES_FOUND' | Set-Content -LiteralPath (Join-Path $logDir 'probe-extract.txt') -Encoding UTF8
-            Write-Host 'No probe lines were found in loader_log.txt.' -ForegroundColor Yellow
+            Write-Host 'No probe lines were found in mods\loader_log.txt.' -ForegroundColor Yellow
         }
     } else {
         'LOADER_LOG_NOT_FOUND' | Set-Content -LiteralPath (Join-Path $logDir 'probe-extract.txt') -Encoding UTF8
