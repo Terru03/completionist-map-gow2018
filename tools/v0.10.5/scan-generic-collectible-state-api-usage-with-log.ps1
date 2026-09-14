@@ -106,7 +106,7 @@ try {
             }
             if ($cats.Count -eq 0) { continue }
 
-            $relative = [IO.Path]::GetRelativePath($luaRoot, $file.FullName).Replace('\','/')
+            $relative = $file.FullName.Substring($luaRoot.Length).TrimStart([char[]]@('\','/')).Replace('\','/')
             $start = [Math]::Max(0, $i - 5)
             $end = [Math]::Min($lines.Length - 1, $i + 5)
             $context = New-Object System.Collections.Generic.List[string]
