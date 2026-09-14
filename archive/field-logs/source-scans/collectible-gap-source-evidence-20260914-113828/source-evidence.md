@@ -1,0 +1,218 @@
+# Collectible gap native-source evidence
+
+Status: **SOURCE_EVIDENCE_ONLY**
+
+- Catalogue Ship Head rows: 7
+- Native Ship Head target total: 10
+- Raw Ship Head carriers: 9
+- Raw Ship Head placement paths: 9
+- Catalogue Nornir rows: 22
+- Native Nornir target total: 21
+- Raw Nornir carriers: 29
+- Raw Nornir placement paths: 29
+- Runtime generation allowed: **false**
+
+## WAD evidence
+
+- `alf150_bridgedark.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `alf200_mazedark.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `alf210_lakedarklh.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[88.755444551175, 5.683702547329506, 368.58752410213316] placement={'override_name': 'gochest_runic_tier1_alf210_1_overrideInst', 'object_name': 'gochest_runic_tier1_alf210_1', 'instance_guid': 'e00c75d2-4c76-b498-de4c-1f85c997c65e', 'record_uuid_hint': 'e00c75d2-b498-4c76-851f-4cde5fc797c9', 'override_offset': '0xEE7090', 'final_offset': '0xEE7560'} ids=['gochest_locked_parent', 'gochest_runic_tier1_alf210_1', 'gochestscript_rn', 'Runic_Axe', 'RunicChestReward']
+- `alf320_trenchadark.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[437.96428631670824, -0.20399974560737633, 497.43487459104415] placement={'override_name': 'gochest_runic_tier1_alf320_1_overrideInst', 'object_name': 'gochest_runic_tier1_alf320_1', 'instance_guid': '3ec0daa8-4892-2cad-4fb3-0c8bb93c171f', 'record_uuid_hint': '3ec0daa8-2cad-4892-8b0c-b34f20183cb9', 'override_offset': '0x2577750', 'final_offset': '0x2577C30'} ids=['gochest_locked_parent', 'gochest_runic_tier1_alf320_1', 'gochestscript_rn', 'Runic_Axe', 'RunicChestReward']
+- `alf325_trenchadarktwr.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `alf340_trenchbdark.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[302.35181336695155, -15.499998837709427, 378.5921481937746] placement={'override_name': 'gochest_runic_tier1_alf340_1_overrideInst', 'object_name': 'gochest_runic_tier1_alf340_1', 'instance_guid': '9a92c243-4083-2c21-07ff-7d997c9fcbda', 'record_uuid_hint': '9a92c243-2c21-4083-997d-ff07dbcc9f7c', 'override_offset': '0x2736BC0', 'final_offset': '0x2737120'} ids=['gochest_locked_parent', 'gochest_runic_tier1_alf340_1', 'gochestscript_rn', 'Runic_Axe', 'runic_breakable_01', 'runic_breakable_02', 'runic_breakable_03', 'RunicChestReward']
+- `alf345_trenchbdarktwr.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `alf355_chiseldungeon.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `alf370_moatscripting.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `alf390_templeextlh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `alf440_hiveextlh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `alf600_templeint.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `alf690_lakelightlh.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[423.0549393892288, 9.274999780952925, 528.7109147310257] placement={'override_name': 'gochest_runic_tier1_alf690_overrideInst', 'object_name': 'gochest_runic_tier1_alf690', 'instance_guid': '522448bf-4d91-b0f1-9de6-adbd1c77d709', 'record_uuid_hint': '522448bf-b0f1-4d91-bdad-e69d0ad8771c', 'override_offset': '0x170FB40', 'final_offset': '0x170FFF0'} ids=['gochest_locked_parent', 'gochest_runic_tier1_alf690', 'gochestscript_rn', 'Runic_Axe', 'RunicChestReward']
+- `alfdgn110_main.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `alfdgn210_main.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `cal100_hub.wad`: shiphead_carriers=2; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `03c3456e-4301-abb5-e829-92b2db44bcbb` paths=1 ids=['RegionSummary_CALS_Shiphead_Parent', 'Ship Head'] error=None
+    - world=[22.059829711914062, -4.013091564178467, 110.69004821777344] placement={'override_name': 'goartifactshiphead08_overrideInst', 'object_name': 'goartifactshiphead08', 'instance_guid': 'f7fbfc3f-4499-1b3d-a378-71879e6de737', 'record_uuid_hint': 'f7fbfc3f-1b3d-4499-8771-78a338e86d9e', 'override_offset': '0x509FCD0', 'final_offset': '0x509FE90'} ids=['= goartifactshiphead08', '>goartifactshiphead08', '\\goartifactscript', 'RegionSummary_CALS_Shiphead_Parent', 'Ship Head']
+  - Ship Head carrier `ffa95828-42dd-e146-75e3-a39ff3385d8c` paths=1 ids=['RegionSummary_CALS_Shiphead_Parent', 'Ship Head'] error=None
+    - world=[22.059829711914062, -4.013091564178467, 110.69004821777344] placement={'override_name': 'goartifactshiphead08_overrideInst', 'object_name': 'goartifactshiphead08', 'instance_guid': 'f7fbfc3f-4499-1b3d-a378-71879e6de737', 'record_uuid_hint': 'f7fbfc3f-1b3d-4499-8771-78a338e86d9e', 'override_offset': '0x509FCD0', 'final_offset': '0x509FE90'} ids=['= goartifactshiphead08', '>goartifactshiphead08', '\\goartifactscript', 'RegionSummary_CALS_Shiphead_Parent', 'Ship Head']
+- `cal170_library1.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `cal250_foothillslh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `cal270_stonemasonlh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `cal500_runevault.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-93.23381805419922, -5.2519025802612305, 1.27968430519104] placement={'override_name': 'gochest_locked_tier4_cal500_1_overrideInst', 'object_name': 'gochest_locked_tier4_cal500_1', 'instance_guid': 'f8548c57-4dc6-7cba-277c-5cb31099648b', 'record_uuid_hint': 'f8548c57-7cba-4dc6-b35c-7c278c659910', 'override_offset': '0x573E060', 'final_offset': '0x573E540'} ids=['gochest_locked_parent', 'gochest_locked_tier4_cal500_1', 'gochestscript_rn', 'Runic_Axe', 'RunicChestReward']
+- `cal700_templeflip.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `cal740_leftwing.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `cal750_rightwing.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `cal820_snakebellymid.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `foot100_base.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-320.090393781662, 14.20871901512146, 241.46955490112305] placement={'override_name': 'gochest_locked_tier1_foot100_1_overrideInst', 'object_name': 'gochest_locked_tier1_foot100_1', 'instance_guid': 'a6ac8eeb-4ea2-545a-b05d-f19e8ea6ee8f', 'record_uuid_hint': 'a6ac8eeb-545a-4ea2-9ef1-5db090efa68e', 'override_offset': '0x46DAD20', 'final_offset': '0x46DB2C0'} ids=['gochest_locked_parent', 'gochest_locked_tier1_foot100_1', 'gochestscript_rn', 'Runic_Axe', 'RunicChestReward']
+- `foot200_mid.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `foot250_chiselarena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `foot400_arena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `foot500_top.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `for200_house.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_CALS_Shiphead_Parent']
+- `for260_chiseldungeon.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `for400_intersection.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `for500_forestentry.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `for550_brokenforest.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `for560_wolfpit.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `for600_spire.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-39.89743423461901, 51.54513931274414, -807.3256225585938] placement={'override_name': 'gochest_runic_tier1_for600_1_overrideInst', 'object_name': 'gochest_runic_tier1_for600_1', 'instance_guid': '6d18634c-4e86-282d-1cfa-0e84f6d5654f', 'record_uuid_hint': '6d18634c-282d-4e86-840e-fa1c5066d5f6', 'override_offset': '0x20B1670', 'final_offset': '0x20B1C10'} ids=['gochest_locked_parent', 'gochest_runic_tier1_for600_1', 'gochestscript_rn', 'Runic_Axe', 'runic_breakable_01', 'runic_breakable_02', 'runic_breakable_03', 'RunicChestReward']
+- `for650_bridge.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `for660_templeinterior.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `for700_deerkill.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `for900_exitclimb.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `hel100_calderaheldressing.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `hel200_entrancedoor.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `hel300_mainbridge.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `hel350_chiselarena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `hel600_guardianarena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `helr100_docks.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[2228.758056640625, -338.0022277832031, 682.715087890625] placement={'override_name': 'gochest_runic_tier4_helr100_1_overrideInst', 'object_name': 'gochest_runic_tier4_helr100_1', 'instance_guid': '6fc8ac79-4c63-bf63-a137-36b7cd3c7f25', 'record_uuid_hint': '6fc8ac79-bf63-4c63-b736-37a126803ccd', 'override_offset': '0x7828540', 'final_offset': '0x7828A20'} ids=['gochest_locked_parent', 'gochest_runic_tier4_helr100_1', 'gochestscript_rn', 'Runic_Axe', 'runic_breakable_01', 'runic_breakable_02', 'runic_breakable_03', 'RunicChestReward']
+- `msp100_base.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `nid100_entrance.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-276.73348781673, 1.9500000476837158, -176.08310999619178] placement={'override_name': 'gomemory_triplechest_overrideInst', 'object_name': 'gomemory_triplechest', 'instance_guid': '7f90f241-43a0-848b-b42a-049da3101362', 'record_uuid_hint': '7f90f241-848b-43a0-9d04-2ab4631410a3', 'override_offset': '0x34E4A80', 'final_offset': '0x34E4F70'} ids=['gochest_locked_parent', 'gochestscript_rn', 'Runic_Axe', 'RunicChestReward']
+- `nid150_calderabridge.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `nid200_swhallway.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-277.4147609915637, 1.9460000477321446, -187.46383446586094] placement={'override_name': 'gorunicgoal_setup_02_overrideInst', 'object_name': 'gorunicgoal_setup_02', 'instance_guid': '13125227-4bf4-0f5c-e6c9-f5a0d085eda9', 'record_uuid_hint': '13125227-0f5c-4bf4-a0f5-c9e6aaee85d0', 'override_offset': '0xD9AFF0', 'final_offset': '0xD9B450'} ids=['gochest_locked_parent', 'gochestscript_rn', 'gorunicgoal_setup_02', 'Runic_Axe', 'RunicChestReward']
+- `nid220_nwhallway.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-216.59044159351, 1.9921520811526754, -115.86421875020673] placement={'override_name': 'gorunicgoal_setup_02_overrideInst', 'object_name': 'gorunicgoal_setup_02', 'instance_guid': '771391cb-4863-b616-3391-8890f8330319', 'record_uuid_hint': '771391cb-b616-4863-9088-91331a0433f8', 'override_offset': '0xD4C180', 'final_offset': '0xD4C5E0'} ids=['gochest_locked_parent', 'gochestscript_rn', 'gorunicgoal_setup_02', 'Runic_Axe', 'RunicChestReward']
+- `nid240_nehallway.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-285.16393100237354, 1.9500000476837158, -124.22998475300489] placement={'override_name': 'gorunicgoal_setup_02_overrideInst', 'object_name': 'gorunicgoal_setup_02', 'instance_guid': '096c444b-4a59-33a8-c650-7084091daa25', 'record_uuid_hint': '096c444b-33a8-4a59-8470-50c626ab1d09', 'override_offset': '0xD9AFF0', 'final_offset': '0xD9B450'} ids=['gochest_locked_parent', 'gochestscript_rn', 'gorunicgoal_setup_02', 'Runic_Axe', 'RunicChestReward']
+- `nid260_sehallway.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-290.5418701922435, 1.957433213502427, -177.8004637677107] placement={'override_name': 'gorunicgoal_setup_02_overrideInst', 'object_name': 'gorunicgoal_setup_02', 'instance_guid': 'ac9bd426-48f6-dff9-4392-1bbdf9103117', 'record_uuid_hint': 'ac9bd426-dff9-48f6-bd1b-9243183210f9', 'override_offset': '0xD9B990', 'final_offset': '0xD9BDF0'} ids=['gochest_locked_parent', 'gochestscript_rn', 'gorunicgoal_setup_02', 'Runic_Axe', 'RunicChestReward']
+- `nid300_wroom.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `nid310_nwroom.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-167.30409606953964, 1.9410000486075878, -93.66612249083425] placement={'override_name': 'gorunicgoal_setup_02_overrideInst', 'object_name': 'gorunicgoal_setup_02', 'instance_guid': '931d2e44-4548-b6f8-0f42-a1a0822cbac1', 'record_uuid_hint': '931d2e44-b6f8-4548-a0a1-420fc2bb2c82', 'override_offset': '0xD7CEA0', 'final_offset': '0xD7D300'} ids=['gochest_locked_parent', 'gochestscript_rn', 'gorunicgoal_setup_02', 'Runic_Axe', 'RunicChestReward']
+- `nid320_nroom.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-255.3579823541865, 2.536000038027762, -64.57504237522112] placement={'override_name': 'gorunicgoal_setup_02_overrideInst', 'object_name': 'gorunicgoal_setup_02', 'instance_guid': '7705c1ed-41eb-e597-a693-1a8cf31db2a4', 'record_uuid_hint': '7705c1ed-e597-41eb-8c1a-93a6a5b31df3', 'override_offset': '0x97A4E0', 'final_offset': '0x97A940'} ids=['gochest_locked_parent', 'gochestscript_rn', 'gorunicgoal_setup_02', 'Runic_Axe', 'RunicChestReward']
+- `nid330_neroom.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `nid340_eroom.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `nid400_center.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak100_entrance.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak120_cavescarelh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak140_caverndark.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-437.34835748264874, 114.29021501541138, 625.9421640814452] placement={'override_name': 'gochest_locked_tier3_peak140_1_overrideInst', 'object_name': 'gochest_locked_tier3_peak140_1', 'instance_guid': 'f8ac74b9-414e-59e7-64d8-738182c00663', 'record_uuid_hint': 'f8ac74b9-59e7-414e-8173-d8646407c082', 'override_offset': '0x52C6FF0', 'final_offset': '0x52C76E0'} ids=['gochest_locked_parent', 'gochest_locked_tier3_peak140_1', 'gochestscript_rn', 'LootCollect140_Increment, Reaction_Celebrate_RunicChest:Trigger', 'Runic_Axe', 'RunicChestReward']
+- `peak180_enttochimneylh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak190_chimneyenter.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak200_chimneylow.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `peak205_chiselarena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak210_rollerroomlh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `peak260_chimneylowhall.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak300_chimneymid.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak500_chimneytop.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `peak720_summitascenthub.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-458.1594543457031, 1197.121337890625, 930.2709350585938] placement={'override_name': 'gochest_locked_tier3_peak720_1_overrideInst', 'object_name': 'gochest_locked_tier3_peak720_1', 'instance_guid': 'c0cf4119-40ba-d7d0-0042-afa7a46f5514', 'record_uuid_hint': 'c0cf4119-d7d0-40ba-a7af-420015566fa4', 'override_offset': '0x63DD580', 'final_offset': '0x63DD9E0'} ids=['gochest_locked_parent', 'gochest_locked_tier3_peak720_1', 'gochestscript_rn', 'Runic_Axe', 'runic_breakable_01', 'runic_breakable_02', 'runic_breakable_03', 'RunicChestReward']
+- `peak740_summitpeak.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `peak780_summitexit.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `riv100_dangersentrance.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `riv200_dangersmain.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `riv225_dangerscave.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-201.34909057617188, 79.71295166015625, -481.97283935546875] placement={'override_name': 'golootlockedchest_overrideInst', 'object_name': 'golootlockedchest', 'instance_guid': '45bbcd15-458c-d30c-3338-a7b3dab9b3d9', 'record_uuid_hint': '45bbcd15-d30c-458c-b3a7-3833dab4b9da', 'override_offset': '0x47F6C70', 'final_offset': '0x47F7210'} ids=['gochest_locked_parent', 'gochestscript_rn', 'Runic_Axe', 'runic_breakable_01', 'runic_breakable_02', 'runic_breakable_03', 'RunicChestReward']
+- `riv325_dangersexit.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-231.0, 95.0, -423.0] placement={'override_name': 'golockedchest_traproom_overrideInst', 'object_name': 'golockedchest_traproom', 'instance_guid': '7d8b4043-40e8-ef8e-db40-96b3a1a1e3fc', 'record_uuid_hint': '7d8b4043-ef8e-40e8-b396-40dbfde4a1a1', 'override_offset': '0x30E22B0', 'final_offset': '0x30E28A0'} ids=['gochest_locked_parent', 'gochestscript_rn', 'Runic_Axe', 'runic_gnome_01', 'runic_gnome_02', 'runic_gnome_03', 'RunicChestReward']
+- `riv350_calderavista.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_CALS_Shiphead_Parent']
+- `riv400_forestintro.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_CALS_Shiphead_Parent']
+- `riv420_forestboarstart.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-313.4189453125, 87.75, -309.90380859375] placement={'override_name': 'gochest_runic_tier1_riv420_1_overrideInst', 'object_name': 'gochest_runic_tier1_riv420_1', 'instance_guid': 'd2cacb84-426f-d68d-504a-11ae125c2b62', 'record_uuid_hint': 'd2cacb84-d68d-426f-ae11-4a50632c5c12', 'override_offset': '0x4125F70', 'final_offset': '0x41265D0'} ids=['gochest_locked_parent', 'gochest_runic_tier1_riv420_1', 'gochestscript_rn', 'Runic_Axe', 'RunicChestReward']
+- `riv430_forestboartrack.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `riv475_freyahouseext.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-402.765625, 63.917999267578125, -25.932273864746094] placement={'override_name': 'gochest_locked_tier3_riv475_1_overrideInst', 'object_name': 'gochest_locked_tier3_riv475_1', 'instance_guid': '69780ade-492b-0891-1948-4199e5423527', 'record_uuid_hint': '69780ade-0891-492b-9941-4819283642e5', 'override_offset': '0x4738340', 'final_offset': '0x4738A50'} ids=['gochest_locked_parent', 'gochest_locked_tier3_riv475_1', 'gochestscript_rn', 'Runic_Axe', 'RunicChestReward']
+- `riv925_freyacave.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-473.51507568359375, 40.5, -26.950910568237305] placement={'override_name': 'gochest_locked_tier1_riv925_1_overrideInst', 'object_name': 'gochest_locked_tier1_riv925_1', 'instance_guid': '0f0cc7ca-4842-3bb2-96f6-ddbed87a8f3b', 'record_uuid_hint': '0f0cc7ca-3bb2-4842-bedd-f6963c907ad8', 'override_offset': '0x5B71F90', 'final_offset': '0x5B724C0'} ids=['gochest_locked_parent', 'gochest_locked_tier1_riv925_1', 'gochestscript_rn', 'Runic_Axe', 'runic_breakable_01', 'runic_breakable_02', 'runic_breakable_03', 'RunicChestReward']
+- `riv975_chiselarena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn100_entrance.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn110_chiselarena.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn150_handunder.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn200_lakeext.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn300_huldracamp.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn350_relicroom.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn400_hammerbase.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn430_hammerclimb.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn550_chasmclimb.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn600_chasmroom.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn750_returnhallway.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `stn800_shortcut.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl100_httk.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[325.83121490478516, -28.444440841674805, -439.92340087890625] placement={'override_name': 'gochest_locked_tier5_xpl100_1_overrideInst', 'object_name': 'gochest_locked_tier5_xpl100_1', 'instance_guid': 'd8e4c774-44fe-09d0-a960-198ab802058e', 'record_uuid_hint': 'd8e4c774-09d0-44fe-8a19-60a98f0602b8', 'override_offset': '0x7735B20', 'final_offset': '0x7736170'} ids=['gochest_locked_parent', 'gochest_locked_tier5_xpl100_1', 'gochestscript_rn', 'Runic_Axe', 'RunicChestReward']
+- `xpl150_httktemple.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl160_httkcavel.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl200_funeral.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-43.9046096801758, 14.5, 748.5794448852539] placement={'override_name': 'gochest_runic_tier2_xpl200_1_overrideInst', 'object_name': 'gochest_runic_tier2_xpl200_1', 'instance_guid': 'c190d593-4070-6bb7-9925-cb9f2d5867cf', 'record_uuid_hint': 'c190d593-6bb7-4070-9fcb-2599d068582d', 'override_offset': '0x85B23F0', 'final_offset': '0x85B27E0'} ids=['gochest_locked_parent', 'gochest_runic_tier2_xpl200_1', 'gochestscript_rn', 'Runic_Axe', 'RunicChestReward', 'RunicLock01', 'RunicLock02', 'RunicLock03']
+- `xpl220_funerallh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl225_funerallh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl250_funeralinterior.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+- `xpl300_stronghold.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl400_huldramines.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl425_huldramineslh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl450_huldramines.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl475_huldramineslh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl600_masontrail.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl625_masontraillh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl650_masontrailcave.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl850_dungeonforest.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[87.19123225540534, 1.461977481842041, -558.6600363232956] placement={'override_name': 'gochest_runic_tier1_xpl850_1_overrideInst', 'object_name': 'gochest_runic_tier1_xpl850_1', 'instance_guid': '3f3a8e78-44ff-44f5-7da0-24b2efce93dc', 'record_uuid_hint': '3f3a8e78-44f5-44ff-b224-a07ddd94ceef', 'override_offset': '0x85B2700', 'final_offset': '0x85B2C90'} ids=['gochest_locked_parent', 'gochest_runic_tier1_xpl850_1', 'gochestscript_rn', 'Runic_Axe', 'RunicChestReward']
+- `xpl875_dungeonforestlh.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl900_islandarch.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl910_islandshipwreck.wad`: shiphead_carriers=1; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `6f50ac26-45fc-6027-e38f-1bba6b58656c` paths=1 ids=['RegionSummary_ISW_Shiphead_Parent', 'Ship Head'] error=None
+    - world=[-170.1243218462434, 2.5339055339153447, -225.88551124984124] placement={'override_name': 'goartifactshiphead_inupperarena_overrideInst', 'object_name': 'goartifactshiphead_inupperarena', 'instance_guid': 'fda83783-4b36-1579-d4a2-9194810c3d09', 'record_uuid_hint': 'fda83783-1579-4b36-9491-a2d40a3e0c81', 'override_offset': '0x25CBBB0', 'final_offset': '0x25CBDC0'} ids=['>goartifactshiphead01', '\\goartifactscript', 'goartifactshiphead_inupperarena', 'RegionSummary_ISW_Shiphead_Parent', 'Ship Head']
+- `xpl920_islandclimb.wad`: shiphead_carriers=0; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[226.80191253510452, -16.742295265197754, -21.639614252489878] placement={'override_name': 'gochest_runic_tier1_xpl920_1_overrideInst', 'object_name': 'gochest_runic_tier1_xpl920_1', 'instance_guid': 'a336e184-4ac7-c90b-6cd6-288e2cdab274', 'record_uuid_hint': 'a336e184-c90b-4ac7-8e28-d66c75b3da2c', 'override_offset': '0x21732A0', 'final_offset': '0x21739A0'} ids=['@kdgochestpickups_loot', 'gochest_locked_parent', 'gochest_runic_tier1_xpl920_1', 'gochestscript_rn', 'Runic_Axe', 'runic_breakable_01', 'runic_breakable_02', 'runic_breakable_03', 'RunicChestReward']
+- `xpl930_beachruins.wad`: shiphead_carriers=0; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault']
+- `xpl940_beachcave.wad`: shiphead_carriers=1; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `30c3bcf5-413a-33e7-f1d3-9f81acd3b99c` paths=1 ids=['RegionSummary_BC_Shiphead_Parent', 'Ship Head'] error=None
+    - world=[100.53295403112952, 2.0206246376037598, -176.91596472170585] placement={'override_name': 'goartifactshiphead06_overrideInst', 'object_name': 'goartifactshiphead06', 'instance_guid': '7d8a35dc-4d6a-abf8-065e-1ead0c470fcc', 'record_uuid_hint': '7d8a35dc-abf8-4d6a-ad1e-5e06cd10470c', 'override_offset': '0x2DD0F50', 'final_offset': '0x2DD1110'} ids=['>goartifactshiphead06', '\\goartifactscript', 'goartifactshiphead06', 'RegionSummary_BC_Shiphead_Parent', 'Ship Head']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[77.69910638370473, -4.40076245367527, -192.25833433522763] placement={'override_name': 'gochest_runic_tier1_xpl940_1_overrideInst', 'object_name': 'gochest_runic_tier1_xpl940_1', 'instance_guid': 'a2cdfc7a-4f0a-b68e-ac21-2bb108cd35b7', 'record_uuid_hint': 'a2cdfc7a-b68e-4f0a-b12b-21acb836cd08', 'override_offset': '0x2DCD5D0', 'final_offset': '0x2DCDCA0'} ids=['gochest_locked_parent', 'gochest_runic_tier1_xpl940_1', 'gochestscript_rn', 'Runic_Axe', 'RunicChestReward', 'UnlockRunicChest']
+- `xpl950_beachmaze.wad`: shiphead_carriers=1; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `5bb11ed5-419b-42ca-ba81-3598d29ca473` paths=1 ids=['RegionSummary_BM_Shiphead_Parent', 'Ship Head'] error=None
+    - world=[-182.69279926829176, -0.4959319829940796, 312.8584548104641] placement={'override_name': 'goartifactshiphead04_overrideInst', 'object_name': 'goartifactshiphead04', 'instance_guid': None, 'record_uuid_hint': 'e8255557-6c89-4c5d-a8b2-9be82b386844', 'override_offset': '0x3235320', 'final_offset': '0x3235410'} ids=['>goartifactshiphead04', '\\goartifactscript', 'goartifactshiphead04', 'RegionSummary_BM_Shiphead_Parent', 'Ship Head']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-251.0319695820877, -5.7467373833060265, 299.8836702630201] placement={'override_name': 'golootlockedchest_spintype_xx01_overrideInst', 'object_name': 'golootlockedchest_spintype_xx01', 'instance_guid': 'c02f0190-49d5-0ea0-146c-478fd46f4a49', 'record_uuid_hint': 'c02f0190-0ea0-49d5-8f47-6c144a4b6fd4', 'override_offset': '0x3232AB0', 'final_offset': '0x32333A0'} ids=['gochest_locked_parent', 'gochestscript_rn', 'gorunic_chest_axe_tier02_04', 'Runic_Axe', 'RunicChestReward']
+- `xpl960_beachship.wad`: shiphead_carriers=1; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `8b297a23-4c77-552f-71b0-139435292c0f` paths=1 ids=['RegionSummary_CALS_Shiphead_Parent', 'Ship Head'] error=None
+    - world=[-223.79661998937502, 5.981132507324219, -115.03532851553268] placement={'override_name': 'goartifactshiphead_ontower_overrideInst', 'object_name': 'goartifactshiphead_ontower', 'instance_guid': 'bd9a46a3-4b8f-d466-0be2-129e27fa4004', 'record_uuid_hint': 'bd9a46a3-d466-4b8f-9e12-e20b0541fa27', 'override_offset': '0x2554240', 'final_offset': '0x2554400'} ids=['>goartifactshiphead09', '\\goartifactscript', 'goartifactshiphead_ontower', 'RegionSummary_CALS_Shiphead_Parent', 'Ship Head']
+- `xpl970_beachtower.wad`: shiphead_carriers=1; nornir_carriers=1; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `448f2d37-44a7-34e0-fd7e-6697791822f8` paths=1 ids=['RegionSummary_BT_Shiphead_Parent', 'Ship Head'] error=None
+    - world=[-260.6669448151499, -4.169470753105234, 183.62904925949533] placement={'override_name': 'goartifactshiphead02xx01xx_overrideInst', 'object_name': 'goartifactshiphead02xx01xx', 'instance_guid': '01a8ba24-409b-5fb4-9a1c-18b43669fe44', 'record_uuid_hint': '01a8ba24-5fb4-409b-b418-1c9a45ff6936', 'override_offset': '0x2172EF0', 'final_offset': '0x21730A0'} ids=['>goartifactshiphead02', '\\goartifactscript', 'goartifactshiphead02xx01xx', 'RegionSummary_BT_Shiphead_Parent', 'Ship Head']
+  - Nornir carrier `779c5eb5-4b6f-add9-2ab6-668448a695c7` types=['Runic_Axe'] paths=1 ids=['Runic_Axe', 'RunicChestReward'] error=None
+    - world=[-261.2477280744189, -3.97690109152191, 188.8201459478363] placement={'override_name': 'gochest_locked_tier1_xpl970_1_overrideInst', 'object_name': 'gochest_locked_tier1_xpl970_1', 'instance_guid': '6b701107-4e78-df82-ecd5-08b6b1a8444f', 'record_uuid_hint': '6b701107-df82-4e78-b608-d5ec5045a8b1', 'override_offset': '0x21609C0', 'final_offset': '0x2160FD0'} ids=['gochest_locked_parent', 'gochest_locked_tier1_xpl970_1', 'gochestscript_rn', 'Runic_Axe', 'RunicChestReward']
+- `xpl980_beachwaterfall.wad`: shiphead_carriers=2; nornir_carriers=0; target_literals=['RegionSummary_RunicChest_Parent_TyrsVault', 'RegionSummary_CALS_Shiphead_Parent']
+  - Ship Head carrier `cf1ec369-4f86-86ee-1296-57b2574540a5` paths=1 ids=['RegionSummary_BW_Shiphead_Parent', 'Ship Head'] error=None
+    - world=[115.25951366519803, 5.969723701477051, 223.703513477275] placement={'override_name': 'goartifactshiphead_ontower_overrideInst', 'object_name': 'goartifactshiphead_ontower', 'instance_guid': '6cffc988-4efa-77b4-24ba-f987adfdba6a', 'record_uuid_hint': '6cffc988-77b4-4efa-87f9-ba246bbbfdad', 'override_offset': '0x2C9A390', 'final_offset': '0x2C9A550'} ids=['>goartifactshiphead07', '\\goartifactscript', 'goartifactshiphead_ontower', 'RegionSummary_BW_Shiphead_Parent', 'Ship Head']
+  - Ship Head carrier `46a6d492-4eae-22cb-cbe8-b4a5d534081a` paths=1 ids=['RegionSummary_CALS_Shiphead_Parent', 'Ship Head'] error=None
+    - world=[115.25951366519803, 5.969723701477051, 223.703513477275] placement={'override_name': 'goartifactshiphead_ontower_overrideInst', 'object_name': 'goartifactshiphead_ontower', 'instance_guid': '6cffc988-4efa-77b4-24ba-f987adfdba6a', 'record_uuid_hint': '6cffc988-77b4-4efa-87f9-ba246bbbfdad', 'override_offset': '0x2C9A390', 'final_offset': '0x2C9A550'} ids=['>goartifactshiphead07', '\\goartifactscript', 'goartifactshiphead_ontower', 'RegionSummary_CALS_Shiphead_Parent', 'Ship Head']
+
+## Interpretation
+
+This report intentionally stops before changing any catalogue join. A native carrier or placement path must still be tied to the exact tracked quest by native evidence; counts and location similarity are not enough.
