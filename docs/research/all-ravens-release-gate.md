@@ -22,17 +22,34 @@ No native read-only API has been proven for reading individual `ravenKilled` sta
 from an unloaded Raven WAD instance. The loaded-instance adapter cannot populate all
 53 rows when a user opens a map, especially for Ravens killed before mod install.
 
-## Exact next runtime probe
+## Native Lua persistence investigation
 
-Build a read-only diagnostic that receives one catalogue instance GUID and queries
-the native checkpoint/object-state store without loading or mutating that Raven.
-Run it against two legitimate saves with opposite state for the same Raven. Prove:
+Offline PE registration-table analysis of the shipped PC executable proved that the
+Lua-facing `game.SubObject` table exposes exactly these seven methods in the relevant
+registration block:
 
-1. The unloaded Raven returns `false` on the uncollected save.
-2. The same unloaded Raven returns `true` on the collected save.
-3. The query works before visiting its region.
-4. Checkpoint restore changes the observed value back when expected.
-5. No save, quest, marker, collectible, or progression bytes change.
+- `Sleep`
+- `Wake`
+- `SetRetainOnCheckpoint`
+- `SetForgetOnCheckpoint`
+- `SoftSave`
+- `SetEntityZoneHandler`
+- `SetUpdateDisableDistance`
 
-Only after this passes should the adapter populate all catalogue rows and the full
-human map/compass matrix begin.
+`LoadSubObject` exists as an internal engine string but is not registered as a Lua
+method. The registered object lookup APIs operate on loaded game objects; the scan
+found no read/restore/GUID API for querying checkpoint state of an unloaded subobject.
+Evidence is archived under
+`archive/field-logs/source-scans/lua-registration-tables-20260914-065951/`.
+
+For release purposes, the supported Lua/native API route is therefore considered
+closed unless new concrete engine evidence appears. This does **not** prove that the
+compiled engine lacks an internal mechanism; it means the mod has no proven callable,
+read-only Lua oracle for it. Unknown per-Raven state remains hidden/fail-closed.
+
+## Runtime gate remains closed
+
+Do not populate static Raven pins from aggregate regional counts, actor absence, map
+discovery, or synthetic completion state. `ready_for_runtime_test` remains `false`
+until an exact individual unloaded-state oracle is proven. Loaded Raven lifecycle
+observation remains valid but cannot establish pre-install kills for all 53 entries.

@@ -15,6 +15,8 @@ do
     byCatalogueId[row.CatalogueId] = row
   end
 
+  local byMarkerId = {}
+
   local states = _G.CompletionistMapV105RavenState or {}
   _G.CompletionistMapV105RavenState = states
   local previousPrompt = MapOn.GetShowOnCompassPrompt
@@ -27,10 +29,28 @@ do
     print(prefix .. category .. " " .. fields)
   end
 
+  local function rememberMarkerId(name, info)
+    if type(name) ~= "string" or type(info) ~= "table" or info.Id == nil then return end
+    byMarkerId[tostring(info.Id)] = name
+  end
+
   local function markerInfo(name)
     local ok, info = pcall(function() return game.Map.GetMarkerInfo(name) end)
-    if not ok or info == nil or info.Id == nil then return nil end
+    if not ok or type(info) ~= "table" or info.Id == nil then return nil end
+    rememberMarkerId(name, info)
     return info
+  end
+
+  local function knownNameForId(id)
+    if id == nil then return nil end
+    local key = tostring(id)
+    local cached = byMarkerId[key]
+    if cached ~= nil then return cached end
+    for name, _ in pairs(byName) do
+      local info = markerInfo(name)
+      if info ~= nil and tostring(info.Id) == key then return name end
+    end
+    return nil
   end
 
   local function recycle(go)
@@ -90,8 +110,8 @@ do
     for _, row in ipairs(rows) do
       if row.Realm == realm and states[row.CatalogueId] == false and icons[row.Name] == nil then
         local ok, value = pcall(function()
-          local info = game.Map.GetMarkerInfo(row.Name)
-          if info == nil or info.Id == nil then return nil, "marker_info" end
+          local info = markerInfo(row.Name)
+          if info == nil then return nil, "marker_info" end
           local found, region = Map.FindRegionFromMarker(info.Id)
           if found ~= true or region == nil then return nil, "region" end
           return Map.CreateMarkerIcon(info.Id, region, ""), nil
@@ -205,7 +225,8 @@ do
     local hidden = 0
     for _, id in ipairs(ids) do
       if exceptIdString == nil or tostring(id) ~= exceptIdString then
-        local hideOK = pcall(function() game.Compass.HideMarker(id) end)
+        local target = knownNameForId(id) or id
+        local hideOK = pcall(function() game.Compass.HideMarker(target) end)
         if not hideOK then return false, hidden, "hide_failed:" .. tostring(id) end
         hidden = hidden + 1
       end

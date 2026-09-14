@@ -107,6 +107,30 @@ class RavenRuntimeTests(unittest.TestCase):
         self.assertEqual(model.click_raven("stock-uid"), "delegate")
         self.assertIsNone(model.active_target)
 
+    def test_incidental_collision_noise_preserves_exact_candidate_until_uid_resolution(self):
+        model = self.model()
+        model.observe(self.a["catalogue_id"], False)
+        model.open_map(self.a["realm"])
+        self.arm(model, self.a)
+
+        # Real map callbacks can contain unrelated collision churn between the exact
+        # Raven collision and the human click. There is deliberately no TTL.
+        for _ in range(5):
+            model.incidental_collision()
+            self.assertIsNone(model.collide("stock:incidental-noise"))
+            self.assertEqual(model.selection, self.a["catalogue_id"])
+
+        self.assertEqual(model.click_raven(self.a["marker"]["uid"]), "shown")
+        self.assertEqual(model.active_target, ("raven", self.a["catalogue_id"]))
+
+        # A genuinely different prompt UID must disarm/delegate instead of letting a
+        # stale Raven candidate hijack a stock target.
+        self.arm(model, self.a)
+        model.incidental_collision()
+        self.assertEqual(model.click_raven("stock-uid"), "delegate")
+        self.assertIsNone(model.selection)
+        self.assertEqual(model.active_target, ("raven", self.a["catalogue_id"]))
+
     def test_marker_id_alone_never_infers_raven(self):
         model = self.model()
         model.observe(self.a["catalogue_id"], False)

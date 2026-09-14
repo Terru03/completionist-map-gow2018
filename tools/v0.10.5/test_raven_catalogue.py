@@ -168,7 +168,7 @@ class NativeCatalogueTests(unittest.TestCase):
         surplus_parents = set(self.audit["parent_surplus"])
         for row in self.catalogue["ravens"]:
             if row["progression"]["parent_quest"] in surplus_parents:
-                self.assertIn("parent_has_one_hidden_surplus_raven", row["special_handling"])
+                self.assertIn("parent_contains_one_bonus_untracked_raven", row["special_handling"])
 
     def test_every_row_has_position_and_state_source(self):
         validation = self.audit["catalogue_validation"]

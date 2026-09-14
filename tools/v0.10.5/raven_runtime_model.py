@@ -61,11 +61,19 @@ class RavenRuntimeModel:
 
     def collide(self, object_token: str):
         row = self.by_object.get(object_token)
-        if row is None or row["catalogue_id"] not in self.map_icons:
+        if row is None:
+            # Incidental/non-custom collision callbacks do not replace an exact Raven
+            # candidate. Ownership is resolved later by the exact prompt UID.
+            return None
+        if row["catalogue_id"] not in self.map_icons:
             self.selection = None
             return None
         self.selection = row["catalogue_id"]
         return self.selection
+
+    def incidental_collision(self) -> None:
+        """Model collision noise that must not expire an exact Raven candidate."""
+        return None
 
     def confirm_prompt(self, curr_marker_uid: str | None, legacy_proven_bridge: bool = False) -> bool:
         if self.selection is None:

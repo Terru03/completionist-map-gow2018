@@ -29,6 +29,17 @@ MAP_PRELUDE = r'''
 calls={logs={},previousShow=0,recycled=0}
 customIds={}
 stockIds={}
+local markerIds={}
+local markerNamesById={}
+local nextMarkerId=10000
+local function markerId(name)
+  if markerIds[name]==nil then
+    markerIds[name]=nextMarkerId
+    markerNamesById[nextMarkerId]=name
+    nextMarkerId=nextMarkerId+1
+  end
+  return markerIds[name]
+end
 print=function(s) calls.logs[#calls.logs+1]=s end
 enabledShowOnCompassMarkerFlags={"stock"}
 lamsConsts={RemoveFromCompass="remove",ReplaceInCompass="replace",AddToCompass="add"}
@@ -51,15 +62,21 @@ function Map.CreateMarkerIcon(id,region,label)
 end
 function Map.RecycleIcon(go) calls.recycled=calls.recycled+1; go.recycled=true end
 game={Map={},Compass={}}
-function game.Map.GetMarkerInfo(name) return {Id=name,X=1,Y=2,Z=3} end
+function game.Map.GetMarkerInfo(name) return {Id=markerId(name),X=1,Y=2,Z=3} end
 function game.Compass.FindMarkersByIconClass(classes)
   if classes[1]=="CompletionistRaven" then return customIds end
   return stockIds
 end
-function game.Compass.ShowMarker(name,class) customIds={name}; calls.shown=name; calls.class=class end
+function game.Compass.ShowMarker(name,class) customIds={markerId(name)}; calls.shown=name; calls.class=class end
 function game.Compass.HideMarker(target)
+  if type(target)=="number" and markerNamesById[target]~=nil then
+    error("raw custom numeric ID rejected")
+  end
   local next={}
-  for _,id in ipairs(customIds) do if tostring(id)~=tostring(target) then next[#next+1]=id end end
+  for _,id in ipairs(customIds) do
+    local customName=markerNamesById[id]
+    if tostring(id)~=tostring(target) and customName~=target then next[#next+1]=id end
+  end
   customIds=next
   local nextStock={}
   for _,id in ipairs(stockIds) do if tostring(id)~=tostring(target) then nextStock[#nextStock+1]=id end end
@@ -91,6 +108,7 @@ end
 function probe.customCount() return #customIds end
 function probe.stockCount() return #stockIds end
 function probe.customAt(i) return customIds[i] end
+function probe.markerId(name) return markerId(name) end
 function probe.tracked() return CompletionistMapV105TrackedCatalogueId end
 function probe.teardown() MapOn.ClearIcons(self) end
 function probe.reset() return CompletionistMapV105ResetRavenStates("save_load") end
@@ -114,9 +132,9 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.probe.open()
         self.assertEqual(self.probe.iconCount(), 2)
         self.probe.click(self.a["marker"]["name"])
-        self.assertEqual(self.probe.customAt(1), self.a["marker"]["name"])
+        self.assertEqual(self.probe.customAt(1), self.probe.markerId(self.a["marker"]["name"]))
         self.probe.click(self.b["marker"]["name"])
-        self.assertEqual(self.probe.customAt(1), self.b["marker"]["name"])
+        self.assertEqual(self.probe.customAt(1), self.probe.markerId(self.b["marker"]["name"]))
         self.probe.click(self.b["marker"]["name"])
         self.assertEqual(self.probe.customCount(), 0)
         self.probe.click(self.a["marker"]["name"])

@@ -1,0 +1,118 @@
+**********************
+PowerShell transcript start
+Start time: 20260914075125
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\run-all-ravens-hardening-with-log.ps1
+Process ID: 30916
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+=== Completionist Map v0.10.5 all-Ravens hardening ===
+Repository: C:/Users/david/Documents/GitHub/completionist-map-gow2018-all-ravens-release-candidate
+Offline/source-only run. God of War is not launched and active saves are not opened.
+=== APPLY GUARDED PATCH ===
+CHANGED tools/v0.10.5/all-ravens-map-runtime.lua
+CHANGED tools/v0.10.5/test_all_ravens_lua.py
+CHANGED tools/v0.10.5/raven_runtime_model.py
+CHANGED tools/v0.10.5/test_raven_runtime_model.py
+CHANGED catalogue/odins-ravens.json
+CHANGED tools/v0.10.5/raven_catalogue.py
+CHANGED tools/v0.10.5/test_raven_catalogue.py
+CHANGED docs/research/all-ravens-release-gate.md
+ALL_RAVENS_HARDENING_PATCH_APPLIED changed=8 catalogue_rows=53
+game_written=false save_or_progression_written=false game_launched=false
+warning: in the working copy of 'catalogue/odins-ravens.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/research/all-ravens-release-gate.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/all-ravens-map-runtime.lua', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/raven_catalogue.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/raven_runtime_model.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/test_all_ravens_lua.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/test_raven_catalogue.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/test_raven_runtime_model.py', LF will be replaced by CRLF the next time Git touches it
+=== TEST raven-catalogue ===
+test_catalogue_matches_json_schema (__main__.NativeCatalogueTests.test_catalogue_matches_json_schema) ... ok
+test_complete_native_object_count (__main__.NativeCatalogueTests.test_complete_native_object_count) ... ok
+test_duplicate_uid_rejected (__main__.NativeCatalogueTests.test_duplicate_uid_rejected) ... ok
+test_every_row_has_position_and_state_source (__main__.NativeCatalogueTests.test_every_row_has_position_and_state_source) ... ok
+test_expected_native_region_distribution (__main__.NativeCatalogueTests.test_expected_native_region_distribution) ... ok
+test_expected_realm_distribution (__main__.NativeCatalogueTests.test_expected_realm_distribution) ... ok
+test_malformed_entry_rejected (__main__.NativeCatalogueTests.test_malformed_entry_rejected) ... ok
+test_midgard_projection_is_plausible (__main__.NativeCatalogueTests.test_midgard_projection_is_plausible) ... ok
+test_proven_raven_stays_frozen (__main__.NativeCatalogueTests.test_proven_raven_stays_frozen) ... ok
+test_release_gate_stays_closed_without_unloaded_state_query (__main__.NativeCatalogueTests.test_release_gate_stays_closed_without_unloaded_state_query) ... ok
+test_surplus_native_parents_are_documented (__main__.NativeCatalogueTests.test_surplus_native_parents_are_documented) ... ok
+test_unique_identities_and_uids (__main__.NativeCatalogueTests.test_unique_identities_and_uids) ... ok
+test_hash_keeps_proven_uid (__main__.TransformTests.test_hash_keeps_proven_uid) ... ok
+test_parent_transform_rebuilds_proven_veithurgard_point (__main__.TransformTests.test_parent_transform_rebuilds_proven_veithurgard_point) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 10.367s
+
+OK
+=== TEST raven-runtime-model ===
+test_a_b_and_b_a_replacement (__main__.RavenRuntimeTests.test_a_b_and_b_a_replacement) ... ok
+test_collected_hidden_uncollected_shown_and_mixed_save (__main__.RavenRuntimeTests.test_collected_hidden_uncollected_shown_and_mixed_save) ... ok
+test_exact_uid_required_after_exact_collision (__main__.RavenRuntimeTests.test_exact_uid_required_after_exact_collision) ... ok
+test_fully_collected_and_fresh_simulation (__main__.RavenRuntimeTests.test_fully_collected_and_fresh_simulation) ... ok
+test_incidental_collision_noise_preserves_exact_candidate_until_uid_resolution (__main__.RavenRuntimeTests.test_incidental_collision_noise_preserves_exact_candidate_until_uid_resolution) ... ok
+test_kill_tracked_a_removes_a_only (__main__.RavenRuntimeTests.test_kill_tracked_a_removes_a_only) ... ok
+test_killing_a_does_not_remove_b_or_stock (__main__.RavenRuntimeTests.test_killing_a_does_not_remove_b_or_stock) ... ok
+test_legacy_proven_bridge_is_only_nil_uid_exception (__main__.RavenRuntimeTests.test_legacy_proven_bridge_is_only_nil_uid_exception) ... ok
+test_loading_other_save_clears_all_cached_state_fail_closed (__main__.RavenRuntimeTests.test_loading_other_save_clears_all_cached_state_fail_closed) ... ok
+test_marker_id_alone_never_infers_raven (__main__.RavenRuntimeTests.test_marker_id_alone_never_infers_raven) ... ok
+test_realm_filtering (__main__.RavenRuntimeTests.test_realm_filtering) ... ok
+test_restore_uncollected_reappears_and_recollects (__main__.RavenRuntimeTests.test_restore_uncollected_reappears_and_recollects) ... ok
+test_same_raven_second_click_removes (__main__.RavenRuntimeTests.test_same_raven_second_click_removes) ... ok
+test_stale_selection_cannot_hijack_other_raven_or_stock (__main__.RavenRuntimeTests.test_stale_selection_cannot_hijack_other_raven_or_stock) ... ok
+test_stock_and_nornir_replacement_both_directions (__main__.RavenRuntimeTests.test_stock_and_nornir_replacement_both_directions) ... ok
+test_teardown_cleans_ui_and_no_permanent_polling (__main__.RavenRuntimeTests.test_teardown_cleans_ui_and_no_permanent_polling) ... ok
+test_unknown_state_fails_closed (__main__.RavenRuntimeTests.test_unknown_state_fails_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.006s
+
+OK
+=== TEST all-ravens-build ===
+test_candidate_has_53_real_ravens_and_no_twin (__main__.AllRavensBuildTests.test_candidate_has_53_real_ravens_and_no_twin) ... ok
+test_candidate_has_only_five_scoped_files (__main__.AllRavensBuildTests.test_candidate_has_only_five_scoped_files) ... ok
+test_deterministic_generate (__main__.AllRavensBuildTests.test_deterministic_generate) ... ok
+test_every_marker_uses_one_shared_raven_resource (__main__.AllRavensBuildTests.test_every_marker_uses_one_shared_raven_resource) ... ok
+test_gameplay_hook_has_53_exact_state_rows (__main__.AllRavensBuildTests.test_gameplay_hook_has_53_exact_state_rows) ... ok
+test_hooks_add_no_progression_write (__main__.AllRavensBuildTests.test_hooks_add_no_progression_write) ... ok
+test_lf_and_crlf_templates_render_same (__main__.AllRavensBuildTests.test_lf_and_crlf_templates_render_same) ... ok
+test_lua_has_53_data_rows_and_exact_router_contract (__main__.AllRavensBuildTests.test_lua_has_53_data_rows_and_exact_router_contract) ... ok
+test_pool_capacity_matches_largest_realm (__main__.AllRavensBuildTests.test_pool_capacity_matches_largest_realm) ... ok
+test_release_gate_closed_for_unloaded_state (__main__.AllRavensBuildTests.test_release_gate_closed_for_unloaded_state) ... ok
+test_source_game_files_stay_unchanged (__main__.AllRavensBuildTests.test_source_game_files_stay_unchanged) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.118s
+
+OK
+=== TEST all-ravens-lua ===
+test_exact_loaded_instance_publishes_native_bool_and_rearms (__main__.AllRavensEventLuaTests.test_exact_loaded_instance_publishes_native_bool_and_rearms) ... ok
+test_a_b_same_click_stock_and_kill_lifecycle (__main__.AllRavensMapLuaTests.test_a_b_same_click_stock_and_kill_lifecycle) ... ok
+test_save_load_reset_clears_state_and_target_fail_closed (__main__.AllRavensMapLuaTests.test_save_load_reset_clears_state_and_target_fail_closed) ... ok
+test_unknown_hidden_restore_and_teardown (__main__.AllRavensMapLuaTests.test_unknown_hidden_restore_and_teardown) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.004s
+
+OK
+=== TEST all-ravens-transaction ===
+ALL_RAVENS_TRANSACTION_SELF_TEST_PASSED
+ALL_RAVENS_HARDENING_PASSED
+**********************
+PowerShell transcript end
+End time: 20260914075148
+**********************

@@ -455,7 +455,7 @@ def build_catalogue(game_root: Path) -> tuple[dict, dict]:
           f"unexpected native Raven object/target difference: {surplus}")
     for row in ravens:
         if row["progression"]["parent_quest"] in surplus:
-            row["special_handling"].append("parent_has_one_hidden_surplus_raven")
+            row["special_handling"].append("parent_contains_one_bonus_untracked_raven")
     catalogue = {
         "schema_version": 2,
         "catalogue": "completionist-map-gow2018-odins-ravens",
