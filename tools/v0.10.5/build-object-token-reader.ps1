@@ -23,5 +23,10 @@ $compile = '"{0}" >nul && cl.exe /nologo /std:c++17 /O2 /GS /guard:cf /W4 /WX /L
 & cmd.exe /d /s /c $compile
 if ($LASTEXITCODE -ne 0) { throw "Native token reader build failed with exit $LASTEXITCODE." }
 if (-not (Test-Path -LiteralPath $resolvedOutput -PathType Leaf)) { throw 'Native token reader output missing.' }
+
+$verify = '"{0}" >nul && dumpbin.exe /nologo /exports "{1}" | findstr.exe /L /C:"luaopen_completionist_object_token" >nul' -f $vcvars, $resolvedOutput
+& cmd.exe /d /s /c $verify
+if ($LASTEXITCODE -ne 0) { throw 'Native token reader export verification failed.' }
+
 Remove-Item -LiteralPath $objectPath -Force -ErrorAction SilentlyContinue
-Write-Host "OBJECT_TOKEN_READER_BUILT output=$resolvedOutput"
+Write-Host "OBJECT_TOKEN_READER_BUILT output=$resolvedOutput export=luaopen_completionist_object_token"
