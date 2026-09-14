@@ -37,6 +37,11 @@ class ProbeBuildTests(unittest.TestCase):
         self.assertIn('Wad = "xpl200_funeral.wad"', output)
         self.assertIn('ObjectName = "goprecisionchallenge_raven_perch1"', output)
 
+    def test_native_module_path_is_lua_quoted(self):
+        output = build(self.template, self.catalogue, r"C:\probe\token-reader.dll")
+        self.assertIn('local objectTokenReaderPath = "C:\\\\probe\\\\token-reader.dll"', output)
+        self.assertNotIn("@@OBJECT_TOKEN_READER_PATH@@", output)
+
     def test_catalogue_wad_object_pairs_are_unique(self):
         pairs = [
             (row["source"]["wad"].lower(), row["native"]["object_name"].lower())

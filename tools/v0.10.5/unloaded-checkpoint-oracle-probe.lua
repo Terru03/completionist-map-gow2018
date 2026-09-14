@@ -4,6 +4,8 @@
 do
   local prefix = "[CompletionistCheckpointOracle] "
   local ran = false
+  local objectTokenReader = nil
+  local objectTokenReaderPath = @@OBJECT_TOKEN_READER_PATH@@
   local catalogue = {
 -- @@RAVEN_ORACLE_ROWS@@
   }
@@ -55,6 +57,19 @@ do
     return table.concat(parts) .. suffix .. ":bytes=" .. tostring(#value)
   end
 
+  if objectTokenReaderPath ~= nil and type(package) == "table" and type(package.loadlib) == "function" then
+    local loader, loadError = package.loadlib(objectTokenReaderPath, "luaopen_completionist_object_token")
+    if type(loader) == "function" then
+      local ok, reader = pcall(loader)
+      if ok and type(reader) == "function" then objectTokenReader = reader end
+      log("TOKEN_READER load=true initOk=" .. tostring(ok) .. " readerType=" .. type(reader))
+    else
+      log("TOKEN_READER load=false error=" .. safeToString(loadError))
+    end
+  else
+    log("TOKEN_READER load=false reason=loadlib_unavailable_or_no_path")
+  end
+
   local function logObjectIdentity(value, killed)
     local fields = {
       "ravenKilled=" .. tostring(killed),
@@ -64,6 +79,9 @@ do
       safeCall("GetDebugPath", function() return value:GetDebugPath() end),
       safeCall("Level", function() return value.Level end),
     }
+    if type(objectTokenReader) == "function" then
+      fields[#fields + 1] = safeCall("ObjectToken", function() return objectTokenReader(value) end)
+    end
     if type(engine) == "table" and type(engine.CanPickle) == "function" then
       fields[#fields + 1] = safeCall("CanPickle", function() return engine.CanPickle(value) end)
     end

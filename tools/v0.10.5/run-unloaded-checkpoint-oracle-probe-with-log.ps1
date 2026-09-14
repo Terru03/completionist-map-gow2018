@@ -19,11 +19,13 @@ $targetRelative = 'mods\lua\gameart\scripts\levels\gameplaymodules\progression\p
 $targetPath = Join-Path $GameRoot $targetRelative
 $templatePath = Join-Path $repo 'tools\v0.10.5\unloaded-checkpoint-oracle-probe.lua'
 $builderPath = Join-Path $repo 'tools\v0.10.5\build-unloaded-checkpoint-oracle-probe.py'
+$nativeBuilderPath = Join-Path $repo 'tools\v0.10.5\build-object-token-reader.ps1'
 $cataloguePath = Join-Path $repo 'catalogue\odins-ravens.json'
 $loaderLogPath = Join-Path $GameRoot 'mods\loader_log.txt'
 $exePath = Join-Path $GameRoot 'GoW.exe'
 $tempBackup = Join-Path $env:TEMP ("completionist-checkpoint-oracle-$stamp.bak")
 $tempProbe = Join-Path $env:TEMP ("completionist-checkpoint-oracle-$stamp.lua")
+$tempNativeModule = Join-Path $env:TEMP ("completionist-object-token-$stamp.dll")
 $targetRestored = $false
 $transcriptStarted = $false
 $gameLaunched = $false
@@ -108,14 +110,16 @@ try {
     $staged = @(& git diff --cached --name-only)
     if ($LASTEXITCODE -ne 0) { throw 'Unable to inspect staged changes.' }
     if ($staged.Count -gt 0) { throw "Refusing to run with staged changes: $($staged -join ', ')" }
-    foreach ($path in @($targetPath, $templatePath, $builderPath, $cataloguePath, $exePath)) {
+    foreach ($path in @($targetPath, $templatePath, $builderPath, $nativeBuilderPath, $cataloguePath, $exePath)) {
         if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" }
     }
     if (Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -in @('GoW', 'GodOfWar') }) {
         throw 'God of War is already running. Close it first.'
     }
 
-    & python $builderPath --template $templatePath --catalogue $cataloguePath --output $tempProbe
+    & $nativeBuilderPath -OutputPath $tempNativeModule
+    if ($LASTEXITCODE -ne 0) { throw 'Native object-token reader build failed.' }
+    & python $builderPath --template $templatePath --catalogue $cataloguePath --output $tempProbe --native-module $tempNativeModule
     if ($LASTEXITCODE -ne 0) { throw 'Probe build failed.' }
     $originalBytes = [IO.File]::ReadAllBytes($targetPath)
     [IO.File]::WriteAllBytes($tempBackup, $originalBytes)
@@ -135,6 +139,7 @@ try {
         "precisionchallenge_before_sha256=$originalHash"
         "precisionchallenge_probe_installed_sha256=$installedHash"
         "probe_lua_sha256=$probeHash"
+        "object_token_reader_sha256=$((Get-FileHash -LiteralPath $tempNativeModule -Algorithm SHA256).Hash.ToLowerInvariant())"
         "target=$targetPath"
         'probe_read_only=true'
         'probe_save_writes=false'
@@ -260,7 +265,7 @@ catch {
 }
 finally {
     try { Restore-Target } catch {}
-    foreach ($path in @($tempBackup, $tempProbe)) {
+    foreach ($path in @($tempBackup, $tempProbe, $tempNativeModule)) {
         if (Test-Path -LiteralPath $path) { Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue }
     }
     Stop-LocalTranscript

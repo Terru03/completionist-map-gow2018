@@ -7,13 +7,14 @@ from pathlib import Path
 
 
 PLACEHOLDER = "-- @@RAVEN_ORACLE_ROWS@@"
+NATIVE_MODULE_PLACEHOLDER = "@@OBJECT_TOKEN_READER_PATH@@"
 
 
 def lua_quote(value: str) -> str:
     return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
-def build(template: str, catalogue: dict) -> str:
+def build(template: str, catalogue: dict, native_module: str | None = None) -> str:
     rows = catalogue["ravens"]
     identities: set[tuple[str, str]] = set()
     runtime_identities: dict[tuple[str, str], str] = {}
@@ -51,7 +52,12 @@ def build(template: str, catalogue: dict) -> str:
         raise ValueError(f"expected 53 Raven rows, found {len(rows)}")
     if template.count(PLACEHOLDER) != 1:
         raise ValueError("probe template placeholder missing or duplicated")
-    return template.replace(PLACEHOLDER, "\n".join(rendered))
+    if template.count(NATIVE_MODULE_PLACEHOLDER) != 1:
+        raise ValueError("native module placeholder missing or duplicated")
+    native_value = "nil" if native_module is None else lua_quote(native_module)
+    return template.replace(PLACEHOLDER, "\n".join(rendered)).replace(
+        NATIVE_MODULE_PLACEHOLDER, native_value
+    )
 
 
 def main() -> int:
@@ -59,10 +65,12 @@ def main() -> int:
     parser.add_argument("--template", type=Path, required=True)
     parser.add_argument("--catalogue", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--native-module", type=Path)
     args = parser.parse_args()
     output = build(
         args.template.read_text(encoding="utf-8"),
         json.loads(args.catalogue.read_text(encoding="utf-8")),
+        str(args.native_module.resolve()) if args.native_module is not None else None,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(output, encoding="utf-8", newline="\n")
