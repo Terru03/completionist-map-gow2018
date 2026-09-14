@@ -8,8 +8,8 @@ do
   local foundSaveRoot = false
   local visited = {}
   local nodeCount = 0
-  local maxNodes = 50000
-  local maxDepth = 10
+  local maxNodes = 75000
+  local maxDepth = 12
   local ravenKilledHits = 0
 
   local function log(msg)
@@ -71,7 +71,7 @@ do
     local ok, err = pcall(function()
       for k, v in pairs(tbl) do
         count = count + 1
-        if #parts < 32 then
+        if #parts < 40 then
           parts[#parts + 1] = keyText(k) .. ":" .. type(v) .. "=" .. (type(v) == "table" and "<table>" or safeToString(v))
         end
       end
@@ -117,15 +117,66 @@ do
     if not ok then log("WALK_ERROR path=" .. path .. " error=" .. safeToString(err)) end
   end
 
-  local function inspect(source, obj)
+  local function inspectSavedInfo(source, savedInfo)
+    log("SAVED_INFO source=" .. tostring(source) .. " type=" .. type(savedInfo) .. " value=" .. safeToString(savedInfo))
+    if type(savedInfo) == "table" then
+      summarize("savedInfo", savedInfo)
+      local ok, killed = pcall(function() return rawget(savedInfo, "ravenKilled") end)
+      log("SAVED_INFO_RAVEN_KILLED ok=" .. tostring(ok) .. " type=" .. type(killed) .. " value=" .. safeToString(killed))
+    end
+  end
+
+  local function inspectCoreSaveUpvalues()
+    local dbg = rawget(_G, "debug")
+    local getup = type(dbg) == "table" and dbg.getupvalue or nil
+    log("DEBUG_GETUPVALUE type=" .. type(getup))
+    if type(getup) ~= "function" then return end
+
+    local okRequire, savelib = pcall(require, "core.save")
+    log("CORE_SAVE_REQUIRE ok=" .. tostring(okRequire) .. " type=" .. type(savelib) .. " value=" .. safeToString(savelib))
+    if not okRequire or type(savelib) ~= "table" then return end
+
+    local targets = {
+      GetSaveState = savelib.GetSaveState,
+      Save = savelib.Save,
+      Restore = savelib.Restore,
+    }
+    local seenRoots = {}
+
+    for label, fn in pairs(targets) do
+      log("CORE_SAVE_FUNCTION label=" .. label .. " type=" .. type(fn) .. " value=" .. safeToString(fn))
+      if type(fn) == "function" then
+        for i = 1, 24 do
+          local ok, name, value = pcall(getup, fn, i)
+          if not ok then
+            log("UPVALUE_ERROR function=" .. label .. " index=" .. tostring(i) .. " error=" .. safeToString(name))
+            break
+          end
+          if name == nil then break end
+          log("UPVALUE function=" .. label .. " index=" .. tostring(i) .. " name=" .. safeToString(name) .. " type=" .. type(value) .. " value=" .. safeToString(value))
+          if name == "object_savestate" and type(value) == "table" and not seenRoots[value] then
+            seenRoots[value] = true
+            foundSaveRoot = true
+            local path = "core.save." .. label .. ".upvalue.object_savestate"
+            log("CORE_SAVE_ROOT function=" .. label .. " index=" .. tostring(i) .. " root=" .. safeToString(value))
+            summarize(path, value)
+            walk(value, path, 0)
+          end
+        end
+      end
+    end
+  end
+
+  local function inspect(source, obj, savedInfo)
     if foundSaveRoot or attempts >= maxAttempts then return end
     attempts = attempts + 1
     visited = {}
     nodeCount = 0
     ravenKilledHits = 0
 
-    log("RUN source=" .. tostring(source) .. " attempt=" .. tostring(attempts) .. " readOnly=true saveWrites=false progressionWrites=false")
+    log("RUN source=" .. tostring(source) .. " attempt=" .. tostring(attempts) .. " readOnly=true saveWrites=false progressionWrites=false upvalueInspection=true")
     log("RAVEN localKilled=" .. tostring(ravenKilled) .. " regionSummaryQuest=" .. tostring(regionSummaryQuest) .. " obj=" .. objectDetail(obj or thisObj))
+    if savedInfo ~= nil then inspectSavedInfo(source, savedInfo) end
 
     if type(engine) == "table" then
       local curObjFn = engine.CurrentlyExecutingObject
@@ -174,30 +225,32 @@ do
       log("ENV_COUNT count=" .. tostring(envCount))
     end
 
+    if not foundSaveRoot then inspectCoreSaveUpvalues() end
+
     log("SUMMARY source=" .. tostring(source) .. " foundSaveRoot=" .. tostring(foundSaveRoot) .. " nodesVisited=" .. tostring(nodeCount) .. " ravenKilledHits=" .. tostring(ravenKilledHits))
   end
 
   local prevLoaded = OnScriptLoaded
   function OnScriptLoaded(level, obj, ...)
     local result = prevLoaded(level, obj, ...)
-    inspect("OnScriptLoaded", obj)
+    inspect("OnScriptLoaded", obj, nil)
     return result
   end
 
   local prevStart = OnStart
   function OnStart(level, obj, ...)
     local result = prevStart(level, obj, ...)
-    inspect("OnStart", obj)
+    inspect("OnStart", obj, nil)
     return result
   end
 
   local prevRestore = OnRestoreCheckpoint
   function OnRestoreCheckpoint(level, obj, savedInfo, ...)
     local result = prevRestore(level, obj, savedInfo, ...)
-    inspect("OnRestoreCheckpoint", obj)
+    inspect("OnRestoreCheckpoint", obj, savedInfo)
     return result
   end
 
-  log("INSTALLED gameplayContext=true readOnly=true saveWrites=false progressionWrites=false")
+  log("INSTALLED gameplayContext=true readOnly=true saveWrites=false progressionWrites=false upvalueInspection=true")
 end
 -- END COMPLETIONIST RAVEN GAMEPLAY SAVESTATE PROBE
