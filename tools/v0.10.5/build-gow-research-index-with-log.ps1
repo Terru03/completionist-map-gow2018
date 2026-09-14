@@ -18,14 +18,35 @@ $console = Join-Path $outDir 'console-log.txt'
 $manifest = Join-Path $outDir 'manifest.json'
 $hotJson = Join-Path $outDir 'hot-report.json'
 $hotText = Join-Path $outDir 'hot-report.txt'
+$bootstrapOutput = Join-Path $outDir 'bootstrap-output.txt'
 $pythonOutput = Join-Path $outDir 'python-output.txt'
 $published = $false
 $transcript = $false
 
 $indexRoot = Join-Path $repo '.research-index'
-$venv = Join-Path $indexRoot 'venv'
-$venvPython = Join-Path $venv 'Scripts\python.exe'
+$packages = Join-Path $indexRoot 'python-packages'
 $db = Join-Path $indexRoot 'gow-caebcb027980.sqlite'
+
+function Invoke-PythonLogged {
+    param(
+        [Parameter(Mandatory=$true)][string[]]$Arguments,
+        [Parameter(Mandatory=$true)][string]$LogPath,
+        [switch]$Append
+    )
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        if ($Append) {
+            & python @Arguments 2>&1 | Tee-Object -FilePath $LogPath -Append | Out-Host
+        } else {
+            & python @Arguments 2>&1 | Tee-Object -FilePath $LogPath | Out-Host
+        }
+        return $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $oldEap
+    }
+}
 
 function Publish([string]$Result) {
     if ($script:published) { return }
@@ -38,6 +59,7 @@ function Publish([string]$Result) {
         "timestamp=$(Get-Date -Format o)"
         "branch=$expectedBranch"
         "local_index=$db"
+        "isolated_python_packages=$packages"
         'source_hashes_unchanged=true'
         'active_save_opened=false'
         'game_written=false'
@@ -81,43 +103,45 @@ try {
     if (-not (Test-Path -LiteralPath (Join-Path $GameRoot 'GoW.exe') -PathType Leaf)) { throw 'GoW.exe missing.' }
 
     New-Item -ItemType Directory -Force -Path $indexRoot | Out-Null
-    if (-not (Test-Path -LiteralPath $venvPython -PathType Leaf)) {
-        Write-Host 'Creating isolated research-index Python environment...'
-        & python -m venv $venv
-        if ($LASTEXITCODE -ne 0) { throw 'python -m venv failed.' }
-    }
+    New-Item -ItemType Directory -Force -Path $packages | Out-Null
 
-    $capstoneOk = $false
-    & $venvPython -c 'import capstone; print(capstone.__version__)' 2>$null | Out-Host
-    if ($LASTEXITCODE -eq 0) { $capstoneOk = $true }
-    if (-not $capstoneOk) {
-        Write-Host 'Installing Capstone into the isolated research-index environment...'
-        & $venvPython -m pip install --disable-pip-version-check 'capstone>=5,<6' | Out-Host
-        if ($LASTEXITCODE -ne 0) { throw 'Capstone installation failed.' }
-    }
+    # Keep third-party research dependencies isolated under .research-index without
+    # relying on Python's venv/ensurepip machinery. PYTHONPATH affects only this process tree.
+    $oldPythonPath = $env:PYTHONPATH
+    $env:PYTHONPATH = if ([string]::IsNullOrWhiteSpace($oldPythonPath)) { $packages } else { "$packages;$oldPythonPath" }
 
-    $argsList = @(
-        $builder,
-        '--game-root', $GameRoot,
-        '--db', $db,
-        '--manifest', $manifest,
-        '--hot-json', $hotJson,
-        '--hot-text', $hotText
-    )
-    if ($Rebuild) { $argsList += '--rebuild' }
-
-    $oldEap = $ErrorActionPreference
-    $ErrorActionPreference = 'Continue'
     try {
-        & $venvPython @argsList 2>&1 | Tee-Object -FilePath $pythonOutput
-        $pythonExit = $LASTEXITCODE
+        Write-Host 'Checking isolated Capstone dependency...'
+        $capstoneExit = Invoke-PythonLogged -Arguments @('-c', 'import capstone; print(capstone.__version__)') -LogPath $bootstrapOutput
+        if ($capstoneExit -ne 0) {
+            Write-Host 'Installing Capstone into .research-index\python-packages...'
+            $pipExit = Invoke-PythonLogged -Arguments @('-m','pip','install','--disable-pip-version-check','--target',$packages,'--upgrade','capstone>=5,<6') -LogPath $bootstrapOutput -Append
+            if ($pipExit -ne 0) {
+                throw "Capstone bootstrap failed with exit code $pipExit. Full output archived in $bootstrapOutput"
+            }
+            $verifyExit = Invoke-PythonLogged -Arguments @('-c', 'import capstone; print(capstone.__version__)') -LogPath $bootstrapOutput -Append
+            if ($verifyExit -ne 0) {
+                throw "Capstone import still fails after installation (exit $verifyExit). Full output archived in $bootstrapOutput"
+            }
+        }
+
+        $argsList = @(
+            $builder,
+            '--game-root', $GameRoot,
+            '--db', $db,
+            '--manifest', $manifest,
+            '--hot-json', $hotJson,
+            '--hot-text', $hotText
+        )
+        if ($Rebuild) { $argsList += '--rebuild' }
+
+        $pythonExit = Invoke-PythonLogged -Arguments $argsList -LogPath $pythonOutput
+        if ($pythonExit -ne 0) {
+            throw "Indexer exited $pythonExit. Full Python output archived in $pythonOutput"
+        }
     }
     finally {
-        $ErrorActionPreference = $oldEap
-    }
-
-    if ($pythonExit -ne 0) {
-        throw "Indexer exited $pythonExit. Full Python output archived in $pythonOutput"
+        $env:PYTHONPATH = $oldPythonPath
     }
 
     Publish 'INDEX_PASSED'
