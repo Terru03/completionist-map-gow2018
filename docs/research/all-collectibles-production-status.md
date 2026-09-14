@@ -12,7 +12,7 @@ state makes no marker. No game start. No game, save, or progress write.
 ## Scope
 
 - Branch: `codex/all-collectibles-production-research`
-- Hardening start commit: `483519b9fdc125c48a455f19c00cc79c096de4b7`
+- Legendary-classification hardening start commit: `0f8774b06759763defc31fb710264f7966cf610c`
 - Inputs: read-only PC WAD records, `mapmaster.dcb`, `quests.dcb`, and native Lua blobs.
 - Raven code and Raven production behavior: unchanged.
 
@@ -22,7 +22,7 @@ state makes no marker. No game start. No game, save, or progress write.
 |---|---:|---:|---:|---:|---|
 | Artefacts | 45 | 45 | 11 all artefacts; 9 Ship Heads | Ship Head 10 | PASS; Ship target gap blocked |
 | Lore Markers | 43 | 43 | 43 | 43 | PASS |
-| Legendary Chests | 64 | 43 | 33 | 33 | PASS raw set; 31 nontracked rows stay raw |
+| Legendary Chests | 64 | 43 | 33 | 33 | PASS raw set; 27 trial rewards excluded; 4 unresolved |
 | Nornir Chests | 22 | 29 | 0 exact | 21 | PASS raw static set; all exact joins blocked |
 | Nornir Seals | 30 | child objects | parent links | n/a | PASS |
 | Nornir Bells | 24 | child objects | parent links | n/a | PASS |
@@ -134,9 +134,62 @@ target. Class: `level_scripted_untracked_triple_chest_reward`.
 
 ## Legendary user class
 
-Raw 64 physical rows stay. 33 map-summary rows stay tracked. Remaining 31 stay
-unresolved nontracked raw research. No new production eligibility guess made.
-Production marker eligibility stays separate from raw physical membership.
+Raw catalogue membership and production eligibility are now separate. All 64
+physical rows stay. All 33 existing exact RegionSummary rows stay
+`tracked_legendary` / `tracked_collectible`; none were downgraded.
+
+Of 31 nontracked physical rows, 27 are `PASS_EXACT` `trial_reward` and therefore
+`exclude_trial_reward`. Positive native proof is the exact placement identity
+(`goarenaNN_{bronze|silver|gold}_legendary_tierN...` or
+`gosurtrs_trial_{bronze|silver|gold}_{l|r}`) plus an exact transform-chain owner
+record (`go{bronze|silver|gold}reward` or `goarenaNN_chestelevator_{l|r}`). Each
+audit row records WAD SHA-256, physical and state GUIDs, record IDs, offsets,
+world XYZ, attributes, and the full chain. WAD filename, region, absence from
+RegionSummary, coordinates, ordering, nearest object, and target counts do not
+classify these rows.
+
+Production-excluded catalogue IDs:
+
+- `legendary_chest_0656339a4c04a3698b80c0ae57ed2e24`
+- `legendary_chest_0e87c24a40632a8e064968874d2b33fc`
+- `legendary_chest_0f68bc8d434fc653dd119d88fe25ac39`
+- `legendary_chest_1426a75646869538a1aab6834be04997`
+- `legendary_chest_167c0b9e442495b37cbbe6b0a59421c9`
+- `legendary_chest_1ea4b3d24aaae3001a7c779588579d23`
+- `legendary_chest_2106ba90475100c6a58ea0ac3e44f84b`
+- `legendary_chest_3398a59742fb97a1ffa90a999575ad86`
+- `legendary_chest_3a43afc448ef450e8db6478342603b96`
+- `legendary_chest_4e9ceb3946ffc7ee27f94a8421e26426`
+- `legendary_chest_5ee9b99949168a003242f99b3a7a9e40`
+- `legendary_chest_62733a594d3d75eafab57d8f356c5e5d`
+- `legendary_chest_778c66804cd49dc1154a6e87d91b6f94`
+- `legendary_chest_7e85dc2d4905c3d53d06388e05fa3a3d`
+- `legendary_chest_8666ad60456472e7c4678183988ff6a6`
+- `legendary_chest_86a82b8b451b29c7671ece9c0c3b02b6`
+- `legendary_chest_8751f6cc4bc76143fafe0fbbd24835e7`
+- `legendary_chest_986af1ac43ce92971070738ef0f0e26f`
+- `legendary_chest_9af2b5194b2e647634c4a89eebf594cd`
+- `legendary_chest_a727239b4ba27f22bd1f34bef81b9c26`
+- `legendary_chest_a7fa046d4390121fef12309f326e5a73`
+- `legendary_chest_a9e88e5d4159d86d6bbdaf98ea1421ef`
+- `legendary_chest_af802a024b7ebfbf480f449f9c033616`
+- `legendary_chest_b7e0c5d14e1cf09b614010bbc6cacf16`
+- `legendary_chest_d389c19140167b88d7a6819e7c392c93`
+- `legendary_chest_d3cc74624839fc657d7ecd8f255e0113`
+- `legendary_chest_ed7fec9d410885a9729dc3baab012f1f`
+
+Four rows remain `unresolved_nontracked` / `unresolved` with
+`BLOCKED_EXACT_REASON_UNKNOWN`. They must not become normal completionist
+markers:
+
+- `legendary_chest_0e27df5f4bc5f2545a43178d0115312b` (`stn200_lakeext.wad`)
+- `legendary_chest_a24ac28d4ea8598d880d7bb099b8b8be` (`xpl300_stronghold.wad`)
+- `legendary_chest_d0b93e274754785e08235285bd6b78f2` (`cal500_runevault.wad`)
+- `legendary_chest_f714d2d845a3dd9e28808db4655e757f` (`cal740_leftwing.wad`)
+
+The audit has one structured classification record for every one of the 64 raw
+rows. Exact class counts: tracked 33, trial reward 27, unresolved 4. No story,
+quest, scripted, or other-native class is claimed.
 
 ## Runtime gate
 
@@ -154,11 +207,12 @@ off. Unknown state stays hidden.
 
 ## Verification
 
-- 84 tests passed; 0 failed; 0 skipped.
-- Four Raven Lua 5.1 tests ran with local CPython 3.14 and existing
-  `dist/re-tools/lupa`; none skipped.
+- Full v0.10.5 discovery: 90 tests passed, 0 failed; 4 Lua tests skipped under
+  CPython 3.13 because that interpreter lacks the Lua runtime.
+- The same four Raven Lua 5.1 tests then ran with local CPython 3.14 and existing
+  `dist/re-tools/lupa`: 4 passed, 0 failed, 0 skipped.
 - Two full native generations were byte-identical.
 - Catalogue SHA-256:
-  `e2d7cdc7c9923c586bdcdcae69d4a23e7f7a5f5d5e825ff540bdefe589713bec`.
+  `df4a44914426599a52ab28bf165142941f950f407b9919b6519ee65968b51ae7`.
 - Audit SHA-256:
-  `18b7bd4a3549ef115cc7dc1731e40abee889cc82631219e7a4e23ae1d8e1cf9b`.
+  `f7e388bb96f75085cd63abc4b154d0a80f474111355a00d0ad13f6c0baf18bc0`.

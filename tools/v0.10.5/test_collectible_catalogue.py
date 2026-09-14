@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import collections
+import copy
 import hashlib
 import json
 import math
@@ -147,6 +148,96 @@ class CollectibleCatalogueTests(unittest.TestCase):
         self.assertEqual(
             self.audit["ship_head_accounting"]["target_discrepancy_result"],
             "BLOCKED_EXACT_REASON_UNKNOWN")
+
+    def test_legendary_raw_membership_and_production_eligibility_are_separate(self):
+        rows = [row for row in self.rows if row["family"] == "legendary_chest"]
+        self.assertEqual(len(rows), 64)
+        self.assertEqual(collections.Counter(row["native_classification"] for row in rows), {
+            "tracked_legendary": 33,
+            "trial_reward": 27,
+            "unresolved_nontracked": 4,
+        })
+        self.assertEqual(collections.Counter(row["production_eligibility"] for row in rows), {
+            "tracked_collectible": 33,
+            "exclude_trial_reward": 27,
+            "unresolved": 4,
+        })
+        tracked = [row for row in rows if row["progression"].get("parent_quest")]
+        self.assertEqual(len(tracked), 33)
+        self.assertTrue(all(row["native_classification"] == "tracked_legendary"
+                            and row["production_eligibility"] == "tracked_collectible"
+                            for row in tracked))
+
+    def test_every_legendary_has_machine_readable_classification_evidence(self):
+        rows = [row for row in self.rows if row["family"] == "legendary_chest"]
+        evidence = self.audit["legendary_classification_evidence"]
+        self.assertEqual(len(evidence), 64)
+        self.assertEqual({row["catalogue_id"] for row in evidence},
+                         {row["catalogue_id"] for row in rows})
+        required = {
+            "catalogue_id", "physical_instance_guid", "state_carrier_guid",
+            "state_carrier_guids", "wad", "world_xyz",
+            "parent_region_summary_target", "classification",
+            "production_eligibility", "final_status", "native_evidence_sources",
+            "source_file_hashes", "record_locators", "rationale",
+        }
+        for item in evidence:
+            self.assertTrue(required <= set(item), item["catalogue_id"])
+            self.assertTrue(item["native_evidence_sources"])
+            self.assertIn(item["final_status"], {
+                "PASS_EXACT", "BLOCKED_EXACT_REASON_UNKNOWN"})
+
+    def test_legendary_exclusions_require_pass_exact_positive_native_evidence(self):
+        for item in self.audit["legendary_classification_evidence"]:
+            if not item["production_eligibility"].startswith("exclude_"):
+                continue
+            self.assertEqual(item["final_status"], "PASS_EXACT")
+            self.assertTrue(any(source.get("positive_classification_edge") is True
+                                for source in item["native_evidence_sources"]))
+            catalogue_tool.validate_legendary_classification_evidence(item)
+
+        invalid = copy.deepcopy(next(
+            item for item in self.audit["legendary_classification_evidence"]
+            if item["production_eligibility"].startswith("exclude_")))
+        invalid["native_evidence_sources"] = [{
+            "source_file": "quests.dcb",
+            "evidence_role": "region_summary_absence",
+            "positive_classification_edge": False,
+        }]
+        with self.assertRaises(ValueError):
+            catalogue_tool.validate_legendary_classification_evidence(invalid)
+
+    def test_unresolved_legendary_rows_stay_unresolved_and_not_excluded(self):
+        evidence = self.audit["legendary_classification_evidence"]
+        unresolved = [item for item in evidence
+                      if item["classification"] == "unresolved_nontracked"]
+        self.assertEqual(len(unresolved), 4)
+        self.assertTrue(all(item["production_eligibility"] == "unresolved"
+                            and item["final_status"] == "BLOCKED_EXACT_REASON_UNKNOWN"
+                            for item in unresolved))
+
+    def test_region_summary_absence_or_wad_name_alone_cannot_classify_legendary(self):
+        sample = copy.deepcopy(next(
+            row for row in self.rows
+            if row["family"] == "legendary_chest"
+            and row["native_classification"] == "unresolved_nontracked"))
+        sample["source"]["wad"] = "msp100_base.wad"
+        sample["progression"]["parent_quest"] = None
+        sample["native"]["placement_object_name"] = "gochest_legendary_tier3_test_1"
+        sample["native"]["attribute_values"] = ["Legendary"]
+        sample["source"]["transform_chain"] = [{
+            "name": "gomsp100_ents", "offset": "0x10", "record_id": "11" * 16,
+        }]
+        result = catalogue_tool.classify_legendary_row(sample)
+        self.assertEqual(result["classification"], "unresolved_nontracked")
+        self.assertEqual(result["production_eligibility"], "unresolved")
+
+    def test_legendary_classification_has_no_nearest_distance_or_count_input(self):
+        source = Path(catalogue_tool.__file__).read_text(encoding="utf-8")
+        block = source[source.index("def classify_legendary_row"):
+                       source.index("def build_legendary_classification_evidence")]
+        for forbidden in ("nearest", "distance", "target_count", "math.dist"):
+            self.assertNotIn(forbidden, block.lower())
 
     def test_ship_head_physical_identity_and_carrier_paths_are_exact(self):
         rows = [row for row in self.rows

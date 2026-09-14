@@ -14,8 +14,10 @@ runtime markers yet.
    `f8548c57-4dc6-7cba-277c-5cb31099648b` to
    `RegionSummary_RunicChest_Parent_TyrsVault`. Current callback/level labels do
    not prove RegionSummary update wire.
-4. Classify 31 nontracked Legendary-path chests only from exact native reward or
-   quest wire. Keep raw rows even when not production eligible.
+4. Resolve the remaining 4 nontracked Legendary-path chests only from positive
+   native reward, quest, callback, or story wire. The other 27 nontracked rows
+   are exact arena/Surtr trial rewards and stay production-excluded. Keep all 64
+   raw rows.
 5. Prove stable runtime ID and world point for Niflheim procedural chest spawn.
    Do not emit 56 Legendary or 7 Nornir templates as fixed markers.
 6. Prove unloaded individual state for Breakable seals. Bell and MemoryChest
@@ -29,6 +31,8 @@ Current blockers:
 - Ship target mismatch: `BLOCKED_EXACT_REASON_UNKNOWN`.
 - All 21 tracked-candidate Nornir bindings: `BLOCKED_EXACT_REASON_UNKNOWN`.
 - cal500 Tyr's Vault binding: `BLOCKED_EXACT_REASON_UNKNOWN`.
+- Legendary production eligibility: 33 tracked, 27 exact trial exclusions,
+  4 unresolved (`stn200`, `xpl300`, `cal500`, `cal740`).
 - Exact unloaded per-instance state: `BLOCKED`.
 - Runtime generation: `BLOCKED_FAIL_CLOSED`.
 

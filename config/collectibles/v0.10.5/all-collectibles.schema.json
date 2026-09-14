@@ -30,6 +30,8 @@
       "properties": {
         "catalogue_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]+$"},
         "family": {"enum": ["artefact", "lore_marker", "legendary_chest", "nornir_chest", "nornir_seal", "nornir_bell", "nornir_mechanism"]},
+        "native_classification": {"enum": ["tracked_legendary", "story_reward", "trial_reward", "quest_reward", "scripted_reward", "other_native_chest", "unresolved_nontracked"]},
+        "production_eligibility": {"enum": ["tracked_collectible", "exclude_story_reward", "exclude_trial_reward", "exclude_quest_reward", "exclude_scripted_reward", "exclude_other_native", "unresolved"]},
         "subtype": {"type": "string", "minLength": 1},
         "display_name": {"type": "string", "minLength": 1},
         "native": {"type": "object", "required": ["object_name", "instance_guid"], "properties": {"object_name": {"type": "string", "minLength": 1}, "instance_guid": {"type": "string", "minLength": 16}}, "additionalProperties": true},

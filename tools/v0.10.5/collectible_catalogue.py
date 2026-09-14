@@ -32,6 +32,11 @@ ARTIFACT_TYPES = {"Alfheim", "Brooch", "Cup", "Horn", "Mask", "Ship Head", "Toy"
 CHEST_TYPES = {"Legendary", "Runic_Axe", "Runic_Blades"}
 NORNIR_KEY_TYPES = {"Breakable", "Bell", "MemoryChest"}
 SHIP_OBJECT_NUMBER_RE = re.compile(r"^goartifactshiphead0*([1-9][0-9]?)(?:[^0-9].*)?$", re.I)
+LEGENDARY_TRIAL_PLACEMENT_RE = re.compile(
+    r"^(?:goarena[0-9]{2}_(?:bronze|silver|gold)_legendary_tier[0-9](?:_[lr])?"
+    r"|gosurtrs_trial_(?:bronze|silver|gold)_[lr])$", re.I)
+LEGENDARY_TRIAL_OWNER_RE = re.compile(
+    r"^(?:goarena[0-9]{2}_chestelevator_[lr]|go(?:bronze|silver|gold)reward)$", re.I)
 
 # Old claims only. Not join proof.
 # Physical GUID is key. WAD name alone cannot join.
@@ -972,6 +977,183 @@ def extract_nornir_children(parent: dict, wad: Path, raw: bytes,
     return result
 
 
+def classify_legendary_row(row: dict) -> dict:
+    """Classify one raw Legendary row from explicit native identity fields."""
+    quest = row["progression"].get("parent_quest")
+    if quest:
+        check(quest.startswith("RegionSummary_LegendaryChest_Parent_"),
+              "Legendary tracked row has non-Legendary parent target")
+        return {
+            "classification": "tracked_legendary",
+            "production_eligibility": "tracked_collectible",
+            "final_status": "PASS_EXACT",
+        }
+
+    placement = row["native"].get("placement_object_name", "")
+    chain = row["source"].get("transform_chain", [])
+    has_trial_placement = bool(LEGENDARY_TRIAL_PLACEMENT_RE.fullmatch(placement))
+    has_trial_owner = any(
+        LEGENDARY_TRIAL_OWNER_RE.fullmatch(node.get("name", ""))
+        and node.get("record_id") and node.get("offset")
+        for node in chain)
+    if has_trial_placement and has_trial_owner:
+        return {
+            "classification": "trial_reward",
+            "production_eligibility": "exclude_trial_reward",
+            "final_status": "PASS_EXACT",
+        }
+
+    return {
+        "classification": "unresolved_nontracked",
+        "production_eligibility": "unresolved",
+        "final_status": "BLOCKED_EXACT_REASON_UNKNOWN",
+    }
+
+
+def build_legendary_classification_evidence(
+        row: dict, summaries: dict[str, dict], target_records: dict[str, dict],
+        map_evidence: dict, quest_evidence: dict) -> dict:
+    result = classify_legendary_row(row)
+    native = row["native"]
+    source = row["source"]
+    quest = row["progression"].get("parent_quest")
+    placement_node = next(
+        (node for node in source["transform_chain"]
+         if node.get("record_id") == native.get("placement_final_record_id")), None)
+    trial_owner_nodes = [
+        node for node in source["transform_chain"]
+        if LEGENDARY_TRIAL_OWNER_RE.fullmatch(node.get("name", ""))
+    ]
+    evidence_sources = [{
+        "source_file": source["wad"],
+        "sha256": source["wad_sha256"],
+        "evidence_role": "physical_chest_placement",
+        "positive_classification_edge": False,
+        "record_id": native["placement_override_record_id"],
+        "record_offset": placement_node["offset"] if placement_node else None,
+        "guid": native["instance_guid"],
+    }]
+    rationale: str
+    if result["classification"] == "tracked_legendary":
+        summary = summaries[quest]
+        target = target_records[quest]
+        evidence_sources.extend([{
+            "source_file": map_evidence["path"],
+            "sha256": map_evidence["sha256"],
+            "evidence_role": "region_summary_membership",
+            "positive_classification_edge": True,
+            "record_offset": summary["summary_record_offset"],
+            "region_summary_target": quest,
+        }, {
+            "source_file": quest_evidence["path"],
+            "sha256": quest_evidence["sha256"],
+            "evidence_role": "region_summary_target",
+            "positive_classification_edge": True,
+            "record_offset": target["quest_record_offset"],
+            "region_summary_target": quest,
+            "target": target["target"],
+        }])
+        rationale = (
+            "Existing exact RegionSummary Legendary row retained as tracked; native "
+            "map-summary and quest-target records name its parent target."
+        )
+    elif result["classification"] == "trial_reward":
+        checkpoint_attributes = sorted(
+            value for value in native.get("attribute_values", [])
+            if value.startswith("checkpoint_override_chests_arena_"))
+        evidence_sources.append({
+            "source_file": source["wad"],
+            "sha256": source["wad_sha256"],
+            "evidence_role": "trial_reward_object_and_owner_chain",
+            "positive_classification_edge": True,
+            "record_id": native["placement_override_record_id"],
+            "record_offset": placement_node["offset"] if placement_node else None,
+            "placement_object": native["placement_object_name"],
+            "owner_records": trial_owner_nodes,
+            "checkpoint_attributes": checkpoint_attributes,
+        })
+        rationale = (
+            "Exact native placement identity is an arena/Surtr trial reward and its "
+            "transform chain owns an arena chest-elevator or medal-reward record."
+        )
+    else:
+        evidence_sources.extend([{
+            "source_file": map_evidence["path"],
+            "sha256": map_evidence["sha256"],
+            "evidence_role": "region_summary_absence",
+            "positive_classification_edge": False,
+        }, {
+            "source_file": quest_evidence["path"],
+            "sha256": quest_evidence["sha256"],
+            "evidence_role": "region_summary_absence",
+            "positive_classification_edge": False,
+        }])
+        rationale = (
+            "Physical Legendary-path chest is exact, but no positive native story, "
+            "trial, quest, scripted, other-native, or RegionSummary class edge is proved."
+        )
+
+    state_guids = native.get("state_carrier_guids", [])
+    return {
+        "catalogue_id": row["catalogue_id"],
+        "physical_instance_guid": native["instance_guid"],
+        "state_carrier_guid": state_guids[0] if len(state_guids) == 1 else None,
+        "state_carrier_guids": state_guids,
+        "wad": source["wad"],
+        "world_xyz": row["marker"]["position_world"],
+        "parent_region_summary_target": quest,
+        **result,
+        "native_evidence_sources": evidence_sources,
+        "source_file_hashes": {
+            source["wad"]: source["wad_sha256"],
+            map_evidence["path"]: map_evidence["sha256"],
+            quest_evidence["path"]: quest_evidence["sha256"],
+        },
+        "record_locators": {
+            "physical_instance_guid": native["instance_guid"],
+            "state_carrier_guids": state_guids,
+            "script_guid": native.get("script_guid"),
+            "override_record_id": native["override_record_id"],
+            "override_offset": source["override_offset"],
+            "final_record_id": native["final_record_id"],
+            "final_offset": source["final_offset"],
+            "placement_override_record_id": native["placement_override_record_id"],
+            "placement_final_record_id": native["placement_final_record_id"],
+            "transform_chain": source["transform_chain"],
+        },
+        "rationale": rationale,
+    }
+
+
+def validate_legendary_classification_evidence(evidence: dict) -> None:
+    allowed = {
+        "tracked_legendary": "tracked_collectible",
+        "story_reward": "exclude_story_reward",
+        "trial_reward": "exclude_trial_reward",
+        "quest_reward": "exclude_quest_reward",
+        "scripted_reward": "exclude_scripted_reward",
+        "other_native_chest": "exclude_other_native",
+        "unresolved_nontracked": "unresolved",
+    }
+    classification = evidence.get("classification")
+    check(classification in allowed, "invalid Legendary native classification")
+    eligibility = evidence.get("production_eligibility")
+    check(eligibility == allowed[classification],
+          "Legendary classification/eligibility mismatch")
+    status = evidence.get("final_status")
+    if classification == "unresolved_nontracked":
+        check(status == "BLOCKED_EXACT_REASON_UNKNOWN",
+              "unresolved Legendary row must stay blocked")
+        return
+    check(status == "PASS_EXACT", "resolved Legendary class must be PASS_EXACT")
+    positive = [source for source in evidence.get("native_evidence_sources", [])
+                if source.get("positive_classification_edge") is True]
+    check(bool(positive), "resolved Legendary class lacks positive native evidence")
+    check(any(any(source.get(key) for key in (
+        "record_id", "record_offset", "guid", "owner_records")) for source in positive),
+        "positive Legendary evidence lacks deterministic native locator")
+
+
 def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
     game_root = Path(game_root).resolve()
     dcb_root = game_root / "exec" / "dc" / "pc_le"
@@ -1106,6 +1288,17 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
             row["region"] = summary["region"]
             row["region_id"] = summary["region_id"]
             row["region_source"] = "exact_native_reference_chain"
+    legendary_rows = [row for row in entries if row["family"] == "legendary_chest"]
+    legendary_classification_evidence = []
+    for row in legendary_rows:
+        classification = classify_legendary_row(row)
+        row["native_classification"] = classification["classification"]
+        row["production_eligibility"] = classification["production_eligibility"]
+        evidence = build_legendary_classification_evidence(
+            row, summaries, target_records, map_evidence, quest_evidence)
+        validate_legendary_classification_evidence(evidence)
+        legendary_classification_evidence.append(evidence)
+    legendary_classification_evidence.sort(key=lambda row: row["catalogue_id"])
     unjoined_nornir = [row for row in nornir_rows
                        if not row["progression"].get("parent_quest")]
     tracked_counts = dict(sorted(collections.Counter(
@@ -1124,6 +1317,27 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
         "native_carrier_counts_before_physical_dedup": carrier_counts,
         "tracked_physical_counts": tracked_counts,
         "native_tracked_target_totals": target_totals,
+        "legendary_accounting": {
+            "raw_physical": len(legendary_rows),
+            "tracked_collectible": sum(
+                row["production_eligibility"] == "tracked_collectible"
+                for row in legendary_rows),
+            "nontracked": sum(
+                row["production_eligibility"] != "tracked_collectible"
+                for row in legendary_rows),
+            "classification_counts": dict(sorted(collections.Counter(
+                row["native_classification"] for row in legendary_rows).items())),
+            "production_eligibility_counts": dict(sorted(collections.Counter(
+                row["production_eligibility"] for row in legendary_rows).items())),
+            "pass_exact_nontracked": sum(
+                row["final_status"] == "PASS_EXACT"
+                and row["classification"] != "tracked_legendary"
+                for row in legendary_classification_evidence),
+            "unresolved_nontracked": sum(
+                row["classification"] == "unresolved_nontracked"
+                for row in legendary_classification_evidence),
+        },
+        "legendary_classification_evidence": legendary_classification_evidence,
         "ship_head_accounting": {
             "physical_placements": len(ship_head_rows),
             "state_carriers": len(ship_head_carrier_ids),
