@@ -37,6 +37,62 @@ do
     return false, nil, nil, nil, nil
   end
 
+  local function inspectChildTable(parent, children, stateFn, progressFn)
+    local seqCount = #children
+    local rawLength = nil
+    if type(rawlen) == "function" then
+      local okRaw, v = pcall(rawlen, children)
+      if okRaw then rawLength = v end
+    end
+    log("CHILDREN_TABLE parent=" .. tostring(parent) ..
+        " seqCount=" .. tostring(seqCount) ..
+        " rawlen=" .. tostring(rawLength))
+
+    local keyCount = 0
+    local numericCount = 0
+    local emitted = 0
+    local okPairs, iter, state, initial = pcall(pairs, children)
+    if not okPairs then
+      log("CHILDREN_ENUM parent=" .. tostring(parent) .. " ok=false error=" .. tostring(iter))
+      return
+    end
+
+    local k = initial
+    while true do
+      local okNext, nk, nv = pcall(iter, state, k)
+      if not okNext then
+        log("CHILDREN_ENUM parent=" .. tostring(parent) .. " nextOk=false error=" .. tostring(nk))
+        break
+      end
+      if nk == nil then break end
+      k = nk
+      keyCount = keyCount + 1
+      if type(nk) == "number" then numericCount = numericCount + 1 end
+
+      if emitted < 64 then
+        emitted = emitted + 1
+        local child = nv
+        local stateOK, childState = safeCall("childState[key=" .. tostring(nk) .. "]", function()
+          return stateFn(child)
+        end)
+        local progressOK, a, b, c = safeCall("childProgress[key=" .. tostring(nk) .. "]", function()
+          return progressFn(child)
+        end)
+        log("CHILD_KEY parent=" .. tostring(parent) ..
+            " keyType=" .. tostring(type(nk)) .. " key=" .. tostring(nk) ..
+            " valueType=" .. tostring(type(child)) .. " id=" .. tostring(child) ..
+            " stateOk=" .. tostring(stateOK) .. " state=" .. tostring(childState) ..
+            " progressOk=" .. tostring(progressOK) ..
+            " ret1=" .. tostring(a) .. " ret2=" .. tostring(b) .. " ret3=" .. tostring(c))
+      end
+    end
+
+    log("CHILDREN_ENUM parent=" .. tostring(parent) ..
+        " ok=true keys=" .. tostring(keyCount) ..
+        " numericKeys=" .. tostring(numericCount) ..
+        " emitted=" .. tostring(emitted))
+  end
+
   local function inspectQuest(qm, questId)
     local stateFn = safeLookup("game.QuestManager.GetQuestState", function() return qm.GetQuestState end)
     local progressFn = safeLookup("game.QuestManager.GetQuestProgressAndGoal", function() return qm.GetQuestProgressAndGoal end)
@@ -62,24 +118,7 @@ do
     end)
 
     if childrenOK and type(children) == "table" then
-      local count = #children
-      log("CHILDREN parent=" .. tostring(questId) .. " count=" .. tostring(count))
-      local limit = math.min(count, 64)
-      for i = 1, limit do
-        local child = children[i]
-        local stateOK, state = safeCall("childState[" .. tostring(i) .. "]", function()
-          return stateFn(child)
-        end)
-        local progressOK, a, b = safeCall("childProgress[" .. tostring(i) .. "]", function()
-          return progressFn(child)
-        end)
-        log("CHILD parent=" .. tostring(questId) ..
-            " index=" .. tostring(i) ..
-            " id=" .. tostring(child) ..
-            " stateOk=" .. tostring(stateOK) .. " state=" .. tostring(state) ..
-            " progressOk=" .. tostring(progressOK) ..
-            " ret1=" .. tostring(a) .. " ret2=" .. tostring(b))
-      end
+      inspectChildTable(questId, children, stateFn, progressFn)
     else
       log("CHILDREN parent=" .. tostring(questId) .. " unavailable=true")
     end
@@ -90,7 +129,7 @@ do
   local function run(reason)
     if ran then return end
     ran = true
-    log("RUN reason=" .. tostring(reason) .. " progressionWrites=false questWrites=false")
+    log("RUN reason=" .. tostring(reason) .. " progressionWrites=false questWrites=false childKeyEnumeration=true")
 
     local qm = nil
     if type(game) == "table" then
@@ -103,8 +142,6 @@ do
       return
     end
 
-    -- Validation target: the exact Veithurgard Raven RegionSummary used by the
-    -- already-proven Raven runtime lifecycle. Comparison target: global Raven labor.
     inspectQuest(qm, "RegionSummary_VF_Raven_Parent")
     inspectQuest(qm, "Quest_Labor_KillRavens")
 
@@ -119,7 +156,7 @@ do
       run("MapCollisionChangeHandler")
       return previous(self, ...)
     end
-    log("HOOK installed=MapOn.MapCollisionChangeHandler questManagerApi=true")
+    log("HOOK installed=MapOn.MapCollisionChangeHandler questManagerApi=true childKeyEnumeration=true")
   else
     log("HOOK unavailable=true fallback=script_load")
     run("script_load_fallback")
