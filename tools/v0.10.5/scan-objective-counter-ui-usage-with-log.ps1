@@ -9,8 +9,8 @@ $branch = (git branch --show-current).Trim()
 if ($branch -ne $expectedBranch) { throw "Expected branch $expectedBranch, got $branch" }
 
 $roots = @(
-  Join-Path $gameRoot 'mods\lua_source',
-  Join-Path $gameRoot 'mods\lua'
+  (Join-Path $gameRoot 'mods\lua_source')
+  (Join-Path $gameRoot 'mods\lua')
 ) | Where-Object { Test-Path $_ }
 if (-not $roots) { throw 'No Lua source roots found under game mods directory.' }
 
