@@ -1,0 +1,145 @@
+Completionist Map - QuestManager methods observed in shipped/live Lua
+timestamp=20260914-190101
+lua_files_scanned=499
+unique_methods=24
+
+METHOD AddMarkersToCompass count=4
+  lua_source\gameart\ui\scripts\util\questutil.lua:544: if QuestManager.AddMarkersToCompass ~= nil then
+  lua_source\gameart\ui\scripts\util\questutil.lua:545: QuestManager.AddMarkersToCompass(questID)
+  lua_source\gameart\ui\scripts\util\questutil.lua:549: if game.QuestManager.AddMarkersToCompass == nil then
+  lua_source\gameart\ui\scripts\util\questutil.lua:555: game.QuestManager.AddMarkersToCompass(questID)
+
+METHOD CompletionResolved count=2
+  lua_source\gameart\scripts\ui\hooks\uihooks.lua:97: if game.QuestManager.CompletionResolved then
+  lua_source\gameart\scripts\ui\hooks\uihooks.lua:98: game.QuestManager.CompletionResolved()
+
+METHOD FindQuestForMarker count=1
+  lua_source\gameart\ui\scripts\util\questutil.lua:234: local hasQuest, questName = QuestManager.FindQuestForMarker(markerID)
+
+METHOD GetActiveRootQuestIds count=6
+  lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:201: local rootQuests = QuestManager.GetActiveRootQuestIds()
+  lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:202: for _, questId in ipairs(QuestManager.GetActiveRootQuestIds()) do
+  lua_source\gameart\ui\scripts\util\questutil.lua:463: local rootQuests = QuestManager.GetActiveRootQuestIds()
+  lua_source\gameart\ui\scripts\util\questutil.lua:471: local rootQuests = QuestManager.GetActiveRootQuestIds()
+  lua_source\gameart\ui\scripts\util\questutil.lua:506: local allActiveRootQuestIDs = QuestManager.GetActiveRootQuestIds()
+  lua_source\gameart\ui\scripts\util\questutil.lua:508: assert(IsValidID(rootQuestID), "Invalid Quest ID found in table returned by QuestManager.GetActiveRootQuestIds!")
+
+METHOD GetChildrenQuestIds count=5
+  lua_source\gameart\ui\scripts\util\questutil.lua:395: local childrenQuestIds = QuestManager.GetChildrenQuestIds(parentQuestId)
+  lua_source\gameart\ui\scripts\util\questutil.lua:399: childrenQuestIds = QuestManager.GetChildrenQuestIds(currentQuestId)
+  lua_source\gameart\ui\scripts\util\questutil.lua:411: local childrenQuestIds = QuestManager.GetChildrenQuestIds(parentQuestId)
+  lua_source\gameart\ui\scripts\util\questutil.lua:414: childrenQuestIds = QuestManager.GetChildrenQuestIds(currentQuestId)
+  lua_source\gameart\ui\scripts\util\questutil.lua:433: local children = QuestManager.GetChildrenQuestIds(curQuestId)
+
+METHOD GetCompletionIndex count=2
+  lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:222: return QuestManager.GetCompletionIndex(a.QuestID) > QuestManager.GetCompletionIndex(b.QuestID)
+  lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:222: return QuestManager.GetCompletionIndex(a.QuestID) > QuestManager.GetCompletionIndex(b.QuestID)
+
+METHOD GetQuestDescriptionLams count=2
+  lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:66: local descLamsId = QuestManager.GetQuestDescriptionLams(activeChildQuestId)
+  lua_source\gameart\ui\scripts\util\questutil.lua:278: local descLamsID = QuestManager.GetQuestDescriptionLams(questID)
+
+METHOD GetQuestLoot count=1
+  lua_source\gameart\ui\scripts\util\questutil.lua:240: lootTable = QuestManager.GetQuestLoot(questID)
+
+METHOD GetQuestProgressAndGoal count=21
+  lua_source\gameart\scripts\characters\heroa00\main.lua:6472: local success, progress, goal = game.QuestManager.GetQuestProgressAndGoal("Quest_AxeUpgrade_Find")
+  lua_source\gameart\scripts\characters\heroa00\main.lua:6476: success, progress, goal = game.QuestManager.GetQuestProgressAndGoal("Quest_AxeUpgrade_Craft")
+  lua_source\gameart\scripts\characters\heroa00\main.lua:6494: local success, progress, goal = game.QuestManager.GetQuestProgressAndGoal("Quest_BladesUpgrade_Find")
+  lua_source\gameart\scripts\characters\heroa00\main.lua:6498: success, progress, goal = game.QuestManager.GetQuestProgressAndGoal("Quest_BladesUpgrade_Craft")
+  lua_source\gameart\scripts\levels\caldera\cal100_hub\objects\cbt_cal100.lua:598: local _, progress = game.QuestManager.GetQuestProgressAndGoal("Quest_UnfinishedBusiness04_Objective_01")
+  lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:220: local _, progress = game.QuestManager.GetQuestProgressAndGoal(child)
+  lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:234: local _, progress = game.QuestManager.GetQuestProgressAndGoal("Quest_SonLanguage_Niflheim")
+  lua_source\gameart\scripts\levels\gameplaymodules\progression\vendor.lua:1333: local golem, amount = game.QuestManager.GetQuestProgressAndGoal("Quest_Labor_AncientKills")
+
+METHOD GetQuestRewardLams count=2
+  lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:72: local rewardDescLamsId = QuestManager.GetQuestRewardLams(activeChildQuestId)
+  lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:74: rewardDescLamsId = QuestManager.GetQuestRewardLams(questUtil.TrackingInfo_GetRootQuestID(childTrackingInfo))
+
+METHOD GetQuestState count=124
+  lua_source\gameart\scripts\characters\heroa00\main.lua:6140: if game.QuestManager.GetQuestState("Quest_Labor_RiftPockets_Bronze") == "Complete" then
+  lua_source\gameart\scripts\levels\caldera\realmcontrollerobject.lua:1790: local questState = game.QuestManager.GetQuestState(v.ActiveQuest)
+  lua_source\gameart\scripts\levels\caldera\cal100_hub\objects\btr_caldera_bridge.lua:132: return LD.GetCurrentRealm() == "Midgard" and game.Level.GetVariable("CompletedCineNumber") == 510 and game.QuestManager.GetQuestState("Quest_Caldera_Objective700") ~= "Complete"
+  lua_source\gameart\scripts\levels\caldera\cal100_hub\objects\poi_realmtravelrestored_script.lua:74: local questState = game.QuestManager.GetQuestState("Quest_Labor_LightBrazier_Parent")
+  lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua:1014: if game.QuestManager.GetQuestState("Quest_SonLanguage_Muspelheim") == "Complete" then
+  lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua:1024: if game.QuestManager.GetQuestState("Quest_SonLanguage_Niflheim") == "Complete" then
+  lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua:1253: local questState = game.QuestManager.GetQuestState("Quest_StoneMason_Objective800")
+  lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua:1273: local questState = game.QuestManager.GetQuestState(v.ActiveQuest)
+
+METHOD GetQuestStateInt count=5
+  lua_source\gameart\scripts\libraries\design\mayaluatableslibrary.lua:167: if execute and game.QuestManager.GetQuestStateInt(quest_name) == 0 then
+  lua_source\gameart\scripts\libraries\design\mayaluatableslibrary.lua:172: if game.QuestManager.GetQuestStateInt(quest_name) == 0 then
+  lua_source\gameart\scripts\libraries\design\mayaluatableslibrary.lua:179: if execute and game.QuestManager.GetQuestStateInt(quest_name) == 1 then
+  lua_source\gameart\scripts\libraries\design\mayaluatableslibrary.lua:184: if game.QuestManager.GetQuestStateInt(quest_name) == 1 then
+  lua_source\gameart\ui\scripts\util\questutil.lua:535: if QuestManager.GetQuestStateInt(questID) ~= tweaks.eQstState.kQS_Active then
+
+METHOD GetQuestTitleLams count=3
+  lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:311: local curQuestLams = QuestManager.GetQuestTitleLams(curQuestID)
+  lua_source\gameart\ui\scripts\util\questutil.lua:73: local titleLamsID = QuestManager.GetQuestTitleLams(currQuestID)
+  lua_source\gameart\ui\scripts\util\questutil.lua:274: local titleLamsID = QuestManager.GetQuestTitleLams(questID)
+
+METHOD GetTrackingInfo count=4
+  lua_source\gameart\ui\scripts\util\questutil.lua:22: trackingInfo = QuestManager.GetTrackingInfo(questID)
+  lua_source\gameart\ui\scripts\util\questutil.lua:492: local trackingInfo = QuestManager.GetTrackingInfo(activeQuestID)
+  lua_source\gameart\ui\scripts\util\questutil.lua:531: local trackingInfo = QuestManager.GetTrackingInfo(questID)
+  lua_source\gameart\ui\scripts\util\questutil.lua:542: local trackingInfo = QuestManager.GetTrackingInfo(questID)
+
+METHOD IncrementQuestProgress count=28
+  lua_source\gameart\scripts\characters\heroa00\main.lua:6470: game.QuestManager.IncrementQuestProgress("Quest_AxeUpgrade_Find", 1)
+  lua_source\gameart\scripts\characters\heroa00\main.lua:6474: game.QuestManager.IncrementQuestProgress("Quest_AxeUpgrade_Find", math.min(goal, axeStage + frozenFlameCount) - progress)
+  lua_source\gameart\scripts\characters\heroa00\main.lua:6478: game.QuestManager.IncrementQuestProgress("Quest_AxeUpgrade_Craft", math.min(goal, axeStage) - progress)
+  lua_source\gameart\scripts\characters\heroa00\main.lua:6483: game.QuestManager.IncrementQuestProgress("Quest_AxeUpgrade_Find", 1)
+  lua_source\gameart\scripts\characters\heroa00\main.lua:6492: game.QuestManager.IncrementQuestProgress("Quest_BladesUpgrade_Find", 1)
+  lua_source\gameart\scripts\characters\heroa00\main.lua:6496: game.QuestManager.IncrementQuestProgress("Quest_BladesUpgrade_Find", math.min(goal, bladesStage + chaosFlameCount) - progress)
+  lua_source\gameart\scripts\characters\heroa00\main.lua:6500: game.QuestManager.IncrementQuestProgress("Quest_BladesUpgrade_Craft", math.min(goal, bladesStage) - progress)
+  lua_source\gameart\scripts\characters\heroa00\main.lua:6505: game.QuestManager.IncrementQuestProgress("Quest_BladesUpgrade_Find", 1)
+
+METHOD IsActiveRootQuestId count=1
+  lua_source\gameart\ui\scripts\util\questutil.lua:393: assert(QuestManager.IsActiveRootQuestId(parentQuestId), "Quest Id passed into QuestUtil:GetFocusQuestStepFromParent is not a parent quest!")
+
+METHOD ProposeQuestCompleted count=3
+  lua_source\gameart\scripts\libraries\design\mayaluatableslibrary.lua:72: game.QuestManager.ProposeQuestCompleted(questName)
+  lua_source\gameart\scripts\libraries\design\mayaluatableslibrary.lua:180: game.QuestManager.ProposeQuestCompleted(quest_name)
+  lua_source\gameart\scripts\libraries\design\mayaluatableslibrary.lua:185: game.QuestManager.ProposeQuestCompleted(quest_name)
+
+METHOD ProposeQuestState count=17
+  lua_source\gameart\scripts\levels\caldera\realmcontrollerobject.lua:1792: game.QuestManager.ProposeQuestState(v.ActiveQuest, v.Action)
+  lua_source\gameart\scripts\levels\caldera\cal100_hub\objects\poi_realmtravelrestored_script.lua:64: game.QuestManager.ProposeQuestState("Quest_Caldera_Objective742", "Complete")
+  lua_source\gameart\scripts\levels\caldera\cal120_airlock\cal120_airlock.lua:1275: game.QuestManager.ProposeQuestState(v.ActiveQuest, v.Action)
+  lua_source\gameart\scripts\levels\caldera\cal120_airlock\objects\cine_huldrareunion_script.lua:191: game.QuestManager.ProposeQuestState("Quest_Caldera_Objective680", "Complete")
+  lua_source\gameart\scripts\levels\caldera\cal120_airlock\objects\poi_eyesontheprize.lua:152: game.QuestManager.ProposeQuestState("Quest_Caldera_Objective820", "Complete")
+  lua_source\gameart\scripts\levels\caldera\cal120_airlock\objects\poi_fasttravelintro_script.lua:117: game.QuestManager.ProposeQuestState("Quest_RiverPass_Objective950", "Complete")
+  lua_source\gameart\scripts\levels\caldera\cal130_templeint\objects\cine_sayinggoodbye_script.lua:117: game.QuestManager.ProposeQuestState("Quest_Caldera_Objective880", "Complete")
+  lua_source\gameart\scripts\levels\caldera\cal130_templeint\objects\cine_talismanacquire_script.lua:99: game.QuestManager.ProposeQuestState("Quest_Caldera_Objective735", "Complete")
+
+METHOD QuestHasFlag count=5
+  lua_source\gameart\ui\scripts\hud\sequence_quest.lua:176: AnimName = args.Quest and game.QuestManager.QuestHasFlag(args.Quest, "GoldBanner") and "QuestTicker_Gold" or "QuestTicker_Blue",
+  lua_source\gameart\ui\scripts\hud\sequence_questspecialcomplete.lua:51: if game.QuestManager.QuestHasFlag(quest, flag2Mat.Flag) then
+  lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:187: if QuestManager.QuestHasFlag(questId, category) then
+  lua_source\gameart\ui\scripts\inworldmenu\questsmenu.lua:208: if QuestManager.QuestHasFlag(questId, categoryFlag) then
+  lua_source\gameart\ui\scripts\util\questutil.lua:132: hasFlag = QuestManager.QuestHasFlag(questID, flag)
+
+METHOD RegisterListener count=1
+  lua_source\gameart\scripts\levels\caldera\cal100_hub\objects\cbt_cal100.lua:43: game.QuestManager.RegisterListener(obj, "Quest_UnfinishedBusiness04_Objective_01")
+
+METHOD StartQuest count=19
+  lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua:1044: game.QuestManager.StartQuest("Quest_Sindri_Niflheim_Parent")
+  lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua:1047: game.QuestManager.StartQuest("Quest_Sindri_Epic_01_Parent")
+  lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua:1052: game.QuestManager.StartQuest("Quest_Sindri_Epic_02_Parent")
+  lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua:1058: game.QuestManager.StartQuest("Quest_Brok_Epic_01_Parent")
+  lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua:1063: game.QuestManager.StartQuest("Quest_Brok_Epic_02_Parent")
+  lua_source\gameart\scripts\levels\gameplaymodules\interactive\talkinteract.lua:1065: game.QuestManager.StartQuest("Quest_Brothers_Epic_03_Parent")
+  lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:218: game.QuestManager.StartQuest(parent)
+  lua_source\gameart\scripts\levels\gameplaymodules\progression\interact_loot_artifact.lua:159: game.QuestManager.StartQuest(typeSpecificData.questState)
+
+METHOD TrackQuest count=2
+  lua_source\gameart\ui\scripts\util\questutil.lua:28: return QuestManager.TrackQuest(questID)
+  lua_source\gameart\ui\scripts\util\questutil.lua:543: QuestManager.TrackQuest(trackingInfo.RootQuest)
+
+METHOD UnregisterListener count=1
+  lua_source\gameart\scripts\levels\caldera\cal100_hub\objects\cbt_cal100.lua:582: game.QuestManager.UnregisterListener(obj, questName)
+
+METHOD UntrackQuest count=2
+  lua_source\gameart\ui\scripts\util\questutil.lua:32: return QuestManager.UntrackQuest(questID)
+  lua_source\gameart\ui\scripts\util\questutil.lua:532: QuestManager.UntrackQuest(trackingInfo.RootQuest)
+
