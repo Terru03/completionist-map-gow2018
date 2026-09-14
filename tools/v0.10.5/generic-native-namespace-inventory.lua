@@ -21,10 +21,32 @@ do
     return false
   end
 
-  local function safePairs(obj)
-    local ok, iter, state, first = pcall(pairs, obj)
-    if not ok then return nil, tostring(iter) end
-    return { iter = iter, state = state, key = first }, nil
+  -- Safely walk a Lua table/userdata using the iterator returned by pairs().
+  -- Important: pairs() normally returns nil as the initial key; the iterator must
+  -- be called once with that nil key to obtain the first entry.
+  local function walkPairs(obj, limit, onEntry, label)
+    local okPairs, iter, state, key = pcall(pairs, obj)
+    if not okPairs then
+      return false, 0, tostring(iter)
+    end
+
+    local count = 0
+    while count < limit do
+      local okNext, nextKey, value = pcall(iter, state, key)
+      if not okNext then
+        return false, count, tostring(nextKey)
+      end
+      if nextKey == nil then
+        return true, count, nil
+      end
+
+      key = nextKey
+      count = count + 1
+      onEntry(nextKey, value)
+    end
+
+    log("LIMIT path=" .. tostring(label) .. " entries=" .. tostring(count))
+    return true, count, nil
   end
 
   local function enumerate(label, obj, emitAll, limit)
@@ -32,32 +54,18 @@ do
     log("OBJECT path=" .. label .. " type=" .. t)
     if t ~= "table" and t ~= "userdata" then return end
 
-    local p, err = safePairs(obj)
-    if p then
-      local count = 0
-      local emitted = 0
-      local k = p.key
-      while k ~= nil do
-        local okValue, value = pcall(function() return obj[k] end)
-        count = count + 1
-        if okValue and (emitAll or isInteresting(k)) then
-          emitted = emitted + 1
-          log("ENTRY path=" .. label .. " key=" .. tostring(k) .. " type=" .. tostring(type(value)))
-        end
-        if count >= limit then
-          log("LIMIT path=" .. label .. " entries=" .. tostring(count))
-          break
-        end
-        local okNext, nk = pcall(p.iter, p.state, k)
-        if not okNext then
-          log("PAIR_ERROR path=" .. label .. " error=" .. tostring(nk))
-          break
-        end
-        k = nk
+    local emitted = 0
+    local okWalk, count, walkErr = walkPairs(obj, limit, function(k, value)
+      if emitAll or isInteresting(k) then
+        emitted = emitted + 1
+        log("ENTRY path=" .. label .. " key=" .. tostring(k) .. " type=" .. tostring(type(value)))
       end
+    end, label)
+
+    if okWalk then
       log("ENUM path=" .. label .. " count=" .. tostring(count) .. " emitted=" .. tostring(emitted))
     else
-      log("ENUM_UNAVAILABLE path=" .. label .. " error=" .. tostring(err))
+      log("ENUM_ERROR path=" .. label .. " count=" .. tostring(count) .. " error=" .. tostring(walkErr))
     end
 
     local okMt, mt = pcall(getmetatable, obj)
@@ -67,27 +75,18 @@ do
         local okIndex, index = pcall(function() return rawget(mt, "__index") end)
         if okIndex then
           log("METAINDEX path=" .. label .. " type=" .. tostring(type(index)))
-          if type(index) == "table" then
-            local ip, ierr = safePairs(index)
-            if ip then
-              local count = 0
-              local emitted = 0
-              local k = ip.key
-              while k ~= nil do
-                local okValue, value = pcall(function() return index[k] end)
-                count = count + 1
-                if okValue and (emitAll or isInteresting(k)) then
-                  emitted = emitted + 1
-                  log("META_ENTRY path=" .. label .. " key=" .. tostring(k) .. " type=" .. tostring(type(value)))
-                end
-                if count >= limit then break end
-                local okNext, nk = pcall(ip.iter, ip.state, k)
-                if not okNext then break end
-                k = nk
+          if type(index) == "table" or type(index) == "userdata" then
+            local metaEmitted = 0
+            local okMeta, metaCount, metaErr = walkPairs(index, limit, function(k, value)
+              if emitAll or isInteresting(k) then
+                metaEmitted = metaEmitted + 1
+                log("META_ENTRY path=" .. label .. " key=" .. tostring(k) .. " type=" .. tostring(type(value)))
               end
-              log("META_ENUM path=" .. label .. " count=" .. tostring(count) .. " emitted=" .. tostring(emitted))
+            end, label .. ".__index")
+            if okMeta then
+              log("META_ENUM path=" .. label .. " count=" .. tostring(metaCount) .. " emitted=" .. tostring(metaEmitted))
             else
-              log("META_ENUM_UNAVAILABLE path=" .. label .. " error=" .. tostring(ierr))
+              log("META_ENUM_ERROR path=" .. label .. " count=" .. tostring(metaCount) .. " error=" .. tostring(metaErr))
             end
           end
         end
@@ -99,54 +98,58 @@ do
 
   local function collectChildTables(label, obj, maxChildren)
     local children = {}
-    if type(obj) ~= "table" then return children end
-    local n = 0
-    for k, v in pairs(obj) do
+    if type(obj) ~= "table" and type(obj) ~= "userdata" then return children end
+
+    walkPairs(obj, 5000, function(k, v)
+      if #children >= maxChildren then return end
       local vt = type(v)
       if vt == "table" or vt == "userdata" then
-        n = n + 1
         children[#children + 1] = { label = label .. "." .. tostring(k), value = v }
-        if n >= maxChildren then break end
       end
-    end
+    end, label .. ".children")
+
     return children
   end
 
   local function run(reason)
     if rawget(_G, "CompletionistNamespaceProbeHasRun") then return end
     _G.CompletionistNamespaceProbeHasRun = true
-    log("RUN reason=" .. tostring(reason) .. " progressionWrites=false nativeCalls=false")
+    log("RUN reason=" .. tostring(reason) .. " progressionWrites=false nativeCalls=false iteratorFix=true")
 
     local roots = {
-      { "game", rawget(_G, "game") },
-      { "engine", rawget(_G, "engine") },
-      { "uiCalls", rawget(_G, "uiCalls") },
+      { "_G", _G, true, 2500 },
+      { "game", rawget(_G, "game"), true, 1600 },
+      { "engine", rawget(_G, "engine"), true, 1600 },
+      { "uiCalls", rawget(_G, "uiCalls"), true, 1600 },
     }
 
     if type(game) == "table" then
-      roots[#roots + 1] = { "game.Level", rawget(game, "Level") }
-      roots[#roots + 1] = { "game.QuestManager", rawget(game, "QuestManager") }
-      roots[#roots + 1] = { "game.SubObject", rawget(game, "SubObject") }
+      roots[#roots + 1] = { "game.Level", rawget(game, "Level"), true, 1600 }
+      roots[#roots + 1] = { "game.QuestManager", rawget(game, "QuestManager"), true, 1600 }
+      roots[#roots + 1] = { "game.SubObject", rawget(game, "SubObject"), true, 1600 }
     end
 
     -- Emit all top-level names so hidden namespaces can be discovered.
     for _, root in ipairs(roots) do
-      enumerate(root[1], root[2], true, 1200)
+      enumerate(root[1], root[2], root[3], root[4])
     end
 
-    -- Inspect first-level native/table namespaces, but only emit state-related members.
+    -- Inspect first-level namespaces, but only emit members whose names look
+    -- relevant to state/progression/collectibles. Including _G lets us discover
+    -- a native namespace that is not under game or engine.
     local seen = {}
     for _, root in ipairs(roots) do
-      local children = collectChildTables(root[1], root[2], 160)
+      local maxChildren = root[1] == "_G" and 320 or 200
+      local children = collectChildTables(root[1], root[2], maxChildren)
       for _, child in ipairs(children) do
         if not seen[child.value] then
           seen[child.value] = true
-          enumerate(child.label, child.value, false, 1200)
+          enumerate(child.label, child.value, false, 1600)
         end
       end
     end
 
-    log("DONE progressionWrites=false nativeCalls=false")
+    log("DONE progressionWrites=false nativeCalls=false iteratorFix=true")
   end
 
   _G.CompletionistNamespaceProbe_Run = run
@@ -157,9 +160,9 @@ do
       run("MapCollisionChangeHandler")
       return previous(self, ...)
     end
-    log("HOOK installed=MapOn.MapCollisionChangeHandler")
+    log("HOOK installed=MapOn.MapCollisionChangeHandler iteratorFix=true")
   else
-    log("HOOK unavailable=true fallback=script_load")
+    log("HOOK unavailable=true fallback=script_load iteratorFix=true")
     run("script_load_fallback")
   end
 end
