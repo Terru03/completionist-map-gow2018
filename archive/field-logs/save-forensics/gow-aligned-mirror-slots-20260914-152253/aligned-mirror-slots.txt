@@ -1,0 +1,23 @@
+Completionist Map - aligned/mirrored GoW save-slot analysis
+layout: prefix=4160 stride=1677512 slots=20 bank_width=10
+formula: 4160 + 20 * 1677512 = 33554400
+changed aligned slots=[6, 16]
+
+slot 6: changed=23349 first=0 last=220610
+slot 16: changed=15561 first=0 last=220610
+
+mirror 6<->16: left=23349 right=15561 intersection=15374 sameTransition=3300
+
+pair 6<->16: A_equal=0.45037234 B_equal=0.46243067
+
+slot 6 A: zlib=81 ravenStreams=2
+  raven rel=39224 bytes=79 sha=a20550b246cb5e25
+  raven rel=518569 bytes=877 sha=0ff2a0fee495608c
+slot 6 B: zlib=81 ravenStreams=2
+  raven rel=39224 bytes=79 sha=a20550b246cb5e25
+  raven rel=518569 bytes=877 sha=0ff2a0fee495608c
+slot 16 A: zlib=0 ravenStreams=0
+slot 16 B: zlib=1 ravenStreams=0
+
+B:6<->16: sharedStreams=1
+  rel=202060 bytes=3014 raven=False sha=085c5e81f2f23910 strings=fireAtAllTargets, currentContextConfig, LoopAnimEvents, kSonLeadTheWayIdle, OneOffAnimEvents, kNavIdleFidgetAdjustQuiver, kNavIdleFidgetGlanceAround, kNavIdleDirectionalGlance
