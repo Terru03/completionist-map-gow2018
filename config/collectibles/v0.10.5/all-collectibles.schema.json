@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://completionist-map.local/schemas/v0.10.5/all-collectibles.schema.json",
+  "title": "Native non-Raven collectible catalogue",
+  "type": "object",
+  "required": ["schema_version", "catalogue", "source_authority", "read_only_progression", "state_gate", "collectibles"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "catalogue": {"const": "completionist-map-gow2018-all-collectibles"},
+    "source_authority": {"const": "native_pc_game_data"},
+    "read_only_progression": {"const": true},
+    "state_gate": {"const": "unloaded_per_instance_queries_unresolved"},
+    "collectibles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/collectible"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hex64": {"type": "string", "pattern": "^[0-9A-F]{16}$"},
+    "position": {
+      "type": "array",
+      "prefixItems": [{"type": "number"}, {"type": "number"}, {"type": "number"}],
+      "items": false
+    },
+    "collectible": {
+      "type": "object",
+      "required": ["catalogue_id", "family", "subtype", "display_name", "native", "marker", "realm", "realm_id", "region", "region_id", "region_source", "progression", "source"],
+      "properties": {
+        "catalogue_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]+$"},
+        "family": {"enum": ["artefact", "lore_marker", "legendary_chest", "nornir_chest", "nornir_seal", "nornir_bell", "nornir_mechanism"]},
+        "subtype": {"type": "string", "minLength": 1},
+        "display_name": {"type": "string", "minLength": 1},
+        "native": {"type": "object", "required": ["object_name", "instance_guid"], "properties": {"object_name": {"type": "string", "minLength": 1}, "instance_guid": {"type": "string", "minLength": 16}}, "additionalProperties": true},
+        "marker": {
+          "type": "object",
+          "required": ["name", "uid", "map_resource", "compass_class", "position_world", "position_map", "map_projection", "coordinate_wad"],
+          "properties": {
+            "name": {"type": "string", "pattern": "^Completionist_V105_"},
+            "uid": {"$ref": "#/$defs/hex64"},
+            "map_resource": {"type": "string", "minLength": 1},
+            "compass_class": {"type": "string", "minLength": 1},
+            "position_world": {"$ref": "#/$defs/position"},
+            "position_map": {"type": ["array", "null"]},
+            "map_projection": {"type": "string", "minLength": 1},
+            "coordinate_wad": {"type": "string", "pattern": "^WAD_"}
+          },
+          "additionalProperties": false
+        },
+        "realm": {"type": "string", "minLength": 1},
+        "realm_id": {"type": ["string", "null"]},
+        "region": {"type": ["string", "null"]},
+        "region_id": {"type": ["string", "null"]},
+        "region_source": {"type": "string", "minLength": 1},
+        "progression": {"type": "object", "required": ["state_adapter", "field", "read_only", "unloaded_query"], "properties": {"state_adapter": {"type": "string", "minLength": 1}, "field": {"type": "string", "minLength": 1}, "read_only": {"const": true}, "unloaded_query": {"const": "unresolved"}}, "additionalProperties": true},
+        "source": {"type": "object", "required": ["wad", "wad_sha256", "final_offset", "world_transform_matrix", "transform_chain"], "properties": {"wad": {"type": "string", "pattern": "\\.wad$"}, "wad_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "final_offset": {"type": "string", "pattern": "^0x[0-9A-F]+$"}, "world_transform_matrix": {"type": "array", "minItems": 9, "maxItems": 9}, "transform_chain": {"type": "array", "minItems": 1}}, "additionalProperties": true}
+      },
+      "additionalProperties": false
+    }
+  }
+}
