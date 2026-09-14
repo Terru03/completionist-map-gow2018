@@ -33,30 +33,32 @@ CHEST_TYPES = {"Legendary", "Runic_Axe", "Runic_Blades"}
 NORNIR_KEY_TYPES = {"Breakable", "Bell", "MemoryChest"}
 SHIP_OBJECT_NUMBER_RE = re.compile(r"^goartifactshiphead0*([1-9][0-9]?)(?:[^0-9].*)?$", re.I)
 
-# Proved native level/zone set. Exact list blocks region/count guess.
-# cal500 and helr100 stay out until native wire proves join.
-NORNIR_EXACT_LEVEL_QUESTS = {
-    "alf210_lakedarklh.wad": "RegionSummary_RunicChest_Parent_Alfheim",
-    "alf320_trenchadark.wad": "RegionSummary_RunicChest_Parent_Alfheim",
-    "alf340_trenchbdark.wad": "RegionSummary_RunicChest_Parent_Alfheim",
-    "alf690_lakelightlh.wad": "RegionSummary_RunicChest_Parent_Alfheim",
-    "foot100_base.wad": "RegionSummary_RunicChest_Parent_Foothills",
-    "for600_spire.wad": "RegionSummary_RunicChest_Parent_Forest",
-    "peak140_caverndark.wad": "RegionSummary_RunicChest_Parent_Peakspass",
-    "peak720_summitascenthub.wad": "RegionSummary_RunicChest_Parent_Peakspass",
-    "riv225_dangerscave.wad": "RegionSummary_RunicChest_Parent_Riverpass",
-    "riv325_dangersexit.wad": "RegionSummary_RunicChest_Parent_Riverpass",
-    "riv420_forestboarstart.wad": "RegionSummary_RunicChest_Parent_Riverpass",
-    "riv475_freyahouseext.wad": "RegionSummary_RunicChest_Parent_Riverpass",
-    "riv925_freyacave.wad": "RegionSummary_RunicChest_Parent_Riverpass",
-    "xpl100_httk.wad": "RegionSummary_RunicChest_Parent_HTTK",
-    "xpl200_funeral.wad": "RegionSummary_RunicChest_Parent_VikingFuneral",
-    "xpl850_dungeonforest.wad": "RegionSummary_RunicChest_Parent_ForestDungeon",
-    "xpl920_islandclimb.wad": "RegionSummary_RunicChest_Parent_IslandClimb",
-    "xpl940_beachcave.wad": "RegionSummary_RunicChest_Parent_BeachCave",
-    "xpl950_beachmaze.wad": "RegionSummary_RunicChest_Parent_BeachMaze",
-    "xpl970_beachtower.wad": "RegionSummary_RunicChest_Parent_BeachTower",
-}
+# Old claims only. Not join proof.
+# Physical GUID is key. WAD name alone cannot join.
+# Row stays BLOCKED until native ref chain proves full binding edge.
+NORNIR_PRIOR_UNVERIFIED_BINDING_CLAIMS = (
+    ("e00c75d2-4c76-b498-de4c-1f85c997c65e", "alf210_lakedarklh.wad", "RegionSummary_RunicChest_Parent_Alfheim"),
+    ("3ec0daa8-4892-2cad-4fb3-0c8bb93c171f", "alf320_trenchadark.wad", "RegionSummary_RunicChest_Parent_Alfheim"),
+    ("9a92c243-4083-2c21-07ff-7d997c9fcbda", "alf340_trenchbdark.wad", "RegionSummary_RunicChest_Parent_Alfheim"),
+    ("522448bf-4d91-b0f1-9de6-adbd1c77d709", "alf690_lakelightlh.wad", "RegionSummary_RunicChest_Parent_Alfheim"),
+    ("a2cdfc7a-4f0a-b68e-ac21-2bb108cd35b7", "xpl940_beachcave.wad", "RegionSummary_RunicChest_Parent_BeachCave"),
+    ("c02f0190-49d5-0ea0-146c-478fd46f4a49", "xpl950_beachmaze.wad", "RegionSummary_RunicChest_Parent_BeachMaze"),
+    ("6b701107-4e78-df82-ecd5-08b6b1a8444f", "xpl970_beachtower.wad", "RegionSummary_RunicChest_Parent_BeachTower"),
+    ("f8548c57-4dc6-7cba-277c-5cb31099648b", "cal500_runevault.wad", "RegionSummary_RunicChest_Parent_TyrsVault"),
+    ("a6ac8eeb-4ea2-545a-b05d-f19e8ea6ee8f", "foot100_base.wad", "RegionSummary_RunicChest_Parent_Foothills"),
+    ("6d18634c-4e86-282d-1cfa-0e84f6d5654f", "for600_spire.wad", "RegionSummary_RunicChest_Parent_Forest"),
+    ("3f3a8e78-44ff-44f5-7da0-24b2efce93dc", "xpl850_dungeonforest.wad", "RegionSummary_RunicChest_Parent_ForestDungeon"),
+    ("d8e4c774-44fe-09d0-a960-198ab802058e", "xpl100_httk.wad", "RegionSummary_RunicChest_Parent_HTTK"),
+    ("a336e184-4ac7-c90b-6cd6-288e2cdab274", "xpl920_islandclimb.wad", "RegionSummary_RunicChest_Parent_IslandClimb"),
+    ("f8ac74b9-414e-59e7-64d8-738182c00663", "peak140_caverndark.wad", "RegionSummary_RunicChest_Parent_Peakspass"),
+    ("c0cf4119-40ba-d7d0-0042-afa7a46f5514", "peak720_summitascenthub.wad", "RegionSummary_RunicChest_Parent_Peakspass"),
+    ("45bbcd15-458c-d30c-3338-a7b3dab9b3d9", "riv225_dangerscave.wad", "RegionSummary_RunicChest_Parent_Riverpass"),
+    ("7d8b4043-40e8-ef8e-db40-96b3a1a1e3fc", "riv325_dangersexit.wad", "RegionSummary_RunicChest_Parent_Riverpass"),
+    ("d2cacb84-426f-d68d-504a-11ae125c2b62", "riv420_forestboarstart.wad", "RegionSummary_RunicChest_Parent_Riverpass"),
+    ("69780ade-492b-0891-1948-4199e5423527", "riv475_freyahouseext.wad", "RegionSummary_RunicChest_Parent_Riverpass"),
+    ("0f0cc7ca-4842-3bb2-96f6-ddbed87a8f3b", "riv925_freyacave.wad", "RegionSummary_RunicChest_Parent_Riverpass"),
+    ("c190d593-4070-6bb7-9925-cb9f2d5867cf", "xpl200_funeral.wad", "RegionSummary_RunicChest_Parent_VikingFuneral"),
+)
 
 
 def check(condition: bool, message: str) -> None:
@@ -159,6 +161,213 @@ def quest_targets(dcb_root: Path) -> tuple[dict[str, int], dict]:
         if name.startswith("RegionSummary_"):
             result[name] = quests.unpack("<I", record + 0x30)[0]
     return result, quests.evidence()
+
+
+def quest_target_records(dcb_root: Path) -> dict[str, dict]:
+    """Read native quest target and record spot."""
+    quests = raven.Dcb(dcb_root / "quests.dcb")
+    result = {}
+    for item in quests.array(quests.root("QUESTS_PERM_DATA", 0x159), 8):
+        record = quests.pointer(item)
+        name = quests.string(record)
+        if name.startswith("RegionSummary_"):
+            result[name] = {
+                "target": quests.unpack("<I", record + 0x30)[0],
+                "quest_record_offset": f"0x{quests.file_base + record:X}",
+            }
+    return result
+
+
+def validate_nornir_binding_evidence(evidence: dict, summaries: dict[str, dict]) -> None:
+    """Reject Nornir join with no native ref-chain edge."""
+    status = evidence.get("final_status")
+    check(status in {"PASS_EXACT", "BLOCKED_EXACT_REASON_UNKNOWN"},
+          "invalid Nornir exact-binding status")
+    if status != "PASS_EXACT":
+        return
+    quest = evidence.get("proposed_region_summary_parent")
+    check(quest in summaries, "PASS_EXACT Nornir target absent from native summaries")
+    check(evidence.get("evidence_classification") == "exact_native_reference_chain",
+          "PASS_EXACT Nornir evidence is not a native reference chain")
+    sources = evidence.get("exact_evidence_sources") or []
+    check(all(source.get("source_file") for source in sources),
+          "PASS_EXACT Nornir evidence lacks native source files")
+    binding_edges = [source for source in sources
+                     if source.get("evidence_role") == "binding_edge"]
+    check(bool(binding_edges), "PASS_EXACT Nornir evidence lacks exact target binding edge")
+    check(any(any(edge.get(key) for key in ("record_offset", "record_id", "guid"))
+              for edge in binding_edges),
+          "PASS_EXACT Nornir binding edge lacks deterministic native locator")
+    summary = summaries[quest]
+    check(evidence.get("native_realm_id") == summary.get("realm_id"),
+          "PASS_EXACT Nornir realm ID disagrees with mapmaster")
+    check(evidence.get("native_region_id") == summary.get("region_id"),
+          "PASS_EXACT Nornir region ID disagrees with mapmaster")
+
+
+def resolve_nornir_parent_binding(wad_name: str, evidence: dict | None,
+                                  summaries: dict[str, dict]) -> tuple[str | None, str | None]:
+    """Return parent only from checked native chain proof.
+
+    wad_name is log data only. It cannot pick binding.
+    API takes no target count.
+    """
+    _ = wad_name
+    if evidence is None:
+        return None, None
+    validate_nornir_binding_evidence(evidence, summaries)
+    if evidence["final_status"] != "PASS_EXACT":
+        return None, None
+    return evidence["proposed_region_summary_parent"], "exact_native_reference_chain"
+
+
+def native_level_metadata(dcb_root: Path, wad_name: str) -> dict:
+    """Prove source level ID from native per-WAD DCB."""
+    stem = Path(wad_name).stem
+    path = dcb_root / f"wad_{stem}.dcb"
+    check(path.is_file(), f"missing native level metadata DCB for {wad_name}")
+    raw = path.read_bytes()
+    names = []
+    for match in raven.WAD_NAME_RE.finditer(raw):
+        value = match.group().decode("ascii")
+        if value.lower() == f"wad_{stem}".lower():
+            names.append({"name": value, "record_offset": f"0x{match.start():X}"})
+    check(bool(names), f"native level metadata lacks exact WAD identity for {wad_name}")
+    return {
+        "source_file": path.name,
+        "source_file_sha256": hashlib.sha256(raw).hexdigest(),
+        "wad_export_name": names[0]["name"],
+        "wad_export_record_offsets": sorted({row["record_offset"] for row in names}),
+        "native_level_identity": names[0]["name"],
+        "native_zone_identity": None,
+        "zone_identity_status": "NO_EXACT_ZONE_TO_REGION_SUMMARY_BINDING_RECORD",
+        "identity_status": "PASS_EXACT_SOURCE_LEVEL_WAD_IDENTITY",
+    }
+
+
+def build_nornir_binding_evidence(row: dict, dcb_root: Path,
+                                   summaries: dict[str, dict],
+                                   target_records: dict[str, dict],
+                                   map_evidence: dict, quest_evidence: dict) -> dict:
+    """Build proof row. One lost edge blocks join."""
+    guid = row["native"]["instance_guid"]
+    claim_matches = [claim for claim in NORNIR_PRIOR_UNVERIFIED_BINDING_CLAIMS
+                     if claim[0] == guid]
+    check(len(claim_matches) <= 1, f"duplicate prior Nornir claim for {guid}")
+    proposed = claim_matches[0][2] if claim_matches else None
+    if claim_matches:
+        check(claim_matches[0][1].lower() == row["source"]["wad"].lower(),
+              f"prior Nornir claim WAD mismatch for {guid}")
+        check(proposed in summaries and proposed in target_records,
+              f"prior Nornir target absent from native DCBs: {proposed}")
+    summary = summaries.get(proposed, {})
+    level = native_level_metadata(dcb_root, row["source"]["wad"])
+    sources = [
+        {
+            "source_file": row["source"]["wad"],
+            "source_file_sha256": row["source"]["wad_sha256"],
+            "evidence_role": "physical_placement",
+            "physical_instance_guid": guid,
+            "state_carrier_guids": row["native"]["state_carrier_guids"],
+            "override_record_id": row["native"]["override_record_id"],
+            "override_record_offset": row["source"]["override_offset"],
+            "final_record_id": row["native"]["final_record_id"],
+            "final_record_offset": row["source"]["final_offset"],
+        },
+        {
+            "source_file": level["source_file"],
+            "source_file_sha256": level["source_file_sha256"],
+            "evidence_role": "source_level_identity",
+            "record_offsets": level["wad_export_record_offsets"],
+            "wad_export_name": level["wad_export_name"],
+        },
+    ]
+    if proposed and summary.get("summary_record_offset"):
+        sources.append({
+                "source_file": "mapmaster.dcb",
+                "source_file_sha256": map_evidence["sha256"],
+                "evidence_role": "region_summary_target_ownership",
+                "record_offset": summary["summary_record_offset"],
+                "region_summary_target": proposed,
+                "native_realm_id": summary.get("realm_id"),
+                "native_region_id": summary.get("region_id"),
+            })
+    if proposed:
+        sources.append({
+            "source_file": "quests.dcb",
+            "source_file_sha256": quest_evidence["sha256"],
+            "evidence_role": "region_summary_target_definition",
+            "record_offset": target_records[proposed]["quest_record_offset"],
+            "region_summary_target": proposed,
+            "target": target_records[proposed]["target"],
+        })
+    helheim = row["source"]["wad"].lower() == "helr100_docks.wad"
+    evidence = {
+        "catalogue_id": row["catalogue_id"],
+        "physical_instance_guid": guid,
+        "state_carrier_guid": row["native"]["state_instance_guid"],
+        "state_carrier_guids": row["native"]["state_carrier_guids"],
+        "wad": row["source"]["wad"],
+        "world_xyz": row["marker"]["position_world"],
+        "proposed_region_summary_parent": proposed,
+        "native_realm_id": summary.get("realm_id", row.get("realm_id")),
+        "native_region_id": summary.get("region_id", row.get("region_id")),
+        "native_level_zone_identity": level,
+        "exact_evidence_sources": sources,
+        "evidence_classification": (
+            "native_untracked_reward_no_region_summary_target" if helheim
+            else "exact_source_and_target_records_missing_binding_edge"),
+        "final_status": "BLOCKED_EXACT_REASON_UNKNOWN",
+        "tracking_classification": (
+            "level_scripted_untracked_triple_chest_reward" if helheim
+            else "unresolved_tracked_candidate"),
+        "physical_object": {
+            "status": "PASS_EXACT",
+            "source_file": row["source"]["wad"],
+            "record_offset": row["source"]["override_offset"],
+            "record_id": row["native"]["override_record_id"],
+            "physical_instance_guid": guid,
+        },
+        "source_level_zone": {
+            "status": "PASS_EXACT_SOURCE_LEVEL_WAD_IDENTITY",
+            **level,
+        },
+        "map_region_ownership": {
+            "status": (
+                "TARGET_NATIVE_IDS_KNOWN_LEVEL_BINDING_UNPROVED"
+                if summary.get("summary_record_offset") else
+                "NO_MAPMASTER_REGION_SUMMARY_BINDING_RECORD"
+                if proposed else "NO_TRACKED_REGION_SUMMARY_TARGET"),
+            "native_realm_id": summary.get("realm_id", row.get("realm_id")),
+            "native_region_id": summary.get("region_id", row.get("region_id")),
+            "source": "mapmaster.dcb" if proposed else None,
+            "record_offset": summary.get("summary_record_offset"),
+        },
+        "region_summary_target": {
+            "status": ("PASS_NATIVE_TARGET_EXISTS_BINDING_EDGE_MISSING"
+                       if proposed else "NOT_APPLICABLE_UNTRACKED"),
+            "quest": proposed,
+            "target": target_records.get(proposed, {}).get("target"),
+            "source_file": "quests.dcb" if proposed else None,
+            "record_offset": target_records.get(proposed, {}).get("quest_record_offset"),
+        },
+        "completion_state_oracle": {
+            "loaded_state_status": "PASS_EXACT",
+            "state_adapter": row["progression"]["state_adapter"],
+            "field": row["progression"]["field"],
+            "state_carrier_guids": row["native"]["state_carrier_guids"],
+            "unloaded_preinstall_state_status": "BLOCKED",
+        },
+        "blocker": (
+            "No exact native GUID/reference/callback edge binds this physical chest or "
+            "its source level/zone to the proposed RegionSummary target. WAD name, "
+            "human region label, target count, and candidate membership are not proof."
+            if proposed else
+            "Native data classifies this chest as untracked; no RegionSummary target exists."
+        ),
+    }
+    validate_nornir_binding_evidence(evidence, summaries)
+    return evidence
 
 
 def collectible_summary_index(dcb_root: Path) -> tuple[dict[str, dict], dict, dict]:
@@ -573,8 +782,6 @@ def extract_standard_chests(wad: Path, raw: bytes, records: list[dict], summarie
         state_guid = native_instance_guid(override)
         parent_name = ("gochest_legendary_parent" if family == "legendary_chest"
                        else "gochest_locked_parent")
-        exact_parent_quest = (NORNIR_EXACT_LEVEL_QUESTS.get(wad.name.lower())
-                              if family == "nornir_chest" else None)
         for matrix, world, chain, raw_chain in exact_world_transforms(
                 final, records, parent_name=parent_name):
             result.append(base_entry(
@@ -588,9 +795,6 @@ def extract_standard_chests(wad: Path, raw: bytes, records: list[dict], summarie
                 compass_class=("CompletionistLegendaryChest" if family == "legendary_chest"
                                else "CompletionistNornirChest"), matrix=matrix, world=world,
                 chain=chain, raw_chain=raw_chain,
-                exact_parent_quest=exact_parent_quest,
-                parent_quest_source=("exact_native_level_zone_ownership"
-                                     if exact_parent_quest else None),
                 allow_region_quest_inference=family != "nornir_chest"))
     return result
 
@@ -775,6 +979,7 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
     check(dcb_root.is_dir() and wad_root.is_dir(), f"unsupported game root: {game_root}")
     summaries, map_evidence, quest_evidence = collectible_summary_index(dcb_root)
     targets, _unused_evidence = quest_targets(dcb_root)
+    target_records = quest_target_records(dcb_root)
     entries = []
     carrier_identities: set[tuple[str, str, str]] = set()
     ship_head_carrier_ids: set[tuple[str, str]] = set()
@@ -868,10 +1073,6 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
     family_counts = dict(sorted(collections.Counter(row["family"] for row in entries).items()))
     carrier_counts = dict(sorted(collections.Counter(
         family for family, _wad, _record in carrier_identities).items()))
-    tracked_counts = dict(sorted(collections.Counter(
-        row["family"] for row in entries
-        if row["family"] in {"artefact", "lore_marker", "legendary_chest", "nornir_chest"}
-        and row["progression"].get("parent_quest")).items()))
     target_totals = {
         "artefact_shiphead": sum(value for name, value in targets.items() if "Shiphead" in name),
         "lore_marker": sum(value for name, value in targets.items() if "LoreMarker" in name),
@@ -881,7 +1082,36 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
     ship_head_rows = [row for row in entries
                       if row["family"] == "artefact" and row["subtype"] == "Ship Head"]
     nornir_rows = [row for row in entries if row["family"] == "nornir_chest"]
-    unjoined_nornir = [row for row in nornir_rows if not row["progression"].get("parent_quest")]
+    nornir_binding_evidence = [
+        build_nornir_binding_evidence(
+            row, dcb_root, summaries, target_records, map_evidence, quest_evidence)
+        for row in nornir_rows
+    ]
+    nornir_binding_evidence.sort(key=lambda row: (row["wad"], row["physical_instance_guid"]))
+    check(
+        {claim[0] for claim in NORNIR_PRIOR_UNVERIFIED_BINDING_CLAIMS}
+        == {row["physical_instance_guid"] for row in nornir_binding_evidence
+            if row["proposed_region_summary_parent"]},
+        "prior Nornir claim ledger does not match physical evidence rows")
+    evidence_by_id = {row["catalogue_id"]: row for row in nornir_binding_evidence}
+    for row in nornir_rows:
+        quest, source = resolve_nornir_parent_binding(
+            row["source"]["wad"], evidence_by_id[row["catalogue_id"]], summaries)
+        row["progression"]["parent_quest"] = quest
+        row["progression"]["parent_quest_source"] = source
+        if quest:
+            summary = summaries[quest]
+            row["realm"] = summary["realm"]
+            row["realm_id"] = summary["realm_id"]
+            row["region"] = summary["region"]
+            row["region_id"] = summary["region_id"]
+            row["region_source"] = "exact_native_reference_chain"
+    unjoined_nornir = [row for row in nornir_rows
+                       if not row["progression"].get("parent_quest")]
+    tracked_counts = dict(sorted(collections.Counter(
+        row["family"] for row in entries
+        if row["family"] in {"artefact", "lore_marker", "legendary_chest", "nornir_chest"}
+        and row["progression"].get("parent_quest")).items()))
     audit = {
         "result": "STATIC_CATALOGUE_PASS_RUNTIME_BLOCKED",
         "static_catalogue_ready": True,
@@ -911,7 +1141,15 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
             "tracked_target": target_totals["nornir_chest"],
             "exact_joined": sum(bool(row["progression"].get("parent_quest"))
                                 for row in nornir_rows),
-            "binding_method": "explicit_native_level_zone_ownership_allowlist",
+            "pass_exact": sum(row["final_status"] == "PASS_EXACT"
+                              for row in nornir_binding_evidence),
+            "blocked_exact_reason_unknown": sum(
+                row["final_status"] == "BLOCKED_EXACT_REASON_UNKNOWN"
+                for row in nornir_binding_evidence),
+            "binding_method": "validated_exact_native_reference_chain_only",
+            "prior_claims_are_join_authority": False,
+            "wad_filename_is_join_authority": False,
+            "target_count_is_join_authority": False,
             "region_or_count_inference_used": False,
             "unjoined": [{
                 "physical_instance_guid": row["native"]["instance_guid"],
@@ -933,6 +1171,7 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
                          "registration, or object attribute binding was proved."),
             } for row in unjoined_nornir],
         },
+        "nornir_exact_binding_evidence": nornir_binding_evidence,
         "tyrs_vault_nornir_binding": {
             "result": "BLOCKED_EXACT_REASON_UNKNOWN",
             "wad": "cal500_runevault.wad",

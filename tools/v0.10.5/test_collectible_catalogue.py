@@ -139,7 +139,7 @@ class CollectibleCatalogueTests(unittest.TestCase):
         })
         self.assertEqual(self.audit["tracked_physical_counts"]["legendary_chest"], 33)
         self.assertEqual(self.audit["tracked_physical_counts"]["lore_marker"], 43)
-        self.assertEqual(self.audit["tracked_physical_counts"]["nornir_chest"], 20)
+        self.assertNotIn("nornir_chest", self.audit["tracked_physical_counts"])
         self.assertEqual(self.audit["tracked_physical_counts"]["artefact"], 11)
         self.assertEqual(self.audit["ship_head_accounting"]["physical_placements"], 9)
         self.assertEqual(self.audit["ship_head_accounting"]["state_carriers"], 9)
@@ -165,22 +165,26 @@ class CollectibleCatalogueTests(unittest.TestCase):
                 row["native"]["state_carrier_guids"],
                 sorted({path["state_carrier_guid"] for path in paths}))
 
-    def test_nornir_joins_never_use_region_or_count_inference(self):
+    def test_nornir_joins_fail_closed_without_exact_native_binding(self):
         parents = [row for row in self.rows if row["family"] == "nornir_chest"]
         joined = [row for row in parents if row["progression"].get("parent_quest")]
-        self.assertEqual(len(joined), 20)
+        self.assertEqual(joined, [])
         self.assertTrue(all(
-            row["progression"]["parent_quest_source"] == "exact_native_level_zone_ownership"
-            for row in joined))
-        self.assertTrue(all(
-            row["progression"].get("parent_quest_source") != "region_or_count_inference"
+            row["progression"].get("parent_quest_source") not in {
+                "unique_region_family_inference",
+                "region_or_count_inference",
+                "nearest_record_logic",
+                "wad_prefix_only_inference",
+                "exact_native_level_zone_ownership",
+            }
             for row in parents))
         unjoined = {row["native"]["instance_guid"]: row for row in parents
                     if not row["progression"].get("parent_quest")}
-        self.assertEqual(set(unjoined), {
+        self.assertEqual(len(unjoined), 22)
+        self.assertTrue({
             "f8548c57-4dc6-7cba-277c-5cb31099648b",
             "6fc8ac79-4c63-bf63-a137-36b7cd3c7f25",
-        })
+        } <= set(unjoined))
         self.assertEqual(
             self.audit["tyrs_vault_nornir_binding"]["result"],
             "BLOCKED_EXACT_REASON_UNKNOWN")
@@ -197,6 +201,109 @@ class CollectibleCatalogueTests(unittest.TestCase):
                 "result": "PASS_EXPLAINED",
                 "wad": "helr100_docks.wad",
             })
+
+    def test_every_nornir_parent_has_machine_readable_binding_evidence(self):
+        parents = [row for row in self.rows if row["family"] == "nornir_chest"]
+        evidence = self.audit["nornir_exact_binding_evidence"]
+        self.assertEqual(len(evidence), len(parents))
+        self.assertEqual(
+            {row["catalogue_id"] for row in evidence},
+            {row["catalogue_id"] for row in parents})
+        required = {
+            "catalogue_id", "physical_instance_guid", "state_carrier_guid",
+            "state_carrier_guids",
+            "wad", "world_xyz", "proposed_region_summary_parent",
+            "native_realm_id", "native_region_id", "native_level_zone_identity",
+            "exact_evidence_sources", "evidence_classification", "final_status",
+            "physical_object", "source_level_zone", "map_region_ownership",
+            "region_summary_target", "completion_state_oracle",
+        }
+        for row in evidence:
+            self.assertTrue(required <= set(row), row["catalogue_id"])
+            self.assertEqual(row["state_carrier_guids"], [row["state_carrier_guid"]])
+            self.assertIsNone(row["native_level_zone_identity"]["native_zone_identity"])
+            self.assertIn(row["final_status"], {
+                "PASS_EXACT", "BLOCKED_EXACT_REASON_UNKNOWN"})
+
+    def test_pass_exact_requires_native_reference_chain(self):
+        for row in self.audit["nornir_exact_binding_evidence"]:
+            if row["final_status"] != "PASS_EXACT":
+                continue
+            self.assertEqual(row["evidence_classification"],
+                             "exact_native_reference_chain")
+            self.assertTrue(row["exact_evidence_sources"])
+            self.assertTrue(all(source["source_file"] for source in
+                                row["exact_evidence_sources"]))
+        invalid = {
+            "final_status": "PASS_EXACT",
+            "evidence_classification": "wad_filename_namespace_only",
+            "proposed_region_summary_parent": "RegionSummary_RunicChest_Parent_Alfheim",
+            "exact_evidence_sources": [],
+        }
+        with self.assertRaises(ValueError):
+            catalogue_tool.validate_nornir_binding_evidence(invalid, {
+                "RegionSummary_RunicChest_Parent_Alfheim": {}})
+
+    def test_right_looking_wad_name_without_native_chain_does_not_join(self):
+        quest, source = catalogue_tool.resolve_nornir_parent_binding(
+            "alf210_lakedarklh.wad", None, {
+                "RegionSummary_RunicChest_Parent_Alfheim": {}})
+        self.assertIsNone(quest)
+        self.assertIsNone(source)
+
+    def test_count_deficit_does_not_create_nornir_join(self):
+        quest, source = catalogue_tool.resolve_nornir_parent_binding(
+            "synthetic_right_looking.wad", {
+                "final_status": "BLOCKED_EXACT_REASON_UNKNOWN",
+                "evidence_classification": "target_count_deficit",
+                "proposed_region_summary_parent":
+                    "RegionSummary_RunicChest_Parent_TyrsVault",
+                "exact_evidence_sources": [],
+            }, {"RegionSummary_RunicChest_Parent_TyrsVault": {}})
+        self.assertIsNone(quest)
+        self.assertIsNone(source)
+
+    def test_exact_native_binding_edge_can_create_join(self):
+        target = "RegionSummary_RunicChest_Parent_Alfheim"
+        evidence = {
+            "final_status": "PASS_EXACT",
+            "evidence_classification": "exact_native_reference_chain",
+            "proposed_region_summary_parent": target,
+            "native_realm_id": "REALM00000000001",
+            "native_region_id": "REGION0000000001",
+            "exact_evidence_sources": [{
+                "source_file": "native-fixture.dcb",
+                "evidence_role": "binding_edge",
+                "record_offset": "0x10",
+            }],
+        }
+        quest, source = catalogue_tool.resolve_nornir_parent_binding(
+            "synthetic.wad", evidence, {target: {
+                "realm_id": "REALM00000000001",
+                "region_id": "REGION0000000001",
+            }})
+        self.assertEqual(quest, target)
+        self.assertEqual(source, "exact_native_reference_chain")
+
+    def test_nornir_evidence_accounting_and_special_cases(self):
+        evidence = self.audit["nornir_exact_binding_evidence"]
+        self.assertEqual(self.audit["nornir_accounting"]["exact_joined"], 0)
+        self.assertEqual(self.audit["nornir_accounting"]["pass_exact"], 0)
+        self.assertEqual(self.audit["nornir_accounting"]["blocked_exact_reason_unknown"], 22)
+        cal = next(row for row in evidence if row["wad"] == "cal500_runevault.wad")
+        self.assertEqual(cal["final_status"], "BLOCKED_EXACT_REASON_UNKNOWN")
+        self.assertEqual(cal["proposed_region_summary_parent"],
+                         "RegionSummary_RunicChest_Parent_TyrsVault")
+        hel = next(row for row in evidence if row["wad"] == "helr100_docks.wad")
+        self.assertEqual(hel["final_status"], "BLOCKED_EXACT_REASON_UNKNOWN")
+        self.assertEqual(hel["tracking_classification"],
+                         "level_scripted_untracked_triple_chest_reward")
+        self.assertIsNone(hel["proposed_region_summary_parent"])
+
+    def test_naked_nornir_exact_allowlist_removed(self):
+        source = Path(catalogue_tool.__file__).read_text(encoding="utf-8")
+        self.assertNotIn("NORNIR_EXACT_LEVEL_QUESTS", source)
+        self.assertNotIn("exact_native_level_zone_ownership", source)
 
     def test_runtime_gate_is_fail_closed(self):
         self.assertFalse(self.audit["ready_for_runtime_test"])
