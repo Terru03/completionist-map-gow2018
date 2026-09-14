@@ -31,6 +31,32 @@ REGION_SUMMARY_RE = re.compile(rb"RegionSummary_[A-Za-z0-9_]+")
 ARTIFACT_TYPES = {"Alfheim", "Brooch", "Cup", "Horn", "Mask", "Ship Head", "Toy"}
 CHEST_TYPES = {"Legendary", "Runic_Axe", "Runic_Blades"}
 NORNIR_KEY_TYPES = {"Breakable", "Bell", "MemoryChest"}
+SHIP_OBJECT_NUMBER_RE = re.compile(r"^goartifactshiphead0*([1-9][0-9]?)(?:[^0-9].*)?$", re.I)
+
+# Proved native level/zone set. Exact list blocks region/count guess.
+# cal500 and helr100 stay out until native wire proves join.
+NORNIR_EXACT_LEVEL_QUESTS = {
+    "alf210_lakedarklh.wad": "RegionSummary_RunicChest_Parent_Alfheim",
+    "alf320_trenchadark.wad": "RegionSummary_RunicChest_Parent_Alfheim",
+    "alf340_trenchbdark.wad": "RegionSummary_RunicChest_Parent_Alfheim",
+    "alf690_lakelightlh.wad": "RegionSummary_RunicChest_Parent_Alfheim",
+    "foot100_base.wad": "RegionSummary_RunicChest_Parent_Foothills",
+    "for600_spire.wad": "RegionSummary_RunicChest_Parent_Forest",
+    "peak140_caverndark.wad": "RegionSummary_RunicChest_Parent_Peakspass",
+    "peak720_summitascenthub.wad": "RegionSummary_RunicChest_Parent_Peakspass",
+    "riv225_dangerscave.wad": "RegionSummary_RunicChest_Parent_Riverpass",
+    "riv325_dangersexit.wad": "RegionSummary_RunicChest_Parent_Riverpass",
+    "riv420_forestboarstart.wad": "RegionSummary_RunicChest_Parent_Riverpass",
+    "riv475_freyahouseext.wad": "RegionSummary_RunicChest_Parent_Riverpass",
+    "riv925_freyacave.wad": "RegionSummary_RunicChest_Parent_Riverpass",
+    "xpl100_httk.wad": "RegionSummary_RunicChest_Parent_HTTK",
+    "xpl200_funeral.wad": "RegionSummary_RunicChest_Parent_VikingFuneral",
+    "xpl850_dungeonforest.wad": "RegionSummary_RunicChest_Parent_ForestDungeon",
+    "xpl920_islandclimb.wad": "RegionSummary_RunicChest_Parent_IslandClimb",
+    "xpl940_beachcave.wad": "RegionSummary_RunicChest_Parent_BeachCave",
+    "xpl950_beachmaze.wad": "RegionSummary_RunicChest_Parent_BeachMaze",
+    "xpl970_beachtower.wad": "RegionSummary_RunicChest_Parent_BeachTower",
+}
 
 
 def check(condition: bool, message: str) -> None:
@@ -210,10 +236,9 @@ def matching_override(records: list[dict], final: dict) -> dict | None:
 def exact_world_transforms(record: dict, records: list[dict], *, parent_name: str | None = None):
     """Expand every exact native placement path for one prefab child.
 
-    A prefab child can have several physical parents. The first hop is selected
-    by an exact native prefab name where shared child IDs exist. Later branches
-    are all real native placements; no position or nearest-neighbour heuristic
-    is used.
+    A prefab child can have several physical parents. Every matching native
+    branch is retained.  parent_name, when supplied, is an exact type/name gate
+    and may still retain several placements of that named prefab.
     """
     candidates: dict[bytes, list[dict]] = collections.defaultdict(list)
     for row in records:
@@ -223,21 +248,16 @@ def exact_world_transforms(record: dict, records: list[dict], *, parent_name: st
 
     def walk(current: dict, matrix, chain: list[dict], seen: set[int], first: bool) -> None:
         parent_id = current["data"][0x54:0x64]
-        parents = [(index, row) for index, row in enumerate(candidates.get(parent_id, []))
-                   if id(row) not in seen]
+        parents = [row for row in candidates.get(parent_id, []) if id(row) not in seen]
         if first and parent_name:
-            parents = [(index, row) for index, row in parents
-                       if row["name"].lower() == parent_name.lower()]
+            parents = [row for row in parents if row["name"].lower() == parent_name.lower()]
             check(bool(parents), f"missing exact prefab parent {parent_name} for {record['name']}")
-        elif first and len(parents) > 1:
-            current_index = next(index for index, row in enumerate(records) if row is current)
-            parents = [min(parents, key=lambda pair: abs(pair[0] - current_index))]
         if parent_id == bytes(16) or not parents:
             evidence = [{"name": row["name"], "record_id": row["id"].hex(),
                          "offset": f"0x{row['offset']:X}"} for row in chain]
             results.append((matrix[0], matrix[1], evidence, chain))
             return
-        for _index, parent in parents:
+        for parent in parents:
             walk(parent, raven.compose(raven.record_transform(parent), matrix),
                  chain + [parent], seen | {id(parent)}, False)
 
@@ -377,7 +397,10 @@ def base_entry(*, family: str, subtype: str, wad: Path, raw: bytes, records: lis
                state_adapter: str, state_field: str,
                map_resource: str, compass_class: str, matrix, world, chain,
                raw_chain: list[dict], physical_instance_guid: str | None = None,
-               catalogue_identity: str | None = None) -> dict:
+               catalogue_identity: str | None = None,
+               exact_parent_quest: str | None = None,
+               parent_quest_source: str | None = None,
+               allow_region_quest_inference: bool = True) -> dict:
     placement_override, placement_final = physical_placement(raw_chain, records)
     physical_guid = (physical_instance_guid or placement_instance_guid(placement_override)
                      or state_instance_guid or override["id"].hex())
@@ -386,20 +409,46 @@ def base_entry(*, family: str, subtype: str, wad: Path, raw: bytes, records: lis
     for chain_override in chain_overrides:
         if chain_override is not None:
             all_values.extend(strings(chain_override["data"]))
-    parent_quest = (explicit_summary(attribute_values, summaries, family_hint)
-                    or explicit_summary(all_values, summaries, family_hint))
+    attribute_parent_quest = (explicit_summary(attribute_values, summaries, family_hint)
+                              or explicit_summary(all_values, summaries, family_hint))
+    parent_quest = exact_parent_quest or attribute_parent_quest
+    if parent_quest:
+        check(parent_quest in summaries, f"unknown exact parent quest: {parent_quest}")
+    quest_source = (parent_quest_source if exact_parent_quest else
+                    "exact_native_object_attribute" if attribute_parent_quest else None)
     region, region_source = choose_region(wad, raw, summaries, parent_quest)
-    if parent_quest is None and region is not None:
+    if allow_region_quest_inference and parent_quest is None and region is not None:
         quest_candidates = [name for name, row in summaries.items()
                             if family_hint.lower() in name.lower()
                             and row["realm"] == region["realm"]
                             and row["region"].lower() == region["region"].lower()]
         if len(quest_candidates) == 1:
             parent_quest = quest_candidates[0]
+            quest_source = "unique_region_family_inference"
     check(all(math.isfinite(value) for value in world), f"nonfinite {family} position")
     identity = catalogue_identity or physical_guid
     custom_name, custom_uid = marker_identity(family, identity)
     realm_name = region["realm"] if region else "Unknown"
+    carrier_path = {
+        "physical_instance_guid": physical_guid,
+        "state_carrier_guid": state_instance_guid,
+        "wad": wad.name,
+        "world_position": list(world),
+        "world_transform_matrix": list(matrix),
+        "transform_chain": chain,
+    }
+    numbered_objects = []
+    if family == "artefact" and subtype == "Ship Head":
+        for row in raw_chain:
+            match = SHIP_OBJECT_NUMBER_RE.match(row["name"])
+            if match:
+                numbered_objects.append({
+                    "number": int(match.group(1)),
+                    "object_name": row["name"],
+                    "record_id": row["id"].hex(),
+                    "offset": f"0x{row['offset']:X}",
+                })
+        numbered_objects.sort(key=lambda row: (row["number"], row["offset"], row["record_id"]))
     return {
         "catalogue_id": f"{family}_{re.sub(r'[^0-9a-z]', '', identity.lower())}",
         "family": family,
@@ -410,6 +459,10 @@ def base_entry(*, family: str, subtype: str, wad: Path, raw: bytes, records: lis
             "override_name": override["name"],
             "instance_guid": physical_guid,
             "state_instance_guid": state_instance_guid,
+            "state_carrier_guids": ([state_instance_guid] if state_instance_guid else []),
+            "carrier_transform_paths": [carrier_path],
+            "numbered_object_evidence": sorted({row["number"] for row in numbered_objects}),
+            "numbered_native_objects": numbered_objects,
             "script_guid": script_guid,
             "placement_record_uuid_hint": record_uuid_hint(placement_override),
             "placement_object_name": placement_final["name"],
@@ -439,10 +492,13 @@ def base_entry(*, family: str, subtype: str, wad: Path, raw: bytes, records: lis
         "region_source": region_source,
         "progression": {
             "parent_quest": parent_quest,
+            "parent_quest_source": quest_source,
             "state_adapter": state_adapter,
             "field": state_field,
             "instance_key": (f"{physical_guid}.{state_instance_guid}"
-                             if state_instance_guid else None),
+                              if state_instance_guid else None),
+            "instance_keys": ([f"{physical_guid}.{state_instance_guid}"]
+                              if state_instance_guid else []),
             "read_only": True,
             "unloaded_query": "unresolved",
         },
@@ -479,7 +535,13 @@ def extract_artifacts(wad: Path, raw: bytes, records: list[dict], summaries: dic
         check(len(subtype_values) == 1, f"ambiguous artefact subtype in {wad.name}")
         instance_guid = native_instance_guid(override)
         final = instance_final(records, index)
-        for matrix, world, chain, raw_chain in exact_world_transforms(final, records):
+        paths = exact_world_transforms(final, records)
+        for matrix, world, chain, raw_chain in paths:
+            physical_identity = None
+            placement_override, _placement_final = physical_placement(raw_chain, records)
+            if len(paths) > 1 and placement_instance_guid(placement_override) is None:
+                # Old prefab shares script child ID. Exact WAD record owns object.
+                physical_identity = f"{wad.name}:{placement_override['id'].hex()}"
             result.append(base_entry(
                 family="artefact", subtype=subtype_values[0], wad=wad, raw=raw, records=records,
                 override=override, final=final, state_instance_guid=instance_guid,
@@ -487,7 +549,7 @@ def extract_artifacts(wad: Path, raw: bytes, records: list[dict], summaries: dic
                 family_hint="Shiphead", state_adapter="interact_loot_artifact_checkpoint_state",
                 state_field="state == ACQUIRED", map_resource="goMapIconCompletionistArtefact",
                 compass_class="CompletionistArtefact", matrix=matrix, world=world, chain=chain,
-                raw_chain=raw_chain))
+                raw_chain=raw_chain, physical_instance_guid=physical_identity))
     return result
 
 
@@ -511,6 +573,8 @@ def extract_standard_chests(wad: Path, raw: bytes, records: list[dict], summarie
         state_guid = native_instance_guid(override)
         parent_name = ("gochest_legendary_parent" if family == "legendary_chest"
                        else "gochest_locked_parent")
+        exact_parent_quest = (NORNIR_EXACT_LEVEL_QUESTS.get(wad.name.lower())
+                              if family == "nornir_chest" else None)
         for matrix, world, chain, raw_chain in exact_world_transforms(
                 final, records, parent_name=parent_name):
             result.append(base_entry(
@@ -523,7 +587,11 @@ def extract_standard_chests(wad: Path, raw: bytes, records: list[dict], summarie
                               else "goMapIconCompletionistNornirChest"),
                 compass_class=("CompletionistLegendaryChest" if family == "legendary_chest"
                                else "CompletionistNornirChest"), matrix=matrix, world=world,
-                chain=chain, raw_chain=raw_chain))
+                chain=chain, raw_chain=raw_chain,
+                exact_parent_quest=exact_parent_quest,
+                parent_quest_source=("exact_native_level_zone_ownership"
+                                     if exact_parent_quest else None),
+                allow_region_quest_inference=family != "nornir_chest"))
     return result
 
 
@@ -708,7 +776,9 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
     summaries, map_evidence, quest_evidence = collectible_summary_index(dcb_root)
     targets, _unused_evidence = quest_targets(dcb_root)
     entries = []
-    carrier_counts = collections.Counter()
+    carrier_identities: set[tuple[str, str, str]] = set()
+    ship_head_carrier_ids: set[tuple[str, str]] = set()
+    ship_head_transform_paths = 0
     scanned = 0
     excluded = collections.Counter()
     for wad in sorted(wad_root.glob("*.wad"), key=lambda item: item.name.lower()):
@@ -722,10 +792,16 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
         artifacts = extract_artifacts(wad, raw, records, summaries)
         chests = extract_standard_chests(wad, raw, records, summaries)
         lore_markers = extract_lore_markers(wad, raw, records, summaries)
-        carrier_counts.update(row["family"] for row in artifacts + chests + lore_markers)
+        for row in artifacts + chests + lore_markers:
+            carrier_identities.add((row["family"], wad.name, row["native"]["override_record_id"]))
+        ship_paths = [row for row in artifacts if row["subtype"] == "Ship Head"]
+        ship_head_transform_paths += len(ship_paths)
+        ship_head_carrier_ids.update(
+            (wad.name, row["native"]["override_record_id"]) for row in ship_paths)
         if b"interact_loot_artifact" in lower:
             carrier_count = sum(row["name"].lower() == "goartifactscript_overrideinst" for row in records)
-            excluded["non_artefact_shared_script_carriers"] += carrier_count - len(artifacts)
+            artefact_carriers = len({row["native"]["override_record_id"] for row in artifacts})
+            excluded["non_artefact_shared_script_carriers"] += carrier_count - artefact_carriers
         entries.extend(artifacts)
         entries.extend(lore_markers)
         for chest in chests:
@@ -745,6 +821,33 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
             check(all(abs(a - b) < 1e-5 for a, b in zip(
                 previous["marker"]["position_world"], row["marker"]["position_world"])),
                 f"identity has conflicting positions: {key}")
+            previous_paths = previous["native"]["carrier_transform_paths"]
+            known_paths = {canonical_json(path) for path in previous_paths}
+            previous_paths.extend(path for path in row["native"]["carrier_transform_paths"]
+                                  if canonical_json(path) not in known_paths)
+            previous_paths.sort(key=lambda path: (
+                path["wad"], path["state_carrier_guid"] or "",
+                tuple(node["offset"] for node in path["transform_chain"])))
+            carrier_guids = sorted({path["state_carrier_guid"] for path in previous_paths
+                                    if path["state_carrier_guid"]})
+            previous["native"]["state_carrier_guids"] = carrier_guids
+            previous["native"]["state_instance_guid"] = (
+                carrier_guids[0] if len(carrier_guids) == 1 else None)
+            numbered_objects = {
+                canonical_json(item): item
+                for item in (previous["native"]["numbered_native_objects"]
+                             + row["native"]["numbered_native_objects"])
+            }
+            previous["native"]["numbered_native_objects"] = sorted(
+                numbered_objects.values(),
+                key=lambda item: (item["number"], item["object_name"], item["offset"]))
+            previous["native"]["numbered_object_evidence"] = sorted({
+                item["number"] for item in previous["native"]["numbered_native_objects"]})
+            instance_keys = sorted(f"{previous['native']['instance_guid']}.{guid}"
+                                   for guid in carrier_guids)
+            previous["progression"]["instance_keys"] = instance_keys
+            previous["progression"]["instance_key"] = (
+                instance_keys[0] if len(instance_keys) == 1 else None)
             duplicate_sources[key].append(row["source"]["wad"])
             continue
         deduplicated[key] = row
@@ -763,6 +866,8 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
         "collectibles": entries,
     }
     family_counts = dict(sorted(collections.Counter(row["family"] for row in entries).items()))
+    carrier_counts = dict(sorted(collections.Counter(
+        family for family, _wad, _record in carrier_identities).items()))
     tracked_counts = dict(sorted(collections.Counter(
         row["family"] for row in entries
         if row["family"] in {"artefact", "lore_marker", "legendary_chest", "nornir_chest"}
@@ -773,6 +878,10 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
         "legendary_chest": sum(value for name, value in targets.items() if "LegendaryChest" in name),
         "nornir_chest": sum(value for name, value in targets.items() if "RunicChest" in name),
     }
+    ship_head_rows = [row for row in entries
+                      if row["family"] == "artefact" and row["subtype"] == "Ship Head"]
+    nornir_rows = [row for row in entries if row["family"] == "nornir_chest"]
+    unjoined_nornir = [row for row in nornir_rows if not row["progression"].get("parent_quest")]
     audit = {
         "result": "STATIC_CATALOGUE_PASS_RUNTIME_BLOCKED",
         "static_catalogue_ready": True,
@@ -782,9 +891,71 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
         "save_or_progression_touched": False,
         "wads_scanned": scanned,
         "physical_counts": family_counts,
-        "native_carrier_counts_before_physical_dedup": dict(sorted(carrier_counts.items())),
+        "native_carrier_counts_before_physical_dedup": carrier_counts,
         "tracked_physical_counts": tracked_counts,
         "native_tracked_target_totals": target_totals,
+        "ship_head_accounting": {
+            "physical_placements": len(ship_head_rows),
+            "state_carriers": len(ship_head_carrier_ids),
+            "exhaustive_transform_paths": ship_head_transform_paths,
+            "tracked_target": target_totals["artefact_shiphead"],
+            "target_discrepancy_result": "BLOCKED_EXACT_REASON_UNKNOWN",
+            "target_discrepancy_reason": (
+                "Native data proves 9 state carriers and 9 distinct physical placements, "
+                "but quests.dcb tracks 10. No exact native tenth carrier, placement, legacy "
+                "object, or bookkeeping duplicate was proved."
+            ),
+        },
+        "nornir_accounting": {
+            "physical_placements": len(nornir_rows),
+            "tracked_target": target_totals["nornir_chest"],
+            "exact_joined": sum(bool(row["progression"].get("parent_quest"))
+                                for row in nornir_rows),
+            "binding_method": "explicit_native_level_zone_ownership_allowlist",
+            "region_or_count_inference_used": False,
+            "unjoined": [{
+                "physical_instance_guid": row["native"]["instance_guid"],
+                "wad": row["source"]["wad"],
+                "world": row["marker"]["position_world"],
+                "classification": (
+                    "level_scripted_untracked_triple_chest_reward"
+                    if row["source"]["wad"].lower() == "helr100_docks.wad"
+                    else "unresolved_tracked_candidate"),
+                "result": (
+                    "PASS_EXPLAINED"
+                    if row["source"]["wad"].lower() == "helr100_docks.wad"
+                    else "BLOCKED_EXACT_REASON_UNKNOWN"),
+                "reason": (
+                    "Placement names HelR100_TripleChest_Callback, and helr100 level script "
+                    "owns that callback. quests.dcb has no Helheim RunicChest target."
+                    if row["source"]["wad"].lower() == "helr100_docks.wad"
+                    else "No exact RegionSummary quest update, reference, GUID chain, event "
+                         "registration, or object attribute binding was proved."),
+            } for row in unjoined_nornir],
+        },
+        "tyrs_vault_nornir_binding": {
+            "result": "BLOCKED_EXACT_REASON_UNKNOWN",
+            "wad": "cal500_runevault.wad",
+            "physical_instance_guid": "f8548c57-4dc6-7cba-277c-5cb31099648b",
+            "candidate_parent_quest": "RegionSummary_RunicChest_Parent_TyrsVault",
+            "evidence": [
+                "Exact placement has RuneChestOpened callback into cal500_runevault level script.",
+                "Level script names chest_locked_tier4_cal500_1, bRuneChestOpened, and TyrsVault.",
+                "Target name appears in shared interact_chest_standard blob, not placement or level script.",
+            ],
+            "blocker": "No exact callback-to-RegionSummary update or native quest reference binds object to target.",
+        },
+        "helheim_unjoined_nornir": {
+            "result": "PASS_EXPLAINED",
+            "classification": "level_scripted_untracked_triple_chest_reward",
+            "wad": "helr100_docks.wad",
+            "physical_instance_guid": "6fc8ac79-4c63-bf63-a137-36b7cd3c7f25",
+            "evidence": [
+                "Placement owns HelR100_TripleChest_Callback.",
+                "helr100_docks level script owns same callback and triple-chest encounter names.",
+                "quests.dcb has no Helheim RunicChest target.",
+            ],
+        },
         "excluded": dict(sorted(excluded.items())),
         "unresolved_region_rows": sum(row["region"] is None for row in entries),
         "native_evidence": {"mapmaster": map_evidence, "quests": quest_evidence},

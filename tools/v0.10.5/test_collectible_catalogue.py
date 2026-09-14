@@ -6,6 +6,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+import struct
 import sys
 import tempfile
 import unittest
@@ -25,6 +26,23 @@ SCHEMA_PATH = CATALOGUE_PATH.with_name("all-collectibles.schema.json")
 AUDIT_PATH = REPO / "docs" / "research" / "all-collectibles-native-audit.json"
 
 
+def transform_record(name, prototype_id, parent_id, x, *, record_id):
+    data = bytearray(164)
+    data[0x0C:0x1C] = prototype_id
+    data[0x54:0x64] = parent_id
+    struct.pack_into("<9f", data, 0x68, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+    struct.pack_into("<3f", data, 0x8C, x, 0, 0)
+    return {
+        "name": name,
+        "kind": 1,
+        "flags": 0x3D,
+        "size": 164,
+        "data": bytes(data),
+        "id": record_id,
+        "offset": x,
+    }
+
+
 class CollectibleCatalogueTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -38,7 +56,7 @@ class CollectibleCatalogueTests(unittest.TestCase):
 
     def test_exact_static_family_counts(self):
         self.assertEqual(collections.Counter(row["family"] for row in self.rows), {
-            "artefact": 43,
+            "artefact": 45,
             "legendary_chest": 64,
             "lore_marker": 43,
             "nornir_bell": 24,
@@ -46,6 +64,34 @@ class CollectibleCatalogueTests(unittest.TestCase):
             "nornir_mechanism": 12,
             "nornir_seal": 30,
         })
+
+    def test_shared_prefab_child_expands_all_exact_first_parent_branches(self):
+        shared_parent_id = bytes.fromhex("11" * 16)
+        child = transform_record(
+            "goartifactscript", bytes.fromhex("22" * 16), shared_parent_id, 1,
+            record_id=bytes.fromhex("01" * 16))
+        first = transform_record(
+            "goartifactshiphead03", shared_parent_id, bytes(16), 10,
+            record_id=bytes.fromhex("02" * 16))
+        second = transform_record(
+            "goartifactshiphead07", shared_parent_id, bytes(16), 20,
+            record_id=bytes.fromhex("03" * 16))
+
+        paths = catalogue_tool.exact_world_transforms(child, [first, child, second])
+        repeated = catalogue_tool.exact_world_transforms(child, [first, child, second])
+
+        self.assertEqual([path[1][0] for path in paths], [11, 21])
+        self.assertEqual(
+            [[path[0], path[1], path[2]] for path in paths],
+            [[path[0], path[1], path[2]] for path in repeated])
+        self.assertEqual(
+            [[node["name"] for node in path[3]] for path in paths],
+            [["goartifactscript", "goartifactshiphead03"],
+             ["goartifactscript", "goartifactshiphead07"]])
+
+    def test_no_nearest_record_first_parent_heuristic_remains(self):
+        source = Path(catalogue_tool.__file__).read_text(encoding="utf-8")
+        self.assertNotIn("abs(pair[0] - current_index)", source)
 
     def test_catalogue_and_marker_ids_unique(self):
         keys = [row["catalogue_id"] for row in self.rows]
@@ -94,7 +140,63 @@ class CollectibleCatalogueTests(unittest.TestCase):
         self.assertEqual(self.audit["tracked_physical_counts"]["legendary_chest"], 33)
         self.assertEqual(self.audit["tracked_physical_counts"]["lore_marker"], 43)
         self.assertEqual(self.audit["tracked_physical_counts"]["nornir_chest"], 20)
-        self.assertEqual(self.audit["tracked_physical_counts"]["artefact"], 9)
+        self.assertEqual(self.audit["tracked_physical_counts"]["artefact"], 11)
+        self.assertEqual(self.audit["ship_head_accounting"]["physical_placements"], 9)
+        self.assertEqual(self.audit["ship_head_accounting"]["state_carriers"], 9)
+        self.assertEqual(self.audit["ship_head_accounting"]["tracked_target"], 10)
+        self.assertEqual(
+            self.audit["ship_head_accounting"]["target_discrepancy_result"],
+            "BLOCKED_EXACT_REASON_UNKNOWN")
+
+    def test_ship_head_physical_identity_and_carrier_paths_are_exact(self):
+        rows = [row for row in self.rows
+                if row["family"] == "artefact" and row["subtype"] == "Ship Head"]
+        self.assertEqual(len(rows), 9)
+        self.assertEqual(len({row["native"]["instance_guid"] for row in rows}), 9)
+        self.assertEqual(
+            {number for row in rows for number in row["native"]["numbered_object_evidence"]},
+            set(range(1, 10)))
+        for row in rows:
+            paths = row["native"]["carrier_transform_paths"]
+            self.assertTrue(paths)
+            self.assertTrue(all(path["physical_instance_guid"] == row["native"]["instance_guid"]
+                                for path in paths))
+            self.assertEqual(
+                row["native"]["state_carrier_guids"],
+                sorted({path["state_carrier_guid"] for path in paths}))
+
+    def test_nornir_joins_never_use_region_or_count_inference(self):
+        parents = [row for row in self.rows if row["family"] == "nornir_chest"]
+        joined = [row for row in parents if row["progression"].get("parent_quest")]
+        self.assertEqual(len(joined), 20)
+        self.assertTrue(all(
+            row["progression"]["parent_quest_source"] == "exact_native_level_zone_ownership"
+            for row in joined))
+        self.assertTrue(all(
+            row["progression"].get("parent_quest_source") != "region_or_count_inference"
+            for row in parents))
+        unjoined = {row["native"]["instance_guid"]: row for row in parents
+                    if not row["progression"].get("parent_quest")}
+        self.assertEqual(set(unjoined), {
+            "f8548c57-4dc6-7cba-277c-5cb31099648b",
+            "6fc8ac79-4c63-bf63-a137-36b7cd3c7f25",
+        })
+        self.assertEqual(
+            self.audit["tyrs_vault_nornir_binding"]["result"],
+            "BLOCKED_EXACT_REASON_UNKNOWN")
+        self.assertEqual(
+            self.audit["helheim_unjoined_nornir"],
+            {
+                "classification": "level_scripted_untracked_triple_chest_reward",
+                "evidence": [
+                    "Placement owns HelR100_TripleChest_Callback.",
+                    "helr100_docks level script owns same callback and triple-chest encounter names.",
+                    "quests.dcb has no Helheim RunicChest target.",
+                ],
+                "physical_instance_guid": "6fc8ac79-4c63-bf63-a137-36b7cd3c7f25",
+                "result": "PASS_EXPLAINED",
+                "wad": "helr100_docks.wad",
+            })
 
     def test_runtime_gate_is_fail_closed(self):
         self.assertFalse(self.audit["ready_for_runtime_test"])

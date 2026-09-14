@@ -1,5 +1,5 @@
 {
-  "catalogue_sha256": "a2a400eeea8d9df91e38f84ca64c0394105187abb247337d5200e05747a1df41",
+  "catalogue_sha256": "63d60af37841111aa4562d57de55419cfcc08c65c1183aa803f1b63e1ade81f9",
   "excluded": {
     "non_artefact_shared_script_carriers": 1,
     "procedural_legendary_chest_template_placements": 56,
@@ -14,9 +14,20 @@
   },
   "game_files_written": false,
   "game_launched": false,
+  "helheim_unjoined_nornir": {
+    "classification": "level_scripted_untracked_triple_chest_reward",
+    "evidence": [
+      "Placement owns HelR100_TripleChest_Callback.",
+      "helr100_docks level script owns same callback and triple-chest encounter names.",
+      "quests.dcb has no Helheim RunicChest target."
+    ],
+    "physical_instance_guid": "6fc8ac79-4c63-bf63-a137-36b7cd3c7f25",
+    "result": "PASS_EXPLAINED",
+    "wad": "helr100_docks.wad"
+  },
   "native_carrier_counts_before_physical_dedup": {
     "artefact": 45,
-    "legendary_chest": 120,
+    "legendary_chest": 43,
     "lore_marker": 43,
     "nornir_chest": 29
   },
@@ -40,8 +51,41 @@
     "lore_marker": 43,
     "nornir_chest": 21
   },
+  "nornir_accounting": {
+    "binding_method": "explicit_native_level_zone_ownership_allowlist",
+    "exact_joined": 20,
+    "physical_placements": 22,
+    "region_or_count_inference_used": false,
+    "tracked_target": 21,
+    "unjoined": [
+      {
+        "classification": "level_scripted_untracked_triple_chest_reward",
+        "physical_instance_guid": "6fc8ac79-4c63-bf63-a137-36b7cd3c7f25",
+        "reason": "Placement names HelR100_TripleChest_Callback, and helr100 level script owns that callback. quests.dcb has no Helheim RunicChest target.",
+        "result": "PASS_EXPLAINED",
+        "wad": "helr100_docks.wad",
+        "world": [
+          2228.758056640625,
+          -338.0022277832031,
+          682.715087890625
+        ]
+      },
+      {
+        "classification": "unresolved_tracked_candidate",
+        "physical_instance_guid": "f8548c57-4dc6-7cba-277c-5cb31099648b",
+        "reason": "No exact RegionSummary quest update, reference, GUID chain, event registration, or object attribute binding was proved.",
+        "result": "BLOCKED_EXACT_REASON_UNKNOWN",
+        "wad": "cal500_runevault.wad",
+        "world": [
+          -93.23381805419922,
+          -5.2519025802612305,
+          1.27968430519104
+        ]
+      }
+    ]
+  },
   "physical_counts": {
-    "artefact": 43,
+    "artefact": 45,
     "legendary_chest": 64,
     "lore_marker": 43,
     "nornir_bell": 24,
@@ -52,9 +96,17 @@
   "ready_for_runtime_test": false,
   "result": "STATIC_CATALOGUE_PASS_RUNTIME_BLOCKED",
   "save_or_progression_touched": false,
+  "ship_head_accounting": {
+    "exhaustive_transform_paths": 13,
+    "physical_placements": 9,
+    "state_carriers": 9,
+    "target_discrepancy_reason": "Native data proves 9 state carriers and 9 distinct physical placements, but quests.dcb tracks 10. No exact native tenth carrier, placement, legacy object, or bookkeeping duplicate was proved.",
+    "target_discrepancy_result": "BLOCKED_EXACT_REASON_UNKNOWN",
+    "tracked_target": 10
+  },
   "static_catalogue_ready": true,
   "tracked_physical_counts": {
-    "artefact": 9,
+    "artefact": 11,
     "legendary_chest": 33,
     "lore_marker": 43,
     "nornir_chest": 20
@@ -364,6 +416,18 @@
       "summary_record_offset": "0xD8C0",
       "target": 1
     }
+  },
+  "tyrs_vault_nornir_binding": {
+    "blocker": "No exact callback-to-RegionSummary update or native quest reference binds object to target.",
+    "candidate_parent_quest": "RegionSummary_RunicChest_Parent_TyrsVault",
+    "evidence": [
+      "Exact placement has RuneChestOpened callback into cal500_runevault level script.",
+      "Level script names chest_locked_tier4_cal500_1, bRuneChestOpened, and TyrsVault.",
+      "Target name appears in shared interact_chest_standard blob, not placement or level script."
+    ],
+    "physical_instance_guid": "f8548c57-4dc6-7cba-277c-5cb31099648b",
+    "result": "BLOCKED_EXACT_REASON_UNKNOWN",
+    "wad": "cal500_runevault.wad"
   },
   "unresolved_region_rows": 0,
   "wads_scanned": 127
