@@ -34,7 +34,10 @@ TARGETS = (
 
 
 def read(path: Path) -> str:
-    return path.read_bytes().decode("utf-8")
+    # Git may materialize these tracked text files as CRLF in the Windows worktree.
+    # Normalize only in memory so the guarded LF snippets are platform-independent;
+    # actual writes still happen only after every guard/postcondition succeeds.
+    return path.read_bytes().decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
 
 
 def replace_guarded(text: str, old: str, new: str, *, path: Path, guard: str, expected: int = 1) -> str:
