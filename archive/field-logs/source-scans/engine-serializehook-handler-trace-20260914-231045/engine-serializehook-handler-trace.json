@@ -1,0 +1,4532 @@
+{
+  "schema": 1,
+  "analysis": "engine_serializehook_handler_trace",
+  "gow_exe_sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+  "registration": {
+    "name": "SerializeHook",
+    "name_ref_site": 5933761,
+    "handler_ref_site": 5933798,
+    "handler_rva": 4873552
+  },
+  "handler": {
+    "entry": 4873552,
+    "begin": 4873552,
+    "end": 4873746,
+    "size": 194,
+    "boundary": "pdata",
+    "hex": "40534883ec40488b4118488bd9488b50088b4208a90000ff007440250000ff003d000002000f858a000000488b02488bcaff50684885c074108b903c0c0000488bcbe849d22d00eb1b488b4310c74008000000004883431010eb09488b5228e80c5c1600488b4320488d15090a9500488b4b1041b901000000c744243800000000458bc1482b084883e91048c1f9048d41fe89442430c744242802000000894c2420488bcbe84601000048834310f04883c4405bc3488d158c099500e8df245400cc",
+    "callers": [],
+    "direct_edges": [
+      {
+        "kind": "call",
+        "site": 4873618,
+        "dest": 7876576,
+        "known": null,
+        "target_function_begin": 7876576,
+        "target_function_end": 7877067
+      },
+      {
+        "kind": "call",
+        "site": 4873647,
+        "dest": 6339008,
+        "known": "token_packer",
+        "target_function_begin": null,
+        "target_function_end": null
+      },
+      {
+        "kind": "call",
+        "site": 4873717,
+        "dest": 4874048,
+        "known": null,
+        "target_function_begin": 4874048,
+        "target_function_end": 4874113
+      },
+      {
+        "kind": "call",
+        "site": 4873740,
+        "dest": 10388208,
+        "known": null,
+        "target_function_begin": 10388208,
+        "target_function_end": 10388285
+      }
+    ],
+    "indirect_sites": [
+      {
+        "site": 4873601,
+        "kind": "call_indirect",
+        "rex": null,
+        "modrm": 80,
+        "bytes": "ff50684885c074108b903c0c"
+      }
+    ],
+    "rip_refs": [
+      {
+        "site": 4873656,
+        "opcode": "lea",
+        "target": 14641096,
+        "section": ".rdata",
+        "exec": false,
+        "text": "__serialized_hook_queue"
+      },
+      {
+        "site": 4873733,
+        "opcode": "lea",
+        "target": 14641048,
+        "section": ".rdata",
+        "exec": false,
+        "text": "Unknown client type during engine.SerializeHook"
+      }
+    ],
+    "interesting_refs": [
+      {
+        "site": 4873656,
+        "opcode": "lea",
+        "target": 14641096,
+        "section": ".rdata",
+        "exec": false,
+        "text": "__serialized_hook_queue"
+      },
+      {
+        "site": 4873733,
+        "opcode": "lea",
+        "target": 14641048,
+        "section": ".rdata",
+        "exec": false,
+        "text": "Unknown client type during engine.SerializeHook"
+      }
+    ]
+  },
+  "token_packer_calls": [
+    {
+      "kind": "call",
+      "site": 4873647,
+      "dest": 6339008,
+      "known": "token_packer",
+      "target_function_begin": null,
+      "target_function_end": null
+    }
+  ],
+  "one_hop_callees": {
+    "0x782FE0": {
+      "entry": 7876576,
+      "begin": 7876576,
+      "end": 7877067,
+      "size": 491,
+      "boundary": "pdata",
+      "hex": "48895c240848896c2418565741564883ec30488b79188bea488b5910488d15e504680041b80d0000000f29742420488bf1e8da1c2700488903488d57400fb6480883c940894b08488bce4c8b4e104d8d41104c8946104983c0f0e821c62600488b4610488bce660f6ef50f5bf6c7400803000000f30f11304c8b46104d8bc8498d4010498d50f048894610e8f0c52600488b46104c8d3535b66100488d48f0493bce0f8400010000f641080f0f85f600000048894e10ba0c000000488bcee8cd092600488bc8488d3d238555024833cf488bd8488908488b4e10488939c74108020000004883461010488b4e18488b56104883c2f0488b4940e842a42600488b5610488b0848894af08b40088942f8488b56104c8d42f04d3bc6741c418b400883e00f7513488bd64c894610488bcfe84c28dcff488b56104883c2f0493bd674178b420883e00f3c05750dbafeffffff488bcee8c80c2600896b08488b4610f30f1130c7400803000000488b4e104883c11048894e10488b41e04889018b41e8894108488bce4c8b4e10498d41104d8d41f048894610498d51d0e8e1cb260048834610e0488b4610488d48f0483bc8731a488b01488941f08b41088941f84883c110488b4610483bc872e6488b5c24504883c0f0488b6c24600f28742420488946104883c430415e5f5ec3",
+      "callers": [
+        {
+          "kind": "jmp",
+          "site": 930443,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "call",
+          "site": 935738,
+          "function_begin": 935552,
+          "function_end": 935822
+        },
+        {
+          "kind": "call",
+          "site": 936474,
+          "function_begin": 936288,
+          "function_end": 936558
+        },
+        {
+          "kind": "call",
+          "site": 936664,
+          "function_begin": 936608,
+          "function_end": 936724
+        },
+        {
+          "kind": "jmp",
+          "site": 936750,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "call",
+          "site": 1659952,
+          "function_begin": 1659888,
+          "function_end": 1660016
+        },
+        {
+          "kind": "call",
+          "site": 1660077,
+          "function_begin": 1660016,
+          "function_end": 1660141
+        },
+        {
+          "kind": "jmp",
+          "site": 2140487,
+          "function_begin": 2140336,
+          "function_end": 2140532
+        },
+        {
+          "kind": "call",
+          "site": 2142124,
+          "function_begin": 2142096,
+          "function_end": 2142165
+        },
+        {
+          "kind": "call",
+          "site": 2142198,
+          "function_begin": 2142176,
+          "function_end": 2142239
+        },
+        {
+          "kind": "call",
+          "site": 2142291,
+          "function_begin": 2142256,
+          "function_end": 2142334
+        },
+        {
+          "kind": "call",
+          "site": 2142371,
+          "function_begin": 2142336,
+          "function_end": 2142414
+        },
+        {
+          "kind": "call",
+          "site": 2142460,
+          "function_begin": 2142432,
+          "function_end": 2142501
+        },
+        {
+          "kind": "call",
+          "site": 2142534,
+          "function_begin": 2142512,
+          "function_end": 2142575
+        },
+        {
+          "kind": "call",
+          "site": 2147010,
+          "function_begin": 2146960,
+          "function_end": 2147031
+        },
+        {
+          "kind": "call",
+          "site": 2147282,
+          "function_begin": 2147232,
+          "function_end": 2147303
+        },
+        {
+          "kind": "call",
+          "site": 2151823,
+          "function_begin": 2151616,
+          "function_end": 2151881
+        },
+        {
+          "kind": "call",
+          "site": 2243872,
+          "function_begin": 2243824,
+          "function_end": 2243936
+        },
+        {
+          "kind": "call",
+          "site": 2243981,
+          "function_begin": 2243936,
+          "function_end": 2244045
+        },
+        {
+          "kind": "jmp",
+          "site": 4602059,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "call",
+          "site": 4611115,
+          "function_begin": 4610592,
+          "function_end": 4611210
+        },
+        {
+          "kind": "jmp",
+          "site": 4873403,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "call",
+          "site": 4873618,
+          "function_begin": 4873552,
+          "function_end": 4873746
+        },
+        {
+          "kind": "call",
+          "site": 4877403,
+          "function_begin": 4875296,
+          "function_end": 4878728
+        },
+        {
+          "kind": "jmp",
+          "site": 5912475,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "call",
+          "site": 5914409,
+          "function_begin": 5913824,
+          "function_end": 5914543
+        },
+        {
+          "kind": "call",
+          "site": 5939985,
+          "function_begin": 5939920,
+          "function_end": 5940028
+        },
+        {
+          "kind": "call",
+          "site": 5941396,
+          "function_begin": 5941312,
+          "function_end": 5941411
+        },
+        {
+          "kind": "call",
+          "site": 5941446,
+          "function_begin": 5941424,
+          "function_end": 5941487
+        },
+        {
+          "kind": "jmp",
+          "site": 5951131,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "call",
+          "site": 5953455,
+          "function_begin": 5953360,
+          "function_end": 5953703
+        },
+        {
+          "kind": "call",
+          "site": 5954499,
+          "function_begin": 5954176,
+          "function_end": 5954826
+        },
+        {
+          "kind": "call",
+          "site": 5955282,
+          "function_begin": 5955120,
+          "function_end": 5957954
+        },
+        {
+          "kind": "call",
+          "site": 6330878,
+          "function_begin": 6328320,
+          "function_end": 6331222
+        },
+        {
+          "kind": "jmp",
+          "site": 6419163,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 6748587,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "call",
+          "site": 6789031,
+          "function_begin": 6788803,
+          "function_end": 6789184
+        },
+        {
+          "kind": "call",
+          "site": 6789434,
+          "function_begin": 6789320,
+          "function_end": 6789489
+        },
+        {
+          "kind": "jmp",
+          "site": 6805979,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 6849739,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 6857963,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 6881355,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 6920731,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 7149627,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 7158219,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 7181227,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 7223099,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "call",
+          "site": 7264002,
+          "function_begin": 7263489,
+          "function_end": 7264053
+        },
+        {
+          "kind": "jmp",
+          "site": 7323531,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 7408251,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 7656923,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 7729339,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 7742763,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 7832971,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 7875559,
+          "function_begin": 7875408,
+          "function_end": 7875604
+        },
+        {
+          "kind": "jmp",
+          "site": 7875627,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "call",
+          "site": 7876289,
+          "function_begin": 7876277,
+          "function_end": 7876307
+        },
+        {
+          "kind": "jmp",
+          "site": 7898171,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 7898407,
+          "function_begin": 7898256,
+          "function_end": 7898452
+        },
+        {
+          "kind": "jmp",
+          "site": 8170491,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 8302759,
+          "function_begin": 8302608,
+          "function_end": 8302804
+        },
+        {
+          "kind": "call",
+          "site": 8632683,
+          "function_begin": 8632512,
+          "function_end": 8632725
+        },
+        {
+          "kind": "jmp",
+          "site": 8672315,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 8763291,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 8903847,
+          "function_begin": 8903696,
+          "function_end": 8903892
+        },
+        {
+          "kind": "jmp",
+          "site": 8904011,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 9075307,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 9166139,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 9314123,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 9508123,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 9910875,
+          "function_begin": null,
+          "function_end": null
+        },
+        {
+          "kind": "jmp",
+          "site": 9983179,
+          "function_begin": null,
+          "function_end": null
+        }
+      ],
+      "direct_edges": [
+        {
+          "kind": "call",
+          "site": 7876625,
+          "dest": 10439920,
+          "known": null,
+          "target_function_begin": 10439920,
+          "target_function_end": 10439976
+        },
+        {
+          "kind": "call",
+          "site": 7876666,
+          "dest": 10417760,
+          "known": null,
+          "target_function_begin": 10417760,
+          "target_function_end": 10418138
+        },
+        {
+          "kind": "call",
+          "site": 7876715,
+          "dest": 10417760,
+          "known": null,
+          "target_function_begin": 10417760,
+          "target_function_end": 10418138
+        },
+        {
+          "kind": "call",
+          "site": 7876766,
+          "dest": 10369648,
+          "known": null,
+          "target_function_begin": 10369648,
+          "target_function_end": 10369718
+        },
+        {
+          "kind": "call",
+          "site": 7876825,
+          "dest": 10409248,
+          "known": null,
+          "target_function_begin": 10409248,
+          "target_function_end": 10409502
+        },
+        {
+          "kind": "call",
+          "site": 7876879,
+          "dest": 5527904,
+          "known": null,
+          "target_function_begin": 5527904,
+          "target_function_end": 5529154
+        },
+        {
+          "kind": "call",
+          "site": 7876915,
+          "dest": 10370560,
+          "known": null,
+          "target_function_begin": 10370560,
+          "target_function_end": 10370807
+        },
+        {
+          "kind": "call",
+          "site": 7876986,
+          "dest": 10419552,
+          "known": null,
+          "target_function_begin": 10419552,
+          "target_function_end": 10420018
+        }
+      ],
+      "indirect_sites": [],
+      "rip_refs": [
+        {
+          "site": 7876604,
+          "opcode": "lea",
+          "target": 14693608,
+          "section": ".rdata",
+          "exec": false,
+          "text": "__udata_level"
+        },
+        {
+          "site": 7876724,
+          "opcode": "lea",
+          "target": 14280368,
+          "section": ".rdata",
+          "exec": false,
+          "text": null
+        },
+        {
+          "site": 7876774,
+          "opcode": "lea",
+          "target": 47035856,
+          "section": ".data",
+          "exec": false,
+          "text": null
+        }
+      ],
+      "interesting_refs": [
+        {
+          "site": 7876604,
+          "opcode": "lea",
+          "target": 14693608,
+          "section": ".rdata",
+          "exec": false,
+          "text": "__udata_level"
+        }
+      ]
+    },
+    "0x4A5F40": {
+      "entry": 4874048,
+      "begin": 4874048,
+      "end": 4874113,
+      "size": 65,
+      "boundary": "pdata",
+      "hex": "405556415541574883ec484c8bfa458be9418bd1418be8488bf1e8c1d05300488d0d4a878f00483bc10f84630400008b400883e00f83e80383f8010f8751040000",
+      "callers": [
+        {
+          "kind": "call",
+          "site": 4873717,
+          "function_begin": 4873552,
+          "function_end": 4873746
+        },
+        {
+          "kind": "call",
+          "site": 4873830,
+          "function_begin": 4873760,
+          "function_end": 4873840
+        },
+        {
+          "kind": "call",
+          "site": 4873926,
+          "function_begin": 4873856,
+          "function_end": 4873936
+        },
+        {
+          "kind": "call",
+          "site": 4874022,
+          "function_begin": 4873952,
+          "function_end": 4874032
+        },
+        {
+          "kind": "call",
+          "site": 7890099,
+          "function_begin": 7889872,
+          "function_end": 7890171
+        }
+      ],
+      "direct_edges": [
+        {
+          "kind": "call",
+          "site": 4874074,
+          "dest": 10367008,
+          "known": null,
+          "target_function_begin": null,
+          "target_function_end": null
+        },
+        {
+          "kind": "call",
+          "site": 4874102,
+          "dest": 37937790,
+          "known": null,
+          "target_function_begin": null,
+          "target_function_end": null
+        }
+      ],
+      "indirect_sites": [],
+      "rip_refs": [
+        {
+          "site": 4874079,
+          "opcode": "lea",
+          "target": 14280368,
+          "section": ".rdata",
+          "exec": false,
+          "text": null
+        }
+      ],
+      "interesting_refs": []
+    },
+    "0x9E82F0": {
+      "entry": 10388208,
+      "begin": 10388208,
+      "end": 10388285,
+      "size": 77,
+      "boundary": "pdata",
+      "hex": "48895424104c894424184c894c242053574883ec28ba01000000488d7c2450488bd9e879edffff488b5424484c8bc7488bcbe8f9a8ffffba02000000488bcbe8bca2ffff488bcbe874afffffcc",
+      "callers": [
+        {
+          "kind": "call",
+          "site": 1636706,
+          "function_begin": 1636663,
+          "function_end": 1636712
+        },
+        {
+          "kind": "call",
+          "site": 1637039,
+          "function_begin": 1636996,
+          "function_end": 1637045
+        },
+        {
+          "kind": "call",
+          "site": 2190730,
+          "function_begin": 2190592,
+          "function_end": 2190768
+        },
+        {
+          "kind": "call",
+          "site": 2190746,
+          "function_begin": 2190592,
+          "function_end": 2190768
+        },
+        {
+          "kind": "call",
+          "site": 2190762,
+          "function_begin": 2190592,
+          "function_end": 2190768
+        },
+        {
+          "kind": "call",
+          "site": 2190903,
+          "function_begin": 2190768,
+          "function_end": 2190941
+        },
+        {
+          "kind": "call",
+          "site": 2190919,
+          "function_begin": 2190768,
+          "function_end": 2190941
+        },
+        {
+          "kind": "call",
+          "site": 2190935,
+          "function_begin": 2190768,
+          "function_end": 2190941
+        },
+        {
+          "kind": "call",
+          "site": 2211648,
+          "function_begin": 2211440,
+          "function_end": 2211654
+        },
+        {
+          "kind": "call",
+          "site": 2211870,
+          "function_begin": 2211664,
+          "function_end": 2211876
+        },
+        {
+          "kind": "call",
+          "site": 2265269,
+          "function_begin": 2265168,
+          "function_end": 2265275
+        },
+        {
+          "kind": "call",
+          "site": 2265378,
+          "function_begin": 2265280,
+          "function_end": 2265384
+        },
+        {
+          "kind": "call",
+          "site": 2265599,
+          "function_begin": 2265408,
+          "function_end": 2265605
+        },
+        {
+          "kind": "call",
+          "site": 2265804,
+          "function_begin": 2265616,
+          "function_end": 2265810
+        },
+        {
+          "kind": "call",
+          "site": 2771881,
+          "function_begin": 2771808,
+          "function_end": 2771887
+        },
+        {
+          "kind": "call",
+          "site": 2771958,
+          "function_begin": 2771888,
+          "function_end": 2771964
+        },
+        {
+          "kind": "call",
+          "site": 4873740,
+          "function_begin": 4873552,
+          "function_end": 4873746
+        },
+        {
+          "kind": "call",
+          "site": 4875267,
+          "function_begin": 4875257,
+          "function_end": 4875289
+        },
+        {
+          "kind": "call",
+          "site": 4875283,
+          "function_begin": 4875257,
+          "function_end": 4875289
+        },
+        {
+          "kind": "call",
+          "site": 5522383,
+          "function_begin": 5522288,
+          "function_end": 5522389
+        },
+        {
+          "kind": "call",
+          "site": 5523810,
+          "function_begin": 5523376,
+          "function_end": 5523816
+        },
+        {
+          "kind": "call",
+          "site": 5526897,
+          "function_begin": 5526448,
+          "function_end": 5526903
+        },
+        {
+          "kind": "call",
+          "site": 5527207,
+          "function_begin": 5527136,
+          "function_end": 5527213
+        },
+        {
+          "kind": "call",
+          "site": 5530130,
+          "function_begin": 5530096,
+          "function_end": 5530136
+        },
+        {
+          "kind": "call",
+          "site": 5530464,
+          "function_begin": 5530144,
+          "function_end": 5530470
+        },
+        {
+          "kind": "call",
+          "site": 5531650,
+          "function_begin": 5531640,
+          "function_end": 5531656
+        },
+        {
+          "kind": "call",
+          "site": 5531669,
+          "function_begin": 5531656,
+          "function_end": 5531794
+        },
+        {
+          "kind": "call",
+          "site": 5531702,
+          "function_begin": 5531656,
+          "function_end": 5531794
+        },
+        {
+          "kind": "call",
+          "site": 5531718,
+          "function_begin": 5531656,
+          "function_end": 5531794
+        },
+        {
+          "kind": "call",
+          "site": 5531734,
+          "function_begin": 5531656,
+          "function_end": 5531794
+        },
+        {
+          "kind": "call",
+          "site": 5531750,
+          "function_begin": 5531656,
+          "function_end": 5531794
+        },
+        {
+          "kind": "call",
+          "site": 5531769,
+          "function_begin": 5531656,
+          "function_end": 5531794
+        },
+        {
+          "kind": "call",
+          "site": 5531788,
+          "function_begin": 5531656,
+          "function_end": 5531794
+        },
+        {
+          "kind": "call",
+          "site": 5532950,
+          "function_begin": 5532940,
+          "function_end": 5532956
+        },
+        {
+          "kind": "call",
+          "site": 5532969,
+          "function_begin": 5532956,
+          "function_end": 5533011
+        },
+        {
+          "kind": "call",
+          "site": 5532988,
+          "function_begin": 5532956,
+          "function_end": 5533011
+        },
+        {
+          "kind": "call",
+          "site": 5535078,
+          "function_begin": 5534672,
+          "function_end": 5535084
+        },
+        {
+          "kind": "call",
+          "site": 5536873,
+          "function_begin": 5536784,
+          "function_end": 5536879
+        },
+        {
+          "kind": "call",
+          "site": 5537862,
+          "function_begin": 5537852,
+          "function_end": 5537868
+        },
+        {
+          "kind": "call",
+          "site": 5537878,
+          "function_begin": 5537868,
+          "function_end": 5537935
+        },
+        {
+          "kind": "call",
+          "site": 5537894,
+          "function_begin": 5537868,
+          "function_end": 5537935
+        },
+        {
+          "kind": "call",
+          "site": 5537910,
+          "function_begin": 5537868,
+          "function_end": 5537935
+        },
+        {
+          "kind": "call",
+          "site": 5537929,
+          "function_begin": 5537868,
+          "function_end": 5537935
+        },
+        {
+          "kind": "call",
+          "site": 5538109,
+          "function_begin": 5537952,
+          "function_end": 5538129
+        },
+        {
+          "kind": "call",
+          "site": 5539477,
+          "function_begin": 5539449,
+          "function_end": 5539483
+        },
+        {
+          "kind": "call",
+          "site": 5539490,
+          "function_begin": 5539483,
+          "function_end": 5539496
+        },
+        {
+          "kind": "call",
+          "site": 5539506,
+          "function_begin": 5539496,
+          "function_end": 5539512
+        },
+        {
+          "kind": "call",
+          "site": 5539522,
+          "function_begin": 5539512,
+          "function_end": 5539528
+        },
+        {
+          "kind": "call",
+          "site": 5539819,
+          "function_begin": 5539536,
+          "function_end": 5539825
+        },
+        {
+          "kind": "call",
+          "site": 5540000,
+          "function_begin": 5539840,
+          "function_end": 5540023
+        },
+        {
+          "kind": "call",
+          "site": 5541937,
+          "function_begin": 5541924,
+          "function_end": 5541980
+        },
+        {
+          "kind": "call",
+          "site": 5541956,
+          "function_begin": 5541924,
+          "function_end": 5541980
+        },
+        {
+          "kind": "call",
+          "site": 5542060,
+          "function_begin": 5542000,
+          "function_end": 5542066
+        },
+        {
+          "kind": "call",
+          "site": 5914537,
+          "function_begin": 5913824,
+          "function_end": 5914543
+        },
+        {
+          "kind": "call",
+          "site": 6267896,
+          "function_begin": 6264912,
+          "function_end": 6267977
+        },
+        {
+          "kind": "call",
+          "site": 6268698,
+          "function_begin": 6268669,
+          "function_end": 6268704
+        },
+        {
+          "kind": "call",
+          "site": 6268948,
+          "function_begin": 6268919,
+          "function_end": 6268954
+        },
+        {
+          "kind": "call",
+          "site": 6269169,
+          "function_begin": 6269140,
+          "function_end": 6269175
+        },
+        {
+          "kind": "call",
+          "site": 6269453,
+          "function_begin": 6269424,
+          "function_end": 6269459
+        },
+        {
+          "kind": "call",
+          "site": 6269656,
+          "function_begin": 6269627,
+          "function_end": 6269662
+        },
+        {
+          "kind": "call",
+          "site": 6270824,
+          "function_begin": 6270814,
+          "function_end": 6270830
+        },
+        {
+          "kind": "call",
+          "site": 6272543,
+          "function_begin": 6272240,
+          "function_end": 6272567
+        },
+        {
+          "kind": "call",
+          "site": 6272883,
+          "function_begin": 6272576,
+          "function_end": 6272955
+        },
+        {
+          "kind": "call",
+          "site": 6272910,
+          "function_begin": 6272576,
+          "function_end": 6272955
+        },
+        {
+          "kind": "call",
+          "site": 6274260,
+          "function_begin": 6273824,
+          "function_end": 6274284
+        },
+        {
+          "kind": "call",
+          "site": 6274798,
+          "function_begin": 6274304,
+          "function_end": 6274842
+        },
+        {
+          "kind": "call",
+          "site": 6275251,
+          "function_begin": 6274848,
+          "function_end": 6275295
+        },
+        {
+          "kind": "call",
+          "site": 6275715,
+          "function_begin": 6275312,
+          "function_end": 6275759
+        },
+        {
+          "kind": "call",
+          "site": 6277231,
+          "function_begin": 6276192,
+          "function_end": 6277306
+        },
+        {
+          "kind": "call",
+          "site": 6277300,
+          "function_begin": 6276192,
+          "function_end": 6277306
+        },
+        {
+          "kind": "call",
+          "site": 6279701,
+          "function_begin": 6277312,
+          "function_end": 6279823
+        },
+        {
+          "kind": "call",
+          "site": 6279717,
+          "function_begin": 6277312,
+          "function_end": 6279823
+        },
+        {
+          "kind": "call",
+          "site": 6279783,
+          "function_begin": 6277312,
+          "function_end": 6279823
+        },
+        {
+          "kind": "call",
+          "site": 6281759,
+          "function_begin": 6281056,
+          "function_end": 6281823
+        },
+        {
+          "kind": "call",
+          "site": 6281778,
+          "function_begin": 6281056,
+          "function_end": 6281823
+        },
+        {
+          "kind": "call",
+          "site": 6283078,
+          "function_begin": 6282384,
+          "function_end": 6283084
+        },
+        {
+          "kind": "call",
+          "site": 6284854,
+          "function_begin": 6283104,
+          "function_end": 6284860
+        },
+        {
+          "kind": "call",
+          "site": 6285009,
+          "function_begin": 6284880,
+          "function_end": 6285046
+        },
+        {
+          "kind": "call",
+          "site": 6285022,
+          "function_begin": 6284880,
+          "function_end": 6285046
+        },
+        {
+          "kind": "call",
+          "site": 6285182,
+          "function_begin": 6285056,
+          "function_end": 6285219
+        },
+        {
+          "kind": "call",
+          "site": 6285195,
+          "function_begin": 6285056,
+          "function_end": 6285219
+        },
+        {
+          "kind": "call",
+          "site": 6285656,
+          "function_begin": 6285646,
+          "function_end": 6285662
+        },
+        {
+          "kind": "call",
+          "site": 6285707,
+          "function_begin": 6285683,
+          "function_end": 6285740
+        },
+        {
+          "kind": "call",
+          "site": 6285734,
+          "function_begin": 6285683,
+          "function_end": 6285740
+        },
+        {
+          "kind": "call",
+          "site": 6286891,
+          "function_begin": 6286816,
+          "function_end": 6286918
+        },
+        {
+          "kind": "call",
+          "site": 6287003,
+          "function_begin": 6286928,
+          "function_end": 6287030
+        },
+        {
+          "kind": "call",
+          "site": 6289660,
+          "function_begin": 6289647,
+          "function_end": 6289666
+        },
+        {
+          "kind": "call",
+          "site": 6293285,
+          "function_begin": 6290464,
+          "function_end": 6293348
+        },
+        {
+          "kind": "call",
+          "site": 6293728,
+          "function_begin": 6293360,
+          "function_end": 6293755
+        },
+        {
+          "kind": "call",
+          "site": 6297133,
+          "function_begin": 6297121,
+          "function_end": 6297139
+        },
+        {
+          "kind": "call",
+          "site": 6299225,
+          "function_begin": 6299215,
+          "function_end": 6299231
+        },
+        {
+          "kind": "call",
+          "site": 6299252,
+          "function_begin": 6299231,
+          "function_end": 6299258
+        },
+        {
+          "kind": "call",
+          "site": 6302604,
+          "function_begin": 6301920,
+          "function_end": 6302655
+        },
+        {
+          "kind": "call",
+          "site": 6302631,
+          "function_begin": 6301920,
+          "function_end": 6302655
+        },
+        {
+          "kind": "call",
+          "site": 6304439,
+          "function_begin": 6303664,
+          "function_end": 6304490
+        },
+        {
+          "kind": "call",
+          "site": 6304484,
+          "function_begin": 6303664,
+          "function_end": 6304490
+        },
+        {
+          "kind": "call",
+          "site": 6304857,
+          "function_begin": 6304496,
+          "function_end": 6304923
+        },
+        {
+          "kind": "call",
+          "site": 6304899,
+          "function_begin": 6304496,
+          "function_end": 6304923
+        },
+        {
+          "kind": "call",
+          "site": 6307156,
+          "function_begin": 6307114,
+          "function_end": 6307181
+        },
+        {
+          "kind": "call",
+          "site": 6307175,
+          "function_begin": 6307114,
+          "function_end": 6307181
+        },
+        {
+          "kind": "call",
+          "site": 6308778,
+          "function_begin": 6308736,
+          "function_end": 6308784
+        },
+        {
+          "kind": "call",
+          "site": 6309591,
+          "function_begin": 6309008,
+          "function_end": 6309666
+        },
+        {
+          "kind": "call",
+          "site": 6309621,
+          "function_begin": 6309008,
+          "function_end": 6309666
+        },
+        {
+          "kind": "call",
+          "site": 6313833,
+          "function_begin": 6313648,
+          "function_end": 6313878
+        },
+        {
+          "kind": "call",
+          "site": 6314286,
+          "function_begin": 6313888,
+          "function_end": 6314292
+        },
+        {
+          "kind": "call",
+          "site": 6314478,
+          "function_begin": 6314304,
+          "function_end": 6314505
+        },
+        {
+          "kind": "call",
+          "site": 6316854,
+          "function_begin": 6316830,
+          "function_end": 6316887
+        },
+        {
+          "kind": "call",
+          "site": 6316881,
+          "function_begin": 6316830,
+          "function_end": 6316887
+        },
+        {
+          "kind": "call",
+          "site": 6317649,
+          "function_begin": 6317625,
+          "function_end": 6317655
+        },
+        {
+          "kind": "call",
+          "site": 6317718,
+          "function_begin": 6317676,
+          "function_end": 6317724
+        },
+        {
+          "kind": "call",
+          "site": 6319006,
+          "function_begin": 6318985,
+          "function_end": 6319012
+        },
+        {
+          "kind": "call",
+          "site": 6323436,
+          "function_begin": 6323072,
+          "function_end": 6323442
+        },
+        {
+          "kind": "call",
+          "site": 6328107,
+          "function_begin": 6328097,
+          "function_end": 6328113
+        },
+        {
+          "kind": "call",
+          "site": 6328150,
+          "function_begin": 6328131,
+          "function_end": 6328312
+        },
+        {
+          "kind": "call",
+          "site": 6328175,
+          "function_begin": 6328131,
+          "function_end": 6328312
+        },
+        {
+          "kind": "call",
+          "site": 6328212,
+          "function_begin": 6328131,
+          "function_end": 6328312
+        },
+        {
+          "kind": "call",
+          "site": 6328231,
+          "function_begin": 6328131,
+          "function_end": 6328312
+        },
+        {
+          "kind": "call",
+          "site": 6328250,
+          "function_begin": 6328131,
+          "function_end": 6328312
+        },
+        {
+          "kind": "call",
+          "site": 6328266,
+          "function_begin": 6328131,
+          "function_end": 6328312
+        },
+        {
+          "kind": "call",
+          "site": 6328288,
+          "function_begin": 6328131,
+          "function_end": 6328312
+        },
+        {
+          "kind": "call",
+          "site": 6331193,
+          "function_begin": 6328320,
+          "function_end": 6331222
+        },
+        {
+          "kind": "call",
+          "site": 6331216,
+          "function_begin": 6328320,
+          "function_end": 6331222
+        },
+        {
+          "kind": "call",
+          "site": 6332965,
+          "function_begin": 6332901,
+          "function_end": 6332986
+        },
+        {
+          "kind": "call",
+          "site": 6335450,
+          "function_begin": 6335426,
+          "function_end": 6335456
+        },
+        {
+          "kind": "call",
+          "site": 6335519,
+          "function_begin": 6335495,
+          "function_end": 6335525
+        },
+        {
+          "kind": "call",
+          "site": 6371598,
+          "function_begin": 6370960,
+          "function_end": 6371604
+        },
+        {
+          "kind": "call",
+          "site": 6546011,
+          "function_begin": 6546000,
+          "function_end": 6546017
+        },
+        {
+          "kind": "call",
+          "site": 6546577,
+          "function_begin": 6546567,
+          "function_end": 6546583
+        },
+        {
+          "kind": "call",
+          "site": 6550287,
+          "function_begin": 6550009,
+          "function_end": 6550293
+        },
+        {
+          "kind": "call",
+          "site": 6550325,
+          "function_begin": 6550311,
+          "function_end": 6550560
+        },
+        {
+          "kind": "call",
+          "site": 6550373,
+          "function_begin": 6550311,
+          "function_end": 6550560
+        },
+        {
+          "kind": "call",
+          "site": 6550389,
+          "function_begin": 6550311,
+          "function_end": 6550560
+        },
+        {
+          "kind": "call",
+          "site": 6550405,
+          "function_begin": 6550311,
+          "function_end": 6550560
+        },
+        {
+          "kind": "call",
+          "site": 6550453,
+          "function_begin": 6550311,
+          "function_end": 6550560
+        },
+        {
+          "kind": "call",
+          "site": 6550469,
+          "function_begin": 6550311,
+          "function_end": 6550560
+        },
+        {
+          "kind": "call",
+          "site": 6550485,
+          "function_begin": 6550311,
+          "function_end": 6550560
+        },
+        {
+          "kind": "call",
+          "site": 6550501,
+          "function_begin": 6550311,
+          "function_end": 6550560
+        },
+        {
+          "kind": "call",
+          "site": 6551142,
+          "function_begin": 6550794,
+          "function_end": 6551164
+        },
+        {
+          "kind": "call",
+          "site": 6551158,
+          "function_begin": 6550794,
+          "function_end": 6551164
+        },
+        {
+          "kind": "call",
+          "site": 6551196,
+          "function_begin": 6551185,
+          "function_end": 6551352
+        },
+        {
+          "kind": "call",
+          "site": 6551212,
+          "function_begin": 6551185,
+          "function_end": 6551352
+        },
+        {
+          "kind": "call",
+          "site": 6551228,
+          "function_begin": 6551185,
+          "function_end": 6551352
+        },
+        {
+          "kind": "call",
+          "site": 6551244,
+          "function_begin": 6551185,
+          "function_end": 6551352
+        },
+        {
+          "kind": "call",
+          "site": 6551260,
+          "function_begin": 6551185,
+          "function_end": 6551352
+        },
+        {
+          "kind": "call",
+          "site": 6551276,
+          "function_begin": 6551185,
+          "function_end": 6551352
+        },
+        {
+          "kind": "call",
+          "site": 6551292,
+          "function_begin": 6551185,
+          "function_end": 6551352
+        },
+        {
+          "kind": "call",
+          "site": 6850479,
+          "function_begin": 6850447,
+          "function_end": 6850497
+        },
+        {
+          "kind": "call",
+          "site": 6850869,
+          "function_begin": 6850512,
+          "function_end": 6850875
+        },
+        {
+          "kind": "call",
+          "site": 6851567,
+          "function_begin": 6851520,
+          "function_end": 6851573
+        },
+        {
+          "kind": "call",
+          "site": 6852511,
+          "function_begin": 6852490,
+          "function_end": 6852517
+        },
+        {
+          "kind": "call",
+          "site": 6853269,
+          "function_begin": 6852544,
+          "function_end": 6853313
+        },
+        {
+          "kind": "call",
+          "site": 6853307,
+          "function_begin": 6852544,
+          "function_end": 6853313
+        },
+        {
+          "kind": "call",
+          "site": 6854317,
+          "function_begin": 6853968,
+          "function_end": 6854323
+        },
+        {
+          "kind": "call",
+          "site": 6855571,
+          "function_begin": 6855539,
+          "function_end": 6855589
+        },
+        {
+          "kind": "call",
+          "site": 6856667,
+          "function_begin": 6856652,
+          "function_end": 6856702
+        },
+        {
+          "kind": "call",
+          "site": 6856696,
+          "function_begin": 6856652,
+          "function_end": 6856702
+        },
+        {
+          "kind": "call",
+          "site": 6856709,
+          "function_begin": 6856702,
+          "function_end": 6856715
+        },
+        {
+          "kind": "call",
+          "site": 6856747,
+          "function_begin": 6856715,
+          "function_end": 6856767
+        },
+        {
+          "kind": "call",
+          "site": 6857133,
+          "function_begin": 6856784,
+          "function_end": 6857139
+        },
+        {
+          "kind": "call",
+          "site": 6922418,
+          "function_begin": 6922397,
+          "function_end": 6922424
+        },
+        {
+          "kind": "call",
+          "site": 7367492,
+          "function_begin": 7367376,
+          "function_end": 7367498
+        },
+        {
+          "kind": "call",
+          "site": 7371392,
+          "function_begin": 7371371,
+          "function_end": 7371428
+        },
+        {
+          "kind": "call",
+          "site": 7371422,
+          "function_begin": 7371371,
+          "function_end": 7371428
+        },
+        {
+          "kind": "call",
+          "site": 7373198,
+          "function_begin": 7373185,
+          "function_end": 7373255
+        },
+        {
+          "kind": "call",
+          "site": 7374047,
+          "function_begin": 7373552,
+          "function_end": 7374140
+        },
+        {
+          "kind": "call",
+          "site": 7374134,
+          "function_begin": 7373552,
+          "function_end": 7374140
+        },
+        {
+          "kind": "call",
+          "site": 7761060,
+          "function_begin": 7759952,
+          "function_end": 7761117
+        },
+        {
+          "kind": "call",
+          "site": 7762456,
+          "function_begin": 7762425,
+          "function_end": 7762462
+        },
+        {
+          "kind": "call",
+          "site": 7774039,
+          "function_begin": 7773936,
+          "function_end": 7774045
+        },
+        {
+          "kind": "call",
+          "site": 7774474,
+          "function_begin": 7774064,
+          "function_end": 7774480
+        },
+        {
+          "kind": "call",
+          "site": 7775370,
+          "function_begin": 7775152,
+          "function_end": 7775376
+        },
+        {
+          "kind": "call",
+          "site": 7775645,
+          "function_begin": 7775392,
+          "function_end": 7775669
+        },
+        {
+          "kind": "call",
+          "site": 7776179,
+          "function_begin": 7775680,
+          "function_end": 7776223
+        },
+        {
+          "kind": "call",
+          "site": 7783216,
+          "function_begin": 7783088,
+          "function_end": 7783222
+        },
+        {
+          "kind": "call",
+          "site": 7796939,
+          "function_begin": 7796926,
+          "function_end": 7796945
+        },
+        {
+          "kind": "call",
+          "site": 7797686,
+          "function_begin": 7797600,
+          "function_end": 7797692
+        },
+        {
+          "kind": "call",
+          "site": 7798893,
+          "function_begin": 7798544,
+          "function_end": 7798938
+        },
+        {
+          "kind": "call",
+          "site": 7799048,
+          "function_begin": 7798992,
+          "function_end": 7799054
+        },
+        {
+          "kind": "call",
+          "site": 7799163,
+          "function_begin": 7799072,
+          "function_end": 7799185
+        },
+        {
+          "kind": "call",
+          "site": 7799179,
+          "function_begin": 7799072,
+          "function_end": 7799185
+        },
+        {
+          "kind": "call",
+          "site": 7799291,
+          "function_begin": 7799200,
+          "function_end": 7799313
+        },
+        {
+          "kind": "call",
+          "site": 7799307,
+          "function_begin": 7799200,
+          "function_end": 7799313
+        },
+        {
+          "kind": "call",
+          "site": 7799419,
+          "function_begin": 7799328,
+          "function_end": 7799441
+        },
+        {
+          "kind": "call",
+          "site": 7799435,
+          "function_begin": 7799328,
+          "function_end": 7799441
+        },
+        {
+          "kind": "call",
+          "site": 7799566,
+          "function_begin": 7799456,
+          "function_end": 7799588
+        },
+        {
+          "kind": "call",
+          "site": 7799582,
+          "function_begin": 7799456,
+          "function_end": 7799588
+        },
+        {
+          "kind": "call",
+          "site": 7799713,
+          "function_begin": 7799600,
+          "function_end": 7799735
+        },
+        {
+          "kind": "call",
+          "site": 7799729,
+          "function_begin": 7799600,
+          "function_end": 7799735
+        },
+        {
+          "kind": "call",
+          "site": 7799852,
+          "function_begin": 7799744,
+          "function_end": 7799874
+        },
+        {
+          "kind": "call",
+          "site": 7799868,
+          "function_begin": 7799744,
+          "function_end": 7799874
+        },
+        {
+          "kind": "call",
+          "site": 7800386,
+          "function_begin": 7799952,
+          "function_end": 7800392
+        },
+        {
+          "kind": "call",
+          "site": 7814571,
+          "function_begin": 7814558,
+          "function_end": 7814577
+        },
+        {
+          "kind": "call",
+          "site": 7863933,
+          "function_begin": 7863872,
+          "function_end": 7863939
+        },
+        {
+          "kind": "call",
+          "site": 7864049,
+          "function_begin": 7863952,
+          "function_end": 7864055
+        },
+        {
+          "kind": "call",
+          "site": 7864190,
+          "function_begin": 7864064,
+          "function_end": 7864196
+        },
+        {
+          "kind": "call",
+          "site": 7864397,
+          "function_begin": 7864208,
+          "function_end": 7864403
+        },
+        {
+          "kind": "call",
+          "site": 7864498,
+          "function_begin": 7864416,
+          "function_end": 7864504
+        },
+        {
+          "kind": "call",
+          "site": 7864594,
+          "function_begin": 7864512,
+          "function_end": 7864600
+        },
+        {
+          "kind": "call",
+          "site": 7865618,
+          "function_begin": 7865536,
+          "function_end": 7865624
+        },
+        {
+          "kind": "call",
+          "site": 7866053,
+          "function_begin": 7866022,
+          "function_end": 7866059
+        },
+        {
+          "kind": "call",
+          "site": 7866428,
+          "function_begin": 7866080,
+          "function_end": 7866465
+        },
+        {
+          "kind": "call",
+          "site": 7866459,
+          "function_begin": 7866080,
+          "function_end": 7866465
+        },
+        {
+          "kind": "call",
+          "site": 7867026,
+          "function_begin": 7866995,
+          "function_end": 7867032
+        },
+        {
+          "kind": "call",
+          "site": 7867266,
+          "function_begin": 7867235,
+          "function_end": 7867272
+        },
+        {
+          "kind": "call",
+          "site": 7867502,
+          "function_begin": 7867471,
+          "function_end": 7867508
+        },
+        {
+          "kind": "call",
+          "site": 7868769,
+          "function_begin": 7868704,
+          "function_end": 7868775
+        },
+        {
+          "kind": "call",
+          "site": 7869820,
+          "function_begin": 7869810,
+          "function_end": 7869826
+        },
+        {
+          "kind": "call",
+          "site": 7870349,
+          "function_begin": 7870064,
+          "function_end": 7870355
+        },
+        {
+          "kind": "call",
+          "site": 7871282,
+          "function_begin": 7871269,
+          "function_end": 7871288
+        },
+        {
+          "kind": "call",
+          "site": 7874531,
+          "function_begin": 7874368,
+          "function_end": 7874537
+        },
+        {
+          "kind": "call",
+          "site": 7879666,
+          "function_begin": 7879184,
+          "function_end": 7879672
+        },
+        {
+          "kind": "call",
+          "site": 7880274,
+          "function_begin": 7879680,
+          "function_end": 7880280
+        },
+        {
+          "kind": "call",
+          "site": 7880491,
+          "function_begin": 7880288,
+          "function_end": 7880518
+        },
+        {
+          "kind": "call",
+          "site": 7881171,
+          "function_begin": 7881150,
+          "function_end": 7881193
+        },
+        {
+          "kind": "call",
+          "site": 7881187,
+          "function_begin": 7881150,
+          "function_end": 7881193
+        },
+        {
+          "kind": "call",
+          "site": 7881459,
+          "function_begin": 7881200,
+          "function_end": 7881486
+        },
+        {
+          "kind": "call",
+          "site": 7882188,
+          "function_begin": 7882178,
+          "function_end": 7882194
+        },
+        {
+          "kind": "call",
+          "site": 7882236,
+          "function_begin": 7882215,
+          "function_end": 7882259
+        },
+        {
+          "kind": "call",
+          "site": 7882621,
+          "function_begin": 7882272,
+          "function_end": 7882648
+        },
+        {
+          "kind": "call",
+          "site": 7883642,
+          "function_begin": 7883621,
+          "function_end": 7883702
+        },
+        {
+          "kind": "call",
+          "site": 7883669,
+          "function_begin": 7883621,
+          "function_end": 7883702
+        },
+        {
+          "kind": "call",
+          "site": 7883696,
+          "function_begin": 7883621,
+          "function_end": 7883702
+        },
+        {
+          "kind": "call",
+          "site": 7883712,
+          "function_begin": 7883702,
+          "function_end": 7883718
+        },
+        {
+          "kind": "call",
+          "site": 7884949,
+          "function_begin": 7884933,
+          "function_end": 7884955
+        },
+        {
+          "kind": "call",
+          "site": 7888654,
+          "function_begin": 7888639,
+          "function_end": 7888660
+        },
+        {
+          "kind": "call",
+          "site": 7888686,
+          "function_begin": 7888660,
+          "function_end": 7888692
+        },
+        {
+          "kind": "call",
+          "site": 7888707,
+          "function_begin": 7888692,
+          "function_end": 7888713
+        },
+        {
+          "kind": "call",
+          "site": 7890165,
+          "function_begin": 7889872,
+          "function_end": 7890171
+        },
+        {
+          "kind": "call",
+          "site": 7896084,
+          "function_begin": 7895248,
+          "function_end": 7896139
+        },
+        {
+          "kind": "call",
+          "site": 7896100,
+          "function_begin": 7895248,
+          "function_end": 7896139
+        },
+        {
+          "kind": "call",
+          "site": 7896133,
+          "function_begin": 7895248,
+          "function_end": 7896139
+        },
+        {
+          "kind": "call",
+          "site": 7896477,
+          "function_begin": 7896160,
+          "function_end": 7896483
+        },
+        {
+          "kind": "call",
+          "site": 8017901,
+          "function_begin": 8017883,
+          "function_end": 8017907
+        },
+        {
+          "kind": "call",
+          "site": 8017925,
+          "function_begin": 8017907,
+          "function_end": 8017931
+        },
+        {
+          "kind": "call",
+          "site": 8018125,
+          "function_begin": 8018107,
+          "function_end": 8018131
+        },
+        {
+          "kind": "call",
+          "site": 8018149,
+          "function_begin": 8018131,
+          "function_end": 8018155
+        },
+        {
+          "kind": "call",
+          "site": 8019065,
+          "function_begin": 8018753,
+          "function_end": 8019071
+        },
+        {
+          "kind": "call",
+          "site": 8019092,
+          "function_begin": 8019071,
+          "function_end": 8019098
+        },
+        {
+          "kind": "call",
+          "site": 8019122,
+          "function_begin": 8019098,
+          "function_end": 8019128
+        },
+        {
+          "kind": "call",
+          "site": 8019291,
+          "function_begin": 8019136,
+          "function_end": 8019297
+        },
+        {
+          "kind": "call",
+          "site": 8023707,
+          "function_begin": 8023456,
+          "function_end": 8023713
+        },
+        {
+          "kind": "call",
+          "site": 8145142,
+          "function_begin": 8144976,
+          "function_end": 8145148
+        },
+        {
+          "kind": "call",
+          "site": 8145476,
+          "function_begin": 8145448,
+          "function_end": 8145482
+        },
+        {
+          "kind": "call",
+          "site": 8147863,
+          "function_begin": 8146368,
+          "function_end": 8147869
+        },
+        {
+          "kind": "call",
+          "site": 8153827,
+          "function_begin": 8153664,
+          "function_end": 8153833
+        },
+        {
+          "kind": "call",
+          "site": 8154003,
+          "function_begin": 8153840,
+          "function_end": 8154009
+        },
+        {
+          "kind": "call",
+          "site": 8154806,
+          "function_begin": 8154785,
+          "function_end": 8154812
+        },
+        {
+          "kind": "call",
+          "site": 8155418,
+          "function_begin": 8155397,
+          "function_end": 8155424
+        },
+        {
+          "kind": "call",
+          "site": 8162841,
+          "function_begin": 8162144,
+          "function_end": 8162847
+        },
+        {
+          "kind": "call",
+          "site": 8169231,
+          "function_begin": 8169203,
+          "function_end": 8169237
+        },
+        {
+          "kind": "call",
+          "site": 8170076,
+          "function_begin": 8169584,
+          "function_end": 8170114
+        },
+        {
+          "kind": "call",
+          "site": 8170108,
+          "function_begin": 8169584,
+          "function_end": 8170114
+        },
+        {
+          "kind": "call",
+          "site": 8179008,
+          "function_begin": 8178980,
+          "function_end": 8179014
+        },
+        {
+          "kind": "call",
+          "site": 8180351,
+          "function_begin": 8179968,
+          "function_end": 8180396
+        },
+        {
+          "kind": "call",
+          "site": 8181535,
+          "function_begin": 8180416,
+          "function_end": 8181580
+        },
+        {
+          "kind": "call",
+          "site": 8190705,
+          "function_begin": 8190608,
+          "function_end": 8190732
+        },
+        {
+          "kind": "call",
+          "site": 8204065,
+          "function_begin": 8204005,
+          "function_end": 8204071
+        },
+        {
+          "kind": "call",
+          "site": 8205285,
+          "function_begin": 8205088,
+          "function_end": 8205312
+        },
+        {
+          "kind": "call",
+          "site": 8206475,
+          "function_begin": 8206112,
+          "function_end": 8206520
+        },
+        {
+          "kind": "call",
+          "site": 8207399,
+          "function_begin": 8206944,
+          "function_end": 8207426
+        },
+        {
+          "kind": "call",
+          "site": 8207913,
+          "function_begin": 8207440,
+          "function_end": 8207940
+        },
+        {
+          "kind": "call",
+          "site": 8208425,
+          "function_begin": 8207952,
+          "function_end": 8208452
+        },
+        {
+          "kind": "call",
+          "site": 8208937,
+          "function_begin": 8208464,
+          "function_end": 8208964
+        },
+        {
+          "kind": "call",
+          "site": 8209439,
+          "function_begin": 8209393,
+          "function_end": 8209445
+        },
+        {
+          "kind": "call",
+          "site": 8209881,
+          "function_begin": 8209456,
+          "function_end": 8209887
+        },
+        {
+          "kind": "call",
+          "site": 8210318,
+          "function_begin": 8209904,
+          "function_end": 8210324
+        },
+        {
+          "kind": "call",
+          "site": 8212994,
+          "function_begin": 8210944,
+          "function_end": 8213075
+        },
+        {
+          "kind": "call",
+          "site": 8213336,
+          "function_begin": 8213326,
+          "function_end": 8213342
+        },
+        {
+          "kind": "call",
+          "site": 8213724,
+          "function_begin": 8213711,
+          "function_end": 8213730
+        },
+        {
+          "kind": "call",
+          "site": 8213782,
+          "function_begin": 8213751,
+          "function_end": 8213788
+        },
+        {
+          "kind": "call",
+          "site": 8214205,
+          "function_begin": 8214192,
+          "function_end": 8214211
+        },
+        {
+          "kind": "call",
+          "site": 8214263,
+          "function_begin": 8214232,
+          "function_end": 8214269
+        },
+        {
+          "kind": "call",
+          "site": 8214668,
+          "function_begin": 8214637,
+          "function_end": 8214674
+        },
+        {
+          "kind": "call",
+          "site": 8214934,
+          "function_begin": 8214924,
+          "function_end": 8214940
+        },
+        {
+          "kind": "call",
+          "site": 8215000,
+          "function_begin": 8214961,
+          "function_end": 8215006
+        },
+        {
+          "kind": "call",
+          "site": 8215196,
+          "function_begin": 8215024,
+          "function_end": 8215202
+        },
+        {
+          "kind": "call",
+          "site": 8215351,
+          "function_begin": 8215216,
+          "function_end": 8215357
+        },
+        {
+          "kind": "call",
+          "site": 8215525,
+          "function_begin": 8215376,
+          "function_end": 8215565
+        },
+        {
+          "kind": "call",
+          "site": 8215559,
+          "function_begin": 8215376,
+          "function_end": 8215565
+        },
+        {
+          "kind": "call",
+          "site": 8215735,
+          "function_begin": 8215584,
+          "function_end": 8215741
+        },
+        {
+          "kind": "call",
+          "site": 8215911,
+          "function_begin": 8215760,
+          "function_end": 8215917
+        },
+        {
+          "kind": "call",
+          "site": 8216156,
+          "function_begin": 8215936,
+          "function_end": 8216162
+        },
+        {
+          "kind": "call",
+          "site": 8217546,
+          "function_begin": 8217518,
+          "function_end": 8217552
+        },
+        {
+          "kind": "call",
+          "site": 8217604,
+          "function_begin": 8217573,
+          "function_end": 8217610
+        },
+        {
+          "kind": "call",
+          "site": 8220085,
+          "function_begin": 8220054,
+          "function_end": 8220091
+        },
+        {
+          "kind": "call",
+          "site": 8242623,
+          "function_begin": 8242613,
+          "function_end": 8242629
+        },
+        {
+          "kind": "call",
+          "site": 8242654,
+          "function_begin": 8242647,
+          "function_end": 8242660
+        },
+        {
+          "kind": "call",
+          "site": 8244894,
+          "function_begin": 8244884,
+          "function_end": 8244900
+        },
+        {
+          "kind": "call",
+          "site": 8253056,
+          "function_begin": 8253014,
+          "function_end": 8253062
+        },
+        {
+          "kind": "call",
+          "site": 8253165,
+          "function_begin": 8253072,
+          "function_end": 8253171
+        },
+        {
+          "kind": "call",
+          "site": 8253699,
+          "function_begin": 8253657,
+          "function_end": 8253705
+        },
+        {
+          "kind": "call",
+          "site": 8254259,
+          "function_begin": 8254235,
+          "function_end": 8254265
+        },
+        {
+          "kind": "call",
+          "site": 8254307,
+          "function_begin": 8254265,
+          "function_end": 8254313
+        },
+        {
+          "kind": "call",
+          "site": 8254630,
+          "function_begin": 8254368,
+          "function_end": 8254654
+        },
+        {
+          "kind": "call",
+          "site": 8255104,
+          "function_begin": 8255062,
+          "function_end": 8255110
+        },
+        {
+          "kind": "call",
+          "site": 8255673,
+          "function_begin": 8255652,
+          "function_end": 8255700
+        },
+        {
+          "kind": "call",
+          "site": 8256314,
+          "function_begin": 8256274,
+          "function_end": 8256320
+        },
+        {
+          "kind": "call",
+          "site": 8256473,
+          "function_begin": 8256452,
+          "function_end": 8256500
+        },
+        {
+          "kind": "call",
+          "site": 8257086,
+          "function_begin": 8257076,
+          "function_end": 8257092
+        },
+        {
+          "kind": "call",
+          "site": 8257113,
+          "function_begin": 8257092,
+          "function_end": 8257119
+        },
+        {
+          "kind": "call",
+          "site": 8257140,
+          "function_begin": 8257119,
+          "function_end": 8257146
+        },
+        {
+          "kind": "call",
+          "site": 8257188,
+          "function_begin": 8257146,
+          "function_end": 8257194
+        },
+        {
+          "kind": "call",
+          "site": 8257236,
+          "function_begin": 8257215,
+          "function_end": 8257242
+        },
+        {
+          "kind": "call",
+          "site": 8260119,
+          "function_begin": 8260079,
+          "function_end": 8260125
+        },
+        {
+          "kind": "call",
+          "site": 8260164,
+          "function_begin": 8260143,
+          "function_end": 8260170
+        },
+        {
+          "kind": "call",
+          "site": 8260441,
+          "function_begin": 8260420,
+          "function_end": 8260468
+        },
+        {
+          "kind": "call",
+          "site": 8260581,
+          "function_begin": 8260480,
+          "function_end": 8260587
+        },
+        {
+          "kind": "call",
+          "site": 8260870,
+          "function_begin": 8260608,
+          "function_end": 8260894
+        },
+        {
+          "kind": "call",
+          "site": 8261331,
+          "function_begin": 8261289,
+          "function_end": 8261337
+        },
+        {
+          "kind": "call",
+          "site": 8262031,
+          "function_begin": 8261868,
+          "function_end": 8262037
+        },
+        {
+          "kind": "call",
+          "site": 8262713,
+          "function_begin": 8262572,
+          "function_end": 8262745
+        },
+        {
+          "kind": "call",
+          "site": 8263648,
+          "function_begin": 8263606,
+          "function_end": 8263654
+        },
+        {
+          "kind": "call",
+          "site": 8264385,
+          "function_begin": 8264343,
+          "function_end": 8264391
+        },
+        {
+          "kind": "call",
+          "site": 8265438,
+          "function_begin": 8265417,
+          "function_end": 8265444
+        },
+        {
+          "kind": "call",
+          "site": 8266022,
+          "function_begin": 8265980,
+          "function_end": 8266028
+        },
+        {
+          "kind": "call",
+          "site": 8266288,
+          "function_begin": 8266267,
+          "function_end": 8266294
+        },
+        {
+          "kind": "call",
+          "site": 8266636,
+          "function_begin": 8266594,
+          "function_end": 8266642
+        },
+        {
+          "kind": "call",
+          "site": 8268260,
+          "function_begin": 8267804,
+          "function_end": 8268332
+        },
+        {
+          "kind": "call",
+          "site": 8268294,
+          "function_begin": 8267804,
+          "function_end": 8268332
+        },
+        {
+          "kind": "call",
+          "site": 8268310,
+          "function_begin": 8267804,
+          "function_end": 8268332
+        },
+        {
+          "kind": "call",
+          "site": 8268326,
+          "function_begin": 8267804,
+          "function_end": 8268332
+        },
+        {
+          "kind": "call",
+          "site": 8268764,
+          "function_begin": 8268722,
+          "function_end": 8268770
+        },
+        {
+          "kind": "call",
+          "site": 8268925,
+          "function_begin": 8268904,
+          "function_end": 8268952
+        },
+        {
+          "kind": "call",
+          "site": 8269424,
+          "function_begin": 8269382,
+          "function_end": 8269430
+        },
+        {
+          "kind": "call",
+          "site": 8269852,
+          "function_begin": 8269810,
+          "function_end": 8269858
+        },
+        {
+          "kind": "call",
+          "site": 8270706,
+          "function_begin": 8270685,
+          "function_end": 8270766
+        },
+        {
+          "kind": "call",
+          "site": 8270733,
+          "function_begin": 8270685,
+          "function_end": 8270766
+        },
+        {
+          "kind": "call",
+          "site": 8270760,
+          "function_begin": 8270685,
+          "function_end": 8270766
+        },
+        {
+          "kind": "call",
+          "site": 8270950,
+          "function_begin": 8270929,
+          "function_end": 8270977
+        },
+        {
+          "kind": "call",
+          "site": 8272687,
+          "function_begin": 8272677,
+          "function_end": 8272709
+        },
+        {
+          "kind": "call",
+          "site": 8272703,
+          "function_begin": 8272677,
+          "function_end": 8272709
+        },
+        {
+          "kind": "call",
+          "site": 8272751,
+          "function_begin": 8272709,
+          "function_end": 8272757
+        },
+        {
+          "kind": "call",
+          "site": 8272767,
+          "function_begin": 8272757,
+          "function_end": 8272837
+        },
+        {
+          "kind": "call",
+          "site": 8272783,
+          "function_begin": 8272757,
+          "function_end": 8272837
+        },
+        {
+          "kind": "call",
+          "site": 8272799,
+          "function_begin": 8272757,
+          "function_end": 8272837
+        },
+        {
+          "kind": "call",
+          "site": 8272815,
+          "function_begin": 8272757,
+          "function_end": 8272837
+        },
+        {
+          "kind": "call",
+          "site": 8272831,
+          "function_begin": 8272757,
+          "function_end": 8272837
+        },
+        {
+          "kind": "call",
+          "site": 8274274,
+          "function_begin": 8274264,
+          "function_end": 8274280
+        },
+        {
+          "kind": "call",
+          "site": 8274322,
+          "function_begin": 8274280,
+          "function_end": 8274328
+        },
+        {
+          "kind": "call",
+          "site": 8274338,
+          "function_begin": 8274328,
+          "function_end": 8274360
+        },
+        {
+          "kind": "call",
+          "site": 8274354,
+          "function_begin": 8274328,
+          "function_end": 8274360
+        },
+        {
+          "kind": "call",
+          "site": 8278609,
+          "function_begin": 8278581,
+          "function_end": 8278615
+        },
+        {
+          "kind": "call",
+          "site": 8278654,
+          "function_begin": 8278615,
+          "function_end": 8278660
+        },
+        {
+          "kind": "call",
+          "site": 8278681,
+          "function_begin": 8278660,
+          "function_end": 8278687
+        },
+        {
+          "kind": "call",
+          "site": 8278697,
+          "function_begin": 8278687,
+          "function_end": 8278854
+        },
+        {
+          "kind": "call",
+          "site": 8278713,
+          "function_begin": 8278687,
+          "function_end": 8278854
+        },
+        {
+          "kind": "call",
+          "site": 8278729,
+          "function_begin": 8278687,
+          "function_end": 8278854
+        },
+        {
+          "kind": "call",
+          "site": 8278745,
+          "function_begin": 8278687,
+          "function_end": 8278854
+        },
+        {
+          "kind": "call",
+          "site": 8278761,
+          "function_begin": 8278687,
+          "function_end": 8278854
+        },
+        {
+          "kind": "call",
+          "site": 8278777,
+          "function_begin": 8278687,
+          "function_end": 8278854
+        },
+        {
+          "kind": "call",
+          "site": 8278793,
+          "function_begin": 8278687,
+          "function_end": 8278854
+        },
+        {
+          "kind": "call",
+          "site": 8278809,
+          "function_begin": 8278687,
+          "function_end": 8278854
+        },
+        {
+          "kind": "call",
+          "site": 8278822,
+          "function_begin": 8278687,
+          "function_end": 8278854
+        },
+        {
+          "kind": "call",
+          "site": 8278835,
+          "function_begin": 8278687,
+          "function_end": 8278854
+        },
+        {
+          "kind": "call",
+          "site": 8278848,
+          "function_begin": 8278687,
+          "function_end": 8278854
+        },
+        {
+          "kind": "call",
+          "site": 8280578,
+          "function_begin": 8280557,
+          "function_end": 8280584
+        },
+        {
+          "kind": "call",
+          "site": 8280605,
+          "function_begin": 8280584,
+          "function_end": 8280611
+        },
+        {
+          "kind": "call",
+          "site": 8282286,
+          "function_begin": 8282192,
+          "function_end": 8282292
+        },
+        {
+          "kind": "call",
+          "site": 8285589,
+          "function_begin": 8285579,
+          "function_end": 8285595
+        },
+        {
+          "kind": "call",
+          "site": 8314661,
+          "function_begin": 8314637,
+          "function_end": 8314667
+        },
+        {
+          "kind": "call",
+          "site": 8323664,
+          "function_begin": 8320192,
+          "function_end": 8323798
+        },
+        {
+          "kind": "call",
+          "site": 8323730,
+          "function_begin": 8320192,
+          "function_end": 8323798
+        },
+        {
+          "kind": "call",
+          "site": 8326408,
+          "function_begin": 8326398,
+          "function_end": 8326414
+        },
+        {
+          "kind": "call",
+          "site": 8326515,
+          "function_begin": 8326473,
+          "function_end": 8326567
+        },
+        {
+          "kind": "call",
+          "site": 8332922,
+          "function_begin": 8332909,
+          "function_end": 8332928
+        },
+        {
+          "kind": "call",
+          "site": 8332938,
+          "function_begin": 8332928,
+          "function_end": 8332944
+        },
+        {
+          "kind": "call",
+          "site": 8332967,
+          "function_begin": 8332944,
+          "function_end": 8333035
+        },
+        {
+          "kind": "call",
+          "site": 8332991,
+          "function_begin": 8332944,
+          "function_end": 8333035
+        },
+        {
+          "kind": "call",
+          "site": 8333010,
+          "function_begin": 8332944,
+          "function_end": 8333035
+        },
+        {
+          "kind": "call",
+          "site": 8333029,
+          "function_begin": 8332944,
+          "function_end": 8333035
+        },
+        {
+          "kind": "call",
+          "site": 8335599,
+          "function_begin": 8335589,
+          "function_end": 8335605
+        },
+        {
+          "kind": "call",
+          "site": 8336843,
+          "function_begin": 8336710,
+          "function_end": 8336849
+        },
+        {
+          "kind": "call",
+          "site": 8338915,
+          "function_begin": 8338905,
+          "function_end": 8338921
+        },
+        {
+          "kind": "call",
+          "site": 8343993,
+          "function_begin": 8343536,
+          "function_end": 8343999
+        },
+        {
+          "kind": "call",
+          "site": 8344758,
+          "function_begin": 8344608,
+          "function_end": 8344764
+        },
+        {
+          "kind": "call",
+          "site": 8461282,
+          "function_begin": 8461152,
+          "function_end": 8461320
+        },
+        {
+          "kind": "call",
+          "site": 8461298,
+          "function_begin": 8461152,
+          "function_end": 8461320
+        },
+        {
+          "kind": "call",
+          "site": 8461314,
+          "function_begin": 8461152,
+          "function_end": 8461320
+        },
+        {
+          "kind": "call",
+          "site": 8461582,
+          "function_begin": 8461472,
+          "function_end": 8461604
+        },
+        {
+          "kind": "call",
+          "site": 8461598,
+          "function_begin": 8461472,
+          "function_end": 8461604
+        },
+        {
+          "kind": "call",
+          "site": 8461746,
+          "function_begin": 8461616,
+          "function_end": 8461784
+        },
+        {
+          "kind": "call",
+          "site": 8461762,
+          "function_begin": 8461616,
+          "function_end": 8461784
+        },
+        {
+          "kind": "call",
+          "site": 8461778,
+          "function_begin": 8461616,
+          "function_end": 8461784
+        },
+        {
+          "kind": "call",
+          "site": 8461927,
+          "function_begin": 8461792,
+          "function_end": 8461965
+        },
+        {
+          "kind": "call",
+          "site": 8461943,
+          "function_begin": 8461792,
+          "function_end": 8461965
+        },
+        {
+          "kind": "call",
+          "site": 8461959,
+          "function_begin": 8461792,
+          "function_end": 8461965
+        },
+        {
+          "kind": "call",
+          "site": 8463621,
+          "function_begin": 8463312,
+          "function_end": 8463643
+        },
+        {
+          "kind": "call",
+          "site": 8463637,
+          "function_begin": 8463312,
+          "function_end": 8463643
+        },
+        {
+          "kind": "call",
+          "site": 8464676,
+          "function_begin": 8464666,
+          "function_end": 8464682
+        },
+        {
+          "kind": "call",
+          "site": 8464720,
+          "function_begin": 8464682,
+          "function_end": 8464726
+        },
+        {
+          "kind": "call",
+          "site": 8468216,
+          "function_begin": 8467840,
+          "function_end": 8468240
+        },
+        {
+          "kind": "call",
+          "site": 8508676,
+          "function_begin": 8508272,
+          "function_end": 8508682
+        },
+        {
+          "kind": "call",
+          "site": 8509092,
+          "function_begin": 8508688,
+          "function_end": 8509098
+        },
+        {
+          "kind": "call",
+          "site": 8509367,
+          "function_begin": 8509104,
+          "function_end": 8509373
+        },
+        {
+          "kind": "call",
+          "site": 8509655,
+          "function_begin": 8509392,
+          "function_end": 8509661
+        },
+        {
+          "kind": "call",
+          "site": 8526368,
+          "function_begin": 8526080,
+          "function_end": 8526374
+        },
+        {
+          "kind": "call",
+          "site": 8526797,
+          "function_begin": 8526416,
+          "function_end": 8526803
+        },
+        {
+          "kind": "call",
+          "site": 8529813,
+          "function_begin": 8529632,
+          "function_end": 8529819
+        },
+        {
+          "kind": "call",
+          "site": 8530133,
+          "function_begin": 8529840,
+          "function_end": 8530160
+        },
+        {
+          "kind": "call",
+          "site": 8530605,
+          "function_begin": 8530595,
+          "function_end": 8530611
+        },
+        {
+          "kind": "call",
+          "site": 8536461,
+          "function_begin": 8536448,
+          "function_end": 8536467
+        },
+        {
+          "kind": "call",
+          "site": 8538945,
+          "function_begin": 8538816,
+          "function_end": 8538951
+        },
+        {
+          "kind": "call",
+          "site": 8539207,
+          "function_begin": 8538960,
+          "function_end": 8539230
+        },
+        {
+          "kind": "call",
+          "site": 8549440,
+          "function_begin": 8549392,
+          "function_end": 8549446
+        },
+        {
+          "kind": "call",
+          "site": 8618779,
+          "function_begin": 8618544,
+          "function_end": 8618810
+        },
+        {
+          "kind": "call",
+          "site": 8618804,
+          "function_begin": 8618544,
+          "function_end": 8618810
+        },
+        {
+          "kind": "call",
+          "site": 8619015,
+          "function_begin": 8618816,
+          "function_end": 8619021
+        },
+        {
+          "kind": "call",
+          "site": 8631365,
+          "function_begin": 8631280,
+          "function_end": 8631371
+        },
+        {
+          "kind": "call",
+          "site": 8631525,
+          "function_begin": 8631476,
+          "function_end": 8631531
+        },
+        {
+          "kind": "call",
+          "site": 8631612,
+          "function_begin": 8631552,
+          "function_end": 8631618
+        },
+        {
+          "kind": "call",
+          "site": 8903410,
+          "function_begin": 8903312,
+          "function_end": 8903416
+        },
+        {
+          "kind": "call",
+          "site": 8904664,
+          "function_begin": 8904657,
+          "function_end": 8904670
+        },
+        {
+          "kind": "call",
+          "site": 8905983,
+          "function_begin": 8905216,
+          "function_end": 8906011
+        },
+        {
+          "kind": "call",
+          "site": 8906005,
+          "function_begin": 8905216,
+          "function_end": 8906011
+        },
+        {
+          "kind": "call",
+          "site": 8906932,
+          "function_begin": 8906032,
+          "function_end": 8907019
+        },
+        {
+          "kind": "call",
+          "site": 8906954,
+          "function_begin": 8906032,
+          "function_end": 8907019
+        },
+        {
+          "kind": "call",
+          "site": 8906997,
+          "function_begin": 8906032,
+          "function_end": 8907019
+        },
+        {
+          "kind": "call",
+          "site": 8907013,
+          "function_begin": 8906032,
+          "function_end": 8907019
+        },
+        {
+          "kind": "call",
+          "site": 8907538,
+          "function_begin": 8907040,
+          "function_end": 8907582
+        },
+        {
+          "kind": "call",
+          "site": 8907560,
+          "function_begin": 8907040,
+          "function_end": 8907582
+        },
+        {
+          "kind": "call",
+          "site": 8907576,
+          "function_begin": 8907040,
+          "function_end": 8907582
+        },
+        {
+          "kind": "call",
+          "site": 9317329,
+          "function_begin": 9316736,
+          "function_end": 9317353
+        },
+        {
+          "kind": "call",
+          "site": 9555470,
+          "function_begin": 9555439,
+          "function_end": 9555476
+        },
+        {
+          "kind": "call",
+          "site": 9556079,
+          "function_begin": 9556048,
+          "function_end": 9556085
+        },
+        {
+          "kind": "call",
+          "site": 9556108,
+          "function_begin": 9556085,
+          "function_end": 9556114
+        },
+        {
+          "kind": "call",
+          "site": 9558521,
+          "function_begin": 9558511,
+          "function_end": 9558527
+        },
+        {
+          "kind": "call",
+          "site": 9558576,
+          "function_begin": 9558548,
+          "function_end": 9558582
+        },
+        {
+          "kind": "call",
+          "site": 9558806,
+          "function_begin": 9558592,
+          "function_end": 9558812
+        },
+        {
+          "kind": "call",
+          "site": 9559765,
+          "function_begin": 9559664,
+          "function_end": 9559771
+        },
+        {
+          "kind": "call",
+          "site": 9559893,
+          "function_begin": 9559792,
+          "function_end": 9559899
+        },
+        {
+          "kind": "call",
+          "site": 9560021,
+          "function_begin": 9559920,
+          "function_end": 9560027
+        },
+        {
+          "kind": "call",
+          "site": 9560149,
+          "function_begin": 9560048,
+          "function_end": 9560155
+        },
+        {
+          "kind": "call",
+          "site": 9560277,
+          "function_begin": 9560176,
+          "function_end": 9560283
+        },
+        {
+          "kind": "call",
+          "site": 9560405,
+          "function_begin": 9560304,
+          "function_end": 9560411
+        },
+        {
+          "kind": "call",
+          "site": 9560533,
+          "function_begin": 9560432,
+          "function_end": 9560539
+        },
+        {
+          "kind": "call",
+          "site": 9560661,
+          "function_begin": 9560560,
+          "function_end": 9560667
+        },
+        {
+          "kind": "call",
+          "site": 9560789,
+          "function_begin": 9560688,
+          "function_end": 9560795
+        },
+        {
+          "kind": "call",
+          "site": 9560971,
+          "function_begin": 9560816,
+          "function_end": 9561027
+        },
+        {
+          "kind": "call",
+          "site": 9561021,
+          "function_begin": 9560816,
+          "function_end": 9561027
+        },
+        {
+          "kind": "call",
+          "site": 9561141,
+          "function_begin": 9561040,
+          "function_end": 9561147
+        },
+        {
+          "kind": "call",
+          "site": 9561321,
+          "function_begin": 9561168,
+          "function_end": 9561327
+        },
+        {
+          "kind": "call",
+          "site": 9561497,
+          "function_begin": 9561344,
+          "function_end": 9561503
+        },
+        {
+          "kind": "call",
+          "site": 9561673,
+          "function_begin": 9561520,
+          "function_end": 9561679
+        },
+        {
+          "kind": "call",
+          "site": 9561849,
+          "function_begin": 9561696,
+          "function_end": 9561855
+        },
+        {
+          "kind": "call",
+          "site": 9562009,
+          "function_begin": 9561872,
+          "function_end": 9562015
+        },
+        {
+          "kind": "call",
+          "site": 9562169,
+          "function_begin": 9562032,
+          "function_end": 9562175
+        },
+        {
+          "kind": "call",
+          "site": 9562305,
+          "function_begin": 9562192,
+          "function_end": 9562311
+        },
+        {
+          "kind": "call",
+          "site": 9562433,
+          "function_begin": 9562320,
+          "function_end": 9562439
+        },
+        {
+          "kind": "call",
+          "site": 9562584,
+          "function_begin": 9562448,
+          "function_end": 9562590
+        },
+        {
+          "kind": "call",
+          "site": 9562729,
+          "function_begin": 9562608,
+          "function_end": 9562735
+        },
+        {
+          "kind": "call",
+          "site": 9562873,
+          "function_begin": 9562752,
+          "function_end": 9562879
+        },
+        {
+          "kind": "call",
+          "site": 9563032,
+          "function_begin": 9562896,
+          "function_end": 9563038
+        },
+        {
+          "kind": "call",
+          "site": 9563169,
+          "function_begin": 9563056,
+          "function_end": 9563175
+        },
+        {
+          "kind": "call",
+          "site": 9563297,
+          "function_begin": 9563184,
+          "function_end": 9563303
+        },
+        {
+          "kind": "call",
+          "site": 9563917,
+          "function_begin": 9563893,
+          "function_end": 9563923
+        },
+        {
+          "kind": "call",
+          "site": 9567796,
+          "function_begin": 9567786,
+          "function_end": 9567802
+        },
+        {
+          "kind": "call",
+          "site": 9567819,
+          "function_begin": 9567802,
+          "function_end": 9567825
+        },
+        {
+          "kind": "call",
+          "site": 9567842,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9567865,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9567888,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9567911,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9567934,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9567957,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9567980,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568003,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568026,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568075,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568098,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568147,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568170,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568216,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568236,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568273,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568293,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568330,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568350,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568387,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568407,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568423,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568455,
+          "function_begin": 9567825,
+          "function_end": 9568461
+        },
+        {
+          "kind": "call",
+          "site": 9568538,
+          "function_begin": 9568480,
+          "function_end": 9568557
+        },
+        {
+          "kind": "call",
+          "site": 9568551,
+          "function_begin": 9568480,
+          "function_end": 9568557
+        },
+        {
+          "kind": "call",
+          "site": 9568602,
+          "function_begin": 9568576,
+          "function_end": 9568608
+        },
+        {
+          "kind": "call",
+          "site": 9569910,
+          "function_begin": 9569200,
+          "function_end": 9569955
+        },
+        {
+          "kind": "call",
+          "site": 9573251,
+          "function_begin": 9572576,
+          "function_end": 9573278
+        },
+        {
+          "kind": "call",
+          "site": 9573624,
+          "function_begin": 9573614,
+          "function_end": 9573650
+        },
+        {
+          "kind": "call",
+          "site": 9573644,
+          "function_begin": 9573614,
+          "function_end": 9573650
+        },
+        {
+          "kind": "call",
+          "site": 9632396,
+          "function_begin": 9632386,
+          "function_end": 9632402
+        },
+        {
+          "kind": "call",
+          "site": 9632418,
+          "function_begin": 9632402,
+          "function_end": 9632468
+        },
+        {
+          "kind": "call",
+          "site": 9632440,
+          "function_begin": 9632402,
+          "function_end": 9632468
+        },
+        {
+          "kind": "call",
+          "site": 9632462,
+          "function_begin": 9632402,
+          "function_end": 9632468
+        },
+        {
+          "kind": "call",
+          "site": 9632966,
+          "function_begin": 9632956,
+          "function_end": 9632972
+        },
+        {
+          "kind": "call",
+          "site": 9632988,
+          "function_begin": 9632972,
+          "function_end": 9633013
+        },
+        {
+          "kind": "call",
+          "site": 9633007,
+          "function_begin": 9632972,
+          "function_end": 9633013
+        },
+        {
+          "kind": "call",
+          "site": 9645406,
+          "function_begin": 9645390,
+          "function_end": 9645412
+        },
+        {
+          "kind": "call",
+          "site": 9645428,
+          "function_begin": 9645412,
+          "function_end": 9645434
+        },
+        {
+          "kind": "call",
+          "site": 9645450,
+          "function_begin": 9645434,
+          "function_end": 9645456
+        },
+        {
+          "kind": "call",
+          "site": 9656681,
+          "function_begin": 9656665,
+          "function_end": 9656687
+        },
+        {
+          "kind": "call",
+          "site": 9658555,
+          "function_begin": 9658128,
+          "function_end": 9658616
+        },
+        {
+          "kind": "call",
+          "site": 9658592,
+          "function_begin": 9658128,
+          "function_end": 9658616
+        },
+        {
+          "kind": "call",
+          "site": 9661245,
+          "function_begin": 9661192,
+          "function_end": 9661251
+        },
+        {
+          "kind": "call",
+          "site": 9662187,
+          "function_begin": 9662140,
+          "function_end": 9662193
+        },
+        {
+          "kind": "call",
+          "site": 9662209,
+          "function_begin": 9662193,
+          "function_end": 9662232
+        },
+        {
+          "kind": "call",
+          "site": 9662937,
+          "function_begin": 9662921,
+          "function_end": 9662961
+        },
+        {
+          "kind": "call",
+          "site": 9664404,
+          "function_begin": 9663648,
+          "function_end": 9664410
+        },
+        {
+          "kind": "call",
+          "site": 9673101,
+          "function_begin": 9673048,
+          "function_end": 9673107
+        },
+        {
+          "kind": "call",
+          "site": 9673766,
+          "function_begin": 9673719,
+          "function_end": 9673772
+        },
+        {
+          "kind": "call",
+          "site": 9673788,
+          "function_begin": 9673772,
+          "function_end": 9673794
+        },
+        {
+          "kind": "call",
+          "site": 9674255,
+          "function_begin": 9674239,
+          "function_end": 9674261
+        },
+        {
+          "kind": "call",
+          "site": 9676053,
+          "function_begin": 9675296,
+          "function_end": 9676059
+        },
+        {
+          "kind": "call",
+          "site": 9680125,
+          "function_begin": 9680072,
+          "function_end": 9680131
+        },
+        {
+          "kind": "call",
+          "site": 9680790,
+          "function_begin": 9680743,
+          "function_end": 9680796
+        },
+        {
+          "kind": "call",
+          "site": 9680812,
+          "function_begin": 9680796,
+          "function_end": 9680818
+        },
+        {
+          "kind": "call",
+          "site": 9681279,
+          "function_begin": 9681263,
+          "function_end": 9681285
+        },
+        {
+          "kind": "call",
+          "site": 9684448,
+          "function_begin": 9682576,
+          "function_end": 9684533
+        },
+        {
+          "kind": "call",
+          "site": 9686878,
+          "function_begin": 9686160,
+          "function_end": 9686884
+        },
+        {
+          "kind": "call",
+          "site": 9687623,
+          "function_begin": 9686896,
+          "function_end": 9687629
+        },
+        {
+          "kind": "call",
+          "site": 9690062,
+          "function_begin": 9690046,
+          "function_end": 9690068
+        },
+        {
+          "kind": "call",
+          "site": 9690084,
+          "function_begin": 9690068,
+          "function_end": 9690108
+        },
+        {
+          "kind": "call",
+          "site": 9690124,
+          "function_begin": 9690108,
+          "function_end": 9690130
+        },
+        {
+          "kind": "call",
+          "site": 9727753,
+          "function_begin": 9727743,
+          "function_end": 9727759
+        },
+        {
+          "kind": "call",
+          "site": 9728272,
+          "function_begin": 9728262,
+          "function_end": 9728278
+        },
+        {
+          "kind": "call",
+          "site": 9728782,
+          "function_begin": 9728772,
+          "function_end": 9728788
+        },
+        {
+          "kind": "call",
+          "site": 9728902,
+          "function_begin": 9728816,
+          "function_end": 9728929
+        },
+        {
+          "kind": "call",
+          "site": 9729548,
+          "function_begin": 9729538,
+          "function_end": 9729554
+        },
+        {
+          "kind": "call",
+          "site": 9730027,
+          "function_begin": 9729568,
+          "function_end": 9730033
+        },
+        {
+          "kind": "call",
+          "site": 9732195,
+          "function_begin": 9732185,
+          "function_end": 9732201
+        },
+        {
+          "kind": "call",
+          "site": 9732241,
+          "function_begin": 9732219,
+          "function_end": 9732247
+        },
+        {
+          "kind": "call",
+          "site": 9732257,
+          "function_begin": 9732247,
+          "function_end": 9732263
+        },
+        {
+          "kind": "call",
+          "site": 9744870,
+          "function_begin": 9744640,
+          "function_end": 9744894
+        },
+        {
+          "kind": "call",
+          "site": 9745209,
+          "function_begin": 9745202,
+          "function_end": 9745215
+        },
+        {
+          "kind": "call",
+          "site": 9745246,
+          "function_begin": 9745215,
+          "function_end": 9745252
+        },
+        {
+          "kind": "call",
+          "site": 9748258,
+          "function_begin": 9748248,
+          "function_end": 9748264
+        },
+        {
+          "kind": "call",
+          "site": 9748274,
+          "function_begin": 9748264,
+          "function_end": 9748280
+        },
+        {
+          "kind": "call",
+          "site": 9764421,
+          "function_begin": 9763840,
+          "function_end": 9764427
+        },
+        {
+          "kind": "call",
+          "site": 9764695,
+          "function_begin": 9764448,
+          "function_end": 9764715
+        },
+        {
+          "kind": "call",
+          "site": 9765214,
+          "function_begin": 9764736,
+          "function_end": 9765275
+        },
+        {
+          "kind": "call",
+          "site": 9765251,
+          "function_begin": 9764736,
+          "function_end": 9765275
+        },
+        {
+          "kind": "call",
+          "site": 9765954,
+          "function_begin": 9765616,
+          "function_end": 9765974
+        },
+        {
+          "kind": "call",
+          "site": 9766271,
+          "function_begin": 9766254,
+          "function_end": 9766277
+        },
+        {
+          "kind": "call",
+          "site": 9767391,
+          "function_begin": 9767348,
+          "function_end": 9767446
+        },
+        {
+          "kind": "call",
+          "site": 9767440,
+          "function_begin": 9767348,
+          "function_end": 9767446
+        },
+        {
+          "kind": "call",
+          "site": 9785531,
+          "function_begin": 9785517,
+          "function_end": 9785537
+        },
+        {
+          "kind": "call",
+          "site": 9785547,
+          "function_begin": 9785537,
+          "function_end": 9785553
+        },
+        {
+          "kind": "call",
+          "site": 9787228,
+          "function_begin": 9786792,
+          "function_end": 9787234
+        },
+        {
+          "kind": "call",
+          "site": 9787244,
+          "function_begin": 9787234,
+          "function_end": 9787250
+        },
+        {
+          "kind": "call",
+          "site": 9787705,
+          "function_begin": 9787264,
+          "function_end": 9787724
+        },
+        {
+          "kind": "call",
+          "site": 9787718,
+          "function_begin": 9787264,
+          "function_end": 9787724
+        },
+        {
+          "kind": "call",
+          "site": 9788700,
+          "function_begin": 9788480,
+          "function_end": 9788719
+        },
+        {
+          "kind": "call",
+          "site": 9788713,
+          "function_begin": 9788480,
+          "function_end": 9788719
+        },
+        {
+          "kind": "call",
+          "site": 10374163,
+          "function_begin": 10373952,
+          "function_end": 10374222
+        },
+        {
+          "kind": "call",
+          "site": 10374179,
+          "function_begin": 10373952,
+          "function_end": 10374222
+        },
+        {
+          "kind": "call",
+          "site": 10374216,
+          "function_begin": 10373952,
+          "function_end": 10374222
+        },
+        {
+          "kind": "call",
+          "site": 10375501,
+          "function_begin": 10374528,
+          "function_end": 10375523
+        },
+        {
+          "kind": "call",
+          "site": 10375517,
+          "function_begin": 10374528,
+          "function_end": 10375523
+        },
+        {
+          "kind": "call",
+          "site": 10376519,
+          "function_begin": 10376413,
+          "function_end": 10376525
+        },
+        {
+          "kind": "call",
+          "site": 10377108,
+          "function_begin": 10377020,
+          "function_end": 10377114
+        },
+        {
+          "kind": "call",
+          "site": 10378474,
+          "function_begin": 10378336,
+          "function_end": 10378480
+        },
+        {
+          "kind": "call",
+          "site": 10382277,
+          "function_begin": 10382245,
+          "function_end": 10382283
+        },
+        {
+          "kind": "call",
+          "site": 10382427,
+          "function_begin": 10382368,
+          "function_end": 10382446
+        },
+        {
+          "kind": "call",
+          "site": 10382440,
+          "function_begin": 10382368,
+          "function_end": 10382446
+        },
+        {
+          "kind": "call",
+          "site": 10388539,
+          "function_begin": 10388384,
+          "function_end": 10388650
+        },
+        {
+          "kind": "call",
+          "site": 10388622,
+          "function_begin": 10388384,
+          "function_end": 10388650
+        },
+        {
+          "kind": "call",
+          "site": 10388644,
+          "function_begin": 10388384,
+          "function_end": 10388650
+        },
+        {
+          "kind": "call",
+          "site": 10454283,
+          "function_begin": 10453792,
+          "function_end": 10454361
+        },
+        {
+          "kind": "call",
+          "site": 10454323,
+          "function_begin": 10453792,
+          "function_end": 10454361
+        },
+        {
+          "kind": "call",
+          "site": 10454339,
+          "function_begin": 10453792,
+          "function_end": 10454361
+        },
+        {
+          "kind": "call",
+          "site": 10454355,
+          "function_begin": 10453792,
+          "function_end": 10454361
+        },
+        {
+          "kind": "call",
+          "site": 10455995,
+          "function_begin": 10454368,
+          "function_end": 10456132
+        },
+        {
+          "kind": "call",
+          "site": 10462363,
+          "function_begin": 10462346,
+          "function_end": 10462387
+        },
+        {
+          "kind": "call",
+          "site": 10463363,
+          "function_begin": 10463353,
+          "function_end": 10463369
+        },
+        {
+          "kind": "call",
+          "site": 10464292,
+          "function_begin": 10464282,
+          "function_end": 10464298
+        },
+        {
+          "kind": "call",
+          "site": 10465741,
+          "function_begin": 10465731,
+          "function_end": 10465831
+        },
+        {
+          "kind": "call",
+          "site": 10465783,
+          "function_begin": 10465731,
+          "function_end": 10465831
+        },
+        {
+          "kind": "call",
+          "site": 10465825,
+          "function_begin": 10465731,
+          "function_end": 10465831
+        },
+        {
+          "kind": "call",
+          "site": 10465967,
+          "function_begin": 10465840,
+          "function_end": 10465973
+        },
+        {
+          "kind": "call",
+          "site": 10466701,
+          "function_begin": 10466694,
+          "function_end": 10466728
+        },
+        {
+          "kind": "call",
+          "site": 10468893,
+          "function_begin": 10468784,
+          "function_end": 10468899
+        },
+        {
+          "kind": "call",
+          "site": 10470179,
+          "function_begin": 10470169,
+          "function_end": 10470185
+        },
+        {
+          "kind": "call",
+          "site": 10470202,
+          "function_begin": 10470185,
+          "function_end": 10470208
+        },
+        {
+          "kind": "call",
+          "site": 10473868,
+          "function_begin": 10473344,
+          "function_end": 10473874
+        },
+        {
+          "kind": "call",
+          "site": 10476394,
+          "function_begin": 10475362,
+          "function_end": 10476400
+        },
+        {
+          "kind": "call",
+          "site": 10479859,
+          "function_begin": 10479488,
+          "function_end": 10479865
+        },
+        {
+          "kind": "call",
+          "site": 10481495,
+          "function_begin": 10481414,
+          "function_end": 10481501
+        },
+        {
+          "kind": "call",
+          "site": 10481511,
+          "function_begin": 10481501,
+          "function_end": 10481517
+        },
+        {
+          "kind": "call",
+          "site": 10489312,
+          "function_begin": 10489302,
+          "function_end": 10489520
+        },
+        {
+          "kind": "call",
+          "site": 10489328,
+          "function_begin": 10489302,
+          "function_end": 10489520
+        },
+        {
+          "kind": "call",
+          "site": 10489382,
+          "function_begin": 10489302,
+          "function_end": 10489520
+        },
+        {
+          "kind": "call",
+          "site": 10489398,
+          "function_begin": 10489302,
+          "function_end": 10489520
+        },
+        {
+          "kind": "call",
+          "site": 10489414,
+          "function_begin": 10489302,
+          "function_end": 10489520
+        },
+        {
+          "kind": "call",
+          "site": 10489897,
+          "function_begin": 10489648,
+          "function_end": 10489919
+        },
+        {
+          "kind": "call",
+          "site": 10489913,
+          "function_begin": 10489648,
+          "function_end": 10489919
+        },
+        {
+          "kind": "call",
+          "site": 10491635,
+          "function_begin": 10491625,
+          "function_end": 10491641
+        },
+        {
+          "kind": "call",
+          "site": 10492167,
+          "function_begin": 10491712,
+          "function_end": 10492173
+        },
+        {
+          "kind": "call",
+          "site": 10492594,
+          "function_begin": 10492577,
+          "function_end": 10492600
+        },
+        {
+          "kind": "call",
+          "site": 10494008,
+          "function_begin": 10493998,
+          "function_end": 10494050
+        },
+        {
+          "kind": "call",
+          "site": 10494031,
+          "function_begin": 10493998,
+          "function_end": 10494050
+        },
+        {
+          "kind": "call",
+          "site": 10494044,
+          "function_begin": 10493998,
+          "function_end": 10494050
+        },
+        {
+          "kind": "call",
+          "site": 10495402,
+          "function_begin": 10495385,
+          "function_end": 10495437
+        },
+        {
+          "kind": "call",
+          "site": 10495415,
+          "function_begin": 10495385,
+          "function_end": 10495437
+        },
+        {
+          "kind": "call",
+          "site": 10495431,
+          "function_begin": 10495385,
+          "function_end": 10495437
+        },
+        {
+          "kind": "call",
+          "site": 10495732,
+          "function_begin": 10495584,
+          "function_end": 10495738
+        },
+        {
+          "kind": "call",
+          "site": 10495888,
+          "function_begin": 10495744,
+          "function_end": 10495911
+        },
+        {
+          "kind": "call",
+          "site": 10495905,
+          "function_begin": 10495744,
+          "function_end": 10495911
+        },
+        {
+          "kind": "call",
+          "site": 10497357,
+          "function_begin": 10497346,
+          "function_end": 10497363
+        },
+        {
+          "kind": "call",
+          "site": 10497374,
+          "function_begin": 10497363,
+          "function_end": 10497434
+        },
+        {
+          "kind": "call",
+          "site": 10497391,
+          "function_begin": 10497363,
+          "function_end": 10497434
+        },
+        {
+          "kind": "call",
+          "site": 10497408,
+          "function_begin": 10497363,
+          "function_end": 10497434
+        },
+        {
+          "kind": "call",
+          "site": 10497428,
+          "function_begin": 10497363,
+          "function_end": 10497434
+        },
+        {
+          "kind": "call",
+          "site": 10497572,
+          "function_begin": 10497440,
+          "function_end": 10497578
+        },
+        {
+          "kind": "call",
+          "site": 10497718,
+          "function_begin": 10497707,
+          "function_end": 10497724
+        },
+        {
+          "kind": "call",
+          "site": 10497828,
+          "function_begin": 10497744,
+          "function_end": 10497834
+        },
+        {
+          "kind": "call",
+          "site": 10498336,
+          "function_begin": 10498240,
+          "function_end": 10498342
+        },
+        {
+          "kind": "call",
+          "site": 10499455,
+          "function_begin": 10499344,
+          "function_end": 10499478
+        },
+        {
+          "kind": "call",
+          "site": 10499472,
+          "function_begin": 10499344,
+          "function_end": 10499478
+        },
+        {
+          "kind": "call",
+          "site": 10499560,
+          "function_begin": 10499488,
+          "function_end": 10499566
+        },
+        {
+          "kind": "call",
+          "site": 10499637,
+          "function_begin": 10499584,
+          "function_end": 10499643
+        },
+        {
+          "kind": "call",
+          "site": 10500155,
+          "function_begin": 10500145,
+          "function_end": 10500161
+        },
+        {
+          "kind": "call",
+          "site": 10501487,
+          "function_begin": 10501480,
+          "function_end": 10501516
+        },
+        {
+          "kind": "call",
+          "site": 10501510,
+          "function_begin": 10501480,
+          "function_end": 10501516
+        },
+        {
+          "kind": "call",
+          "site": 10502270,
+          "function_begin": 10502260,
+          "function_end": 10502276
+        },
+        {
+          "kind": "call",
+          "site": 10505404,
+          "function_begin": 10504944,
+          "function_end": 10505452
+        },
+        {
+          "kind": "call",
+          "site": 10521321,
+          "function_begin": 10521136,
+          "function_end": 10521327
+        },
+        {
+          "kind": "call",
+          "site": 10566777,
+          "function_begin": 10565728,
+          "function_end": 10566783
+        },
+        {
+          "kind": "call",
+          "site": 10577710,
+          "function_begin": 10577682,
+          "function_end": 10577716
+        },
+        {
+          "kind": "call",
+          "site": 13855508,
+          "function_begin": 13855472,
+          "function_end": 13855514
+        }
+      ],
+      "direct_edges": [
+        {
+          "kind": "call",
+          "site": 10388242,
+          "dest": 10383504,
+          "known": null,
+          "target_function_begin": 10383504,
+          "target_function_end": 10383768
+        },
+        {
+          "kind": "call",
+          "site": 10388258,
+          "dest": 10365984,
+          "known": null,
+          "target_function_begin": 10365984,
+          "target_function_end": 10366082
+        },
+        {
+          "kind": "call",
+          "site": 10388271,
+          "dest": 10364400,
+          "known": null,
+          "target_function_begin": 10364400,
+          "target_function_end": 10364557
+        },
+        {
+          "kind": "call",
+          "site": 10388279,
+          "dest": 10367664,
+          "known": null,
+          "target_function_begin": 10367664,
+          "target_function_end": 10367674
+        }
+      ],
+      "indirect_sites": [],
+      "rip_refs": [],
+      "interesting_refs": []
+    }
+  },
+  "game_launched": false,
+  "save_opened": false,
+  "progression_written": false
+}

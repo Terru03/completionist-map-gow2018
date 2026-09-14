@@ -1,0 +1,35 @@
+Completionist Map - exact engine.SerializeHook handler trace
+gow_exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+registration=SerializeHook@0x5A8AC1 -> handler_ref@0x5A8AE6 -> 0x4A5D50
+handler_range=0x4A5D50-0x4A5E12 size=194 boundary=pdata
+direct_edges=4
+indirect_sites=1
+rip_refs=2
+token_packer_calls=1
+
+DIRECT EDGES
+  CALL site=0x4A5D92 -> 0x782FE0
+  CALL site=0x4A5DAF -> 0x60B9C0 known=token_packer
+  CALL site=0x4A5DF5 -> 0x4A5F40
+  CALL site=0x4A5E0C -> 0x9E82F0
+
+INDIRECT SITES
+  call_indirect site=0x4A5D81 bytes=ff50684885c074108b903c0c
+
+RIP REFERENCES
+  lea site=0x4A5DB8 -> 0xDF67C8 section=.rdata text='__serialized_hook_queue'
+  lea site=0x4A5E05 -> 0xDF6798 section=.rdata text='Unknown client type during engine.SerializeHook'
+
+TOKEN PACKER INTERSECTION
+  site=0x4A5DAF -> 0x60B9C0 known=token_packer
+
+ONE-HOP CALLEES
+  0x782FE0 range=0x782FE0-0x7831CB size=491 direct_edges=8 indirect=0
+    string site=0x782FFC -> '__udata_level'
+  0x4A5F40 range=0x4A5F40-0x4A5F81 size=65 direct_edges=2 indirect=0
+  0x9E82F0 range=0x9E82F0-0x9E833D size=77 direct_edges=4 indirect=0
+
+source_hash_unchanged=true
+game_launched=false
+save_opened=false
+progression_written=false
