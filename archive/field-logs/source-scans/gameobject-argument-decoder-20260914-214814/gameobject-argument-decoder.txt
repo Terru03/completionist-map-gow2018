@@ -1,0 +1,86 @@
+Completionist Map - GameObject Lua argument decoder candidates
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+handler_count=10
+shared_candidate_count=5
+
+HANDLERS
+  GetDebugName entry=0x18F2A0 fn=0x18F2A0-0x18F2E5 size=69 boundary=pdata
+    CALL 0x18F2AE -> 0x5F9350 targetFn=0x5F9350
+    CALL 0x18F2C3 -> 0x9E4360 targetFn=0x9E4360
+    CALL 0x18F2DF -> 0x549070 targetFn=0x549070
+  GetDebugPath entry=0x18F350 fn=0x18F350-0x18F398 size=72 boundary=pdata
+    CALL 0x18F35E -> 0x5F9350 targetFn=0x5F9350
+    CALL 0x18F392 -> 0x549070 targetFn=0x549070
+  GetCreature entry=0x18F420 fn=0x18F420-0x18F47F size=95 boundary=pdata
+    CALL 0x18F42E -> 0x5F9350 targetFn=0x5F9350
+    CALL 0x18F479 -> 0x549070 targetFn=0x549070
+  GetBreakable entry=0x18F500 fn=0x18F500-0x18F55F size=95 boundary=pdata
+    CALL 0x18F50E -> 0x5F9350 targetFn=0x5F9350
+    CALL 0x18F559 -> 0x549070 targetFn=0x549070
+  IsEffect entry=0x18F5D0 fn=0x18F5D0-0x18F636 size=102 boundary=pdata
+    CALL 0x18F5E4 -> 0x5F9350 targetFn=0x5F9350
+    CALL 0x18F603 -> 0x5479F0 targetFn=leaf/exact
+    CALL 0x18F630 -> 0x549070 targetFn=0x549070
+  Level entry=0x195360 fn=0x195360-0x1953D4 size=116 boundary=pdata
+    CALL 0x195374 -> 0x5F9350 targetFn=0x5F9350
+    CALL 0x195381 -> 0x4FB040 targetFn=0x4FB040
+    CALL 0x1953A1 -> 0x60B9C0 targetFn=leaf/exact
+    CALL 0x1953CE -> 0x549070 targetFn=0x549070
+  Parent entry=0x6041C0 fn=0x6041C0-0x6043C0 size=512 boundary=registration_hint
+    JMP 0x6041C5 -> 0x6041D0 targetFn=0x6041D0
+    CALL 0x6041EC -> 0x5F9350 targetFn=0x5F9350
+    CALL 0x60423D -> 0x5F90D0 targetFn=0x5F90D0
+    CALL 0x604277 -> 0x9F3280 targetFn=0x9F3280
+    CALL 0x604293 -> 0x9ECE90 targetFn=0x9ECE90
+    CALL 0x6042BB -> 0x9ECF00 targetFn=0x9ECF00
+    CALL 0x60432F -> 0x547A60 targetFn=0x547A60
+    CALL 0x604341 -> 0x9E45D0 targetFn=0x9E45D0
+    CALL 0x60438F -> 0x549070 targetFn=0x549070
+    CALL 0x604398 -> 0xD9980 targetFn=leaf/exact
+    CALL 0x6043AA -> 0x9E82F0 targetFn=0x9E82F0
+  Children entry=0x6043C0 fn=0x6043C0-0x6043DC size=28 boundary=pdata
+    CALL 0x6043CE -> 0x5F9350 targetFn=0x5F9350
+  GetWorldPosition entry=0x6056B0 fn=0x6056B0-0x605796 size=230 boundary=pdata
+    CALL 0x6056C2 -> 0x5F9350 targetFn=0x5F9350
+    CALL 0x6056DB -> 0x5F9350 targetFn=0x5F9350
+    CALL 0x6056FD -> 0x550840 targetFn=0x550840
+    CALL 0x605757 -> 0xD9980 targetFn=leaf/exact
+    CALL 0x605769 -> 0x9E82F0 targetFn=0x9E82F0
+    CALL 0x60577B -> 0x549070 targetFn=0x549070
+    CALL 0x605790 -> 0x549070 targetFn=0x549070
+  IsCreature entry=0x6084E0 fn=0x6084E0-0x608521 size=65 boundary=pdata
+    CALL 0x6084EE -> 0x5F9350 targetFn=0x5F9350
+    CALL 0x6084FF -> 0x9E4360 targetFn=0x9E4360
+    CALL 0x60851B -> 0x549070 targetFn=0x549070
+
+SHARED CANDIDATES
+  FUNCTION 0x5F9350-0x5F95CF size=639 boundary=pdata handlers=10 tokenPacker=false names=Children,GetBreakable,GetCreature,GetDebugName,GetDebugPath,GetWorldPosition,IsCreature,IsEffect,Level,Parent
+    CALL 0x5F9364 -> 0x9E3020
+    JMP 0x5F93FD -> 0x5F7683
+    CALL 0x5F9407 -> 0x4EF0B0
+    CALL 0x5F9450 -> 0x549BC0
+    CALL 0x5F94C6 -> 0x4EF0B0
+    JMP 0x5F9542 -> 0x549D10
+    CALL 0x5F955E -> 0x549D10
+    CALL 0x5F95A2 -> 0x7C5790
+    CALL 0x5F95BA -> 0x824AC0
+
+  FUNCTION 0x549070-0x5490B2 size=66 boundary=pdata handlers=9 tokenPacker=false names=GetBreakable,GetCreature,GetDebugName,GetDebugPath,GetWorldPosition,IsCreature,IsEffect,Level,Parent
+    STR 0x5490A2 "Failed to unbox argument %d as a '%s' during method call -- got a '%s' instead"
+    CALL 0x549087 -> 0x634C90
+    CALL 0x549092 -> 0x1562A0
+    CALL 0x5490AC -> 0x9E82F0
+
+  FUNCTION 0xD9980-0xD9B80 size=512 boundary=target_window handlers=2 tokenPacker=false names=GetWorldPosition,Parent
+
+  FUNCTION 0x9E4360-0x9E43FE size=158 boundary=pdata handlers=2 tokenPacker=false names=GetDebugName,IsCreature
+    CALL 0x9E43A4 -> 0x9F3280
+    CALL 0x9E43D4 -> 0x9F4CF0
+
+  FUNCTION 0x9E82F0-0x9E833D size=77 boundary=pdata handlers=2 tokenPacker=false names=GetWorldPosition,Parent
+    CALL 0x9E8312 -> 0x9E7090
+    CALL 0x9E8322 -> 0x9E2C20
+    CALL 0x9E832F -> 0x9E25F0
+    CALL 0x9E8337 -> 0x9E32B0
+
+source_hash_unchanged=true game_launched=false save_opened=false progression_written=false
