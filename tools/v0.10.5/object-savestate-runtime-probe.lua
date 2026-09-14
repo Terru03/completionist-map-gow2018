@@ -1,5 +1,5 @@
 -- BEGIN COMPLETIONIST OBJECT SAVESTATE RUNTIME PROBE
--- Read-only traversal of the restored core.save graph published as _G.__object_savestate.
+-- Read-only traversal of restored core.save graphs, including subobject Lua environments.
 -- No save-state creation, mutation, quest writes, or progression writes.
 do
   local prefix = "[CompletionistSaveStateProbe] "
@@ -37,10 +37,11 @@ do
   local interestingKeyCounts = {}
   local interestingStringCount = 0
   local ravenKilledHits = 0
-  local maxNodes = 25000
+  local maxNodes = 50000
   local maxDepth = 8
   local nodeCount = 0
   local visited = {}
+  local rootsVisited = 0
 
   local function bump(tbl, key)
     tbl[key] = (tbl[key] or 0) + 1
@@ -120,48 +121,99 @@ do
     end
   end
 
+  local function inspectSaveRoot(root, label)
+    if type(root) ~= "table" then return false end
+    rootsVisited = rootsVisited + 1
+    log("SAVE_ROOT label=" .. label .. " type=table value=" .. safeToString(root))
+    summarizeTable(label, root, 32)
+    walk(root, label, 0, label)
+    return true
+  end
+
+  local function inspectEnvironment(envKey, env, index)
+    if type(env) ~= "table" then return 0 end
+    local label = "subenv[" .. tostring(index) .. "] key=" .. keyText(envKey)
+    local found = 0
+
+    local directState = rawget(env, "__object_savestate")
+    if type(directState) == "table" then
+      found = found + 1
+      inspectSaveRoot(directState, label .. "/__object_savestate")
+    end
+
+    local envGlobal = rawget(env, "_G")
+    if type(envGlobal) == "table" and envGlobal ~= env then
+      local nestedState = rawget(envGlobal, "__object_savestate")
+      if type(nestedState) == "table" then
+        found = found + 1
+        inspectSaveRoot(nestedState, label .. "/_G/__object_savestate")
+      end
+    end
+
+    for key in pairs(interestingKeys) do
+      local value = rawget(env, key)
+      if value ~= nil then
+        log("ENV_FIELD env=" .. label .. " key=" .. key .. " type=" .. type(value) .. " value=" .. safeToString(value))
+      end
+    end
+
+    local thisObj = rawget(env, "thisObj")
+    if thisObj ~= nil then
+      log("ENV_THISOBJ env=" .. label .. " type=" .. type(thisObj) .. " value=" .. safeToString(thisObj))
+    end
+
+    return found
+  end
+
   local function run(reason)
     if ran then return end
     ran = true
-    log("RUN reason=" .. safeToString(reason) .. " readOnly=true progressionWrites=false saveWrites=false")
+    log("RUN reason=" .. safeToString(reason) .. " readOnly=true progressionWrites=false saveWrites=false subobjectScan=true")
 
-    local root = rawget(_G, "__object_savestate")
-    log("ROOT type=" .. type(root) .. " value=" .. safeToString(root))
-    if type(root) ~= "table" then
-      log("DONE rootUnavailable=true")
-      return
+    local directRoot = rawget(_G, "__object_savestate")
+    log("ROOT type=" .. type(directRoot) .. " value=" .. safeToString(directRoot))
+    if type(directRoot) == "table" then
+      inspectSaveRoot(directRoot, "mapGlobal/__object_savestate")
     end
 
-    local topCount = 0
-    local topKeyTypes = {}
-    local topValueTypes = {}
-    local topSamples = 0
-    local ok, err = pcall(function()
-      for k, v in pairs(root) do
-        topCount = topCount + 1
-        bump(topKeyTypes, type(k))
-        bump(topValueTypes, type(v))
-        local top = keyText(k)
-        if topSamples < 96 then
-          topSamples = topSamples + 1
-          log("TOP index=" .. tostring(topCount) ..
-              " keyType=" .. type(k) ..
-              " key=" .. top ..
-              " valueType=" .. type(v))
-        end
-        if stringInteresting(k) then
-          log("TOP_INTERESTING_KEY key=" .. top .. " valueType=" .. type(v))
-        end
-        if type(v) == "table" then
-          walk(v, "root/" .. top, 1, top)
-        elseif stringInteresting(v) then
-          log("TOP_INTERESTING_VALUE key=" .. top .. " value=" .. safeToString(v))
-        end
-      end
-    end)
+    local debugFn = nil
+    if type(engine) == "table" then
+      local ok, value = pcall(function() return engine.DebugGetSubObjectEnvironmentRoot end)
+      if ok then debugFn = value end
+    end
+    log("DEBUG_ENV_ROOT_FN type=" .. type(debugFn))
 
-    if not ok then
-      log("ROOT_ENUM_ERROR error=" .. safeToString(err))
+    local envRoot = nil
+    if type(debugFn) == "function" then
+      local ok, value = pcall(debugFn)
+      if ok then
+        envRoot = value
+        log("DEBUG_ENV_ROOT_CALL ok=true type=" .. type(value) .. " value=" .. safeToString(value))
+      else
+        log("DEBUG_ENV_ROOT_CALL ok=false error=" .. safeToString(value))
+      end
+    end
+
+    local envCount = 0
+    local envSaveRoots = 0
+    local envTableCount = 0
+    local envScanLimit = 10000
+    if type(envRoot) == "table" then
+      local ok, err = pcall(function()
+        for envKey, env in pairs(envRoot) do
+          envCount = envCount + 1
+          if envCount > envScanLimit then break end
+          if type(env) == "table" then
+            envTableCount = envTableCount + 1
+            envSaveRoots = envSaveRoots + inspectEnvironment(envKey, env, envCount)
+          elseif envCount <= 64 then
+            log("ENV_NON_TABLE index=" .. tostring(envCount) .. " key=" .. keyText(envKey) .. " type=" .. type(env) .. " value=" .. safeToString(env))
+          end
+        end
+      end)
+      if not ok then
+        log("ENV_ENUM_ERROR error=" .. safeToString(err))
+      end
     end
 
     local function emitCounts(label, tbl)
@@ -173,16 +225,17 @@ do
       end
     end
 
-    log("SUMMARY topCount=" .. tostring(topCount) ..
+    log("SUMMARY rootsVisited=" .. tostring(rootsVisited) ..
+        " envCount=" .. tostring(envCount) ..
+        " envTableCount=" .. tostring(envTableCount) ..
+        " envSaveRoots=" .. tostring(envSaveRoots) ..
         " nodesVisited=" .. tostring(nodeCount) ..
         " ravenKilledHits=" .. tostring(ravenKilledHits) ..
         " interestingStringHits=" .. tostring(interestingStringCount) ..
         " maxNodes=" .. tostring(maxNodes) ..
         " maxDepth=" .. tostring(maxDepth))
-    emitCounts("TOP_KEY_TYPE", topKeyTypes)
-    emitCounts("TOP_VALUE_TYPE", topValueTypes)
     emitCounts("INTERESTING_FIELD_COUNT", interestingKeyCounts)
-    log("DONE readOnly=true progressionWrites=false saveWrites=false")
+    log("DONE readOnly=true progressionWrites=false saveWrites=false subobjectScan=true")
   end
 
   _G.CompletionistSaveStateProbe_Run = run
@@ -193,9 +246,9 @@ do
       run("MapCollisionChangeHandler")
       return previous(self, ...)
     end
-    log("HOOK installed=MapOn.MapCollisionChangeHandler")
+    log("HOOK installed=MapOn.MapCollisionChangeHandler subobjectScan=true")
   else
-    log("HOOK unavailable=true fallback=script_load")
+    log("HOOK unavailable=true fallback=script_load subobjectScan=true")
     run("script_load_fallback")
   end
 end
