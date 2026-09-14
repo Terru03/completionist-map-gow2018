@@ -1,0 +1,100 @@
+Completionist Map - GoW native Lua binding PE/xref analysis
+exe=G:\SteamLibrary\steamapps\common\GodOfWar\GoW.exe
+sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+image_base=0x140000000 size_of_image=85839872
+source_hashes_unchanged=true active_save_opened=false game_launched=false
+
+SubObject: strings=3 abs64=0 rva32=1 riprel=0 likely_reg_pairs=0
+  string file=0xe01cc4 rva=0xe032c4 va=0x140e032c4 section=.rdata
+  string file=0xe0236a rva=0xe0396a va=0x140e0396a section=.rdata
+  string file=0xe2bdc0 rva=0xe2d3c0 va=0x140e2d3c0 section=.rdata
+Sleep: strings=2 abs64=1 rva32=0 riprel=0 likely_reg_pairs=1
+  string file=0xe2bdcc rva=0xe2d3cc va=0x140e2d3cc section=.rdata
+    REG_PAIR table=0x11cd558 section=.data fn_rva=0x948350 fn_section=.text
+  string file=0x1056e08 rva=0x1058408 va=0x141058408 section=.rdata
+  REG_BLOCK: Sleep->0x948350
+Wake: strings=1 abs64=1 rva32=0 riprel=0 likely_reg_pairs=1
+  string file=0xe2bdd4 rva=0xe2d3d4 va=0x140e2d3d4 section=.rdata
+    REG_PAIR table=0x11cd570 section=.data fn_rva=0x948330 fn_section=.text
+  REG_BLOCK: Wake->0x948330
+SetRetainOnCheckpoint: strings=1 abs64=1 rva32=0 riprel=0 likely_reg_pairs=1
+  string file=0xe2bde0 rva=0xe2d3e0 va=0x140e2d3e0 section=.rdata
+    REG_PAIR table=0x11cd588 section=.data fn_rva=0x948310 fn_section=.text
+  REG_BLOCK: SetRetainOnCheckpoint->0x948310
+SetForgetOnCheckpoint: strings=1 abs64=1 rva32=0 riprel=0 likely_reg_pairs=1
+  string file=0xe2bdf8 rva=0xe2d3f8 va=0x140e2d3f8 section=.rdata
+    REG_PAIR table=0x11cd5a0 section=.data fn_rva=0x9482f0 fn_section=.text
+  REG_BLOCK: SetForgetOnCheckpoint->0x9482f0
+SoftSave: strings=5 abs64=1 rva32=0 riprel=0 likely_reg_pairs=1
+  string file=0xe0d0f1 rva=0xe0e6f1 va=0x140e0e6f1 section=.rdata
+  string file=0xe0d14a rva=0xe0e74a va=0x140e0e74a section=.rdata
+  string file=0xe0d15f rva=0xe0e75f va=0x140e0e75f section=.rdata
+  string file=0xe0d16e rva=0xe0e76e va=0x140e0e76e section=.rdata
+  string file=0xe2be10 rva=0xe2d410 va=0x140e2d410 section=.rdata
+    REG_PAIR table=0x11cd5b8 section=.data fn_rva=0x948280 fn_section=.text
+  REG_BLOCK: SoftSave->0x948280
+SetEntityZoneHandler: strings=1 abs64=1 rva32=0 riprel=0 likely_reg_pairs=1
+  string file=0xe2be20 rva=0xe2d420 va=0x140e2d420 section=.rdata
+    REG_PAIR table=0x11cd5d0 section=.data fn_rva=0x9480b0 fn_section=.text
+  REG_BLOCK: SetEntityZoneHandler->0x9480b0
+LoadSubObject: strings=1 abs64=0 rva32=0 riprel=0 likely_reg_pairs=0
+  string file=0xe01cc0 rva=0xe032c0 va=0x140e032c0 section=.rdata
+DebugGetSubObjectEnvironmentRoot: strings=1 abs64=0 rva32=0 riprel=1 likely_reg_pairs=0
+  string file=0xe022f8 rva=0xe038f8 va=0x140e038f8 section=.rdata
+CurrentlyExecutingSubObject: strings=1 abs64=0 rva32=0 riprel=1 likely_reg_pairs=0
+  string file=0xe02358 rva=0xe03958 va=0x140e03958 section=.rdata
+SerializeHook: strings=3 abs64=0 rva32=0 riprel=1 likely_reg_pairs=0
+  string file=0xdf5127 rva=0xdf6727 va=0x140df6727 section=.rdata
+  string file=0xdf51ba rva=0xdf67ba va=0x140df67ba section=.rdata
+  string file=0xe021e0 rva=0xe037e0 va=0x140e037e0 section=.rdata
+GetAvailableWads: strings=1 abs64=0 rva32=0 riprel=1 likely_reg_pairs=0
+  string file=0xe02278 rva=0xe03878 va=0x140e03878 section=.rdata
+GetPermWad: strings=1 abs64=0 rva32=0 riprel=1 likely_reg_pairs=0
+  string file=0xe02210 rva=0xe03810 va=0x140e03810 section=.rdata
+GetUIWad: strings=1 abs64=0 rva32=0 riprel=1 likely_reg_pairs=0
+  string file=0xe02220 rva=0xe03820 va=0x140e03820 section=.rdata
+FindGameObjects: strings=1 abs64=1 rva32=0 riprel=0 likely_reg_pairs=1
+  string file=0xe12e90 rva=0xe14490 va=0x140e14490 section=.rdata
+    REG_PAIR table=0x11bed10 section=.data fn_rva=0x786a30 fn_section=.text
+  REG_BLOCK: FindGameObjects->0x786a30
+FindSingleGameObject: strings=1 abs64=1 rva32=0 riprel=0 likely_reg_pairs=1
+  string file=0xe12eb0 rva=0xe144b0 va=0x140e144b0 section=.rdata
+    REG_PAIR table=0x11bed58 section=.data fn_rva=0x786a80 fn_section=.text
+  REG_BLOCK: FindSingleGameObject->0x786a80
+FindGameObject: strings=1 abs64=1 rva32=0 riprel=0 likely_reg_pairs=1
+  string file=0xe12ec8 rva=0xe144c8 va=0x140e144c8 section=.rdata
+    REG_PAIR table=0x11bed40 section=.data fn_rva=0x786a80 fn_section=.text
+  REG_BLOCK: FindGameObject->0x786a80
+GetGameObject: strings=1 abs64=5 rva32=0 riprel=0 likely_reg_pairs=5
+  string file=0xe12ef0 rva=0xe144f0 va=0x140e144f0 section=.rdata
+    REG_PAIR table=0x11bed70 section=.data fn_rva=0x783820 fn_section=.text
+    REG_PAIR table=0x11bfe38 section=.data fn_rva=0x7c4510 fn_section=.text
+    REG_PAIR table=0x11c0838 section=.data fn_rva=0x221d20 fn_section=.text
+    REG_PAIR table=0x11c1ee8 section=.data fn_rva=0x2290c0 fn_section=.text
+    REG_PAIR table=0x11c2f90 section=.data fn_rva=0x81dc40 fn_section=.text
+  REG_BLOCK: GetGameObject->0x783820
+  REG_BLOCK: GetGameObject->0x7c4510
+  REG_BLOCK: GetGameObject->0x221d20
+  REG_BLOCK: GetGameObject->0x2290c0
+  REG_BLOCK: GetGameObject->0x81dc40
+IterateGameObjects: strings=1 abs64=1 rva32=0 riprel=0 likely_reg_pairs=1
+  string file=0xe12ed8 rva=0xe144d8 va=0x140e144d8 section=.rdata
+    REG_PAIR table=0x11bed88 section=.data fn_rva=0x7834c0 fn_section=.text
+  REG_BLOCK: IterateGameObjects->0x7834c0
+
+unique_registration_blocks=15
+BLOCK 1: Sleep->0x948350
+BLOCK 2: Wake->0x948330
+BLOCK 3: SetRetainOnCheckpoint->0x948310
+BLOCK 4: SetForgetOnCheckpoint->0x9482f0
+BLOCK 5: SoftSave->0x948280
+BLOCK 6: SetEntityZoneHandler->0x9480b0
+BLOCK 7: FindGameObjects->0x786a30
+BLOCK 8: FindSingleGameObject->0x786a80
+BLOCK 9: FindGameObject->0x786a80
+BLOCK 10: GetGameObject->0x783820
+BLOCK 11: GetGameObject->0x7c4510
+BLOCK 12: GetGameObject->0x221d20
+BLOCK 13: GetGameObject->0x2290c0
+BLOCK 14: GetGameObject->0x81dc40
+BLOCK 15: IterateGameObjects->0x7834c0
