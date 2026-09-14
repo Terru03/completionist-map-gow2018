@@ -115,6 +115,34 @@ do
     end
   end
 
+  local function rowFromExactReferences(wad, object, discoveredRoots)
+    if wad == nil or object == nil then return nil end
+    local found = nil
+    local diagnostics = 0
+    for _, root in ipairs(discoveredRoots) do
+      for key, value in pairs(root.Value) do
+        if value == object and type(key) == "string" then
+          local normalized = string.lower(key)
+          local row = exactRows[string.lower(wad .. "|" .. normalized)]
+          if diagnostics < 30 then
+            diagnostics = diagnostics + 1
+            log("IDENTITY_REFERENCE root=" .. root.Label .. " key=" .. key ..
+                " catalogueMatch=" .. tostring(row ~= nil))
+          end
+          if row ~= nil then
+            if found ~= nil and found.CatalogueId ~= row.CatalogueId then
+              log("IDENTITY_REFERENCE_REFUSED reason=conflicting_exact_keys first=" ..
+                  found.CatalogueId .. " second=" .. row.CatalogueId)
+              return nil
+            end
+            found = row
+          end
+        end
+      end
+    end
+    return found
+  end
+
   local function addRoot(roots, seen, label, value)
     if type(value) == "table" and not seen[value] then
       seen[value] = true
@@ -270,7 +298,8 @@ do
     ran = true
     local active = availableWads()
     local executingWad = currentWad()
-    log("RUN reason=" .. safeToString(reason) .. " roots=" .. tostring(#roots()) ..
+    local discoveredRoots = roots()
+    log("RUN reason=" .. safeToString(reason) .. " roots=" .. tostring(#discoveredRoots) ..
         " currentWad=" .. safeToString(executingWad) ..
         " readOnly=true progressionWrites=false saveWrites=false streamingWrites=false")
 
@@ -279,7 +308,7 @@ do
     local pickleRoots = 0
     local subobjectRecords = 0
     local seenPickles = {}
-    for _, root in ipairs(roots()) do
+    for _, root in ipairs(discoveredRoots) do
       for _, pickleName in ipairs({ "__PickleTable", "__SoftPickleTable" }) do
         local pickle = rawget(root.Value, pickleName)
         if type(pickle) == "table" and not seenPickles[pickle] then
@@ -298,6 +327,7 @@ do
                 local objectName = exactObjectName(object)
                 local lookup = wad ~= nil and objectName ~= nil and string.lower(wad .. "|" .. objectName) or nil
                 local row = lookup ~= nil and exactRows[lookup] or nil
+                if row == nil then row = rowFromExactReferences(wad, object, discoveredRoots) end
                 local resident = residentStatus(wad, active, executingWad)
                 if row ~= nil then
                   local old = matchedById[row.CatalogueId]
