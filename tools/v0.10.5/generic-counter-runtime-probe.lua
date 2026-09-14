@@ -1,5 +1,5 @@
 -- BEGIN COMPLETIONIST GENERIC COUNTER RUNTIME PROBE
--- Read-only runtime introspection for native counter APIs. No progression writes.
+-- Read-only runtime introspection for native/QuestManager counter APIs. No progression writes.
 do
   local prefix = "[CompletionistCounterProbe] "
   local ran = false
@@ -8,109 +8,107 @@ do
     print(prefix .. message)
   end
 
-  local function typeOf(path, value)
-    log("TYPE path=" .. path .. " type=" .. tostring(type(value)))
-  end
-
-  local names = {
-    "GetCounter",
-    "GetCounterChild",
-    "GetCounterChildrenCount",
-    "GetCounterName",
-    "GetRefBool",
-    "GetRefFloat",
-    "GetRefInt",
-    "GetRefString",
-    "ResolveGameObject",
-    "MarkerID",
-    "GetRegionHash",
-  }
-
-  for _, name in ipairs(names) do
-    typeOf("_G." .. name, rawget(_G, name))
-  end
-
-  if type(game) == "table" then
-    for _, name in ipairs(names) do
-      typeOf("game." .. name, rawget(game, name))
-    end
-    if type(game.Level) == "table" then
-      for _, name in ipairs(names) do
-        typeOf("game.Level." .. name, rawget(game.Level, name))
-      end
-    end
-    if type(game.QuestManager) == "table" then
-      for _, name in ipairs(names) do
-        typeOf("game.QuestManager." .. name, rawget(game.QuestManager, name))
-      end
-    end
-  end
-
-  local function safeOne(label, fn)
-    if type(fn) ~= "function" then
-      log("CALL label=" .. label .. " skipped=not_function")
-      return false, nil
-    end
+  local function safeLookup(label, fn)
     local ok, value = pcall(fn)
     if ok then
-      log("CALL label=" .. label .. " ok=true type=" .. tostring(type(value)) .. " value=" .. tostring(value))
-      return true, value
+      log("TYPE path=" .. label .. " type=" .. tostring(type(value)))
+      return value
     end
-    log("CALL label=" .. label .. " ok=false error=" .. tostring(value))
-    return false, nil
+    log("TYPE path=" .. label .. " lookupOk=false error=" .. tostring(value))
+    return nil
+  end
+
+  local function safeCall(label, fn)
+    if type(fn) ~= "function" then
+      log("CALL label=" .. label .. " skipped=not_function")
+      return false, nil, nil, nil, nil
+    end
+    local ok, a, b, c, d = pcall(fn)
+    if ok then
+      log("CALL label=" .. label ..
+          " ok=true" ..
+          " ret1Type=" .. tostring(type(a)) .. " ret1=" .. tostring(a) ..
+          " ret2Type=" .. tostring(type(b)) .. " ret2=" .. tostring(b) ..
+          " ret3Type=" .. tostring(type(c)) .. " ret3=" .. tostring(c) ..
+          " ret4Type=" .. tostring(type(d)) .. " ret4=" .. tostring(d))
+      return true, a, b, c, d
+    end
+    log("CALL label=" .. label .. " ok=false error=" .. tostring(a))
+    return false, nil, nil, nil, nil
+  end
+
+  local function inspectQuest(qm, questId)
+    local stateFn = safeLookup("game.QuestManager.GetQuestState", function() return qm.GetQuestState end)
+    local progressFn = safeLookup("game.QuestManager.GetQuestProgressAndGoal", function() return qm.GetQuestProgressAndGoal end)
+    local childrenFn = safeLookup("game.QuestManager.GetChildrenQuestIds", function() return qm.GetChildrenQuestIds end)
+    local rootFn = safeLookup("game.QuestManager.IsActiveRootQuestId", function() return qm.IsActiveRootQuestId end)
+
+    log("QUEST_BEGIN id=" .. tostring(questId))
+
+    safeCall("GetQuestState(" .. tostring(questId) .. ")", function()
+      return stateFn(questId)
+    end)
+
+    safeCall("IsActiveRootQuestId(" .. tostring(questId) .. ")", function()
+      return rootFn(questId)
+    end)
+
+    safeCall("GetQuestProgressAndGoal(" .. tostring(questId) .. ")", function()
+      return progressFn(questId)
+    end)
+
+    local childrenOK, children = safeCall("GetChildrenQuestIds(" .. tostring(questId) .. ")", function()
+      return childrenFn(questId)
+    end)
+
+    if childrenOK and type(children) == "table" then
+      local count = #children
+      log("CHILDREN parent=" .. tostring(questId) .. " count=" .. tostring(count))
+      local limit = math.min(count, 64)
+      for i = 1, limit do
+        local child = children[i]
+        local stateOK, state = safeCall("childState[" .. tostring(i) .. "]", function()
+          return stateFn(child)
+        end)
+        local progressOK, a, b = safeCall("childProgress[" .. tostring(i) .. "]", function()
+          return progressFn(child)
+        end)
+        log("CHILD parent=" .. tostring(questId) ..
+            " index=" .. tostring(i) ..
+            " id=" .. tostring(child) ..
+            " stateOk=" .. tostring(stateOK) .. " state=" .. tostring(state) ..
+            " progressOk=" .. tostring(progressOK) ..
+            " ret1=" .. tostring(a) .. " ret2=" .. tostring(b))
+      end
+    else
+      log("CHILDREN parent=" .. tostring(questId) .. " unavailable=true")
+    end
+
+    log("QUEST_END id=" .. tostring(questId))
   end
 
   local function run(reason)
     if ran then return end
     ran = true
-    log("RUN reason=" .. tostring(reason) .. " progressionWrites=false")
+    log("RUN reason=" .. tostring(reason) .. " progressionWrites=false questWrites=false")
 
-    local getCounter = rawget(_G, "GetCounter")
-    local getCounterChild = rawget(_G, "GetCounterChild")
-    local getCounterChildrenCount = rawget(_G, "GetCounterChildrenCount")
-    local getCounterName = rawget(_G, "GetCounterName")
-    local parent = "RegionSummary_VF_Raven_Parent"
-
-    local parentOK, parentValue = safeOne("GetCounter(parent)", function()
-      return getCounter(parent)
-    end)
-    local countOK, childCount = safeOne("GetCounterChildrenCount(parent)", function()
-      return getCounterChildrenCount(parent)
-    end)
-
-    if countOK and type(childCount) == "number" and childCount >= 0 and childCount <= 128 and
-       type(getCounterChild) == "function" and type(getCounterName) == "function" and type(getCounter) == "function" then
-      log("TREE parent=" .. parent .. " parentValue=" .. tostring(parentValue) .. " children=" .. tostring(childCount))
-      local limit = math.min(childCount, 64)
-      for i = 0, limit - 1 do
-        local childOK, child = pcall(function() return getCounterChild(parent, i) end)
-        if childOK then
-          local nameOK, childName = pcall(function() return getCounterName(child) end)
-          local valueOK, childValue = pcall(function() return getCounter(child) end)
-          log("CHILD index=" .. tostring(i) ..
-              " childOk=true id=" .. tostring(child) ..
-              " nameOk=" .. tostring(nameOK) .. " name=" .. tostring(childName) ..
-              " valueOk=" .. tostring(valueOK) .. " value=" .. tostring(childValue))
-        else
-          log("CHILD index=" .. tostring(i) .. " childOk=false error=" .. tostring(child))
-        end
-      end
-    else
-      log("TREE skipped=true reason=counter_api_unavailable_or_invalid_count" ..
-          " parentOk=" .. tostring(parentOK) .. " countOk=" .. tostring(countOK) ..
-          " count=" .. tostring(childCount))
+    local qm = nil
+    if type(game) == "table" then
+      qm = safeLookup("game.QuestManager", function() return game.QuestManager end)
     end
 
-    if type(game) == "table" and type(game.QuestManager) == "table" and
-       type(game.QuestManager.GetQuestState) == "function" then
-      safeOne("QuestManager.GetQuestState(parent)", function()
-        return game.QuestManager.GetQuestState(parent)
-      end)
-    else
-      log("CALL label=QuestManager.GetQuestState(parent) skipped=not_function")
+    if type(qm) ~= "table" then
+      log("QUEST_MANAGER unavailable=true")
+      log("DONE progressionWrites=false questWrites=false")
+      return
     end
 
-    log("DONE progressionWrites=false")
+    -- Validation target: the exact Veithurgard Raven RegionSummary used by the
+    -- already-proven Raven runtime lifecycle. Comparison target: global Raven labor.
+    inspectQuest(qm, "RegionSummary_VF_Raven_Parent")
+    inspectQuest(qm, "Quest_Labor_KillRavens")
+
+    log("DONE progressionWrites=false questWrites=false")
   end
 
   _G.CompletionistCounterProbe_Run = run
@@ -121,7 +119,7 @@ do
       run("MapCollisionChangeHandler")
       return previous(self, ...)
     end
-    log("HOOK installed=MapOn.MapCollisionChangeHandler")
+    log("HOOK installed=MapOn.MapCollisionChangeHandler questManagerApi=true")
   else
     log("HOOK unavailable=true fallback=script_load")
     run("script_load_fallback")
