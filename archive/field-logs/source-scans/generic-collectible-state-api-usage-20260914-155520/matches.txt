@@ -1,0 +1,2462 @@
+﻿=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:21 [collectible_state_words] ===
+    16: local interactAvailable = true
+    17: local states = {
+    18:   ENABLED = 1,
+    19:   DISABLED = 2,
+    20:   LOCKED = 3,
+>   21:   OPENED = 4
+    22: }
+    23: -- Completionist Map v0.10.1 Nornir state publisher.
+    24: -- Observes stock Nornir state and forwards a plain-data snapshot to the UI
+    25: -- WAD. It does not mutate puzzle state, quest state, or save data.
+    26: 
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:70 [collectible_state_words] ===
+    65:   local entry = {
+    66:     registryKey = registryKey,
+    67:     name = chestName,
+    68:     keyType = keyType,
+    69:     state = state,
+>   70:     opened = state == states.OPENED,
+    71:     puzzleRevealed =
+    72:       state == states.LOCKED or
+    73:       challengeComplete == true or
+    74:       (previous ~= nil and previous.puzzleRevealed == true),
+    75:     challengeComplete = challengeComplete == true,
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:98 [collectible_state_words] ===
+    93:       return thisObj:FindLuaTableAttribute(
+    94:         "sealBreakable0" .. tostring(i)
+    95:       )
+    96:     end)
+    97: 
+>   98:     local runeEnabledOK, runeEnabled = pcall(function()
+    99:       if runeTable[i] == nil or
+   100:           runeTable[i].runeVisual == nil or
+   101:           runeTable[i].runeVisual.LuaObjectScript == nil or
+   102:           runeTable[i].runeVisual.LuaObjectScript.IsEnabled == nil then
+   103:         return nil
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:110 [collectible_state_words] ===
+   105:       return runeTable[i].runeVisual.LuaObjectScript.IsEnabled()
+   106:     end)
+   107: 
+   108:     local runeEnabledValue = nil
+   109:     if runeEnabledOK then
+>  110:       runeEnabledValue = runeEnabled
+   111:     end
+   112: 
+   113:     local broken =
+   114:       previous ~= nil and
+   115:       previous.keys ~= nil and
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:113 [collectible_state_words] ===
+   108:     local runeEnabledValue = nil
+   109:     if runeEnabledOK then
+   110:       runeEnabledValue = runeEnabled
+   111:     end
+   112: 
+>  113:     local broken =
+   114:       previous ~= nil and
+   115:       previous.keys ~= nil and
+   116:       previous.keys[i] ~= nil and
+   117:       previous.keys[i].broken == true
+   118: 
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:117 [collectible_state_words] ===
+   112: 
+   113:     local broken =
+   114:       previous ~= nil and
+   115:       previous.keys ~= nil and
+   116:       previous.keys[i] ~= nil and
+>  117:       previous.keys[i].broken == true
+   118: 
+   119:     -- For Breakable chests only, a disabled rune visual is durable evidence
+   120:     -- that this exact seal has already been broken. Bell and MemoryChest
+   121:     -- visuals are intentionally temporary and must not use this rule.
+   122:     if keyType == "Breakable" and
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:120 [collectible_state_words] ===
+   115:       previous.keys ~= nil and
+   116:       previous.keys[i] ~= nil and
+   117:       previous.keys[i].broken == true
+   118: 
+   119:     -- For Breakable chests only, a disabled rune visual is durable evidence
+>  120:     -- that this exact seal has already been broken. Bell and MemoryChest
+   121:     -- visuals are intentionally temporary and must not use this rule.
+   122:     if keyType == "Breakable" and
+   123:         runeEnabledOK and runeEnabled == false then
+   124:       broken = true
+   125:     end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:123 [collectible_state_words] ===
+   118: 
+   119:     -- For Breakable chests only, a disabled rune visual is durable evidence
+   120:     -- that this exact seal has already been broken. Bell and MemoryChest
+   121:     -- visuals are intentionally temporary and must not use this rule.
+   122:     if keyType == "Breakable" and
+>  123:         runeEnabledOK and runeEnabled == false then
+   124:       broken = true
+   125:     end
+   126: 
+   127:     if keyType == "Breakable" and
+   128:         source == "OnKeyBroken-after-disable" and
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:124 [collectible_state_words] ===
+   119:     -- For Breakable chests only, a disabled rune visual is durable evidence
+   120:     -- that this exact seal has already been broken. Bell and MemoryChest
+   121:     -- visuals are intentionally temporary and must not use this rule.
+   122:     if keyType == "Breakable" and
+   123:         runeEnabledOK and runeEnabled == false then
+>  124:       broken = true
+   125:     end
+   126: 
+   127:     if keyType == "Breakable" and
+   128:         source == "OnKeyBroken-after-disable" and
+   129:         tonumber(activeIndex) == i then
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:130 [collectible_state_words] ===
+   125:     end
+   126: 
+   127:     if keyType == "Breakable" and
+   128:         source == "OnKeyBroken-after-disable" and
+   129:         tonumber(activeIndex) == i then
+>  130:       broken = true
+   131:     end
+   132: 
+   133:     if broken then
+   134:       knownBrokenCount = knownBrokenCount + 1
+   135:     elseif keyType == "Breakable" and
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:133 [collectible_state_words] ===
+   128:         source == "OnKeyBroken-after-disable" and
+   129:         tonumber(activeIndex) == i then
+   130:       broken = true
+   131:     end
+   132: 
+>  133:     if broken then
+   134:       knownBrokenCount = knownBrokenCount + 1
+   135:     elseif keyType == "Breakable" and
+   136:         (not runeEnabledOK or runeEnabled == nil) then
+   137:       unknownBreakable[#unknownBreakable + 1] = i
+   138:     end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:136 [collectible_state_words] ===
+   131:     end
+   132: 
+   133:     if broken then
+   134:       knownBrokenCount = knownBrokenCount + 1
+   135:     elseif keyType == "Breakable" and
+>  136:         (not runeEnabledOK or runeEnabled == nil) then
+   137:       unknownBreakable[#unknownBreakable + 1] = i
+   138:     end
+   139: 
+   140:     entry.keys[i] = {
+   141:       index = i,
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:144 [collectible_state_words] ===
+   139: 
+   140:     entry.keys[i] = {
+   141:       index = i,
+   142:       ref = refOK and sealRef or nil,
+   143:       name = keyName,
+>  144:       runeEnabled = runeEnabledValue,
+   145:       runeEnabledKnown = runeEnabledOK and runeEnabled ~= nil,
+   146:       broken = broken == true,
+   147:       x = keyPos and keyPos.x or nil,
+   148:       y = keyPos and keyPos.y or nil,
+   149:       z = keyPos and keyPos.z or nil
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:145 [collectible_state_words] ===
+   140:     entry.keys[i] = {
+   141:       index = i,
+   142:       ref = refOK and sealRef or nil,
+   143:       name = keyName,
+   144:       runeEnabled = runeEnabledValue,
+>  145:       runeEnabledKnown = runeEnabledOK and runeEnabled ~= nil,
+   146:       broken = broken == true,
+   147:       x = keyPos and keyPos.x or nil,
+   148:       y = keyPos and keyPos.y or nil,
+   149:       z = keyPos and keyPos.z or nil
+   150:     }
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:146 [collectible_state_words] ===
+   141:       index = i,
+   142:       ref = refOK and sealRef or nil,
+   143:       name = keyName,
+   144:       runeEnabled = runeEnabledValue,
+   145:       runeEnabledKnown = runeEnabledOK and runeEnabled ~= nil,
+>  146:       broken = broken == true,
+   147:       x = keyPos and keyPos.x or nil,
+   148:       y = keyPos and keyPos.y or nil,
+   149:       z = keyPos and keyPos.z or nil
+   150:     }
+   151:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:156 [collectible_state_words] ===
+   151:   end
+   152: 
+   153:   -- Conservative persisted-state inference. If the stock aggregate says N
+   154:   -- Breakable seals are already gone and the exact number still unaccounted
+   155:   -- for equals the number of unknown rune visuals, those unknown indices must
+>  156:   -- be the persisted broken seals. If the numbers do not match, show the
+   157:   -- uncertain seal rather than hide a potentially remaining one.
+   158:   if keyType == "Breakable" then
+   159:     local expectedBroken = tonumber(keysUsed) or 0
+   160:     local missing = expectedBroken - knownBrokenCount
+   161:     if missing > 0 and missing == #unknownBreakable then
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:163 [collectible_state_words] ===
+   158:   if keyType == "Breakable" then
+   159:     local expectedBroken = tonumber(keysUsed) or 0
+   160:     local missing = expectedBroken - knownBrokenCount
+   161:     if missing > 0 and missing == #unknownBreakable then
+   162:       for _, index in ipairs(unknownBreakable) do
+>  163:         entry.keys[index].broken = true
+   164:       end
+   165:       print("[CompletionistMap v0.10.1] NORNIR_PERSISTED_INFER" ..
+   166:         " registryKey=" .. tostring(registryKey) ..
+   167:         " keysUsed=" .. tostring(keysUsed) ..
+   168:         " inferred=" .. tostring(#unknownBreakable))
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:178 [collectible_state_words] ===
+   173:     " source=" .. tostring(source) ..
+   174:     " activeIndex=" .. tostring(activeIndex) ..
+   175:     " name=" .. tostring(chestName) ..
+   176:     " keyType=" .. tostring(keyType) ..
+   177:     " state=" .. tostring(state) ..
+>  178:     " opened=" .. tostring(entry.opened) ..
+   179:     " puzzleRevealed=" .. tostring(entry.puzzleRevealed) ..
+   180:     " challengeComplete=" .. tostring(challengeComplete) ..
+   181:     " keysUsed=" .. tostring(keysUsed) ..
+   182:     " x=" .. tostring(chestPos and chestPos.x or "<nil>") ..
+   183:     " y=" .. tostring(chestPos and chestPos.y or "<nil>") ..
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:194 [collectible_state_words] ===
+   189:       " chest=" .. tostring(chestName) ..
+   190:       " keyType=" .. tostring(keyType) ..
+   191:       " activeIndex=" .. tostring(activeIndex) ..
+   192:       " index=" .. tostring(i) ..
+   193:       " runeEnabledKnown=" .. tostring(key.runeEnabledKnown) ..
+>  194:       " runeEnabled=" .. tostring(key.runeEnabled) ..
+   195:       " broken=" .. tostring(key.broken) ..
+   196:       " ref=" .. tostring(key.ref or "<unavailable>") ..
+   197:       " name=" .. tostring(key.name) ..
+   198:       " x=" .. tostring(key.x or "<nil>") ..
+   199:       " y=" .. tostring(key.y or "<nil>") ..
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:195 [collectible_state_words] ===
+   190:       " keyType=" .. tostring(keyType) ..
+   191:       " activeIndex=" .. tostring(activeIndex) ..
+   192:       " index=" .. tostring(i) ..
+   193:       " runeEnabledKnown=" .. tostring(key.runeEnabledKnown) ..
+   194:       " runeEnabled=" .. tostring(key.runeEnabled) ..
+>  195:       " broken=" .. tostring(key.broken) ..
+   196:       " ref=" .. tostring(key.ref or "<unavailable>") ..
+   197:       " name=" .. tostring(key.name) ..
+   198:       " x=" .. tostring(key.x or "<nil>") ..
+   199:       " y=" .. tostring(key.y or "<nil>") ..
+   200:       " z=" .. tostring(key.z or "<nil>"))
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:287 [collectible_state_words] ===
+   282:     if keyType == "MemoryChest" then
+   283:       runeTable[i].successRune = thisObj:GetLuaTableAttribute("SuccessRune_0" .. tostring(i))
+   284:     end
+   285:     runeTable[i].runeKey = level:FindSingleGameObject(thisObj:FindLuaTableAttribute("sealBreakable0" .. tostring(i)))
+   286:     runeTable[i].runeVisual = thisObj:FindSingleGOByName("keyRune0" .. tostring(i))
+>  287:     runeTable[i].onBreakableDestroyed = thisObj:FindLuaTableAttribute("Event_Breakable0" .. tostring(i) .. "Destroyed")
+   288:     if runeTable[i].onBreakableDestroyed ~= nil then
+   289:       runeTable[i].onBreakableDestroyed = LD.ExtractCallbacksForEvent(thisLevel, thisObj, runeTable[i].onBreakableDestroyed)
+   290:     end
+   291:   end
+   292:   chestScript = thisObj:FindSingleGOByName("ChestScript_RN").Child.LuaObjectScript
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:300 [collectible_state_words] ===
+   295: function OnPreStart(level, obj)
+   296:   for i = 1, 3 do
+   297:     if runeTable[1].runeKey and runeTable[2].runeKey and runeTable[3].runeKey then
+   298:       if keyType == "Breakable" then
+   299:         if runeTable[i].runeKey.LuaObjectScript.OnBroken ~= nil then
+>  300:           runeTable[i].runeKey.LuaObjectScript.OnBroken(onBrokenCallbacks["Key0" .. tostring(i) .. "Broken"])
+   301:         end
+   302:       elseif keyType == "Bell" then
+   303:         runeTable[i].runeKey.LuaObjectScript.RegisterStartRingingCallback(function()
+   304:           OnBellStartRinging(runeTable[i].runeVisual, i)
+   305:         end)
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:335 [collectible_state_words] ===
+   330:     Enable()
+   331:   elseif state == states.DISABLED then
+   332:     Disable()
+   333:   elseif state == states.LOCKED then
+   334:     Lock()
+>  335:   elseif state == states.OPENED then
+   336:     Disable()
+   337:     return
+   338:   else
+   339:     chestScript.Disable()
+   340:     frontInteractZone:Enable()
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:351 [checkpoint_fields] ===
+   346:   end
+   347:   if keyType == "MemoryChest" then
+   348:     OnRotateCallback()
+   349:   end
+   350: end
+>  351: function OnSaveCheckpoint(level, go)
+   352:   return {
+   353:     state = state,
+   354:     keysUsed = keysUsed,
+   355:     challengeComplete = challengeComplete,
+   356:     interactAvailable = interactAvailable
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:359 [checkpoint_fields] ===
+   354:     keysUsed = keysUsed,
+   355:     challengeComplete = challengeComplete,
+   356:     interactAvailable = interactAvailable
+   357:   }
+   358: end
+>  359: function OnRestoreCheckpoint(level, go, savedInfo)
+   360:   state = savedInfo.state
+   361:   keysUsed = savedInfo.keysUsed
+   362:   challengeComplete = savedInfo.challengeComplete
+   363:   interactAvailable = savedInfo.interactAvailable
+   364: end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:376 [collectible_state_words] ===
+   371:   interactFunction()
+   372: end
+   373: function OnInteractAbort(level, obj, creature)
+   374: end
+   375: function OnInteractFinish(level, obj, creature)
+>  376:   state = states.OPENED
+   377:   CompletionistMapV100_DumpNornir("OnInteractFinish-after-open")
+   378: end
+   379: function OnInteractDone()
+   380: end
+   381: function PerformKratosInteraction_Locked()
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:392 [collectible_state_words] ===
+   387:   TripleChestLockedBanter()
+   388:   PlayLockMusic()
+   389:   PlayLockSound()
+   390: end
+   391: function Enable()
+>  392:   if state ~= states.OPENED then
+   393:     state = states.ENABLED
+   394:     frontInteractZone:Disable()
+   395:     chestScript.Enable()
+   396:     chestScript.UnlockChest()
+   397:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:428 [checkpoint_fields] ===
+   423: end
+   424: function GetFakeInteractZone()
+   425:   return frontInteractZone
+   426: end
+   427: function RunicSoftSave()
+>  428:   game.SubObject.SoftSave(thisObj)
+   429:   if keyType == "MemoryChest" then
+   430:     for i = 1, 3 do
+   431:       if runeTable[i].runeKey then
+   432:         runeTable[i].runeKey.LuaObjectScript.SoftSave()
+   433:       end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:432 [checkpoint_fields] ===
+   427: function RunicSoftSave()
+   428:   game.SubObject.SoftSave(thisObj)
+   429:   if keyType == "MemoryChest" then
+   430:     for i = 1, 3 do
+   431:       if runeTable[i].runeKey then
+>  432:         runeTable[i].runeKey.LuaObjectScript.SoftSave()
+   433:       end
+   434:     end
+   435:   end
+   436: end
+   437: function ResolveRunicSoftSave()
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua:529 [collectible_state_words] ===
+   524:   CheckKeys()
+   525:   CompletionistMapV100_DumpNornir("OnKeyBroken-after-check", runeIndex)
+   526:   PlayProgressSound()
+   527:   PlaySealBrokenMusic()
+   528:   if runeTable[i].onBreakableDestroyed ~= nil then
+>  529:     LD.ExecuteCallbacksForEvent(thisLevel, thisObj, runeTable[i].onBreakableDestroyed, "Brk 0" .. tostring(i) .. " Destroyed")
+   530:   end
+   531:   if game.Loot.AlertTripleChestBreakableBroken ~= nil then
+   532:     game.Loot.AlertTripleChestBreakableBroken(runeIndex)
+   533:   end
+   534: end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:13 [collectible_state_words] ===
+     8: local state
+     9: local states = {
+    10:   ENABLED = 1,
+    11:   DISABLED = 2,
+    12:   LOCKED = 3,
+>   13:   OPENED = 4
+    14: }
+    15: local uiCalls_LoadLibrary = function()
+    16:   if uiCalls == nil then
+    17:     uiCalls = require("ui.uicalls")
+    18:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:27 [collectible_state_words] ===
+    22:     TUT = require("game.GlobalTutorials")
+    23:   end
+    24: end
+    25: -- Completionist Map v0.10.1 authoritative Nornir chest-open publisher.
+    26: -- The runic parent owns puzzle state, but interact_chest_standard.lua owns the
+>   27: -- actual loot chest's OPENED state. This is observational only.
+    28: local function CompletionistMapV100_PublishRunicChestOpened(source)
+    29:   if chestType ~= "Runic_Axe" and chestType ~= "Runic_Blades" then
+    30:     return
+    31:   end
+    32: 
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:56 [collectible_state_words] ===
+    51:     tostring(pos.z)
+    52: 
+    53:   local payload = {
+    54:     registryKey = registryKey,
+    55:     name = nameOK and name or "chest_locked_parent",
+>   56:     opened = true,
+    57:     x = pos.x,
+    58:     y = pos.y,
+    59:     z = pos.z,
+    60:     source = source
+    61:   }
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:147 [collectible_state_words] ===
+   142:     lootObject:HideModel()
+   143:     LD.HideFX(lootObject)
+   144:   end
+   145: end
+   146: function OnStart(level, obj)
+>  147:   if state == states.OPENED then CompletionistMapV100_PublishRunicChestOpened("OnStart-opened") end
+   148:   if (onOpenedEvent or interactionOnFinish) and not checkpointOnOpened and not checkpointRequirementDisabled then
+   149:     engine.Warning("Chest Error - " .. LD.GetParentTrace(thisObj) .. " has a callback, but isn't set to save a checkpoint. Check the 'CheckpointOnOpened' option in the toolbox to ensure the chest saves correctly")
+   150:   end
+   151:   SetTypeData()
+   152:   if state == states.ENABLED then
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:158 [collectible_state_words] ===
+   153:     Enable()
+   154:   elseif state == states.DISABLED then
+   155:     Disable()
+   156:   elseif state == states.LOCKED then
+   157:     LockChest()
+>  158:   elseif state == states.OPENED then
+   159:     TypeSpecific_SoftSaveRestore()
+   160:   end
+   161: end
+   162: function TypeSpecific_SoftSaveRestore()
+   163:   idleFX:Hide()
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:234 [collectible_state_words] ===
+   229:     typeSpecificData.DispellObject = parentObj:FindSingleGOByName("sondispell_chest").Child
+   230:     if typeSpecificData.DispellObject then
+   231:       typeSpecificData.DispellObject:StartAnim("maskLoopFloating")
+   232:       typeSpecificData.DispellObject:PlayAnimCycle()
+   233:     end
+>  234:     if state ~= states.OPENED then
+   235:       if typeSpecificData.DispellObject and not typeSpecificData.FX_Idle then
+   236:         typeSpecificData.FX_Idle = typeSpecificData.DispellObject:FindSingleGOByName("idleFX")
+   237:         typeSpecificData.FX_Death = typeSpecificData.DispellObject:FindSingleGOByName("deathFX")
+   238:       end
+   239:       typeSpecificData.FX_Idle:SetWorldPosition(typeSpecificData.DispellObject:FindSingleGOByName("Mesh"):GetWorldPosition())
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:269 [quest_state] ===
+   264:     function typeSpecificCallbacks.OnOpened()
+   265:       typeSpecificData.PreAwardMuspCount = game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece")
+   266:       typeSpecificData.PreAwardNifCount = game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece")
+   267:     end
+   268:     function typeSpecificCallbacks.AwardLoot()
+>  269:       local IncrementQuest = function(parent, child, pieces)
+   270:         local questState = game.QuestManager.GetQuestState(parent)
+   271:         if questState == "Inactive" then
+   272:           game.QuestManager.StartQuest(parent)
+   273:         end
+   274:         local _, progress = game.QuestManager.GetQuestProgressAndGoal(child)
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:270 [quest_state] ===
+   265:       typeSpecificData.PreAwardMuspCount = game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece")
+   266:       typeSpecificData.PreAwardNifCount = game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece")
+   267:     end
+   268:     function typeSpecificCallbacks.AwardLoot()
+   269:       local IncrementQuest = function(parent, child, pieces)
+>  270:         local questState = game.QuestManager.GetQuestState(parent)
+   271:         if questState == "Inactive" then
+   272:           game.QuestManager.StartQuest(parent)
+   273:         end
+   274:         local _, progress = game.QuestManager.GetQuestProgressAndGoal(child)
+   275:         game.QuestManager.IncrementQuestProgress(child, pieces - progress)
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:272 [quest_state] ===
+   267:     end
+   268:     function typeSpecificCallbacks.AwardLoot()
+   269:       local IncrementQuest = function(parent, child, pieces)
+   270:         local questState = game.QuestManager.GetQuestState(parent)
+   271:         if questState == "Inactive" then
+>  272:           game.QuestManager.StartQuest(parent)
+   273:         end
+   274:         local _, progress = game.QuestManager.GetQuestProgressAndGoal(child)
+   275:         game.QuestManager.IncrementQuestProgress(child, pieces - progress)
+   276:       end
+   277:       if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") > typeSpecificData.PreAwardMuspCount then
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:274 [quest_state] ===
+   269:       local IncrementQuest = function(parent, child, pieces)
+   270:         local questState = game.QuestManager.GetQuestState(parent)
+   271:         if questState == "Inactive" then
+   272:           game.QuestManager.StartQuest(parent)
+   273:         end
+>  274:         local _, progress = game.QuestManager.GetQuestProgressAndGoal(child)
+   275:         game.QuestManager.IncrementQuestProgress(child, pieces - progress)
+   276:       end
+   277:       if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") > typeSpecificData.PreAwardMuspCount then
+   278:         IncrementQuest("Quest_SonLanguage_Muspelheim_Parent", "Quest_SonLanguage_Muspelheim", game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece"))
+   279:         if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") == 4 then
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:275 [quest_state] ===
+   270:         local questState = game.QuestManager.GetQuestState(parent)
+   271:         if questState == "Inactive" then
+   272:           game.QuestManager.StartQuest(parent)
+   273:         end
+   274:         local _, progress = game.QuestManager.GetQuestProgressAndGoal(child)
+>  275:         game.QuestManager.IncrementQuestProgress(child, pieces - progress)
+   276:       end
+   277:       if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") > typeSpecificData.PreAwardMuspCount then
+   278:         IncrementQuest("Quest_SonLanguage_Muspelheim_Parent", "Quest_SonLanguage_Muspelheim", game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece"))
+   279:         if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") == 4 then
+   280:           game.Audio.PlayBanterNonCritical("Musp_Disc_Complete")
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:278 [quest_state] ===
+   273:         end
+   274:         local _, progress = game.QuestManager.GetQuestProgressAndGoal(child)
+   275:         game.QuestManager.IncrementQuestProgress(child, pieces - progress)
+   276:       end
+   277:       if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") > typeSpecificData.PreAwardMuspCount then
+>  278:         IncrementQuest("Quest_SonLanguage_Muspelheim_Parent", "Quest_SonLanguage_Muspelheim", game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece"))
+   279:         if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") == 4 then
+   280:           game.Audio.PlayBanterNonCritical("Musp_Disc_Complete")
+   281:         else
+   282:           game.Audio.PlayBanterNonCritical("Musp_Disc", nil, nil, false)
+   283:         end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:287 [quest_state] ===
+   282:           game.Audio.PlayBanterNonCritical("Musp_Disc", nil, nil, false)
+   283:         end
+   284:         TrophyCheck()
+   285:       end
+   286:       if game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece") > typeSpecificData.PreAwardNifCount then
+>  287:         IncrementQuest("Quest_SonLanguage_Niflheim_Parent", "Quest_SonLanguage_Niflheim", game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece"))
+   288:         local _, progress = game.QuestManager.GetQuestProgressAndGoal("Quest_SonLanguage_Niflheim")
+   289:         if game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece") == 4 then
+   290:           game.Audio.PlayBanterNonCritical("Nif_Disc_Complete")
+   291:         else
+   292:           game.Audio.PlayBanterNonCritical("Nif_Disc")
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:288 [quest_state] ===
+   283:         end
+   284:         TrophyCheck()
+   285:       end
+   286:       if game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece") > typeSpecificData.PreAwardNifCount then
+   287:         IncrementQuest("Quest_SonLanguage_Niflheim_Parent", "Quest_SonLanguage_Niflheim", game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece"))
+>  288:         local _, progress = game.QuestManager.GetQuestProgressAndGoal("Quest_SonLanguage_Niflheim")
+   289:         if game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece") == 4 then
+   290:           game.Audio.PlayBanterNonCritical("Nif_Disc_Complete")
+   291:         else
+   292:           game.Audio.PlayBanterNonCritical("Nif_Disc")
+   293:         end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:310 [quest_state,collectible_state_words] ===
+   305:     reward = ""
+   306:     openFX = "Chest_Legendary_Open_Effect_Root"
+   307:   end
+   308: end
+   309: function TrophyCheck()
+>  310:   if game.QuestManager.GetQuestState("Quest_SonLanguage_Muspelheim") == "Complete" and game.QuestManager.GetQuestState("Quest_SonLanguage_Niflheim") == "Complete" then
+   311:     AwardTrophy()
+   312:   end
+   313:   if game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece") == 4 and game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece") == 4 then
+   314:     AwardTrophy()
+   315:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:398 [checkpoint_fields] ===
+   393:     game.Loot.AlertChestOpened()
+   394:   end
+   395:   FireOnInteractStartCallbacks()
+   396: end
+   397: function TrapChestSoftSave()
+>  398:   game.SubObject.SoftSave(thisObj)
+   399: end
+   400: function OnInteractAbort(level, obj, creature)
+   401: end
+   402: function OnInteractFinish(level, obj, creature)
+   403:   StopSoundChestIdle()
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:428 [collectible_state_words] ===
+   423:   if lootObject and not trapChest then
+   424:     lootObject:ShowModel()
+   425:     LD.ShowFX(lootObject)
+   426:   end
+   427:   SpawnOpenFX()
+>  428:   state = states.OPENED
+   429:   if onOpenedEvent ~= nil then
+   430:     LD.ExecuteCallbacksForEvent(thisLevel, thisObj, onOpenedEvent, "onOpenedEvent")
+   431:   end
+   432:   if typeSpecificCallbacks.OnOpened then
+   433:     typeSpecificCallbacks.OnOpened()
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:436 [collectible_state_words] ===
+   431:   end
+   432:   if typeSpecificCallbacks.OnOpened then
+   433:     typeSpecificCallbacks.OnOpened()
+   434:   end
+   435:   if chestType == "Legendary" then
+>  436:     local found, currentRegion = game.Map.FindPlayerRegion()
+   437:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+   438:     if found and comparisonString ~= "TyrsVault" and comparisonString ~= "TheHallofTyr" then
+   439:       UpdateRegionSummary(currentRegion, "LegendaryChest")
+   440:     elseif found and comparisonString == "TyrsVault" then
+   441:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TyrsVault")
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:438 [collectible_state_words] ===
+   433:     typeSpecificCallbacks.OnOpened()
+   434:   end
+   435:   if chestType == "Legendary" then
+   436:     local found, currentRegion = game.Map.FindPlayerRegion()
+   437:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+>  438:     if found and comparisonString ~= "TyrsVault" and comparisonString ~= "TheHallofTyr" then
+   439:       UpdateRegionSummary(currentRegion, "LegendaryChest")
+   440:     elseif found and comparisonString == "TyrsVault" then
+   441:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TyrsVault")
+   442:     elseif found and comparisonString == "TheHallofTyr" then
+   443:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TheHallofTyr")
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:440 [collectible_state_words] ===
+   435:   if chestType == "Legendary" then
+   436:     local found, currentRegion = game.Map.FindPlayerRegion()
+   437:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+   438:     if found and comparisonString ~= "TyrsVault" and comparisonString ~= "TheHallofTyr" then
+   439:       UpdateRegionSummary(currentRegion, "LegendaryChest")
+>  440:     elseif found and comparisonString == "TyrsVault" then
+   441:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TyrsVault")
+   442:     elseif found and comparisonString == "TheHallofTyr" then
+   443:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TheHallofTyr")
+   444:     else
+   445:       print("RegionSummary Check: no region found for player")
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:441 [region_summary] ===
+   436:     local found, currentRegion = game.Map.FindPlayerRegion()
+   437:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+   438:     if found and comparisonString ~= "TyrsVault" and comparisonString ~= "TheHallofTyr" then
+   439:       UpdateRegionSummary(currentRegion, "LegendaryChest")
+   440:     elseif found and comparisonString == "TyrsVault" then
+>  441:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TyrsVault")
+   442:     elseif found and comparisonString == "TheHallofTyr" then
+   443:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TheHallofTyr")
+   444:     else
+   445:       print("RegionSummary Check: no region found for player")
+   446:     end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:442 [collectible_state_words] ===
+   437:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+   438:     if found and comparisonString ~= "TyrsVault" and comparisonString ~= "TheHallofTyr" then
+   439:       UpdateRegionSummary(currentRegion, "LegendaryChest")
+   440:     elseif found and comparisonString == "TyrsVault" then
+   441:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TyrsVault")
+>  442:     elseif found and comparisonString == "TheHallofTyr" then
+   443:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TheHallofTyr")
+   444:     else
+   445:       print("RegionSummary Check: no region found for player")
+   446:     end
+   447:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:443 [region_summary] ===
+   438:     if found and comparisonString ~= "TyrsVault" and comparisonString ~= "TheHallofTyr" then
+   439:       UpdateRegionSummary(currentRegion, "LegendaryChest")
+   440:     elseif found and comparisonString == "TyrsVault" then
+   441:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TyrsVault")
+   442:     elseif found and comparisonString == "TheHallofTyr" then
+>  443:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TheHallofTyr")
+   444:     else
+   445:       print("RegionSummary Check: no region found for player")
+   446:     end
+   447:   end
+   448:   if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:445 [collectible_state_words] ===
+   440:     elseif found and comparisonString == "TyrsVault" then
+   441:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TyrsVault")
+   442:     elseif found and comparisonString == "TheHallofTyr" then
+   443:       LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TheHallofTyr")
+   444:     else
+>  445:       print("RegionSummary Check: no region found for player")
+   446:     end
+   447:   end
+   448:   if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+   449:     local found, currentRegion = game.Map.FindPlayerRegion()
+   450:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:449 [collectible_state_words] ===
+   444:     else
+   445:       print("RegionSummary Check: no region found for player")
+   446:     end
+   447:   end
+   448:   if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+>  449:     local found, currentRegion = game.Map.FindPlayerRegion()
+   450:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+   451:     if found and comparisonString ~= "TyrsVault" then
+   452:       UpdateRegionSummary(currentRegion, "RunicChest")
+   453:     elseif found and comparisonString == "TyrsVault" then
+   454:       LD.ActivateAndIncrementQuest("RegionSummary_RunicChest_Parent_TyrsVault")
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:451 [collectible_state_words] ===
+   446:     end
+   447:   end
+   448:   if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+   449:     local found, currentRegion = game.Map.FindPlayerRegion()
+   450:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+>  451:     if found and comparisonString ~= "TyrsVault" then
+   452:       UpdateRegionSummary(currentRegion, "RunicChest")
+   453:     elseif found and comparisonString == "TyrsVault" then
+   454:       LD.ActivateAndIncrementQuest("RegionSummary_RunicChest_Parent_TyrsVault")
+   455:     else
+   456:       print("RegionSummary Check: no region found for player")
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:453 [collectible_state_words] ===
+   448:   if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+   449:     local found, currentRegion = game.Map.FindPlayerRegion()
+   450:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+   451:     if found and comparisonString ~= "TyrsVault" then
+   452:       UpdateRegionSummary(currentRegion, "RunicChest")
+>  453:     elseif found and comparisonString == "TyrsVault" then
+   454:       LD.ActivateAndIncrementQuest("RegionSummary_RunicChest_Parent_TyrsVault")
+   455:     else
+   456:       print("RegionSummary Check: no region found for player")
+   457:     end
+   458:     if game.Loot.AlertTripleChestOpened ~= nil then
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:454 [region_summary] ===
+   449:     local found, currentRegion = game.Map.FindPlayerRegion()
+   450:     local comparisonString = LD.RegionInfo_GetName(currentRegion)
+   451:     if found and comparisonString ~= "TyrsVault" then
+   452:       UpdateRegionSummary(currentRegion, "RunicChest")
+   453:     elseif found and comparisonString == "TyrsVault" then
+>  454:       LD.ActivateAndIncrementQuest("RegionSummary_RunicChest_Parent_TyrsVault")
+   455:     else
+   456:       print("RegionSummary Check: no region found for player")
+   457:     end
+   458:     if game.Loot.AlertTripleChestOpened ~= nil then
+   459:       game.Loot.AlertTripleChestOpened()
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:456 [collectible_state_words] ===
+   451:     if found and comparisonString ~= "TyrsVault" then
+   452:       UpdateRegionSummary(currentRegion, "RunicChest")
+   453:     elseif found and comparisonString == "TyrsVault" then
+   454:       LD.ActivateAndIncrementQuest("RegionSummary_RunicChest_Parent_TyrsVault")
+   455:     else
+>  456:       print("RegionSummary Check: no region found for player")
+   457:     end
+   458:     if game.Loot.AlertTripleChestOpened ~= nil then
+   459:       game.Loot.AlertTripleChestOpened()
+   460:     end
+   461:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:542 [checkpoint_fields] ===
+   537:       game.World.StoreCheckpoint({OverrideObject = checkpointOnOpened_Override})
+   538:     else
+   539:       game.World.StoreCheckpoint()
+   540:     end
+   541:   else
+>  542:     if game.SubObject.SoftSave then
+   543:       game.SubObject.SoftSave(thisObj)
+   544:     end
+   545:     if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+   546:       thisObj.Parent.Parent.LuaObjectScript.RunicSoftSave()
+   547:     end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:543 [checkpoint_fields] ===
+   538:     else
+   539:       game.World.StoreCheckpoint()
+   540:     end
+   541:   else
+   542:     if game.SubObject.SoftSave then
+>  543:       game.SubObject.SoftSave(thisObj)
+   544:     end
+   545:     if chestType == "Runic_Axe" or chestType == "Runic_Blades" then
+   546:       thisObj.Parent.Parent.LuaObjectScript.RunicSoftSave()
+   547:     end
+   548:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:553 [checkpoint_fields] ===
+   548:   end
+   549: end
+   550: function DisableCheckpointRequirement()
+   551:   checkpointRequirementDisabled = true
+   552: end
+>  553: function OnSaveCheckpoint(level, obj)
+   554:   return {state = state}
+   555: end
+   556: function OnRestoreCheckpoint(level, obj, savedInfo)
+   557:   state = savedInfo.state
+   558: end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:556 [checkpoint_fields] ===
+   551:   checkpointRequirementDisabled = true
+   552: end
+   553: function OnSaveCheckpoint(level, obj)
+   554:   return {state = state}
+   555: end
+>  556: function OnRestoreCheckpoint(level, obj, savedInfo)
+   557:   state = savedInfo.state
+   558: end
+   559: function AwardTrophy()
+   560:   print("Trophy Awarded: Trilingual")
+   561:   game.UnlockTrophy(14)
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:564 [collectible_state_words] ===
+   559: function AwardTrophy()
+   560:   print("Trophy Awarded: Trilingual")
+   561:   game.UnlockTrophy(14)
+   562: end
+   563: function Enable()
+>  564:   if state ~= states.OPENED then
+   565:     state = states.ENABLED
+   566:     interactZone:Enable()
+   567:     LD.ShowFX(idleFX)
+   568:     PlaySoundChestIdle()
+   569:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:572 [collectible_state_words] ===
+   567:     LD.ShowFX(idleFX)
+   568:     PlaySoundChestIdle()
+   569:   end
+   570: end
+   571: function Disable()
+>  572:   if state ~= states.OPENED then
+   573:     state = states.DISABLED
+   574:   end
+   575:   interactZone:Disable()
+   576:   LD.HideFX(idleFX)
+   577: end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:636 [collectible_state_words] ===
+   631:   parentObj:ShowModel()
+   632:   parentObj:ShowCollision()
+   633:   parentObj:ShowNavObstacle()
+   634:   ResetLootObjectLocation()
+   635:   LD.HideFX(lootObject)
+>  636:   if state ~= states.OPENED and not hideIdleFx then
+   637:     idleFX:Show()
+   638:   end
+   639:   if chestType == "Common" then
+   640:     local breakableLid = parentObj:FindSingleGOByName("animatedLid")
+   641:     if breakableLid then
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:655 [collectible_state_words] ===
+   650:     lootObject:SetWorldPosition(parentObj:GetWorldJointPosition(lootObjJoint))
+   651:     lootObject:SetWorldFacing(parentObj:GetWorldJointForward(lootObjJoint))
+   652:   end
+   653: end
+   654: function IsOpen()
+>  655:   return state == states.OPENED
+   656: end
+   657: function GetState()
+   658:   return state
+   659: end
+   660: function GetPossibleStates()
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:751 [quest_state] ===
+   746:   local MaxRageUpgradePiece = game.Wallets.GetResourceValue("HERO", "MaxRageUpgradePiece") > resourceTestTable.MaxRageUpgradePiece
+   747:   local MaxHealthUpgrade = game.Wallets.GetResourceValue("HERO", "MaxHealthUpgrade") > resourceTestTable.MaxHealthUpgrade
+   748:   local MaxRageUpgrade = game.Wallets.GetResourceValue("HERO", "MaxRageUpgrade") > resourceTestTable.MaxRageUpgrade
+   749:   if nifArmorPattern_Chest then
+   750:     game.Audio.PlayBanter("Niflheim_Armor_Quest")
+>  751:     LD.ActivateQuest("Quest_NiflheimArmorChest_Parent")
+   752:     LD.CompleteQuest("Quest_NiflheimArmorChest_01")
+   753:     game.SubObject.SoftSave(thisObj)
+   754:   end
+   755:   if MaxHealthUpgradePiece or MaxHealthUpgrade then
+   756:     player:MeterSetValue("Health", player:MeterGetMax("Health"))
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:752 [quest_state] ===
+   747:   local MaxHealthUpgrade = game.Wallets.GetResourceValue("HERO", "MaxHealthUpgrade") > resourceTestTable.MaxHealthUpgrade
+   748:   local MaxRageUpgrade = game.Wallets.GetResourceValue("HERO", "MaxRageUpgrade") > resourceTestTable.MaxRageUpgrade
+   749:   if nifArmorPattern_Chest then
+   750:     game.Audio.PlayBanter("Niflheim_Armor_Quest")
+   751:     LD.ActivateQuest("Quest_NiflheimArmorChest_Parent")
+>  752:     LD.CompleteQuest("Quest_NiflheimArmorChest_01")
+   753:     game.SubObject.SoftSave(thisObj)
+   754:   end
+   755:   if MaxHealthUpgradePiece or MaxHealthUpgrade then
+   756:     player:MeterSetValue("Health", player:MeterGetMax("Health"))
+   757:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua:753 [checkpoint_fields] ===
+   748:   local MaxRageUpgrade = game.Wallets.GetResourceValue("HERO", "MaxRageUpgrade") > resourceTestTable.MaxRageUpgrade
+   749:   if nifArmorPattern_Chest then
+   750:     game.Audio.PlayBanter("Niflheim_Armor_Quest")
+   751:     LD.ActivateQuest("Quest_NiflheimArmorChest_Parent")
+   752:     LD.CompleteQuest("Quest_NiflheimArmorChest_01")
+>  753:     game.SubObject.SoftSave(thisObj)
+   754:   end
+   755:   if MaxHealthUpgradePiece or MaxHealthUpgrade then
+   756:     player:MeterSetValue("Health", player:MeterGetMax("Health"))
+   757:   end
+   758:   if MaxRageUpgradePiece or MaxRageUpgrade then
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:4 [collectible_state_words] ===
+     1: local LD = require("design.LevelDesignLibrary")
+     2: local timers = require("level.timer")
+     3: local bIsAnimated, thisObj
+>    4: local ravenKilled = false
+     5: local BirdMesh, OnKilledCallbacks, regionSummaryQuest
+     6: -- Completionist Map v0.10.1 Raven lifecycle bridge.
+     7: -- Read-only with respect to progression: it only observes the script's own
+     8: -- ravenKilled state and publishes it to the custom map/HUD prototype.
+     9: local function CompletionistMapV100_IsTargetRaven()
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:8 [collectible_state_words] ===
+     3: local bIsAnimated, thisObj
+     4: local ravenKilled = false
+     5: local BirdMesh, OnKilledCallbacks, regionSummaryQuest
+     6: -- Completionist Map v0.10.1 Raven lifecycle bridge.
+     7: -- Read-only with respect to progression: it only observes the script's own
+>    8: -- ravenKilled state and publishes it to the custom map/HUD prototype.
+     9: local function CompletionistMapV100_IsTargetRaven()
+    10:   if thisObj == nil then
+    11:     return false, nil
+    12:   end
+    13: 
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:36 [collectible_state_words] ===
+    31:   local isTarget, pos = CompletionistMapV100_IsTargetRaven()
+    32:   if not isTarget then
+    33:     return
+    34:   end
+    35: 
+>   36:   local collected = killed == true
+    37:   _G.CompletionistMapV100TargetRavenKilled = collected
+    38: 
+    39:   if _G.CompletionistMapV100Target ~= nil and
+    40:       _G.CompletionistMapV100Target.type == "Raven" then
+    41:     _G.CompletionistMapV100Target.collected = collected
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:37 [collectible_state_words] ===
+    32:   if not isTarget then
+    33:     return
+    34:   end
+    35: 
+    36:   local collected = killed == true
+>   37:   _G.CompletionistMapV100TargetRavenKilled = collected
+    38: 
+    39:   if _G.CompletionistMapV100Target ~= nil and
+    40:       _G.CompletionistMapV100Target.type == "Raven" then
+    41:     _G.CompletionistMapV100Target.collected = collected
+    42:     if collected then
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:41 [collectible_state_words] ===
+    36:   local collected = killed == true
+    37:   _G.CompletionistMapV100TargetRavenKilled = collected
+    38: 
+    39:   if _G.CompletionistMapV100Target ~= nil and
+    40:       _G.CompletionistMapV100Target.type == "Raven" then
+>   41:     _G.CompletionistMapV100Target.collected = collected
+    42:     if collected then
+    43:       _G.CompletionistMapV100Target.active = false
+    44:     end
+    45:   end
+    46: 
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:42 [collectible_state_words] ===
+    37:   _G.CompletionistMapV100TargetRavenKilled = collected
+    38: 
+    39:   if _G.CompletionistMapV100Target ~= nil and
+    40:       _G.CompletionistMapV100Target.type == "Raven" then
+    41:     _G.CompletionistMapV100Target.collected = collected
+>   42:     if collected then
+    43:       _G.CompletionistMapV100Target.active = false
+    44:     end
+    45:   end
+    46: 
+    47:   print("[CompletionistMap v0.10.1] RAVEN_STATE" ..
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:50 [collectible_state_words] ===
+    45:   end
+    46: 
+    47:   print("[CompletionistMap v0.10.1] RAVEN_STATE" ..
+    48:     " target=true" ..
+    49:     " source=" .. tostring(source) ..
+>   50:     " killed=" .. tostring(collected) ..
+    51:     " regionQuest=" .. tostring(regionSummaryQuest) ..
+    52:     " x=" .. tostring(pos and pos.x or "<nil>") ..
+    53:     " y=" .. tostring(pos and pos.y or "<nil>") ..
+    54:     " z=" .. tostring(pos and pos.z or "<nil>"))
+    55: end
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:66 [collectible_state_words] ===
+    61:   BirdMesh = thisObj:FindSingleGOByName("BirdMesh")
+    62:   SoundInit()
+    63:   game.SubObject.Sleep(obj)
+    64: end
+    65: function OnStart(level, obj)
+>   66:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnStart")
+    67:   if ravenKilled == true then
+    68:     HideBird()
+    69:     return
+    70:   elseif BirdMesh ~= nil then
+    71:     BirdMesh:PlayAnimCycle()
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:67 [collectible_state_words] ===
+    62:   SoundInit()
+    63:   game.SubObject.Sleep(obj)
+    64: end
+    65: function OnStart(level, obj)
+    66:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnStart")
+>   67:   if ravenKilled == true then
+    68:     HideBird()
+    69:     return
+    70:   elseif BirdMesh ~= nil then
+    71:     BirdMesh:PlayAnimCycle()
+    72:     thisObj:PlayAnimCycle()
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:79 [quest_state] ===
+    74:   end
+    75: end
+    76: function OnHitByWeapon(level, obj, attacker, weapon)
+    77:   CompletionistMapV100_PublishTargetState(true, "OnHitByWeapon")
+    78:   timers.StartLevelTimer(1.5, HideBird())
+>   79:   local questState = game.QuestManager.GetQuestState("Quest_Labor_KillRavens_Parent")
+    80:   if questState == "Inactive" then
+    81:     game.QuestManager.StartQuest("Quest_Labor_KillRavens_Parent")
+    82:   end
+    83:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens", 1)
+    84:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_25", 1)
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:81 [quest_state] ===
+    76: function OnHitByWeapon(level, obj, attacker, weapon)
+    77:   CompletionistMapV100_PublishTargetState(true, "OnHitByWeapon")
+    78:   timers.StartLevelTimer(1.5, HideBird())
+    79:   local questState = game.QuestManager.GetQuestState("Quest_Labor_KillRavens_Parent")
+    80:   if questState == "Inactive" then
+>   81:     game.QuestManager.StartQuest("Quest_Labor_KillRavens_Parent")
+    82:   end
+    83:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens", 1)
+    84:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_25", 1)
+    85:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_50", 1)
+    86:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:83 [quest_state] ===
+    78:   timers.StartLevelTimer(1.5, HideBird())
+    79:   local questState = game.QuestManager.GetQuestState("Quest_Labor_KillRavens_Parent")
+    80:   if questState == "Inactive" then
+    81:     game.QuestManager.StartQuest("Quest_Labor_KillRavens_Parent")
+    82:   end
+>   83:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens", 1)
+    84:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_25", 1)
+    85:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_50", 1)
+    86:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+    87:     game.UnlockTrophy(25)
+    88:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:84 [quest_state] ===
+    79:   local questState = game.QuestManager.GetQuestState("Quest_Labor_KillRavens_Parent")
+    80:   if questState == "Inactive" then
+    81:     game.QuestManager.StartQuest("Quest_Labor_KillRavens_Parent")
+    82:   end
+    83:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens", 1)
+>   84:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_25", 1)
+    85:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_50", 1)
+    86:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+    87:     game.UnlockTrophy(25)
+    88:   end
+    89:   ravenKilled = true
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:85 [quest_state] ===
+    80:   if questState == "Inactive" then
+    81:     game.QuestManager.StartQuest("Quest_Labor_KillRavens_Parent")
+    82:   end
+    83:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens", 1)
+    84:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_25", 1)
+>   85:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_50", 1)
+    86:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+    87:     game.UnlockTrophy(25)
+    88:   end
+    89:   ravenKilled = true
+    90:   SpawnFX()
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:86 [quest_state,collectible_state_words] ===
+    81:     game.QuestManager.StartQuest("Quest_Labor_KillRavens_Parent")
+    82:   end
+    83:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens", 1)
+    84:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_25", 1)
+    85:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_50", 1)
+>   86:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+    87:     game.UnlockTrophy(25)
+    88:   end
+    89:   ravenKilled = true
+    90:   SpawnFX()
+    91:   PlayDeathSound()
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:89 [collectible_state_words] ===
+    84:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_25", 1)
+    85:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_50", 1)
+    86:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+    87:     game.UnlockTrophy(25)
+    88:   end
+>   89:   ravenKilled = true
+    90:   SpawnFX()
+    91:   PlayDeathSound()
+    92:   OnKilledCallback(level, obj)
+    93:   ActivateRegionSummaryQuest()
+    94:   timers.StartLevelTimer(1, SoftSave)
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:94 [checkpoint_fields] ===
+    89:   ravenKilled = true
+    90:   SpawnFX()
+    91:   PlayDeathSound()
+    92:   OnKilledCallback(level, obj)
+    93:   ActivateRegionSummaryQuest()
+>   94:   timers.StartLevelTimer(1, SoftSave)
+    95: end
+    96: function OnKilledCallback(level, obj)
+    97:   if OnKilledCallbacks ~= nil or OnKilledCallbacks ~= "" then
+    98:     LD.ExtractAndExecuteCallbacksForEvent(level, obj, OnKilledCallbacks, "On Killed Event")
+    99:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:126 [checkpoint_fields] ===
+   121:   else
+   122:     local deathFX = game.FX.Spawn("Raven_Death_FX", thisObj, {AutoDelete = true})
+   123:     deathFX:SetWorldPosition(thisObj:GetWorldPosition())
+   124:   end
+   125: end
+>  126: function SoftSave(level, obj)
+   127:   game.SubObject.SoftSave(thisObj)
+   128: end
+   129: function OnSaveCheckpoint(level, obj)
+   130:   return {ravenKilled = ravenKilled}
+   131: end
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:127 [checkpoint_fields] ===
+   122:     local deathFX = game.FX.Spawn("Raven_Death_FX", thisObj, {AutoDelete = true})
+   123:     deathFX:SetWorldPosition(thisObj:GetWorldPosition())
+   124:   end
+   125: end
+   126: function SoftSave(level, obj)
+>  127:   game.SubObject.SoftSave(thisObj)
+   128: end
+   129: function OnSaveCheckpoint(level, obj)
+   130:   return {ravenKilled = ravenKilled}
+   131: end
+   132: function OnRestoreCheckpoint(level, obj, tab)
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:129 [checkpoint_fields] ===
+   124:   end
+   125: end
+   126: function SoftSave(level, obj)
+   127:   game.SubObject.SoftSave(thisObj)
+   128: end
+>  129: function OnSaveCheckpoint(level, obj)
+   130:   return {ravenKilled = ravenKilled}
+   131: end
+   132: function OnRestoreCheckpoint(level, obj, tab)
+   133:   ravenKilled = tab.ravenKilled
+   134:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnRestoreCheckpoint")
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:130 [collectible_state_words] ===
+   125: end
+   126: function SoftSave(level, obj)
+   127:   game.SubObject.SoftSave(thisObj)
+   128: end
+   129: function OnSaveCheckpoint(level, obj)
+>  130:   return {ravenKilled = ravenKilled}
+   131: end
+   132: function OnRestoreCheckpoint(level, obj, tab)
+   133:   ravenKilled = tab.ravenKilled
+   134:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnRestoreCheckpoint")
+   135: end
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:132 [checkpoint_fields] ===
+   127:   game.SubObject.SoftSave(thisObj)
+   128: end
+   129: function OnSaveCheckpoint(level, obj)
+   130:   return {ravenKilled = ravenKilled}
+   131: end
+>  132: function OnRestoreCheckpoint(level, obj, tab)
+   133:   ravenKilled = tab.ravenKilled
+   134:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnRestoreCheckpoint")
+   135: end
+   136: local emitter
+   137: function SoundInit()
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:133 [collectible_state_words] ===
+   128: end
+   129: function OnSaveCheckpoint(level, obj)
+   130:   return {ravenKilled = ravenKilled}
+   131: end
+   132: function OnRestoreCheckpoint(level, obj, tab)
+>  133:   ravenKilled = tab.ravenKilled
+   134:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnRestoreCheckpoint")
+   135: end
+   136: local emitter
+   137: function SoundInit()
+   138:   print(string.upper(thisObj:GetName()))
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:134 [checkpoint_fields,collectible_state_words] ===
+   129: function OnSaveCheckpoint(level, obj)
+   130:   return {ravenKilled = ravenKilled}
+   131: end
+   132: function OnRestoreCheckpoint(level, obj, tab)
+   133:   ravenKilled = tab.ravenKilled
+>  134:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnRestoreCheckpoint")
+   135: end
+   136: local emitter
+   137: function SoundInit()
+   138:   print(string.upper(thisObj:GetName()))
+   139:   if BirdMesh ~= nil then
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:164 [collectible_state_words] ===
+   159:   LD.PlaySound(emitter, soundEvents.Death)
+   160:   LD.StopRestartableSoundLoop(emitter, soundEvents.IdleLoop)
+   161: end
+   162: 
+   163: -- BEGIN COMPLETIONIST V0.10.4 RAVEN LIFECYCLE V3.1 EVENTS
+>  164: -- Runs inside persistent Raven gameplay script. Read native ravenKilled only.
+   165: -- Clean exact real CompletionistRaven compass target. Never touch Twin or stock.
+   166: do
+   167:   local prefix = "[CompletionistMap uid-lifecycle-v3.1] "
+   168:   local ravenName = "Completionist_V103_Veithurgard_Raven_01"
+   169:   local ravenClass = "CompletionistRaven"
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:202 [collectible_state_words] ===
+   197:   end
+   198: 
+   199:   local function schedule(source, attempt, ticket, sawReal)
+   200:     local scheduleOK, scheduleErr = pcall(function()
+   201:       timers.StartLevelTimer(0.1, function()
+>  202:       if ticket ~= generation or ravenKilled ~= true then return end
+   203:       local shown, queryOK, queryErr, realId = realShown()
+   204:       local nextSawReal = sawReal or shown
+   205:       if shown then
+   206:         local hideOK, hideErr = pcall(function() game.Compass.HideMarker(ravenName) end)
+   207:         log("REAL_HIDE", "source=" .. tostring(source) ..
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:241 [collectible_state_words] ===
+   236:   end
+   237: 
+   238:   local function observe(source)
+   239:     local target = CompletionistMapV100_IsTargetRaven()
+   240:     if not target then return end
+>  241:     local killed = ravenKilled == true
+   242:     if not killed then
+   243:       generation = generation + 1
+   244:       if observedKilled == true then
+   245:         log("LIFECYCLE_REARM", "source=" .. tostring(source) ..
+   246:             " staleTicketCancelled=true")
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:281 [checkpoint_fields] ===
+   276:     local result = hit(...)
+   277:     observe("OnHitByWeapon")
+   278:     return result
+   279:   end
+   280: 
+>  281:   local restore = OnRestoreCheckpoint
+   282:   function OnRestoreCheckpoint(...)
+   283:     local result = restore(...)
+   284:     observe("OnRestoreCheckpoint")
+   285:     return result
+   286:   end
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:282 [checkpoint_fields] ===
+   277:     observe("OnHitByWeapon")
+   278:     return result
+   279:   end
+   280: 
+   281:   local restore = OnRestoreCheckpoint
+>  282:   function OnRestoreCheckpoint(...)
+   283:     local result = restore(...)
+   284:     observe("OnRestoreCheckpoint")
+   285:     return result
+   286:   end
+   287: 
+
+=== gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua:284 [checkpoint_fields] ===
+   279:   end
+   280: 
+   281:   local restore = OnRestoreCheckpoint
+   282:   function OnRestoreCheckpoint(...)
+   283:     local result = restore(...)
+>  284:     observe("OnRestoreCheckpoint")
+   285:     return result
+   286:   end
+   287: 
+   288:   local start = OnStart
+   289:   function OnStart(...)
+
+=== gameart/ui/scripts/hud/mainhud.lua:144 [collectible_state_words] ===
+   139:     _G.CompletionistMapV100NornirRegistry or {}
+   140:   _G.CompletionistMapV100NornirRegistry[args.registryKey] = args
+   141: 
+   142:   local target = _G.CompletionistMapV100Target
+   143:   if target ~= nil and target.registryKey == args.registryKey then
+>  144:     if target.type == "NornirChest" and args.opened == true then
+   145:       target.collected = true
+   146:       target.active = false
+   147:     elseif target.type == "NornirPuzzle" then
+   148:       local key = args.keys and args.keys[target.keyIndex] or nil
+   149:       if args.challengeComplete == true or args.opened == true or
+
+=== gameart/ui/scripts/hud/mainhud.lua:145 [collectible_state_words] ===
+   140:   _G.CompletionistMapV100NornirRegistry[args.registryKey] = args
+   141: 
+   142:   local target = _G.CompletionistMapV100Target
+   143:   if target ~= nil and target.registryKey == args.registryKey then
+   144:     if target.type == "NornirChest" and args.opened == true then
+>  145:       target.collected = true
+   146:       target.active = false
+   147:     elseif target.type == "NornirPuzzle" then
+   148:       local key = args.keys and args.keys[target.keyIndex] or nil
+   149:       if args.challengeComplete == true or args.opened == true or
+   150:           (args.keyType == "Breakable" and key ~= nil and key.broken == true) then
+
+=== gameart/ui/scripts/hud/mainhud.lua:149 [collectible_state_words] ===
+   144:     if target.type == "NornirChest" and args.opened == true then
+   145:       target.collected = true
+   146:       target.active = false
+   147:     elseif target.type == "NornirPuzzle" then
+   148:       local key = args.keys and args.keys[target.keyIndex] or nil
+>  149:       if args.challengeComplete == true or args.opened == true or
+   150:           (args.keyType == "Breakable" and key ~= nil and key.broken == true) then
+   151:         target.collected = true
+   152:         target.active = false
+   153:       end
+   154:     end
+
+=== gameart/ui/scripts/hud/mainhud.lua:150 [collectible_state_words] ===
+   145:       target.collected = true
+   146:       target.active = false
+   147:     elseif target.type == "NornirPuzzle" then
+   148:       local key = args.keys and args.keys[target.keyIndex] or nil
+   149:       if args.challengeComplete == true or args.opened == true or
+>  150:           (args.keyType == "Breakable" and key ~= nil and key.broken == true) then
+   151:         target.collected = true
+   152:         target.active = false
+   153:       end
+   154:     end
+   155:   end
+
+=== gameart/ui/scripts/hud/mainhud.lua:151 [collectible_state_words] ===
+   146:       target.active = false
+   147:     elseif target.type == "NornirPuzzle" then
+   148:       local key = args.keys and args.keys[target.keyIndex] or nil
+   149:       if args.challengeComplete == true or args.opened == true or
+   150:           (args.keyType == "Breakable" and key ~= nil and key.broken == true) then
+>  151:         target.collected = true
+   152:         target.active = false
+   153:       end
+   154:     end
+   155:   end
+   156: 
+
+=== gameart/ui/scripts/hud/mainhud.lua:160 [collectible_state_words] ===
+   155:   end
+   156: 
+   157:   print("[CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_RECV" ..
+   158:     " registryKey=" .. tostring(args.registryKey) ..
+   159:     " keyType=" .. tostring(args.keyType) ..
+>  160:     " opened=" .. tostring(args.opened) ..
+   161:     " challengeComplete=" .. tostring(args.challengeComplete) ..
+   162:     " keysUsed=" .. tostring(args.keysUsed))
+   163: end
+   164: 
+   165: function MainHUD:EVT_COMPLETIONIST_NORNIR_STATE(args)
+
+=== gameart/ui/scripts/hud/mainhud.lua:180 [collectible_state_words] ===
+   175:   local entry = _G.CompletionistMapV100NornirRegistry[args.registryKey]
+   176:   if entry == nil then
+   177:     entry = {
+   178:       registryKey = args.registryKey,
+   179:       name = args.name,
+>  180:       opened = true,
+   181:       x = args.x,
+   182:       y = args.y,
+   183:       z = args.z,
+   184:       keys = {}
+   185:     }
+
+=== gameart/ui/scripts/hud/mainhud.lua:188 [collectible_state_words] ===
+   183:       z = args.z,
+   184:       keys = {}
+   185:     }
+   186:     _G.CompletionistMapV100NornirRegistry[args.registryKey] = entry
+   187:   else
+>  188:     entry.opened = true
+   189:   end
+   190: 
+   191:   local target = _G.CompletionistMapV100Target
+   192:   if target ~= nil and
+   193:       target.registryKey == args.registryKey and
+
+=== gameart/ui/scripts/hud/mainhud.lua:195 [collectible_state_words] ===
+   190: 
+   191:   local target = _G.CompletionistMapV100Target
+   192:   if target ~= nil and
+   193:       target.registryKey == args.registryKey and
+   194:       (target.type == "NornirChest" or target.type == "NornirPuzzle") then
+>  195:     target.collected = true
+   196:     target.active = false
+   197:   end
+   198: 
+   199:   print("[CompletionistMap v0.10.1] NORNIR_OPENED_RECV" ..
+   200:     " registryKey=" .. tostring(args.registryKey) ..
+
+=== gameart/ui/scripts/hud/mainhud.lua:214 [collectible_state_words] ===
+   209:   local target = _G.CompletionistMapV100Target
+   210: 
+   211:   if target ~= nil then
+   212:     if target.type == "Raven" and
+   213:         _G.CompletionistMapV100TargetRavenKilled == true then
+>  214:       target.collected = true
+   215:     end
+   216: 
+   217:     if target.type == "Raven" and
+   218:         not target.collected and
+   219:         target.regionQuest ~= nil then
+
+=== gameart/ui/scripts/hud/mainhud.lua:218 [collectible_state_words] ===
+   213:         _G.CompletionistMapV100TargetRavenKilled == true then
+   214:       target.collected = true
+   215:     end
+   216: 
+   217:     if target.type == "Raven" and
+>  218:         not target.collected and
+   219:         target.regionQuest ~= nil then
+   220:       local stateOK, state = pcall(function()
+   221:         return game.QuestManager.GetQuestState(target.regionQuest)
+   222:       end)
+   223: 
+
+=== gameart/ui/scripts/hud/mainhud.lua:221 [quest_state] ===
+   216: 
+   217:     if target.type == "Raven" and
+   218:         not target.collected and
+   219:         target.regionQuest ~= nil then
+   220:       local stateOK, state = pcall(function()
+>  221:         return game.QuestManager.GetQuestState(target.regionQuest)
+   222:       end)
+   223: 
+   224:       if stateOK and tostring(state) == "Complete" then
+   225:         target.collected = true
+   226:         _G.CompletionistMapV100TargetRavenKilled = true
+
+=== gameart/ui/scripts/hud/mainhud.lua:224 [collectible_state_words] ===
+   219:         target.regionQuest ~= nil then
+   220:       local stateOK, state = pcall(function()
+   221:         return game.QuestManager.GetQuestState(target.regionQuest)
+   222:       end)
+   223: 
+>  224:       if stateOK and tostring(state) == "Complete" then
+   225:         target.collected = true
+   226:         _G.CompletionistMapV100TargetRavenKilled = true
+   227:       end
+   228:     end
+   229: 
+
+=== gameart/ui/scripts/hud/mainhud.lua:225 [collectible_state_words] ===
+   220:       local stateOK, state = pcall(function()
+   221:         return game.QuestManager.GetQuestState(target.regionQuest)
+   222:       end)
+   223: 
+   224:       if stateOK and tostring(state) == "Complete" then
+>  225:         target.collected = true
+   226:         _G.CompletionistMapV100TargetRavenKilled = true
+   227:       end
+   228:     end
+   229: 
+   230:     if (target.type == "NornirPuzzle" or
+
+=== gameart/ui/scripts/hud/mainhud.lua:246 [collectible_state_words] ===
+   241:         " x=" .. tostring(target.x) ..
+   242:         " y=" .. tostring(target.y) ..
+   243:         " z=" .. tostring(target.z))
+   244:     end
+   245: 
+>  246:     if target.collected then
+   247:       if target.active then
+   248:         print("[CompletionistMap v0.10.1] HUD_AUTO_CLEAR reason=target_collected")
+   249:       end
+   250:       target.active = false
+   251:       CompletionistMapV100_RestoreProofVisual(self)
+
+=== gameart/ui/scripts/hud/mainhud.lua:917 [checkpoint_fields] ===
+   912:     self:EVT_TEMP_OFF()
+   913:   end
+   914: end
+   915: MainHUD.EVT_PlayerDamaged = MainHUD.EVT_TEMP_ON
+   916: MainHUD.EVT_GAME_START = MainHUD.EVT_REFRESH_HUD
+>  917: function MainHUD:OnSaveCheckpoint(tab)
+   918: end
+   919: function MainHUD:OnRestoreCheckpoint(tab)
+   920: end
+
+=== gameart/ui/scripts/hud/mainhud.lua:919 [checkpoint_fields] ===
+   914: end
+   915: MainHUD.EVT_PlayerDamaged = MainHUD.EVT_TEMP_ON
+   916: MainHUD.EVT_GAME_START = MainHUD.EVT_REFRESH_HUD
+   917: function MainHUD:OnSaveCheckpoint(tab)
+   918: end
+>  919: function MainHUD:OnRestoreCheckpoint(tab)
+   920: end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:43 [collectible_state_words] ===
+    38:   tweaks.eTokenState.kDiscoveredButLocked
+    39: }
+    40: -- Completionist Map v0.10.1
+    41: --
+    42: -- Map side:
+>   43: --   Create a genuinely separate duplicate of a SAFE DISCOVERED DockPoint icon,
+    44: --   move the duplicate ROOT to the Raven map coordinate, and intercept only
+    45: --   collision with that exact duplicate. This gives us boat artwork without
+    46: --   hijacking the original dock.
+    47: --
+    48: -- HUD side:
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:65 [collectible_state_words] ===
+    60:   _G.CompletionistMapV100PlayerMarkerVisible = true
+    61: end
+    62: 
+    63: _G.CompletionistMapV100Target = _G.CompletionistMapV100Target or {
+    64:   active = false,
+>   65:   collected = false,
+    66:   type = "Raven",
+    67:   realm = "Midgard",
+    68:   regionQuest = "RegionSummary_VF_Raven_Parent",
+    69:   x = -64.850898742676,
+    70:   y = 12.987384796143,
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:68 [region_summary] ===
+    63: _G.CompletionistMapV100Target = _G.CompletionistMapV100Target or {
+    64:   active = false,
+    65:   collected = false,
+    66:   type = "Raven",
+    67:   realm = "Midgard",
+>   68:   regionQuest = "RegionSummary_VF_Raven_Parent",
+    69:   x = -64.850898742676,
+    70:   y = 12.987384796143,
+    71:   z = 787.30694580078,
+    72:   mapX = 3.2117712497711,
+    73:   mapZ = 0.8695997595787
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:204 [quest_state] ===
+   199:   if _G.CompletionistMapV100TargetRavenKilled == true then
+   200:     return true
+   201:   end
+   202: 
+   203:   local stateOK, state = pcall(function()
+>  204:     return game.QuestManager.GetQuestState(
+   205:       "RegionSummary_VF_Raven_Parent"
+   206:     )
+   207:   end)
+   208: 
+   209:   if stateOK and tostring(state) == "Complete" then
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:205 [region_summary] ===
+   200:     return true
+   201:   end
+   202: 
+   203:   local stateOK, state = pcall(function()
+   204:     return game.QuestManager.GetQuestState(
+>  205:       "RegionSummary_VF_Raven_Parent"
+   206:     )
+   207:   end)
+   208: 
+   209:   if stateOK and tostring(state) == "Complete" then
+   210:     _G.CompletionistMapV100TargetRavenKilled = true
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:209 [collectible_state_words] ===
+   204:     return game.QuestManager.GetQuestState(
+   205:       "RegionSummary_VF_Raven_Parent"
+   206:     )
+   207:   end)
+   208: 
+>  209:   if stateOK and tostring(state) == "Complete" then
+   210:     _G.CompletionistMapV100TargetRavenKilled = true
+   211:     return true
+   212:   end
+   213: 
+   214:   return false
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:234 [collectible_state_words] ===
+   229: 
+   230:     local registry = CompletionistMapV100_GetNornirRegistry()
+   231:     local entry = registry and registry[target.registryKey] or nil
+   232:     if entry ~= nil then
+   233:       if target.type == "NornirChest" then
+>  234:         target.collected = entry.opened == true
+   235:       else
+   236:         local key = entry.keys and entry.keys[target.keyIndex] or nil
+   237:         if entry.challengeComplete == true or entry.opened == true then
+   238:           target.collected = true
+   239:         elseif entry.keyType == "Breakable" then
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:237 [collectible_state_words] ===
+   232:     if entry ~= nil then
+   233:       if target.type == "NornirChest" then
+   234:         target.collected = entry.opened == true
+   235:       else
+   236:         local key = entry.keys and entry.keys[target.keyIndex] or nil
+>  237:         if entry.challengeComplete == true or entry.opened == true then
+   238:           target.collected = true
+   239:         elseif entry.keyType == "Breakable" then
+   240:           target.collected = key ~= nil and key.broken == true
+   241:         else
+   242:           target.collected = false
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:238 [collectible_state_words] ===
+   233:       if target.type == "NornirChest" then
+   234:         target.collected = entry.opened == true
+   235:       else
+   236:         local key = entry.keys and entry.keys[target.keyIndex] or nil
+   237:         if entry.challengeComplete == true or entry.opened == true then
+>  238:           target.collected = true
+   239:         elseif entry.keyType == "Breakable" then
+   240:           target.collected = key ~= nil and key.broken == true
+   241:         else
+   242:           target.collected = false
+   243:         end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:240 [collectible_state_words] ===
+   235:       else
+   236:         local key = entry.keys and entry.keys[target.keyIndex] or nil
+   237:         if entry.challengeComplete == true or entry.opened == true then
+   238:           target.collected = true
+   239:         elseif entry.keyType == "Breakable" then
+>  240:           target.collected = key ~= nil and key.broken == true
+   241:         else
+   242:           target.collected = false
+   243:         end
+   244:       end
+   245:     end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:242 [collectible_state_words] ===
+   237:         if entry.challengeComplete == true or entry.opened == true then
+   238:           target.collected = true
+   239:         elseif entry.keyType == "Breakable" then
+   240:           target.collected = key ~= nil and key.broken == true
+   241:         else
+>  242:           target.collected = false
+   243:         end
+   244:       end
+   245:     end
+   246:     if target.collected then target.active = false end
+   247:     return target.collected == true
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:246 [collectible_state_words] ===
+   241:         else
+   242:           target.collected = false
+   243:         end
+   244:       end
+   245:     end
+>  246:     if target.collected then target.active = false end
+   247:     return target.collected == true
+   248:   end
+   249: 
+   250:   if _G.CompletionistMapV100TargetRavenKilled == true then
+   251:     target.collected = true
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:247 [collectible_state_words] ===
+   242:           target.collected = false
+   243:         end
+   244:       end
+   245:     end
+   246:     if target.collected then target.active = false end
+>  247:     return target.collected == true
+   248:   end
+   249: 
+   250:   if _G.CompletionistMapV100TargetRavenKilled == true then
+   251:     target.collected = true
+   252:   end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:251 [collectible_state_words] ===
+   246:     if target.collected then target.active = false end
+   247:     return target.collected == true
+   248:   end
+   249: 
+   250:   if _G.CompletionistMapV100TargetRavenKilled == true then
+>  251:     target.collected = true
+   252:   end
+   253:   if not target.collected and target.regionQuest ~= nil then
+   254:     local stateOK, state = pcall(function()
+   255:       return game.QuestManager.GetQuestState(target.regionQuest)
+   256:     end)
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:253 [collectible_state_words] ===
+   248:   end
+   249: 
+   250:   if _G.CompletionistMapV100TargetRavenKilled == true then
+   251:     target.collected = true
+   252:   end
+>  253:   if not target.collected and target.regionQuest ~= nil then
+   254:     local stateOK, state = pcall(function()
+   255:       return game.QuestManager.GetQuestState(target.regionQuest)
+   256:     end)
+   257:     if stateOK and tostring(state) == "Complete" then
+   258:       target.collected = true
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:255 [quest_state] ===
+   250:   if _G.CompletionistMapV100TargetRavenKilled == true then
+   251:     target.collected = true
+   252:   end
+   253:   if not target.collected and target.regionQuest ~= nil then
+   254:     local stateOK, state = pcall(function()
+>  255:       return game.QuestManager.GetQuestState(target.regionQuest)
+   256:     end)
+   257:     if stateOK and tostring(state) == "Complete" then
+   258:       target.collected = true
+   259:       _G.CompletionistMapV100TargetRavenKilled = true
+   260:     end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:257 [collectible_state_words] ===
+   252:   end
+   253:   if not target.collected and target.regionQuest ~= nil then
+   254:     local stateOK, state = pcall(function()
+   255:       return game.QuestManager.GetQuestState(target.regionQuest)
+   256:     end)
+>  257:     if stateOK and tostring(state) == "Complete" then
+   258:       target.collected = true
+   259:       _G.CompletionistMapV100TargetRavenKilled = true
+   260:     end
+   261:   end
+   262:   if target.collected then target.active = false end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:258 [collectible_state_words] ===
+   253:   if not target.collected and target.regionQuest ~= nil then
+   254:     local stateOK, state = pcall(function()
+   255:       return game.QuestManager.GetQuestState(target.regionQuest)
+   256:     end)
+   257:     if stateOK and tostring(state) == "Complete" then
+>  258:       target.collected = true
+   259:       _G.CompletionistMapV100TargetRavenKilled = true
+   260:     end
+   261:   end
+   262:   if target.collected then target.active = false end
+   263:   return target.collected
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:262 [collectible_state_words] ===
+   257:     if stateOK and tostring(state) == "Complete" then
+   258:       target.collected = true
+   259:       _G.CompletionistMapV100TargetRavenKilled = true
+   260:     end
+   261:   end
+>  262:   if target.collected then target.active = false end
+   263:   return target.collected
+   264: end
+   265: 
+   266: local function CompletionistMapV100_LogMapCalibration(self)
+   267:   if self.currRealmName ~= "Midgard" or self.playerIconGO == nil then
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:263 [collectible_state_words] ===
+   258:       target.collected = true
+   259:       _G.CompletionistMapV100TargetRavenKilled = true
+   260:     end
+   261:   end
+   262:   if target.collected then target.active = false end
+>  263:   return target.collected
+   264: end
+   265: 
+   266: local function CompletionistMapV100_LogMapCalibration(self)
+   267:   if self.currRealmName ~= "Midgard" or self.playerIconGO == nil then
+   268:     return
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:453 [collectible_state_words] ===
+   448:   local fallback = {}
+   449:   fallback[registryKey] = {
+   450:     registryKey = registryKey,
+   451:     name = "chest_locked_parent",
+   452:     keyType = "Breakable",
+>  453:     opened = false,
+   454:     challengeComplete = false,
+   455:     keysUsed = nil,
+   456:     x = -43.904609680176,
+   457:     y = 14.5,
+   458:     z = 748.57946777344,
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:480 [collectible_state_words] ===
+   475:     return false
+   476:   end
+   477: 
+   478:   local registry = CompletionistMapV100_GetNornirRegistry()
+   479:   local entry = registry and registry[pin.registryKey] or nil
+>  480:   if entry == nil or entry.opened == true or entry.challengeComplete == true then
+   481:     return false
+   482:   end
+   483: 
+   484:   local key = entry.keys and entry.keys[pin.keyIndex] or nil
+   485:   if key == nil then
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:490 [collectible_state_words] ===
+   485:   if key == nil then
+   486:     return false
+   487:   end
+   488: 
+   489:   if entry.keyType == "Breakable" then
+>  490:     return key.broken ~= true
+   491:   end
+   492: 
+   493:   -- Bell and MemoryChest actors remain relevant until the whole timed/rotator
+   494:   -- challenge completes. Their transient runeVisual disabled state is not a
+   495:   -- collected state.
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:495 [collectible_state_words] ===
+   490:     return key.broken ~= true
+   491:   end
+   492: 
+   493:   -- Bell and MemoryChest actors remain relevant until the whole timed/rotator
+   494:   -- challenge completes. Their transient runeVisual disabled state is not a
+>  495:   -- collected state.
+   496:   return true
+   497: end
+   498: 
+   499: local function CompletionistMapV100_DestroyNornirPins(self)
+   500:   if self.completionistMapV100NornirPins ~= nil then
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:565 [collectible_state_words] ===
+   560: 
+   561: local function CompletionistMapV100_IsNornirChestRemaining(pin)
+   562:   if pin == nil then return false end
+   563:   local registry = CompletionistMapV100_GetNornirRegistry()
+   564:   local entry = registry and registry[pin.registryKey] or nil
+>  565:   return entry ~= nil and entry.opened ~= true
+   566: end
+   567: 
+   568: local function CompletionistMapV100_NornirChestReticle(self, currState, pin)
+   569:   self.currQuestID = nil
+   570:   self.currMarkerID = nil
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:581 [collectible_state_words] ===
+   576:   local registry = CompletionistMapV100_GetNornirRegistry()
+   577:   local entry = registry and registry[pin.registryKey] or nil
+   578:   local title = "Nornir Chest"
+   579:   local description = "Incomplete Nornir Chest - Completionist Map"
+   580:   if entry ~= nil then
+>  581:     if entry.challengeComplete == true and entry.opened ~= true then
+   582:       description = "Unlocked Nornir Chest - open it to complete"
+   583:     elseif entry.keyType == "Breakable" then
+   584:       description = "Nornir Chest - break the remaining rune seals"
+   585:     elseif entry.keyType == "Bell" then
+   586:       description = "Nornir Chest - ring the three timed bells"
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:582 [collectible_state_words] ===
+   577:   local entry = registry and registry[pin.registryKey] or nil
+   578:   local title = "Nornir Chest"
+   579:   local description = "Incomplete Nornir Chest - Completionist Map"
+   580:   if entry ~= nil then
+   581:     if entry.challengeComplete == true and entry.opened ~= true then
+>  582:       description = "Unlocked Nornir Chest - open it to complete"
+   583:     elseif entry.keyType == "Breakable" then
+   584:       description = "Nornir Chest - break the remaining rune seals"
+   585:     elseif entry.keyType == "Bell" then
+   586:       description = "Nornir Chest - ring the three timed bells"
+   587:     elseif entry.keyType == "MemoryChest" then
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:610 [collectible_state_words] ===
+   605:   end)
+   606:   if playerYOK and playerMapPos ~= nil then mapY = playerMapPos.y end
+   607: 
+   608:   local chestOrdinal = 0
+   609:   for registryKey, entry in pairs(registry or {}) do
+>  610:     if entry ~= nil and entry.opened ~= true and
+   611:         entry.x ~= nil and entry.z ~= nil then
+   612:       chestOrdinal = chestOrdinal + 1
+   613:       local backing =
+   614:         CompletionistMapV100_FindBackingDock(self, 2 + chestOrdinal - 1)
+   615:       if backing == nil then
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:727 [collectible_state_words] ===
+   722:   end
+   723: 
+   724:   local created = 0
+   725:   for registryKey, entry in pairs(registry) do
+   726:     if entry ~= nil and
+>  727:         entry.opened ~= true and
+   728:         entry.challengeComplete ~= true and
+   729:         type(entry.keys) == "table" then
+   730:       for i = 1, 3 do
+   731:         local key = entry.keys[i]
+   732:         local shouldCreate = key ~= nil and
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:736 [collectible_state_words] ===
+   731:         local key = entry.keys[i]
+   732:         local shouldCreate = key ~= nil and
+   733:           key.x ~= nil and key.z ~= nil
+   734: 
+   735:         if shouldCreate and entry.keyType == "Breakable" then
+>  736:           shouldCreate = key.broken ~= true
+   737:         end
+   738: 
+   739:         if shouldCreate then
+   740:           local backing =
+   741:             CompletionistMapV100_FindBackingDock(self, 10 + created)
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:766 [collectible_state_words] ===
+   761:               mapX = mapX,
+   762:               mapY = mapY,
+   763:               mapZ = mapZ,
+   764:               iconGO = iconOrErr,
+   765:               frames = 0,
+>  766:               broken = key.broken == true
+   767:             }
+   768:             local setOK, setErr = pcall(function()
+   769:               pin.iconGO:SetWorldPosition(
+   770:                 engine.Vector.New(mapX, mapY, mapZ)
+   771:               )
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:1237 [collectible_state_words] ===
+  1232:     local revealInShowAll =
+  1233:       filter == 1 and
+  1234:       entry ~= nil and
+  1235:       entry.puzzleRevealed == true and
+  1236:       entry.challengeComplete ~= true and
+> 1237:       entry.opened ~= true
+  1238: 
+  1239:     CompletionistMapV100_SetGOVisible(
+  1240:       pin.iconGO,
+  1241:       showPuzzle or revealInShowAll
+  1242:     )
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:1260 [collectible_state_words] ===
+  1255:       (
+  1256:         filter == 1 and
+  1257:         selectedEntry ~= nil and
+  1258:         selectedEntry.puzzleRevealed == true and
+  1259:         selectedEntry.challengeComplete ~= true and
+> 1260:         selectedEntry.opened ~= true
+  1261:       )
+  1262: 
+  1263:     if not selectedPuzzleVisible then
+  1264:       self.completionistMapV100NornirSelected = nil
+  1265:     end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:1515 [collectible_state_words] ===
+  1510:   local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
+  1511:   self._goCursorTextGroup_Top = goMapCursorText:FindSingleGOByName("CursorInfo_Top")
+  1512:   self._goCursorTextGroup_Bottom = goMapCursorText:FindSingleGOByName("CursorInfo_Bottom")
+  1513:   self.playerIconGO = util.GetUiObjByName("MapIconPlayer")
+  1514:   UI.SetIsClickable(self.playerIconGO)
+> 1515:   assert(self.playerIconGO ~= nil, "The player indicator gameObject was not found.")
+  1516:   tutorialUtil.RegisterDesaturationObject("MapSortList", self.goFilter)
+  1517:   tutorialUtil.RegisterDesaturationObject("MapCursor", goRefnode)
+  1518:   tutorialUtil.RegisterDesaturationObject("MapCursorInfo", goMapCursorText)
+  1519: end
+  1520: function MapOn:UpdateAccessibilityScaling()
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:1889 [quest_state] ===
+  1884:   else
+  1885:     goThorStatue1:Show()
+  1886:   end
+  1887:   local goMidgard = goMap:FindSingleGOByName("Midgard")
+  1888:   local jid_smallThorStatue = goMidgard:GetJointIndex("smallThorStatue")
+> 1889:   if GetGlobalVar("ThorStatueBroken") or game.QuestManager.GetQuestState("Quest_UnfinishedBusiness03_Objective_01") == questConsts.QUEST_STATE_COMPLETE then
+  1890:     goMidgard:HideJoint(jid_smallThorStatue)
+  1891:   else
+  1892:     goMidgard:ShowJoint(jid_smallThorStatue)
+  1893:   end
+  1894:   self:UpdateSnakeState(completedCineNumber)
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:1902 [variable_api] ===
+  1897:   self:AnimateFog()
+  1898: end
+  1899: function MapOn:CheckForTutorial()
+  1900:   local resourceValue = game.Wallets.GetResourceValue("HERO", "MapTutorial")
+  1901:   local hasResource = -1 < resourceValue
+> 1902:   if not hasResource and game.Level.GetVariable("CompletedCineNumber") >= 180 then
+  1903:     self:SendEventToUIFsm("inWorldMenu", "EVT_ATTEMPT_TUTORIAL", "Map", "MapTutorial", "MapFilterTutorial")
+  1904:   end
+  1905: end
+  1906: function MapOn:UpdateSnakeState(completedCineNumber)
+  1907:   local currentSnakeState = mapConsts.snakeState_1
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:1950 [variable_api] ===
+  1945:   local targetTimelinePos = 0.3
+  1946:   local animRate = 0
+  1947:   local goWaterGroup = util.GetUiObjByName("Midgard_Water")
+  1948:   local jid_waterLevel0 = goWaterGroup:GetJointIndex("WaterLevel0")
+  1949:   local jid_waterLevel1 = goWaterGroup:GetJointIndex("WaterLevel1")
+> 1950:   if game.Level.GetVariable("_GBL_WaterDrop01Triggered") == false then
+  1951:     goWaterGroup:ShowJoint(jid_waterLevel0)
+  1952:     goWaterGroup:HideJoint(jid_waterLevel1)
+  1953:     targetTimelinePos = 0.3
+  1954:   elseif game.Level.GetVariable("_GBL_WaterDrop02Triggered") == false then
+  1955:     goWaterGroup:ShowJoint(jid_waterLevel1)
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:1954 [variable_api] ===
+  1949:   local jid_waterLevel1 = goWaterGroup:GetJointIndex("WaterLevel1")
+  1950:   if game.Level.GetVariable("_GBL_WaterDrop01Triggered") == false then
+  1951:     goWaterGroup:ShowJoint(jid_waterLevel0)
+  1952:     goWaterGroup:HideJoint(jid_waterLevel1)
+  1953:     targetTimelinePos = 0.3
+> 1954:   elseif game.Level.GetVariable("_GBL_WaterDrop02Triggered") == false then
+  1955:     goWaterGroup:ShowJoint(jid_waterLevel1)
+  1956:     goWaterGroup:HideJoint(jid_waterLevel0)
+  1957:     targetTimelinePos = 0.2
+  1958:   else
+  1959:     goWaterGroup:HideJoint(jid_waterLevel1)
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:2224 [variable_api] ===
+  2219:     self.clickedMarkerInfo = nil
+  2220:     self.clickedPlayer = false
+  2221:     if iconCollInfo == nil then
+  2222:       self:ClearReticleInfo()
+  2223:       local cineNumberAfterWhichTowerInfoIsDisplayed = 200
+> 2224:       if cineNumberAfterWhichTowerInfoIsDisplayed <= game.Level.GetVariable("CompletedCineNumber") then
+  2225:         for i = 1, #collisionGameObjectTable do
+  2226:           local collGO = collisionGameObjectTable[i]
+  2227:           if collGO ~= nil and collGO.GetName ~= nil then
+  2228:             local name = collGO:GetName()
+  2229:             if string.sub(name, 1, 15) == "towercollision_" then
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:2758 [quest_state] ===
+  2753:   for _, regionInfo in ipairs(regionInfoTable) do
+  2754:     local regionMarkerInfoTable = Map.GetMarkersInfoTable(regionInfo.Id)
+  2755:     for i = 1, #regionMarkerInfoTable do
+  2756:       local markerInfo = regionMarkerInfoTable[i]
+  2757:       local hasQuest, questName = questUtil.FindQuestForMarker(markerInfo.Id)
+> 2758:       if not hasQuest or game.QuestManager.GetQuestState(questName) ~= questConsts.QUEST_STATE_COMPLETE then
+  2759:         markerInfo.regionId = regionInfo.Id
+  2760:         self.realmMarkerInfo[#self.realmMarkerInfo + 1] = regionMarkerInfoTable[i]
+  2761:       end
+  2762:     end
+  2763:   end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:2793 [variable_api] ===
+  2788:   local playerRealm = mapUtil.GetPlayerRealm()
+  2789:   local showPlayerMarker =
+  2790:     playerRealm == self.currRealmName and
+  2791:     self.playerIconGO ~= nil and
+  2792:     _G.CompletionistMapV100PlayerMarkerVisible ~= false
+> 2793:   local Hel_MapState = game.Level.GetVariable("Hel_MapState")
+  2794:   local inTheLight = game.Level.GetVariable("CompletedCineNumber") == 240
+  2795:   local onBoat = 2 <= Hel_MapState and Hel_MapState < 5 and playerRealm == mapConsts.REALM_HELHEIM
+  2796:   local fastTraveling = Player.FindPlayer().CurrentLevelWadName == "Gbl000_FastTravel"
+  2797:   if onBoat or fastTraveling or inTheLight then
+  2798:     showPlayerMarker = false
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:2794 [variable_api] ===
+  2789:   local showPlayerMarker =
+  2790:     playerRealm == self.currRealmName and
+  2791:     self.playerIconGO ~= nil and
+  2792:     _G.CompletionistMapV100PlayerMarkerVisible ~= false
+  2793:   local Hel_MapState = game.Level.GetVariable("Hel_MapState")
+> 2794:   local inTheLight = game.Level.GetVariable("CompletedCineNumber") == 240
+  2795:   local onBoat = 2 <= Hel_MapState and Hel_MapState < 5 and playerRealm == mapConsts.REALM_HELHEIM
+  2796:   local fastTraveling = Player.FindPlayer().CurrentLevelWadName == "Gbl000_FastTravel"
+  2797:   if onBoat or fastTraveling or inTheLight then
+  2798:     showPlayerMarker = false
+  2799:   end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3191 [collectible_state_words] ===
+  3186:       target.x = pin.worldX
+  3187:       target.y = pin.worldY
+  3188:       target.z = pin.worldZ
+  3189:       target.mapX = pin.mapX
+  3190:       target.mapZ = pin.mapZ
+> 3191:       target.collected = false
+  3192:       target.active = true
+  3193:       _G.CompletionistMapV100TargetCollectedNornirLogged = false
+  3194:       _G.CompletionistMapV100NornirTargetGeneration =
+  3195:         (_G.CompletionistMapV100NornirTargetGeneration or 0) + 1
+  3196:       Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3239 [collectible_state_words] ===
+  3234:       target.x = pin.worldX
+  3235:       target.y = pin.worldY
+  3236:       target.z = pin.worldZ
+  3237:       target.mapX = pin.mapX
+  3238:       target.mapZ = pin.mapZ
+> 3239:       target.collected = false
+  3240:       target.active = true
+  3241:       _G.CompletionistMapV100NornirTargetGeneration =
+  3242:         (_G.CompletionistMapV100NornirTargetGeneration or 0) + 1
+  3243:       Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
+  3244:     end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3265 [collectible_state_words] ===
+  3260:     local target = _G.CompletionistMapV100Target
+  3261: 
+  3262:     if CompletionistMapV100_IsRavenCollected() then
+  3263:       if target ~= nil and target.type == "Raven" then
+  3264:         target.active = false
+> 3265:         target.collected = true
+  3266:       end
+  3267:       self.completionistMapV100Selected = false
+  3268:       print("[CompletionistMap v0.10.1] CUSTOM_COMPASS refused=raven_collected")
+  3269:       return
+  3270:     end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3280 [region_summary] ===
+  3275:       target.active = false
+  3276:       Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
+  3277:     else
+  3278:       target.type = "Raven"
+  3279:       target.realm = "Midgard"
+> 3280:       target.regionQuest = "RegionSummary_VF_Raven_Parent"
+  3281:       target.registryKey = nil
+  3282:       target.keyIndex = nil
+  3283:       target.x = COMPLETIONIST_RAVEN_WORLD_X
+  3284:       target.y = COMPLETIONIST_RAVEN_WORLD_Y
+  3285:       target.z = COMPLETIONIST_RAVEN_WORLD_Z
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3288 [collectible_state_words] ===
+  3283:       target.x = COMPLETIONIST_RAVEN_WORLD_X
+  3284:       target.y = COMPLETIONIST_RAVEN_WORLD_Y
+  3285:       target.z = COMPLETIONIST_RAVEN_WORLD_Z
+  3286:       target.mapX = COMPLETIONIST_RAVEN_MAP_X
+  3287:       target.mapZ = COMPLETIONIST_RAVEN_MAP_Z
+> 3288:       target.collected = false
+  3289:       target.active = true
+  3290:       _G.CompletionistMapV100TargetCollectedNornirLogged = false
+  3291:       Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
+  3292:     end
+  3293: 
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3506 [checkpoint_fields] ===
+  3501:   self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Asgard")
+  3502: end
+  3503: function Asgard:EVT_MOUSE_CLICKED()
+  3504:   self.mapOn:MouseClickHandler(self)
+  3505: end
+> 3506: function MapMenu:OnSaveCheckpoint(tab)
+  3507: end
+  3508: function MapMenu:OnRestoreCheckpoint(tab)
+  3509: end
+  3510: 
+  3511: 
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3508 [checkpoint_fields] ===
+  3503: function Asgard:EVT_MOUSE_CLICKED()
+  3504:   self.mapOn:MouseClickHandler(self)
+  3505: end
+  3506: function MapMenu:OnSaveCheckpoint(tab)
+  3507: end
+> 3508: function MapMenu:OnRestoreCheckpoint(tab)
+  3509: end
+  3510: 
+  3511: 
+  3512: 
+  3513: -- BEGIN COMPLETIONIST V0.10.4 RAVEN REGISTERED CLASS RUNTIME PROOF
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3548 [collectible_state_words] ===
+  3543:     for _, name in ipairs({"regionId", "RegionId", "RegionID", "regionID"}) do
+  3544:       local value = safeField(info, name)
+  3545:       if value ~= nil then return value, "marker_info." .. name end
+  3546:     end
+  3547: 
+> 3548:     local callOK, found, region = pcall(function()
+  3549:       return game.Map.FindRegionFromMarker(markerId)
+  3550:     end)
+  3551:     if not callOK then
+  3552:       return nil, "FindRegionFromMarker.error=" .. tostring(found)
+  3553:     end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3552 [collectible_state_words] ===
+  3547: 
+  3548:     local callOK, found, region = pcall(function()
+  3549:       return game.Map.FindRegionFromMarker(markerId)
+  3550:     end)
+  3551:     if not callOK then
+> 3552:       return nil, "FindRegionFromMarker.error=" .. tostring(found)
+  3553:     end
+  3554:     if found ~= true or region == nil then
+  3555:       return nil, "FindRegionFromMarker.not_found"
+  3556:     end
+  3557:     return region, "FindRegionFromMarker.region"
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3554 [collectible_state_words] ===
+  3549:       return game.Map.FindRegionFromMarker(markerId)
+  3550:     end)
+  3551:     if not callOK then
+  3552:       return nil, "FindRegionFromMarker.error=" .. tostring(found)
+  3553:     end
+> 3554:     if found ~= true or region == nil then
+  3555:       return nil, "FindRegionFromMarker.not_found"
+  3556:     end
+  3557:     return region, "FindRegionFromMarker.region"
+  3558:   end
+  3559: 
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3661 [collectible_state_words] ===
+  3656: --
+  3657: -- Visual-only diagnostic layered on the proven corrected registered class.
+  3658: -- The custom Raven texpack is active and this bridge renders the dedicated
+  3659: -- goMapIconCompletionistRaven map object directly. For this diagnostic only,
+  3660: -- the map icon is allowed to render even when the tested Raven has already been
+> 3661: -- collected so artwork can still be inspected. No marker state, save state,
+  3662: -- progression value, or native compass state is changed here.
+  3663: do
+  3664:   local prefix = "[CompletionistMap v0.10.4-raven-artwork] "
+  3665:   local candidate = "Completionist_V103_Veithurgard_Raven_01"
+  3666:   local expectedMapResource = "goMapIconCompletionistRaven"
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3692 [collectible_state_words] ===
+  3687:     for _, name in ipairs({"regionId", "RegionId", "RegionID", "regionID"}) do
+  3688:       local value = safeField(info, name)
+  3689:       if value ~= nil then return value, "marker_info." .. name end
+  3690:     end
+  3691: 
+> 3692:     local callOK, found, region = pcall(function()
+  3693:       return game.Map.FindRegionFromMarker(markerId)
+  3694:     end)
+  3695:     if not callOK then
+  3696:       return nil, "FindRegionFromMarker.error=" .. tostring(found)
+  3697:     end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3696 [collectible_state_words] ===
+  3691: 
+  3692:     local callOK, found, region = pcall(function()
+  3693:       return game.Map.FindRegionFromMarker(markerId)
+  3694:     end)
+  3695:     if not callOK then
+> 3696:       return nil, "FindRegionFromMarker.error=" .. tostring(found)
+  3697:     end
+  3698:     if found ~= true or region == nil then
+  3699:       return nil, "FindRegionFromMarker.not_found"
+  3700:     end
+  3701:     return region, "FindRegionFromMarker.region"
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3698 [collectible_state_words] ===
+  3693:       return game.Map.FindRegionFromMarker(markerId)
+  3694:     end)
+  3695:     if not callOK then
+  3696:       return nil, "FindRegionFromMarker.error=" .. tostring(found)
+  3697:     end
+> 3698:     if found ~= true or region == nil then
+  3699:       return nil, "FindRegionFromMarker.not_found"
+  3700:     end
+  3701:     return region, "FindRegionFromMarker.region"
+  3702:   end
+  3703: 
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3709 [collectible_state_words] ===
+  3704:   CompletionistMapV100_CreateMapPin = function(self, currState)
+  3705:     if self == nil or self.currRealmName ~= "Midgard" then return end
+  3706: 
+  3707:     CompletionistMapV100_DestroyMapPin(self)
+  3708: 
+> 3709:     local collected = false
+  3710:     local collectedOK, collectedValue = pcall(function()
+  3711:       return CompletionistMapV100_IsRavenCollected()
+  3712:     end)
+  3713:     if collectedOK then collected = collectedValue == true end
+  3714: 
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3713 [collectible_state_words] ===
+  3708: 
+  3709:     local collected = false
+  3710:     local collectedOK, collectedValue = pcall(function()
+  3711:       return CompletionistMapV100_IsRavenCollected()
+  3712:     end)
+> 3713:     if collectedOK then collected = collectedValue == true end
+  3714: 
+  3715:     local infoOK, info = pcall(function()
+  3716:       return game.Map.GetMarkerInfo(candidate)
+  3717:     end)
+  3718:     if not infoOK or info == nil then
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3733 [collectible_state_words] ===
+  3728: 
+  3729:     log("ART_PREFLIGHT",
+  3730:       "candidate=" .. candidate ..
+  3731:       " id=" .. tostring(markerId) ..
+  3732:       " state=" .. tostring(markerState) ..
+> 3733:       " collected=" .. tostring(collected) ..
+  3734:       " region=" .. tostring(regionId) ..
+  3735:       " regionType=" .. tostring(type(regionId)) ..
+  3736:       " regionSource=" .. tostring(regionSource) ..
+  3737:       " expectedMapResource=" .. expectedMapResource ..
+  3738:       " texpackLoaded=true" ..
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3782 [collectible_state_words] ===
+  3777:       "active=true" ..
+  3778:       " candidate=" .. candidate ..
+  3779:       " resourceExpected=" .. expectedMapResource ..
+  3780:       " goName=" .. goName ..
+  3781:       " dedicatedNameObserved=" .. tostring(dedicated) ..
+> 3782:       " collectedAtRender=" .. tostring(collected) ..
+  3783:       " clickableOK=" .. tostring(clickableOK) ..
+  3784:       " clickableError=" .. tostring(clickableErr) ..
+  3785:       " nativePlacement=" .. tostring(posOK and pos ~= nil) ..
+  3786:       " position=" .. (posOK and pos ~= nil and
+  3787:         ("x=" .. tostring(pos.x) .. ",y=" .. tostring(pos.y) .. ",z=" .. tostring(pos.z)) or "<unavailable>") ..
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3854 [collectible_state_words] ===
+  3849:     end)
+  3850:     if not ok then
+  3851:       return false, {}, false, tostring(ids)
+  3852:     end
+  3853: 
+> 3854:     local found = false
+  3855:     local others = {}
+  3856:     for _, id in ipairs(ids or {}) do
+  3857:       if candidateId ~= nil and tostring(id) == candidateId then
+  3858:         found = true
+  3859:       else
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3858 [collectible_state_words] ===
+  3853: 
+  3854:     local found = false
+  3855:     local others = {}
+  3856:     for _, id in ipairs(ids or {}) do
+  3857:       if candidateId ~= nil and tostring(id) == candidateId then
+> 3858:         found = true
+  3859:       else
+  3860:         others[#others + 1] = id
+  3861:       end
+  3862:     end
+  3863:     return found, others, true, nil
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:3863 [collectible_state_words] ===
+  3858:         found = true
+  3859:       else
+  3860:         others[#others + 1] = id
+  3861:       end
+  3862:     end
+> 3863:     return found, others, true, nil
+  3864:   end
+  3865: 
+  3866:   local function suppressLegacyRavenHud()
+  3867:     local target = _G.CompletionistMapV100Target
+  3868:     if target ~= nil and target.type == "Raven" and target.active == true then
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:4523 [collectible_state_words] ===
+  4518:     local originalPresent = original ~= nil
+  4519: 
+  4520:     local ok, err = pcall(function()
+  4521:       local info = Map.GetMarkerInfo(twinName)
+  4522:       if info == nil or info.Id == nil then
+> 4523:         log("LOOKUP found=false")
+  4524:         return
+  4525:       end
+  4526:       local found, region = Map.FindRegionFromMarker(info.Id)
+  4527:       log("LOOKUP found=true uid=" .. tostring(info.Id) ..
+  4528:           " state=" .. tostring(info.State) .. " regionFound=" .. tostring(found) ..
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:4526 [collectible_state_words] ===
+  4521:       local info = Map.GetMarkerInfo(twinName)
+  4522:       if info == nil or info.Id == nil then
+  4523:         log("LOOKUP found=false")
+  4524:         return
+  4525:       end
+> 4526:       local found, region = Map.FindRegionFromMarker(info.Id)
+  4527:       log("LOOKUP found=true uid=" .. tostring(info.Id) ..
+  4528:           " state=" .. tostring(info.State) .. " regionFound=" .. tostring(found) ..
+  4529:           " region=" .. tostring(region) .. " originalPresent=" .. tostring(originalPresent))
+  4530:       if found ~= true or region == nil then return end
+  4531:       local go = Map.CreateMarkerIcon(info.Id, region, "")
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:4527 [collectible_state_words] ===
+  4522:       if info == nil or info.Id == nil then
+  4523:         log("LOOKUP found=false")
+  4524:         return
+  4525:       end
+  4526:       local found, region = Map.FindRegionFromMarker(info.Id)
+> 4527:       log("LOOKUP found=true uid=" .. tostring(info.Id) ..
+  4528:           " state=" .. tostring(info.State) .. " regionFound=" .. tostring(found) ..
+  4529:           " region=" .. tostring(region) .. " originalPresent=" .. tostring(originalPresent))
+  4530:       if found ~= true or region == nil then return end
+  4531:       local go = Map.CreateMarkerIcon(info.Id, region, "")
+  4532:       if go == nil then
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:4528 [collectible_state_words] ===
+  4523:         log("LOOKUP found=false")
+  4524:         return
+  4525:       end
+  4526:       local found, region = Map.FindRegionFromMarker(info.Id)
+  4527:       log("LOOKUP found=true uid=" .. tostring(info.Id) ..
+> 4528:           " state=" .. tostring(info.State) .. " regionFound=" .. tostring(found) ..
+  4529:           " region=" .. tostring(region) .. " originalPresent=" .. tostring(originalPresent))
+  4530:       if found ~= true or region == nil then return end
+  4531:       local go = Map.CreateMarkerIcon(info.Id, region, "")
+  4532:       if go == nil then
+  4533:         log("CREATE success=false reason=nil_object originalPresent=" .. tostring(originalPresent))
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:4530 [collectible_state_words] ===
+  4525:       end
+  4526:       local found, region = Map.FindRegionFromMarker(info.Id)
+  4527:       log("LOOKUP found=true uid=" .. tostring(info.Id) ..
+  4528:           " state=" .. tostring(info.State) .. " regionFound=" .. tostring(found) ..
+  4529:           " region=" .. tostring(region) .. " originalPresent=" .. tostring(originalPresent))
+> 4530:       if found ~= true or region == nil then return end
+  4531:       local go = Map.CreateMarkerIcon(info.Id, region, "")
+  4532:       if go == nil then
+  4533:         log("CREATE success=false reason=nil_object originalPresent=" .. tostring(originalPresent))
+  4534:         return
+  4535:       end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:4629 [quest_state,region_summary] ===
+  4624:   -- checkpoint must win over stale quest state. This is read-only for progression.
+  4625:   CompletionistMapV100_IsRavenCollected = function()
+  4626:     local state = _G.CompletionistMapV100TargetRavenKilled
+  4627:     if type(state) == "boolean" then return state end
+  4628:     local ok, quest = pcall(function()
+> 4629:       return game.QuestManager.GetQuestState("RegionSummary_VF_Raven_Parent")
+  4630:     end)
+  4631:     if not ok or quest == nil then return nil end
+  4632:     return tostring(quest) == "Complete"
+  4633:   end
+  4634: 
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:4632 [collectible_state_words] ===
+  4627:     if type(state) == "boolean" then return state end
+  4628:     local ok, quest = pcall(function()
+  4629:       return game.QuestManager.GetQuestState("RegionSummary_VF_Raven_Parent")
+  4630:     end)
+  4631:     if not ok or quest == nil then return nil end
+> 4632:     return tostring(quest) == "Complete"
+  4633:   end
+  4634: 
+  4635:   local function originalCollected()
+  4636:     local ok, value = pcall(CompletionistMapV100_IsRavenCollected)
+  4637:     if not ok or type(value) ~= "boolean" then return nil end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:5047 [collectible_state_words] ===
+  5042:     Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
+  5043:     refreshPrompt(self, selected)
+  5044:   end
+  5045: 
+  5046:   local function observeMapCompletion(self)
+> 5047:     local collected = originalCollected()
+  5048:     if collected == nil then return end
+  5049:     if collected == false then
+  5050:       if completionObserved == true then log("LIFECYCLE_REARM", "reason=MapOn.Update") end
+  5051:       completionObserved = false
+  5052:       return
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:5048 [collectible_state_words] ===
+  5043:     refreshPrompt(self, selected)
+  5044:   end
+  5045: 
+  5046:   local function observeMapCompletion(self)
+  5047:     local collected = originalCollected()
+> 5048:     if collected == nil then return end
+  5049:     if collected == false then
+  5050:       if completionObserved == true then log("LIFECYCLE_REARM", "reason=MapOn.Update") end
+  5051:       completionObserved = false
+  5052:       return
+  5053:     end
+
+=== gameart/ui/scripts/inworldmenu/mapmenu.lua:5049 [collectible_state_words] ===
+  5044:   end
+  5045: 
+  5046:   local function observeMapCompletion(self)
+  5047:     local collected = originalCollected()
+  5048:     if collected == nil then return end
+> 5049:     if collected == false then
+  5050:       if completionObserved == true then log("LIFECYCLE_REARM", "reason=MapOn.Update") end
+  5051:       completionObserved = false
+  5052:       return
+  5053:     end
+  5054:     if completionObserved == true then return end
+
