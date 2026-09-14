@@ -1,0 +1,491 @@
+Completionist Map - GameObject token allocator trace
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+known_token_formula=(((field_284&0xFFFFF)<<1 | ((field_278>>3)&1))<<16 | (field_280&0xFFFF))<<1 | 1
+
+TARGET token_resolver entry=0x4EF0B0 fn=0x4EF0B0-0x4EF2B0 size=512
+  signatures={"bts_bit16": false, "clear_bit3_set_bit0_278": false, "mask_20bit": false, "or_flag_09_278": false, "shift_left_17": false, "write_278": true, "write_280": true, "write_284": true}
+  direct_callers=392
+    JMP site=0x18977B fn=none
+    CALL site=0x189BA5 fn=0x189B40
+    CALL site=0x189F77 fn=0x189F30
+    CALL site=0x18A0F1 fn=0x18A0A0
+    CALL site=0x18A38F fn=0x18A36F
+    CALL site=0x18A5B9 fn=0x18A520
+    CALL site=0x18AD56 fn=0x18ACE0
+    CALL site=0x18AD94 fn=0x18ACE0
+    CALL site=0x18B0DF fn=0x18B090
+    CALL site=0x18B11E fn=0x18B090
+    CALL site=0x18B8B1 fn=0x18B860
+    CALL site=0x18BB34 fn=0x18BAE0
+    CALL site=0x18BDBF fn=0x18BD70
+    CALL site=0x18C0A0 fn=0x18C050
+    CALL site=0x18C0DE fn=0x18C050
+    CALL site=0x18C67E fn=0x18C656
+    CALL site=0x18CB21 fn=0x18CAD0
+    CALL site=0x18CE07 fn=0x18CDC0
+    CALL site=0x18CF67 fn=0x18CF20
+    CALL site=0x18D097 fn=0x18D050
+    CALL site=0x18D22E fn=0x18D206
+    CALL site=0x18D4CC fn=0x18D4A4
+    CALL site=0x18DAF9 fn=0x18DAD1
+    CALL site=0x18E1BC fn=0x18E194
+    CALL site=0x18E4B0 fn=0x18E460
+    CALL site=0x18E4EE fn=0x18E460
+    CALL site=0x18E702 fn=0x18E6B0
+    CALL site=0x18EAC7 fn=0x18EA80
+    CALL site=0x18EC6F fn=0x18EC4F
+    CALL site=0x18F0CC fn=0x18F080
+    CALL site=0x1C27FF fn=0x1C27B0
+    CALL site=0x1C283E fn=0x1C27B0
+    CALL site=0x1CC187 fn=0x1CC140
+    CALL site=0x1CFC9F fn=0x1CFC60
+    CALL site=0x1CFE1D fn=0x1CFDD0
+    CALL site=0x1D000E fn=0x1CFFB0
+    CALL site=0x1D0882 fn=0x1D0820
+    CALL site=0x1D7FD7 fn=0x1D7F90
+    CALL site=0x1E4AA1 fn=0x1E4A76
+    CALL site=0x1E4ACB fn=0x1E4A76
+    CALL site=0x1E70D2 fn=0x1E7095
+    CALL site=0x1E7317 fn=0x1E72D0
+    CALL site=0x1E752C fn=0x1E750C
+    CALL site=0x1FBD17 fn=0x1FBCD0
+    CALL site=0x1FBEC9 fn=0x1FBEA1
+    CALL site=0x20A8FA fn=0x20A8B0
+    CALL site=0x20AB4C fn=0x20AA98
+    CALL site=0x20AC92 fn=0x20AA98
+    CALL site=0x20ADC3 fn=0x20AA98
+    CALL site=0x20B93A fn=0x20B8C0
+    CALL site=0x20BAD3 fn=0x20BA60
+    CALL site=0x20BC74 fn=0x20BC00
+    CALL site=0x20C553 fn=0x20C4E0
+    CALL site=0x20C6F0 fn=0x20C680
+    CALL site=0x20C891 fn=0x20C820
+    CALL site=0x20D537 fn=0x20D4C0
+    CALL site=0x211696 fn=0x211610
+    CALL site=0x21FD0F fn=0x21FCC0
+    CALL site=0x21FD52 fn=0x21FCC0
+    CALL site=0x22003C fn=0x21FFF0
+    CALL site=0x2291BD fn=0x229140
+    CALL site=0x22928A fn=0x229210
+    CALL site=0x229E79 fn=0x229DE0
+    CALL site=0x22ACAC fn=0x22AC60
+    CALL site=0x22B06F fn=0x22B030
+    CALL site=0x22B209 fn=0x22B1C0
+    CALL site=0x22B39F fn=0x22B360
+    CALL site=0x22B539 fn=0x22B4F0
+    CALL site=0x22B7C8 fn=0x22B710
+    CALL site=0x22BB69 fn=0x22BAD0
+    CALL site=0x22C322 fn=0x22C280
+    CALL site=0x22CA92 fn=0x22C9F0
+    CALL site=0x22CEAD fn=0x22CE70
+    CALL site=0x23310C fn=0x2330C0
+    CALL site=0x2333F7 fn=0x2333B0
+    CALL site=0x233546 fn=0x2334F0
+    JMP site=0x2349A9 fn=none
+    CALL site=0x234D23 fn=0x234C90
+    CALL site=0x237DCF fn=0x237D80
+    CALL site=0x238029 fn=0x237FD0
+    CALL site=0x238655 fn=0x2385C0
+    CALL site=0x23882D fn=0x2387F0
+    CALL site=0x238FA0 fn=0x238DF0
+    CALL site=0x239242 fn=0x238DF0
+    CALL site=0x23929C fn=0x238DF0
+    CALL site=0x23C079 fn=0x23C020
+    CALL site=0x25E1DC fn=0x25E130
+    CALL site=0x260AEA fn=0x260A9A
+    CALL site=0x275647 fn=0x2755E0
+    CALL site=0x275685 fn=0x2755E0
+    CALL site=0x2756D6 fn=0x2755E0
+    CALL site=0x27591C fn=0x2758DB
+    CALL site=0x275952 fn=0x2758DB
+    CALL site=0x2F674B fn=0x2F6670
+    CALL site=0x2F7361 fn=0x2F7260
+    CALL site=0x2F7D37 fn=0x2F7C40
+    CALL site=0x2F7FAE fn=0x2F7EA4
+    CALL site=0x2F9298 fn=0x2F8A60
+    CALL site=0x2F9570 fn=0x2F8A60
+    CALL site=0x407C89 fn=0x406820
+    CALL site=0x44EEF3 fn=0x44EEA0
+    CALL site=0x47C576 fn=0x47C4A0
+    CALL site=0x5495AF fn=0x549481
+    CALL site=0x54973D fn=0x549700
+    CALL site=0x549BFD fn=0x549BC0
+    JMP site=0x549D49 fn=none
+    CALL site=0x58ACF2 fn=0x58AC92
+    CALL site=0x5D5D7D fn=0x5D5CE0
+    CALL site=0x5F9407 fn=0x5F9350
+    CALL site=0x5F94C6 fn=0x5F9350
+    CALL site=0x5F967B fn=0x5F95F0
+    CALL site=0x6027BB fn=0x60273F
+    CALL site=0x6059BA fn=0x605940
+    CALL site=0x620118 fn=0x620080
+    CALL site=0x68A5BD fn=0x68A580
+    CALL site=0x68A811 fn=0x68A780
+    CALL site=0x68A90C fn=0x68A8A9
+    CALL site=0x68A971 fn=0x68A8A9
+    CALL site=0x68BA41 fn=0x68B930
+    CALL site=0x68BD1B fn=0x68BC70
+    CALL site=0x68CC03 fn=0x68CB10
+    CALL site=0x68CF15 fn=0x68CEA0
+    CALL site=0x68CFEE fn=0x68CFA0
+    CALL site=0x68D72B fn=0x68D6EB
+    CALL site=0x68D800 fn=0x68D7BB
+    CALL site=0x68D8CB fn=0x68D88B
+    CALL site=0x68D9A0 fn=0x68D95B
+    CALL site=0x68DA6B fn=0x68DA2B
+    CALL site=0x68DB40 fn=0x68DAFB
+    CALL site=0x68DC0B fn=0x68DBCB
+    CALL site=0x68DCD2 fn=0x68DC80
+    CALL site=0x68E168 fn=0x68E0B0
+    CALL site=0x68E36B fn=0x68E2E4
+    CALL site=0x68E52E fn=0x68E4D5
+    CALL site=0x68E766 fn=0x68E720
+    CALL site=0x68EC92 fn=0x68EA30
+    CALL site=0x690F57 fn=0x690F00
+    CALL site=0x691045 fn=0x690FF0
+    CALL site=0x692455 fn=0x6923B0
+    CALL site=0x6927AC fn=0x692760
+    CALL site=0x692945 fn=0x6928F0
+    CALL site=0x6955F4 fn=0x695570
+    CALL site=0x695BA3 fn=0x695B50
+    CALL site=0x695C21 fn=0x695BE0
+    CALL site=0x697338 fn=0x6972DC
+    CALL site=0x697691 fn=0x697620
+    CALL site=0x69DA90 fn=0x69D930
+    CALL site=0x69E144 fn=0x69DEF0
+    CALL site=0x69E478 fn=0x69E310
+    CALL site=0x6A04D2 fn=0x6A0300
+    CALL site=0x6A333C fn=0x6A32D9
+    CALL site=0x6A5595 fn=0x6A5550
+    CALL site=0x6A598D fn=0x6A5930
+    CALL site=0x6A5F10 fn=0x6A5ECB
+    CALL site=0x6A5F62 fn=0x6A5F1E
+    CALL site=0x6A6736 fn=0x6A66EF
+    CALL site=0x6B0B12 fn=0x6B0A90
+    CALL site=0x6B1416 fn=0x6B1250
+    CALL site=0x6B3803 fn=0x6B37B2
+    CALL site=0x6B402B fn=0x6B3E32
+    CALL site=0x6B4163 fn=0x6B3E32
+    CALL site=0x6B6EFB fn=0x6B6E90
+    CALL site=0x6B7276 fn=0x6B71D0
+    CALL site=0x6B73B5 fn=0x6B71D0
+    CALL site=0x6B7572 fn=0x6B7520
+    CALL site=0x6B765D fn=0x6B75E0
+    CALL site=0x6B7CE8 fn=0x6B7C90
+    CALL site=0x6B9D85 fn=0x6B9CD0
+    CALL site=0x6BA878 fn=0x6BA716
+    CALL site=0x6C3209 fn=0x6C3160
+    CALL site=0x6C33C4 fn=0x6C3340
+    CALL site=0x6D0CC5 fn=0x6D0B59
+    CALL site=0x6D0D95 fn=0x6D0B59
+    CALL site=0x6D0DE7 fn=0x6D0B59
+    CALL site=0x6D0EEF fn=0x6D0E90
+    CALL site=0x6D8DF5 fn=0x6D8DA0
+    CALL site=0x6DFA20 fn=0x6DF980
+    CALL site=0x6DFDB7 fn=0x6DFD10
+    CALL site=0x6E0358 fn=0x6DFD10
+    CALL site=0x6E060A fn=0x6E05A0
+    CALL site=0x6E0ABC fn=0x6E0A80
+    CALL site=0x6E0F13 fn=0x6E0E82
+    CALL site=0x6E1481 fn=0x6E13E0
+    CALL site=0x6E18C4 fn=0x6E1800
+    CALL site=0x6E1C61 fn=0x6E1C00
+    CALL site=0x6E1E5D fn=0x6E1E20
+    CALL site=0x6F30C7 fn=0x6F2F00
+    CALL site=0x6F3E41 fn=0x6F3C70
+    CALL site=0x6F434A fn=0x6F42BB
+    CALL site=0x6F43BD fn=0x6F42BB
+    CALL site=0x6F6333 fn=0x6F62E1
+    CALL site=0x6F65C1 fn=0x6F6470
+    CALL site=0x6F68E8 fn=0x6F68AA
+    CALL site=0x6F6C56 fn=0x6F6AF0
+    CALL site=0x6F8F7C fn=0x6F8E80
+    CALL site=0x6F9AA4 fn=0x6F9A5E
+    CALL site=0x6F9AF8 fn=0x6F9A5E
+    CALL site=0x700F78 fn=0x700EE0
+    CALL site=0x7017EE fn=0x7017AC
+    CALL site=0x701A1E fn=0x7019DC
+    CALL site=0x701C32 fn=0x701BD0
+    CALL site=0x701D1A fn=0x701C90
+    CALL site=0x701D7B fn=0x701C90
+    CALL site=0x7024C4 fn=0x702492
+    CALL site=0x702504 fn=0x702492
+    CALL site=0x70299E fn=0x702960
+    CALL site=0x702A36 fn=0x7029F0
+    CALL site=0x702B26 fn=0x702AE0
+    CALL site=0x7032EA fn=0x703240
+    CALL site=0x705753 fn=0x7056B0
+    CALL site=0x712C78 fn=0x712C10
+    CALL site=0x71854D fn=0x7183C0
+    CALL site=0x71BDB8 fn=0x71BD17
+    CALL site=0x71E767 fn=0x71E731
+    CALL site=0x71E7B4 fn=0x71E731
+    CALL site=0x71E888 fn=0x71E840
+    CALL site=0x71EAE4 fn=0x71E950
+    CALL site=0x71EB68 fn=0x71EB20
+    CALL site=0x71EC0A fn=0x71EBC0
+    JMP site=0x71EC51 fn=0x71EBC0
+    JMP site=0x71ECB1 fn=none
+    CALL site=0x726045 fn=0x726000
+    CALL site=0x728974 fn=0x728605
+    CALL site=0x739ADA fn=0x739950
+    CALL site=0x74CAD5 fn=0x74CA80
+    CALL site=0x74CBDB fn=0x74CB80
+    CALL site=0x74CCC6 fn=0x74CC80
+    CALL site=0x74CD88 fn=0x74CD36
+    CALL site=0x77927D fn=0x779240
+    CALL site=0x782B9A fn=0x782B50
+    CALL site=0x7884DA fn=0x788490
+    CALL site=0x78E533 fn=0x78E4B0
+    CALL site=0x78FED1 fn=0x78FDC6
+    CALL site=0x791359 fn=0x791300
+    CALL site=0x792054 fn=0x791FF0
+    CALL site=0x79CDA5 fn=0x79CB10
+    CALL site=0x79FD2D fn=0x79FC50
+    CALL site=0x79FD86 fn=0x79FC50
+    CALL site=0x7AA6A9 fn=0x7AA590
+    JMP site=0x7AA8F9 fn=none
+    CALL site=0x7C03F8 fn=0x7C0360
+    CALL site=0x7C0A1E fn=0x7C09D0
+    CALL site=0x7C3E17 fn=0x7C3D70
+    CALL site=0x7C3EAC fn=0x7C3D70
+    CALL site=0x7D2342 fn=0x7D229D
+    CALL site=0x7D3384 fn=0x7D3320
+    CALL site=0x7D3474 fn=0x7D3410
+    CALL site=0x7D3574 fn=0x7D3510
+    CALL site=0x7DEADF fn=0x7DEA20
+    CALL site=0x7E5F4A fn=0x7E5EA0
+    CALL site=0x7E5FAE fn=0x7E5EA0
+    CALL site=0x7EB05A fn=0x7EB010
+    CALL site=0x7EB189 fn=0x7EB0F0
+    CALL site=0x7F418F fn=0x7F4050
+    CALL site=0x7F4330 fn=0x7F42F4
+    CALL site=0x7F4862 fn=0x7F4720
+    CALL site=0x7F4A12 fn=0x7F49C6
+    CALL site=0x7F5581 fn=0x7F54D0
+    CALL site=0x7F5679 fn=0x7F55E0
+    CALL site=0x7FE608 fn=0x7FE560
+    CALL site=0x7FF55D fn=0x7FF50E
+    CALL site=0x7FF5BF fn=0x7FF50E
+    CALL site=0x7FF737 fn=0x7FF50E
+    CALL site=0x7FFABB fn=0x7FFA00
+    CALL site=0x7FFAF5 fn=0x7FFA00
+    CALL site=0x801B2A fn=0x801A60
+    CALL site=0x801B62 fn=0x801A60
+    CALL site=0x80226C fn=0x801A60
+    CALL site=0x802876 fn=0x802810
+    CALL site=0x802927 fn=0x802810
+    CALL site=0x803354 fn=0x803300
+    CALL site=0x80AFC2 fn=0x80AF80
+    CALL site=0x80EEDF fn=0x80EE60
+    CALL site=0x80F09E fn=0x80F040
+    CALL site=0x80F243 fn=0x80F180
+    CALL site=0x80F41E fn=0x80F380
+    CALL site=0x80F7FF fn=0x80F7B8
+    CALL site=0x811BB0 fn=0x811B60
+    CALL site=0x811C5F fn=0x811C10
+    CALL site=0x811CF5 fn=0x811CA0
+    CALL site=0x811D84 fn=0x811D30
+    CALL site=0x811E39 fn=0x811DE0
+    CALL site=0x811EFA fn=0x811EA0
+    CALL site=0x8122EE fn=0x812290
+    CALL site=0x812493 fn=0x8123D0
+    CALL site=0x812D52 fn=0x812C80
+    CALL site=0x81353E fn=0x8134B0
+    CALL site=0x81385E fn=0x813810
+    CALL site=0x8139C6 fn=0x813980
+    CALL site=0x813BF5 fn=0x813B60
+    CALL site=0x8150AB fn=0x815062
+    CALL site=0x815447 fn=0x815320
+    CALL site=0x815DF6 fn=0x815D40
+    CALL site=0x816672 fn=0x81662D
+    CALL site=0x8166B9 fn=0x816681
+    CALL site=0x816716 fn=0x816681
+    CALL site=0x816756 fn=0x816681
+    CALL site=0x818733 fn=0x81864A
+    CALL site=0x818878 fn=0x818800
+    CALL site=0x8188C7 fn=0x818800
+    CALL site=0x81E4B5 fn=0x81E470
+    CALL site=0x81E5EF fn=0x81E560
+    CALL site=0x81FCAF fn=0x81FC50
+    CALL site=0x81FCF5 fn=0x81FC50
+    CALL site=0x821441 fn=0x8213A0
+    CALL site=0x821525 fn=0x821490
+    CALL site=0x821706 fn=0x821650
+    CALL site=0x821814 fn=0x821760
+    CALL site=0x82794A fn=0x827900
+    CALL site=0x830B06 fn=0x82FB57
+    CALL site=0x8354D3 fn=0x8354AE
+    CALL site=0x8359ED fn=0x835992
+    CALL site=0x835C6C fn=0x835992
+    CALL site=0x835FE5 fn=0x835F50
+    CALL site=0x8365AF fn=0x83658C
+    CALL site=0x836C41 fn=0x836BC0
+    CALL site=0x836C89 fn=0x836BC0
+    CALL site=0x83714B fn=0x836F46
+    CALL site=0x84703F fn=0x846FC0
+    CALL site=0x84786B fn=0x8477F0
+    CALL site=0x852390 fn=0x852270
+    CALL site=0x85412B fn=0x854060
+    CALL site=0x85435B fn=0x854310
+    CALL site=0x856CD0 fn=0x856C10
+    CALL site=0x85DFFF fn=0x85DFC7
+    CALL site=0x85E03A fn=0x85DFC7
+    CALL site=0x85E8C7 fn=0x85E88D
+    CALL site=0x85E8FD fn=0x85E88D
+    CALL site=0x86D660 fn=0x86D580
+    CALL site=0x87DC5A fn=0x87DC10
+    CALL site=0x87F14E fn=0x87F100
+    CALL site=0x87F1E3 fn=0x87F190
+    CALL site=0x8829BB fn=0x882690
+    CALL site=0x882F81 fn=0x882F30
+    CALL site=0x8830DE fn=0x88309C
+    CALL site=0x88492F fn=0x884740
+    CALL site=0x8858A3 fn=0x8855BE
+    CALL site=0x886C63 fn=0x886BC0
+    CALL site=0x88B4C5 fn=0x88B480
+    JMP site=0x88C5CF fn=none
+    CALL site=0x88C650 fn=0x88C5E0
+    CALL site=0x88E0FA fn=0x88E08E
+    CALL site=0x895522 fn=0x895490
+    CALL site=0x895744 fn=0x8956D0
+    CALL site=0x89674C fn=0x8966ED
+    CALL site=0x89D732 fn=0x89D6A0
+    CALL site=0x8A7B54 fn=0x8A7AB0
+    CALL site=0x8A7B6F fn=0x8A7AB0
+    CALL site=0x8A7BDB fn=0x8A7AB0
+    CALL site=0x8A7F28 fn=0x8A7AB0
+    CALL site=0x8A7F47 fn=0x8A7AB0
+    CALL site=0x8B9786 fn=0x8B9720
+    CALL site=0x8CC0A3 fn=0x8CBDD4
+    CALL site=0x8CC3D0 fn=0x8CC1D1
+    CALL site=0x8CCADD fn=0x8CC77C
+    CALL site=0x8DF77D fn=0x8DF730
+    CALL site=0x8E21A9 fn=0x8E2160
+    CALL site=0x907968 fn=0x907920
+    CALL site=0x907C1F fn=0x907AD0
+    CALL site=0x90901D fn=0x908FDE
+    CALL site=0x90905A fn=0x908FDE
+    CALL site=0x916B9B fn=0x916B30
+    CALL site=0x918B87 fn=0x918B40
+    CALL site=0x91EE39 fn=0x91ED74
+    CALL site=0x9239AC fn=0x923960
+    CALL site=0x923AF1 fn=0x923AA0
+    CALL site=0x943C95 fn=0x943BF0
+    CALL site=0x94418D fn=0x9440E0
+    CALL site=0x944976 fn=0x944938
+    CALL site=0x944BB3 fn=0x944AF0
+    CALL site=0x944C68 fn=0x944AF0
+    CALL site=0x945198 fn=0x9450F0
+    CALL site=0x945441 fn=0x9453A0
+    CALL site=0x945621 fn=0x945580
+    CALL site=0x9465D0 fn=0x946560
+    CALL site=0x946616 fn=0x946560
+    CALL site=0x946E84 fn=0x946DBD
+    CALL site=0x94708B fn=0x946FCD
+    CALL site=0x961566 fn=0x961500
+    CALL site=0x967E5B fn=0x967D00
+    CALL site=0x96DDB0 fn=0x96DD7B
+    CALL site=0x96DDE8 fn=0x96DD7B
+    CALL site=0x977F3E fn=0x977ED0
+    CALL site=0x97824D fn=0x978208
+    CALL site=0x97828B fn=0x978208
+    CALL site=0x97F50F fn=0x97F4DB
+    CALL site=0x97FEAD fn=0x97F8A3
+    CALL site=0x98C46F fn=0x98C420
+    CALL site=0xD356BF fn=0xD351B0
+    CALL site=0xD358B3 fn=0xD351B0
+    CALL site=0xD35948 fn=0xD351B0
+    CALL site=0xD35A33 fn=0xD351B0
+  outgoing_rel32=2
+    CALL site=0x4EF157 dest=0xE30B0 targetFn=none
+    CALL site=0x4EF19B dest=0x4EF110 targetFn=0x4EF110
+  rip_targets=4
+    LEA site=0x4EF0B0 -> 0x22A98C0 section=.data bytes16=None
+    LEA site=0x4EF0B7 -> 0x22A9AC0 section=.data bytes16=None
+    LEA site=0x4EF225 -> 0x22A98C0 section=.data bytes16=None
+    LEA site=0x4EF234 -> 0x22A9AC0 section=.data bytes16=None
+  pointer_occurrences=0
+  function_hex=488d0509a8db014c8d1502aadb0166904c8b084d85c97405413909740c4883c008493bc27cea33c0c34584c0b820000000b9080000000f44c1423b54081073e64a8b04088bca488b04c8c3cccccccccccccccccccccccccccccccccccccccccc4c8bdc41574883ec60f68178020000014c8bf90f847801000049896b10488d817001000049897318498d4bb84d8963e84d896be04533ed4d896bc8498943b849c743c00000ffffe8543fbfff0fb774242a458d65080fb76c2428663bf50f8fab00000048895c2470488b5c243048897c24588b7c242c4c897424404c8b7424204885db488d4be0490f44cde870ffffff4885db7422488b1b83ffff74154885db74150fb743ea0fb6c83bcf74054885db75e34885db754366ffc6663bf57f400fbfc6498b1cc64885db74ec0f1f44000083ffff74204885db488d43e8490f44c40fb740020fb6c83bcf740a488b1b4885db75ddebc24885db74bd663bf57e814c8b742440488b7c2458488b5c2470418b9780020000488d0594a6db01488bb424800000004c8d0585a8db01488b6c2478488b084885c974043911740a4903c4493bc07ceceb2e4885c97429418b8778020000ba20000000c1e803a801490f44d44803d1418b8f84020000488b024c892cc8ff4a0c4183a778020000f64c8b6c24484c8b64245049c78780020000ffffffff4883c460415fc3cccccccccccccccc
+
+TARGET flavor1_constructor entry=0x4EF2B0 fn=0x4EF2B0-0x4EF3EB size=315
+  signatures={"bts_bit16": true, "clear_bit3_set_bit0_278": false, "mask_20bit": true, "or_flag_09_278": true, "shift_left_17": true, "write_278": true, "write_280": true, "write_284": true}
+  direct_callers=36
+    CALL site=0x2CC0FC fn=0x2CC0BB
+    JMP site=0x2E7DEA fn=0x2E7D80
+    CALL site=0x49C58A fn=0x49C530
+    CALL site=0x4C948F fn=0x4C8E30
+    CALL site=0x4EF421 fn=0x4EF3EB
+    JMP site=0x4EF4F1 fn=none
+    JMP site=0x4F3E55 fn=none
+    CALL site=0x6138A3 fn=0x613690
+    CALL site=0x6177A3 fn=0x617710
+    CALL site=0x621FA8 fn=0x621F40
+    CALL site=0x622050 fn=0x621F40
+    CALL site=0x683285 fn=0x682020
+    CALL site=0x68361D fn=0x682020
+    CALL site=0x684049 fn=0x683E60
+    CALL site=0x684771 fn=0x684600
+    CALL site=0x6A517F fn=0x6A5120
+    CALL site=0x6C27CA fn=0x6C2770
+    CALL site=0x6F020E fn=0x6F00F0
+    CALL site=0x6F036E fn=0x6F00F0
+    CALL site=0x6F04CE fn=0x6F00F0
+    CALL site=0x6F1FFB fn=0x6F1EAE
+    CALL site=0x71ADF3 fn=0x71AC70
+    CALL site=0x750BCA fn=0x750BA7
+    CALL site=0x752B56 fn=0x752660
+    CALL site=0x789425 fn=0x788F30
+    CALL site=0x7917B4 fn=0x79161C
+    CALL site=0x81019E fn=0x810000
+    CALL site=0x81E712 fn=0x81E560
+    CALL site=0x855DC4 fn=0x855500
+    CALL site=0x85621E fn=0x855FC0
+    CALL site=0x857270 fn=0x856F50
+    CALL site=0x8572AA fn=0x856F50
+    CALL site=0x860179 fn=0x860130
+    CALL site=0x88E5A1 fn=0x88E57A
+    CALL site=0x8AA06A fn=0x8AA010
+    CALL site=0x9696E9 fn=0x969670
+  outgoing_rel32=1
+    CALL site=0x4EF3CA dest=0xE30B0 targetFn=none
+  rip_targets=2
+    LEA site=0x4EF2C2 -> 0x22A9AC0 section=.data bytes16=None
+    LEA site=0x4EF2C9 -> 0x22A98C0 section=.data bytes16=None
+  pointer_occurrences=3
+    PTR kind=rva32 rva=0xFB2844 section=.rdata code_refs=0
+    PTR kind=rva32 rva=0xFB2854 section=.rdata code_refs=0
+    PTR kind=rva32 rva=0x50FD1CC section=.pdata code_refs=0
+  function_hex=40555657415541574883ec40488bf9448bfa488d0df7a7db01488d05f0a5db014c8b084533ed4d85c97405453939740c4883c008483bc17ce74d8bcd48895c24704d85c07449418b480485c97509498b4120488938eb6a418949288bd1418b59304d8b51206666660f1f840000000000448bc28d420133d2f7f34585c074f14f392cc274043bd175e74b893cc2eb2e418b5128448bd2458b59304d8b412066908bca8d420133d241f7f385c974f24d392cc87405413bd275e749893cc84189512841ff412c8bd1838f780200000981e2ffff0f0048c1e211410fb7cf480bd148c74424280000ffff480fbaea104c896c24300fb7ca898f80020000488d4c2420488d041248c1e812898784020000488d87700100004889442420e8e13cbfff0fb774242a0fb76c2428663bf50f8fc40000008b7c242c488b5c2430
+
+TARGET flavor1_wrapper entry=0x4EF3EB fn=0x4EF3EB-0x4EF4A6 size=187
+  signatures={"bts_bit16": false, "clear_bit3_set_bit0_278": false, "mask_20bit": false, "or_flag_09_278": false, "shift_left_17": false, "write_278": false, "write_280": false, "write_284": false}
+  direct_callers=0
+  outgoing_rel32=1
+    CALL site=0x4EF421 dest=0x4EF2B0 targetFn=0x4EF2B0
+  rip_targets=0
+  pointer_occurrences=4
+    PTR kind=rva32 rva=0xFB2848 section=.rdata code_refs=0
+    PTR kind=rva32 rva=0xFB2858 section=.rdata code_refs=0
+    PTR kind=rva32 rva=0x50FD1D0 section=.pdata code_refs=0
+    PTR kind=rva32 rva=0x50FD1D8 section=.pdata code_refs=0
+  function_hex=4c8964247841bc080000004c89b424800000004c8b7424200f1f4000660f1f8400000000004885db488d4be0418bd7490f44cd4533c0e88afeffff4885db74270f1f440000488b1b83ffff74154885db74150fb743ea0fb6c83bcf74054885db75e34885db753e66ffc6663bf57f3f0fbfc6498b1cc64885db74ec83ffff74204885db488d43e8490f44c40fb740020fb6c83bcf740a488b1b4885db75ddebc74885db74c2663bf50f8e77ffffff4c8bb424800000004c8b642478
+
+TARGET flavor0_constructor entry=0x4EF540 fn=0x4EF540-0x4EF610 size=208
+  signatures={"bts_bit16": false, "clear_bit3_set_bit0_278": true, "mask_20bit": true, "or_flag_09_278": false, "shift_left_17": true, "write_278": true, "write_280": true, "write_284": true}
+  direct_callers=0
+  outgoing_rel32=0
+  rip_targets=2
+    LEA site=0x4EF545 -> 0x22A98C0 section=.data bytes16=None
+    LEA site=0x4EF551 -> 0x22A9AC0 section=.data bytes16=None
+  pointer_occurrences=4
+    PTR kind=rva32 rva=0xFB2880 section=.rdata code_refs=0
+    PTR kind=rva32 rva=0xFB2890 section=.rdata code_refs=0
+    PTR kind=rva32 rva=0x50FD1F4 section=.pdata code_refs=0
+    PTR kind=rva32 rva=0x50FD1FC section=.pdata code_refs=0
+  function_hex=48896c2410488d0574a3db014889742418488d1568a5db0148897c24200f1f004c8b0033c94d85c07405453910740c4883c008483bc27ce84c8bc1418b50108bf2418b6818498b78080f1f8000000000448bca8d4201448bda33d2f7f54585c974ee4a390ccf74043bd675e4488b7424184181e3ffff0f00488b6c24104a891ccf41ff4014488b7c24204189501049c1e311410fb7d24c0bda410fb7d38993800200004b8d041b48c1e8128983840200008b837802000083e0f783c8014c39352493b2018983780200000f8590000000
+
+source_hash_unchanged=true
+game_launched=false
+save_opened=false
+progression_written=false
