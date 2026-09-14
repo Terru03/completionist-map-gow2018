@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\apply-all-ravens-hardening.py", line 206, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\apply-all-ravens-hardening.py", line 174, in main
+    texts[RUNTIME] = patch_runtime(texts[RUNTIME])
+                     ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\apply-all-ravens-hardening.py", line 64, in patch_runtime
+    text = replace_guarded(
+        text,
+    ...<3 lines>...
+        guard='  local byMarkerId = {}\n',
+    )
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\apply-all-ravens-hardening.py", line 45, in replace_guarded
+    raise RuntimeError(f"{path}: expected {expected} guarded occurrence(s), found {count}")
+RuntimeError: C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\all-ravens-map-runtime.lua: expected 1 guarded occurrence(s), found 0

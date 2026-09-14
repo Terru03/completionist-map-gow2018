@@ -1,0 +1,45 @@
+**********************
+PowerShell transcript start
+Start time: 20260914074100
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\run-all-ravens-hardening-with-log.ps1
+Process ID: 35912
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+=== Completionist Map v0.10.5 all-Ravens hardening ===
+Repository: C:/Users/david/Documents/GitHub/completionist-map-gow2018-all-ravens-release-candidate
+Offline/source-only run. God of War is not launched and active saves are not opened.
+=== APPLY GUARDED PATCH ===
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\apply-all-ravens-hardening.py", line 206, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\apply-all-ravens-hardening.py", line 174, in main
+    texts[RUNTIME] = patch_runtime(texts[RUNTIME])
+                     ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\apply-all-ravens-hardening.py", line 64, in patch_runtime
+    text = replace_guarded(
+        text,
+    ...<3 lines>...
+        guard='  local byMarkerId = {}\n',
+    )
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\apply-all-ravens-hardening.py", line 45, in replace_guarded
+    raise RuntimeError(f"{path}: expected {expected} guarded occurrence(s), found {count}")
+RuntimeError: C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\all-ravens-map-runtime.lua: expected 1 guarded occurrence(s), found 0
+ALL_RAVENS_HARDENING_FAILED: Hardening patcher failed with exit code 1
+
+**********************
+PowerShell transcript end
+End time: 20260914074101
+**********************
