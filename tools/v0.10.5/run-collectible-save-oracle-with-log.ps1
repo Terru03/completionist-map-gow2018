@@ -20,6 +20,17 @@ $pythonOutput = Join-Path $logDir 'python-output.txt'
 $published = $false
 $transcriptStarted = $false
 
+function Resolve-FrozenGameSave([string]$BackupDir) {
+    if (-not (Test-Path -LiteralPath $BackupDir -PathType Container)) {
+        throw "Frozen backup directory missing: $BackupDir"
+    }
+    $matches = @(Get-ChildItem -LiteralPath $BackupDir -Recurse -File -Filter 'game.sav' -ErrorAction Stop)
+    if ($matches.Count -ne 1) {
+        throw "Expected exactly one game.sav below frozen backup '$BackupDir', found $($matches.Count)."
+    }
+    return $matches[0].FullName
+}
+
 function Publish-OracleLog([string]$Result) {
     if ($script:published) { return }
     $script:published = $true
@@ -107,11 +118,10 @@ try {
         throw "Desktop folder not found: $desktop"
     }
 
-    $saveA = Join-Path $desktop 'GodOfWar-SaveBackup-2026-09-13_21-53-50\game.sav'
-    $saveB = Join-Path $desktop 'GodOfWar-SaveBackup-2026-09-13_22-01-52\game.sav'
-    foreach ($save in @($saveA, $saveB)) {
-        if (-not (Test-Path -LiteralPath $save -PathType Leaf)) { throw "Frozen backup missing: $save" }
-    }
+    $backupA = Join-Path $desktop 'GodOfWar-SaveBackup-2026-09-13_21-53-50'
+    $backupB = Join-Path $desktop 'GodOfWar-SaveBackup-2026-09-13_22-01-52'
+    $saveA = Resolve-FrozenGameSave $backupA
+    $saveB = Resolve-FrozenGameSave $backupB
 
     $activeSaveDir = Join-Path $HOME 'Saved Games\God of War'
     $resolvedA = (Resolve-Path -LiteralPath $saveA).Path
