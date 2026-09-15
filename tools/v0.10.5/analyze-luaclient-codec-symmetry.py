@@ -1,6 +1,6 @@
 """Analyze LuaClient save/restore codec symmetry from the reusable GoW SQLite index.
 
-Pure SQLite analysis.  No GoW.exe rescan, game launch, or save access.
+Pure SQLite analysis. No GoW.exe rescan, game launch, or save access.
 
 Proven native shape entering this pass:
   save:    LuaClient slot14 -> 0x5B2130 -> 0x5B2171 -> 0x7E7F10
@@ -179,8 +179,6 @@ def main():
         intersections[key].sort(key=lambda x: (sum(v for k,v in x.items() if k != "function"), x["function"]))
 
     local = local_codec_functions(con)
-
-    # Exact indirect-call signatures around restore helper and nearby codec family.
     indirect_special = []
     for rec in local:
         sm = rec["summary"]
@@ -260,7 +258,9 @@ def main():
     Path(args.output_text).write_text("\n".join(lines)+"\n", encoding="utf-8")
     print("LUACLIENT_CODEC_SYMMETRY_PASSED")
     pre = summaries["restore_pre_helper"]
-    print(f"restore_0x7E9550_function={'NONE' if not pre['function'] else f'0x{pre['function']['begin']:X}'}")
+    pre_fn = pre["function"]
+    pre_fn_text = "NONE" if not pre_fn else f"0x{pre_fn['begin']:X}"
+    print(f"restore_0x7E9550_function={pre_fn_text}")
     print(f"restore_0x7E9550_callees={len(pre['callees'])}")
     print(f"restore_0x7E9550_indirect_calls={len(pre['indirect_calls'])}")
     print(f"restore_0x7E9550_special_fields={len(pre['special_mem_refs'])}")
