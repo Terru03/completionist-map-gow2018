@@ -1,0 +1,38 @@
+GoW __subobjs GameObject key trace
+===================================
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+gameobject_persistent_key_status=BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY
+production_oracle_status=BLOCKED_EXACT_UNLOADED_STATE_ORACLE
+
+Exact Lua key
+type=full userdata
+payload=qword token at userdata+0x8
+token=1 | ((u16[GameObject+0x280])<<1) | (((u32[GameObject+0x278]>>3)&1)<<17) | ((u32[GameObject+0x284]&0xFFFFF)<<18)
+shared_packer=used on save at 0x174B93; normal builder 0x5AC760 uses exact inlined formula
+
+Inverse
+registry_id=(token>>1)&0xFFFF
+flavor=(token>>17)&1
+slot=(token>>18)&0xFFFFF
+resolver=runtime descriptor bank selected by registry_id/flavor, then bank[slot]
+
+Stable identity
+result=not proved
+missing_edge=no connected producer/consumer maps (level/WAD +0xC3C registry_id, descriptor +0x30 slot) to canonical catalogue instance identity and proves same pair after unload/reload
+guid_zero_hits=raw GUID fields are proved absent from token ancestry; exact reason raw catalogue GUID bytes are absent from frozen saves remains unproved because the GameObject userdata callback payload is unresolved
+
+Binary mapping
+result=GameObject callback target, blob layout, and inverse are unresolved; structural frozen-save parser is not justified
+conflict=connected GameObject-key flow requires userdata callback, but exact recovered CodeSideLuaClass registry has only GroundType and CollisionType with null save/restore callbacks
+
+Safety
+analysis_mode=read-only
+game_launched=false
+active_save_opened=false
+active_save_modified=false
+save_or_progression_written=false
+exe_written=false
+frozen_save_opened=false
+
+exact_rva_assertions=58
+reused_archives=20

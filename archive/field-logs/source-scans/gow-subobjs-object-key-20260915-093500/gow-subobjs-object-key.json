@@ -1,0 +1,596 @@
+{
+  "analysis": "gow_subobjs_object_key",
+  "assertions": [
+    "save_gameobject_load_a@0x5AC899",
+    "save_valid_test_a@0x5AC8B1",
+    "save_flags_load_a@0x5AC8BD",
+    "save_slot_load_a@0x5AC8C3",
+    "save_registry_load_a@0x5AC8DB",
+    "save_userdata_push_a@0x5AC8F3",
+    "save_callback_a@0x5AC924",
+    "save_savedinfo_nonempty_probe_a@0x5ACA85",
+    "save_table_set_a@0x5ACACF",
+    "save_gameobject_load_b@0x5ACBC7",
+    "save_userdata_push_b@0x5ACC21",
+    "save_callback_b@0x5ACC51",
+    "save_savedinfo_nonempty_probe_b@0x5ACDB6",
+    "save_table_set_b@0x5ACE00",
+    "save_shared_packer_load@0x174B8C",
+    "save_shared_packer_call@0x174B93",
+    "restore_gameobject_load@0x5AD597",
+    "restore_packer_call@0x5AD5A5",
+    "restore_table_get@0x5AD5BA",
+    "restore_callback@0x5AD608",
+    "restore_consume_load@0x5AD6B8",
+    "packer_valid@0x60B9D7",
+    "packer_flags@0x60B9E1",
+    "packer_slot@0x60B9E8",
+    "packer_registry@0x60BA01",
+    "packer_final_shift@0x60BA10",
+    "packer_to_userdata@0x60BA17",
+    "userdata_payload_store@0x547B67",
+    "unbox_payload_load@0x5F93D6",
+    "unbox_flavor@0x5F93F7",
+    "unbox_resolver_call@0x5F9407",
+    "resolver_registry_compare@0x4EF0C8",
+    "resolver_slot_bound@0x4EF0E9",
+    "resolver_bank_load@0x4EF0F0",
+    "resolver_object_load@0x4EF0F6",
+    "remove_slot_clear@0x4EF27D",
+    "remove_flags_clear@0x4EF284",
+    "remove_identity_invalidate@0x4EF296",
+    "allocator_hint_load@0x4EF2F6",
+    "allocator_slot_store@0x4EF339",
+    "allocator_flags_store@0x4EF377",
+    "allocator_registry_store@0x4EF3A5",
+    "allocator_slot_field_store@0x4EF3B8",
+    "loader_level_registry@0x856FAD",
+    "loader_record_hint@0x856FB7",
+    "loader_hint_registry_copy@0x857243",
+    "loader_hint_slot_copy@0x85724B",
+    "loader_hint_allocator_call@0x8572AA",
+    "loader_dynamic_call@0x857329",
+    "descriptor_slot_arg_store@0x85670A",
+    "descriptor_slot_field_store@0x85670E",
+    "value_userdata_branch@0x7E8F5F",
+    "value_userdata_callback@0x7E8F70",
+    "callback_parent_walk@0x7E925F",
+    "callback_indirect_call@0x7E9298",
+    "callback_blob_copy@0x7E92E6",
+    "callback_node_tag@0x7E92FE",
+    "binary_node_writer@0x7E9450"
+  ],
+  "exact_sites": {
+    "allocator_flags_store": {
+      "bytes": "838f7802000009",
+      "instruction": "or dword ptr [rdi + 0x278], 9",
+      "rva": "0x4EF377"
+    },
+    "allocator_hint_load": {
+      "bytes": "418b4804",
+      "instruction": "mov ecx, dword ptr [r8 + 4]",
+      "rva": "0x4EF2F6"
+    },
+    "allocator_registry_store": {
+      "bytes": "898f80020000",
+      "instruction": "mov dword ptr [rdi + 0x280], ecx",
+      "rva": "0x4EF3A5"
+    },
+    "allocator_slot_field_store": {
+      "bytes": "898784020000",
+      "instruction": "mov dword ptr [rdi + 0x284], eax",
+      "rva": "0x4EF3B8"
+    },
+    "allocator_slot_store": {
+      "bytes": "4b893cc2",
+      "instruction": "mov qword ptr [r10 + r8*8], rdi",
+      "rva": "0x4EF339"
+    },
+    "binary_node_writer": {
+      "bytes": "440fb64904",
+      "instruction": "movzx r9d, byte ptr [rcx + 4]",
+      "rva": "0x7E9450"
+    },
+    "callback_blob_copy": {
+      "bytes": "e8af40c0ff",
+      "instruction": "call 0x1403ed39a",
+      "rva": "0x7E92E6"
+    },
+    "callback_indirect_call": {
+      "bytes": "41ffd2",
+      "instruction": "call r10",
+      "rva": "0x7E9298"
+    },
+    "callback_node_tag": {
+      "bytes": "41881408",
+      "instruction": "mov byte ptr [r8 + rcx], dl",
+      "rva": "0x7E92FE"
+    },
+    "callback_parent_walk": {
+      "bytes": "4c8b90b8000000",
+      "instruction": "mov r10, qword ptr [rax + 0xb8]",
+      "rva": "0x7E925F"
+    },
+    "descriptor_slot_arg_store": {
+      "bytes": "8b442460",
+      "instruction": "mov eax, dword ptr [rsp + 0x60]",
+      "rva": "0x85670A"
+    },
+    "descriptor_slot_field_store": {
+      "bytes": "41894630",
+      "instruction": "mov dword ptr [r14 + 0x30], eax",
+      "rva": "0x85670E"
+    },
+    "loader_dynamic_call": {
+      "bytes": "e89281c9ff",
+      "instruction": "call 0x1404ef4c0",
+      "rva": "0x857329"
+    },
+    "loader_hint_allocator_call": {
+      "bytes": "e80180c9ff",
+      "instruction": "call 0x1404ef2b0",
+      "rva": "0x8572AA"
+    },
+    "loader_hint_registry_copy": {
+      "bytes": "8b442444",
+      "instruction": "mov eax, dword ptr [rsp + 0x44]",
+      "rva": "0x857243"
+    },
+    "loader_hint_slot_copy": {
+      "bytes": "8b4630",
+      "instruction": "mov eax, dword ptr [rsi + 0x30]",
+      "rva": "0x85724B"
+    },
+    "loader_level_registry": {
+      "bytes": "8b9f3c0c0000",
+      "instruction": "mov ebx, dword ptr [rdi + 0xc3c]",
+      "rva": "0x856FAD"
+    },
+    "loader_record_hint": {
+      "bytes": "8b4630",
+      "instruction": "mov eax, dword ptr [rsi + 0x30]",
+      "rva": "0x856FB7"
+    },
+    "packer_final_shift": {
+      "bytes": "4803d2",
+      "instruction": "add rdx, rdx",
+      "rva": "0x60BA10"
+    },
+    "packer_flags": {
+      "bytes": "418b8078020000",
+      "instruction": "mov eax, dword ptr [r8 + 0x278]",
+      "rva": "0x60B9E1"
+    },
+    "packer_registry": {
+      "bytes": "410fb78080020000",
+      "instruction": "movzx eax, word ptr [r8 + 0x280]",
+      "rva": "0x60BA01"
+    },
+    "packer_slot": {
+      "bytes": "418b9084020000",
+      "instruction": "mov edx, dword ptr [r8 + 0x284]",
+      "rva": "0x60B9E8"
+    },
+    "packer_to_userdata": {
+      "bytes": "e944c0f3ff",
+      "instruction": "jmp 0x140547a60",
+      "rva": "0x60BA17"
+    },
+    "packer_valid": {
+      "bytes": "41f6807802000001",
+      "instruction": "test byte ptr [r8 + 0x278], 1",
+      "rva": "0x60B9D7"
+    },
+    "remove_flags_clear": {
+      "bytes": "4183a778020000f6",
+      "instruction": "and dword ptr [r15 + 0x278], 0xfffffff6",
+      "rva": "0x4EF284"
+    },
+    "remove_identity_invalidate": {
+      "bytes": "49c78780020000ffffffff",
+      "instruction": "mov qword ptr [r15 + 0x280], 0xffffffffffffffff",
+      "rva": "0x4EF296"
+    },
+    "remove_slot_clear": {
+      "bytes": "4c892cc8",
+      "instruction": "mov qword ptr [rax + rcx*8], r13",
+      "rva": "0x4EF27D"
+    },
+    "resolver_bank_load": {
+      "bytes": "4a8b0408",
+      "instruction": "mov rax, qword ptr [rax + r9]",
+      "rva": "0x4EF0F0"
+    },
+    "resolver_object_load": {
+      "bytes": "488b04c8",
+      "instruction": "mov rax, qword ptr [rax + rcx*8]",
+      "rva": "0x4EF0F6"
+    },
+    "resolver_registry_compare": {
+      "bytes": "413909",
+      "instruction": "cmp dword ptr [r9], ecx",
+      "rva": "0x4EF0C8"
+    },
+    "resolver_slot_bound": {
+      "bytes": "423b540810",
+      "instruction": "cmp edx, dword ptr [rax + r9 + 0x10]",
+      "rva": "0x4EF0E9"
+    },
+    "restore_callback": {
+      "bytes": "e8d366ffff",
+      "instruction": "call 0x1405a3ce0",
+      "rva": "0x5AD608"
+    },
+    "restore_consume_load": {
+      "bytes": "488b5628",
+      "instruction": "mov rdx, qword ptr [rsi + 0x28]",
+      "rva": "0x5AD6B8"
+    },
+    "restore_gameobject_load": {
+      "bytes": "488b5628",
+      "instruction": "mov rdx, qword ptr [rsi + 0x28]",
+      "rva": "0x5AD597"
+    },
+    "restore_packer_call": {
+      "bytes": "e816e40500",
+      "instruction": "call 0x14060b9c0",
+      "rva": "0x5AD5A5"
+    },
+    "restore_table_get": {
+      "bytes": "e861ff4300",
+      "instruction": "call 0x1409ed520",
+      "rva": "0x5AD5BA"
+    },
+    "save_callback_a": {
+      "bytes": "e8b773ffff",
+      "instruction": "call 0x1405a3ce0",
+      "rva": "0x5AC924"
+    },
+    "save_callback_b": {
+      "bytes": "e88a70ffff",
+      "instruction": "call 0x1405a3ce0",
+      "rva": "0x5ACC51"
+    },
+    "save_flags_load_a": {
+      "bytes": "8b8178020000",
+      "instruction": "mov eax, dword ptr [rcx + 0x278]",
+      "rva": "0x5AC8BD"
+    },
+    "save_gameobject_load_a": {
+      "bytes": "498b4e28",
+      "instruction": "mov rcx, qword ptr [r14 + 0x28]",
+      "rva": "0x5AC899"
+    },
+    "save_gameobject_load_b": {
+      "bytes": "498b4e28",
+      "instruction": "mov rcx, qword ptr [r14 + 0x28]",
+      "rva": "0x5ACBC7"
+    },
+    "save_registry_load_a": {
+      "bytes": "0fb78180020000",
+      "instruction": "movzx eax, word ptr [rcx + 0x280]",
+      "rva": "0x5AC8DB"
+    },
+    "save_savedinfo_nonempty_probe_a": {
+      "bytes": "e896064400",
+      "instruction": "call 0x1409ed120",
+      "rva": "0x5ACA85"
+    },
+    "save_savedinfo_nonempty_probe_b": {
+      "bytes": "e865034400",
+      "instruction": "call 0x1409ed120",
+      "rva": "0x5ACDB6"
+    },
+    "save_shared_packer_call": {
+      "bytes": "e8286e4900",
+      "instruction": "call 0x14060b9c0",
+      "rva": "0x174B93"
+    },
+    "save_shared_packer_load": {
+      "bytes": "488b5228",
+      "instruction": "mov rdx, qword ptr [rdx + 0x28]",
+      "rva": "0x174B8C"
+    },
+    "save_slot_load_a": {
+      "bytes": "8b9184020000",
+      "instruction": "mov edx, dword ptr [rcx + 0x284]",
+      "rva": "0x5AC8C3"
+    },
+    "save_table_set_a": {
+      "bytes": "e8dc794300",
+      "instruction": "call 0x1409e44b0",
+      "rva": "0x5ACACF"
+    },
+    "save_table_set_b": {
+      "bytes": "e8ab764300",
+      "instruction": "call 0x1409e44b0",
+      "rva": "0x5ACE00"
+    },
+    "save_userdata_push_a": {
+      "bytes": "e868b1f9ff",
+      "instruction": "call 0x140547a60",
+      "rva": "0x5AC8F3"
+    },
+    "save_userdata_push_b": {
+      "bytes": "e83aaef9ff",
+      "instruction": "call 0x140547a60",
+      "rva": "0x5ACC21"
+    },
+    "save_valid_test_a": {
+      "bytes": "f6817802000001",
+      "instruction": "test byte ptr [rcx + 0x278], 1",
+      "rva": "0x5AC8B1"
+    },
+    "unbox_flavor": {
+      "bytes": "4180e001",
+      "instruction": "and r8b, 1",
+      "rva": "0x5F93F7"
+    },
+    "unbox_payload_load": {
+      "bytes": "488b4a08",
+      "instruction": "mov rcx, qword ptr [rdx + 8]",
+      "rva": "0x5F93D6"
+    },
+    "unbox_resolver_call": {
+      "bytes": "e8a45cefff",
+      "instruction": "call 0x1404ef0b0",
+      "rva": "0x5F9407"
+    },
+    "userdata_payload_store": {
+      "bytes": "48895808",
+      "instruction": "mov qword ptr [rax + 8], rbx",
+      "rva": "0x547B67"
+    },
+    "value_userdata_branch": {
+      "bytes": "448bc5",
+      "instruction": "mov r8d, ebp",
+      "rva": "0x7E8F5F"
+    },
+    "value_userdata_callback": {
+      "bytes": "e81b020000",
+      "instruction": "call 0x1407e9190",
+      "rva": "0x7E8F70"
+    }
+  },
+  "executable": {
+    "path": "G:\\SteamLibrary\\steamapps\\common\\GodOfWar\\GoW.exe",
+    "sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+    "sha256_verified": true
+  },
+  "gameobject_persistent_key_status": "BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY",
+  "phase_1_save_connected_dataflow": {
+    "connected_native_ancestors": [
+      "GameObject+0x278 bit 3",
+      "GameObject+0x280 low 16",
+      "GameObject+0x284 low 20"
+    ],
+    "key_lua_type": "full userdata",
+    "native_payload": "qword token at userdata+0x8",
+    "not_connected_ancestors": [
+      "GameObjectGUID",
+      "GameObjectIDA",
+      "GameObjectIDB",
+      "coordinates",
+      "nearby hashes"
+    ],
+    "path": [
+      "subobject",
+      "subobject+0x28 GameObject pointer",
+      "GameObject fields +0x278/+0x280/+0x284",
+      "packed qword token",
+      "GameObject full userdata with token at userdata+0x8",
+      "OnSaveCheckpoint savedInfo",
+      "__subobjs[key]=savedInfo"
+    ],
+    "shared_packer_0x60B9C0": "used on save at 0x174B93; normal builder 0x5AC760 uses exact inlined formula",
+    "token_equation": "1 | ((u16[GameObject+0x280])<<1) | (((u32[GameObject+0x278]>>3)&1)<<17) | ((u32[GameObject+0x284]&0xFFFFF)<<18)",
+    "token_layout": {
+      "bit_0": "valid marker 1",
+      "bit_17": "flavor/bank",
+      "bits_18_37": "slot",
+      "bits_1_16": "registry_id",
+      "bits_38_63": "zero"
+    }
+  },
+  "phase_2_restore_inverse": {
+    "inverse": {
+      "flavor": "(token>>17)&1",
+      "registry_id": "(token>>1)&0xFFFF",
+      "slot": "(token>>18)&0xFFFFF"
+    },
+    "lifetime_evidence": "0x4EF27D clears bank[slot]; 0x4EF284 clears valid/flavor bits; 0x4EF296 writes -1 across +0x280/+0x284",
+    "path": [
+      "__subobjs userdata key",
+      "userdata+0x8 qword",
+      "0x5F9350 unbox",
+      "0x4EF0B0 resolver",
+      "runtime registry bank[slot]",
+      "GameObject"
+    ],
+    "resolver_layout": "descriptor selected by registry_id; flavor chooses descriptor+0x08 or +0x20 bank; slot indexes pointer array"
+  },
+  "phase_3_stable_identity": {
+    "allocator_input": "loader descriptor +0x30 supplies preferred slot; level/WAD object +0xC3C supplies registry_id",
+    "candidates": [
+      {
+        "catalogue_relationship": "none proved",
+        "consumer_rva": "0x5F9350 then 0x4EF0B0",
+        "endian_layout": "native little-endian qword at userdata+0x8; checkpoint wire layout unresolved",
+        "evidence_strength": "strong allocator lifecycle proof",
+        "fields": "GameObject+0x278 bit 3, +0x280 low 16, +0x284 low 20",
+        "level_wad_component": "+0x280 derives from level/WAD +0xC3C registry_id on allocator path",
+        "name": "runtime GameObject token",
+        "producer_rva": "0x60B9C0 (shared) / 0x5AC8B1 and 0x5ACBDF (inlined)",
+        "survives_unload_reload": false,
+        "transformations": "bit packing and inverse masks/shifts stated above",
+        "width": "38 meaningful bits in qword"
+      },
+      {
+        "catalogue_relationship": "not proved",
+        "consumer_rva": "0x857243/0x85724B -> 0x8572AA -> 0x4EF2B0",
+        "endian_layout": "native little-endian fields; checkpoint wire layout unresolved",
+        "evidence_strength": "strong connected allocator input; weak persistence claim",
+        "fields": "level/WAD object+0xC3C u32 and loader descriptor+0x30 u32",
+        "level_wad_component": "registry_id is loaded from level/WAD object+0xC3C",
+        "name": "loader registry_id and preferred slot tuple",
+        "producer_rva": "0x856FAD and 0x856FB7; descriptor +0x30 itself set at 0x85670E from stack argument",
+        "survives_unload_reload": "unproved",
+        "transformations": "preferred slot feeds allocator; -1 selects dynamic allocation",
+        "width": "u32 + u32, later truncated to 16 + 20 bits"
+      }
+    ],
+    "dynamic_case": "descriptor +0x30 == -1 reaches 0x857329 and allocates a free flavor-one slot",
+    "evidence_strength": "strong for runtime handle; insufficient for stable persistent identity",
+    "guid_zero_hit_answer": "raw GUID fields are proved absent from token ancestry; exact reason raw catalogue GUID bytes are absent from frozen saves remains unproved because the GameObject userdata callback payload is unresolved",
+    "precise_missing_edge": "no connected producer/consumer maps (level/WAD +0xC3C registry_id, descriptor +0x30 slot) to canonical catalogue instance identity and proves same pair after unload/reload",
+    "result": "not proved"
+  },
+  "phase_4_binary_mapping": {
+    "conflict": "connected GameObject-key flow requires userdata callback, but exact recovered CodeSideLuaClass registry has only GroundType and CollisionType with null save/restore callbacks",
+    "connected_path": [
+      "__subobjs table",
+      "0x7E7F10 table codec",
+      "0x7E8EF0 value classifier",
+      "userdata branch 0x7E8F5F",
+      "0x7E9190 callback dispatcher",
+      "callback blob node type 5",
+      "0x7E9450 binary node writer"
+    ],
+    "result": "GameObject callback target, blob layout, and inverse are unresolved; structural frozen-save parser is not justified"
+  },
+  "phase_5_frozen_save_probe": {
+    "decoder_created": false,
+    "performed": false,
+    "reason": "phase 4 structural proof gate failed"
+  },
+  "production_oracle_status": "BLOCKED_EXACT_UNLOADED_STATE_ORACLE",
+  "rejected_evidence_classes": [
+    "disconnected GUID-string references",
+    "generic GameObject resolver calls",
+    "nearby bit manipulation without token provenance",
+    "allocator-only tokens labelled persistent IDs"
+  ],
+  "reused_archives": [
+    {
+      "name": "object-checkpoint-dispatch-20260914-205500",
+      "path": "archive/field-logs/source-scans/object-checkpoint-dispatch-20260914-205500"
+    },
+    {
+      "name": "gameobject-token-resolver-20260914-220203",
+      "path": "archive/field-logs/source-scans/gameobject-token-resolver-20260914-220203"
+    },
+    {
+      "name": "gameobject-token-resolver-v2-20260914-220529",
+      "path": "archive/field-logs/source-scans/gameobject-token-resolver-v2-20260914-220529"
+    },
+    {
+      "name": "gameobject-token-allocator-trace-20260914-221542",
+      "path": "archive/field-logs/source-scans/gameobject-token-allocator-trace-20260914-221542"
+    },
+    {
+      "name": "gameobject-token-allocator-trace-v2-20260914-221951",
+      "path": "archive/field-logs/source-scans/gameobject-token-allocator-trace-v2-20260914-221951"
+    },
+    {
+      "name": "object-token-inverse-20260914-214158",
+      "path": "archive/field-logs/source-scans/object-token-inverse-20260914-214158"
+    },
+    {
+      "name": "gameobject-argument-decoder-20260914-214448",
+      "path": "archive/field-logs/source-scans/gameobject-argument-decoder-20260914-214448"
+    },
+    {
+      "name": "gameobject-argument-decoder-20260914-214814",
+      "path": "archive/field-logs/source-scans/gameobject-argument-decoder-20260914-214814"
+    },
+    {
+      "name": "gameobject-identity-field-stores-20260914-220954",
+      "path": "archive/field-logs/source-scans/gameobject-identity-field-stores-20260914-220954"
+    },
+    {
+      "name": "gameobject-pickle-codec-20260914-222442",
+      "path": "archive/field-logs/source-scans/gameobject-pickle-codec-20260914-222442"
+    },
+    {
+      "name": "gameobject-pickle-bridge-trace-20260914-222927",
+      "path": "archive/field-logs/source-scans/gameobject-pickle-bridge-trace-20260914-222927"
+    },
+    {
+      "name": "checkpoint-pickle-return-serializer-20260914-232017",
+      "path": "archive/field-logs/source-scans/checkpoint-pickle-return-serializer-20260914-232017"
+    },
+    {
+      "name": "core-pickle-registration-trace-20260914-223441",
+      "path": "archive/field-logs/source-scans/core-pickle-registration-trace-20260914-223441"
+    },
+    {
+      "name": "core-pickle-game-resource-scan-20260914-224243",
+      "path": "archive/field-logs/source-scans/core-pickle-game-resource-scan-20260914-224243"
+    },
+    {
+      "name": "core-pickle-source-snippets-20260914-224927",
+      "path": "archive/field-logs/source-scans/core-pickle-source-snippets-20260914-224927"
+    },
+    {
+      "name": "object-unpickle-resolver-20260914-213155",
+      "path": "archive/field-logs/source-scans/object-unpickle-resolver-20260914-213155"
+    },
+    {
+      "name": "object-unpickle-functions-20260914-213459",
+      "path": "archive/field-logs/source-scans/object-unpickle-functions-20260914-213459"
+    },
+    {
+      "name": "savelib-object-key-usage-20260914-190854",
+      "path": "archive/field-logs/source-scans/savelib-object-key-usage-20260914-190854"
+    },
+    {
+      "name": "known-raven-runtime-key-save-probe-20260914-150602",
+      "path": "archive/field-logs/source-scans/known-raven-runtime-key-save-probe-20260914-150602"
+    },
+    {
+      "name": "known-raven-runtime-key-context-20260914-151244",
+      "path": "archive/field-logs/source-scans/known-raven-runtime-key-context-20260914-151244"
+    }
+  ],
+  "safety": {
+    "active_save_modified": false,
+    "active_save_opened": false,
+    "analysis_mode": "read-only",
+    "exe_written": false,
+    "frozen_save_opened": false,
+    "game_launched": false,
+    "save_or_progression_written": false
+  },
+  "sqlite_call_edges": [
+    {
+      "kind": "call",
+      "site": "0x5AC8F3",
+      "source_function": "0x5AC760",
+      "target": "0x547A60"
+    },
+    {
+      "kind": "call",
+      "site": "0x5ACA85",
+      "source_function": "0x5AC760",
+      "target": "0x9ED120"
+    },
+    {
+      "kind": "call",
+      "site": "0x5AD5A5",
+      "source_function": "0x5AD4A0",
+      "target": "0x60B9C0"
+    },
+    {
+      "kind": "call",
+      "site": "0x5F9407",
+      "source_function": "0x5F9350",
+      "target": "0x4EF0B0"
+    },
+    {
+      "kind": "call",
+      "site": "0x7E8F70",
+      "source_function": "0x7E8EF0",
+      "target": "0x7E9190"
+    }
+  ]
+}
