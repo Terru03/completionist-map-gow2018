@@ -1,0 +1,40 @@
+GoW GameObject userdata persistence trace
+========================================
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+gameobject_userdata_callback_status=BLOCKED_EXACT_GAMEOBJECT_USERDATA_CALLBACK
+gameobject_persistent_key_status=BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY
+production_oracle_status=BLOCKED_EXACT_UNLOADED_STATE_ORACLE
+
+Exact userdata class lookup
+status=BLOCKED
+key_rva=0xDF6660
+key_length=18
+key_hex=5f5f636f6465736964656c7561636c617373
+key_ascii=__codesideluaclass
+nul_terminated_after_key=true
+key_rip_refs=8
+
+Callback ABI at 0x7E9298
+rcx=Lua state/context
+edx=original userdata stack index
+r8=0x80-byte output buffer
+r9d=0x80 max payload
+out_length=dword[rsp+0x30]
+
+Registration bridge
+gameobject_rip_refs=5
+constructor_callers=78
+missing_edge=runtime value returned by userdata['__CodeSideLuaClass'] -> concrete GameObject class descriptor/initializer
+
+blocker=The expected userdata class lookup bridge did not satisfy all exact guards.
+
+Safety
+analysis_mode=read-only
+game_launched=false
+active_save_opened=false
+active_save_modified=false
+frozen_save_opened=false
+save_or_progression_written=false
+exe_written=false
+
+exact_rva_assertions=22
