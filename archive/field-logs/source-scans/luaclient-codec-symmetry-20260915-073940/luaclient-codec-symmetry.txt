@@ -1,0 +1,505 @@
+Completionist Map - LuaClient codec symmetry analysis
+exe_rescanned=false
+
+PROVEN INPUT SHAPE
+save:    LuaClient slot14 -> 0x5B2130 -> 0x5B2171 -> 0x7E7F10
+restore: LuaClient slot16 -> 0x5B2280 -> 0x7E9550 -> 0x5B2324
+
+ROOT SUMMARIES
+- save_virtual rva=0x5B2130 fn=0x5B2130-0x5B2171 callers=0 callees=1 indirect=0 special_fields=0
+    STRING 0x5B214E 'OnPickleInternal'
+    CALL 0x5B215C -> 0xFA040
+- save_post_helper rva=0x5B2171 fn=0x5B2171-0x5B224B callers=1 callees=4 indirect=0 special_fields=2
+    CALL 0x5B21BE -> 0x9EAE10
+    CALL 0x5B21CA -> 0x9EDFC0
+    CALL 0x5B2201 -> 0x5B2246
+    CALL 0x5B222C -> 0x7E7F10
+    FIELD 0x5B2219 disp=0x30 access=2 base=rsp
+    FIELD 0x5B2236 disp=0x30 access=1 base=rsp
+- restore_virtual rva=0x5B2280 fn=0x5B2280-0x5B22EF callers=0 callees=2 indirect=0 special_fields=0
+    CALL 0x5B22C3 -> 0x7E9550
+    CALL 0x5B22ED -> 0x5B2324
+- restore_pre_helper rva=0x7E9550 fn=0x7E9550-0x7E9B54 callers=15 callees=34 indirect=4 special_fields=5
+    STRING 0x7E9AD7 'tableref_root'
+    CALL 0x7E95BA -> 0x7E8D90
+    CALL 0x7E9630 -> 0x3ED388
+    CALL 0x7E9669 -> 0x9C6380
+    CALL 0x7E9677 -> 0x9C6480
+    CALL 0x7E9689 -> 0x9C9CC0
+    CALL 0x7E96B9 -> 0x3ED39A
+    CALL 0x7E9707 -> 0x7E972B
+    CALL 0x7E9715 -> 0x7E972B
+    CALL 0x7E9725 -> 0x7E972B
+    CALL 0x7E9756 -> 0x7E977C
+    CALL 0x7E9765 -> 0x7E977C
+    CALL 0x7E9776 -> 0x7E977C
+    CALL 0x7E97A4 -> 0x3ED39A
+    CALL 0x7E97BF -> 0x3ED39A
+    CALL 0x7E9823 -> 0x9F3280
+    CALL 0x7E9828 -> 0x7E983C
+    CALL 0x7E9895 -> 0x9F10E0
+    CALL 0x7E98A9 -> 0x9F10E0
+    CALL 0x7E98BA -> 0x9F0510
+    CALL 0x7E98C7 -> 0x9F0510
+    INDIRECT 0x7E96F8 base=None reg=rcx disp=None
+    INDIRECT 0x7E9746 base=None reg=rcx disp=None
+    INDIRECT 0x7E984F base=rdi reg=None disp=0
+    INDIRECT 0x7E995E base=rdi reg=None disp=0
+    FIELD 0x7E95B5 disp=0x30 access=1 base=rsp
+    FIELD 0x7E95C7 disp=0x48 access=2 base=rsp
+    FIELD 0x7E96B4 disp=0x30 access=1 base=rsp
+    FIELD 0x7E99E1 disp=0x30 access=1 base=rsp
+    FIELD 0x7E9A1D disp=0x30 access=1 base=rsp
+- restore_bridge_helper rva=0x5B22EF fn=0x5B22EF-0x5B2324 callers=0 callees=1 indirect=0 special_fields=0
+    CALL 0x5B22FF -> 0x9ECE10
+- on_unpickle_internal rva=0x5B2324 fn=0x5B2324-0x5B24A2 callers=3 callees=11 indirect=0 special_fields=0
+    STRING 0x5B2328 'OnUnpickleInternal'
+    CALL 0x5B2340 -> 0x9F4CF0
+    CALL 0x5B2363 -> 0x9EF660
+    CALL 0x5B238E -> 0x60B9C0
+    CALL 0x5B23F6 -> 0x9EAE10
+    CALL 0x5B2402 -> 0x9EDFC0
+    CALL 0x5B243D -> 0x5B2471
+    CALL 0x5B244A -> 0x5B245C
+    CALL 0x5B2454 -> 0xD21A90
+    CALL 0x5B2468 -> 0x3ED39A
+    CALL 0x5B248C -> 0x9EB890
+    CALL 0x5B249C -> 0x9E91A0
+- byte_serializer rva=0x7E7F10 fn=0x7E7F10-0x7E8330 callers=11 callees=29 indirect=0 special_fields=0
+    STRING 0x7E7F94 'tableref_root'
+    STRING 0x7E802F 'tableref_root'
+    CALL 0x7E7F43 -> 0x9E4900
+    CALL 0x7E7F82 -> 0x9E3020
+    CALL 0x7E7F9E -> 0x9F4CF0
+    CALL 0x7E7FC6 -> 0x9EF660
+    CALL 0x7E7FED -> 0x9F3EA0
+    CALL 0x7E7FF8 -> 0x7E7FFC
+    CALL 0x7E8010 -> 0x7E8D90
+    CALL 0x7E801D -> 0x9E3020
+    CALL 0x7E8039 -> 0x9F4CF0
+    CALL 0x7E8061 -> 0x9EF660
+    CALL 0x7E806E -> 0x9E7FA0
+    CALL 0x7E8083 -> 0x7E8B70
+    CALL 0x7E808F -> 0x7E88F0
+    CALL 0x7E809B -> 0x7E8760
+    CALL 0x7E8109 -> 0x3ED39A
+    CALL 0x7E8119 -> 0x3ED39A
+    CALL 0x7E813D -> 0x7E8540
+    CALL 0x7E8174 -> 0x7E818B
+    CALL 0x7E81B0 -> 0x7E81CB
+    CALL 0x7E81B9 -> 0x3ED39A
+- userdata_serializer rva=0x7E9190 fn=0x7E9190-0x7E9331 callers=3 callees=7 indirect=1 special_fields=10
+    STRING 0x7E91CA '__codesideluaclass'
+    CALL 0x7E91BC -> 0x9E3F80
+    CALL 0x7E91DE -> 0x9F4CF0
+    CALL 0x7E9206 -> 0x9EF660
+    CALL 0x7E9221 -> 0x7E9236
+    CALL 0x7E922B -> 0x7E9231
+    CALL 0x7E92E6 -> 0x3ED39A
+    CALL 0x7E931E -> 0x3EB970
+    INDIRECT 0x7E9298 base=None reg=r10 disp=None
+    FIELD 0x7E9255 disp=0xA4 access=1 base=rax
+    FIELD 0x7E925F disp=0xB8 access=1 base=rax
+    FIELD 0x7E9266 disp=0x48 access=1 base=rax
+    FIELD 0x7E9275 disp=0x30 access=1 base=rsp
+    FIELD 0x7E927A disp=0x30 access=2 base=rsp
+    FIELD 0x7E92B2 disp=0x30 access=1 base=rsp
+    FIELD 0x7E92C8 disp=0x30 access=1 base=rsi
+    FIELD 0x7E92D6 disp=0x30 access=1 base=rsi
+    FIELD 0x7E92DA disp=0x30 access=1 base=rsp
+    FIELD 0x7E92F2 disp=0x30 access=1 base=rsp
+- userdata_serializer_helper rva=0x7E9340 fn=0x7E9340-0x7E93B9 callers=2 callees=0 indirect=1 special_fields=0
+    INDIRECT 0x7E93A4 base=rip reg=None disp=5635246
+- gameobject_token_resolver rva=0x4EF0B0 fn=NONE callers=386 callees=0 indirect=0 special_fields=0
+- lua_gameobject_unbox rva=0x5F9350 fn=0x5F9350-0x5F95CF callers=398 callees=12 indirect=1 special_fields=7
+    CALL 0x5F9364 -> 0x9E3020
+    CALL 0x5F9381 -> 0x5F938F
+    CALL 0x5F938A -> 0x5F938F
+    CALL 0x5F9397 -> 0x5F939F
+    CALL 0x5F9407 -> 0x4EF0B0
+    CALL 0x5F9450 -> 0x549BC0
+    CALL 0x5F94C6 -> 0x4EF0B0
+    CALL 0x5F94F1 -> 0x5F94F9
+    CALL 0x5F9542 -> 0x549D10
+    CALL 0x5F955E -> 0x549D10
+    CALL 0x5F95A2 -> 0x7C5790
+    CALL 0x5F95BA -> 0x824AC0
+    INDIRECT 0x5F94F6 base=rax reg=None disp=24
+    FIELD 0x5F93A6 disp=0x30 access=1 base=rsp
+    FIELD 0x5F9412 disp=0x30 access=1 base=rsp
+    FIELD 0x5F9461 disp=0x30 access=1 base=rsp
+    FIELD 0x5F9509 disp=0x30 access=1 base=rsp
+    FIELD 0x5F9533 disp=0x30 access=1 base=rsp
+    FIELD 0x5F958D disp=0x30 access=1 base=rsp
+    FIELD 0x5F95BF disp=0x30 access=1 base=rsp
+- gameobject_token_packer rva=0x60B9C0 fn=NONE callers=46 callees=0 indirect=0 special_fields=0
+
+GRAPH INTERSECTIONS
+- restore_to_gameobject_resolver: 0
+- restore_to_lua_gameobject_unbox: 0
+- restore_serializer_overlap: 54
+    function=0x7E8D90 restore_depth=1 serializer_depth=1
+    function=0x9F4CF0 restore_depth=1 serializer_depth=1
+    function=0x9C9CC0 restore_depth=1 serializer_depth=2
+    function=0x9E4900 restore_depth=2 serializer_depth=1
+    function=0x9F3280 restore_depth=1 serializer_depth=2
+    function=0x9E91A0 restore_depth=2 serializer_depth=2
+    function=0x9E93A0 restore_depth=2 serializer_depth=2
+    function=0x9EB890 restore_depth=1 serializer_depth=3
+    function=0x9EBB90 restore_depth=2 serializer_depth=2
+    function=0x9ED520 restore_depth=2 serializer_depth=2
+    function=0x9ECF00 restore_depth=1 serializer_depth=4
+    function=0x9EF660 restore_depth=4 serializer_depth=1
+    function=0x9EFD60 restore_depth=1 serializer_depth=4
+    function=0x9F3EA0 restore_depth=4 serializer_depth=1
+    function=0x9E91E0 restore_depth=3 serializer_depth=3
+    function=0x9E9720 restore_depth=3 serializer_depth=3
+    function=0x9EA560 restore_depth=3 serializer_depth=3
+    function=0x9EAE10 restore_depth=3 serializer_depth=3
+    function=0x9ECC90 restore_depth=3 serializer_depth=3
+    function=0x9ED450 restore_depth=2 serializer_depth=4
+    function=0x9EDFC0 restore_depth=3 serializer_depth=3
+    function=0x9EFBE0 restore_depth=3 serializer_depth=3
+    function=0x9EFF40 restore_depth=3 serializer_depth=3
+    function=0x9F4390 restore_depth=3 serializer_depth=3
+    function=0x9F5BA0 restore_depth=2 serializer_depth=4
+    function=0xB3E90 restore_depth=4 serializer_depth=3
+    function=0x3EB970 restore_depth=4 serializer_depth=3
+    function=0x9EC200 restore_depth=2 serializer_depth=5
+    function=0x9EC6C0 restore_depth=2 serializer_depth=5
+    function=0x9EFB50 restore_depth=5 serializer_depth=2
+- restore_userdata_serializer_overlap: 50
+    function=0x9F4CF0 restore_depth=1 userdata_depth=1
+    function=0x9E91A0 restore_depth=2 userdata_depth=2
+    function=0x9E93A0 restore_depth=2 userdata_depth=2
+    function=0x9EB890 restore_depth=1 userdata_depth=3
+    function=0x9EBB90 restore_depth=2 userdata_depth=2
+    function=0x9ED520 restore_depth=2 userdata_depth=2
+    function=0x3EB970 restore_depth=4 userdata_depth=1
+    function=0x9ECF00 restore_depth=1 userdata_depth=4
+    function=0x9EF660 restore_depth=4 userdata_depth=1
+    function=0x9EFD60 restore_depth=1 userdata_depth=4
+    function=0x9E91E0 restore_depth=3 userdata_depth=3
+    function=0x9E9720 restore_depth=3 userdata_depth=3
+    function=0x9EA560 restore_depth=3 userdata_depth=3
+    function=0x9EAE10 restore_depth=3 userdata_depth=3
+    function=0x9ECC90 restore_depth=3 userdata_depth=3
+    function=0x9ED450 restore_depth=2 userdata_depth=4
+    function=0x9EDFC0 restore_depth=3 userdata_depth=3
+    function=0x9EFBE0 restore_depth=3 userdata_depth=3
+    function=0x9EFF40 restore_depth=3 userdata_depth=3
+    function=0x9F4390 restore_depth=3 userdata_depth=3
+    function=0x9F5BA0 restore_depth=2 userdata_depth=4
+    function=0x9EC200 restore_depth=2 userdata_depth=5
+    function=0x9EC6C0 restore_depth=2 userdata_depth=5
+    function=0x9F39B0 restore_depth=3 userdata_depth=4
+    function=0x9F5B80 restore_depth=2 userdata_depth=5
+    function=0xB3E90 restore_depth=4 userdata_depth=4
+    function=0x9E9C60 restore_depth=4 userdata_depth=4
+    function=0x9EAD50 restore_depth=4 userdata_depth=4
+    function=0x9EB370 restore_depth=4 userdata_depth=4
+    function=0x9EBCD0 restore_depth=4 userdata_depth=4
+
+TOP LOCAL CODEC FUNCTIONS 0x7E7000-0x7EA500
+#1 fn=0x7E7B60-0x7E7E34 score=260 indirect=2 special_fields=9 strings=2
+    STRING 0x7E7CA1 'tableref'
+    STRING 0x7E7D08 'classref'
+    CALL 0x7E7C00 -> 0x9E4360
+    CALL 0x7E7C2C -> 0x9E4360
+    CALL 0x7E7C59 -> 0x9F3280
+    CALL 0x7E7C5E -> 0x7E7C72
+    CALL 0x7E7C75 -> 0x9ECE90
+    CALL 0x7E7C9C -> 0x9ECF00
+    CALL 0x7E7CA8 -> 0x7E7D0F
+    CALL 0x7E7CC0 -> 0x9F3280
+    CALL 0x7E7CC5 -> 0x7E7CD9
+    CALL 0x7E7CDC -> 0x9ECE90
+    INDIRECT 0x7E7B94 base=None reg=r9 disp=None
+    INDIRECT 0x7E7E07 base=None reg=r9 disp=None
+    FIELD 0x7E7BB6 disp=0x30 access=1 base=rsp
+    FIELD 0x7E7BDD disp=0x30 access=1 base=rsp
+    FIELD 0x7E7C07 disp=0x30 access=1 base=rsp
+    FIELD 0x7E7C33 disp=0x30 access=1 base=rsp
+    FIELD 0x7E7D6F disp=0x30 access=1 base=rsp
+    FIELD 0x7E7D8D disp=0x30 access=1 base=rdx
+    FIELD 0x7E7DDD disp=0x48 access=1 base=rcx
+    FIELD 0x7E7DF8 disp=0x30 access=1 base=rsp
+#2 fn=0x7E9190-0x7E9331 score=240 indirect=1 special_fields=10 strings=1
+    STRING 0x7E91CA '__codesideluaclass'
+    CALL 0x7E91BC -> 0x9E3F80
+    CALL 0x7E91DE -> 0x9F4CF0
+    CALL 0x7E9206 -> 0x9EF660
+    CALL 0x7E9221 -> 0x7E9236
+    CALL 0x7E922B -> 0x7E9231
+    CALL 0x7E92E6 -> 0x3ED39A
+    CALL 0x7E931E -> 0x3EB970
+    INDIRECT 0x7E9298 base=None reg=r10 disp=None
+    FIELD 0x7E9255 disp=0xA4 access=1 base=rax
+    FIELD 0x7E925F disp=0xB8 access=1 base=rax
+    FIELD 0x7E9266 disp=0x48 access=1 base=rax
+    FIELD 0x7E9275 disp=0x30 access=1 base=rsp
+    FIELD 0x7E927A disp=0x30 access=2 base=rsp
+    FIELD 0x7E92B2 disp=0x30 access=1 base=rsp
+    FIELD 0x7E92C8 disp=0x30 access=1 base=rsi
+    FIELD 0x7E92D6 disp=0x30 access=1 base=rsi
+#3 fn=0x7E9550-0x7E9B54 score=215 indirect=4 special_fields=5 strings=1
+    STRING 0x7E9AD7 'tableref_root'
+    CALL 0x7E95BA -> 0x7E8D90
+    CALL 0x7E9630 -> 0x3ED388
+    CALL 0x7E9669 -> 0x9C6380
+    CALL 0x7E9677 -> 0x9C6480
+    CALL 0x7E9689 -> 0x9C9CC0
+    CALL 0x7E96B9 -> 0x3ED39A
+    CALL 0x7E9707 -> 0x7E972B
+    CALL 0x7E9715 -> 0x7E972B
+    CALL 0x7E9725 -> 0x7E972B
+    CALL 0x7E9756 -> 0x7E977C
+    INDIRECT 0x7E96F8 base=None reg=rcx disp=None
+    INDIRECT 0x7E9746 base=None reg=rcx disp=None
+    INDIRECT 0x7E984F base=rdi reg=None disp=0
+    INDIRECT 0x7E995E base=rdi reg=None disp=0
+    FIELD 0x7E95B5 disp=0x30 access=1 base=rsp
+    FIELD 0x7E95C7 disp=0x48 access=2 base=rsp
+    FIELD 0x7E96B4 disp=0x30 access=1 base=rsp
+    FIELD 0x7E99E1 disp=0x30 access=1 base=rsp
+    FIELD 0x7E9A1D disp=0x30 access=1 base=rsp
+#4 fn=0x7E9B60-0x7E9BA3 score=120 indirect=0 special_fields=2 strings=0
+    CALL 0x7E9B8A -> 0x7E7F10
+    FIELD 0x7E9B77 disp=0x30 access=2 base=rsp
+    FIELD 0x7E9B94 disp=0x30 access=1 base=rsp
+#5 fn=0x7E8760-0x7E88E3 score=95 indirect=0 special_fields=4 strings=1
+    STRING 0x7E878E 'tableref_to_classname'
+    CALL 0x7E8785 -> 0x9E3020
+    CALL 0x7E87A1 -> 0x9F4CF0
+    CALL 0x7E87C9 -> 0x9EF660
+    CALL 0x7E881A -> 0x9EF660
+    CALL 0x7E8827 -> 0x9E4280
+    CALL 0x7E8847 -> 0x9EFB50
+    CALL 0x7E8853 -> 0x7E8893
+    CALL 0x7E886B -> 0x9F3280
+    CALL 0x7E8870 -> 0x7E8884
+    CALL 0x7E8896 -> 0x7E9340
+    FIELD 0x7E87D8 disp=0x48 access=1 base=rbp
+    FIELD 0x7E88B4 disp=0x48 access=1 base=rbp
+    FIELD 0x7E88C0 disp=0x30 access=1 base=rsp
+    FIELD 0x7E88CE disp=0x48 access=1 base=rsp
+#6 fn=0x7E8540-0x7E871A score=80 indirect=0 special_fields=4 strings=0
+    CALL 0x7E8574 -> 0x3ED388
+    CALL 0x7E85AE -> 0x9C9850
+    CALL 0x7E85F7 -> 0x7E8672
+    CALL 0x7E8657 -> 0x7E8672
+    CALL 0x7E866E -> 0x7E8672
+    CALL 0x7E8693 -> 0x7E869C
+    CALL 0x7E8697 -> 0x7E869C
+    CALL 0x7E86CB -> 0x9C9DA0
+    CALL 0x7E86D7 -> 0x9C9CC0
+    CALL 0x7E86F7 -> 0x7E86FC
+    FIELD 0x7E85AA disp=0x48 access=2 base=rsp
+    FIELD 0x7E85F9 disp=0x30 access=1 base=r8
+    FIELD 0x7E862D disp=0x30 access=1 base=r9
+    FIELD 0x7E8672 disp=0x48 access=1 base=r8
+#7 fn=0x7E8EF0-0x7E8F80 score=80 indirect=0 special_fields=0 strings=0
+    CALL 0x7E8F0E -> 0x9E3020
+    CALL 0x7E8F27 -> 0x7E8F2F
+    CALL 0x7E8F5A -> 0x7E9012
+    CALL 0x7E8F70 -> 0x7E9190
+    CALL 0x7E8F79 -> 0x7E9012
+#8 fn=0x7E74F0-0x7E764F score=75 indirect=0 special_fields=3 strings=1
+    STRING 0x7E7602 'tableref_root'
+    CALL 0x7E751B -> 0x9F3280
+    CALL 0x7E7520 -> 0x7E7534
+    CALL 0x7E7537 -> 0x9ECE90
+    CALL 0x7E755E -> 0x9ECF00
+    CALL 0x7E757E -> 0x7E7920
+    CALL 0x7E75A4 -> 0x7E7660
+    CALL 0x7E75EF -> 0x9E3020
+    CALL 0x7E760F -> 0x9F4CF0
+    CALL 0x7E7633 -> 0x9EFD60
+    FIELD 0x7E758C disp=0x30 access=1 base=rsp
+    FIELD 0x7E75BB disp=0x30 access=1 base=rsp
+    FIELD 0x7E7644 disp=0x30 access=1 base=rsp
+#9 fn=0x7E7E40-0x7E7ECD score=65 indirect=1 special_fields=2 strings=0
+    INDIRECT 0x7E7ECA base=None reg=r9 disp=None
+    FIELD 0x7E7E69 disp=0x30 access=1 base=rdx
+    FIELD 0x7E7EAC disp=0x48 access=1 base=rcx
+#10 fn=0x7E83F1-0x7E850C score=65 indirect=1 special_fields=2 strings=0
+    CALL 0x7E843A -> 0x7E8443
+    CALL 0x7E847A -> 0x7E84E2
+    CALL 0x7E8485 -> 0x7E84E2
+    CALL 0x7E84A6 -> 0x7E84E2
+    CALL 0x7E84B1 -> 0x7E84E2
+    CALL 0x7E84D2 -> 0x7E84E2
+    CALL 0x7E84DF -> 0x7E84E2
+    CALL 0x7E84E9 -> 0x7E9450
+    INDIRECT 0x7E845A base=None reg=rcx disp=None
+    FIELD 0x7E83F1 disp=0x30 access=2 base=rsp
+    FIELD 0x7E8507 disp=0x30 access=1 base=rsp
+#11 fn=0x7E796B-0x7E7A7D score=60 indirect=0 special_fields=3 strings=0
+    CALL 0x7E79BA -> 0x7E79CA
+    CALL 0x7E79CD -> 0x9E4360
+    CALL 0x7E79EF -> 0x7E7A44
+    CALL 0x7E7A04 -> 0x7E7A44
+    CALL 0x7E7A10 -> 0x7E7A44
+    CALL 0x7E7A3F -> 0x7E7A44
+    CALL 0x7E7A53 -> 0x9EFD60
+    FIELD 0x7E7973 disp=0x48 access=2 base=rsp
+    FIELD 0x7E7A61 disp=0x48 access=1 base=rsi
+    FIELD 0x7E7A73 disp=0x48 access=1 base=rsp
+#12 fn=0x7E8B70-0x7E8D7D score=60 indirect=1 special_fields=1 strings=1
+    STRING 0x7E8B9C 'stringref_to_string'
+    CALL 0x7E8B93 -> 0x9E3020
+    CALL 0x7E8BAF -> 0x9F4CF0
+    CALL 0x7E8BD7 -> 0x9EF660
+    CALL 0x7E8C13 -> 0x9EF660
+    CALL 0x7E8C24 -> 0x9E4280
+    CALL 0x7E8C42 -> 0x9EFB50
+    CALL 0x7E8C4D -> 0x7E8C8D
+    CALL 0x7E8C65 -> 0x9F3280
+    CALL 0x7E8C6A -> 0x7E8C7E
+    CALL 0x7E8D1F -> 0x3ED39A
+    INDIRECT 0x7E8D76 base=rip reg=None disp=5636835
+    FIELD 0x7E8D63 disp=0x48 access=1 base=rsp
+#13 fn=0x7E88F0-0x7E8B65 score=55 indirect=0 special_fields=2 strings=1
+    STRING 0x7E8924 'tableref_to_table'
+    CALL 0x7E891B -> 0x9E3020
+    CALL 0x7E8937 -> 0x9F4CF0
+    CALL 0x7E895F -> 0x9EF660
+    CALL 0x7E89B0 -> 0x9EF660
+    CALL 0x7E89C1 -> 0x9E4900
+    CALL 0x7E8A3A -> 0x7E8A8A
+    CALL 0x7E8A4E -> 0x7E8A8A
+    CALL 0x7E8A5A -> 0x7E8A8A
+    CALL 0x7E8A85 -> 0x7E8A8A
+    CALL 0x7E8A94 -> 0x9ED120
+    FIELD 0x7E89D3 disp=0x48 access=1 base=rbp
+    FIELD 0x7E89F9 disp=0x48 access=2 base=rbp
+#14 fn=0x7E8D90-0x7E8EE8 score=40 indirect=0 special_fields=2 strings=0
+    CALL 0x7E8DA6 -> 0x3ED388
+    CALL 0x7E8EC8 -> 0x3ED388
+    CALL 0x7E8EE3 -> 0x3ED388
+    FIELD 0x7E8E74 disp=0x30 access=2 base=rdi
+    FIELD 0x7E8ED9 disp=0x30 access=1 base=rsp
+#15 fn=0x7E9FC5-0x7EA028 score=40 indirect=0 special_fields=2 strings=0
+    FIELD 0x7E9FC5 disp=0x30 access=2 base=rsp
+    FIELD 0x7EA01E disp=0x30 access=1 base=rsp
+#16 fn=0x7EA0C9-0x7EA12D score=40 indirect=0 special_fields=2 strings=0
+    CALL 0x7EA11E -> 0x7EA123
+    FIELD 0x7EA0C9 disp=0x30 access=2 base=rsp
+    FIELD 0x7EA123 disp=0x30 access=1 base=rsp
+#17 fn=0x7E7660-0x7E7917 score=35 indirect=0 special_fields=1 strings=1
+    STRING 0x7E767A 'tableref_to_table'
+    CALL 0x7E7681 -> 0x9E8190
+    CALL 0x7E76FA -> 0x9F3280
+    CALL 0x7E76FF -> 0x7E7713
+    CALL 0x7E7725 -> 0x9F5BA0
+    CALL 0x7E7787 -> 0x9ECF00
+    CALL 0x7E77CC -> 0x7E7B60
+    CALL 0x7E77E3 -> 0x7E7B60
+    CALL 0x7E77F8 -> 0x9E4900
+    CALL 0x7E7806 -> 0x9E3020
+    CALL 0x7E781D -> 0x9EFD60
+    FIELD 0x7E76B0 disp=0x48 access=1 base=r13
+#18 fn=0x7E7920-0x7E796B score=35 indirect=0 special_fields=1 strings=1
+    STRING 0x7E7938 'tableref_to_classname'
+    CALL 0x7E793F -> 0x9E8190
+    FIELD 0x7E7960 disp=0x48 access=1 base=rsi
+#19 fn=0x7E7F10-0x7E8330 score=30 indirect=0 special_fields=0 strings=2
+    STRING 0x7E7F94 'tableref_root'
+    STRING 0x7E802F 'tableref_root'
+    CALL 0x7E7F43 -> 0x9E4900
+    CALL 0x7E7F82 -> 0x9E3020
+    CALL 0x7E7F9E -> 0x9F4CF0
+    CALL 0x7E7FC6 -> 0x9EF660
+    CALL 0x7E7FED -> 0x9F3EA0
+    CALL 0x7E7FF8 -> 0x7E7FFC
+    CALL 0x7E8010 -> 0x7E8D90
+    CALL 0x7E801D -> 0x9E3020
+    CALL 0x7E8039 -> 0x9F4CF0
+    CALL 0x7E8061 -> 0x9EF660
+#20 fn=0x7E9340-0x7E93B9 score=25 indirect=1 special_fields=0 strings=0
+    INDIRECT 0x7E93A4 base=rip reg=None disp=5635246
+#21 fn=0x7E7AA0-0x7E7B51 score=20 indirect=0 special_fields=1 strings=0
+    CALL 0x7E7ACE -> 0x3ED388
+    CALL 0x7E7B0F -> 0x9C6380
+    CALL 0x7E7B1E -> 0x9C6480
+    CALL 0x7E7B2A -> 0x7E7B38
+    CALL 0x7E7B31 -> 0x9C9CC0
+    FIELD 0x7E7B02 disp=0x30 access=2 base=rsp
+#22 fn=0x7E90AE-0x7E917D score=20 indirect=0 special_fields=1 strings=0
+    CALL 0x7E90BE -> 0x9E41B0
+    CALL 0x7E90C9 -> 0x7E9340
+    CALL 0x7E90D2 -> 0x7E9012
+    CALL 0x7E90E4 -> 0x9E3020
+    CALL 0x7E9109 -> 0x9F3EA0
+    CALL 0x7E9134 -> 0x7E9012
+    CALL 0x7E9141 -> 0x7E9012
+    CALL 0x7E9153 -> 0x9E3020
+    CALL 0x7E916E -> 0x7E9012
+    CALL 0x7E9178 -> 0x7E9012
+    FIELD 0x7E9123 disp=0x30 access=2 base=rsp
+#23 fn=0x7EA320-0x7EA47A score=20 indirect=0 special_fields=1 strings=0
+    CALL 0x7EA341 -> 0x7EA396
+    CALL 0x7EA391 -> 0x7EA396
+    CALL 0x7EA3CA -> 0x7EA423
+    CALL 0x7EA41E -> 0x7EA423
+    CALL 0x7EA437 -> 0x7E9E00
+    CALL 0x7EA45F -> 0x7E9E00
+    FIELD 0x7EA46F disp=0x48 access=1 base=rsp
+#24 fn=0x7EA47A-0x7EA5D1 score=20 indirect=0 special_fields=1 strings=0
+    CALL 0x7EA4CA -> 0x7EA523
+    CALL 0x7EA51E -> 0x7EA523
+    CALL 0x7EA53E -> 0x7EA5B5
+    CALL 0x7EA54F -> 0x7EA59F
+    CALL 0x7EA5CC -> 0x7E9E00
+    FIELD 0x7EA5C2 disp=0x48 access=1 base=rsp
+#25 fn=0x7E8F80-0x7E9012 score=15 indirect=0 special_fields=0 strings=1
+    STRING 0x7E8F91 'tableref'
+    CALL 0x7E8F88 -> 0x9E3020
+    CALL 0x7E8FA4 -> 0x9F4CF0
+    CALL 0x7E8FCC -> 0x9EF660
+    CALL 0x7E8FE4 -> 0x7E8FEB
+    CALL 0x7E8FFF -> 0x9E7FA0
+#26 fn=0x7E9026-0x7E90AE score=15 indirect=0 special_fields=0 strings=1
+    STRING 0x7E9037 'classref'
+    CALL 0x7E902C -> 0x9E3020
+    CALL 0x7E9044 -> 0x9F4CF0
+    CALL 0x7E906C -> 0x9EF660
+    CALL 0x7E9084 -> 0x7E908B
+    CALL 0x7E909F -> 0x7E8FFF
+    CALL 0x7E90A9 -> 0x7E900D
+#27 fn=0x7E7A7D-0x7E7A9A score=0 indirect=0 special_fields=0 strings=0
+#28 fn=0x7E8340-0x7E83C6 score=0 indirect=0 special_fields=0 strings=0
+    CALL 0x7E839E -> 0x7E83AF
+#29 fn=0x7E83D0-0x7E83F1 score=0 indirect=0 special_fields=0 strings=0
+#30 fn=0x7E850C-0x7E8530 score=0 indirect=0 special_fields=0 strings=0
+#31 fn=0x7E9012-0x7E9026 score=0 indirect=0 special_fields=0 strings=0
+#32 fn=0x7E9BB0-0x7E9BE7 score=0 indirect=0 special_fields=0 strings=0
+    CALL 0x7E9BD1 -> 0x553EB0
+#33 fn=0x7E9E00-0x7E9E50 score=0 indirect=0 special_fields=0 strings=0
+#34 fn=0x7E9E50-0x7E9EC1 score=0 indirect=0 special_fields=0 strings=0
+#35 fn=0x7E9EC1-0x7E9EC6 score=0 indirect=0 special_fields=0 strings=0
+#36 fn=0x7E9ED0-0x7E9F06 score=0 indirect=0 special_fields=0 strings=0
+#37 fn=0x7E9F06-0x7E9F79 score=0 indirect=0 special_fields=0 strings=0
+#38 fn=0x7E9F79-0x7E9F90 score=0 indirect=0 special_fields=0 strings=0
+#39 fn=0x7E9FA0-0x7E9FC5 score=0 indirect=0 special_fields=0 strings=0
+    CALL 0x7E9FB8 -> 0x7EA028
+    CALL 0x7E9FBD -> 0x7EA028
+#40 fn=0x7EA028-0x7EA04C score=0 indirect=0 special_fields=0 strings=0
+    CALL 0x7EA047 -> 0x7E9E00
+#41 fn=0x7EA060-0x7EA08C score=0 indirect=0 special_fields=0 strings=0
+    CALL 0x7EA07D -> 0x7E9ED0
+#42 fn=0x7EA0A0-0x7EA0C9 score=0 indirect=0 special_fields=0 strings=0
+    CALL 0x7EA0BC -> 0x7EA12D
+    CALL 0x7EA0C1 -> 0x7EA12D
+#43 fn=0x7EA12D-0x7EA15E score=0 indirect=0 special_fields=0 strings=0
+    CALL 0x7EA159 -> 0x7E9E00
+#44 fn=0x7EA170-0x7EA1B6 score=0 indirect=0 special_fields=0 strings=0
+    CALL 0x7EA1A7 -> 0x7E9ED0
+#45 fn=0x7EA1C0-0x7EA292 score=0 indirect=0 special_fields=0 strings=0
+    CALL 0x7EA1E6 -> 0x7EA23B
+    CALL 0x7EA236 -> 0x7EA23B
+    CALL 0x7EA24F -> 0x7E9E00
+    CALL 0x7EA277 -> 0x7E9E00
+#46 fn=0x7EA2A0-0x7EA30E score=0 indirect=0 special_fields=0 strings=0
+    CALL 0x7EA2DE -> 0x7E9E00
+    CALL 0x7EA2FA -> 0x7E9ED0
