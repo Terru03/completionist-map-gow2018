@@ -1,0 +1,21 @@
+GoW GameObject parent persistence trace
+=======================================
+gameobject_parent_descriptor_status=PASS_EXACT_GAMEOBJECT_PARENT_DESCRIPTOR
+gameobject_userdata_callback_status=BLOCKED_EXACT_GAMEOBJECT_USERDATA_CALLBACK
+child_descriptor=0x2D1B710
+parent_descriptor=0x27DA820
+resolved_save_callback_rva=none
+precise_missing_edge=parent descriptor 0x27DA820 is proved; exact runtime value written to parent +0xB8, or inherited parent chain if +0xB8 is null, remains to be resolved from reported writer windows
+
+Slots
+parent_0x48@0x27DA868: file_qword=None file_exec=None writes=0
+guard_0xA4@0x27DA8C4: file_qword=None file_exec=None writes=0
+save_0xB8@0x27DA8D8: file_qword=None file_exec=None writes=2
+restore_0xC0@0x27DA8E0: file_qword=None file_exec=None writes=2
+
+Reference counts
+parent_descriptor: rip=318 imm=0 ptr=1
+parent_0x48: rip=0 imm=0 ptr=0
+guard_0xA4: rip=0 imm=0 ptr=0
+save_0xB8: rip=2 imm=0 ptr=0
+restore_0xC0: rip=2 imm=0 ptr=0
