@@ -56,17 +56,36 @@ function Publish([string]$Result) {
     $script:published = $true
 }
 
-function Invoke-PythonLogged([string[]]$Args, [string]$OutputPath) {
+function Invoke-PythonScriptLogged {
+    param(
+        [Parameter(Mandatory=$true)][string]$PythonExe,
+        [Parameter(Mandatory=$true)][string]$ScriptPath,
+        [Parameter(Mandatory=$true)][string[]]$ScriptArguments,
+        [Parameter(Mandatory=$true)][string]$OutputPath
+    )
+
+    if (-not (Test-Path -LiteralPath $PythonExe -PathType Leaf)) { throw "Python executable missing: $PythonExe" }
+    if (-not (Test-Path -LiteralPath $ScriptPath -PathType Leaf)) { throw "Python script missing: $ScriptPath" }
+
+    Write-Host "PYTHON_EXE=$PythonExe"
+    Write-Host "PYTHON_SCRIPT=$ScriptPath"
+    Write-Host "PYTHON_ARGUMENT_COUNT=$($ScriptArguments.Count)"
+
     $oldEap = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
     try {
-        & python @Args 2>&1 | Tee-Object -FilePath $OutputPath
-        $exit = $LASTEXITCODE
+        # -I keeps the invocation deterministic and, most importantly, this is
+        # always an explicit script invocation.  Do not use a parameter named
+        # $Args here: $Args is a PowerShell automatic variable and caused the
+        # previous Windows PowerShell 5.1 run to launch bare `python`, dropping
+        # Python 3.14 into its interactive _pyrepl console.
+        & $PythonExe -I $ScriptPath @ScriptArguments 2>&1 | Tee-Object -FilePath $OutputPath
+        $pythonExit = $LASTEXITCODE
     }
     finally {
         $ErrorActionPreference = $oldEap
     }
-    if ($exit -ne 0) { throw "Python exited $exit. Full output: $OutputPath" }
+    if ($pythonExit -ne 0) { throw "Python exited $pythonExit. Full output: $OutputPath" }
 }
 
 try {
@@ -93,8 +112,15 @@ try {
     if (-not (Test-Path -LiteralPath $ext -PathType Leaf)) { throw 'Pointer extension tool missing.' }
     if (-not (Test-Path -LiteralPath $own -PathType Leaf)) { throw 'Pointer ownership analyzer missing.' }
 
-    Invoke-PythonLogged @($ext,'--exe',$exe,'--db',$db,'--output-json',$extJson,'--output-text',$extText) $extOut
-    Invoke-PythonLogged @($own,'--db',$db,'--output-json',$ownJson,'--output-text',$ownText) $ownOut
+    $pythonCommand = Get-Command python.exe -ErrorAction Stop
+    $pythonExe = $pythonCommand.Source
+    if ([string]::IsNullOrWhiteSpace($pythonExe)) { throw 'Unable to resolve python.exe.' }
+
+    $extArgs = @('--exe',$exe,'--db',$db,'--output-json',$extJson,'--output-text',$extText)
+    Invoke-PythonScriptLogged -PythonExe $pythonExe -ScriptPath $ext -ScriptArguments $extArgs -OutputPath $extOut
+
+    $ownArgs = @('--db',$db,'--output-json',$ownJson,'--output-text',$ownText)
+    Invoke-PythonScriptLogged -PythonExe $pythonExe -ScriptPath $own -ScriptArguments $ownArgs -OutputPath $ownOut
 
     Publish 'PHASE_PASSED'
     Write-Host 'GOW_STATIC_POINTER_OWNERSHIP_PHASE_PASSED_AND_PUSHED' -ForegroundColor Green
