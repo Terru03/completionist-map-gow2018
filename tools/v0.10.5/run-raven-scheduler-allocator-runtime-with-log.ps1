@@ -96,6 +96,14 @@ try {
     $preflightExit = $LASTEXITCODE
     if ($preflightExit -ne 0) { throw "Runtime capturer preflight failed with exit code $preflightExit. Game not launched." }
 
+    # Windows PowerShell 5.1 does not support Tee-Object -Append. Validate the
+    # PS5.1-safe append logger before launching the game so a logging problem
+    # cannot create another pointless GoW launch.
+    $loggerProbe = '__CAPTURE_LOGGER_PREFLIGHT_OK__'
+    Add-Content -LiteralPath $pythonLog -Value $loggerProbe -Encoding UTF8
+    $loggerTail = Get-Content -LiteralPath $pythonLog -Tail 1
+    if ($loggerTail -ne $loggerProbe) { throw 'Capture logger preflight failed. Game not launched.' }
+
     $toolCommit = (& git rev-parse HEAD).Trim()
     Write-Host ''
     Write-Host 'Game will start. Wait for debugger-ready line before loading save.' -ForegroundColor Cyan
@@ -113,11 +121,15 @@ try {
     } while ($null -eq $live -and (Get-Date) -lt $deadline)
     if ($null -eq $live) { throw 'GoW.exe process did not remain available for debugger attach.' }
 
-    # Merge native stdout/stderr into one live stream so constructor/startup
-    # tracebacks are preserved in the archive instead of collapsing to only
-    # an exit code. Tee-Object keeps interactive capture prompts visible.
+    # Merge native stdout/stderr into one live stream. Use Add-Content rather
+    # than Tee-Object -Append because the latter is not available in Windows
+    # PowerShell 5.1. Keep every Python line visible and archived.
     & python $scriptPath capture --pid $game.Id --exe $exePath --wad $wadPath --tool-commit $toolCommit --output $captureJson --runs 2 2>&1 |
-        Tee-Object -LiteralPath $pythonLog -Append | Out-Host
+        ForEach-Object {
+            $line = [string]$_
+            Add-Content -LiteralPath $pythonLog -Value $line -Encoding UTF8
+            Write-Host $line
+        }
     $pythonExit = $LASTEXITCODE
     Write-Host "python_exit_code=$pythonExit"
     if ($pythonExit -ne 0) { throw "Runtime capturer failed with exit code $pythonExit." }
