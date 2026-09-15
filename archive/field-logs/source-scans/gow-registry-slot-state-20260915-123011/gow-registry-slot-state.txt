@@ -1,0 +1,18 @@
+GoW registry slot-state trace
+=============================
+status=PASS_REGISTRY_SLOT_POLICY
+gameobject_persistent_key_status=BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY
+table=0x22A98C0-0x22A9AC0
+entries=64
+static_target_count=0
+nonzero_raw_count=0
+initialization_class=RUNTIME_INITIALIZED_REGISTRY_TABLE
+table_xrefs=2
+policy=circular first-free from cursor; slot 0 skipped; cursor advances to next index
+precise_missing_edge=trace registry table population and +0x28/+0x2C/+0x30 initialization/reset before canonical WAD allocation
+
+Non-null/static entries
+
+Table xrefs
+0x2564E fn=- -> 0x22A98A0 mov qword ptr [rip + 0x228424b], rax
+0x2566E fn=- -> 0x22A98A8 mov qword ptr [rip + 0x2284233], rax
