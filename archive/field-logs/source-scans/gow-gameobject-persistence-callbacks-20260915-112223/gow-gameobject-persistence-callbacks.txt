@@ -1,0 +1,96 @@
+GoW GameObject persistence callback trace
+=========================================
+gameobject_userdata_callback_status=PASS_EXACT_GAMEOBJECT_USERDATA_CALLBACK
+gameobject_persistent_key_status=BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY
+save_callback=0x5F96B0
+save_size=87
+save_direct_edges=4
+save_rip_refs=0
+restore_callback=0x5F95F0
+restore_size=178
+restore_direct_edges=3
+restore_rip_refs=0
+direct_callees_disassembled=2
+precise_missing_edge=callback semantics: exact bytes written by 0x5F96B0 and their connected stable GameObject identity ancestry; then inverse resolution through 0x5F95F0
+
+Save instructions
+0x5F96B0  4883ec38                 sub rsp, 0x38
+0x5F96B4  4d63d1                   movsxd r10, r9d
+0x5F96B7  4d8bd8                   mov r11, r8
+0x5F96BA  e861993e00               call 0x1409e3020
+0x5F96BF  8b4808                   mov ecx, dword ptr [rax + 8]
+0x5F96C2  83e10f                   and ecx, 0xf
+0x5F96C5  83f902                   cmp ecx, 2
+0x5F96C8  740e                     je 0x1405f96d8
+0x5F96CA  83f907                   cmp ecx, 7
+0x5F96CD  7511                     jne 0x1405f96e0
+0x5F96CF  488b00                   mov rax, qword ptr [rax]
+0x5F96D2  4883c030                 add rax, 0x30
+0x5F96D6  eb03                     jmp 0x1405f96db
+0x5F96D8  488b00                   mov rax, qword ptr [rax]
+0x5F96DB  4885c0                   test rax, rax
+0x5F96DE  7504                     jne 0x1405f96e4
+0x5F96E0  33c0                     xor eax, eax
+0x5F96E2  eb04                     jmp 0x1405f96e8
+0x5F96E4  488b4008                 mov rax, qword ptr [rax + 8]
+0x5F96E8  4c8b4c2460               mov r9, qword ptr [rsp + 0x60]
+0x5F96ED  488d4c2420               lea rcx, [rsp + 0x20]
+0x5F96F2  4d8bc2                   mov r8, r10
+0x5F96F5  4889442420               mov qword ptr [rsp + 0x20], rax
+0x5F96FA  498bd3                   mov rdx, r11
+0x5F96FD  e81efdf4ff               call 0x140549420
+0x5F9702  4883c438                 add rsp, 0x38
+0x5F9706  c3                       ret 
+
+Restore instructions
+0x5F95F0  48895c2410               mov qword ptr [rsp + 0x10], rbx
+0x5F95F5  56                       push rsi
+0x5F95F6  4883ec20                 sub rsp, 0x20
+0x5F95FA  33db                     xor ebx, ebx
+0x5F95FC  488bc2                   mov rax, rdx
+0x5F95FF  4963d0                   movsxd rdx, r8d
+0x5F9602  488bf1                   mov rsi, rcx
+0x5F9605  48895c2448               mov qword ptr [rsp + 0x48], rbx
+0x5F960A  895c2440                 mov dword ptr [rsp + 0x40], ebx
+0x5F960E  4883fa01                 cmp rdx, 1
+0x5F9612  730d                     jae 0x1405f9621
+0x5F9614  32c0                     xor al, al
+0x5F9616  488b5c2438               mov rbx, qword ptr [rsp + 0x38]
+0x5F961B  4883c420                 add rsp, 0x20
+0x5F961F  5e                       pop rsi
+0x5F9620  c3                       ret 
+0x5F9621  4c8d4c2440               lea r9, [rsp + 0x40]
+0x5F9626  48897c2430               mov qword ptr [rsp + 0x30], rdi
+0x5F962B  4c8d442448               lea r8, [rsp + 0x48]
+0x5F9630  488bc8                   mov rcx, rax
+0x5F9633  e868fbf4ff               call 0x1405491a0
+0x5F9638  0fb6f8                   movzx edi, al
+0x5F963B  84c0                     test al, al
+0x5F963D  744f                     je 0x1405f968e
+0x5F963F  488b4c2448               mov rcx, qword ptr [rsp + 0x48]
+0x5F9644  0fb6d1                   movzx edx, cl
+0x5F9647  f6d2                     not dl
+0x5F9649  f6c201                   test dl, 1
+0x5F964C  7535                     jne 0x1405f9683
+0x5F964E  48b800000000c00f0000     movabs rax, 0xfc000000000
+0x5F9658  4885c8                   test rax, rcx
+0x5F965B  7526                     jne 0x1405f9683
+0x5F965D  4c8bc1                   mov r8, rcx
+0x5F9660  488bd1                   mov rdx, rcx
+0x5F9663  49c1e811                 shr r8, 0x11
+0x5F9667  48c1ea12                 shr rdx, 0x12
+0x5F966B  4180e001                 and r8b, 1
+0x5F966F  48d1e9                   shr rcx, 1
+0x5F9672  81e2ffff0f00             and edx, 0xfffff
+0x5F9678  0fb7c9                   movzx ecx, cx
+0x5F967B  e8305aefff               call 0x1404ef0b0
+0x5F9680  488bd8                   mov rbx, rax
+0x5F9683  488bd3                   mov rdx, rbx
+0x5F9686  488bce                   mov rcx, rsi
+0x5F9689  e812e1f4ff               call 0x1405477a0
+0x5F968E  488b5c2438               mov rbx, qword ptr [rsp + 0x38]
+0x5F9693  400fb6c7                 movzx eax, dil
+0x5F9697  488b7c2430               mov rdi, qword ptr [rsp + 0x30]
+0x5F969C  4883c420                 add rsp, 0x20
+0x5F96A0  5e                       pop rsi
+0x5F96A1  c3                       ret 
