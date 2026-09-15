@@ -2,9 +2,14 @@
 
 This deliberately does NOT call DebugActiveProcess, install breakpoints, suspend
 threads, or write process memory. It opens GoW.exe with QUERY_INFORMATION and
-VM_READ only, resolves the scheduler outer for alf355_chiseldungeon.wad, obtains
-that outer's exact runtime registry ID, enumerates the flavor-1 GameObject bank,
-and scores live objects against exact canonical Raven evidence.
+VM_READ only.
+
+The supported EXE's metadata reconciliation loop at 0x82CF00 proves a 64-entry
+runtime WAD-context array at RVA 0x282B028. Entries are 0xEE28 bytes, entry+0x08
+is the WAD pointer, [WAD+0x50]+0x54 identifies the WAD filename/path, and
+WAD+0xC3C is the GameObject registry ID. This probe uses that exact mapping to
+resolve alf355_chiseldungeon.wad, then enumerates only its GameObject registry
+and scores live objects against canonical Raven evidence.
 
 The result is evidence only. A candidate token is never promoted to an exact
 persistent-key PASS by this tool alone.
@@ -34,7 +39,11 @@ TARGET_INDEX = 9633
 TARGET_OFFSET = 0x32E3C60
 TARGET_POS = (355.9026702633928, -13.425154601028225, 150.08795393212495)
 REGISTRY_TABLE_RVA = 0x22A98C0
-SCHEDULER_OUTER_SENTINEL_RVA = 0x11C7928
+WAD_CONTEXT_ARRAY_RVA = 0x282B028
+WAD_CONTEXT_COUNT = 0x40
+WAD_CONTEXT_STRIDE = 0xEE28
+WAD_CONTEXT_WAD_OFFSET = 0x08
+WAD_REGISTRY_ID_OFFSET = 0xC3C
 
 PROCESS_QUERY_INFORMATION = 0x0400
 PROCESS_VM_READ = 0x0010
@@ -176,33 +185,30 @@ def wad_name(reader: Reader, wad_ptr: int) -> str | None:
     return direct
 
 
-def scheduler_outers(reader: Reader, base: int) -> list[dict]:
-    sentinel = base + SCHEDULER_OUTER_SENTINEL_RVA
-    rows: list[dict] = []
-    seen: set[int] = set()
-    try:
-        node = reader.u64(sentinel)
-    except OSError:
-        return rows
-    for _ in range(4096):
-        if not node or node == sentinel or node in seen or not plausible_ptr(node):
-            break
-        seen.add(node)
-        raw = reader.try_read(node, 0x58)
-        if raw is None or len(raw) < 0x48:
-            break
-        nxt = struct.unpack_from("<Q", raw, 0x00)[0]
-        registry_id = struct.unpack_from("<I", raw, 0x10)[0]
-        config = struct.unpack_from("<Q", raw, 0x18)[0]
-        resource_hash = struct.unpack_from("<Q", raw, 0x30)[0]
-        wad_ptr = struct.unpack_from("<Q", raw, 0x40)[0]
-        name = wad_name(reader, wad_ptr) if plausible_ptr(wad_ptr) else None
+def wad_contexts(reader: Reader, base: int) -> list[dict]:
+    """Enumerate the exact 64-slot WAD-context table proved in 0x82CF00."""
+    rows = []
+    contexts = base + WAD_CONTEXT_ARRAY_RVA
+    for index in range(WAD_CONTEXT_COUNT):
+        context = contexts + index * WAD_CONTEXT_STRIDE
+        try:
+            wad_ptr = reader.u64(context + WAD_CONTEXT_WAD_OFFSET)
+        except OSError:
+            continue
+        if not plausible_ptr(wad_ptr):
+            continue
+        name = wad_name(reader, wad_ptr)
+        try:
+            registry_id = reader.u32(wad_ptr + WAD_REGISTRY_ID_OFFSET)
+        except OSError:
+            registry_id = None
         rows.append({
-            "address": f"0x{node:X}", "registry_id": registry_id,
-            "type_116_config": f"0x{config:X}", "resource_hash": f"0x{resource_hash:X}",
-            "wad_ptr": f"0x{wad_ptr:X}", "wad_name": name,
+            "context_index": index,
+            "context": f"0x{context:X}",
+            "wad_ptr": f"0x{wad_ptr:X}",
+            "wad_name": name,
+            "registry_id": registry_id,
         })
-        node = nxt
     return rows
 
 
@@ -342,14 +348,19 @@ def snapshot(pid: int, exe: Path, wad: Path) -> dict:
         base, path = reader.module()
         if Path(path).resolve() != exe.resolve():
             raise RuntimeError(f"PID {pid} executable mismatch: {path}")
-        outers = scheduler_outers(reader, base)
-        target_outers = [row for row in outers if row.get("wad_name") and TARGET_WAD in row["wad_name"].lower()]
+
+        contexts = wad_contexts(reader, base)
+        target_contexts = [
+            row for row in contexts
+            if row.get("wad_name") and TARGET_WAD in row["wad_name"].lower()
+        ]
         registries = registry_rows(reader, base)
         registry_by_id = {row["registry_id"]: row for row in registries}
         target_results = []
-        for outer in target_outers:
-            reg = registry_by_id.get(outer["registry_id"])
-            item = {"outer": outer, "registry": None, "inspection": None}
+        for context in target_contexts:
+            registry_id = context.get("registry_id")
+            reg = registry_by_id.get(registry_id)
+            item = {"context": context, "registry": None, "inspection": None}
             if reg is not None:
                 public_reg = {k: (f"0x{v:X}" if k in ("address", "bank") else v) for k, v in reg.items()}
                 item["registry"] = public_reg
@@ -361,12 +372,17 @@ def snapshot(pid: int, exe: Path, wad: Path) -> dict:
             inspection = item.get("inspection") or {}
             for obj in inspection.get("objects", []):
                 if obj["score"] > 0:
-                    candidates.append({**obj, "registry_id": item["outer"]["registry_id"]})
+                    candidates.append({**obj, "registry_id": item["context"]["registry_id"]})
         candidates.sort(key=lambda x: (-x["score"], x["slot"]))
 
+        target_registry_ids = sorted({
+            int(row["registry_id"])
+            for row in target_contexts
+            if row.get("registry_id") is not None
+        })
         return {
-            "schema": 1,
-            "analysis": "gow_raven_readonly_registry_snapshot",
+            "schema": 2,
+            "analysis": "gow_raven_readonly_exact_wad_context_registry_snapshot",
             "pid": pid, "module_base": f"0x{base:X}", "module_path": path,
             "exe_sha256": EXPECTED_EXE_SHA256, "wad_sha256": EXPECTED_WAD_SHA256,
             "safety": {
@@ -374,12 +390,25 @@ def snapshot(pid: int, exe: Path, wad: Path) -> dict:
                 "process_writes": False, "thread_suspend_resume": False,
                 "save_or_progression_writes": False, "access": "PROCESS_QUERY_INFORMATION|PROCESS_VM_READ",
             },
-            "scheduler_outer_count": len(outers),
-            "target_wad_outer_count": len(target_outers),
-            "target_wad_outers": target_results,
+            "mapping_proof": {
+                "wad_context_array_rva": f"0x{WAD_CONTEXT_ARRAY_RVA:X}",
+                "wad_context_count": WAD_CONTEXT_COUNT,
+                "wad_context_stride": f"0x{WAD_CONTEXT_STRIDE:X}",
+                "wad_pointer_offset": f"0x{WAD_CONTEXT_WAD_OFFSET:X}",
+                "wad_registry_id_offset": f"0x{WAD_REGISTRY_ID_OFFSET:X}",
+                "source_function": "0x82CF00",
+            },
+            "live_wad_context_count": len(contexts),
+            "target_wad_context_count": len(target_contexts),
+            "target_wad_contexts": target_results,
+            "target_wad_registry_ids": target_registry_ids,
             "registry_table_live_entries": len(registries),
             "candidate_count": len(candidates),
             "top_candidates": candidates[:25],
+            # Compatibility aliases retained for the existing wrapper/result parser.
+            "scheduler_outer_count": 0,
+            "target_wad_outer_count": len(target_contexts),
+            "target_wad_outers": target_results,
             "gameobject_persistent_key_status": "BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY",
             "production_oracle_status": "BLOCKED_EXACT_UNLOADED_STATE_ORACLE",
         }
@@ -397,7 +426,8 @@ def main() -> int:
     report = snapshot(a.pid, a.exe, a.wad)
     a.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"READONLY_SNAPSHOT_OK pid={a.pid}")
-    print(f"target_wad_outer_count={report['target_wad_outer_count']}")
+    print(f"target_wad_context_count={report['target_wad_context_count']}")
+    print("target_wad_registry_ids=" + ",".join(str(x) for x in report["target_wad_registry_ids"]))
     print(f"candidate_count={report['candidate_count']}")
     for index, candidate in enumerate(report["top_candidates"][:5], 1):
         print(f"candidate_{index}=token={candidate['token_hex']} registry={candidate['registry_id']} slot={candidate['slot']} score={candidate['score']} evidence={','.join(candidate['evidence'])}")
