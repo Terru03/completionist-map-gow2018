@@ -1,0 +1,284 @@
+Completionist Map - LuaClient persistence semantic analysis
+exe_rescanned=false
+class=.?AVLuaClient@@
+vtable=0xE04018 slots=18
+
+VIRTUAL SLOTS
+- slot=0 offset=0x0 target=0x175CF0 labels=[] fn=0x175CF0
+    CALL 0x175D13 -> 0x5A6CD0
+    CALL 0x175D28 -> 0x4B1080
+    CALL 0x175D35 -> 0x40B190
+    CALL 0x175D41 -> 0x40B690
+    CALL 0x175D5D -> 0xB3040
+- slot=1 offset=0x8 target=0xC8850 labels=[] fn=NONE
+- slot=2 offset=0x10 target=0xD7BB0 labels=[] fn=NONE
+- slot=3 offset=0x18 target=0xD7BC0 labels=[] fn=NONE
+- slot=4 offset=0x20 target=0xD7BD0 labels=[] fn=NONE
+- slot=5 offset=0x28 target=0xD7BE0 labels=[] fn=NONE
+- slot=6 offset=0x30 target=0xD7BF0 labels=[] fn=NONE
+- slot=7 offset=0x38 target=0x552700 labels=[] fn=0x552700
+    CALL 0x55274B -> 0x1029C0
+    CALL 0x55276B -> 0x3ED39A
+    CALL 0x55277F -> 0x101680
+    CALL 0x55278D -> 0x1017F0
+    CALL 0x5527B0 -> 0x3ED39A
+    CALL 0x5527CF -> 0x3EB970
+- slot=8 offset=0x40 target=0x173D50 labels=[] fn=NONE
+- slot=9 offset=0x48 target=0x5A6510 labels=[] fn=NONE
+- slot=10 offset=0x50 target=0x173D60 labels=[] fn=NONE
+- slot=11 offset=0x58 target=0x5B1F50 labels=[] fn=0x5B1F50
+    STRING 0x5B1FF4 'OnGOCreateLuaState'
+    STRING 0x5B2011 'OnGOCreateLuaState'
+    STRING 0x5B20C8 'OnAICreateLuaState'
+    STRING 0x5B20ED 'OnAICreateLuaState'
+    CALL 0x5B1F6E -> 0x5A6C10
+    CALL 0x5B1F8D -> 0x782530
+    CALL 0x5B1FB1 -> 0x44F140
+    CALL 0x5B2001 -> 0xFA040
+    CALL 0x5B201E -> 0xE4B50
+    CALL 0x5B2080 -> 0x44F140
+    CALL 0x5B20D2 -> 0x44EFB0
+    CALL 0x5B20E1 -> 0x547980
+    CALL 0x5B20FA -> 0xE4B50
+    CALL 0x5B2105 -> 0x7829E0
+- slot=12 offset=0x60 target=0x5A6260 labels=[] fn=NONE
+- slot=13 offset=0x68 target=0x5B1F30 labels=[] fn=NONE
+- slot=14 offset=0x70 target=0x5B2130 labels=['on_pickle_internal'] fn=0x5B2130
+    STRING 0x5B214E 'OnPickleInternal'
+    CALL 0x5B215C -> 0xFA040
+- slot=15 offset=0x78 target=0x173D70 labels=[] fn=NONE
+- slot=16 offset=0x80 target=0x5B2280 labels=['on_unpickle_thunk'] fn=0x5B2280
+    CALL 0x5B22C3 -> 0x7E9550
+    CALL 0x5B22ED -> 0x5B2324
+- slot=17 offset=0x88 target=0x173D80 labels=[] fn=NONE
+
+PERSISTENCE ANCHOR CALLERS
+- on_pickle_internal 0x5B2130: callers=0 callees=1 indirect=0
+    STRING 0x5B214E 'OnPickleInternal'
+- pickle_post_helper 0x5B2171: callers=1 callees=4 indirect=0
+    CALLER fn=0x5B2171 site=0x5B2201 kind=jmp
+- on_unpickle_thunk 0x5B2280: callers=0 callees=2 indirect=0
+- on_unpickle_internal 0x5B2324: callers=3 callees=11 indirect=0
+    CALLER fn=0x5B2280 site=0x5B22ED kind=jmp
+    CALLER fn=0x5B2324 site=0x5B243D kind=jmp
+    CALLER fn=0x5B2324 site=0x5B244A kind=jmp
+    STRING 0x5B2328 'OnUnpickleInternal'
+- byte_serializer 0x7E7F10: callers=11 callees=29 indirect=0
+    CALLER fn=0x5AF8AD site=0x5AFAB0 kind=call
+    CALLER fn=0x5B2171 site=0x5B222C kind=call
+    CALLER fn=0x7E7F10 site=0x7E7FF8 kind=jmp
+    CALLER fn=0x7E7F10 site=0x7E8174 kind=jmp
+    CALLER fn=0x7E7F10 site=0x7E81B0 kind=jmp
+    CALLER fn=0x7E7F10 site=0x7E81F1 kind=jmp
+    CALLER fn=0x7E7F10 site=0x7E8244 kind=jmp
+    CALLER fn=0x7E7F10 site=0x7E8280 kind=jmp
+    CALLER fn=0x7E7F10 site=0x7E82E7 kind=jmp
+    CALLER fn=0x7E7F10 site=0x7E830C kind=jmp
+    CALLER fn=0x7E9B60 site=0x7E9B8A kind=call
+- core_pickle_unpickle 0x5AECC7: callers=1 callees=12 indirect=0
+    CALLER fn=0x5AECC7 site=0x5AECF8 kind=jmp
+    STRING 0x5AED8B 'core.pickle'
+    STRING 0x5AEDCD 'Unpickle'
+
+INDIRECT VIRTUAL CALL CANDIDATES
+- slot14_pickle: 95
+    fn=0xFB6D3 site=0xFB7CF base=rax reg=None strings=[]
+    fn=0x304800 site=0x304866 base=rsp reg=None strings=[]
+    fn=0x330E5E site=0x330EBF base=r10 reg=None strings=[]
+    fn=0x3541A0 site=0x354203 base=rax reg=None strings=[]
+    fn=0x36D39E site=0x36D3FF base=r10 reg=None strings=[]
+    fn=0x40B690 site=0x40B6FA base=rdi reg=None strings=[]
+    fn=0x40C510 site=0x40C5E8 base=rsi reg=None strings=[]
+    fn=0x41DBF2 site=0x41DC36 base=rax reg=None strings=[]
+    fn=0x41DD62 site=0x41DD98 base=rax reg=None strings=[]
+    fn=0x422F50 site=0x422F5E base=rax reg=None strings=[]
+    fn=0x422F50 site=0x422F6B base=rax reg=None strings=[]
+    fn=0x422F50 site=0x422F78 base=rax reg=None strings=[]
+    fn=0x422F50 site=0x422F85 base=rax reg=None strings=[]
+    fn=0x422F50 site=0x422FA0 base=rax reg=None strings=[]
+    fn=0x422F50 site=0x422FAD base=rax reg=None strings=[]
+    fn=0x422F50 site=0x422FBA base=rax reg=None strings=[]
+    fn=0x422F50 site=0x422FC7 base=rax reg=None strings=[]
+    fn=0x422F50 site=0x422FD4 base=rax reg=None strings=[]
+    fn=0x422F50 site=0x422FE1 base=rax reg=None strings=[]
+    fn=0x422F50 site=0x422FEE base=rax reg=None strings=[]
+    fn=0x422F50 site=0x422FFB base=rax reg=None strings=[]
+    fn=0x422F50 site=0x423008 base=rax reg=None strings=[]
+    fn=0x422F50 site=0x423015 base=rax reg=None strings=[]
+    fn=0x422F50 site=0x423022 base=rax reg=None strings=[]
+    fn=0x422F50 site=0x42302F base=rax reg=None strings=[]
+    fn=0x422F50 site=0x42303C base=rax reg=None strings=[]
+    fn=0x422F50 site=0x423049 base=rax reg=None strings=[]
+    fn=0x424650 site=0x42466B base=rax reg=None strings=[]
+    fn=0x424650 site=0x424678 base=rax reg=None strings=[]
+    fn=0x424650 site=0x424685 base=rax reg=None strings=[]
+    fn=0x424650 site=0x424692 base=rax reg=None strings=[]
+    fn=0x424650 site=0x4246AD base=rax reg=None strings=[]
+    fn=0x424650 site=0x4246BA base=rax reg=None strings=[]
+    fn=0x424650 site=0x4246C7 base=rax reg=None strings=[]
+    fn=0x424650 site=0x4246D4 base=rax reg=None strings=[]
+    fn=0x424650 site=0x4246E1 base=rax reg=None strings=[]
+    fn=0x424650 site=0x4246EE base=rax reg=None strings=[]
+    fn=0x424650 site=0x4246FB base=rax reg=None strings=[]
+    fn=0x424650 site=0x424708 base=rax reg=None strings=[]
+    fn=0x424650 site=0x424715 base=rax reg=None strings=[]
+    fn=0x424650 site=0x424722 base=rax reg=None strings=[]
+    fn=0x424650 site=0x42472F base=rax reg=None strings=[]
+    fn=0x424650 site=0x42473C base=rax reg=None strings=[]
+    fn=0x424650 site=0x424749 base=rax reg=None strings=[]
+    fn=0x424650 site=0x424756 base=rax reg=None strings=[]
+    fn=0x433CB0 site=0x433CE8 base=rax reg=None strings=[]
+    fn=0x464EF0 site=0x46510A base=rax reg=None strings=[]
+    fn=0x464EF0 site=0x4651BE base=rax reg=None strings=[]
+    fn=0x4E2D53 site=0x4E2D8C base=rax reg=None strings=[]
+    fn=0x4E2D53 site=0x4E2DBD base=rax reg=None strings=[]
+    fn=0x4E2D53 site=0x4E2DF9 base=rax reg=None strings=[]
+    fn=0x4E46C0 site=0x4E46ED base=rax reg=None strings=[]
+    fn=0x521DB0 site=0x521E45 base=rax reg=None strings=[]
+    fn=0x5C42C0 site=0x5C4305 base=rax reg=None strings=[]
+    fn=0x5C4520 site=0x5C4586 base=rax reg=None strings=[]
+    fn=0x5C4520 site=0x5C476F base=rax reg=None strings=[]
+    fn=0x5C484F site=0x5C4947 base=rax reg=None strings=[]
+    fn=0x62FC00 site=0x6316AE base=rax reg=None strings=[]
+    fn=0x6432C0 site=0x64339D base=rdx reg=None strings=[]
+    fn=0x64351E site=0x643696 base=rdx reg=None strings=[]
+    fn=0x64351E site=0x64370A base=rdx reg=None strings=[]
+    fn=0x643B76 site=0x643C45 base=rdx reg=None strings=[]
+    fn=0x644050 site=0x644270 base=rdx reg=None strings=[]
+    fn=0x653CD0 site=0x653D3B base=rax reg=None strings=[]
+    fn=0x669B00 site=0x66A903 base=rax reg=None strings=[]
+    fn=0x6733A0 site=0x673408 base=rax reg=None strings=[]
+    fn=0x6AAADA site=0x6AAB07 base=rax reg=None strings=[]
+    fn=0x725910 site=0x72596B base=rax reg=None strings=[]
+    fn=0x737F80 site=0x738207 base=rax reg=None strings=[]
+    fn=0x853650 site=0x853C4A base=rax reg=None strings=[]
+    fn=0x861DA7 site=0x861F42 base=rax reg=None strings=[]
+    fn=0x8E9AE0 site=0x8E9BAB base=rax reg=None strings=[]
+    fn=0x967D00 site=0x9682FB base=rax reg=None strings=[]
+    fn=0x9AB68B site=0x9ABFAA base=r10 reg=None strings=[]
+    fn=0x9AB68B site=0x9AC049 base=rax reg=None strings=[]
+    fn=0xABF190 site=0xABFCD7 base=r13 reg=None strings=[]
+    fn=0xB17E90 site=0xB18286 base=r14 reg=None strings=[]
+    fn=0xB8B560 site=0xB8B664 base=rax reg=None strings=[]
+    fn=0xB8DFDE site=0xB8E012 base=rax reg=None strings=[]
+    fn=0xBA4070 site=0xBA43E1 base=rax reg=None strings=[]
+- slot16_unpickle: 162
+    fn=0x23FAA0 site=0x240047 base=rax reg=None strings=[]
+    fn=0x2BAED0 site=0x2BAF0B base=r10 reg=None strings=[]
+    fn=0x2BAF20 site=0x2BAFA2 base=r10 reg=None strings=[]
+    fn=0x2BAFD0 site=0x2BB052 base=r10 reg=None strings=[]
+    fn=0x2C3440 site=0x2C34FE base=rax reg=None strings=[]
+    fn=0x2C3530 site=0x2C35A1 base=rax reg=None strings=[]
+    fn=0x336030 site=0x336040 base=rax reg=None strings=[]
+    fn=0x464EF0 site=0x465143 base=rax reg=None strings=[]
+    fn=0x464EF0 site=0x4651E2 base=rax reg=None strings=[]
+    fn=0x4E1EB6 site=0x4E1F30 base=rax reg=None strings=[]
+    fn=0x4E1EB6 site=0x4E1FF1 base=rax reg=None strings=[]
+    fn=0x4F1D00 site=0x4F1D2D base=rax reg=None strings=[]
+    fn=0x4F1D73 site=0x4F1DE6 base=rax reg=None strings=[]
+    fn=0x4F8040 site=0x4F826A base=rax reg=None strings=[]
+    fn=0x4F8560 site=0x4F858C base=rax reg=None strings=[]
+    fn=0x5A6C10 site=0x5A6C46 base=rax reg=None strings=[]
+    fn=0x60E0B0 site=0x60E155 base=rax reg=None strings=[]
+    fn=0x60E1A3 site=0x60E208 base=rax reg=None strings=[]
+    fn=0x62EA80 site=0x62EB09 base=rax reg=None strings=[]
+    fn=0x62F200 site=0x62F25F base=rax reg=None strings=[]
+    fn=0x6432C0 site=0x643383 base=rdx reg=None strings=[]
+    fn=0x64351E site=0x64367C base=rdx reg=None strings=[]
+    fn=0x64351E site=0x6436F0 base=rdx reg=None strings=[]
+    fn=0x643B76 site=0x643C2B base=rdx reg=None strings=[]
+    fn=0x644050 site=0x644256 base=rdx reg=None strings=[]
+    fn=0x669300 site=0x6699A0 base=rax reg=None strings=[]
+    fn=0x683E60 site=0x6843F6 base=rax reg=None strings=[]
+    fn=0x686760 site=0x6868B6 base=rax reg=None strings=[]
+    fn=0x6A8A50 site=0x6A8ACD base=rax reg=None strings=[]
+    fn=0x6A98B3 site=0x6A9930 base=rax reg=None strings=[]
+    fn=0x6AA490 site=0x6AA970 base=rax reg=None strings=[]
+    fn=0x71F190 site=0x71F1D8 base=rax reg=None strings=[]
+    fn=0x733990 site=0x733AB1 base=rax reg=None strings=[]
+    fn=0x733B70 site=0x733C64 base=rax reg=None strings=[]
+    fn=0x752069 site=0x7520B8 base=r8 reg=None strings=[]
+    fn=0x752069 site=0x752186 base=r8 reg=None strings=[]
+    fn=0x752069 site=0x752227 base=r8 reg=None strings=[]
+    fn=0x752069 site=0x752289 base=r8 reg=None strings=[]
+    fn=0x752069 site=0x75231E base=r8 reg=None strings=[]
+    fn=0x75A560 site=0x75A5CD base=rax reg=None strings=[]
+    fn=0x77BBA0 site=0x77BBBC base=rax reg=None strings=[]
+    fn=0x77C7E2 site=0x77C7EF base=rax reg=None strings=[]
+    fn=0x80C980 site=0x80CA6F base=rax reg=None strings=[]
+    fn=0x84CD90 site=0x84CE83 base=rax reg=None strings=[]
+    fn=0x84CED0 site=0x84CFC3 base=rax reg=None strings=[]
+    fn=0x850FF0 site=0x8511D4 base=r10 reg=None strings=[]
+    fn=0x856F50 site=0x8573A7 base=r9 reg=None strings=[]
+    fn=0x9578D0 site=0x9578EC base=rax reg=None strings=[]
+    fn=0x95A4F0 site=0x95A507 base=rax reg=None strings=[]
+    fn=0x97C770 site=0x97C7AF base=rax reg=None strings=[]
+    fn=0x9AB68B site=0x9AB77B base=rax reg=None strings=[]
+    fn=0xB36530 site=0xB366B4 base=rdx reg=None strings=[]
+    fn=0xB37690 site=0xB37988 base=rax reg=None strings=[]
+    fn=0xB37B50 site=0xB37EAF base=rdx reg=None strings=[]
+    fn=0xB74970 site=0xB74BF9 base=rdx reg=None strings=[]
+    fn=0xB74970 site=0xB74CD0 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB74CEB base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB74E03 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB74E41 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB74E52 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB74FC4 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB74FFC base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB750D8 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB7510F base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB75120 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB75161 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB75172 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB75183 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB751D3 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB751E4 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB751F5 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB7524C base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB75265 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB7527E base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB75321 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB75450 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB7558F base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB755C2 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB755E7 base=rax reg=None strings=[]
+    fn=0xB74970 site=0xB75627 base=rax reg=None strings=[]
+
+BYTE SERIALIZER USERS
+- fn=0x5AF8AD site=0x5AFAB0
+- fn=0x5B2171 site=0x5B222C
+- fn=0x7E7F10 site=0x7E7FF8
+- fn=0x7E7F10 site=0x7E8174
+- fn=0x7E7F10 site=0x7E81B0
+- fn=0x7E7F10 site=0x7E81F1
+- fn=0x7E7F10 site=0x7E8244
+- fn=0x7E7F10 site=0x7E8280
+- fn=0x7E7F10 site=0x7E82E7
+- fn=0x7E7F10 site=0x7E830C
+- fn=0x7E9B60 site=0x7E9B8A
+
+CORE.PICKLE.UNPICKLE DIRECT USERS
+- fn=0x5AECC7 site=0x5AECF8 kind=jmp
+
+NATIVE NEIGHBORHOOD 0x5B1E00-0x5B2600
+- fn=0x5B1E08-0x5B1E0E size=6 callers=0 callees=0 indirect=0
+- fn=0x5B1E20-0x5B1E61 size=65 callers=0 callees=1 indirect=0
+- fn=0x5B1E70-0x5B1EAE size=62 callers=0 callees=1 indirect=0
+- fn=0x5B1F50-0x5B211F size=463 callers=0 callees=10 indirect=1
+    STRING 0x5B1FF4 'OnGOCreateLuaState'
+    STRING 0x5B2011 'OnGOCreateLuaState'
+    STRING 0x5B20C8 'OnAICreateLuaState'
+    STRING 0x5B20ED 'OnAICreateLuaState'
+- fn=0x5B2130-0x5B2171 size=65 callers=0 callees=1 indirect=0
+    STRING 0x5B214E 'OnPickleInternal'
+- fn=0x5B2171-0x5B224B size=218 callers=1 callees=4 indirect=0
+- fn=0x5B224B-0x5B225C size=17 callers=0 callees=0 indirect=0
+- fn=0x5B225C-0x5B227A size=30 callers=0 callees=2 indirect=0
+- fn=0x5B2280-0x5B22EF size=111 callers=0 callees=2 indirect=0
+- fn=0x5B22EF-0x5B2324 size=53 callers=0 callees=1 indirect=0
+- fn=0x5B2324-0x5B24A2 size=382 callers=3 callees=11 indirect=0
+    STRING 0x5B2328 'OnUnpickleInternal'
+- fn=0x5B24D0-0x5B2505 size=53 callers=0 callees=1 indirect=0
+- fn=0x5B2550-0x5B25AF size=95 callers=6 callees=0 indirect=0
+- fn=0x5B25AF-0x5B25BB size=12 callers=0 callees=0 indirect=0
+- fn=0x5B25BB-0x5B2783 size=456 callers=3 callees=4 indirect=0
