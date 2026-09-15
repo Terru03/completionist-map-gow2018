@@ -1,0 +1,2578 @@
+{
+  "schema": 1,
+  "analysis": "gow_static_pointer_ownership",
+  "index_meta": {
+    "gow_exe_sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+    "index_complete": "1",
+    "index_schema": "2",
+    "capstone_version": "5.0.7",
+    "native_decoded_functions": "51869",
+    "native_instruction_count": "2754846",
+    "lua_present": "True",
+    "lua_files": "493",
+    "lua_hits": "6050",
+    "game_files": "157250",
+    "game_bytes": "68998195555",
+    "data_ptr_index_complete": "1",
+    "data_ptr_count": "95746",
+    "data_ptr_scanned_bytes": "5912576"
+  },
+  "targets": {
+    "core_pickle_unpickle": 5958855,
+    "pickle_table_builder": 5959708,
+    "pickle_driver": 5961901,
+    "on_pickle_internal": 5972272,
+    "on_unpickle_internal": 5972772,
+    "restore_dispatch": 5952672,
+    "byte_serializer": 8290064,
+    "userdata_serializer": 8294800,
+    "userdata_serializer_helper": 8295232,
+    "gameobject_token_resolver": 5173424,
+    "lua_gameobject_unbox": 6263632,
+    "gameobject_token_packer": 6339008
+  },
+  "string_rvas": {
+    "GameObject": 14705112,
+    "__codesideluaclass": 14640736,
+    "OnPickleInternal": 14696392,
+    "OnUnpickleInternal": 14696440,
+    "__PickleTable": 14695992,
+    "__SoftPickleTable": 14696008,
+    "core.pickle": 14695920,
+    "Pickle": 14695864,
+    "Unpickle": 14695960
+  },
+  "target_static_ptrs": {
+    "core_pickle_unpickle": [],
+    "pickle_table_builder": [],
+    "pickle_driver": [],
+    "on_pickle_internal": [
+      {
+        "location_rva": 14696584,
+        "location_section": ".rdata",
+        "value_rva": 5972272,
+        "target_section": ".text",
+        "target_exec": 1,
+        "target_function": 5972272
+      }
+    ],
+    "on_unpickle_internal": [],
+    "restore_dispatch": [],
+    "byte_serializer": [],
+    "userdata_serializer": [],
+    "userdata_serializer_helper": [],
+    "gameobject_token_resolver": [],
+    "lua_gameobject_unbox": [],
+    "gameobject_token_packer": []
+  },
+  "string_static_ptrs": {
+    "GameObject": [],
+    "__codesideluaclass": [],
+    "OnPickleInternal": [],
+    "OnUnpickleInternal": [],
+    "__PickleTable": [],
+    "__SoftPickleTable": [],
+    "core.pickle": [],
+    "Pickle": [],
+    "Unpickle": []
+  },
+  "ranked_clusters": [
+    {
+      "base": 14696448,
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "seed_locations": [
+        {
+          "location": 14696584,
+          "label": "fn:on_pickle_internal"
+        }
+      ],
+      "entries": [
+        {
+          "location_rva": 14696208,
+          "location_section": ".rdata",
+          "value_rva": 15854696,
+          "target_section": ".rdata",
+          "target_exec": 0,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696216,
+          "location_section": ".rdata",
+          "value_rva": 1526368,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 1526368,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696224,
+          "location_section": ".rdata",
+          "value_rva": 821328,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696232,
+          "location_section": ".rdata",
+          "value_rva": 883632,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696240,
+          "location_section": ".rdata",
+          "value_rva": 883648,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696248,
+          "location_section": ".rdata",
+          "value_rva": 883664,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696256,
+          "location_section": ".rdata",
+          "value_rva": 883680,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696264,
+          "location_section": ".rdata",
+          "value_rva": 883696,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696272,
+          "location_section": ".rdata",
+          "value_rva": 5580544,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5580544,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696280,
+          "location_section": ".rdata",
+          "value_rva": 5966544,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696288,
+          "location_section": ".rdata",
+          "value_rva": 5952400,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5952400,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696296,
+          "location_section": ".rdata",
+          "value_rva": 5965888,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5965888,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696304,
+          "location_section": ".rdata",
+          "value_rva": 5955120,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5955120,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696312,
+          "location_section": ".rdata",
+          "value_rva": 5954832,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5954832,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696320,
+          "location_section": ".rdata",
+          "value_rva": 1526192,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696328,
+          "location_section": ".rdata",
+          "value_rva": 5959568,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5959568,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696336,
+          "location_section": ".rdata",
+          "value_rva": 5959520,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5959520,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696344,
+          "location_section": ".rdata",
+          "value_rva": 5958720,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5958720,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696352,
+          "location_section": ".rdata",
+          "value_rva": 5958688,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5958688,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696464,
+          "location_section": ".rdata",
+          "value_rva": 15854880,
+          "target_section": ".rdata",
+          "target_exec": 0,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696472,
+          "location_section": ".rdata",
+          "value_rva": 1531120,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 1531120,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696480,
+          "location_section": ".rdata",
+          "value_rva": 821328,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696488,
+          "location_section": ".rdata",
+          "value_rva": 883632,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696496,
+          "location_section": ".rdata",
+          "value_rva": 883648,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696504,
+          "location_section": ".rdata",
+          "value_rva": 883664,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696512,
+          "location_section": ".rdata",
+          "value_rva": 883680,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696520,
+          "location_section": ".rdata",
+          "value_rva": 883696,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696528,
+          "location_section": ".rdata",
+          "value_rva": 5580544,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5580544,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696536,
+          "location_section": ".rdata",
+          "value_rva": 1523024,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696544,
+          "location_section": ".rdata",
+          "value_rva": 5924112,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696552,
+          "location_section": ".rdata",
+          "value_rva": 1523040,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696560,
+          "location_section": ".rdata",
+          "value_rva": 5971792,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5971792,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696568,
+          "location_section": ".rdata",
+          "value_rva": 5923424,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696576,
+          "location_section": ".rdata",
+          "value_rva": 5971760,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696584,
+          "location_section": ".rdata",
+          "value_rva": 5972272,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5972272,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696592,
+          "location_section": ".rdata",
+          "value_rva": 1523056,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696600,
+          "location_section": ".rdata",
+          "value_rva": 5972608,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5972608,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696608,
+          "location_section": ".rdata",
+          "value_rva": 1523072,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696648,
+          "location_section": ".rdata",
+          "value_rva": 15855576,
+          "target_section": ".rdata",
+          "target_exec": 0,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696656,
+          "location_section": ".rdata",
+          "value_rva": 1546464,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 1546464,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696664,
+          "location_section": ".rdata",
+          "value_rva": 821328,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696672,
+          "location_section": ".rdata",
+          "value_rva": 1546944,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696680,
+          "location_section": ".rdata",
+          "value_rva": 1546912,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696688,
+          "location_section": ".rdata",
+          "value_rva": 1546896,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696696,
+          "location_section": ".rdata",
+          "value_rva": 1546848,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696704,
+          "location_section": ".rdata",
+          "value_rva": 1546608,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 1546608,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696712,
+          "location_section": ".rdata",
+          "value_rva": 5580544,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5580544,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696720,
+          "location_section": ".rdata",
+          "value_rva": 1546832,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696728,
+          "location_section": ".rdata",
+          "value_rva": 1546768,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 1546768,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696736,
+          "location_section": ".rdata",
+          "value_rva": 15855360,
+          "target_section": ".rdata",
+          "target_exec": 0,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696744,
+          "location_section": ".rdata",
+          "value_rva": 1546320,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 1546320,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696752,
+          "location_section": ".rdata",
+          "value_rva": 821328,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696760,
+          "location_section": ".rdata",
+          "value_rva": 883632,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696768,
+          "location_section": ".rdata",
+          "value_rva": 883648,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696776,
+          "location_section": ".rdata",
+          "value_rva": 883664,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696784,
+          "location_section": ".rdata",
+          "value_rva": 883680,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696792,
+          "location_section": ".rdata",
+          "value_rva": 883696,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696800,
+          "location_section": ".rdata",
+          "value_rva": 5580544,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5580544,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696808,
+          "location_section": ".rdata",
+          "value_rva": 15855296,
+          "target_section": ".rdata",
+          "target_exec": 0,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696816,
+          "location_section": ".rdata",
+          "value_rva": 1547216,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 1547216,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696824,
+          "location_section": ".rdata",
+          "value_rva": 821328,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696832,
+          "location_section": ".rdata",
+          "value_rva": 1546944,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696840,
+          "location_section": ".rdata",
+          "value_rva": 1546912,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696848,
+          "location_section": ".rdata",
+          "value_rva": 1546896,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696856,
+          "location_section": ".rdata",
+          "value_rva": 1546848,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696864,
+          "location_section": ".rdata",
+          "value_rva": 1546608,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 1546608,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696872,
+          "location_section": ".rdata",
+          "value_rva": 5580544,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5580544,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696880,
+          "location_section": ".rdata",
+          "value_rva": 1546832,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696888,
+          "location_section": ".rdata",
+          "value_rva": 1546768,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 1546768,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696920,
+          "location_section": ".rdata",
+          "value_rva": 14696912,
+          "target_section": ".rdata",
+          "target_exec": 0,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696928,
+          "location_section": ".rdata",
+          "value_rva": 15855704,
+          "target_section": ".rdata",
+          "target_exec": 0,
+          "target_function": null,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696936,
+          "location_section": ".rdata",
+          "value_rva": 1548192,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 1548192,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696944,
+          "location_section": ".rdata",
+          "value_rva": 5996976,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 5996976,
+          "target_string": null
+        },
+        {
+          "location_rva": 14696952,
+          "location_section": ".rdata",
+          "value_rva": 789872,
+          "target_section": ".text",
+          "target_exec": 1,
+          "target_function": 789872,
+          "target_string": null
+        }
+      ],
+      "code_refs": [
+        {
+          "site": 1526393,
+          "src_fn": 1526368,
+          "mnemonic": "lea",
+          "target": 14696216,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 1531145,
+          "src_fn": 1531120,
+          "mnemonic": "lea",
+          "target": 14696472,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 1546345,
+          "src_fn": 1546320,
+          "mnemonic": "lea",
+          "target": 14696744,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 1546489,
+          "src_fn": 1546464,
+          "mnemonic": "lea",
+          "target": 14696656,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 1546983,
+          "src_fn": 1546960,
+          "mnemonic": "lea",
+          "target": 14696816,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 1547132,
+          "src_fn": 1547088,
+          "mnemonic": "lea",
+          "target": 14696816,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 4609587,
+          "src_fn": 4609184,
+          "mnemonic": "lea",
+          "target": 14696216,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 4610154,
+          "src_fn": 4609184,
+          "mnemonic": "lea",
+          "target": 14696472,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 5968841,
+          "src_fn": 5968800,
+          "mnemonic": "lea",
+          "target": 14696216,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 5971956,
+          "src_fn": 5971792,
+          "mnemonic": "lea",
+          "target": 14696416,
+          "target_section": ".rdata",
+          "target_string": "OnGOCreateLuaState"
+        },
+        {
+          "site": 5971985,
+          "src_fn": 5971792,
+          "mnemonic": "lea",
+          "target": 14696416,
+          "target_section": ".rdata",
+          "target_string": "OnGOCreateLuaState"
+        },
+        {
+          "site": 5972168,
+          "src_fn": 5971792,
+          "mnemonic": "lea",
+          "target": 14696368,
+          "target_section": ".rdata",
+          "target_string": "OnAICreateLuaState"
+        },
+        {
+          "site": 5972205,
+          "src_fn": 5971792,
+          "mnemonic": "lea",
+          "target": 14696368,
+          "target_section": ".rdata",
+          "target_string": "OnAICreateLuaState"
+        },
+        {
+          "site": 5972302,
+          "src_fn": 5972272,
+          "mnemonic": "lea",
+          "target": 14696392,
+          "target_section": ".rdata",
+          "target_string": "OnPickleInternal"
+        },
+        {
+          "site": 5972776,
+          "src_fn": 5972772,
+          "mnemonic": "lea",
+          "target": 14696440,
+          "target_section": ".rdata",
+          "target_string": "OnUnpickleInternal"
+        },
+        {
+          "site": 5973221,
+          "src_fn": 5973200,
+          "mnemonic": "lea",
+          "target": 14696472,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 5990564,
+          "src_fn": 5990512,
+          "mnemonic": "lea",
+          "target": 14696816,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 5990618,
+          "src_fn": 5990512,
+          "mnemonic": "lea",
+          "target": 14696656,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 5990756,
+          "src_fn": 5990704,
+          "mnemonic": "lea",
+          "target": 14696744,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 5995793,
+          "src_fn": 5995696,
+          "mnemonic": "lea",
+          "target": 14696896,
+          "target_section": ".rdata",
+          "target_string": "ResourceWads"
+        },
+        {
+          "site": 5995842,
+          "src_fn": 5995696,
+          "mnemonic": "lea",
+          "target": 14696912,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 5996279,
+          "src_fn": 5995696,
+          "mnemonic": "lea",
+          "target": 14696912,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 5998812,
+          "src_fn": 5998400,
+          "mnemonic": "lea",
+          "target": 14696816,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 5998865,
+          "src_fn": 5998400,
+          "mnemonic": "lea",
+          "target": 14696656,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 5999135,
+          "src_fn": 5998400,
+          "mnemonic": "lea",
+          "target": 14696744,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 5999269,
+          "src_fn": 5999232,
+          "mnemonic": "lea",
+          "target": 14696936,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 6000641,
+          "src_fn": 6000608,
+          "mnemonic": "lea",
+          "target": 14696936,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 6795410,
+          "src_fn": 6795328,
+          "mnemonic": "lea",
+          "target": 14696896,
+          "target_section": ".rdata",
+          "target_string": "ResourceWads"
+        },
+        {
+          "site": 6795447,
+          "src_fn": 6795328,
+          "mnemonic": "lea",
+          "target": 14696912,
+          "target_section": ".rdata",
+          "target_string": null
+        },
+        {
+          "site": 6795500,
+          "src_fn": 6795328,
+          "mnemonic": "lea",
+          "target": 14696912,
+          "target_section": ".rdata",
+          "target_string": null
+        }
+      ],
+      "owners": [
+        {
+          "function": 1526368,
+          "table_refs": [
+            {
+              "site": 1526393,
+              "src_fn": 1526368,
+              "mnemonic": "lea",
+              "target": 14696216,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 1526403,
+              "kind": "call",
+              "dest": 5926096,
+              "target_fn": 5926096
+            },
+            {
+              "site": 1526424,
+              "kind": "call",
+              "dest": 4919424,
+              "target_fn": 4919424
+            },
+            {
+              "site": 1526437,
+              "kind": "call",
+              "dest": 4239760,
+              "target_fn": 4239760
+            },
+            {
+              "site": 1526449,
+              "kind": "call",
+              "dest": 4241040,
+              "target_fn": 4241040
+            },
+            {
+              "site": 1526477,
+              "kind": "call",
+              "dest": 733248,
+              "target_fn": null
+            }
+          ]
+        },
+        {
+          "function": 1531120,
+          "table_refs": [
+            {
+              "site": 1531145,
+              "src_fn": 1531120,
+              "mnemonic": "lea",
+              "target": 14696472,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 1531155,
+              "kind": "call",
+              "dest": 5926096,
+              "target_fn": 5926096
+            },
+            {
+              "site": 1531176,
+              "kind": "call",
+              "dest": 4919424,
+              "target_fn": 4919424
+            },
+            {
+              "site": 1531189,
+              "kind": "call",
+              "dest": 4239760,
+              "target_fn": 4239760
+            },
+            {
+              "site": 1531201,
+              "kind": "call",
+              "dest": 4241040,
+              "target_fn": 4241040
+            },
+            {
+              "site": 1531229,
+              "kind": "call",
+              "dest": 733248,
+              "target_fn": null
+            }
+          ]
+        },
+        {
+          "function": 1546320,
+          "table_refs": [
+            {
+              "site": 1546345,
+              "src_fn": 1546320,
+              "mnemonic": "lea",
+              "target": 14696744,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 1546355,
+              "kind": "call",
+              "dest": 5580384,
+              "target_fn": 5580384
+            },
+            {
+              "site": 1546376,
+              "kind": "call",
+              "dest": 4919424,
+              "target_fn": 4919424
+            },
+            {
+              "site": 1546389,
+              "kind": "call",
+              "dest": 4239760,
+              "target_fn": 4239760
+            },
+            {
+              "site": 1546401,
+              "kind": "call",
+              "dest": 4241040,
+              "target_fn": 4241040
+            },
+            {
+              "site": 1546429,
+              "kind": "call",
+              "dest": 733248,
+              "target_fn": null
+            }
+          ]
+        },
+        {
+          "function": 1546464,
+          "table_refs": [
+            {
+              "site": 1546489,
+              "src_fn": 1546464,
+              "mnemonic": "lea",
+              "target": 14696656,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 1546499,
+              "kind": "call",
+              "dest": 1546960,
+              "target_fn": 1546960
+            },
+            {
+              "site": 1546520,
+              "kind": "call",
+              "dest": 4919424,
+              "target_fn": 4919424
+            },
+            {
+              "site": 1546533,
+              "kind": "call",
+              "dest": 4239760,
+              "target_fn": 4239760
+            },
+            {
+              "site": 1546545,
+              "kind": "call",
+              "dest": 4241040,
+              "target_fn": 4241040
+            },
+            {
+              "site": 1546573,
+              "kind": "call",
+              "dest": 733248,
+              "target_fn": null
+            }
+          ]
+        },
+        {
+          "function": 1546960,
+          "table_refs": [
+            {
+              "site": 1546983,
+              "src_fn": 1546960,
+              "mnemonic": "lea",
+              "target": 14696816,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 1547012,
+              "kind": "call",
+              "dest": 4919424,
+              "target_fn": 4919424
+            },
+            {
+              "site": 1547025,
+              "kind": "call",
+              "dest": 4239760,
+              "target_fn": 4239760
+            },
+            {
+              "site": 1547037,
+              "kind": "call",
+              "dest": 4241040,
+              "target_fn": 4241040
+            },
+            {
+              "site": 1547078,
+              "kind": "jmp",
+              "dest": 5615696,
+              "target_fn": 5615696
+            }
+          ]
+        },
+        {
+          "function": 1547088,
+          "table_refs": [
+            {
+              "site": 1547132,
+              "src_fn": 1547088,
+              "mnemonic": "lea",
+              "target": 14696816,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 1547126,
+              "kind": "call",
+              "dest": 5616144,
+              "target_fn": 5616144
+            },
+            {
+              "site": 1547180,
+              "kind": "call",
+              "dest": 5586832,
+              "target_fn": 5586832
+            }
+          ]
+        },
+        {
+          "function": 4609184,
+          "table_refs": [
+            {
+              "site": 4609587,
+              "src_fn": 4609184,
+              "mnemonic": "lea",
+              "target": 14696216,
+              "target_section": ".rdata",
+              "target_string": null
+            },
+            {
+              "site": 4610154,
+              "src_fn": 4609184,
+              "mnemonic": "lea",
+              "target": 14696472,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 4609271,
+              "kind": "jmp",
+              "dest": 4610217,
+              "target_fn": 4609184
+            },
+            {
+              "site": 4609296,
+              "kind": "call",
+              "dest": 4243216,
+              "target_fn": 4243216
+            },
+            {
+              "site": 4609324,
+              "kind": "call",
+              "dest": 5580208,
+              "target_fn": 5580208
+            },
+            {
+              "site": 4609346,
+              "kind": "jmp",
+              "dest": 4610213,
+              "target_fn": 4609184
+            },
+            {
+              "site": 4609371,
+              "kind": "call",
+              "dest": 4243216,
+              "target_fn": 4243216
+            },
+            {
+              "site": 4609393,
+              "kind": "call",
+              "dest": 5580208,
+              "target_fn": 5580208
+            },
+            {
+              "site": 4609453,
+              "kind": "jmp",
+              "dest": 4610213,
+              "target_fn": 4609184
+            },
+            {
+              "site": 4609470,
+              "kind": "jmp",
+              "dest": 4610213,
+              "target_fn": 4609184
+            },
+            {
+              "site": 4609508,
+              "kind": "call",
+              "dest": 5968640,
+              "target_fn": 5968640
+            },
+            {
+              "site": 4609513,
+              "kind": "jmp",
+              "dest": 4609532,
+              "target_fn": 4609184
+            },
+            {
+              "site": 4609538,
+              "kind": "call",
+              "dest": 4604944,
+              "target_fn": null
+            },
+            {
+              "site": 4609553,
+              "kind": "call",
+              "dest": 4244016,
+              "target_fn": 4244016
+            },
+            {
+              "site": 4609582,
+              "kind": "call",
+              "dest": 5926352,
+              "target_fn": 5926352
+            },
+            {
+              "site": 4609725,
+              "kind": "call",
+              "dest": 4117384,
+              "target_fn": null
+            },
+            {
+              "site": 4609815,
+              "kind": "call",
+              "dest": 4117384,
+              "target_fn": null
+            },
+            {
+              "site": 4609938,
+              "kind": "jmp",
+              "dest": 4610213,
+              "target_fn": 4609184
+            },
+            {
+              "site": 4609963,
+              "kind": "call",
+              "dest": 4243216,
+              "target_fn": 4243216
+            },
+            {
+              "site": 4609996,
+              "kind": "call",
+              "dest": 5580208,
+              "target_fn": 5580208
+            },
+            {
+              "site": 4610050,
+              "kind": "call",
+              "dest": 5579824,
+              "target_fn": 5579824
+            },
+            {
+              "site": 4610063,
+              "kind": "jmp",
+              "dest": 4610213,
+              "target_fn": 4609184
+            },
+            {
+              "site": 4610124,
+              "kind": "call",
+              "dest": 4244016,
+              "target_fn": 4244016
+            },
+            {
+              "site": 4610149,
+              "kind": "call",
+              "dest": 5926352,
+              "target_fn": 5926352
+            },
+            {
+              "site": 4610172,
+              "kind": "jmp",
+              "dest": 4610206,
+              "target_fn": 4609184
+            },
+            {
+              "site": 4610201,
+              "kind": "jmp",
+              "dest": 4610117,
+              "target_fn": 4609184
+            }
+          ]
+        },
+        {
+          "function": 5968800,
+          "table_refs": [
+            {
+              "site": 5968841,
+              "src_fn": 5968800,
+              "mnemonic": "lea",
+              "target": 14696216,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 5968827,
+              "kind": "call",
+              "dest": 5926352,
+              "target_fn": 5926352
+            },
+            {
+              "site": 5968971,
+              "kind": "call",
+              "dest": 4117384,
+              "target_fn": null
+            },
+            {
+              "site": 5969064,
+              "kind": "call",
+              "dest": 4117384,
+              "target_fn": null
+            }
+          ]
+        },
+        {
+          "function": 5971792,
+          "table_refs": [
+            {
+              "site": 5971956,
+              "src_fn": 5971792,
+              "mnemonic": "lea",
+              "target": 14696416,
+              "target_section": ".rdata",
+              "target_string": "OnGOCreateLuaState"
+            },
+            {
+              "site": 5971985,
+              "src_fn": 5971792,
+              "mnemonic": "lea",
+              "target": 14696416,
+              "target_section": ".rdata",
+              "target_string": "OnGOCreateLuaState"
+            },
+            {
+              "site": 5972168,
+              "src_fn": 5971792,
+              "mnemonic": "lea",
+              "target": 14696368,
+              "target_section": ".rdata",
+              "target_string": "OnAICreateLuaState"
+            },
+            {
+              "site": 5972205,
+              "src_fn": 5971792,
+              "mnemonic": "lea",
+              "target": 14696368,
+              "target_section": ".rdata",
+              "target_string": "OnAICreateLuaState"
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 5971822,
+              "kind": "call",
+              "dest": 5925904,
+              "target_fn": 5925904
+            },
+            {
+              "site": 5971853,
+              "kind": "call",
+              "dest": 7873840,
+              "target_fn": 7873840
+            },
+            {
+              "site": 5971889,
+              "kind": "call",
+              "dest": 4518208,
+              "target_fn": null
+            },
+            {
+              "site": 5971969,
+              "kind": "call",
+              "dest": 1024064,
+              "target_fn": 1024064
+            },
+            {
+              "site": 5971998,
+              "kind": "call",
+              "dest": 936784,
+              "target_fn": 936784
+            },
+            {
+              "site": 5972096,
+              "kind": "call",
+              "dest": 4518208,
+              "target_fn": null
+            },
+            {
+              "site": 5972178,
+              "kind": "call",
+              "dest": 4517808,
+              "target_fn": 4517808
+            },
+            {
+              "site": 5972193,
+              "kind": "call",
+              "dest": 5536128,
+              "target_fn": null
+            },
+            {
+              "site": 5972218,
+              "kind": "call",
+              "dest": 936784,
+              "target_fn": 936784
+            },
+            {
+              "site": 5972229,
+              "kind": "call",
+              "dest": 7875040,
+              "target_fn": 7875040
+            }
+          ]
+        },
+        {
+          "function": 5972272,
+          "table_refs": [
+            {
+              "site": 5972302,
+              "src_fn": 5972272,
+              "mnemonic": "lea",
+              "target": 14696392,
+              "target_section": ".rdata",
+              "target_string": "OnPickleInternal"
+            }
+          ],
+          "interesting_strings": [
+            {
+              "site": 5972302,
+              "target": 14696392,
+              "target_string": "OnPickleInternal"
+            }
+          ],
+          "calls": [
+            {
+              "site": 5972316,
+              "kind": "call",
+              "dest": 1024064,
+              "target_fn": 1024064
+            }
+          ]
+        },
+        {
+          "function": 5972772,
+          "table_refs": [
+            {
+              "site": 5972776,
+              "src_fn": 5972772,
+              "mnemonic": "lea",
+              "target": 14696440,
+              "target_section": ".rdata",
+              "target_string": "OnUnpickleInternal"
+            }
+          ],
+          "interesting_strings": [
+            {
+              "site": 5972776,
+              "target": 14696440,
+              "target_string": "OnUnpickleInternal"
+            }
+          ],
+          "calls": [
+            {
+              "site": 5972800,
+              "kind": "call",
+              "dest": 10439920,
+              "target_fn": 10439920
+            },
+            {
+              "site": 5972835,
+              "kind": "call",
+              "dest": 10417760,
+              "target_fn": 10417760
+            },
+            {
+              "site": 5972878,
+              "kind": "call",
+              "dest": 6339008,
+              "target_fn": null
+            },
+            {
+              "site": 5972982,
+              "kind": "call",
+              "dest": 10399248,
+              "target_fn": 10399248
+            },
+            {
+              "site": 5972994,
+              "kind": "call",
+              "dest": 10411968,
+              "target_fn": 10411968
+            },
+            {
+              "site": 5973053,
+              "kind": "jmp",
+              "dest": 5973105,
+              "target_fn": 5972772
+            },
+            {
+              "site": 5973066,
+              "kind": "jmp",
+              "dest": 5973084,
+              "target_fn": 5972772
+            },
+            {
+              "site": 5973076,
+              "kind": "call",
+              "dest": 13769360,
+              "target_fn": 13769360
+            },
+            {
+              "site": 5973096,
+              "kind": "call",
+              "dest": 4117402,
+              "target_fn": null
+            },
+            {
+              "site": 5973132,
+              "kind": "call",
+              "dest": 10401936,
+              "target_fn": 10401936
+            },
+            {
+              "site": 5973148,
+              "kind": "call",
+              "dest": 10391968,
+              "target_fn": 10391968
+            }
+          ]
+        },
+        {
+          "function": 5973200,
+          "table_refs": [
+            {
+              "site": 5973221,
+              "src_fn": 5973200,
+              "mnemonic": "lea",
+              "target": 14696472,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 5973216,
+              "kind": "call",
+              "dest": 5926352,
+              "target_fn": 5926352
+            }
+          ]
+        },
+        {
+          "function": 5990512,
+          "table_refs": [
+            {
+              "site": 5990564,
+              "src_fn": 5990512,
+              "mnemonic": "lea",
+              "target": 14696816,
+              "target_section": ".rdata",
+              "target_string": null
+            },
+            {
+              "site": 5990618,
+              "src_fn": 5990512,
+              "mnemonic": "lea",
+              "target": 14696656,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 5990558,
+              "kind": "call",
+              "dest": 5616144,
+              "target_fn": 5616144
+            },
+            {
+              "site": 5990612,
+              "kind": "call",
+              "dest": 5586832,
+              "target_fn": 5586832
+            }
+          ]
+        },
+        {
+          "function": 5990704,
+          "table_refs": [
+            {
+              "site": 5990756,
+              "src_fn": 5990704,
+              "mnemonic": "lea",
+              "target": 14696744,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 5990750,
+              "kind": "call",
+              "dest": 5580208,
+              "target_fn": 5580208
+            },
+            {
+              "site": 5990789,
+              "kind": "call",
+              "dest": 5579824,
+              "target_fn": 5579824
+            }
+          ]
+        },
+        {
+          "function": 5995696,
+          "table_refs": [
+            {
+              "site": 5995793,
+              "src_fn": 5995696,
+              "mnemonic": "lea",
+              "target": 14696896,
+              "target_section": ".rdata",
+              "target_string": "ResourceWads"
+            },
+            {
+              "site": 5995842,
+              "src_fn": 5995696,
+              "mnemonic": "lea",
+              "target": 14696912,
+              "target_section": ".rdata",
+              "target_string": null
+            },
+            {
+              "site": 5996279,
+              "src_fn": 5995696,
+              "mnemonic": "lea",
+              "target": 14696912,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [
+            {
+              "site": 5995793,
+              "target": 14696896,
+              "target_string": "ResourceWads"
+            },
+            {
+              "site": 5996347,
+              "target": 14644764,
+              "target_string": "WAD_"
+            }
+          ],
+          "calls": [
+            {
+              "site": 5995803,
+              "kind": "call",
+              "dest": 799920,
+              "target_fn": 799920
+            },
+            {
+              "site": 5995904,
+              "kind": "call",
+              "dest": 6804736,
+              "target_fn": null
+            },
+            {
+              "site": 5996105,
+              "kind": "jmp",
+              "dest": 5996263,
+              "target_fn": 5995696
+            },
+            {
+              "site": 5996126,
+              "kind": "jmp",
+              "dest": 5996021,
+              "target_fn": 5995696
+            },
+            {
+              "site": 5996237,
+              "kind": "jmp",
+              "dest": 5996258,
+              "target_fn": 5995696
+            },
+            {
+              "site": 5996249,
+              "kind": "call",
+              "dest": 1548528,
+              "target_fn": 1548528
+            },
+            {
+              "site": 5996342,
+              "kind": "call",
+              "dest": 5993760,
+              "target_fn": 5993760
+            },
+            {
+              "site": 5996510,
+              "kind": "jmp",
+              "dest": 5996514,
+              "target_fn": 5995696
+            },
+            {
+              "site": 5996629,
+              "kind": "call",
+              "dest": 4397968,
+              "target_fn": 4397968
+            },
+            {
+              "site": 5996693,
+              "kind": "call",
+              "dest": 4337920,
+              "target_fn": 4337920
+            },
+            {
+              "site": 5996785,
+              "kind": "jmp",
+              "dest": 5996843,
+              "target_fn": 5995696
+            },
+            {
+              "site": 5996799,
+              "kind": "jmp",
+              "dest": 5996843,
+              "target_fn": 5995696
+            },
+            {
+              "site": 5996834,
+              "kind": "call",
+              "dest": 5999856,
+              "target_fn": 5999856
+            },
+            {
+              "site": 5996914,
+              "kind": "call",
+              "dest": 5991328,
+              "target_fn": 5991328
+            },
+            {
+              "site": 5996929,
+              "kind": "call",
+              "dest": 4110704,
+              "target_fn": 4110704
+            }
+          ]
+        },
+        {
+          "function": 5998400,
+          "table_refs": [
+            {
+              "site": 5998812,
+              "src_fn": 5998400,
+              "mnemonic": "lea",
+              "target": 14696816,
+              "target_section": ".rdata",
+              "target_string": null
+            },
+            {
+              "site": 5998865,
+              "src_fn": 5998400,
+              "mnemonic": "lea",
+              "target": 14696656,
+              "target_section": ".rdata",
+              "target_string": null
+            },
+            {
+              "site": 5999135,
+              "src_fn": 5998400,
+              "mnemonic": "lea",
+              "target": 14696744,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 5998481,
+              "kind": "call",
+              "dest": 737152,
+              "target_fn": null
+            },
+            {
+              "site": 5998516,
+              "kind": "call",
+              "dest": 5616144,
+              "target_fn": 5616144
+            },
+            {
+              "site": 5998570,
+              "kind": "call",
+              "dest": 5586832,
+              "target_fn": 5586832
+            },
+            {
+              "site": 5998608,
+              "kind": "jmp",
+              "dest": 5998614,
+              "target_fn": 5998400
+            },
+            {
+              "site": 5998652,
+              "kind": "call",
+              "dest": 737152,
+              "target_fn": null
+            },
+            {
+              "site": 5998686,
+              "kind": "call",
+              "dest": 6498112,
+              "target_fn": 6498112
+            },
+            {
+              "site": 5998694,
+              "kind": "jmp",
+              "dest": 5998699,
+              "target_fn": 5998400
+            },
+            {
+              "site": 5998751,
+              "kind": "call",
+              "dest": 5994752,
+              "target_fn": 5994752
+            },
+            {
+              "site": 5998769,
+              "kind": "call",
+              "dest": 737152,
+              "target_fn": null
+            },
+            {
+              "site": 5998806,
+              "kind": "call",
+              "dest": 5616144,
+              "target_fn": 5616144
+            },
+            {
+              "site": 5998859,
+              "kind": "call",
+              "dest": 5586832,
+              "target_fn": 5586832
+            },
+            {
+              "site": 5998882,
+              "kind": "jmp",
+              "dest": 5998887,
+              "target_fn": 5998400
+            },
+            {
+              "site": 5998929,
+              "kind": "call",
+              "dest": 737152,
+              "target_fn": null
+            },
+            {
+              "site": 5998951,
+              "kind": "call",
+              "dest": 5580208,
+              "target_fn": 5580208
+            },
+            {
+              "site": 5999004,
+              "kind": "call",
+              "dest": 4117384,
+              "target_fn": null
+            },
+            {
+              "site": 5999084,
+              "kind": "call",
+              "dest": 5994752,
+              "target_fn": 5994752
+            },
+            {
+              "site": 5999100,
+              "kind": "call",
+              "dest": 737152,
+              "target_fn": null
+            },
+            {
+              "site": 5999129,
+              "kind": "call",
+              "dest": 5580208,
+              "target_fn": 5580208
+            },
+            {
+              "site": 5999169,
+              "kind": "call",
+              "dest": 5579824,
+              "target_fn": 5579824
+            },
+            {
+              "site": 5999175,
+              "kind": "jmp",
+              "dest": 5999042,
+              "target_fn": 5998400
+            }
+          ]
+        },
+        {
+          "function": 5999232,
+          "table_refs": [
+            {
+              "site": 5999269,
+              "src_fn": 5999232,
+              "mnemonic": "lea",
+              "target": 14696936,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 5999297,
+              "kind": "call",
+              "dest": 4919424,
+              "target_fn": 4919424
+            },
+            {
+              "site": 5999310,
+              "kind": "call",
+              "dest": 4239760,
+              "target_fn": 4239760
+            },
+            {
+              "site": 5999322,
+              "kind": "call",
+              "dest": 4241040,
+              "target_fn": 4241040
+            },
+            {
+              "site": 5999342,
+              "kind": "call",
+              "dest": 10114656,
+              "target_fn": 10114656
+            },
+            {
+              "site": 5999363,
+              "kind": "call",
+              "dest": 4919424,
+              "target_fn": 4919424
+            },
+            {
+              "site": 5999376,
+              "kind": "call",
+              "dest": 4239760,
+              "target_fn": 4239760
+            },
+            {
+              "site": 5999388,
+              "kind": "call",
+              "dest": 4241040,
+              "target_fn": 4241040
+            },
+            {
+              "site": 5999416,
+              "kind": "call",
+              "dest": 4919424,
+              "target_fn": 4919424
+            },
+            {
+              "site": 5999429,
+              "kind": "call",
+              "dest": 4239760,
+              "target_fn": 4239760
+            },
+            {
+              "site": 5999441,
+              "kind": "call",
+              "dest": 4241040,
+              "target_fn": 4241040
+            },
+            {
+              "site": 5999461,
+              "kind": "call",
+              "dest": 10114656,
+              "target_fn": 10114656
+            },
+            {
+              "site": 5999482,
+              "kind": "call",
+              "dest": 4919424,
+              "target_fn": 4919424
+            },
+            {
+              "site": 5999495,
+              "kind": "call",
+              "dest": 4239760,
+              "target_fn": 4239760
+            },
+            {
+              "site": 5999507,
+              "kind": "call",
+              "dest": 4241040,
+              "target_fn": 4241040
+            },
+            {
+              "site": 5999527,
+              "kind": "call",
+              "dest": 10114656,
+              "target_fn": 10114656
+            },
+            {
+              "site": 5999564,
+              "kind": "call",
+              "dest": 4919424,
+              "target_fn": 4919424
+            },
+            {
+              "site": 5999577,
+              "kind": "call",
+              "dest": 4239760,
+              "target_fn": 4239760
+            },
+            {
+              "site": 5999589,
+              "kind": "call",
+              "dest": 4241040,
+              "target_fn": 4241040
+            },
+            {
+              "site": 5999601,
+              "kind": "call",
+              "dest": 10114656,
+              "target_fn": 10114656
+            },
+            {
+              "site": 5999636,
+              "kind": "call",
+              "dest": 4919424,
+              "target_fn": 4919424
+            },
+            {
+              "site": 5999649,
+              "kind": "call",
+              "dest": 4239760,
+              "target_fn": 4239760
+            },
+            {
+              "site": 5999661,
+              "kind": "call",
+              "dest": 4241040,
+              "target_fn": 4241040
+            },
+            {
+              "site": 5999689,
+              "kind": "call",
+              "dest": 4919424,
+              "target_fn": 4919424
+            },
+            {
+              "site": 5999702,
+              "kind": "call",
+              "dest": 4239760,
+              "target_fn": 4239760
+            },
+            {
+              "site": 5999714,
+              "kind": "call",
+              "dest": 4241040,
+              "target_fn": 4241040
+            },
+            {
+              "site": 5999741,
+              "kind": "call",
+              "dest": 4882448,
+              "target_fn": 4882448
+            }
+          ]
+        },
+        {
+          "function": 6000608,
+          "table_refs": [
+            {
+              "site": 6000641,
+              "src_fn": 6000608,
+              "mnemonic": "lea",
+              "target": 14696936,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [],
+          "calls": [
+            {
+              "site": 6000635,
+              "kind": "call",
+              "dest": 788416,
+              "target_fn": null
+            },
+            {
+              "site": 6000826,
+              "kind": "call",
+              "dest": 4949584,
+              "target_fn": null
+            },
+            {
+              "site": 6000901,
+              "kind": "jmp",
+              "dest": 6000993,
+              "target_fn": 6000608
+            },
+            {
+              "site": 6000988,
+              "kind": "jmp",
+              "dest": 6000944,
+              "target_fn": 6000608
+            }
+          ]
+        },
+        {
+          "function": 6795328,
+          "table_refs": [
+            {
+              "site": 6795410,
+              "src_fn": 6795328,
+              "mnemonic": "lea",
+              "target": 14696896,
+              "target_section": ".rdata",
+              "target_string": "ResourceWads"
+            },
+            {
+              "site": 6795447,
+              "src_fn": 6795328,
+              "mnemonic": "lea",
+              "target": 14696912,
+              "target_section": ".rdata",
+              "target_string": null
+            },
+            {
+              "site": 6795500,
+              "src_fn": 6795328,
+              "mnemonic": "lea",
+              "target": 14696912,
+              "target_section": ".rdata",
+              "target_string": null
+            }
+          ],
+          "interesting_strings": [
+            {
+              "site": 6795410,
+              "target": 14696896,
+              "target_string": "ResourceWads"
+            }
+          ],
+          "calls": [
+            {
+              "site": 6795388,
+              "kind": "jmp",
+              "dest": 6795407,
+              "target_fn": 6795328
+            },
+            {
+              "site": 6795417,
+              "kind": "call",
+              "dest": 799920,
+              "target_fn": 799920
+            },
+            {
+              "site": 6795495,
+              "kind": "call",
+              "dest": 6794080,
+              "target_fn": 6794080
+            },
+            {
+              "site": 6795531,
+              "kind": "call",
+              "dest": 4110704,
+              "target_fn": 4110704
+            }
+          ]
+        }
+      ],
+      "score": 1190
+    }
+  ],
+  "ranked_owner_functions": [
+    {
+      "function": 5995696,
+      "score": 205,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 3,
+      "interesting_strings": [
+        {
+          "text": "ResourceWads",
+          "site": 5995793
+        },
+        {
+          "text": "WAD_",
+          "site": 5996347
+        }
+      ]
+    },
+    {
+      "function": 6795328,
+      "score": 180,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 3,
+      "interesting_strings": [
+        {
+          "text": "ResourceWads",
+          "site": 6795410
+        }
+      ]
+    },
+    {
+      "function": 5972272,
+      "score": 170,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 1,
+      "interesting_strings": [
+        {
+          "text": "OnPickleInternal",
+          "site": 5972302
+        }
+      ]
+    },
+    {
+      "function": 5972772,
+      "score": 170,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 1,
+      "interesting_strings": [
+        {
+          "text": "OnUnpickleInternal",
+          "site": 5972776
+        }
+      ]
+    },
+    {
+      "function": 5971792,
+      "score": 160,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 4,
+      "interesting_strings": []
+    },
+    {
+      "function": 5998400,
+      "score": 155,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 3,
+      "interesting_strings": []
+    },
+    {
+      "function": 4609184,
+      "score": 150,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 2,
+      "interesting_strings": []
+    },
+    {
+      "function": 5990512,
+      "score": 150,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 2,
+      "interesting_strings": []
+    },
+    {
+      "function": 1526368,
+      "score": 145,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 1,
+      "interesting_strings": []
+    },
+    {
+      "function": 1531120,
+      "score": 145,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 1,
+      "interesting_strings": []
+    },
+    {
+      "function": 1546320,
+      "score": 145,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 1,
+      "interesting_strings": []
+    },
+    {
+      "function": 1546464,
+      "score": 145,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 1,
+      "interesting_strings": []
+    },
+    {
+      "function": 1546960,
+      "score": 145,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 1,
+      "interesting_strings": []
+    },
+    {
+      "function": 1547088,
+      "score": 145,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 1,
+      "interesting_strings": []
+    },
+    {
+      "function": 5968800,
+      "score": 145,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 1,
+      "interesting_strings": []
+    },
+    {
+      "function": 5973200,
+      "score": 145,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 1,
+      "interesting_strings": []
+    },
+    {
+      "function": 5990704,
+      "score": 145,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 1,
+      "interesting_strings": []
+    },
+    {
+      "function": 5999232,
+      "score": 145,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 1,
+      "interesting_strings": []
+    },
+    {
+      "function": 6000608,
+      "score": 145,
+      "clusters": [
+        14696448
+      ],
+      "labels": [
+        "fn:on_pickle_internal"
+      ],
+      "refs": 1,
+      "interesting_strings": []
+    }
+  ],
+  "exe_rescanned": false,
+  "game_launched": false,
+  "save_opened": false
+}
