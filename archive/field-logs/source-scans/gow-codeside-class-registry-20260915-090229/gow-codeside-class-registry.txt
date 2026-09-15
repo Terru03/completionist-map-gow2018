@@ -1,0 +1,39 @@
+Completionist Map - GoW CodeSideLuaClass persistence registry
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+registry_count_global=0x22AE7DC
+registry_pointer_table=0x22AE820
+registry_count=2
+mode=read-only exact-global trace
+broad_heuristic_scan=false
+
+DETERMINISTIC REGISTRY TABLE
+[0] key=0x994A9F8D559DEF45 metadata=0x2C2AEF0 name=GroundType parent=null save_B8=null restore_C0=null init=0x3B8B0
+    neighbour_F0=0x107CFE0 neighbour_F8=0x107D0F0 class=non-executable-enum-data
+[1] key=0x92272F4435C83E6C metadata=0x2C2A510 name=CollisionType parent=null save_B8=null restore_C0=null init=0x3BAE0
+    neighbour_F0=0x107D2B0 neighbour_F8=0x107D210 class=non-executable-enum-data
+
+EXACT CALLBACK MAPPING
+  (none: both static classes have null +0xB8/+0xC0 and null parent)
+
+GAMEOBJECT PERSISTENCE PAYLOAD
+  not decoded; no connected GameObject registry class/callback evidence
+
+FROZEN SAVE DECODER
+  not created; Phase 1/2 evidence threshold not met
+
+PRODUCTION ORACLE STATUS
+  BLOCKED_EXACT_UNLOADED_STATE_ORACLE
+  blocker=The exact static registry contains only GroundType and CollisionType. Both have null parent, null +0xB8 save callback, and null +0xC0 restore callback. No connected registry pointer/callback evidence reaches OnUnpickleInternal 0x5B2324, OnPickleInternal 0x5B2130, the GameObject resolver, or unbox machinery. Therefore GameObject payload bytes, stable instance identity, and the semantic completion field remain unproved; frozen-save decoding and catalogue joins are not justified.
+
+MISSING EVIDENCE
+  - connected registration provenance for a GameObject/persistent-object CodeSideLuaClass entry
+  - its exact +0xB8 encoder and +0xC0 decoder callbacks
+  - inverse-pair proof of stable instance identity fields and byte layout
+  - semantic completion field with opposite positively labelled values for same field
+
+SAFETY
+  game_launched=false
+  active_save_opened=false
+  active_save_modified=false
+  save_or_progression_written=false
+  exe_written=false

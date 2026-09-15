@@ -1,0 +1,420 @@
+{
+  "schema": 1,
+  "analysis": "gow_codeside_class_registry",
+  "exe_sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+  "registry": {
+    "count_global_rva": 36366300,
+    "pointer_table_rva": 36366368,
+    "static_count_after_crt_initializers": 2,
+    "entry_size": 8,
+    "crt_order_proved": true,
+    "entries": [
+      {
+        "registry_index": 0,
+        "class_metadata_rva": 46313200,
+        "class_key": 11045816465455181637,
+        "name": "GroundType",
+        "name_storage": {
+          "source_rva": 14739416,
+          "inline_offset": 100
+        },
+        "parent_plus_0x48": null,
+        "callback_slots": {
+          "+0xA8": null,
+          "+0xB0": null,
+          "+0xB8_save": null,
+          "+0xC0_restore": null,
+          "+0xC8": null,
+          "+0xD0": null
+        },
+        "neighbouring_noncallback_fields": {
+          "+0xF0": 17289184,
+          "+0xF8": 17289456,
+          "classification": "non-executable enum descriptor/value tables"
+        },
+        "initializer_rva": 243888,
+        "registration_provenance": {
+          "crt_pointer_rva": 13938024,
+          "registry_append_site": 244054,
+          "count_load_site": 244004,
+          "count_increment_store_site": 244064
+        },
+        "initializer_evidence": [
+          {
+            "rva": 243955,
+            "bytes": "48890df6f5be02",
+            "mnemonic": "mov",
+            "op_str": "qword ptr [rip + 0x2bef5f6], rcx",
+            "rip_targets": [
+              46313200
+            ]
+          },
+          {
+            "rva": 243972,
+            "bytes": "488d3de5f5be02",
+            "mnemonic": "lea",
+            "op_str": "rdi, [rip + 0x2bef5e5]",
+            "rip_targets": [
+              46313200
+            ]
+          },
+          {
+            "rva": 244004,
+            "bytes": "48630db12e2702",
+            "mnemonic": "movsxd",
+            "op_str": "rcx, dword ptr [rip + 0x2272eb1]",
+            "rip_targets": [
+              36366300
+            ]
+          },
+          {
+            "rva": 244054,
+            "bytes": "4889bcca20e82a02",
+            "mnemonic": "mov",
+            "op_str": "qword ptr [rdx + rcx*8 + 0x22ae820], rdi"
+          },
+          {
+            "rva": 244064,
+            "bytes": "890d762e2702",
+            "mnemonic": "mov",
+            "op_str": "dword ptr [rip + 0x2272e76], ecx",
+            "rip_targets": [
+              36366300
+            ]
+          },
+          {
+            "rva": 244011,
+            "bytes": "488d05ae160401",
+            "mnemonic": "lea",
+            "op_str": "rax, [rip + 0x10416ae]",
+            "rip_targets": [
+              17289184
+            ]
+          },
+          {
+            "rva": 244018,
+            "bytes": "488905a7f6be02",
+            "mnemonic": "mov",
+            "op_str": "qword ptr [rip + 0x2bef6a7], rax",
+            "rip_targets": [
+              46313440
+            ]
+          },
+          {
+            "rva": 244025,
+            "bytes": "488d05b0170401",
+            "mnemonic": "lea",
+            "op_str": "rax, [rip + 0x10417b0]",
+            "rip_targets": [
+              17289456
+            ]
+          },
+          {
+            "rva": 244032,
+            "bytes": "488905a1f6be02",
+            "mnemonic": "mov",
+            "op_str": "qword ptr [rip + 0x2bef6a1], rax",
+            "rip_targets": [
+              46313448
+            ]
+          }
+        ],
+        "zero_fill_basis": "metadata lies in .data virtual tail with no raw-file backing; no initializer store targets +0x48/+0xB8/+0xC0",
+        "gameobject_connectivity": {
+          "has_persistence_callback": false,
+          "paths_to_gameobject_targets": []
+        }
+      },
+      {
+        "registry_index": 1,
+        "class_metadata_rva": 46310672,
+        "class_key": 10531438223635791468,
+        "name": "CollisionType",
+        "name_storage": {
+          "source_rva": 14739432,
+          "inline_offset": 100
+        },
+        "parent_plus_0x48": null,
+        "callback_slots": {
+          "+0xA8": null,
+          "+0xB0": null,
+          "+0xB8_save": null,
+          "+0xC0_restore": null,
+          "+0xC8": null,
+          "+0xD0": null
+        },
+        "neighbouring_noncallback_fields": {
+          "+0xF0": 17289904,
+          "+0xF8": 17289744,
+          "classification": "non-executable enum descriptor/value tables"
+        },
+        "initializer_rva": 244448,
+        "registration_provenance": {
+          "crt_pointer_rva": 13938032,
+          "registry_append_site": 244614,
+          "count_load_site": 244564,
+          "count_increment_store_site": 244624
+        },
+        "initializer_evidence": [
+          {
+            "rva": 244515,
+            "bytes": "48890de6e9be02",
+            "mnemonic": "mov",
+            "op_str": "qword ptr [rip + 0x2bee9e6], rcx",
+            "rip_targets": [
+              46310672
+            ]
+          },
+          {
+            "rva": 244532,
+            "bytes": "488d3dd5e9be02",
+            "mnemonic": "lea",
+            "op_str": "rdi, [rip + 0x2bee9d5]",
+            "rip_targets": [
+              46310672
+            ]
+          },
+          {
+            "rva": 244564,
+            "bytes": "48630d812c2702",
+            "mnemonic": "movsxd",
+            "op_str": "rcx, dword ptr [rip + 0x2272c81]",
+            "rip_targets": [
+              36366300
+            ]
+          },
+          {
+            "rva": 244614,
+            "bytes": "4889bcca20e82a02",
+            "mnemonic": "mov",
+            "op_str": "qword ptr [rdx + rcx*8 + 0x22ae820], rdi"
+          },
+          {
+            "rva": 244624,
+            "bytes": "890d462c2702",
+            "mnemonic": "mov",
+            "op_str": "dword ptr [rip + 0x2272c46], ecx",
+            "rip_targets": [
+              36366300
+            ]
+          },
+          {
+            "rva": 244571,
+            "bytes": "488d054e170401",
+            "mnemonic": "lea",
+            "op_str": "rax, [rip + 0x104174e]",
+            "rip_targets": [
+              17289904
+            ]
+          },
+          {
+            "rva": 244578,
+            "bytes": "48890597eabe02",
+            "mnemonic": "mov",
+            "op_str": "qword ptr [rip + 0x2beea97], rax",
+            "rip_targets": [
+              46310912
+            ]
+          },
+          {
+            "rva": 244585,
+            "bytes": "488d05a0160401",
+            "mnemonic": "lea",
+            "op_str": "rax, [rip + 0x10416a0]",
+            "rip_targets": [
+              17289744
+            ]
+          },
+          {
+            "rva": 244592,
+            "bytes": "48890591eabe02",
+            "mnemonic": "mov",
+            "op_str": "qword ptr [rip + 0x2beea91], rax",
+            "rip_targets": [
+              46310920
+            ]
+          }
+        ],
+        "zero_fill_basis": "metadata lies in .data virtual tail with no raw-file backing; no initializer store targets +0x48/+0xB8/+0xC0",
+        "gameobject_connectivity": {
+          "has_persistence_callback": false,
+          "paths_to_gameobject_targets": []
+        }
+      }
+    ]
+  },
+  "reference_audit": {
+    "count_refs": [
+      {
+        "site": 244004,
+        "function": 243888,
+        "mnemonic": "movsxd"
+      },
+      {
+        "site": 244064,
+        "function": 243888,
+        "mnemonic": "mov"
+      },
+      {
+        "site": 244564,
+        "function": 244448,
+        "mnemonic": "movsxd"
+      },
+      {
+        "site": 244624,
+        "function": 244448,
+        "mnemonic": "mov"
+      },
+      {
+        "site": 8289681,
+        "function": 8289120,
+        "mnemonic": "mov"
+      },
+      {
+        "site": 8289873,
+        "function": 8289856,
+        "mnemonic": "mov"
+      }
+    ],
+    "table_rip_refs": [
+      {
+        "site": 8289710,
+        "function": 8289120,
+        "mnemonic": "lea"
+      },
+      {
+        "site": 8289912,
+        "function": 8289856,
+        "mnemonic": "lea"
+      }
+    ],
+    "static_aliases": {
+      "count_data_pointers": [],
+      "table_data_pointers": [],
+      "count_immediates": [],
+      "table_immediates": []
+    },
+    "scope": "exact registry globals, direct writers, two lookup consumers, and CRT pointers only",
+    "broad_heuristic_scan": false
+  },
+  "lookup_evidence": {
+    "0x7E7B60": [
+      {
+        "rva": 8289681,
+        "bytes": "448b15446aac01",
+        "mnemonic": "mov",
+        "op_str": "r10d, dword ptr [rip + 0x1ac6a44]",
+        "rip_targets": [
+          36366300
+        ]
+      },
+      {
+        "rva": 8289710,
+        "bytes": "488d156b6aac01",
+        "mnemonic": "lea",
+        "op_str": "rdx, [rip + 0x1ac6a6b]",
+        "rip_targets": [
+          36366368
+        ]
+      },
+      {
+        "rva": 8289750,
+        "bytes": "4c8b89c0000000",
+        "mnemonic": "mov",
+        "op_str": "r9, qword ptr [rcx + 0xc0]"
+      },
+      {
+        "rva": 8289757,
+        "bytes": "488b4948",
+        "mnemonic": "mov",
+        "op_str": "rcx, qword ptr [rcx + 0x48]"
+      }
+    ],
+    "0x7E7E40": [
+      {
+        "rva": 8289873,
+        "bytes": "448b158469ac01",
+        "mnemonic": "mov",
+        "op_str": "r10d, dword ptr [rip + 0x1ac6984]",
+        "rip_targets": [
+          36366300
+        ]
+      },
+      {
+        "rva": 8289912,
+        "bytes": "488d15a169ac01",
+        "mnemonic": "lea",
+        "op_str": "rdx, [rip + 0x1ac69a1]",
+        "rip_targets": [
+          36366368
+        ]
+      },
+      {
+        "rva": 8289957,
+        "bytes": "4c8b89c0000000",
+        "mnemonic": "mov",
+        "op_str": "r9, qword ptr [rcx + 0xc0]"
+      },
+      {
+        "rva": 8289964,
+        "bytes": "488b4948",
+        "mnemonic": "mov",
+        "op_str": "rcx, qword ptr [rcx + 0x48]"
+      }
+    ],
+    "0x7E9190": [
+      {
+        "rva": 8295007,
+        "bytes": "4c8b90b8000000",
+        "mnemonic": "mov",
+        "op_str": "r10, qword ptr [rax + 0xb8]"
+      },
+      {
+        "rva": 8295014,
+        "bytes": "488b4048",
+        "mnemonic": "mov",
+        "op_str": "rax, qword ptr [rax + 0x48]"
+      },
+      {
+        "rva": 8295064,
+        "bytes": "41ffd2",
+        "mnemonic": "call",
+        "op_str": "r10"
+      }
+    ]
+  },
+  "callback_mapping": [
+    {
+      "class_key": 11045816465455181637,
+      "class_name": "GroundType",
+      "save_plus_0xB8": null,
+      "restore_plus_0xC0": null,
+      "parent_plus_0x48": null
+    },
+    {
+      "class_key": 10531438223635791468,
+      "class_name": "CollisionType",
+      "save_plus_0xB8": null,
+      "restore_plus_0xC0": null,
+      "parent_plus_0x48": null
+    }
+  ],
+  "gameobject_persistence_class": null,
+  "gameobject_payload_layout": null,
+  "frozen_save_decoder_created": false,
+  "production_oracle_status": "BLOCKED_EXACT_UNLOADED_STATE_ORACLE",
+  "blocker": "The exact static registry contains only GroundType and CollisionType. Both have null parent, null +0xB8 save callback, and null +0xC0 restore callback. No connected registry pointer/callback evidence reaches OnUnpickleInternal 0x5B2324, OnPickleInternal 0x5B2130, the GameObject resolver, or unbox machinery. Therefore GameObject payload bytes, stable instance identity, and the semantic completion field remain unproved; frozen-save decoding and catalogue joins are not justified.",
+  "missing_evidence": [
+    "connected registration provenance for a GameObject/persistent-object CodeSideLuaClass entry",
+    "its exact +0xB8 encoder and +0xC0 decoder callbacks",
+    "inverse-pair proof of stable instance identity fields and byte layout",
+    "semantic completion field with opposite positively labelled values for same field"
+  ],
+  "safety": {
+    "game_launched": false,
+    "active_save_opened": false,
+    "active_save_modified": false,
+    "save_or_progression_written": false,
+    "exe_written": false
+  }
+}
