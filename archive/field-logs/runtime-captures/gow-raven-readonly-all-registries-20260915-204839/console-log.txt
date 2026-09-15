@@ -1,0 +1,59 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260915204839
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Set-Location -LiteralPath 'C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research'; & '.\tools\v0.10.5\run-raven-readonly-all-registries-with-log.ps1'
+Process ID: 50620
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+=== Canonical Raven READ-ONLY ALL-REGISTRY capture ===
+NO debugger. NO breakpoints. NO process writes. NO thread suspension.
+Scans every live GameObject registry bank; scheduler root is diagnostic only.
+Launching GoW normally. No debugger will attach.
+Initial launch PID: 25160
+Live GoW PID: 25160
+Taking all-registry read-only snapshot 'baseline-main-menu' from PID 48856...
+READONLY_ALL_REGISTRIES_OK pid=48856
+registry_table_live_entries=12
+validated_object_count=46
+candidate_count=0
+BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY
+BLOCKED_EXACT_UNLOADED_STATE_ORACLE
+RUN A: load the same target save and stand near the exact Raven. DO NOT kill/collect it.
+Taking all-registry read-only snapshot 'run-a-raven' from PID 48856...
+READONLY_ALL_REGISTRIES_OK pid=48856
+registry_table_live_entries=14
+validated_object_count=109
+candidate_count=0
+BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY
+BLOCKED_EXACT_UNLOADED_STATE_ORACLE
+Return to the fully loaded MAIN MENU.
+Taking all-registry read-only snapshot 'between-main-menu' from PID 48856...
+READONLY_ALL_REGISTRIES_OK pid=48856
+registry_table_live_entries=12
+validated_object_count=46
+candidate_count=0
+BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY
+BLOCKED_EXACT_UNLOADED_STATE_ORACLE
+RUN B: reload the SAME save and return to the SAME Raven.
+Taking all-registry read-only snapshot 'run-b-raven' from PID 48856...
+READONLY_ALL_REGISTRIES_OK pid=48856
+registry_table_live_entries=14
+validated_object_count=113
+candidate_count=0
+BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY
+BLOCKED_EXACT_UNLOADED_STATE_ORACLE
+**********************
+Windows PowerShell transcript end
+End time: 20260915205114
+**********************
