@@ -1,0 +1,76 @@
+Completionist Map - pickle/unpickle callback ownership from reusable SQLite index
+exe_rescanned=false
+
+EXACT TARGET REFERENCES
+- core_pickle_unpickle 0x5AECC7: direct=1 rip=0 imm=0
+- pickle_table_builder 0x5AF01C: direct=8 rip=0 imm=0
+- pickle_driver 0x5AF8AD: direct=5 rip=0 imm=1
+    IMM_REF site=0x5AF870 src_fn=0x5AF800
+- on_pickle_internal 0x5B2130: direct=0 rip=0 imm=0
+- on_unpickle_internal 0x5B2324: direct=3 rip=0 imm=1
+    IMM_REF site=0x5B22ED src_fn=0x5B2280
+- restore_dispatch 0x5AD4A0: direct=12 rip=0 imm=10
+    IMM_REF site=0x174EDD src_fn=0x174EC0
+    IMM_REF site=0x174EF2 src_fn=0x174EC0
+    IMM_REF site=0x5ABC35 src_fn=0x5ABB60
+    IMM_REF site=0x5ABC4A src_fn=0x5ABB60
+    IMM_REF site=0x5ABCE4 src_fn=0x5ABB60
+    IMM_REF site=0x5ABCF9 src_fn=0x5ABB60
+    IMM_REF site=0x5AD45A src_fn=0x5AD440
+    IMM_REF site=0x5AD46F src_fn=0x5AD440
+    IMM_REF site=0x5B0113 src_fn=0x5AFF84
+    IMM_REF site=0x5B0128 src_fn=0x5AFF84
+- byte_serializer 0x7E7F10: direct=11 rip=0 imm=3
+    IMM_REF site=0x5AFAB0 src_fn=0x5AF8AD
+    IMM_REF site=0x5B222C src_fn=0x5B2171
+    IMM_REF site=0x7E9B8A src_fn=0x7E9B60
+- userdata_serializer 0x7E9190: direct=3 rip=0 imm=1
+    IMM_REF site=0x7E8F70 src_fn=0x7E8EF0
+
+TOP ADDRESS-OWNER FUNCTIONS
+#1 fn=0x5AF8AD score=240 targets=['byte_serializer']
+    imm_refs site=0x5AFAB0 target=byte_serializer
+    STRING 0x5AF937 'core.pickle'
+    STRING 0x5AF979 'Pickle'
+    STRING 0x5AFA6C "Failed to pickle Lua state '%s'"
+    STRING 0x5AFADF "Failed to pickle Lua state '%s' (no data written)"
+    STRING 0x5AFAF7 "Pickled Lua state '%s', used %d bytes."
+    STRING 0x5AFB12 "Failed to pickle Lua state '%s'. Pickle size is %d, but buffer is only %d."
+    STRING 0x5AFB31 'Error Pickle returned value is not a table'
+#2 fn=0x5ABB60 score=180 targets=['restore_dispatch']
+    imm_refs site=0x5ABC35 target=restore_dispatch
+    imm_refs site=0x5ABC4A target=restore_dispatch
+    imm_refs site=0x5ABCE4 target=restore_dispatch
+    imm_refs site=0x5ABCF9 target=restore_dispatch
+    STRING 0x5ABC25 '__PickleTable'
+    STRING 0x5ABC3D '__SoftPickleTable'
+    STRING 0x5ABCD4 '__PickleTable'
+    STRING 0x5ABCEC '__SoftPickleTable'
+#3 fn=0x174EC0 score=140 targets=['restore_dispatch']
+    imm_refs site=0x174EDD target=restore_dispatch
+    imm_refs site=0x174EF2 target=restore_dispatch
+    STRING 0x174ECD '__PickleTable'
+    STRING 0x174EE5 '__SoftPickleTable'
+#4 fn=0x5AD440 score=140 targets=['restore_dispatch']
+    imm_refs site=0x5AD45A target=restore_dispatch
+    imm_refs site=0x5AD46F target=restore_dispatch
+    STRING 0x5AD44D '__PickleTable'
+    STRING 0x5AD462 '__SoftPickleTable'
+#5 fn=0x5AFF84 score=140 targets=['restore_dispatch']
+    imm_refs site=0x5B0113 target=restore_dispatch
+    imm_refs site=0x5B0128 target=restore_dispatch
+    STRING 0x5B0103 '__PickleTable'
+    STRING 0x5B011B '__SoftPickleTable'
+#6 fn=0x5AF800 score=100 targets=['pickle_driver']
+    imm_refs site=0x5AF870 target=pickle_driver
+#7 fn=0x5B2171 score=100 targets=['byte_serializer']
+    imm_refs site=0x5B222C target=byte_serializer
+#8 fn=0x5B2280 score=100 targets=['on_unpickle_internal']
+    imm_refs site=0x5B22ED target=on_unpickle_internal
+#9 fn=0x7E8EF0 score=100 targets=['userdata_serializer']
+    imm_refs site=0x7E8F70 target=userdata_serializer
+#10 fn=0x7E9B60 score=100 targets=['byte_serializer']
+    imm_refs site=0x7E9B8A target=byte_serializer
+
+MULTI-TARGET CALLBACK-FAMILY FUNCTIONS
+#1 fn=0x5AF8AD targets=['byte_serializer', 'pickle_driver']
