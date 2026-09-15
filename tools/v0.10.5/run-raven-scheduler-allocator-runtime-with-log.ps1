@@ -121,9 +121,6 @@ try {
     $preflightExit = $LASTEXITCODE
     if ($preflightExit -ne 0) { throw "Runtime capturer preflight failed with exit code $preflightExit. Game not launched." }
 
-    # Windows PowerShell 5.1 does not support Tee-Object -Append. Validate the
-    # PS5.1-safe append logger before launching the game so a logging problem
-    # cannot create another pointless GoW launch.
     $loggerProbe = '__CAPTURE_LOGGER_PREFLIGHT_OK__'
     Add-Content -LiteralPath $pythonLog -Value $loggerProbe -Encoding UTF8
     $loggerTail = Get-Content -LiteralPath $pythonLog -Tail 1
@@ -131,15 +128,10 @@ try {
 
     $toolCommit = (& git rev-parse HEAD).Trim()
     Write-Host ''
-    Write-Host 'Game will start. Wait for debugger-ready line before loading save.' -ForegroundColor Cyan
-    Write-Host 'Run A: load target save/context, reach alf355_chiseldungeon Raven, approach it, do not kill or collect.' -ForegroundColor Cyan
-    Write-Host 'After RUN_A_EXACT_TARGET_CAPTURED: return to main menu, reload same save/context, approach same Raven again.' -ForegroundColor Cyan
-    Write-Host 'If no capture line appears within 60 seconds at Raven, quit game. Wrapper will archive and push failure evidence.' -ForegroundColor Cyan
-    Write-Host 'Do not inspect memory or logs. Wrapper collects and compares all data.' -ForegroundColor Cyan
+    Write-Host 'Game will start WITHOUT debugger attachment first.' -ForegroundColor Cyan
+    Write-Host 'Let God of War reach the main menu. Do not load the save yet.' -ForegroundColor Cyan
+    Write-Host 'When the main menu is fully usable, return to this PowerShell window and press Enter.' -ForegroundColor Cyan
 
-    # Steam may replace the directly started process with a new GoW.exe PID.
-    # Start-Process's PID is therefore only a launcher hint; discover the actual
-    # live process by exact executable path before attaching the debugger.
     $launcher = Start-Process -FilePath $exePath -WorkingDirectory $GameRoot -PassThru
     $launcherPid = $launcher.Id
     $gameLaunched = $true
@@ -153,20 +145,52 @@ try {
     } while ($null -eq $live -and (Get-Date) -lt $deadline)
     if ($null -eq $live) {
         $launcherState = if (Get-Process -Id $launcherPid -ErrorAction SilentlyContinue) { 'still-running' } else { 'exited-or-handed-off' }
-        throw "No live GoW.exe matching '$exePath' appeared for debugger attach within two minutes. Initial PID $launcherPid is $launcherState."
+        throw "No live GoW.exe matching '$exePath' appeared within two minutes. Initial PID $launcherPid is $launcherState."
     }
 
     $gamePid = $live.Id
-    Write-Host "Game process ready for debugger attach: PID $gamePid"
+    Write-Host "Initial live GoW process: PID $gamePid"
     if ($gamePid -ne $launcherPid) {
         Write-Host "Steam/process handoff detected: initial PID $launcherPid -> live GoW PID $gamePid"
     }
 
-    # Capture uses a narrow compatibility launcher that changes only module-base
-    # discovery (PSAPI first, Toolhelp retry fallback). Temporarily relax native
-    # stderr handling because Windows PowerShell 5.1 otherwise turns the first
-    # Python traceback line into a terminating PowerShell error when global
-    # ErrorActionPreference is Stop.
+    # Do not attach during startup. Let Steam/GoW finish any early process
+    # handoffs and anti-tamper/startup work first. The target Alfheim WAD should
+    # not be loaded until the operator later loads the save, so this still
+    # preserves the relevant target-registry lifecycle for the capture.
+    [void](Read-Host 'At the fully loaded MAIN MENU, press Enter to attach debugger (do NOT load the save yet)')
+
+    # Re-discover after the human wait because Steam/GoW can replace the process
+    # during startup. Require the final exact-path process to remain alive for a
+    # short stability window before debugger attachment.
+    $stableDeadline = (Get-Date).AddMinutes(2)
+    $stablePid = $null
+    $stableSince = $null
+    do {
+        $candidate = Get-ExactGameProcess -ExpectedPath $exePath
+        if ($null -eq $candidate) {
+            $stablePid = $null
+            $stableSince = $null
+        }
+        elseif ($stablePid -ne $candidate.Id) {
+            $stablePid = $candidate.Id
+            $stableSince = Get-Date
+            Write-Host "Main-menu candidate GoW PID: $stablePid"
+        }
+        elseif ($null -ne $stableSince -and ((Get-Date) - $stableSince).TotalSeconds -ge 5) {
+            break
+        }
+        Start-Sleep -Milliseconds 500
+    } while ((Get-Date) -lt $stableDeadline)
+
+    if ($null -eq $stablePid -or $null -eq $stableSince -or ((Get-Date) - $stableSince).TotalSeconds -lt 5) {
+        throw 'Could not obtain a stable exact-path GoW.exe process for five seconds after main-menu confirmation.'
+    }
+
+    $gamePid = $stablePid
+    Write-Host "Stable main-menu GoW process ready for debugger attach: PID $gamePid"
+    Write-Host 'Attaching debugger now. Keep the game at the main menu until Debugger ready appears.' -ForegroundColor Cyan
+
     $savedErrorActionPreference = $ErrorActionPreference
     try {
         $ErrorActionPreference = 'Continue'
