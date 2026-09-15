@@ -1,0 +1,204 @@
+Completionist Map - inverse/unpickle analysis from reusable SQLite index
+exe_rescanned=false
+graph_depth=4
+graph_root=0x7E6DC0
+candidate_0x7E6DC0_function=0x7E6DC0
+
+PROVEN
+- 0x5B1030 inserts 0x7E6DC0 as a native Lua C function before later unpickle-table handling.
+- 0x7E9190 userdata serialization walks CodeSideLuaClass +0x48 and invokes persistence callback +0xB8.
+
+NOT YET PROVEN
+- 0x7E6DC0 semantics as the actual byte-to-Lua decoder (highest-priority hypothesis).
+- exact GameObject +0xB8 encoder callback and stable static/WAD identity payload.
+
+ROOT COVERAGE
+- gameobject_token_resolver: rva=0x4EF0B0 function=NONE
+- lua_gameobject_unbox: rva=0x5F9350 function=0x5F9350
+- gameobject_token_packer: rva=0x60B9C0 function=NONE
+- restore_dispatch: rva=0x5AD4A0 function=0x5AD4A0
+- unpickle_driver: rva=0x5B1030 function=0x5B1030
+- on_unpickle_internal: rva=0x5B2324 function=0x5B2324
+- candidate_native_deserializer: rva=0x7E6DC0 function=0x7E6DC0
+- userdata_serializer: rva=0x7E9190 function=0x7E9190
+- userdata_serializer_helper: rva=0x7E9340 function=0x7E9340
+- later_unpickle_helper: rva=0x7EABD0 function=0x7EABD0
+- byte_serializer: rva=0x7E7F10 function=0x7E7F10
+
+FORWARD/REVERSE INTERSECTIONS
+- gameobject_token_resolver: 0 intersection(s)
+- lua_gameobject_unbox: 0 intersection(s)
+- gameobject_token_packer: 0 intersection(s)
+- on_unpickle_internal: 0 intersection(s)
+
+TOP INVERSE CANDIDATES
+#1 fn=0xD351B0 score=128 forward_depth=1 reverse_hits={} strings=0 indirect=2 special_fields=13
+    FIELD 0xD352E5 disp=0x30 access=2
+    FIELD 0xD352EB disp=0x30 access=1
+    FIELD 0xD352F1 disp=0x30 access=1
+    FIELD 0xD35394 disp=0x30 access=1
+    FIELD 0xD353A8 disp=0x30 access=2
+#2 fn=0x9F3EA0 score=126 forward_depth=2 reverse_hits={} strings=0 indirect=3 special_fields=5
+    FIELD 0x9F3EDE disp=0x48 access=1
+    FIELD 0x9F3F00 disp=0x48 access=1
+    FIELD 0x9F3F23 disp=0x48 access=2
+    FIELD 0x9F3F3E disp=0x30 access=1
+    FIELD 0x9F3F4E disp=0x30 access=1
+#3 fn=0x9EDFC0 score=118 forward_depth=1 reverse_hits={} strings=0 indirect=1 special_fields=30
+    FIELD 0x9EE007 disp=0x30 access=2
+    FIELD 0x9EE00C disp=0x30 access=1
+    FIELD 0x9EE01E disp=0x48 access=1
+    FIELD 0x9EE109 disp=0x30 access=1
+    FIELD 0x9EE116 disp=0x30 access=1
+#4 fn=0x9F4390 score=110 forward_depth=2 reverse_hits={} strings=0 indirect=3 special_fields=3
+    FIELD 0x9F43F7 disp=0x30 access=1
+    FIELD 0x9F456A disp=0x30 access=1
+    FIELD 0x9F45D7 disp=0xB8 access=1
+#5 fn=0x9F2D50 score=106 forward_depth=2 reverse_hits={} strings=0 indirect=1 special_fields=8
+    FIELD 0x9F2DA3 disp=0x30 access=1
+    FIELD 0x9F2DEC disp=0x30 access=1
+    FIELD 0x9F2E30 disp=0x30 access=1
+    FIELD 0x9F2E4D disp=0x30 access=1
+    FIELD 0x9F2E5F disp=0x30 access=2
+#6 fn=0x9ED520 score=100 forward_depth=1 reverse_hits={} strings=0 indirect=0 special_fields=4
+    FIELD 0x9ED584 disp=0x30 access=1
+    FIELD 0x9ED59F disp=0x30 access=1
+    FIELD 0x9ED605 disp=0x30 access=1
+    FIELD 0x9ED613 disp=0x30 access=1
+#7 fn=0x7E6DC0 score=96 forward_depth=0 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0x7E6DDF disp=0x30 access=2
+    FIELD 0x7E74B4 disp=0x30 access=1
+#8 fn=0x9E44B0 score=92 forward_depth=1 reverse_hits={} strings=0 indirect=0 special_fields=3
+    FIELD 0x9E4546 disp=0x30 access=2
+    FIELD 0x9E4560 disp=0x30 access=1
+    FIELD 0x9E456F disp=0x48 access=1
+#9 fn=0x4E6420 score=88 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=4
+    FIELD 0x4E6452 disp=0x30 access=2
+    FIELD 0x4E6475 disp=0x30 access=1
+    FIELD 0x4E657C disp=0x30 access=1
+    FIELD 0x4E658D disp=0x30 access=1
+#10 fn=0x9EF540 score=88 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=4
+    FIELD 0x9EF57A disp=0x48 access=1
+    FIELD 0x9EF5AE disp=0x48 access=1
+    FIELD 0x9EF5EF disp=0x48 access=1
+    FIELD 0x9EF601 disp=0x48 access=1
+#11 fn=0x9EF7E0 score=88 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=4
+    FIELD 0x9EF81A disp=0x48 access=1
+    FIELD 0x9EF84E disp=0x48 access=1
+    FIELD 0x9EF88F disp=0x48 access=1
+    FIELD 0x9EF8A1 disp=0x48 access=1
+#12 fn=0x553EB0 score=86 forward_depth=3 reverse_hits={} strings=0 indirect=1 special_fields=4
+    FIELD 0x553EF2 disp=0x30 access=1
+    FIELD 0x553F01 disp=0x30 access=2
+    FIELD 0x553F41 disp=0x30 access=1
+    FIELD 0x553F5B disp=0x30 access=2
+#13 fn=0x544BA0 score=84 forward_depth=1 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0x544C19 disp=0x30 access=1
+    FIELD 0x544C24 disp=0x30 access=1
+#14 fn=0x9E8190 score=84 forward_depth=1 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0x9E81E9 disp=0x30 access=2
+    FIELD 0x9E82C4 disp=0x30 access=1
+#15 fn=0x9EAE10 score=84 forward_depth=1 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0x9EAEAD disp=0x30 access=1
+    FIELD 0x9EAEFA disp=0x30 access=1
+#16 fn=0x9EFD60 score=84 forward_depth=1 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0x9EFE2B disp=0x30 access=2
+    FIELD 0x9EFE3B disp=0x48 access=1
+#17 fn=0x2284C0 score=80 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=3
+    FIELD 0x22850B disp=0x30 access=2
+    FIELD 0x228538 disp=0x30 access=1
+    FIELD 0x228543 disp=0x30 access=1
+#18 fn=0x9F0070 score=80 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=3
+    FIELD 0x9F00CF disp=0x30 access=1
+    FIELD 0x9F00D4 disp=0x30 access=2
+    FIELD 0x9F0120 disp=0x48 access=2
+#19 fn=0x545960 score=77 forward_depth=3 reverse_hits={} strings=1 indirect=0 special_fields=1
+    STRING 0x545C85 '__codesideluaclass'
+    FIELD 0x545E2E disp=0x30 access=1
+#20 fn=0x9ED120 score=76 forward_depth=1 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x9ED2BB disp=0x30 access=1
+#21 fn=0x9EFBE0 score=74 forward_depth=2 reverse_hits={} strings=0 indirect=1 special_fields=1
+    FIELD 0x9EFCDE disp=0x48 access=1
+#22 fn=0x4EDB40 score=72 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0x4EDBA3 disp=0x48 access=1
+    FIELD 0x4EDBA8 disp=0x48 access=2
+#23 fn=0x9E39E0 score=72 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0x9E3A4F disp=0x30 access=1
+    FIELD 0x9E3A5A disp=0x30 access=1
+#24 fn=0x9EAD50 score=72 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0x9EAD5F disp=0x48 access=1
+    FIELD 0x9EADEF disp=0x30 access=1
+#25 fn=0x9ED450 score=72 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0x9ED468 disp=0x30 access=2
+    FIELD 0x9ED4CA disp=0x30 access=1
+#26 fn=0xD36680 score=72 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0xD366AE disp=0x30 access=1
+    FIELD 0xD366B3 disp=0x30 access=2
+#27 fn=0x9E9720 score=72 forward_depth=3 reverse_hits={} strings=0 indirect=2 special_fields=1
+    FIELD 0x9E975F disp=0x30 access=1
+#28 fn=0x9ED8D0 score=72 forward_depth=3 reverse_hits={} strings=0 indirect=2 special_fields=1
+    FIELD 0x9ED95C disp=0x30 access=1
+#29 fn=0xCB240 score=72 forward_depth=4 reverse_hits={} strings=0 indirect=0 special_fields=5
+    FIELD 0xCB244 disp=0x30 access=1
+    FIELD 0xCB262 disp=0x30 access=2
+    FIELD 0xCB284 disp=0x30 access=1
+    FIELD 0xCB33A disp=0x30 access=1
+    FIELD 0xCB36B disp=0x30 access=1
+#30 fn=0x9EB920 score=70 forward_depth=3 reverse_hits={} strings=0 indirect=1 special_fields=2
+    FIELD 0x9EB951 disp=0x30 access=2
+    FIELD 0x9EB986 disp=0x30 access=1
+#31 fn=0x9F3BB0 score=70 forward_depth=3 reverse_hits={} strings=0 indirect=1 special_fields=2
+    FIELD 0x9F3BEE disp=0x30 access=2
+    FIELD 0x9F3D76 disp=0x30 access=1
+#32 fn=0x156120 score=64 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x156192 disp=0x30 access=1
+#33 fn=0x9E38D0 score=64 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x9E393E disp=0x30 access=1
+#34 fn=0x9E4A60 score=64 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x9E4AC8 disp=0x30 access=1
+#35 fn=0x9E93A0 score=64 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x9E9418 disp=0x30 access=1
+#36 fn=0x9EB370 score=64 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x9EB3A7 disp=0x30 access=1
+#37 fn=0x9EBB90 score=64 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x9EBBEE disp=0x30 access=1
+#38 fn=0x9EF660 score=64 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x9EF6DC disp=0x48 access=1
+#39 fn=0x9EFF40 score=64 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x9F0049 disp=0x30 access=1
+#40 fn=0x9F39B0 score=64 forward_depth=2 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x9F3ABD disp=0x30 access=1
+#41 fn=0x622F10 score=60 forward_depth=3 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0x622F3D disp=0x30 access=1
+    FIELD 0x622F4D disp=0x30 access=1
+#42 fn=0x9ED9E0 score=60 forward_depth=3 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0x9EDA8D disp=0x30 access=1
+    FIELD 0x9EDA9D disp=0x30 access=1
+#43 fn=0xD35BA0 score=60 forward_depth=3 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0xD35BBC disp=0x30 access=1
+    FIELD 0xD35BC1 disp=0x30 access=2
+#44 fn=0xD366F0 score=60 forward_depth=3 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0xD36714 disp=0x30 access=2
+    FIELD 0xD36745 disp=0x30 access=1
+#45 fn=0x625260 score=56 forward_depth=4 reverse_hits={} strings=0 indirect=0 special_fields=3
+    FIELD 0x625275 disp=0x30 access=1
+    FIELD 0x625290 disp=0x30 access=2
+    FIELD 0x6252CF disp=0x48 access=1
+#46 fn=0x9E9300 score=52 forward_depth=3 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x9E932E disp=0x48 access=1
+#47 fn=0x9EDAC0 score=52 forward_depth=3 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x9EDBA8 disp=0x30 access=1
+#48 fn=0x9EDBD0 score=52 forward_depth=3 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x9EDCA6 disp=0x30 access=1
+#49 fn=0x9E4360 score=48 forward_depth=4 reverse_hits={} strings=0 indirect=0 special_fields=2
+    FIELD 0x9E4383 disp=0x30 access=1
+    FIELD 0x9E43EF disp=0x30 access=1
+#50 fn=0x58C560 score=40 forward_depth=4 reverse_hits={} strings=0 indirect=0 special_fields=1
+    FIELD 0x58C5B5 disp=0x30 access=1
+
+reachable_functions=94
+reachable_interesting_strings=1
+global_codesideluaclass_refs=8
+global_gameobject_refs=5
+game_launched=false
+save_opened=false
