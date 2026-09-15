@@ -24,6 +24,7 @@ New-Item -ItemType Directory -Force -Path $logDir | Out-Null
 $consoleLog = Join-Path $logDir 'console-log.txt'
 $pythonLog = Join-Path $logDir 'python-output.txt'
 $captureJson = Join-Path $logDir 'capture.json'
+$preflightJson = Join-Path $logDir 'preflight.json'
 $resultPath = Join-Path $logDir 'result.txt'
 $preexistingPath = Join-Path $logDir 'preexisting-unstaged-tracked.txt'
 $scriptPath = Join-Path $repo 'tools\v0.10.5\capture-raven-scheduler-allocator-runtime.py'
@@ -89,6 +90,12 @@ try {
         throw 'God of War already running. Close it, then rerun this command.'
     }
 
+    Write-Host 'Run static capturer preflight before game launch.'
+    & python $scriptPath preflight --exe $exePath --wad $wadPath --output $preflightJson 2>&1 |
+        Tee-Object -LiteralPath $pythonLog | Out-Host
+    $preflightExit = $LASTEXITCODE
+    if ($preflightExit -ne 0) { throw "Runtime capturer preflight failed with exit code $preflightExit. Game not launched." }
+
     $toolCommit = (& git rev-parse HEAD).Trim()
     Write-Host ''
     Write-Host 'Game will start. Wait for debugger-ready line before loading save.' -ForegroundColor Cyan
@@ -110,7 +117,7 @@ try {
     # tracebacks are preserved in the archive instead of collapsing to only
     # an exit code. Tee-Object keeps interactive capture prompts visible.
     & python $scriptPath capture --pid $game.Id --exe $exePath --wad $wadPath --tool-commit $toolCommit --output $captureJson --runs 2 2>&1 |
-        Tee-Object -LiteralPath $pythonLog | Out-Host
+        Tee-Object -LiteralPath $pythonLog -Append | Out-Host
     $pythonExit = $LASTEXITCODE
     Write-Host "python_exit_code=$pythonExit"
     if ($pythonExit -ne 0) { throw "Runtime capturer failed with exit code $pythonExit." }

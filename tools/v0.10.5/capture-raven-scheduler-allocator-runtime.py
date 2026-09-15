@@ -334,8 +334,19 @@ if sys.platform == "win32":
             ("Rip", ctypes.c_ulonglong), ("Extended", ctypes.c_byte * (1232 - 256))]
 
     kernel32.CreateToolhelp32Snapshot.restype = wintypes.HANDLE
+    kernel32.CreateToolhelp32Snapshot.argtypes = [wintypes.DWORD, wintypes.DWORD]
     kernel32.OpenProcess.restype = wintypes.HANDLE
+    kernel32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
     kernel32.OpenThread.restype = wintypes.HANDLE
+    kernel32.OpenThread.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    kernel32.Module32FirstW.argtypes = [wintypes.HANDLE, ctypes.POINTER(MODULEENTRY32W)]
+    kernel32.Module32FirstW.restype = wintypes.BOOL
+    kernel32.Thread32First.argtypes = [wintypes.HANDLE, ctypes.POINTER(THREADENTRY32)]
+    kernel32.Thread32First.restype = wintypes.BOOL
+    kernel32.Thread32Next.argtypes = [wintypes.HANDLE, ctypes.POINTER(THREADENTRY32)]
+    kernel32.Thread32Next.restype = wintypes.BOOL
+    kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+    kernel32.CloseHandle.restype = wintypes.BOOL
     kernel32.ReadProcessMemory.argtypes = [wintypes.HANDLE, ctypes.c_void_p, ctypes.c_void_p,
                                            ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t)]
     kernel32.WriteProcessMemory.argtypes = [wintypes.HANDLE, ctypes.c_void_p, ctypes.c_void_p,
@@ -346,6 +357,72 @@ if sys.platform == "win32":
     kernel32.SetThreadContext.argtypes = [wintypes.HANDLE, ctypes.POINTER(CONTEXT64)]
     kernel32.WaitForDebugEvent.argtypes = [ctypes.POINTER(DEBUG_EVENT), wintypes.DWORD]
     kernel32.ContinueDebugEvent.argtypes = [wintypes.DWORD, wintypes.DWORD, wintypes.DWORD]
+    kernel32.ContinueDebugEvent.restype = wintypes.BOOL
+    kernel32.DebugActiveProcess.argtypes = [wintypes.DWORD]
+    kernel32.DebugActiveProcess.restype = wintypes.BOOL
+    kernel32.DebugActiveProcessStop.argtypes = [wintypes.DWORD]
+    kernel32.DebugActiveProcessStop.restype = wintypes.BOOL
+    kernel32.DebugSetProcessKillOnExit.argtypes = [wintypes.BOOL]
+    kernel32.DebugSetProcessKillOnExit.restype = wintypes.BOOL
+    kernel32.FlushInstructionCache.argtypes = [wintypes.HANDLE, ctypes.c_void_p, ctypes.c_size_t]
+    kernel32.FlushInstructionCache.restype = wintypes.BOOL
+    kernel32.SuspendThread.argtypes = [wintypes.HANDLE]
+    kernel32.SuspendThread.restype = wintypes.DWORD
+    kernel32.ResumeThread.argtypes = [wintypes.HANDLE]
+    kernel32.ResumeThread.restype = wintypes.DWORD
+
+
+def static_preflight(exe: Path, wad: Path) -> dict:
+    """Check every non-process prerequisite before game launch or attach."""
+    verify_image(exe)
+    target = load_target_record(wad)
+    report = {
+        "schema": 1,
+        "analysis": "gow_raven_scheduler_allocator_static_preflight",
+        "platform": sys.platform,
+        "python_bits": struct.calcsize("P") * 8,
+        "exe_sha256": sha256_path(exe),
+        "wad_sha256": sha256_path(wad),
+        "canonical_record_index": TARGET_RECORD_INDEX,
+        "canonical_record_offset": f"0x{TARGET_RECORD_OFFSET:X}",
+        "canonical_record_sha256": target["sha256"],
+        "instruction_anchor_count": len(BREAKPOINTS) + len(ANCHORS),
+        "process_attach_tested": False,
+    }
+    if sys.platform != "win32":
+        raise RuntimeError("live capture preflight requires Windows")
+    if report["python_bits"] != 64:
+        raise RuntimeError("live capture requires 64-bit Python")
+    layouts = {
+        "MODULEENTRY32W": ctypes.sizeof(MODULEENTRY32W),
+        "THREADENTRY32": ctypes.sizeof(THREADENTRY32),
+        "EXCEPTION_RECORD": ctypes.sizeof(EXCEPTION_RECORD),
+        "DEBUG_EVENT": ctypes.sizeof(DEBUG_EVENT),
+        "CONTEXT64": ctypes.sizeof(CONTEXT64),
+        "CONTEXT64_Rip_offset": CONTEXT64.Rip.offset,
+    }
+    expected = {
+        "MODULEENTRY32W": 1080, "THREADENTRY32": 28,
+        "EXCEPTION_RECORD": 152, "DEBUG_EVENT": 192,
+        "CONTEXT64": 1232, "CONTEXT64_Rip_offset": 248,
+    }
+    if layouts != expected:
+        raise RuntimeError(f"Windows x64 ctypes ABI mismatch: {layouts}")
+    api_names = (
+        "CreateToolhelp32Snapshot", "Module32FirstW", "Thread32First", "Thread32Next",
+        "OpenProcess", "OpenThread", "CloseHandle", "ReadProcessMemory",
+        "WriteProcessMemory", "VirtualProtectEx", "GetThreadContext", "SetThreadContext",
+        "WaitForDebugEvent", "ContinueDebugEvent", "DebugActiveProcess",
+        "DebugActiveProcessStop", "DebugSetProcessKillOnExit", "FlushInstructionCache",
+        "SuspendThread", "ResumeThread",
+    )
+    missing_prototypes = [name for name in api_names if getattr(kernel32, name).argtypes is None]
+    if missing_prototypes:
+        raise RuntimeError(f"Windows API prototypes missing: {missing_prototypes}")
+    report["ctypes_layouts"] = layouts
+    report["windows_api_prototypes"] = len(api_names)
+    report["status"] = "PREFLIGHT_PASSED_ATTACH_NOT_TESTED"
+    return report
 
 
 class RuntimeCapture:
@@ -354,14 +431,20 @@ class RuntimeCapture:
             raise RuntimeError("live capture requires Windows")
         self.pid, self.exe, self.wad = pid, exe, wad
         self.tool_commit, self.output, self.run_count = tool_commit, output, runs
+        static_preflight(exe, wad)
         self.target = load_target_record(wad)
-        verify_image(exe)
+        print("CAPTURE_STARTUP_STAGE=OpenProcess", flush=True)
         self.process = kernel32.OpenProcess(PROCESS_ACCESS, False, pid)
         if not self.process:
             raise ctypes.WinError(ctypes.get_last_error())
-        self.module_base, self.module_path = self._module()
-        if Path(self.module_path).resolve() != exe.resolve():
-            raise RuntimeError(f"debugged module differs from verified EXE: {self.module_path}")
+        print("CAPTURE_STARTUP_STAGE=Module32FirstW", flush=True)
+        try:
+            self.module_base, self.module_path = self._module()
+            if Path(self.module_path).resolve() != exe.resolve():
+                raise RuntimeError(f"debugged module differs from verified EXE: {self.module_path}")
+        except Exception:
+            kernel32.CloseHandle(self.process)
+            raise
         self.breakpoints: dict[int, dict] = {}
         self.pending_reinsert: dict[int, int] = {}
         self.suspended: dict[int, list[int]] = {}
@@ -769,17 +852,19 @@ class RuntimeCapture:
         self.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     def run(self) -> int:
-        print("Debugger ready. Load same target save/context. Approach exact Raven. Do not kill or collect it.", flush=True)
-        if not kernel32.DebugActiveProcess(self.pid):
-            raise ctypes.WinError(ctypes.get_last_error())
-        self.attached = True
         event = DEBUG_EVENT()
         cleanup_ok = False
         try:
+            print("CAPTURE_STARTUP_STAGE=DebugActiveProcess", flush=True)
+            if not kernel32.DebugActiveProcess(self.pid):
+                raise ctypes.WinError(ctypes.get_last_error())
+            self.attached = True
             if not kernel32.DebugSetProcessKillOnExit(False):
                 raise ctypes.WinError(ctypes.get_last_error())
+            print("CAPTURE_STARTUP_STAGE=InstallBreakpoints", flush=True)
             self._install()
             self._snapshot_initial_registries()
+            print("Debugger ready. Load same target save/context. Approach exact Raven. Do not kill or collect it.", flush=True)
             while len(self.runs) < self.run_count:
                 if not kernel32.WaitForDebugEvent(ctypes.byref(event), 1000):
                     if ctypes.get_last_error() == 121:
@@ -804,6 +889,9 @@ class RuntimeCapture:
                     raise ctypes.WinError(ctypes.get_last_error())
         except KeyboardInterrupt:
             self.errors.append("capture interrupted")
+        except Exception as error:
+            self.errors.append(f"capture failed: {type(error).__name__}: {error}")
+            raise
         finally:
             cleanup_ok = self._restore_all()
             if self.attached:
@@ -840,6 +928,10 @@ def main() -> int:
     compare.add_argument("--run-a", type=Path, required=True)
     compare.add_argument("--run-b", type=Path, required=True)
     compare.add_argument("--output", type=Path, required=True)
+    preflight = sub.add_parser("preflight")
+    preflight.add_argument("--exe", type=Path, required=True)
+    preflight.add_argument("--wad", type=Path, required=True)
+    preflight.add_argument("--output", type=Path)
     args = parser.parse_args()
     if args.self_test:
         self_test(); return 0
@@ -848,6 +940,13 @@ def main() -> int:
         args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         print(result["gameobject_persistent_key_status"])
         print(result["production_oracle_status"])
+        return 0
+    if args.command == "preflight":
+        result = static_preflight(args.exe, args.wad)
+        rendered = json.dumps(result, indent=2, sort_keys=True) + "\n"
+        if args.output:
+            args.output.write_text(rendered, encoding="utf-8")
+        print(result["status"])
         return 0
     if args.command == "capture":
         if args.runs != 2:

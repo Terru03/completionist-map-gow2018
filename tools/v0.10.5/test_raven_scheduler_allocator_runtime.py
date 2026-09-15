@@ -88,6 +88,25 @@ class RuntimeProtocolTests(unittest.TestCase):
             self.assertEqual(ctypes.sizeof(self.module.CONTEXT64), 1232)
             self.assertEqual(self.module.CONTEXT64.Rip.offset, 248)
 
+    def test_static_preflight_checks_supported_local_files_when_present(self):
+        exe = Path(r"G:\SteamLibrary\steamapps\common\GodOfWar\GoW.exe")
+        wad = Path(r"G:\SteamLibrary\steamapps\common\GodOfWar\exec\wad\pc_le\alf355_chiseldungeon.wad")
+        if not exe.is_file() or not wad.is_file():
+            self.skipTest("supported local game files absent")
+        result = self.module.static_preflight(exe, wad)
+        self.assertEqual(result["status"], "PREFLIGHT_PASSED_ATTACH_NOT_TESTED")
+        self.assertFalse(result["process_attach_tested"])
+        self.assertEqual(result["canonical_record_index"], 9633)
+
+    def test_windows_api_prototypes_are_explicit(self):
+        if hasattr(self.module, "kernel32"):
+            for name in ("CreateToolhelp32Snapshot", "Module32FirstW", "Thread32First",
+                         "Thread32Next", "OpenProcess", "OpenThread", "CloseHandle",
+                         "DebugActiveProcess", "DebugActiveProcessStop",
+                         "DebugSetProcessKillOnExit", "FlushInstructionCache",
+                         "SuspendThread", "ResumeThread"):
+                self.assertIsNotNone(getattr(self.module.kernel32, name).argtypes, name)
+
     def test_wrong_executable_hash_fails_closed(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "GoW.exe"

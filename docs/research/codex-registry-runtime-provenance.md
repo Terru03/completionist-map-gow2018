@@ -93,6 +93,14 @@ canonical catalogue/WAD record
 
 A narrow read-only runtime trace should log `WAD +0xC3C`, scheduler outer/inner indices, allocator entry cursor, selected slot, and the catalogue record ID/offset on two clean reloads. Only an identical tuple tied to the same canonical record would justify `PASS_EXACT_GAMEOBJECT_PERSISTENT_KEY`.
 
+The later offline exhaustion pass proved scheduler construction order, the exact
+WAD-filename metadata lookup key, and six direct slot-release entries. It narrowed
+the first missing join to the canonical override/final record pair into its loaded
+type-`0x116` inner config. See
+`docs/research/codex-offline-persistent-key-exhaustion.md`. Status remains
+`BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY` and
+`BLOCKED_EXACT_UNLOADED_STATE_ORACLE`.
+
 ## Tool
 
 `tools/v0.10.5/trace-gow-registry-runtime-provenance.py` reuses the SQLite RIP-reference index, joins adjacent pdata chunks when control falls through, follows computed table addresses through registers, asserts exact lifecycle/scheduler anchors, and checks the canonical Raven record against the shipped WAD. It is read-only for game files and saves.

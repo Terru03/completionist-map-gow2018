@@ -88,6 +88,13 @@ registers and memory automatically, compares both runs, archives success or
 failure, commits only its new archive directory, and pushes the branch. It does
 not ask for manual address, register, memory, or log inspection.
 
+Before game launch, the wrapper runs a non-invasive static preflight and archives
+`preflight.json`. It verifies supported file hashes, PE instruction anchors,
+canonical WAD record identity, 64-bit Python, x64 ctypes layouts, and explicit
+Windows API prototypes. `Debugger ready` prints only after process attach,
+breakpoint installation, and initial registry snapshot finish. Earlier startup
+failures print a precise stage and retain Python stderr.
+
 ## Safety boundary
 
 The tooling never writes collectible/progression state, markers, or saves.
