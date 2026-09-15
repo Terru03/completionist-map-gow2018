@@ -1,0 +1,39 @@
+**********************
+PowerShell transcript start
+Start time: 20260915120250
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\trace-gow-dynamic-slot-allocation-with-log.ps1
+Process ID: 7396
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+=== Completionist Map GoW dynamic slot allocation ===
+Read-only no-hint allocator trace. No game launch or save access.
+
+
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\trace-gow-dynamic-slot-allocation.py", line 299, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\trace-gow-dynamic-slot-allocation.py", line 289, in main
+    r = analyze(a.exe, a.db)
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\trace-gow-dynamic-slot-allocation.py", line 202, in analyze
+    dynamic = decode_fn(md, pe, DYNAMIC_ALLOCATOR, op_imm, op_mem, rip_reg)
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\trace-gow-dynamic-slot-allocation.py", line 64, in decode_fn
+    raise RuntimeError(f"no runtime function for 0x{rva:X}")
+RuntimeError: no runtime function for 0x4EF4C0
+ANALYSIS_FAILED: analysis failed (exit 1)
+**********************
+PowerShell transcript end
+End time: 20260915120251
+**********************
