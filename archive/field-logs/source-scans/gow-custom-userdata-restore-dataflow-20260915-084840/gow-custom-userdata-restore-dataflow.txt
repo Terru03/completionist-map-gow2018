@@ -1,0 +1,295 @@
+Completionist Map - GoW custom-userdata restore dataflow
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+restore_root=0x7E9550
+save_serializer=0x7E9190
+mode=read-only targeted disassembly
+game_launched=false
+active_save_opened=false
+exe_modified=false
+
+MAIN RESULT
+#1 record_size_to_native_restore_dispatch score=100 confidence=HIGH
+  FLOW ecx := word[r8] is record index
+  FLOW rax := qword[rdx+0x28]; edi := byte[rax+rcx] is record_size
+  FLOW rax := qword[rdx+0x20]; r11 := word[rax+rcx*2] is record_offset
+  FLOW rbx := qword[rdx+0x30] is record_blob_base
+  FLOW rax := qword[rbx+r11] is first qword and CodeSideLuaClass key
+  FLOW rax key is compared with qword entries in global lookup table
+  FLOW matching class metadata is walked via +0x48; callback comes from +0xC0
+  FLOW r8d := zero_extend(record_size_byte); r8d -= 8 gives payload_length
+  FLOW rdx := record_blob_base + record_offset + 8 gives payload_pointer
+  FLOW tail jmp r9 dispatches callback(rcx=restore state, rdx=payload pointer, r8=payload length)
+#2 restore_input_cursor_to_descriptor_to_record_dispatch score=86 confidence=HIGH
+  FLOW 0x7E9550 r8 input becomes r15; rsi=input+0x10
+  FLOW 0x7E97A4 copies cursor bytes to descriptor+0x28 (record-size table)
+  FLOW 0x7E97BF copies cursor words to descriptor+0x20 (record-offset table)
+  FLOW inflate output r12 plus input header offset becomes descriptor+0x30 record blob base
+  FLOW 0x7E9A27 passes descriptor as r8 to 0x7E7660
+  FLOW 0x7E7660 preserves descriptor in r13 and derives record entries from descriptor+0x40/+0x50
+  FLOW 0x7E77CC and 0x7E77E3 pass descriptor in rdx to 0x7E7B60
+  FLOW 0x7E7B60 reads descriptor+0x28 size bytes, +0x20 offsets, and +0x30 blob base
+
+CONNECTED RECORD INVERSE CHAIN
+  record_index: 0x007E7D7F  410fb708               movzx    ecx, word ptr [r8]
+  size_table_base: 0x007E7D86  488b4228               mov      rax, qword ptr [rdx + 0x28]
+  record_size_byte: 0x007E7D98  0fb63c01               movzx    edi, byte ptr [rcx + rax]
+  offset_table_base: 0x007E7D9C  488b4220               mov      rax, qword ptr [rdx + 0x20]
+  record_offset: 0x007E7DA0  440fb71c48             movzx    r11d, word ptr [rax + rcx*2]
+  record_blob_base: 0x007E7D8D  488b5a30               mov      rbx, qword ptr [rdx + 0x30]
+  class_key_qword: 0x007E7DA5  498b041b               mov      rax, qword ptr [r11 + rbx]
+  key_compare: 0x007E7DB8  483901                 cmp      qword ptr [rcx], rax
+  class_callback: 0x007E7DD6  4c8b89c0000000         mov      r9, qword ptr [rcx + 0xc0]
+  class_parent: 0x007E7DDD  488b4948               mov      rcx, qword ptr [rcx + 0x48]
+  payload_length_seed: 0x007E7DE6  440fb6c7               movzx    r8d, dil
+  payload_pointer_plus_8: 0x007E7DEA  488d5308               lea      rdx, [rbx + 8]
+  payload_length_minus_8: 0x007E7DEE  4183e808               sub      r8d, 8
+  payload_pointer_plus_offset: 0x007E7DF2  4903d3                 add      rdx, r11
+  restore_dispatch: 0x007E7E07  49ffe1                 jmp      r9
+
+PRECISE RECORD DISPATCH WINDOW
+0x007E7D7F  410fb708               movzx    ecx, word ptr [r8]
+0x007E7D83  4533c9                 xor      r9d, r9d
+0x007E7D86  488b4228               mov      rax, qword ptr [rdx + 0x28]
+0x007E7D8A  458bc1                 mov      r8d, r9d
+0x007E7D8D  488b5a30               mov      rbx, qword ptr [rdx + 0x30]
+0x007E7D91  448b15446aac01         mov      r10d, dword ptr [rip + 0x1ac6a44]
+0x007E7D98  0fb63c01               movzx    edi, byte ptr [rcx + rax]
+0x007E7D9C  488b4220               mov      rax, qword ptr [rdx + 0x20]
+0x007E7DA0  440fb71c48             movzx    r11d, word ptr [rax + rcx*2]
+0x007E7DA5  498b041b               mov      rax, qword ptr [r11 + rbx]
+0x007E7DA9  4585d2                 test     r10d, r10d
+0x007E7DAC  7e1b                   jle      0x1407e7dc9
+0x007E7DAE  488d156b6aac01         lea      rdx, [rip + 0x1ac6a6b]
+0x007E7DB5  488b0a                 mov      rcx, qword ptr [rdx]
+0x007E7DB8  483901                 cmp      qword ptr [rcx], rax
+0x007E7DBB  740f                   je       0x1407e7dcc
+0x007E7DBD  41ffc0                 inc      r8d
+0x007E7DC0  4883c208               add      rdx, 8
+0x007E7DC4  453bc2                 cmp      r8d, r10d
+0x007E7DC7  7cec                   jl       0x1407e7db5
+0x007E7DC9  498bc9                 mov      rcx, r9
+0x007E7DCC  4885c9                 test     rcx, rcx
+0x007E7DCF  7415                   je       0x1407e7de6
+0x007E7DD1  4d85c9                 test     r9, r9
+0x007E7DD4  7510                   jne      0x1407e7de6
+0x007E7DD6  4c8b89c0000000         mov      r9, qword ptr [rcx + 0xc0]
+0x007E7DDD  488b4948               mov      rcx, qword ptr [rcx + 0x48]
+0x007E7DE1  4885c9                 test     rcx, rcx
+0x007E7DE4  75eb                   jne      0x1407e7dd1
+0x007E7DE6  440fb6c7               movzx    r8d, dil
+0x007E7DEA  488d5308               lea      rdx, [rbx + 8]
+0x007E7DEE  4183e808               sub      r8d, 8
+0x007E7DF2  4903d3                 add      rdx, r11
+0x007E7DF5  488bce                 mov      rcx, rsi
+0x007E7DF8  488b5c2430             mov      rbx, qword ptr [rsp + 0x30]
+0x007E7DFD  488b742438             mov      rsi, qword ptr [rsp + 0x38]
+0x007E7E02  4883c420               add      rsp, 0x20
+0x007E7E06  5f                     pop      rdi
+0x007E7E07  49ffe1                 jmp      r9
+
+INPUT/READ CURSOR PROVENANCE
+  rsi = input_r8 + 0x10, then advanced through serialized sections
+  input_argument: 0x007E957C  4d8bf8                 mov      r15, r8 -- r15 := entry r8 (serialized restore input/header)
+  cursor_create: 0x007E95BF  498d7710               lea      rsi, [r15 + 0x10] -- rsi := r15 + 0x10 (serialized body cursor)
+  compressed_input_pointer: 0x007E964F  488975c7               mov      qword ptr [rbp - 0x39], rsi -- inflate state input := rsi
+  decompressed_output_pointer: 0x007E965B  4c8965d7               mov      qword ptr [rbp - 0x29], r12 -- inflate state output := r12
+  compression_only_call: 0x007E9677  e804ce1d00             call     0x1409c6480 -- inflate parser call; carrier step, never restore-handler candidate
+  cursor_length_load: 0x007E968E  410fb7470e             movzx    eax, word ptr [r15 + 0xe] -- rax := word[r15+0xE]
+  cursor_advance: 0x007E9693  4803f0                 add      rsi, rax -- rsi += word[r15+0xE] after compression stream
+  record_blob_subbuffer: 0x007E96A0  4903c4                 add      rax, r12 -- rax := decompressed output r12 + word[input+2]
+  descriptor_record_blob: 0x007E96A3  48894587               mov      qword ptr [rbp - 0x79], rax -- descriptor+0x30 := decompressed output sub-buffer
+  copy_source: 0x007E96B1  488bd6                 mov      rdx, rsi -- rdx := rsi for descriptor table copy
+  cursor_advance: 0x007E96BE  4803f3                 add      rsi, rbx -- rsi += 2*word[r15]
+  cursor_advance: 0x007E97A9  4803f3                 add      rsi, rbx -- rsi += word[r15+8] after record-size table
+  cursor_advance: 0x007E97C4  4803f3                 add      rsi, rbx -- rsi += 2*word[r15+8] after record-offset table
+  cursor_advance: 0x007E97E9  488d7606               lea      rsi, [rsi + 6] -- rsi += 6 for each descriptor row
+
+EVERY DIRECT BYTE LOAD FROM RSI CURSOR
+  0x007E96E0  0fb606                 movzx    eax, byte ptr [rsi]
+    USE type_bounds: cmp eax,5; ja rejects type outside jump table
+    USE cursor_advance: tag selects encoded width 2, 5, or 3; rsi += selected width
+  0x007E96FA  0fb64601               movzx    eax, byte ptr [rsi + 1]
+    USE decoded_value: one-byte value copied from cursor+1
+  0x007E972E  0fb606                 movzx    eax, byte ptr [rsi]
+    USE type_bounds: cmp eax,5; ja rejects type outside jump table
+    USE cursor_advance: tag selects encoded width 2, 5, or 3; rsi += selected width
+  0x007E9748  0fb64601               movzx    eax, byte ptr [rsi + 1]
+    USE decoded_value: one-byte value copied from cursor+1
+
+RECORD TABLE COPIES FROM CURSOR
+  0x7E97A4 record-size byte table: rsi -> qword[descriptor+0x28]; length=zero_extend(word[input+8])
+  0x7E97BF record-offset word table: rsi -> qword[descriptor+0x20]; length=2 * zero_extend(word[input+8])
+
+BOUNDS, LOOP, AND LENGTH FINDINGS
+  {'rva': 8289705, 'meaning': 'test global CodeSideLuaClass count'}
+  {'rvas': [8289717, 8289720, 8289725, 8289728, 8289732, 8289735], 'meaning': 'bounded 8-byte key lookup loop'}
+  {'rva': 8289743, 'meaning': 'terminate if class key not found'}
+  {'rvas': [8289745, 8289757, 8289761, 8289764], 'meaning': 'walk class parent metadata until callback found or chain ends'}
+  {'finding': 'no explicit record_size >= 8 guard is visible in this dispatch block; subtract is direct'}
+
+DIRECT CALLERS OF 0x7E9550
+  caller=0x5AEC9E site=0x5AECAD
+    0x005AEC9E  48896c2448             mov      qword ptr [rsp + 0x48], rbp
+    0x005AECA3  4c8bc2                 mov      r8, rdx
+    0x005AECA6  488b6958               mov      rbp, qword ptr [rcx + 0x58]
+    0x005AECAA  488bcd                 mov      rcx, rbp
+    0x005AECAD  e89ea82300             call     0x1407e9550
+    0x005AECB2  84c0                   test     al, al
+    0x005AECB4  0f8438020000           je       0x1405aeef2
+    0x005AECBA  488b4520               mov      rax, qword ptr [rbp + 0x20]
+    0x005AECBE  488b4d18               mov      rcx, qword ptr [rbp + 0x18]
+  caller=0x5B2280 site=0x5B22C3
+    0x005B229F  4885c0                 test     rax, rax
+    0x005B22A2  0f8497010000           je       0x1405b243f
+    0x005B22A8  80b89801000000         cmp      byte ptr [rax + 0x198], 0
+    0x005B22AF  0f848a010000           je       0x1405b243f
+    0x005B22B5  488b7158               mov      rsi, qword ptr [rcx + 0x58]
+    0x005B22B9  4c8bc2                 mov      r8, rdx
+    0x005B22BC  488b6928               mov      rbp, qword ptr [rcx + 0x28]
+    0x005B22C0  488bce                 mov      rcx, rsi
+    0x005B22C3  e888722300             call     0x1407e9550
+    0x005B22C8  84c0                   test     al, al
+    0x005B22CA  0f84a1010000           je       0x1405b2471
+    0x005B22D0  488b4618               mov      rax, qword ptr [rsi + 0x18]
+    0x005B22D4  4c8d35d5c37e00         lea      r14, [rip + 0x7ec3d5]
+
+DIRECT CALLEES OF 0x7E9550
+  site=0x7E95BA target=0x7E8D90 class=local_codec
+    0x007E95B2  498bd5                 mov      rdx, r13
+    0x007E95B5  488d4c2430             lea      rcx, [rsp + 0x30]
+    0x007E95BA  e8d1f7ffff             call     0x1407e8d90
+    0x007E95BF  498d7710               lea      rsi, [r15 + 0x10]
+    0x007E95C3  410fb707               movzx    eax, word ptr [r15]
+  site=0x7E9630 target=0x3ED388 class=allocation_suppressed
+    0x007E9628  448d4258               lea      r8d, [rdx + 0x58]
+    0x007E962C  488d4dc7               lea      rcx, [rbp - 0x39]
+    0x007E9630  e8533dc0ff             call     0x1403ed388
+    0x007E9635  488d05f4f0ffff         lea      rax, [rip - 0xf0c]
+    0x007E963C  488945f7               mov      qword ptr [rbp - 9], rax
+  site=0x7E9669 target=0x9C6380 class=compression_suppressed
+    0x007E9662  894ddf                 mov      dword ptr [rbp - 0x21], ecx
+    0x007E9665  488d4dc7               lea      rcx, [rbp - 0x39]
+    0x007E9669  e812cd1d00             call     0x1409c6380
+    0x007E966E  ba04000000             mov      edx, 4
+    0x007E9673  488d4dc7               lea      rcx, [rbp - 0x39]
+  site=0x7E9677 target=0x9C6480 class=compression_suppressed
+    0x007E966E  ba04000000             mov      edx, 4
+    0x007E9673  488d4dc7               lea      rcx, [rbp - 0x39]
+    0x007E9677  e804ce1d00             call     0x1409c6480
+    0x007E967C  83f801                 cmp      eax, 1
+    0x007E967F  0f8574030000           jne      0x1407e99f9
+  site=0x7E9689 target=0x9C9CC0 class=compression_suppressed
+    0x007E967F  0f8574030000           jne      0x1407e99f9
+    0x007E9685  488d4dc7               lea      rcx, [rbp - 0x39]
+    0x007E9689  e832061e00             call     0x1409c9cc0
+    0x007E968E  410fb7470e             movzx    eax, word ptr [r15 + 0xe]
+    0x007E9693  4803f0                 add      rsi, rax
+  site=0x7E96B9 target=0x3ED39A class=memcpy_included_only_at_direct_cursor_sites
+    0x007E96B1  488bd6                 mov      rdx, rsi
+    0x007E96B4  488b4c2430             mov      rcx, qword ptr [rsp + 0x30]
+    0x007E96B9  e8dc3cc0ff             call     0x1403ed39a
+    0x007E96BE  4803f3                 add      rsi, rbx
+    0x007E96C1  4533e4                 xor      r12d, r12d
+  site=0x7E97A4 target=0x3ED39A class=memcpy_included_only_at_direct_cursor_sites
+    0x007E979C  488bd6                 mov      rdx, rsi
+    0x007E979F  488b4c2458             mov      rcx, qword ptr [rsp + 0x58]
+    0x007E97A4  e8f13bc0ff             call     0x1403ed39a
+    0x007E97A9  4803f3                 add      rsi, rbx
+    0x007E97AC  410fb75f08             movzx    ebx, word ptr [r15 + 8]
+  site=0x7E97BF target=0x3ED39A class=memcpy_included_only_at_direct_cursor_sites
+    0x007E97B7  488bd6                 mov      rdx, rsi
+    0x007E97BA  488b4c2450             mov      rcx, qword ptr [rsp + 0x50]
+    0x007E97BF  e8d63bc0ff             call     0x1403ed39a
+    0x007E97C4  4803f3                 add      rsi, rbx
+    0x007E97C7  458bc4                 mov      r8d, r12d
+  site=0x7E9823 target=0x9F3280 class=generic_lua_or_runtime_suppressed_unless_cursor_connected
+    0x007E981E  740a                   je       0x1407e982a
+    0x007E9820  498bce                 mov      rcx, r14
+    0x007E9823  e8589a2000             call     0x1409f3280
+    0x007E9828  eb12                   jmp      0x1407e983c
+    0x007E982A  4805800c0000           add      rax, 0xc80
+  site=0x7E9895 target=0x9F10E0 class=generic_lua_or_runtime_suppressed_unless_cursor_connected
+    0x007E988E  4c8d4577               lea      r8, [rbp + 0x77]
+    0x007E9892  498bce                 mov      rcx, r14
+    0x007E9895  e846782000             call     0x1409f10e0
+    0x007E989A  48894378               mov      qword ptr [rbx + 0x78], rax
+    0x007E989E  488d5360               lea      rdx, [rbx + 0x60]
+  site=0x7E98A9 target=0x9F10E0 class=generic_lua_or_runtime_suppressed_unless_cursor_connected
+    0x007E98A2  4c8d4577               lea      r8, [rbp + 0x77]
+    0x007E98A6  498bce                 mov      rcx, r14
+    0x007E98A9  e832782000             call     0x1409f10e0
+    0x007E98AE  48894370               mov      qword ptr [rbx + 0x70], rax
+    0x007E98B2  ba20000000             mov      edx, 0x20
+  site=0x7E98BA target=0x9F0510 class=generic_lua_or_runtime_suppressed_unless_cursor_connected
+    0x007E98B2  ba20000000             mov      edx, 0x20
+    0x007E98B7  498bce                 mov      rcx, r14
+    0x007E98BA  e8516c2000             call     0x1409f0510
+    0x007E98BF  badfffffff             mov      edx, 0xffffffdf
+    0x007E98C4  498bce                 mov      rcx, r14
+  site=0x7E98C7 target=0x9F0510 class=generic_lua_or_runtime_suppressed_unless_cursor_connected
+    0x007E98BF  badfffffff             mov      edx, 0xffffffdf
+    0x007E98C4  498bce                 mov      rcx, r14
+    0x007E98C7  e8446c2000             call     0x1409f0510
+    0x007E98CC  ba20000000             mov      edx, 0x20
+    0x007E98D1  498bce                 mov      rcx, r14
+  site=0x7E98D4 target=0x9F0510 class=generic_lua_or_runtime_suppressed_unless_cursor_connected
+    0x007E98CC  ba20000000             mov      edx, 0x20
+    0x007E98D1  498bce                 mov      rcx, r14
+    0x007E98D4  e8376c2000             call     0x1409f0510
+    0x007E98D9  4180ff02               cmp      r15b, 2
+    0x007E98DD  750d                   jne      0x1407e98ec
+  site=0x7E98E7 target=0x9F0510 class=generic_lua_or_runtime_suppressed_unless_cursor_connected
+    0x007E98DF  ba01000000             mov      edx, 1
+    0x007E98E4  498bce                 mov      rcx, r14
+    0x007E98E7  e8246c2000             call     0x1409f0510
+    0x007E98EC  44887e56               mov      byte ptr [rsi + 0x56], r15b
+    0x007E98F0  4c8b4610               mov      r8, qword ptr [rsi + 0x10]
+  site=0x7E99C9 target=0x9ECF00 class=generic_lua_or_runtime_suppressed_unless_cursor_connected
+    0x007E99C3  4533c0                 xor      r8d, r8d
+    0x007E99C6  498bce                 mov      rcx, r14
+    0x007E99C9  e832352000             call     0x1409ecf00
+    0x007E99CE  498b4620               mov      rax, qword ptr [r14 + 0x20]
+    0x007E99D2  498b5e10               mov      rbx, qword ptr [r14 + 0x10]
+  site=0x7E99EB target=0x7E7920 class=local_codec
+    0x007E99E6  8bd3                   mov      edx, ebx
+    0x007E99E8  498bce                 mov      rcx, r14
+    0x007E99EB  e830dfffff             call     0x1407e7920
+    0x007E99F0  84c0                   test     al, al
+    0x007E99F2  7529                   jne      0x1407e9a1d
+  site=0x7E9A27 target=0x7E7660 class=local_codec
+    0x007E9A22  8bd3                   mov      edx, ebx
+    0x007E9A24  498bce                 mov      rcx, r14
+    0x007E9A27  e834dcffff             call     0x1407e7660
+    0x007E9A2C  84c0                   test     al, al
+    0x007E9A2E  74c4                   je       0x1407e99f4
+  site=0x7E9AE1 target=0x9F4CF0 class=generic_lua_or_runtime_suppressed_unless_cursor_connected
+    0x007E9AD7  488d1512006300         lea      rdx, [rip + 0x630012]
+    0x007E9ADE  498bce                 mov      rcx, r14
+    0x007E9AE1  e80ab22000             call     0x1409f4cf0
+    0x007E9AE6  488907                 mov      qword ptr [rdi], rax
+    0x007E9AE9  0fb64808               movzx    ecx, byte ptr [rax + 8]
+  site=0x7E9B05 target=0x9EFD60 class=generic_lua_or_runtime_suppressed_unless_cursor_connected
+    0x007E9AFF  488bd3                 mov      rdx, rbx
+    0x007E9B02  498bce                 mov      rcx, r14
+    0x007E9B05  e856622000             call     0x1409efd60
+    0x007E9B0A  49834610e0             add      qword ptr [r14 + 0x10], -0x20
+    0x007E9B0F  b001                   mov      al, 1
+  site=0x7E9B1E target=0x9EB890 class=generic_lua_or_runtime_suppressed_unless_cursor_connected
+    0x007E9B16  ba04000000             mov      edx, 4
+    0x007E9B1B  498bce                 mov      rcx, r14
+    0x007E9B1E  e86d1d2000             call     0x1409eb890
+    0x007E9B23  cc                     int3     
+    0x007E9B24  fa                     cli      
+
+FALSE_POSITIVE_CLASSIFICATION
+  function=0x9C6480 class=SUPPRESSED_FALSE_POSITIVE score=0
+  reason=inflate/compression bitstream parser, not custom-userdata restore handler
+  gzip_magic=0x009C6587  4181ff1f8b0000         cmp      r15d, 0x8b1f
+  shift_operation_count=107
+  suppression_rule=compression functions never receive candidate score unless proven record cursor reaches size-minus-8, key lookup, payload split, and dispatch in one connected chain
+
+SUPPRESSED PATH POLICY
+  gzip/zlib/inflate/deflate code gets score 0 unless full record-connected chain is present
+  generic Lua string/table allocation gets score 0 unless it carries proven record cursor
+  memcpy/allocation helpers get score 0; memcpy windows remain evidence only when rdx is proven cursor
+  independent byte load + qword load + immediate 8 never forms a scored chain
