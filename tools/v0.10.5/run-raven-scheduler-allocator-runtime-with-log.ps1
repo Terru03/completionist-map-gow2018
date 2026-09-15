@@ -22,6 +22,7 @@ $relativeLogDir = "archive/field-logs/runtime-captures/gow-raven-scheduler-alloc
 $logDir = Join-Path $repo $relativeLogDir
 New-Item -ItemType Directory -Force -Path $logDir | Out-Null
 $consoleLog = Join-Path $logDir 'console-log.txt'
+$pythonLog = Join-Path $logDir 'python-output.txt'
 $captureJson = Join-Path $logDir 'capture.json'
 $resultPath = Join-Path $logDir 'result.txt'
 $preexistingPath = Join-Path $logDir 'preexisting-unstaged-tracked.txt'
@@ -105,8 +106,15 @@ try {
     } while ($null -eq $live -and (Get-Date) -lt $deadline)
     if ($null -eq $live) { throw 'GoW.exe process did not remain available for debugger attach.' }
 
-    & python $scriptPath capture --pid $game.Id --exe $exePath --wad $wadPath --tool-commit $toolCommit --output $captureJson --runs 2
-    if ($LASTEXITCODE -ne 0) { throw "Runtime capturer failed with exit code $LASTEXITCODE." }
+    # Merge native stdout/stderr into one live stream so constructor/startup
+    # tracebacks are preserved in the archive instead of collapsing to only
+    # an exit code. Tee-Object keeps interactive capture prompts visible.
+    & python $scriptPath capture --pid $game.Id --exe $exePath --wad $wadPath --tool-commit $toolCommit --output $captureJson --runs 2 2>&1 |
+        Tee-Object -LiteralPath $pythonLog | Out-Host
+    $pythonExit = $LASTEXITCODE
+    Write-Host "python_exit_code=$pythonExit"
+    if ($pythonExit -ne 0) { throw "Runtime capturer failed with exit code $pythonExit." }
+
     $capture = Get-Content -LiteralPath $captureJson -Raw | ConvertFrom-Json
     if ($capture.capture_complete -ne $true -or $capture.captured_runs -ne 2) {
         throw 'Two-run capture JSON is incomplete.'
