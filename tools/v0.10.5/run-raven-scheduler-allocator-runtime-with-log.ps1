@@ -28,6 +28,7 @@ $preflightJson = Join-Path $logDir 'preflight.json'
 $resultPath = Join-Path $logDir 'result.txt'
 $preexistingPath = Join-Path $logDir 'preexisting-unstaged-tracked.txt'
 $scriptPath = Join-Path $repo 'tools\v0.10.5\capture-raven-scheduler-allocator-runtime.py'
+$compatScriptPath = Join-Path $repo 'tools\v0.10.5\run-raven-scheduler-allocator-runtime-compat.py'
 $exePath = Join-Path $GameRoot 'GoW.exe'
 $wadPath = Join-Path $GameRoot 'exec\wad\pc_le\alf355_chiseldungeon.wad'
 $expectedExeHash = 'caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452'
@@ -103,7 +104,7 @@ try {
     @(& git diff --name-status --ignore-submodules --) |
         Set-Content -LiteralPath $preexistingPath -Encoding UTF8
 
-    foreach ($path in @($scriptPath, $exePath, $wadPath)) {
+    foreach ($path in @($scriptPath, $compatScriptPath, $exePath, $wadPath)) {
         if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" }
     }
     $exeHash = (Get-FileHash -LiteralPath $exePath -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -161,16 +162,25 @@ try {
         Write-Host "Steam/process handoff detected: initial PID $launcherPid -> live GoW PID $gamePid"
     }
 
-    # Merge native stdout/stderr into one live stream. Use Add-Content rather
-    # than Tee-Object -Append because the latter is not available in Windows
-    # PowerShell 5.1. Keep every Python line visible and archived.
-    & python $scriptPath capture --pid $gamePid --exe $exePath --wad $wadPath --tool-commit $toolCommit --output $captureJson --runs 2 2>&1 |
-        ForEach-Object {
-            $line = [string]$_
-            Add-Content -LiteralPath $pythonLog -Value $line -Encoding UTF8
-            Write-Host $line
-        }
-    $pythonExit = $LASTEXITCODE
+    # Capture uses a narrow compatibility launcher that changes only module-base
+    # discovery (PSAPI first, Toolhelp retry fallback). Temporarily relax native
+    # stderr handling because Windows PowerShell 5.1 otherwise turns the first
+    # Python traceback line into a terminating PowerShell error when global
+    # ErrorActionPreference is Stop.
+    $savedErrorActionPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        & python $compatScriptPath capture --pid $gamePid --exe $exePath --wad $wadPath --tool-commit $toolCommit --output $captureJson --runs 2 2>&1 |
+            ForEach-Object {
+                $line = [string]$_
+                Add-Content -LiteralPath $pythonLog -Value $line -Encoding UTF8
+                Write-Host $line
+            }
+        $pythonExit = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $savedErrorActionPreference
+    }
     Write-Host "python_exit_code=$pythonExit"
     if ($pythonExit -ne 0) { throw "Runtime capturer failed with exit code $pythonExit." }
 
