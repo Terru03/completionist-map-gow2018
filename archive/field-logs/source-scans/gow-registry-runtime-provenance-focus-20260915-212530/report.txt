@@ -1,0 +1,289 @@
+GoW registry runtime provenance trace
+=====================================
+status=PASS_REGISTRY_RUNTIME_PROVENANCE_STATIC_TRACE
+gameobject_persistent_key_status=BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY
+table=0x22A98C0-0x22A9AC0
+functions_with_table_base=113
+computed_writes=2
+missing_anchors=0
+
+Computed writes
+0x4F35A5 fn=0x4F3520 indexed mov qword ptr [r9 + rax*8], rdx
+0x4F37A2 fn=0x4F3660 indexed mov qword ptr [r14 + rax*8], rdi
+
+Canonical Raven example
+guid=95b9c644-4d47-9ac6-8207-b1829d02909b
+wad=alf355_chiseldungeon.wad
+physical_record_index=9633
+physical_record_offset=0x32E3C60
+tuple_reconstructible=false
+precise_missing_edge=bind canonical WAD physical record 9633 to its runtime scheduler allocation ordinal and prove identical prior live/free slot state across reload
+
+All table-base functions
+fn=0x109E5A-0x109F67 seeds=1 accesses=1 tainted_calls=0
+    READ 0x109EB3 +0x0 mov rdx, qword ptr [rax]
+fn=0x109FB5-0x10A0F0 seeds=1 accesses=1 tainted_calls=0
+    READ 0x10A006 +0x0 mov rdx, qword ptr [rax]
+fn=0x10A275-0x10A3B4 seeds=1 accesses=1 tainted_calls=0
+    READ 0x10A2C0 +0x0 mov rdx, qword ptr [rcx]
+fn=0x10A3F8-0x10A5E7 seeds=2 accesses=2 tainted_calls=0
+    READ 0x10A457 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x10A500 +0x0 mov rdx, qword ptr [rax]
+fn=0x10A66E-0x10A70A seeds=1 accesses=1 tainted_calls=0
+    READ 0x10A6C2 +0x0 mov rdx, qword ptr [rax]
+fn=0x10A77D-0x10A82C seeds=1 accesses=1 tainted_calls=0
+    READ 0x10A7D3 +0x0 mov rdx, qword ptr [rax]
+fn=0x18C306-0x18C4AF seeds=1 accesses=1 tainted_calls=0
+    READ 0x18C370 +0x0 mov rdx, qword ptr [rcx]
+fn=0x2B8298-0x2B8461 seeds=1 accesses=1 tainted_calls=0
+    READ 0x2B8306 +0x0 mov r8, qword ptr [rdx]
+fn=0x2B85B8-0x2B8781 seeds=1 accesses=1 tainted_calls=0
+    READ 0x2B8626 +0x0 mov r8, qword ptr [rdx]
+fn=0x2C0AF0-0x2C0BF2 seeds=1 accesses=1 tainted_calls=0
+    READ 0x2C0B70 +0x0 mov r8, qword ptr [rcx]
+fn=0x2C2C05-0x2C3045 seeds=1 accesses=1 tainted_calls=0
+    READ 0x2C2E03 +0x0 mov r8, qword ptr [rdx]
+fn=0x2F86C2-0x2F881C seeds=1 accesses=1 tainted_calls=0
+    READ 0x2F8737 +0x0 mov rdx, qword ptr [rax]
+fn=0x489700-0x48A4FD seeds=1 accesses=1 tainted_calls=0
+    READ 0x48A3F0 +0x0 mov rdx, qword ptr [rcx]
+fn=0x48AD63-0x48AE96 seeds=1 accesses=1 tainted_calls=0
+    READ 0x48ADD0 +0x0 mov r8, qword ptr [rcx]
+fn=0x4BAD38-0x4BADEA seeds=1 accesses=1 tainted_calls=0
+    READ 0x4BAD93 +0x0 mov rdx, qword ptr [rax]
+fn=0x4BF2C3-0x4BF37F seeds=1 accesses=1 tainted_calls=0
+    READ 0x4BF316 +0x0 mov rdx, qword ptr [rax]
+fn=0x4C7060-0x4C780C seeds=1 accesses=1 tainted_calls=0
+    READ 0x4C7470 +0x0 mov rdx, qword ptr [rcx]
+fn=0x4EDC30-0x4EDF41 seeds=1 accesses=1 tainted_calls=0
+    READ 0x4EDDD2 +0x0 mov r8, qword ptr [rdx]
+fn=0x4EEF50-0x4EEFC9 seeds=1 accesses=1 tainted_calls=0
+    READ 0x4EEF80 +0x0 mov rdi, qword ptr [rbx]
+fn=0x4EF21E-0x4EF2A8 seeds=1 accesses=1 tainted_calls=0
+    READ 0x4EF240 +0x0 mov rcx, qword ptr [rax]
+fn=0x4EF2B0-0x4EF4B7 seeds=1 accesses=1 tainted_calls=0
+    READ 0x4EF2D0 +0x0 mov r9, qword ptr [rax]
+fn=0x4EF540-0x4EF6A8 seeds=1 accesses=1 tainted_calls=0
+    READ 0x4EF560 +0x0 mov r8, qword ptr [rax]
+fn=0x4F3520-0x4F364B seeds=1 accesses=3 tainted_calls=3
+    READ 0x4F3550 +0x0 mov rbx, qword ptr [rax]
+    READ 0x4F3590 +0x0 cmp qword ptr [rax], rbx
+    WRITE 0x4F35A5 indexed mov qword ptr [r9 + rax*8], rdx
+    CALL 0x4F3569 -> 0x4F3550 args={'r9': 0}
+    CALL 0x4F35A0 -> 0x4F35A9 args={'r9': 0}
+    CALL 0x4F35BD -> 0x40B190 args={'r9': 0}
+fn=0x4F3660-0x4F37B7 seeds=1 accesses=3 tainted_calls=0
+    READ 0x4F3682 +0x0 mov rcx, qword ptr [rax]
+    READ 0x4F3785 +0x0 cmp qword ptr [rdx], 0
+    WRITE 0x4F37A2 indexed mov qword ptr [r14 + rax*8], rdi
+fn=0x50DF62-0x50E0DC seeds=1 accesses=1 tainted_calls=0
+    READ 0x50DFB3 +0x0 mov rdx, qword ptr [rax]
+fn=0x52A78D-0x52ABD5 seeds=1 accesses=1 tainted_calls=0
+    READ 0x52A7B8 +0x0 mov r8, qword ptr [rdx]
+fn=0x6057A0-0x605934 seeds=1 accesses=1 tainted_calls=0
+    READ 0x6058A0 +0x0 mov rdx, qword ptr [rcx]
+fn=0x61F900-0x61FCAF seeds=1 accesses=1 tainted_calls=0
+    READ 0x61FB07 +0x0 mov r8, qword ptr [rdx]
+fn=0x6708A0-0x671058 seeds=2 accesses=2 tainted_calls=0
+    READ 0x670BE6 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x670D17 +0x0 mov rdx, qword ptr [rcx]
+fn=0x67F339-0x67F6DC seeds=1 accesses=1 tainted_calls=0
+    READ 0x67F3A0 +0x0 mov rdx, qword ptr [rcx]
+fn=0x68A1C0-0x68A452 seeds=1 accesses=1 tainted_calls=0
+    READ 0x68A300 +0x0 mov rdx, qword ptr [rcx]
+fn=0x68AE8F-0x68B025 seeds=1 accesses=1 tainted_calls=0
+    READ 0x68AF28 +0x0 mov rdx, qword ptr [rcx]
+fn=0x68EED3-0x68F5E7 seeds=1 accesses=4 tainted_calls=0
+    READ 0x68EF56 +0x0 mov r8, qword ptr [rdx]
+    READ 0x68F1C0 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x68F372 +0x0 mov r8, qword ptr [rcx]
+    READ 0x68F438 +0x0 mov rdx, qword ptr [r15]
+fn=0x6905C0-0x6909FC seeds=2 accesses=2 tainted_calls=0
+    READ 0x6906C7 +0x0 mov r8, qword ptr [rdx]
+    READ 0x690768 +0x0 mov rdx, qword ptr [rcx]
+fn=0x6928F0-0x692AE6 seeds=1 accesses=1 tainted_calls=0
+    READ 0x692A26 +0x0 mov rdx, qword ptr [rcx]
+fn=0x6A6BB0-0x6A6E6C seeds=1 accesses=1 tainted_calls=0
+    READ 0x6A6C84 +0x0 mov rdx, qword ptr [rcx]
+fn=0x6A6EE6-0x6A717F seeds=1 accesses=1 tainted_calls=0
+    READ 0x6A6F40 +0x0 mov r8, qword ptr [rdx]
+fn=0x6D0B59-0x6D0E7E seeds=1 accesses=1 tainted_calls=0
+    READ 0x6D0C00 +0x0 mov rdx, qword ptr [rcx]
+fn=0x6D1079-0x6D119A seeds=1 accesses=1 tainted_calls=0
+    READ 0x6D1097 +0x0 mov rdx, qword ptr [rcx]
+fn=0x6D1308-0x6D13F9 seeds=1 accesses=1 tainted_calls=0
+    READ 0x6D1376 +0x0 mov rdx, qword ptr [rax]
+fn=0x6D41E0-0x6D43CB seeds=1 accesses=1 tainted_calls=0
+    READ 0x6D42E3 +0x0 mov r8, qword ptr [rdx]
+fn=0x6D8EF0-0x6D9343 seeds=1 accesses=1 tainted_calls=0
+    READ 0x6D8FD0 +0x0 mov r8, qword ptr [rdx]
+fn=0x6E35D4-0x6E36DF seeds=1 accesses=1 tainted_calls=0
+    READ 0x6E3650 +0x0 mov rdx, qword ptr [rax]
+fn=0x6E3B84-0x6E3CAB seeds=1 accesses=1 tainted_calls=0
+    READ 0x6E3C10 +0x0 mov r8, qword ptr [rcx]
+fn=0x6EF8DF-0x6EFB2C seeds=3 accesses=3 tainted_calls=0
+    READ 0x6EF916 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x6EF9C6 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x6EFA90 +0x0 mov rdx, qword ptr [rcx]
+fn=0x6EFEE0-0x6F00DD seeds=1 accesses=3 tainted_calls=0
+    READ 0x6EFF60 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x6EFFE0 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x6F0060 +0x0 mov rdx, qword ptr [rax]
+fn=0x6F00F0-0x6F0589 seeds=1 accesses=3 tainted_calls=0
+    READ 0x6F0170 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x6F02D0 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x6F0430 +0x0 mov rdx, qword ptr [rcx]
+fn=0x704550-0x70514A seeds=3 accesses=3 tainted_calls=0
+    READ 0x704942 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x7049D4 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x704E17 +0x0 mov rdx, qword ptr [rcx]
+fn=0x705150-0x705591 seeds=3 accesses=3 tainted_calls=0
+    READ 0x7051E7 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x705250 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x7054C6 +0x0 mov r8, qword ptr [rcx]
+fn=0x708790-0x708ACC seeds=1 accesses=1 tainted_calls=0
+    READ 0x708880 +0x0 mov r8, qword ptr [rcx]
+fn=0x718710-0x71901B seeds=1 accesses=1 tainted_calls=0
+    READ 0x718B30 +0x0 mov rdx, qword ptr [rcx]
+fn=0x71AF00-0x71B40D seeds=1 accesses=1 tainted_calls=0
+    READ 0x71B310 +0x0 mov rdx, qword ptr [rcx]
+fn=0x71D73A-0x71D90F seeds=2 accesses=2 tainted_calls=0
+    READ 0x71D7A6 +0x0 mov rdx, qword ptr [rax]
+    READ 0x71D827 +0x0 mov rdx, qword ptr [rcx]
+fn=0x726DD0-0x726FC1 seeds=1 accesses=1 tainted_calls=0
+    READ 0x726E80 +0x0 mov rdx, qword ptr [rax]
+fn=0x7277E0-0x728161 seeds=1 accesses=1 tainted_calls=0
+    READ 0x727F71 +0x0 mov r8, qword ptr [rdx]
+fn=0x73CCC8-0x73CDC6 seeds=1 accesses=1 tainted_calls=0
+    READ 0x73CD26 +0x0 mov rdx, qword ptr [rax]
+fn=0x73CDE0-0x73D206 seeds=1 accesses=1 tainted_calls=0
+    READ 0x73CF87 +0x0 mov r8, qword ptr [rdx]
+fn=0x74B130-0x74B765 seeds=1 accesses=1 tainted_calls=0
+    READ 0x74B4C0 +0x0 mov rdx, qword ptr [rcx]
+fn=0x74C455-0x74C7CA seeds=1 accesses=1 tainted_calls=0
+    READ 0x74C6A3 +0x0 mov rdx, qword ptr [rcx]
+fn=0x74D46B-0x74D5BE seeds=1 accesses=1 tainted_calls=0
+    READ 0x74D502 +0x0 mov rdx, qword ptr [rax]
+fn=0x775D4A-0x775F80 seeds=1 accesses=1 tainted_calls=0
+    READ 0x775E53 +0x0 mov r8, qword ptr [rdx]
+fn=0x775FE0-0x77617A seeds=1 accesses=1 tainted_calls=0
+    READ 0x7760F0 +0x0 mov r8, qword ptr [rax]
+fn=0x78AC82-0x78AE09 seeds=1 accesses=1 tainted_calls=0
+    READ 0x78ACF0 +0x0 mov rdx, qword ptr [rcx]
+fn=0x78B0F2-0x78B1C4 seeds=1 accesses=1 tainted_calls=0
+    READ 0x78B153 +0x0 mov rdx, qword ptr [rax]
+fn=0x79161C-0x791B30 seeds=3 accesses=3 tainted_calls=0
+    READ 0x791680 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x791860 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x791B10 +0x0 mov rdx, qword ptr [rcx]
+fn=0x791AD0-0x791B30 seeds=1 accesses=1 tainted_calls=0
+    READ 0x791B10 +0x0 mov rdx, qword ptr [rcx]
+fn=0x791E30-0x791FB4 seeds=1 accesses=1 tainted_calls=0
+    READ 0x791EF7 +0x0 mov rdx, qword ptr [rax]
+fn=0x792180-0x7922B4 seeds=1 accesses=1 tainted_calls=0
+    READ 0x792210 +0x0 mov rdx, qword ptr [rax]
+fn=0x7922E0-0x79244B seeds=1 accesses=1 tainted_calls=0
+    READ 0x792390 +0x0 mov rdx, qword ptr [rcx]
+fn=0x7AB1CF-0x7AB2E8 seeds=1 accesses=1 tainted_calls=0
+    READ 0x7AB240 +0x0 mov rdx, qword ptr [rax]
+fn=0x7B6029-0x7B668A seeds=2 accesses=2 tainted_calls=0
+    READ 0x7B6118 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x7B61D0 +0x0 mov rdx, qword ptr [rcx]
+fn=0x7BBE4D-0x7BD44B seeds=2 accesses=2 tainted_calls=0
+    READ 0x7BBF51 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x7BC246 +0x0 mov rdx, qword ptr [rcx]
+fn=0x7BC14A-0x7BD44B seeds=1 accesses=1 tainted_calls=0
+    READ 0x7BC246 +0x0 mov rdx, qword ptr [rcx]
+fn=0x7FDD20-0x7FDF1F seeds=1 accesses=1 tainted_calls=0
+    READ 0x7FDE47 +0x0 mov r8, qword ptr [rcx]
+fn=0x7FF180-0x7FF2EE seeds=1 accesses=1 tainted_calls=0
+    READ 0x7FF220 +0x0 mov r9, qword ptr [r8]
+fn=0x7FF7FE-0x7FF96A seeds=1 accesses=2 tainted_calls=0
+    READ 0x7FF875 +0x0 mov r9, qword ptr [r8]
+    READ 0x7FF8A6 +0x0 mov r10, qword ptr [r9]
+fn=0x800B88-0x800D93 seeds=2 accesses=2 tainted_calls=0
+    READ 0x800C00 +0x0 mov r8, qword ptr [rdx]
+    READ 0x800C46 +0x0 mov r8, qword ptr [rdx]
+fn=0x801A60-0x802468 seeds=1 accesses=1 tainted_calls=0
+    READ 0x801EF0 +0x0 mov r8, qword ptr [rdx]
+fn=0x802DFF-0x80301B seeds=1 accesses=1 tainted_calls=0
+    READ 0x802E60 +0x0 mov r8, qword ptr [rcx]
+fn=0x811059-0x811199 seeds=1 accesses=1 tainted_calls=0
+    READ 0x8110D3 +0x0 mov rdx, qword ptr [rcx]
+fn=0x811217-0x8116FE seeds=1 accesses=1 tainted_calls=0
+    READ 0x8112F0 +0x0 mov rdx, qword ptr [rcx]
+fn=0x81172D-0x81186F seeds=1 accesses=1 tainted_calls=0
+    READ 0x8117A3 +0x0 mov rdx, qword ptr [rcx]
+fn=0x8119AE-0x811B52 seeds=1 accesses=1 tainted_calls=0
+    READ 0x811A17 +0x0 mov rdx, qword ptr [rcx]
+fn=0x81B590-0x81BFEA seeds=1 accesses=2 tainted_calls=0
+    READ 0x81B880 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x81BAC1 +0x0 mov rdx, qword ptr [r14]
+fn=0x81DE07-0x81DFEA seeds=2 accesses=2 tainted_calls=0
+    READ 0x81DE80 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x81DF10 +0x0 mov rdx, qword ptr [rcx]
+fn=0x81E2C2-0x81E46A seeds=1 accesses=1 tainted_calls=0
+    READ 0x81E334 +0x0 mov rdx, qword ptr [rax]
+fn=0x81F370-0x81F914 seeds=1 accesses=3 tainted_calls=0
+    READ 0x81F421 +0x0 mov r8, qword ptr [rcx]
+    READ 0x81F530 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x81F597 +0x0 mov rcx, qword ptr [r11]
+fn=0x81F938-0x81FA19 seeds=1 accesses=1 tainted_calls=0
+    READ 0x81F996 +0x0 mov rdx, qword ptr [rax]
+fn=0x81FA4B-0x81FC16 seeds=2 accesses=2 tainted_calls=0
+    READ 0x81FAD4 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x81FB60 +0x0 mov rdx, qword ptr [rcx]
+fn=0x820C53-0x820D9B seeds=1 accesses=1 tainted_calls=0
+    READ 0x820CC6 +0x0 mov rdx, qword ptr [rcx]
+fn=0x820E8F-0x820FB8 seeds=1 accesses=1 tainted_calls=0
+    READ 0x820F02 +0x0 mov rdx, qword ptr [rax]
+fn=0x82CF00-0x82D658 seeds=2 accesses=2 tainted_calls=0
+    READ 0x82D1C4 +0x0 mov rbp, qword ptr [r15]
+    READ 0x82D370 +0x0 mov rdi, qword ptr [rbx]
+fn=0x851682-0x851830 seeds=1 accesses=1 tainted_calls=0
+    READ 0x8516D7 +0x0 mov r8, qword ptr [rcx]
+fn=0x85F990-0x85FC95 seeds=2 accesses=2 tainted_calls=0
+    READ 0x85FA60 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x85FB50 +0x0 mov rdx, qword ptr [rax]
+fn=0x88A8B6-0x88AA46 seeds=1 accesses=1 tainted_calls=0
+    READ 0x88A933 +0x0 mov r8, qword ptr [rcx]
+fn=0x88B541-0x88B83E seeds=1 accesses=2 tainted_calls=0
+    READ 0x88B5C0 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x88B710 +0x0 mov rdx, qword ptr [rcx]
+fn=0x89ACB2-0x89B025 seeds=1 accesses=1 tainted_calls=0
+    READ 0x89AF35 +0x0 mov rdx, qword ptr [rcx]
+fn=0x8B7D20-0x8B7F22 seeds=1 accesses=1 tainted_calls=0
+    READ 0x8B7DB0 +0x0 mov rdx, qword ptr [rax]
+fn=0x8B7F68-0x8B813D seeds=1 accesses=1 tainted_calls=0
+    READ 0x8B7FE0 +0x0 mov rdx, qword ptr [rax]
+fn=0x8BB330-0x8BB49C seeds=1 accesses=1 tainted_calls=0
+    READ 0x8BB410 +0x0 mov rdx, qword ptr [rcx]
+fn=0x8BB4B0-0x8BBBE4 seeds=2 accesses=2 tainted_calls=0
+    READ 0x8BB5B7 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x8BB6D1 +0x0 mov rdx, qword ptr [rcx]
+fn=0x8D0E00-0x8D1A4B seeds=2 accesses=2 tainted_calls=0
+    READ 0x8D1780 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x8D1861 +0x0 mov rdx, qword ptr [rcx]
+fn=0x8DBBC0-0x8DC559 seeds=1 accesses=1 tainted_calls=0
+    READ 0x8DBD35 +0x0 mov rdx, qword ptr [rcx]
+fn=0x8F7F90-0x8F922B seeds=2 accesses=2 tainted_calls=0
+    READ 0x8F8765 +0x0 mov rdx, qword ptr [rcx]
+    READ 0x8F8845 +0x0 mov rdx, qword ptr [rcx]
+fn=0x907AD0-0x907C63 seeds=1 accesses=1 tainted_calls=0
+    READ 0x907BA4 +0x0 mov rdx, qword ptr [rax]
+fn=0x91A0C3-0x91A24F seeds=1 accesses=1 tainted_calls=0
+    READ 0x91A0F1 +0x0 mov rdx, qword ptr [rcx]
+fn=0x91D715-0x91D9EF seeds=1 accesses=1 tainted_calls=0
+    READ 0x91D921 +0x0 mov rdx, qword ptr [rcx]
+fn=0x9611B8-0x9612ED seeds=1 accesses=1 tainted_calls=0
+    READ 0x961216 +0x0 mov r8, qword ptr [rdx]
+fn=0x961372-0x96144B seeds=1 accesses=1 tainted_calls=0
+    READ 0x9613E0 +0x0 mov r8, qword ptr [rdx]
+fn=0x9618F7-0x961A49 seeds=1 accesses=1 tainted_calls=0
+    READ 0x961962 +0x0 mov r8, qword ptr [rdx]
+fn=0x978DE0-0x978F35 seeds=1 accesses=1 tainted_calls=0
+    READ 0x978E38 +0x0 mov rdx, qword ptr [rax]
+fn=0x978F40-0x9790C6 seeds=1 accesses=1 tainted_calls=0
+    READ 0x978FE2 +0x0 mov rdx, qword ptr [rcx]
+fn=0xD34743-0xD3481C seeds=1 accesses=1 tainted_calls=0
+    READ 0xD34780 +0x0 mov rdx, qword ptr [rcx]
