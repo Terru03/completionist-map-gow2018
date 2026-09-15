@@ -1,0 +1,25 @@
+Completionist Map - corrected upstream Unpickle/decoder analysis
+exe_rescanned=false
+proven_unpickle_wrapper=0x5AECC7
+reverse_depth=6
+direct_unpickle_callers=0
+
+PROVEN
+- 0x5AECC7 references core.pickle + Unpickle and invokes package.loaded['core.pickle']['Unpickle'].
+- Its Unpickle arguments are pre-existing Lua stack values; bytes->Lua decoding must be upstream.
+- Save-side userdata dispatch remains 0x7E9190 -> CodeSideLuaClass +0xB8.
+
+CLOSED FALSE LEAD
+- 0x5B1030 -> 0x7E6DC0 is not the checkpoint decoder path.
+- 0x7E6DC0 references POIDelete/client/sequence/activetrigger/triggers and is gameplay POI logic.
+
+DIRECT CALLERS OF REAL UNPICKLE WRAPPER
+
+CALL-SITE SIBLING WINDOWS
+
+TOP UPSTREAM DECODER/BRIDGE CANDIDATES
+
+SAVE BYTE SERIALIZER CALLERS (SYMMETRY REFERENCE)
+- site=0x5AFAB0 src_fn=0x5AF8AD -> 0x7E7F10
+- site=0x5B222C src_fn=0x5B2171 -> 0x7E7F10
+- site=0x7E9B8A src_fn=0x7E9B60 -> 0x7E7F10
