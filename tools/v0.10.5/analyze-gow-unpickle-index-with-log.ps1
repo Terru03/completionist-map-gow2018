@@ -36,13 +36,15 @@ function Publish([string]$Result) {
         'save_or_progression_written=false'
         'game_launched=false'
         'index_query_only=true'
+        'analysis_root=0x5AECC7 core.pickle.Unpickle wrapper'
+        'closed_false_lead=0x5B1030 -> 0x7E6DC0 decoder hypothesis'
     ) | Set-Content -LiteralPath (Join-Path $outDir 'result.txt') -Encoding UTF8
 
     & git add -- $relative
     if ($LASTEXITCODE -ne 0) { throw 'git add failed.' }
     & git diff --cached --quiet -- $relative
     if ($LASTEXITCODE -eq 1) {
-        & git commit -m "Archive GoW inverse unpickle index analysis $stamp" -- $relative | Out-Host
+        & git commit -m "Archive corrected GoW upstream unpickle index analysis $stamp" -- $relative | Out-Host
         if ($LASTEXITCODE -ne 0) { throw 'git commit failed.' }
         & git push origin "HEAD:$expectedBranch" | Out-Host
         if ($LASTEXITCODE -ne 0) { throw 'git push failed.' }
@@ -56,7 +58,8 @@ try {
     Start-Transcript -LiteralPath $console -Force | Out-Null
     $transcript = $true
 
-    Write-Host '=== Completionist Map inverse unpickle analysis from reusable index ==='
+    Write-Host '=== Completionist Map corrected upstream Unpickle analysis ==='
+    Write-Host 'Root: 0x5AECC7 core.pickle.Unpickle wrapper.'
     Write-Host 'No GoW.exe rescan; no game launch; no save I/O.'
 
     $branch = (& git branch --show-current).Trim()
@@ -73,7 +76,7 @@ try {
     $oldEap = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
     try {
-        & python $analyzer --db $db --output-json $json --output-text $text --depth 4 2>&1 | Tee-Object -FilePath $pythonOutput
+        & python $analyzer --db $db --output-json $json --output-text $text --depth 6 2>&1 | Tee-Object -FilePath $pythonOutput
         $pythonExit = $LASTEXITCODE
     }
     finally {
