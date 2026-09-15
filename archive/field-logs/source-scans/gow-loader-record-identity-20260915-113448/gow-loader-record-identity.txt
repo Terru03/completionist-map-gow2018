@@ -1,0 +1,21 @@
+GoW loader record identity trace
+================================
+status=PASS_NARROW_LOADER_RECORD_EDGE
+gameobject_persistent_key_status=BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY
+production_oracle_status=BLOCKED_EXACT_UNLOADED_STATE_ORACLE
+
+Facts
+- 0x82D1FB loads eax from dword [rbx+0x24], then 0x82D203 stores eax to level/WAD +0xC3C
+- 0x7B10A0 calls descriptor builder and loader back-to-back using one local construction context
+- descriptor +0x30 comes directly from builder stack argument at [rsp+0x60]
+
+precise_missing_edge=identify the canonical loader record behind RBX at 0x82D1FB and map its +0x24 registry_id plus the 0x7B1353 builder slot argument to a catalogue/WAD instance identity
+
+Assertions
+shared_builder_call=true
+shared_loader_call=true
+descriptor_slot_source=true
+descriptor_slot_store=true
+registry_source_a=true
+registry_store_a=true
+registry_store_b=true
