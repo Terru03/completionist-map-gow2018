@@ -170,7 +170,8 @@ def main():
     for s in slots:
         sm=s["summary"]
         labels=[k for k,v in ANCHORS.items() if v==s["target_rva"]]
-        lines.append(f"- slot={s['slot_index']} offset=0x{s['slot_index']*8:X} target=0x{s['target_rva']:X} labels={labels} fn={'NONE' if not sm['function'] else f'0x{sm['function']['begin']:X}'}")
+        fn_label = "NONE" if not sm["function"] else f"0x{sm['function']['begin']:X}"
+        lines.append(f"- slot={s['slot_index']} offset=0x{s['slot_index']*8:X} target=0x{s['target_rva']:X} labels={labels} fn={fn_label}")
         for x in sm["interesting_strings"][:10]: lines.append(f"    STRING 0x{x['site']:X} {x['target_string']!r}")
         for c in sm["callees"][:12]: lines.append(f"    CALL 0x{c['site']:X} -> 0x{c['dest']:X}")
     lines += ["", "PERSISTENCE ANCHOR CALLERS"]
