@@ -22,7 +22,6 @@ import importlib.util
 import json
 from pathlib import Path
 import re
-import struct
 import sys
 
 EXPECTED_SHA256 = "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452"
@@ -134,6 +133,11 @@ def normalize_reg(name: str | None):
     return f"r{m.group(1)}" if m else name
 
 
+def is_skipdata(ins) -> bool:
+    """Capstone represents SKIPDATA bytes as synthetic id==0 instructions."""
+    return getattr(ins, "id", 0) == 0
+
+
 def ins_record(md, ins, strings, op_imm, op_mem, op_reg, rip_reg):
     rec = {
         "rva": ins.address - IMAGE_BASE,
@@ -141,9 +145,19 @@ def ins_record(md, ins, strings, op_imm, op_mem, op_reg, rip_reg):
         "op_str": ins.op_str,
         "bytes": ins.bytes.hex(),
     }
+    if is_skipdata(ins):
+        rec["skipdata"] = True
+        return rec
+
     refs = []
     mems = []
-    for idx, op in enumerate(ins.operands):
+    try:
+        operands = ins.operands
+    except Exception:
+        rec["operand_metadata_unavailable"] = True
+        return rec
+
+    for idx, op in enumerate(operands):
         if op.type == op_imm:
             val = op.imm
             if IMAGE_BASE <= val < IMAGE_BASE + 0x2000000:
@@ -174,9 +188,15 @@ def ins_record(md, ins, strings, op_imm, op_mem, op_reg, rip_reg):
 
 
 def direct_dest(ins, op_imm):
-    if ins.mnemonic not in ("call", "jmp") or not ins.operands:
+    if is_skipdata(ins) or ins.mnemonic not in ("call", "jmp"):
         return None
-    op = ins.operands[0]
+    try:
+        operands = ins.operands
+    except Exception:
+        return None
+    if not operands:
+        return None
+    op = operands[0]
     if op.type != op_imm:
         return None
     val = op.imm
@@ -186,9 +206,15 @@ def direct_dest(ins, op_imm):
 
 
 def indirect_target(ins, md, op_mem, op_reg):
-    if ins.mnemonic != "call" or not ins.operands:
+    if is_skipdata(ins) or ins.mnemonic != "call":
         return None
-    op = ins.operands[0]
+    try:
+        operands = ins.operands
+    except Exception:
+        return None
+    if not operands:
+        return None
+    op = operands[0]
     if op.type == op_reg:
         return {"kind":"reg","reg":normalize_reg(reg_name(md, op.reg))}
     if op.type == op_mem:
@@ -209,23 +235,24 @@ def backward_slice(records, call_index, target, limit=80):
         wanted.add(target["reg"])
     elif target["kind"] == "mem":
         for k in ("base","index"):
-            if target.get(k): wanted.add(target[k])
+            if target.get(k):
+                wanted.add(target[k])
     steps = []
     callback_loads = []
     for i in range(call_index - 1, max(-1, call_index - limit - 1), -1):
         r = records[i]
+        if r.get("skipdata"):
+            continue
         writes = set(r.get("regs_write", []))
         reads = set(r.get("regs_read", []))
         if not (writes & wanted) and not (reads & wanted):
             continue
         steps.append(r)
         hit_writes = writes & wanted
-        # Detect mov/lea targetReg,[base+disp] as likely callback/table load.
         if hit_writes and r["mnemonic"] in ("mov","lea") and r.get("mem"):
             for m in r["mem"]:
                 if m.get("base") or "rip_target_rva" in m:
                     callback_loads.append({"instruction":r,"mem":m,"written_regs":sorted(hit_writes)})
-        # Continue provenance through source regs of a write to wanted.
         if hit_writes:
             wanted -= hit_writes
             for x in reads:
@@ -265,10 +292,12 @@ def main():
     function_rows = []
     offset_hist = defaultdict(int)
     interesting_string_hits = []
+    skipdata_count = 0
 
     for fn in funcs:
         insns = disasm_fn(md, pe, fn)
         records = [ins_record(md, ins, strings, op_imm, op_mem, op_reg, rip_reg) for ins in insns]
+        skipdata_count += sum(1 for r in records if r.get("skipdata"))
         decoded[fn["begin"]] = (fn, insns, records)
         for r in records:
             for m in r.get("mem", []):
@@ -317,12 +346,13 @@ def main():
         }
 
     result = {
-        "schema":1,
+        "schema":2,
         "analysis":"gow_codec_inverse_dataflow",
         "exe_sha256":EXPECTED_SHA256,
         "range":{"begin":RANGE_LO,"end":RANGE_HI},
         "capstone_version":capstone.__version__,
         "function_count":len(function_rows),
+        "skipdata_record_count":skipdata_count,
         "functions":function_rows,
         "focus":focus,
         "indirect_calls":indirects,
@@ -341,13 +371,15 @@ def main():
         f"capstone={capstone.__version__}",
         f"functions={len(function_rows)}",
         f"indirect_calls={len(indirects)}",
+        f"skipdata_records={skipdata_count}",
         "",
         "INDIRECT CALLS AND BACKWARD SLICES",
     ]
     for i,row in enumerate(indirects,1):
         lines.append(f"#{i} fn=0x{row['function']:X} site=0x{row['site']:X} target={row['target']}")
         for c in row["slice"]["callback_loads"]:
-            ins=c["instruction"]; m=c["mem"]
+            ins=c["instruction"]
+            m=c["mem"]
             lines.append(f"    CALLBACK_LOAD 0x{ins['rva']:X} {ins['mnemonic']} {ins['op_str']} mem={m} writes={c['written_regs']}")
         for s in row["slice"]["steps"]:
             lines.append(f"    SLICE 0x{s['rva']:X} {s['mnemonic']} {s['op_str']}")
@@ -357,10 +389,12 @@ def main():
     lines += ["", "FOCUS FUNCTION LISTINGS"]
     for name in FOCUS:
         rec=focus[name]
-        lines.append(f"",)
+        lines.append("")
         lines.append(f"=== {name} query=0x{rec['query_rva']:X} function={rec['function']} ===")
         for ins in rec.get("instructions",[]):
             extra=[]
+            if ins.get("skipdata"):
+                extra.append("SKIPDATA")
             for ref in ins.get("refs",[]):
                 if ref.get("string"):
                     extra.append(f"REF={ref['string']!r}")
@@ -378,6 +412,7 @@ def main():
     print("GOW_CODEC_INVERSE_DATAFLOW_PASSED")
     print(f"functions={len(function_rows)}")
     print(f"indirect_calls={len(indirects)}")
+    print(f"skipdata_records={skipdata_count}")
     for name in ("tableref_classref_dispatch","classref_reader","restore_pre_helper"):
         rec=focus[name]
         print(f"{name}_indirect_calls={len(rec.get('indirect_calls',[]))}")
