@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\trace-gow-codec-inverse-dataflow.py", line 386, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\trace-gow-codec-inverse-dataflow.py", line 271, in main
+    records = [ins_record(md, ins, strings, op_imm, op_mem, op_reg, rip_reg) for ins in insns]
+               ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\trace-gow-codec-inverse-dataflow.py", line 146, in ins_record
+    for idx, op in enumerate(ins.operands):
+                             ^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\.research-index\python-packages\capstone\__init__.py", line 792, in __getattr__
+    raise CsError(CS_ERR_SKIPDATA)
+capstone.CsError: Information irrelevant for 'data' instruction in SKIPDATA mode (CS_ERR_SKIPDATA)
