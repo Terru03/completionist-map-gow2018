@@ -218,14 +218,18 @@ def render_text(r):
     ]
     for row in t["entries"]:
         if row["raw_qword"] not in (None, 0):
+            target_text = "-" if row["target_rva"] is None else f"0x{row['target_rva']:X}"
             lines.append(
                 f"[{row['index']:02d}] entry=0x{row['entry_rva']:X} raw=0x{row['raw_qword']:016X} "
-                f"target={('-' if row['target_rva'] is None else f'0x{row[\"target_rva\"]:X}')} "
+                f"target={target_text} "
                 f"id={row.get('registry_id')} cursor={row.get('cursor_0x28')} live={row.get('live_count_0x2c')} cap={row.get('capacity_0x30')}"
             )
     lines += ["", "Table xrefs"]
     for x in r["table_xrefs"]:
-        lines.append(f"0x{x['site']:X} fn={('-' if x['function_begin'] is None else f'0x{x[\"function_begin\"]:X}')} -> 0x{x['target_rva']:X} {x['instruction']}")
+        fn_text = "-" if x["function_begin"] is None else f"0x{x['function_begin']:X}"
+        lines.append(
+            f"0x{x['site']:X} fn={fn_text} -> 0x{x['target_rva']:X} {x['instruction']}"
+        )
     return "\n".join(lines) + "\n"
 
 
