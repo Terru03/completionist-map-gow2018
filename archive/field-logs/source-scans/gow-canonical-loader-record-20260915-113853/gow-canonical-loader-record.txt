@@ -1,0 +1,12 @@
+GoW canonical loader record trace
+=================================
+status=PASS_CANONICAL_LOADER_RECORD_TRACE
+gameobject_persistent_key_status=BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY
+canonical_owner=0x858320
+builder_call=0x859BD6
+loader_call=0x859C0D
+stable_slot_candidate=false
+arg7_stack_write={'rva': 8756137, 'bytes': 'c7442430ffffffff', 'mnemonic': 'mov', 'op_str': 'dword ptr [rsp + 0x30], 0xffffffff', 'immediates': [4294967295]}
+arg7_register_source=None
+last_rbx_write={'rva': 8573329, 'bytes': '8b1dd597a901', 'mnemonic': 'mov', 'op_str': 'ebx, dword ptr [rip + 0x1a997d5]', 'rip_targets': [36465004]}
+precise_missing_edge=connect canonical 0x858320 builder arg7 slot source and 0x82CF00 RBX record provenance to the same WAD/catalogue record identity
