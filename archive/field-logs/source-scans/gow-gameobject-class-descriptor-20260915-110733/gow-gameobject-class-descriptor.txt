@@ -1,0 +1,22 @@
+GoW exact GameObject class descriptor trace
+===========================================
+gameobject_class_descriptor_status=PASS_EXACT_GAMEOBJECT_CLASS_DESCRIPTOR
+gameobject_userdata_callback_status=BLOCKED_EXACT_GAMEOBJECT_USERDATA_CALLBACK
+descriptor_rva=0x2D1B710
+registration_helper=0x545960
+helper_rcx_to_rsi=true
+resolved_save_callback_rva=none
+precise_missing_edge=exact runtime writer/value for GameObject descriptor +0xB8 (and +0x48 parent if inherited) remains unresolved
+
+Reference counts
+descriptor: rip=8 imm=0 ptr=1
+parent_0x48: rip=2 imm=0 ptr=0
+guard_0xA4: rip=0 imm=0 ptr=0
+save_0xB8: rip=0 imm=0 ptr=0
+restore_0xC0: rip=0 imm=0 ptr=0
+
+Slots
+parent_0x48@0x2D1B758: file_qword=None writes=2
+guard_0xA4@0x2D1B7B4: file_qword=None writes=0
+save_0xB8@0x2D1B7C8: file_qword=None writes=0
+restore_0xC0@0x2D1B7D0: file_qword=None writes=0
