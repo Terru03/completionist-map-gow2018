@@ -7,7 +7,7 @@ $ErrorActionPreference = "Stop"
 $repo = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 Set-Location $repo
 
-$tool = Join-Path $repo "tools\v0.10.5\trace-gow-dynamic-slot-allocation.py"
+$tool = Join-Path $repo "tools\v0.10.5\trace-gow-dynamic-slot-allocation-fixed.py"
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $archive = Join-Path $repo "archive\field-logs\source-scans\gow-dynamic-slot-allocation-$stamp"
 New-Item -ItemType Directory -Force -Path $archive | Out-Null
