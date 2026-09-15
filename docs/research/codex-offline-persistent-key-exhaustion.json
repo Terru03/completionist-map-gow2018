@@ -1,0 +1,130 @@
+{
+  "allocator": {
+    "frees_before_target_ruled_out": false,
+    "reason": "six direct release entry sites and runtime object lifetimes remain between fresh registry creation and unknown target scheduler item",
+    "slot_release": "0x4EF110 clears selected flavor bank slot and decrements live count",
+    "static_target_slot": null
+  },
+  "analysis": "gow_offline_persistent_key_exhaustion",
+  "executable": {
+    "anchors_verified": 37,
+    "sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452"
+  },
+  "frozen_saves": [
+    {
+      "backup": "GodOfWar-SaveBackup-2026-09-13_21-53-50",
+      "raw_hits": {
+        "filename_ascii": 0,
+        "filename_utf16le": 0,
+        "wad_name_ascii": 0,
+        "wad_name_utf16le": 0
+      },
+      "sha256": "617dc5867850dc14b6a4791bc116ace132a84a6a188d3165cec5276049d48438",
+      "validated_zlib_streams": 1267,
+      "zlib_hits": {
+        "filename_ascii": 0,
+        "filename_utf16le": 0,
+        "wad_name_ascii": 0,
+        "wad_name_utf16le": 0
+      }
+    },
+    {
+      "backup": "GodOfWar-SaveBackup-2026-09-13_22-01-52",
+      "raw_hits": {
+        "filename_ascii": 0,
+        "filename_utf16le": 0,
+        "wad_name_ascii": 0,
+        "wad_name_utf16le": 0
+      },
+      "sha256": "d1d7b43780ad878e300507d71059347734f96515d2ae3d0cf40e9571216bc63d",
+      "validated_zlib_streams": 1268,
+      "zlib_hits": {
+        "filename_ascii": 0,
+        "filename_utf16le": 0,
+        "wad_name_ascii": 0,
+        "wad_name_utf16le": 0
+      }
+    }
+  ],
+  "gameobject_persistent_key_status": "BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY",
+  "metadata": {
+    "exact_registry_id": null,
+    "existing_key": "strcmp(WAD path at [WAD+0x50]+0x54, record+0x84)",
+    "existing_registry_id": "record+0x24",
+    "new_registry_id": "current metadata count/index + 0x12",
+    "reason": "metadata array is deserialized at runtime, then reconciled in current 64-slot WAD-context order; neither input order is present in WAD physical records",
+    "record_plus_0x28": "current runtime WAD-context slot ordinal from 64-slot scan"
+  },
+  "precise_remaining_edge": "bind canonical override/final record pair to its loaded type-0x116 inner config entry and observe or reconstruct complete preceding same-registry allocation/free sequence",
+  "production_oracle_status": "BLOCKED_EXACT_UNLOADED_STATE_ORACLE",
+  "scheduler": {
+    "construction_order": "outer tail insertion; inner tail insertion in type-0x116 config array order",
+    "inner_layout": {
+      "outer": "0x18",
+      "state": "0x20..0x40",
+      "type_116_config_entry": "0x10"
+    },
+    "lookup_identity": "resolved WAD context pointer plus WAD+0x1D8",
+    "outer_layout": {
+      "inner_sentinel": "0x20",
+      "registry_id": "0x10",
+      "resource_hash": "0x30",
+      "type_116_config": "0x18",
+      "wad": "0x40"
+    },
+    "physical_record_mapping": "unproved",
+    "selection": "LCG selects a weighted variant inside one fixed inner item; list order is unchanged"
+  },
+  "schema": 1,
+  "sqlite_index": {
+    "edges_verified": 10,
+    "slot_release_direct_callers": [
+      "0x4EF19B",
+      "0x54FF3E",
+      "0x60DA17",
+      "0x60EA32",
+      "0x60ED16",
+      "0x8100FB"
+    ]
+  },
+  "wad": {
+    "canonical": {
+      "id": "44c6b995c69a474d82b107829c90029d",
+      "index": 9633,
+      "name": "goprecisionchallenge_raven_perch",
+      "offset": "0x32E3C60",
+      "parent_index": 9632,
+      "size": 164
+    },
+    "exact_record_to_scheduler_item_proved": false,
+    "override": {
+      "index": 9631,
+      "name": "goprecisionchallenge_raven_perch_overrideInst",
+      "offset": "0x32E3AB0"
+    },
+    "prototype_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+    "prototype_payload_hits": [
+      {
+        "index": 8545,
+        "name": "goprecision_challenge_raven_perch",
+        "offset": "0x321BF30",
+        "payload_offset": 84
+      },
+      {
+        "index": 8548,
+        "name": "goProtoNW711ED14F",
+        "offset": "0x321C100",
+        "payload_offset": 616
+      },
+      {
+        "index": 9633,
+        "name": "goprecisionchallenge_raven_perch",
+        "offset": "0x32E3C60",
+        "payload_offset": 12
+      }
+    ],
+    "reason": "scheduler item holds type-0x116 config and selects a type-0x352 resource by variant name; it has no raw record ID or physical offset field",
+    "record_count": 26898,
+    "sha256": "2e66a927426e83d4e7f2d6a17d5a3fd1387b1ddd415b7a5c43dc0d96fd7f5268"
+  }
+}
