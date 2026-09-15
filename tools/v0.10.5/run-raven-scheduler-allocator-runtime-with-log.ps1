@@ -37,12 +37,36 @@ $failure = ''
 $gameLaunched = $false
 $published = $false
 $transcriptStarted = $false
+$launcherPid = $null
+$gamePid = $null
 
 function Stop-LocalTranscript {
     if ($script:transcriptStarted) {
         Stop-Transcript | Out-Null
         $script:transcriptStarted = $false
     }
+}
+
+function Get-ExactGameProcess {
+    param([string]$ExpectedPath)
+
+    $expectedFull = [System.IO.Path]::GetFullPath($ExpectedPath)
+    $candidates = @(Get-Process -ErrorAction SilentlyContinue | Where-Object {
+        $_.ProcessName -in @('GoW', 'GodOfWar')
+    })
+    foreach ($candidate in $candidates) {
+        $candidatePath = $null
+        try { $candidatePath = $candidate.Path } catch { }
+        if ([string]::IsNullOrWhiteSpace($candidatePath)) {
+            try { $candidatePath = $candidate.MainModule.FileName } catch { }
+        }
+        if ([string]::IsNullOrWhiteSpace($candidatePath)) { continue }
+        try { $candidateFull = [System.IO.Path]::GetFullPath($candidatePath) } catch { continue }
+        if ([string]::Equals($candidateFull, $expectedFull, [System.StringComparison]::OrdinalIgnoreCase)) {
+            return $candidate
+        }
+    }
+    return $null
 }
 
 function Publish-Capture {
@@ -86,7 +110,7 @@ try {
     $wadHash = (Get-FileHash -LiteralPath $wadPath -Algorithm SHA256).Hash.ToLowerInvariant()
     if ($exeHash -ne $expectedExeHash) { throw "GoW.exe SHA mismatch: $exeHash" }
     if ($wadHash -ne $expectedWadHash) { throw "Target WAD SHA mismatch: $wadHash" }
-    if (Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -in @('GoW','GodOfWar') }) {
+    if ($null -ne (Get-ExactGameProcess -ExpectedPath $exePath)) {
         throw 'God of War already running. Close it, then rerun this command.'
     }
 
@@ -112,19 +136,35 @@ try {
     Write-Host 'If no capture line appears within 60 seconds at Raven, quit game. Wrapper will archive and push failure evidence.' -ForegroundColor Cyan
     Write-Host 'Do not inspect memory or logs. Wrapper collects and compares all data.' -ForegroundColor Cyan
 
-    $game = Start-Process -FilePath $exePath -WorkingDirectory $GameRoot -PassThru
+    # Steam may replace the directly started process with a new GoW.exe PID.
+    # Start-Process's PID is therefore only a launcher hint; discover the actual
+    # live process by exact executable path before attaching the debugger.
+    $launcher = Start-Process -FilePath $exePath -WorkingDirectory $GameRoot -PassThru
+    $launcherPid = $launcher.Id
     $gameLaunched = $true
+    Write-Host "Initial launch PID: $launcherPid"
+
     $deadline = (Get-Date).AddMinutes(2)
+    $live = $null
     do {
         Start-Sleep -Milliseconds 500
-        $live = Get-Process -Id $game.Id -ErrorAction SilentlyContinue
+        $live = Get-ExactGameProcess -ExpectedPath $exePath
     } while ($null -eq $live -and (Get-Date) -lt $deadline)
-    if ($null -eq $live) { throw 'GoW.exe process did not remain available for debugger attach.' }
+    if ($null -eq $live) {
+        $launcherState = if (Get-Process -Id $launcherPid -ErrorAction SilentlyContinue) { 'still-running' } else { 'exited-or-handed-off' }
+        throw "No live GoW.exe matching '$exePath' appeared for debugger attach within two minutes. Initial PID $launcherPid is $launcherState."
+    }
+
+    $gamePid = $live.Id
+    Write-Host "Game process ready for debugger attach: PID $gamePid"
+    if ($gamePid -ne $launcherPid) {
+        Write-Host "Steam/process handoff detected: initial PID $launcherPid -> live GoW PID $gamePid"
+    }
 
     # Merge native stdout/stderr into one live stream. Use Add-Content rather
     # than Tee-Object -Append because the latter is not available in Windows
     # PowerShell 5.1. Keep every Python line visible and archived.
-    & python $scriptPath capture --pid $game.Id --exe $exePath --wad $wadPath --tool-commit $toolCommit --output $captureJson --runs 2 2>&1 |
+    & python $scriptPath capture --pid $gamePid --exe $exePath --wad $wadPath --tool-commit $toolCommit --output $captureJson --runs 2 2>&1 |
         ForEach-Object {
             $line = [string]$_
             Add-Content -LiteralPath $pythonLog -Value $line -Encoding UTF8
@@ -145,6 +185,8 @@ try {
         "branch=$branch"
         "tool_commit=$toolCommit"
         "game_launched=$($gameLaunched.ToString().ToLowerInvariant())"
+        "launcher_pid=$launcherPid"
+        "game_pid=$gamePid"
         "captured_runs=$($capture.captured_runs)"
         "gameobject_persistent_key_status=$status"
         'production_oracle_status=BLOCKED_EXACT_UNLOADED_STATE_ORACLE'
@@ -166,6 +208,8 @@ catch {
         "timestamp=$(Get-Date -Format o)"
         "branch=$branch"
         "game_launched=$($gameLaunched.ToString().ToLowerInvariant())"
+        "launcher_pid=$launcherPid"
+        "game_pid=$gamePid"
         'gameobject_persistent_key_status=BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY'
         'production_oracle_status=BLOCKED_EXACT_UNLOADED_STATE_ORACLE'
         'save_writes=false'
