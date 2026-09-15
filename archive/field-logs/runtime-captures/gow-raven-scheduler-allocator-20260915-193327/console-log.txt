@@ -1,0 +1,47 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260915193327
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Set-Location -LiteralPath 'C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research'; & '.\tools\v0.10.5\run-raven-scheduler-allocator-runtime-with-log.ps1'
+Process ID: 9592
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+=== Exact Raven scheduler/allocator two-reload capture ===
+Target: 95b9c644-4d47-9ac6-8207-b1829d02909b / alf355_chiseldungeon.wad / 0x32E3C60 / record 9633
+Tool writes no save, progression, collectible, or map-marker state.
+Tool temporarily changes three bytes in live process only. It restores each byte immediately and restores all before detach.
+Run static capturer preflight before game launch.
+PREFLIGHT_PASSED_ATTACH_NOT_TESTED
+
+Game will start WITHOUT debugger attachment first.
+Let God of War reach the main menu. Do not load the save yet.
+When the main menu is fully usable, return to this PowerShell window and press Enter.
+Initial launch PID: 42132
+Initial live GoW process: PID 17996
+Steam/process handoff detected: initial PID 42132 -> live GoW PID 17996
+Main-menu candidate GoW PID: 17996
+Stable main-menu GoW process ready for debugger attach: PID 17996
+Attaching debugger now. Keep the game at the main menu until Debugger ready appears.
+CAPTURE_STARTUP_STAGE=OpenProcess
+CAPTURE_STARTUP_STAGE=Module32FirstW
+CAPTURE_STARTUP_STAGE=ModuleDiscoveryPSAPI
+CAPTURE_MODULE_DISCOVERY=PSAPI base=0x7FF6F81F0000 path=G:\SteamLibrary\steamapps\common\GodOfWar\GoW.exe
+CAPTURE_STARTUP_STAGE=DebugActiveProcess
+CAPTURE_STARTUP_STAGE=InstallBreakpoints
+Debugger ready. Load same target save/context. Approach exact Raven. Do not kill or collect it.
+python_exit_code=2
+RUNTIME_CAPTURE_FAILED: Runtime capturer failed with exit code 2.
+**********************
+Windows PowerShell transcript end
+End time: 20260915193337
+**********************
