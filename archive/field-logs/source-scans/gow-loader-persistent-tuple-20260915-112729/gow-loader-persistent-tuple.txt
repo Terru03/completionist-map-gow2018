@@ -1,0 +1,29 @@
+GoW loader persistent tuple trace
+=================================
+callback_token_roundtrip_status=PASS_EXACT_RUNTIME_TOKEN_ROUNDTRIP
+gameobject_persistent_key_status=BLOCKED_EXACT_GAMEOBJECT_PERSISTENT_KEY
+builder_function=0x8566B0-0x8567C2
+loader_function=0x856F50-0x8573B4
+builder_callers=4
+loader_callers=4
+c3c_accesses=155
+c3c_writes=4
+precise_missing_edge=map descriptor-construction slot argument feeding +0x30 and level/WAD +0xC3C registry_id to a canonical WAD/catalogue record identity, proving the same tuple after reload
+
++0xC3C writers
+0x45D190 fn=0x45D040 mov dword ptr [rax + rcx + 0xc3c], 0x447a0000
+0x4B7AFE fn=0x4B7400 mov dword ptr [rdi + 0xc3c], eax
+0x82D203 fn=0x82CF00 mov dword ptr [r13 + 0xc3c], eax
+0x82D3B7 fn=0x82CF00 mov dword ptr [r13 + 0xc3c], eax
+
+Descriptor builder callers
+0x7B1353 fn=0x7B10A0 call
+0x85361E fn=0x8535CC call
+0x853BD3 fn=0x853650 call
+0x859BD6 fn=0x858320 call
+
+Loader callers
+0x67D08C fn=0x67CFB0 call
+0x789246 fn=0x788F30 call
+0x7B137F fn=0x7B10A0 call
+0x859C0D fn=0x858320 call
