@@ -1,5 +1,5 @@
 -- BEGIN COMPLETIONIST V0.10.5 ALL RAVENS
--- Data drives all Raven work. Exact map GO must exist before UID check.
+-- Data drives all Raven work. Catalogue Ravens are visible unless explicitly collected.
 do
   local prefix = "[CompletionistMap v0.10.5-all-ravens] "
   local ravenClass = "CompletionistRaven"
@@ -27,6 +27,14 @@ do
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
+  end
+
+  local function isCollected(catalogueId)
+    return states[catalogueId] == true
+  end
+
+  local function shouldShow(catalogueId)
+    return byCatalogueId[catalogueId] ~= nil and not isCollected(catalogueId)
   end
 
   local function rememberMarkerId(name, info)
@@ -101,14 +109,14 @@ do
     local realm = self.currRealmName
     for name, go in pairs(icons) do
       local row = byName[name]
-      if row == nil or row.Realm ~= realm or states[row.CatalogueId] ~= false then
+      if row == nil or row.Realm ~= realm or isCollected(row.CatalogueId) then
         recycle(go)
         if self.mapIconCollision == go then self.mapIconCollision = nil end
         icons[name] = nil
       end
     end
     for _, row in ipairs(rows) do
-      if row.Realm == realm and states[row.CatalogueId] == false and icons[row.Name] == nil then
+      if row.Realm == realm and shouldShow(row.CatalogueId) and icons[row.Name] == nil then
         local ok, value = pcall(function()
           local info = markerInfo(row.Name)
           if info == nil then return nil, "marker_info" end
@@ -149,7 +157,7 @@ do
       for name, go in pairs(icons) do
         if collision == go then
           local row = byName[name]
-          if row ~= nil and states[row.CatalogueId] == false then
+          if row ~= nil and shouldShow(row.CatalogueId) then
             local info = markerInfo(name)
             if info ~= nil then
               return {
@@ -179,7 +187,7 @@ do
     local icons = self.completionistMapV105RavenIcons or {}
     if selected.Generation ~= selectionGeneration or
         icons[selected.Name] ~= selected.ObjectRef or
-        states[selected.CatalogueId] ~= false then
+        not shouldShow(selected.CatalogueId) then
       clearSelection(self, "candidate_no_longer_exact")
       return nil
     end
@@ -297,7 +305,7 @@ do
       return
     end
     clearSelection(self, "SELECT_CONSUME")
-    if states[selected.CatalogueId] ~= false then return end
+    if not shouldShow(selected.CatalogueId) then return end
     local ids, queryOK = customIds()
     if not queryOK then return end
     if contains(ids, selected.IdString) then
@@ -352,6 +360,30 @@ do
     return true
   end
 
+  _G.CompletionistMapV105ApplyPersistedRavenKills = function(catalogueIds, source)
+    if type(catalogueIds) ~= "table" then return false, 0 end
+    for catalogueId, _ in pairs(states) do states[catalogueId] = nil end
+    local accepted = 0
+    for key, value in pairs(catalogueIds) do
+      local catalogueId = nil
+      if type(key) == "number" then
+        catalogueId = value
+      elseif value == true then
+        catalogueId = key
+      end
+      local row = byCatalogueId[catalogueId]
+      if row ~= nil and states[catalogueId] ~= true then
+        states[catalogueId] = true
+        accepted = accepted + 1
+        hideExactTracked(row)
+      end
+    end
+    if lastMapOnSelf ~= nil then syncIcons(lastMapOnSelf, "persisted:" .. tostring(source)) end
+    log("PERSISTED_KILLS", "source=" .. tostring(source) ..
+        " accepted=" .. tostring(accepted) .. " catalogueDefaultVisible=true progressionWrites=false")
+    return true, accepted
+  end
+
   _G.CompletionistMapV105ResetRavenStates = function(source)
     for catalogueId, _ in pairs(states) do states[catalogueId] = nil end
     if lastMapOnSelf ~= nil then
@@ -359,7 +391,7 @@ do
     end
     _G.CompletionistMapV105TrackedCatalogueId = nil
     log("STATE_RESET", "source=" .. tostring(source) ..
-        " staleStateRetained=false progressionWrites=false")
+        " staleStateRetained=false catalogueDefaultVisible=true progressionWrites=false")
     return true
   end
 
@@ -370,6 +402,7 @@ do
   log("API", "installed=true catalogueCount=" .. tostring(#rows) ..
       " mapResource=" .. mapResource .. " compassClass=" .. ravenClass ..
       " exactCollisionRequired=true markerIdAloneInfersRaven=false" ..
-      " polling=false progressionWrites=false unloadedStateUnknownHidden=true")
+      " polling=false progressionWrites=false catalogueDefaultVisible=true" ..
+      " persistedKillBootstrap=true")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVENS
