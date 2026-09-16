@@ -78,7 +78,7 @@ try {
     $sha = (& git rev-parse HEAD).Trim()
     if ($LASTEXITCODE -ne 0) { throw 'git rev-parse HEAD failed after push.' }
     Write-Host ''
-    Write-Host "PUSHED $status: $sha"
+    Write-Host "PUSHED ${status}: $sha"
     Write-Host "Capture: $relativeDir"
 
     if ($captureCode -ne 0) {
