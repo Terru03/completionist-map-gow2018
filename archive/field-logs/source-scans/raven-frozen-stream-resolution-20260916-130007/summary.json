@@ -1,0 +1,320 @@
+{
+  "alive": {
+    "historical_coordinate": {
+      "compressed_length": 73,
+      "decompressed_length": 79,
+      "relative_offset": 39272,
+      "required_strings": [],
+      "slot_index": 17,
+      "slot_stream_index": 27
+    },
+    "immediate_header": {
+      "compressed_length_matches": true,
+      "decompressed_length_matches": true,
+      "expected_decompressed_length_from_header": 79,
+      "fields": {
+        "compressed_length": 73,
+        "metadata_pair_count": 5,
+        "record_blob_length": 50,
+        "record_blob_offset": 29,
+        "record_count": 2,
+        "row_count": 4,
+        "scalar_c": 1,
+        "section0_word_count": 2
+      },
+      "header_start": 28561120,
+      "header_start_hex": "0x1B3CEE0",
+      "length_signature_matches": true,
+      "preceding_16_hex": "02001d00050004000200320001004900",
+      "present": true,
+      "scanner_exact_decompression_hits": 22,
+      "scanner_full_carrier_at_header_start": true,
+      "scanner_matches_at_header_start": [
+        {
+          "class_keys": [
+            "0x75E050AB149B4062",
+            "0x75E050AB149B4062"
+          ],
+          "compression": "zlib",
+          "end_offset": 28561271,
+          "end_offset_hex": "0x1B3CF77",
+          "header": {
+            "compressed_length": 73,
+            "metadata_pair_count": 5,
+            "record_blob_length": 50,
+            "record_blob_offset": 29,
+            "record_count": 2,
+            "row_count": 4,
+            "scalar_c": 1,
+            "section0_word_count": 2
+          },
+          "inferred_tag_widths": {
+            "0": 3,
+            "2": 2
+          },
+          "invalid_records": 0,
+          "length": 151,
+          "metadata_candidate_count": 7,
+          "offset": 28561120,
+          "offset_hex": "0x1B3CEE0",
+          "valid_records": 2
+        }
+      ],
+      "scanner_plausible_headers_tested": 3235,
+      "words": [
+        2,
+        29,
+        5,
+        4,
+        2,
+        50,
+        1,
+        73
+      ]
+    },
+    "input_length": 33554400,
+    "input_name": "game.sav",
+    "input_sha256": "b6b7b1cd3bfa9c6b040065bf53cbd6ba70c232e4d3f8c0e1a313907cddcd2944",
+    "label": "alive",
+    "layout": {
+      "header_size": 208,
+      "prefix": 4160,
+      "slot_count": 20,
+      "stride": 1677512
+    },
+    "post_compressed_256_ascii": "..............................................................Xpl200_AI_Exterior01..............T.......T.................Xpl200_AI_Persist................%U......%U.................Xpl250_FuneralInterior..........:'U.....:'U.....}.......{..y..............",
+    "post_compressed_256_hex": "00000a000200000302000500000303000501000304000201000001020100000119190000190000000100000001000200000003000100000004000100000058706c3230305f41495f4578746572696f723031000000000000000000000000bb8e5482f47f0000bb8e5482f47f000004000000000000000200000058706c3230305f41495f50657273697374000000000000000000000000000000e8255582f47f0000e8255582f47f000004000000000000000200000058706c3235305f46756e6572616c496e746572696f72000000000000000000003a275582f47f00003a275582f47f00007d000000000000007b00007902001d0003000300010019000100",
+    "raw_offset": 28561136,
+    "raw_offset_hex": "0x1B3CEF0",
+    "required_string_presence": {},
+    "resolved_stream": {
+      "compressed_length": 73,
+      "compressed_sha256": "d705e131c7b737682e2b410936bb0646c94166f795ca3456792507c365fffc03",
+      "decompressed_length": 79,
+      "decompressed_sha256": "a20550b246cb5e25acc12402c64093110969eff4ba1fdd2b66e6850d359d2172",
+      "index": 27,
+      "relative_offset": 39272
+    },
+    "same_payload_candidate_count": 15,
+    "same_payload_candidate_offsets": [
+      1720896,
+      3398408,
+      5075920,
+      6753480,
+      10108456,
+      11785968,
+      13463480,
+      15141040,
+      16817128,
+      18496083,
+      20173492,
+      21851039,
+      23528552,
+      25206112,
+      28561136
+    ],
+    "same_size_candidate_count": 48,
+    "same_size_candidate_offsets": [
+      42912,
+      54470,
+      1720445,
+      1720896,
+      1731958,
+      3397957,
+      3398408,
+      3409470,
+      5075469,
+      5075920,
+      5086982,
+      6753029,
+      6753480,
+      6764542,
+      8430520,
+      8442078,
+      10108005,
+      10108456,
+      10119518,
+      11785517,
+      11785968,
+      11797030,
+      13463029,
+      13463480,
+      13474542,
+      15140589,
+      15141040,
+      15152102,
+      16816677,
+      16817128,
+      18495632,
+      18496083,
+      18507145,
+      20173041,
+      20173492,
+      20184554,
+      21850588,
+      21851039,
+      21862101,
+      23528101,
+      23528552,
+      23539614,
+      25205661,
+      25206112,
+      25217174,
+      28560685,
+      28561136,
+      28572198
+    ],
+    "slot_start": 28521864,
+    "slot_start_hex": "0x1B33588",
+    "slot_stream_count": 81,
+    "whole_file_stream_count": 1349,
+    "whole_file_stream_index0": 1295
+  },
+  "analysis": "exact_frozen_raven_stream_resolution",
+  "coordinate_semantics": {
+    "raw_offset_formula": "prefix + slot_index * stride + relative_offset",
+    "relative_offset_base": "complete_slot_start",
+    "slot_header_included_in_relative_coordinates": true,
+    "slot_index_base": 0,
+    "slot_stream_index_base": 0
+  },
+  "dead": {
+    "historical_coordinate": {
+      "compressed_length": 96,
+      "decompressed_length": 116,
+      "relative_offset": 39203,
+      "required_strings": [
+        "ravenKilled",
+        "mapSummaryComplete"
+      ],
+      "slot_index": 18,
+      "slot_stream_index": 27
+    },
+    "immediate_header": {
+      "compressed_length_matches": true,
+      "decompressed_length_matches": true,
+      "expected_decompressed_length_from_header": 116,
+      "fields": {
+        "compressed_length": 96,
+        "metadata_pair_count": 7,
+        "record_blob_length": 75,
+        "record_blob_offset": 41,
+        "record_count": 3,
+        "row_count": 5,
+        "scalar_c": 1,
+        "section0_word_count": 3
+      },
+      "header_start": 30238563,
+      "header_start_hex": "0x1CD6763",
+      "length_signature_matches": true,
+      "preceding_16_hex": "030029000700050003004b0001006000",
+      "present": true,
+      "scanner_exact_decompression_hits": 22,
+      "scanner_full_carrier_at_header_start": true,
+      "scanner_matches_at_header_start": [
+        {
+          "class_keys": [
+            "0x75E050AB149B4062",
+            "0x75E050AB149B4062",
+            "0x75E050AB149B4062"
+          ],
+          "compression": "zlib",
+          "end_offset": 30238759,
+          "end_offset_hex": "0x1CD6827",
+          "header": {
+            "compressed_length": 96,
+            "metadata_pair_count": 7,
+            "record_blob_length": 75,
+            "record_blob_offset": 41,
+            "record_count": 3,
+            "row_count": 5,
+            "scalar_c": 1,
+            "section0_word_count": 3
+          },
+          "inferred_tag_widths": {
+            "0": 3,
+            "2": 2
+          },
+          "invalid_records": 0,
+          "length": 196,
+          "metadata_candidate_count": 4,
+          "offset": 30238563,
+          "offset_hex": "0x1CD6763",
+          "valid_records": 3
+        }
+      ],
+      "scanner_plausible_headers_tested": 3242,
+      "words": [
+        3,
+        41,
+        7,
+        5,
+        3,
+        75,
+        1,
+        96
+      ]
+    },
+    "input_length": 33554400,
+    "input_name": "game.sav",
+    "input_sha256": "d9c495835a7c53820d9c10df0f4693610e9af004697b920c8312b90e47609cd7",
+    "label": "dead",
+    "layout": {
+      "header_size": 208,
+      "prefix": 4160,
+      "slot_count": 20,
+      "stride": 1677512
+    },
+    "post_compressed_256_ascii": "....................................................2...............................Xpl200_AI_Exterior01.............%.......%..................Xpl200_AI_Persist................%.......%..................Xpl250_FuneralInterior..........c'......c'......}...",
+    "post_compressed_256_hex": "00000a001d0002000003020005000003030005010003040005020003050002010000010202000001020100000119191900001900320000000100000001000300000004000100000005000100000006000100000058706c3230305f41495f4578746572696f723031000000000000000000000000e825a9d3f37f0000e825a9d3f37f000004000000000000000200000058706c3230305f41495f50657273697374000000000000000000000000000000e425a9d3f37f0000e425a9d3f37f000004000000000000000200000058706c3235305f46756e6572616c496e746572696f72000000000000000000006327a9d3f37f00006327a9d3f37f00007d000000",
+    "raw_offset": 30238579,
+    "raw_offset_hex": "0x1CD6773",
+    "required_string_presence": {
+      "mapSummaryComplete": true,
+      "ravenKilled": true
+    },
+    "resolved_stream": {
+      "compressed_length": 96,
+      "compressed_sha256": "171052571d7a5db05d4821ffe08ee0c9d6941f74b644254e6bb2925ce4134c8e",
+      "decompressed_length": 116,
+      "decompressed_sha256": "620bb85be8fd0ebf9c778eb06aba0e532ca57c74bec2d2252694512728e7f308",
+      "index": 27,
+      "relative_offset": 39203
+    },
+    "same_payload_candidate_count": 2,
+    "same_payload_candidate_offsets": [
+      8430971,
+      30238579
+    ],
+    "same_size_candidate_count": 3,
+    "same_size_candidate_offsets": [
+      43363,
+      8430971,
+      30238579
+    ],
+    "slot_start": 30199376,
+    "slot_start_hex": "0x1CCCE50",
+    "slot_stream_count": 81,
+    "whole_file_stream_count": 1430,
+    "whole_file_stream_index0": 1376
+  },
+  "decoded_comparison": {
+    "alive_changed_ascii": "b@...P.u...'4%0.N.a.u .\\.",
+    "alive_changed_hex": "62409b14ab50e07501b0b227342530c24ee561807520d55c16",
+    "alive_changed_range": [
+      29,
+      54
+    ],
+    "common_prefix_length": 29,
+    "common_suffix_length": 25,
+    "dead_changed_ascii": "ravenKilled.b@...P.u...'4%0.N.a.u .\\.b@...P.u...'4%0.N.e-.....",
+    "dead_changed_hex": "726176656e4b696c6c65640062409b14ab50e07501b0b227342530c24ee561807520d55c1662409b14ab50e07501b0b227342530c24ea9652dba0717be98",
+    "dead_changed_range": [
+      29,
+      91
+    ]
+  },
+  "schema": 1,
+  "verdict": "EXACT_RAVEN_STREAMS_RESOLVED_NATIVE_CARRIER",
+  "verdict_explanation": "Both exact historical Raven streams are accepted as complete native custom-userdata carriers beginning 16 bytes earlier."
+}
