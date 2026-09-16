@@ -1,0 +1,41 @@
+**********************
+PowerShell transcript start
+Start time: 20260916134106
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\prove-raven-native-carrier-replay-v2-with-log.ps1
+Process ID: 47564
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Raven native carrier bidirectional replay v2
+Branch: codex/all-collectibles-production-research
+Archive: archive/field-logs/source-scans/raven-native-carrier-replay-v2-20260916-134106
+Running carrier parser self-test...
+GOW_CUSTOM_USERDATA_CARRIER_SELFTEST_PASSED
+Running carrier scanner self-test...
+GOW_CUSTOM_USERDATA_CARRIER_SCAN_SELFTEST_PASSED
+Running corrected replay v2 self-test...
+RAVEN_NATIVE_CARRIER_REPLAY_V2_SELFTEST_PASSED
+Replaying frozen ALIVE <-> DEAD carriers...
+RAVEN_NATIVE_CARRIER_BIDIRECTIONAL_REPLAY_EXACT
+FORWARD_COMPONENTS={"metadata": true, "prefix": true, "records": true, "rows": true, "section0": true}
+REVERSE_COMPONENTS={"metadata": true, "prefix": true, "records": true, "rows": true, "section0": true}
+FORWARD_EXACT_ZLIB_LEVELS=7,8,9
+REVERSE_EXACT_ZLIB_LEVELS=7,8,9
+RAVEN_RECORD_TRAILING_IDENTITY=0x98BE1707BA2D65A9
+RAVEN_NATIVE_CARRIER_REPLAY_V2_PASSED
+Bidirectional replay is byte-for-byte exact.
+**********************
+PowerShell transcript end
+End time: 20260916134107
+**********************
