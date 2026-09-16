@@ -1,0 +1,120 @@
+Completionist Map - GoW serialization format trace for 0x5491A0 / 0x549420
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+capstone=5.0.7
+edge_count=132218
+
+PROVEN CONTEXT (carried forward, not re-inferred here)
+save_record=[8-byte CodeSideLuaClass key][class +0xB8 callback payload]
+save_record_size_byte=payload_length+8
+restore_tables=descriptor+0x20:u16 offsets, +0x28:u8 sizes, +0x30:blob
+restore_callback=CodeSideLuaClass+0xC0(payload=record+8,len=size-8)
+
+TARGET FUNCTION RESOLUTION
+target_5491A0 requested=0x5491A0 fn=0x5491A0-0x54921F size=0x7F entry=True
+  direct_callers=6
+    caller=0x2197A0 site=0x219B04
+    caller=0x2197A0 site=0x219C85
+    caller=0x21A6E0 site=0x21A852
+    caller=0x5F95F0 site=0x5F9633
+    caller=0x668AC0 site=0x668EE6
+    caller=0x8255A0 site=0x82560C
+  direct_callees=0
+  paths_to_known_anchors:
+    save_userdata_serializer: target_to_anchor=NONE
+    save_userdata_serializer: anchor_to_target=NONE
+    restore_orchestrator: target_to_anchor=NONE
+    restore_orchestrator: anchor_to_target=NONE
+    restore_record_dispatch_fn: target_to_anchor=NONE
+    restore_record_dispatch_fn: anchor_to_target=NONE
+  interesting_memory_accesses:
+    0x5491E1 disp=0x48 size=8 mov qword ptr [rsp + 0x48], rbx
+  RIP_relative_refs:
+  complete_disassembly:
+    0x005491A0  4055                     push     rbp
+    0x005491A2  4157                     push     r15
+    0x005491A4  4883ec28                 sub      rsp, 0x28
+    0x005491A8  440fb611                 movzx    r10d, byte ptr [rcx]
+    0x005491AC  498be8                   mov      rbp, r8
+    0x005491AF  458bda                   mov      r11d, r10d
+    0x005491B2  4c8bf9                   mov      r15, rcx
+    0x005491B5  4183e301                 and      r11d, 1
+    0x005491B9  4180e205                 and      r10b, 5
+    0x005491BD  41c1e304                 shl      r11d, 4
+    0x005491C1  41ffc3                   inc      r11d
+    0x005491C4  4180fa05                 cmp      r10b, 5
+    0x005491C8  418d4304                 lea      eax, [r11 + 4]
+    0x005491CC  410f45c3                 cmovne   eax, r11d
+    0x005491D0  4898                     cdqe     
+    0x005491D2  483bd0                   cmp      rdx, rax
+    0x005491D5  730a                     jae      0x1405491e1
+    0x005491D7  32c0                     xor      al, al
+    0x005491D9  4883c428                 add      rsp, 0x28
+    0x005491DD  415f                     pop      r15
+    0x005491DF  5d                       pop      rbp
+    0x005491E0  c3                       ret      
+    0x005491E1  48895c2448               mov      qword ptr [rsp + 0x48], rbx
+    0x005491E6  33db                     xor      ebx, ebx
+    0x005491E8  498918                   mov      qword ptr [r8], rbx
+    0x005491EB  4889742450               mov      qword ptr [rsp + 0x50], rsi
+    0x005491F0  0fb631                   movzx    esi, byte ptr [rcx]
+    0x005491F3  400fb6c6                 movzx    eax, sil
+    0x005491F7  2401                     and      al, 1
+    0x005491F9  440fb6c0                 movzx    r8d, al
+    0x005491FD  400fb6c6                 movzx    eax, sil
+    0x00549201  2405                     and      al, 5
+    0x00549203  418bd0                   mov      edx, r8d
+    0x00549206  c1e204                   shl      edx, 4
+    0x00549209  ffc2                     inc      edx
+    0x0054920B  3c05                     cmp      al, 5
+    0x0054920D  8d4a04                   lea      ecx, [rdx + 4]
+    0x00549210  0f45ca                   cmovne   ecx, edx
+    0x00549213  418909                   mov      dword ptr [r9], ecx
+    0x00549216  4584c0                   test     r8b, r8b
+    0x00549219  0f84dc010000             je       0x1405493fb
+
+target_549420 requested=0x549420 fn=0x549420-0x549442 size=0x22 entry=True
+  direct_callers=4
+    caller=0x2194E8 site=0x219632
+    caller=0x21A220 site=0x21A250
+    caller=0x5F96B0 site=0x5F96FD
+    caller=0x8254C0 site=0x82554E
+  direct_callees=0
+  paths_to_known_anchors:
+    save_userdata_serializer: target_to_anchor=NONE
+    save_userdata_serializer: anchor_to_target=NONE
+    restore_orchestrator: target_to_anchor=NONE
+    restore_orchestrator: anchor_to_target=NONE
+    restore_record_dispatch_fn: target_to_anchor=NONE
+    restore_record_dispatch_fn: anchor_to_target=NONE
+  interesting_memory_accesses:
+  RIP_relative_refs:
+    0x54942E -> rva=0x105A208 mov rax, qword ptr [rip + 0xb10dd3]
+  complete_disassembly:
+    0x00549420  4c8bdc                   mov      r11, rsp
+    0x00549423  53                       push     rbx
+    0x00549424  55                       push     rbp
+    0x00549425  4157                     push     r15
+    0x00549427  4881ec00020000           sub      rsp, 0x200
+    0x0054942E  488b05d30db100           mov      rax, qword ptr [rip + 0xb10dd3]
+    0x00549435  4833c4                   xor      rax, rsp
+    0x00549438  48898424d0010000         mov      qword ptr [rsp + 0x1d0], rax
+    0x00549440  33c0                     xor      eax, eax
+
+TARGET-TO-TARGET CALL-GRAPH RELATION
+target_5491A0_to_target_549420=NONE
+target_549420_to_target_5491A0=NONE
+
+ANCHOR-TO-ANCHOR PATHS FOUND WITHIN DEPTH LIMIT
+restore_orchestrator_to_restore_record_dispatch_fn=0x7E9550 -> 0x7E7660 -> 0x7E7B60
+
+INTERPRETATION RULES
+- A direct/short call-graph edge is evidence of structural relationship, not semantic identity.
+- 0x544C40 is intentionally kept separate from 0x5491A0/0x549420 unless a path proves a link.
+- No role is assigned to either target solely from address proximity.
+- The 8-byte CodeSideLuaClass key is not labelled a hash or pointer here.
+
+SAFETY
+game_launched=false
+save_opened=false
+save_written=false
+exe_modified=false
