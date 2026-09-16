@@ -46,7 +46,7 @@ class RavenRuntimeModel:
         self.state = {key: "unknown" for key in self.rows}
         accepted = 0
         for catalogue_id in catalogue_ids:
-            if catalogue_id not in self.rows:
+            if catalogue_id not in self.rows or self.state[catalogue_id] == "collected":
                 continue
             self.state[catalogue_id] = "collected"
             accepted += 1
