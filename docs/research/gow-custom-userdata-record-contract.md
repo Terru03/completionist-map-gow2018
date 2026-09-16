@@ -1,6 +1,6 @@
-# GoW 2018 custom-userdata decoded record contract
+# GoW 2018 custom-userdata persistence contract
 
-Status: **native save/restore record layer proven; outer carrier still partially unresolved**
+Status: **decoded record layer proven; outer carrier framing substantially proven; remaining gaps are metadata semantics, exact compressor identity, and raw-save embedding**
 
 Target executable SHA-256:
 
@@ -8,20 +8,24 @@ Target executable SHA-256:
 
 Relevant native functions:
 
-- save callback wrapper: `0x7E8EF0`
-- decoded-record serializer: `0x7E9190`
-- restore callback wrapper: `0x7E9550`
-- decoded-record restore dispatch: `0x7E7B60`, with the decisive dispatch window at `0x7E7D7F..0x7E7E07`
-- shared save/restore helper currently under investigation: `0x7E9012`
+- outer save carrier builder: `0x7E7F10`
+- variable tagged-metadata writer: `0x7E83D0`
+- save-side compression wrapper: `0x7E8540`
+- decoded userdata-record serializer: `0x7E9190`
+- outer restore carrier reader: `0x7E9550`
+- decoded record restore dispatch: `0x7E7B60`, decisive window `0x7E7D7F..0x7E7E07`
+- local callback path: `0x7E8EF0`
+- tiny shared local helper still semantically unnamed: `0x7E9012`
 
-This document deliberately separates the **decoded record descriptor** from the
-**outer save carrier**. The descriptor contract below is strong enough to build
-and inspect records deterministically. The exact 16-byte carrier header,
-compression framing, and remaining metadata must not be inferred from it.
+The important correction from the carrier-symmetry pass is that `0x7E8EF0` is **not**
+the main outer-carrier builder. `0x7E7F10` writes the complete carrier consumed
+by `0x7E9550`. The two functions mirror one another closely enough to recover
+the binary framing without assigning speculative game-level meanings to every
+field.
 
 ## 1. Proven decoded descriptor
 
-The native descriptor consumed by restore and populated by save contains:
+The descriptor consumed by restore and populated by save contains:
 
 | Descriptor field | Meaning |
 | --- | --- |
@@ -31,8 +35,7 @@ The native descriptor consumed by restore and populated by save contains:
 | `+0x38` | `u16` record count |
 | `+0x3A` | `u16` current/final record-blob length |
 
-All integer fields observed in the serialized tables are little-endian on the
-supported x86-64 build.
+All serialized integer fields observed here are little-endian.
 
 For record index `i`:
 
@@ -54,45 +57,40 @@ payload_ptr = blob + offset + 8
 payload_len = stored_size - 8
 ```
 
-The phrase **CodeSideLuaClass key/reference** is intentional. The dispatch code
-proves that this qword is compared against qword keys in the global class
-registry. It is not yet necessary to label its physical representation more
-specifically than that.
+The phrase **CodeSideLuaClass key/reference** remains intentional. Native code
+proves that this qword is compared with qword keys in the global class
+registry. A narrower physical label is not needed for the parser.
 
-## 2. Save side: `0x7E9190`
+## 2. Save-side decoded record: `0x7E9190`
 
-The save-side native serializer establishes the forward half of the contract.
+The save serializer walks class metadata until it finds the persistence save
+callback at `CodeSideLuaClass + 0xB8`.
 
-The class metadata chain is walked until the save callback is found. The
-relevant persistence callback slot is `CodeSideLuaClass + 0xB8`.
+It then:
 
-The serializer:
-
-1. invokes the `+0xB8` callback into a bounded temporary payload buffer;
+1. invokes the callback into a bounded temporary payload buffer;
 2. obtains the callback payload length;
 3. writes the class key/reference as the first qword of the record;
-4. copies the callback payload immediately after that qword;
-5. stores `payload_length + 8` into the byte-sized size table;
-6. stores the current blob position into the 16-bit offset table;
-7. advances the descriptor record count and blob length.
+4. copies the payload immediately after the key;
+5. stores `payload_length + 8` in the byte-sized size table;
+6. stores the current record-blob position in the 16-bit offset table;
+7. increments descriptor record count and blob length.
 
-The observed native save-side limits are:
+Observed native save-side limits:
 
 ```text
 record_count          <= 512
 record_blob_length    <= 0x3000
 callback_payload      <= 0x80
-stored_record_size    <= 0x88 for the proven callback buffer
+stored_record_size    <= 0x88
 ```
 
-The byte-sized size table itself can represent at most `0xFF`, but the proven
-save callback buffer imposes the tighter `0x80 + 8 = 0x88` native-output limit.
+The size table can represent `0xFF`, but the proven save callback buffer imposes
+the tighter native-output limit of `0x80 + 8 = 0x88`.
 
-## 3. Restore side: `0x7E7D7F..0x7E7E07`
+## 3. Restore-side decoded record: `0x7E7D7F..0x7E7E07`
 
-Restore independently proves the inverse.
-
-The decisive native flow is:
+Restore independently proves the inverse:
 
 ```text
 record_index       = u16[*entry]
@@ -105,8 +103,8 @@ payload_pointer    = record_blob_base + record_offset + 8
 payload_length     = record_size - 8
 ```
 
-The class key is looked up in the global `CodeSideLuaClass` registry. If needed,
-restore walks the class-parent link at `+0x48`. The restore callback is taken
+The class key is looked up in the global `CodeSideLuaClass` registry. Restore
+walks the class-parent link at `+0x48` when needed. The restore callback comes
 from `CodeSideLuaClass + 0xC0` and receives:
 
 ```text
@@ -115,79 +113,185 @@ rdx = payload pointer
 r8  = payload length
 ```
 
-The dispatch is a tail jump to the resolved callback.
-
-This is the strongest symmetry result in the persistence work so far:
+The native symmetry is therefore:
 
 ```text
 save:    class +0xB8 -> [key][payload], size = payload + 8
 restore: [key][payload], size - 8 -> class +0xC0
 ```
 
-## 4. Outer carrier: what is already proven
+## 4. Proven 16-byte outer header
 
-`0x7E8EF0` and `0x7E9550` are registered as the corresponding save and restore
-handlers for the same callback registrations.
+`0x7E7F10` constructs a 16-byte header and later copies it to the serialized
+output as one 16-byte block. All eight fields are little-endian `u16`.
 
-The save wrapper calls the decoded-record serializer at:
+Neutral structural names are used where game-level semantics are not yet
+proven:
 
-```text
-0x7E8F70 -> 0x7E9190
-```
+| Offset | Structural meaning | Save-side source / restore use |
+| --- | --- | --- |
+| `+0x00` | `section0_word_count` | controls a post-compression section of `2 * value` bytes |
+| `+0x02` | `record_blob_offset` | offset of record blob inside decompressed payload |
+| `+0x04` | `metadata_pair_count` | number of variable metadata entries; each entry restores two tagged scalars |
+| `+0x06` | `row_count` | number of trailing 6-byte rows |
+| `+0x08` | `record_count` | number of size bytes and offset words |
+| `+0x0A` | `record_blob_length` | record-blob byte length |
+| `+0x0C` | `scalar_c` | copied through the header; exact semantics still unknown |
+| `+0x0E` | `compressed_length` | byte length of compressed section immediately after header |
 
-The restore wrapper receives its serialized input in `r8`. Its cursor starts at:
+Header construction is visible at `0x7E80A0..0x7E80D6`. The whole header is
+written at `0x7E8176..0x7E817D`.
+
+Restore starts its body cursor at:
 
 ```text
 rsi = input + 0x10
 ```
 
-so the outer carrier begins with a 16-byte header.
-
-The restore dataflow currently proves these header-dependent operations:
+and advances past the compressed section with:
 
 ```text
-word[input + 0x02]
-    added to the decompressed-output base to locate descriptor->record_blob
-
-word[input + 0x08]
-    record count used to copy:
-      count bytes      -> descriptor +0x28 size table
-      count * 2 bytes  -> descriptor +0x20 offset table
-
-word[input + 0x0E]
-    added to the serialized cursor after the compression/inflate section
+rsi += u16_le(input + 0x0E)
 ```
 
-Restore calls the inflate/parser routine at `0x9C6480`, with the serialized
-cursor as input and a separate output buffer.
+so the 16-byte boundary and `compressed_length` are independently confirmed by
+the reader.
 
-After the compressed section, restore consumes the record-size table, then the
-record-offset table, and later advances by six bytes for each row in another
-descriptor/metadata section.
+## 5. Proven decompressed payload
 
-The shared helper `0x7E9012` is reachable from both save and restore paths. That
-makes it relevant infrastructure, but its exact semantic role is **not yet
-proven**. It should not be named as carrier setup/finalization until its writes
-are reconstructed.
+Before calling the save-side compression wrapper, `0x7E7F10` constructs one
+contiguous uncompressed buffer.
 
-## 5. What is not yet proven
+At `0x7E8102..0x7E8119` it copies:
 
-Do not encode any of the following as facts yet:
+```text
+prefix length      = header.record_blob_offset
+record blob length = header.record_blob_length
 
-- semantic names for all fields in the 16-byte outer header;
-- exact deflate/compression-side function paired with restore's `0x9C6480`;
-- exact meaning/layout of the six-byte-per-row metadata section;
-- whether the known Raven 79-byte / 116-byte decompressed zlib stream is itself
-  this native carrier, a sub-buffer inside it, or a different persistence
-  stream;
-- a raw-save-file patching algorithm.
+decompressed_payload =
+    descriptor_prefix[0 : record_blob_offset]
+    + record_blob[0 : record_blob_length]
+```
 
-Those are the remaining carrier-layer questions.
+It then calls the compression wrapper:
 
-## 6. Deterministic descriptor tool
+```text
+0x7E813D -> 0x7E8540
+```
 
-`tools/v0.10.5/gow-custom-userdata-descriptor.py` operates only on the proven
-decoded descriptor components.
+Restore performs the inverse through its inflate/parser call at `0x7E9677` and
+then establishes:
+
+```text
+descriptor->record_blob =
+    decompressed_output + u16_le(header + 0x02)
+```
+
+Expected decompressed length is therefore:
+
+```text
+record_blob_offset + record_blob_length
+```
+
+The exact low-level compression identity is intentionally not frozen as a fact
+yet. The current inspection tool tries standard zlib, gzip, and raw-deflate
+framing and reports which, if any, succeeds.
+
+## 6. Proven serialized body grammar
+
+After the 16-byte header, save and restore now agree on this framing:
+
+```text
++0x00  header[16]
+
++0x10  compressed bytes
+       length = header.compressed_length
+
+       section0 u16 words
+       length = 2 * header.section0_word_count
+
+       variable tagged metadata
+       entry count = header.metadata_pair_count
+       each entry contains TWO tagged scalars
+       each tagged scalar occupies 2, 3, or 5 bytes total
+
+       record-size table
+       length = header.record_count bytes
+
+       record-offset table
+       length = 2 * header.record_count bytes
+
+       trailing rows
+       length = 6 * header.row_count bytes
+```
+
+Restore's fixed-table copies are decisive:
+
+```text
+0x7E97A4:
+    cursor -> descriptor +0x28
+    length = header.record_count
+
+0x7E97BF:
+    cursor -> descriptor +0x20
+    length = 2 * header.record_count
+```
+
+and the row loop advances `rsi += 6` per row at `0x7E97E9`.
+
+Save calls the variable-metadata writer at:
+
+```text
+0x7E820E -> 0x7E83D0
+```
+
+The reader loads each metadata tag from the serialized cursor, rejects values
+outside `0..5`, and dispatches to one of three observed encoded widths:
+
+```text
+2 bytes total
+3 bytes total
+5 bytes total
+```
+
+The restore-side instruction windows around `0x7E96E0..0x7E972B` and
+`0x7E972E..0x7E977C` show the two tagged-scalar decodes per entry.
+
+The exact semantic meaning of tag values `0..5` is not yet named. That is no
+longer required merely to locate the following record tables.
+
+## 7. Deterministic metadata-boundary inference
+
+Because every section after variable metadata has a header-proven fixed length,
+the metadata span itself is recoverable from the total carrier length:
+
+```text
+fixed_tail =
+    record_count
+    + 2 * record_count
+    + 6 * row_count
+
+metadata_length =
+    carrier_length
+    - cursor_after_section0
+    - fixed_tail
+```
+
+For `N = metadata_pair_count`, restore consumes exactly `2*N` tagged scalars.
+Each scalar has width 2, 3, or 5 and tag byte `<= 5`.
+
+Therefore a tool can infer the width used by each observed tag by requiring a
+consistent tag->width assignment whose `2*N` tokens consume the metadata span
+exactly. There are at most six tags and only three candidate widths, so the
+search space is tiny (`3^6 = 729` before early pruning).
+
+This is framing inference, not semantic guessing.
+
+## 8. Tools
+
+### Decoded descriptor
+
+`tools/v0.10.5/gow-custom-userdata-descriptor.py`
 
 Self-test:
 
@@ -195,58 +299,60 @@ Self-test:
 python .\tools\v0.10.5\gow-custom-userdata-descriptor.py selftest
 ```
 
-Inspect three already-extracted components:
+It can inspect and build the proven `sizes / offsets / blob` components.
+
+### Outer carrier
+
+`tools/v0.10.5/gow-custom-userdata-carrier.py`
+
+Self-test:
 
 ```powershell
-python .\tools\v0.10.5\gow-custom-userdata-descriptor.py inspect `
-  --sizes .\sizes.bin `
-  --offsets .\offsets.bin `
-  --blob .\blob.bin `
-  --serializer-compatible `
-  --require-contiguous
+python .\tools\v0.10.5\gow-custom-userdata-carrier.py selftest
 ```
 
-Build components from JSON:
-
-```json
-{
-  "records": [
-    {
-      "class_key": "0x1122334455667788",
-      "payload_hex": "AABBCC"
-    }
-  ]
-}
-```
+Inspect an exact extracted carrier:
 
 ```powershell
-python .\tools\v0.10.5\gow-custom-userdata-descriptor.py build `
-  --input .\records.json `
-  --out-dir .\descriptor-out
+python .\tools\v0.10.5\gow-custom-userdata-carrier.py inspect .\carrier.bin
 ```
 
-The builder emits:
+Inspect a carrier embedded in a larger file:
 
-```text
-sizes.bin
-offsets.bin
-blob.bin
-manifest.json
+```powershell
+python .\tools\v0.10.5\gow-custom-userdata-carrier.py inspect .\input.bin `
+  --offset 0x1234 `
+  --length 0x5678 `
+  --output .\carrier-report.json
 ```
 
-and immediately parses its own output with the strict native-compatible checks.
-It is therefore useful now even before the outer carrier is solved.
+The carrier inspector:
 
-## 7. Next static-analysis target
+- decodes all eight header words;
+- slices the compressed section and all fixed post-compression sections;
+- infers candidate tag-width mappings from exact framing constraints;
+- tries zlib/gzip/raw-deflate decompression without asserting a format in advance;
+- validates decompressed length against `record_blob_offset + record_blob_length`;
+- slices prefix and record blob;
+- reconstructs record boundaries from the proven size/offset tables;
+- reports each valid record's class key/reference and callback payload.
 
-The next pass should be narrow:
+## 9. Remaining questions
 
-1. reconstruct the complete `0x7E8EF0` save-wrapper control/data flow;
-2. reconstruct `0x7E9012` without assigning semantics in advance;
-3. identify the save-side peer of restore's `0x9C6480` compression call;
-4. map every write that produces the 16-byte header and the post-compression
-   tables/rows;
-5. compare the resulting writer layout directly with the `0x7E9550` reader;
-6. only then apply the carrier parser to the Raven alive/dead oracle.
+The persistence problem is now narrower. The unresolved items are:
 
-No new gameplay capture is needed for this stage.
+- semantic names for header `+0x00`, `+0x04`, `+0x06`, and `+0x0C` beyond their proven structural roles;
+- semantic meanings of metadata tags `0..5`;
+- exact semantics of the six-byte rows;
+- exact low-level save compressor identity / framing accepted by `0x7E8540`;
+- precise role of tiny helper `0x7E9012` and the archived call-vs-tail-jump CFG discrepancy around it;
+- whether the known Raven 79-byte / 116-byte decompressed zlib stream is this carrier, a sub-buffer of it, or a different persistence stream;
+- the carrier's exact location/embedding inside the raw save container.
+
+The next useful step is **not** another broad scan. It is to run the outer
+carrier inspector against archived candidate bytes where an exact carrier
+boundary is available, then use the Raven alive/dead oracle to identify which
+record or metadata entry changes. If the archive does not contain an exact
+carrier byte slice, the next static pass should target only the writer output
+length/buffer handoff from `0x7E7F10` into its caller so that the carrier can be
+extracted deterministically from an existing save.
