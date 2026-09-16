@@ -29,8 +29,6 @@ class RavenRuntimeTests(unittest.TestCase):
 
     def test_realm_filtering(self):
         model = self.model()
-        for row in self.catalogue["ravens"]:
-            model.observe(row["catalogue_id"], False)
         model.open_map(self.a["realm"])
         self.assertIn(self.a["catalogue_id"], model.map_icons)
         self.assertNotIn(self.other_realm["catalogue_id"], model.map_icons)
@@ -46,18 +44,34 @@ class RavenRuntimeTests(unittest.TestCase):
 
     def test_fully_collected_and_fresh_simulation(self):
         model = self.model()
+        model.open_map("Midgard")
+        self.assertEqual(len(model.map_icons), 45)
         for row in self.catalogue["ravens"]:
             model.observe(row["catalogue_id"], True)
-        model.open_map("Midgard")
         self.assertEqual(model.map_icons, set())
-        for row in self.catalogue["ravens"]:
-            model.observe(row["catalogue_id"], False)
+        self.assertEqual(model.apply_persisted_kills([]), 0)
         self.assertEqual(len(model.map_icons), 45)
 
-    def test_unknown_state_fails_closed(self):
+    def test_unknown_state_defaults_visible(self):
         model = self.model()
         model.open_map(self.a["realm"])
+        self.assertIn(self.a["catalogue_id"], model.map_icons)
+
+    def test_persisted_kill_bootstrap_hides_only_confirmed_ids(self):
+        model = self.model()
+        self.assertEqual(model.apply_persisted_kills([self.a["catalogue_id"]]), 1)
+        model.open_map(self.a["realm"])
         self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+        self.assertIn(self.b["catalogue_id"], model.map_icons)
+        self.assertEqual(model.state[self.a["catalogue_id"]], "collected")
+        self.assertEqual(model.state[self.b["catalogue_id"]], "unknown")
+
+    def test_persisted_kill_bootstrap_ignores_unknown_ids(self):
+        model = self.model()
+        self.assertEqual(model.apply_persisted_kills(["not-a-raven", self.a["catalogue_id"]]), 1)
+        model.open_map(self.a["realm"])
+        self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+        self.assertIn(self.b["catalogue_id"], model.map_icons)
 
     def test_a_b_and_b_a_replacement(self):
         model = self.model()
@@ -198,17 +212,17 @@ class RavenRuntimeTests(unittest.TestCase):
         self.assertIsNone(model.selection)
         self.assertFalse(model.permanent_polling)
 
-    def test_loading_other_save_clears_all_cached_state_fail_closed(self):
+    def test_loading_other_save_clears_cached_state_then_defaults_to_catalogue(self):
         model = self.model()
-        model.observe(self.a["catalogue_id"], False)
+        model.observe(self.a["catalogue_id"], True)
         model.open_map(self.a["realm"])
-        self.arm(model, self.a)
-        model.click_raven(self.a["marker"]["uid"])
         model.load_save()
         self.assertTrue(all(value == "unknown" for value in model.state.values()))
         self.assertEqual(model.map_icons, set())
         self.assertIsNone(model.selection)
         self.assertIsNone(model.active_target)
+        model.open_map(self.a["realm"])
+        self.assertIn(self.a["catalogue_id"], model.map_icons)
 
 
 if __name__ == "__main__":
