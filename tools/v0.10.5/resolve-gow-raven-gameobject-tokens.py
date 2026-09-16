@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-"""Resolve the three archived Raven GameObject records through GoW's live decoder.
+"""Passively capture the three archived Raven GameObject tokens on GoW's real game thread.
 
-This tool calls the already-reconstructed decoder at RVA 0x5491A0 inside the
-running GoW.exe. It does not guess or invert the 64-bit hashes: the game does
-its normal registry/object lookup and returns the packed GameObject token.
+This installs a tiny temporary detour at RVA 0x5493A1, immediately after the
+decoder has resolved the packed token in RDX. The detour only records tokens
+whose serialized input at R15 matches the known Raven registry/object hashes,
+then reproduces the overwritten instructions and returns to normal game code.
+
+The hook is removed before exit. It does not call the decoder from a synthetic
+remote thread, so game-thread/TLS state remains exactly as GoW expects.
 """
 from __future__ import annotations
 
@@ -16,31 +20,29 @@ import os
 from pathlib import Path
 import struct
 import sys
+import time
 from datetime import datetime, timezone
 
 EXPECTED_EXE_SHA256 = "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452"
-DECODER_RVA = 0x5491A0
-OUTPUT_SITE_RVA = 0x5493A1
-DECODER_PROLOGUE = bytes.fromhex("405541574883ec28")
-OUTPUT_SITE_BYTES = bytes.fromhex("4889550041f60704")
-
-TARGET_HEX = (
-    "01b0b227342530c24ee561807520d55c16",
-    "01b0b227342530c24ea0a803505c2eb7ad",
-    "01b0b227342530c24ea9652dba0717be98",
-)
-TARGETS = tuple(bytes.fromhex(x) for x in TARGET_HEX)
+HOOK_RVA = 0x5493A1
+HOOK_RETURN_FLAGGED_RVA = 0x5493AF
+HOOK_RETURN_NOFLAG_RVA = 0x5493F1
+HOOK_ORIGINAL = bytes.fromhex("4889550041f607047446418b4711")
 EXPECTED_REGISTRY_HASH = 0x4EC230253427B2B0
 EXPECTED_OBJECT_HASHES = (
     0x165CD520758061E5,
     0xADB72E5C5003A8A0,
     0x98BE1707BA2D65A9,
 )
+TARGET_HEX = (
+    "01b0b227342530c24ee561807520d55c16",
+    "01b0b227342530c24ea0a803505c2eb7ad",
+    "01b0b227342530c24ea9652dba0717be98",
+)
 
 TH32CS_SNAPPROCESS = 0x00000002
 TH32CS_SNAPMODULE = 0x00000008
 TH32CS_SNAPMODULE32 = 0x00000010
-PROCESS_CREATE_THREAD = 0x0002
 PROCESS_VM_OPERATION = 0x0008
 PROCESS_VM_READ = 0x0010
 PROCESS_VM_WRITE = 0x0020
@@ -49,87 +51,26 @@ MEM_COMMIT = 0x1000
 MEM_RESERVE = 0x2000
 MEM_RELEASE = 0x8000
 PAGE_EXECUTE_READWRITE = 0x40
-WAIT_OBJECT_0 = 0x00000000
-WAIT_TIMEOUT = 0x00000102
 INVALID_HANDLE_VALUE = C.c_void_p(-1).value
 MAX_PATH = 260
 
-
 class PROCESSENTRY32W(C.Structure):
     _fields_ = [
-        ("dwSize", W.DWORD),
-        ("cntUsage", W.DWORD),
-        ("th32ProcessID", W.DWORD),
-        ("th32DefaultHeapID", C.c_size_t),
-        ("th32ModuleID", W.DWORD),
-        ("cntThreads", W.DWORD),
-        ("th32ParentProcessID", W.DWORD),
-        ("pcPriClassBase", W.LONG),
-        ("dwFlags", W.DWORD),
+        ("dwSize", W.DWORD), ("cntUsage", W.DWORD), ("th32ProcessID", W.DWORD),
+        ("th32DefaultHeapID", C.c_size_t), ("th32ModuleID", W.DWORD),
+        ("cntThreads", W.DWORD), ("th32ParentProcessID", W.DWORD),
+        ("pcPriClassBase", W.LONG), ("dwFlags", W.DWORD),
         ("szExeFile", W.WCHAR * MAX_PATH),
     ]
 
-
 class MODULEENTRY32W(C.Structure):
     _fields_ = [
-        ("dwSize", W.DWORD),
-        ("th32ModuleID", W.DWORD),
-        ("th32ProcessID", W.DWORD),
-        ("GlblcntUsage", W.DWORD),
-        ("ProccntUsage", W.DWORD),
-        ("modBaseAddr", C.POINTER(C.c_ubyte)),
-        ("modBaseSize", W.DWORD),
-        ("hModule", W.HMODULE),
-        ("szModule", W.WCHAR * 256),
+        ("dwSize", W.DWORD), ("th32ModuleID", W.DWORD), ("th32ProcessID", W.DWORD),
+        ("GlblcntUsage", W.DWORD), ("ProccntUsage", W.DWORD),
+        ("modBaseAddr", C.POINTER(C.c_ubyte)), ("modBaseSize", W.DWORD),
+        ("hModule", W.HMODULE), ("szModule", W.WCHAR * 256),
         ("szExePath", W.WCHAR * MAX_PATH),
     ]
-
-
-def parse_record(payload: bytes) -> dict[str, int]:
-    if len(payload) != 17:
-        raise ValueError(f"expected 17-byte record, got {len(payload)}")
-    return {
-        "flags": payload[0],
-        "registry_hash": int.from_bytes(payload[1:9], "little"),
-        "object_hash": int.from_bytes(payload[9:17], "little"),
-    }
-
-
-def decode_token(token: int) -> dict[str, int | bool]:
-    registry = (token >> 1) & 0xFFFF
-    aux_flag = (token >> 17) & 1
-    slot = (token >> 18) & 0xFFFFF
-    flavour = (token >> 38) & 0x3F
-    reconstructed_raven = 1 | (registry << 1) | (slot << 18)
-    return {
-        "present": bool(token & 1),
-        "registry": registry,
-        "aux_flag": aux_flag,
-        "slot": slot,
-        "flavour": flavour,
-        "reconstructed_raven_token": reconstructed_raven,
-        "raven_formula_match": token == reconstructed_raven,
-    }
-
-
-def self_test() -> None:
-    parsed = [parse_record(p) for p in TARGETS]
-    assert all(x["flags"] == 1 for x in parsed)
-    assert all(x["registry_hash"] == EXPECTED_REGISTRY_HASH for x in parsed)
-    assert tuple(x["object_hash"] for x in parsed) == EXPECTED_OBJECT_HASHES
-
-    registry = 0xBEEF
-    slot = 0xABCDE
-    token = 1 | (registry << 1) | (slot << 18)
-    d = decode_token(token)
-    assert d["present"] is True
-    assert d["registry"] == registry
-    assert d["aux_flag"] == 0
-    assert d["slot"] == slot
-    assert d["flavour"] == 0
-    assert d["raven_formula_match"] is True
-    print("SELF-TEST PASS: Raven record parsing and token field extraction")
-
 
 def _configure_kernel32():
     k32 = C.WinDLL("kernel32", use_last_error=True)
@@ -153,26 +94,21 @@ def _configure_kernel32():
     k32.VirtualAllocEx.restype = W.LPVOID
     k32.VirtualFreeEx.argtypes = [W.HANDLE, W.LPVOID, C.c_size_t, W.DWORD]
     k32.VirtualFreeEx.restype = W.BOOL
-    k32.CreateRemoteThread.argtypes = [W.HANDLE, W.LPVOID, C.c_size_t, W.LPVOID, W.LPVOID, W.DWORD, C.POINTER(W.DWORD)]
-    k32.CreateRemoteThread.restype = W.HANDLE
-    k32.WaitForSingleObject.argtypes = [W.HANDLE, W.DWORD]
-    k32.WaitForSingleObject.restype = W.DWORD
+    k32.VirtualProtectEx.argtypes = [W.HANDLE, W.LPVOID, C.c_size_t, W.DWORD, C.POINTER(W.DWORD)]
+    k32.VirtualProtectEx.restype = W.BOOL
     k32.FlushInstructionCache.argtypes = [W.HANDLE, W.LPCVOID, C.c_size_t]
     k32.FlushInstructionCache.restype = W.BOOL
     k32.CloseHandle.argtypes = [W.HANDLE]
     k32.CloseHandle.restype = W.BOOL
     return k32
 
-
 def _winerr(prefix: str) -> RuntimeError:
     code = C.get_last_error()
     return RuntimeError(f"{prefix}: WinError {code}: {C.FormatError(code).strip()}")
 
-
 def _close(k32, handle) -> None:
     if handle and int(C.cast(handle, C.c_void_p).value or 0) not in (0, INVALID_HANDLE_VALUE):
         k32.CloseHandle(handle)
-
 
 def find_process(k32, exe_name: str) -> int:
     snap = k32.CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
@@ -188,8 +124,7 @@ def find_process(k32, exe_name: str) -> int:
             ok = k32.Process32NextW(snap, C.byref(pe))
     finally:
         _close(k32, snap)
-    raise RuntimeError(f"{exe_name} is not running. Start God of War and leave it at the main menu, then rerun this command.")
-
+    raise RuntimeError(f"{exe_name} is not running.")
 
 def get_main_module(k32, pid: int, exe_name: str) -> tuple[int, str]:
     snap = k32.CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, pid)
@@ -210,7 +145,6 @@ def get_main_module(k32, pid: int, exe_name: str) -> tuple[int, str]:
         _close(k32, snap)
     raise RuntimeError(f"could not find {exe_name} module in PID {pid}")
 
-
 def read_mem(k32, process, address: int, size: int) -> bytes:
     buf = (C.c_ubyte * size)()
     done = C.c_size_t()
@@ -220,7 +154,6 @@ def read_mem(k32, process, address: int, size: int) -> bytes:
         raise RuntimeError(f"short ReadProcessMemory at 0x{address:X}: {done.value}/{size}")
     return bytes(buf)
 
-
 def write_mem(k32, process, address: int, data: bytes) -> None:
     buf = C.create_string_buffer(data)
     done = C.c_size_t()
@@ -229,64 +162,6 @@ def write_mem(k32, process, address: int, data: bytes) -> None:
     if done.value != len(data):
         raise RuntimeError(f"short WriteProcessMemory at 0x{address:X}: {done.value}/{len(data)}")
 
-
-def make_stub(payload_addr: int, token_addr: int, consumed_addr: int, ok_addr: int, decoder_addr: int) -> bytes:
-    # Windows x64 ABI: reserve 32 bytes shadow space + 8 bytes alignment before CALL.
-    code = bytearray()
-    code += b"\x48\x83\xEC\x28"                              # sub rsp, 28h
-    code += b"\x48\xB9" + struct.pack("<Q", payload_addr)       # mov rcx, payload
-    code += b"\xBA\x11\x00\x00\x00"                         # mov edx, 17
-    code += b"\x49\xB8" + struct.pack("<Q", token_addr)         # mov r8, token_out
-    code += b"\x49\xB9" + struct.pack("<Q", consumed_addr)      # mov r9, consumed_out
-    code += b"\x48\xB8" + struct.pack("<Q", decoder_addr)       # mov rax, decoder
-    code += b"\xFF\xD0"                                         # call rax
-    code += b"\x49\xBA" + struct.pack("<Q", ok_addr)            # mov r10, ok_out
-    code += b"\x41\x88\x02"                                    # mov [r10], al
-    code += b"\x48\x83\xC4\x28"                              # add rsp, 28h
-    code += b"\x31\xC0"                                         # xor eax, eax
-    code += b"\xC3"                                               # ret
-    return bytes(code)
-
-
-def resolve_one(k32, process, decoder_addr: int, payload: bytes, timeout_ms: int) -> tuple[int, int, int]:
-    alloc_size = 0x1000
-    remote = k32.VirtualAllocEx(process, None, alloc_size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)
-    if not remote:
-        raise _winerr("VirtualAllocEx failed")
-    base = int(C.cast(remote, C.c_void_p).value)
-    payload_addr = base + 0x000
-    token_addr = base + 0x020
-    consumed_addr = base + 0x028
-    ok_addr = base + 0x02C
-    code_addr = base + 0x100
-    thread = None
-    try:
-        write_mem(k32, process, payload_addr, payload)
-        write_mem(k32, process, token_addr, b"\x00" * 16)
-        stub = make_stub(payload_addr, token_addr, consumed_addr, ok_addr, decoder_addr)
-        write_mem(k32, process, code_addr, stub)
-        k32.FlushInstructionCache(process, C.c_void_p(code_addr), len(stub))
-
-        tid = W.DWORD()
-        thread = k32.CreateRemoteThread(process, None, 0, C.c_void_p(code_addr), None, 0, C.byref(tid))
-        if not thread:
-            raise _winerr("CreateRemoteThread failed")
-        wait = k32.WaitForSingleObject(thread, timeout_ms)
-        if wait == WAIT_TIMEOUT:
-            raise RuntimeError(f"live decoder call timed out after {timeout_ms} ms")
-        if wait != WAIT_OBJECT_0:
-            raise RuntimeError(f"WaitForSingleObject returned 0x{wait:08X}")
-
-        token = int.from_bytes(read_mem(k32, process, token_addr, 8), "little")
-        consumed = int.from_bytes(read_mem(k32, process, consumed_addr, 4), "little")
-        ok = read_mem(k32, process, ok_addr, 1)[0]
-        return token, consumed, ok
-    finally:
-        _close(k32, thread)
-        if not k32.VirtualFreeEx(process, C.c_void_p(base), 0, MEM_RELEASE):
-            print(f"WARNING: VirtualFreeEx failed for 0x{base:X}", file=sys.stderr)
-
-
 def sha256_file(path: str) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -294,10 +169,102 @@ def sha256_file(path: str) -> str:
             h.update(chunk)
     return h.hexdigest()
 
+def decode_token(token: int) -> dict[str, int | bool]:
+    registry = (token >> 1) & 0xFFFF
+    aux_flag = (token >> 17) & 1
+    slot = (token >> 18) & 0xFFFFF
+    flavour = (token >> 38) & 0x3F
+    reconstructed = 1 | (registry << 1) | (slot << 18)
+    return {
+        "present": bool(token & 1),
+        "registry": registry,
+        "aux_flag": aux_flag,
+        "slot": slot,
+        "flavour": flavour,
+        "reconstructed_raven_token": reconstructed,
+        "raven_formula_match": token == reconstructed,
+    }
 
-def live_resolve(output: Path, timeout_ms: int) -> None:
+def abs_jmp(target: int) -> bytes:
+    return b"\xFF\x25\x00\x00\x00\x00" + struct.pack("<Q", target)
+
+def build_hook(code_addr: int, capture_addr: int, noflag_addr: int, flagged_addr: int) -> bytes:
+    """Build hook with rel32 labels, preserving RAX while matching records."""
+    b = bytearray()
+    labels: dict[str, int] = {}
+    fixups: list[tuple[int, str]] = []
+
+    def label(name: str):
+        labels[name] = len(b)
+
+    def jcc(op2: int, name: str):
+        b.extend((0x0F, op2))
+        fixups.append((len(b), name))
+        b.extend(b"\x00\x00\x00\x00")
+
+    def jmp(name: str):
+        b.append(0xE9)
+        fixups.append((len(b), name))
+        b.extend(b"\x00\x00\x00\x00")
+
+    b.append(0x50)
+    b.extend(b"\x41\x80\x3F\x01")
+    jcc(0x85, "done_capture")
+    b.extend(b"\x48\xB8" + struct.pack("<Q", EXPECTED_REGISTRY_HASH))
+    b.extend(b"\x49\x39\x47\x01")
+    jcc(0x85, "done_capture")
+
+    for i, obj in enumerate(EXPECTED_OBJECT_HASHES):
+        b.extend(b"\x48\xB8" + struct.pack("<Q", obj))
+        b.extend(b"\x49\x39\x47\x09")
+        if i < len(EXPECTED_OBJECT_HASHES) - 1:
+            jcc(0x85, f"obj_{i+1}")
+        else:
+            jcc(0x85, "done_capture")
+        b.extend(b"\x48\xB8" + struct.pack("<Q", capture_addr + i * 16))
+        b.extend(b"\x48\x89\x10")
+        b.extend(b"\x48\xC7\x40\x08\x01\x00\x00\x00")
+        jmp("done_capture")
+        if i < len(EXPECTED_OBJECT_HASHES) - 1:
+            label(f"obj_{i+1}")
+
+    label("done_capture")
+    b.append(0x58)
+    b.extend(b"\x48\x89\x55\x00")
+    b.extend(b"\x41\xF6\x07\x04")
+    jcc(0x85, "flagged")
+    b.extend(abs_jmp(noflag_addr))
+    label("flagged")
+    b.extend(b"\x41\x8B\x47\x11")
+    b.extend(abs_jmp(flagged_addr))
+
+    for pos, name in fixups:
+        if name not in labels:
+            raise AssertionError(f"undefined hook label {name}")
+        src_after = code_addr + pos + 4
+        dst = code_addr + labels[name]
+        rel = dst - src_after
+        if not -(1 << 31) <= rel < (1 << 31):
+            raise AssertionError("hook rel32 out of range")
+        b[pos:pos+4] = struct.pack("<i", rel)
+    return bytes(b)
+
+def install_patch(k32, process, address: int, patch: bytes) -> int:
+    old = W.DWORD()
+    if not k32.VirtualProtectEx(process, C.c_void_p(address), len(patch), PAGE_EXECUTE_READWRITE, C.byref(old)):
+        raise _winerr(f"VirtualProtectEx(0x{address:X}) failed")
+    try:
+        write_mem(k32, process, address, patch)
+        if not k32.FlushInstructionCache(process, C.c_void_p(address), len(patch)):
+            raise _winerr("FlushInstructionCache failed")
+    finally:
+        tmp = W.DWORD()
+        k32.VirtualProtectEx(process, C.c_void_p(address), len(patch), old.value, C.byref(tmp))
+    return int(old.value)
+
+def capture(output: Path, timeout_s: int) -> None:
     if os.name != "nt":
-        raise RuntimeError("live resolution is Windows-only; use --self-test on other platforms")
+        raise RuntimeError("runtime capture is Windows-only")
     if C.sizeof(C.c_void_p) != 8:
         raise RuntimeError("run this tool with 64-bit Python")
 
@@ -307,77 +274,126 @@ def live_resolve(output: Path, timeout_ms: int) -> None:
     actual_sha = sha256_file(exe_path)
     if actual_sha.lower() != EXPECTED_EXE_SHA256:
         raise RuntimeError(
-            "GoW.exe build mismatch; refusing live call. "
+            "GoW.exe build mismatch; refusing hook. "
             f"expected sha256={EXPECTED_EXE_SHA256}, got {actual_sha} ({exe_path})"
         )
 
-    access = PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ
+    access = PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ
     process = k32.OpenProcess(access, False, pid)
     if not process:
         raise _winerr(f"OpenProcess({pid}) failed")
+
+    remote = None
+    patch_installed = False
+    hook_addr = module_base + HOOK_RVA
     try:
-        prologue = read_mem(k32, process, module_base + DECODER_RVA, len(DECODER_PROLOGUE))
-        output_site = read_mem(k32, process, module_base + OUTPUT_SITE_RVA, len(OUTPUT_SITE_BYTES))
-        if prologue != DECODER_PROLOGUE:
+        original = read_mem(k32, process, hook_addr, len(HOOK_ORIGINAL))
+        if original != HOOK_ORIGINAL:
             raise RuntimeError(
-                f"decoder signature mismatch at RVA 0x{DECODER_RVA:X}: "
-                f"expected {DECODER_PROLOGUE.hex()}, got {prologue.hex()}"
+                f"hook-site signature mismatch at RVA 0x{HOOK_RVA:X}: "
+                f"expected {HOOK_ORIGINAL.hex()}, got {original.hex()}"
             )
-        if output_site != OUTPUT_SITE_BYTES:
-            raise RuntimeError(
-                f"output-site signature mismatch at RVA 0x{OUTPUT_SITE_RVA:X}: "
-                f"expected {OUTPUT_SITE_BYTES.hex()}, got {output_site.hex()}"
-            )
+
+        remote = k32.VirtualAllocEx(process, None, 0x1000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)
+        if not remote:
+            raise _winerr("VirtualAllocEx hook page failed")
+        remote_base = int(C.cast(remote, C.c_void_p).value)
+        capture_addr = remote_base
+        code_addr = remote_base + 0x100
+        write_mem(k32, process, capture_addr, b"\x00" * 48)
+
+        hook = build_hook(
+            code_addr=code_addr,
+            capture_addr=capture_addr,
+            noflag_addr=module_base + HOOK_RETURN_NOFLAG_RVA,
+            flagged_addr=module_base + HOOK_RETURN_FLAGGED_RVA,
+        )
+        write_mem(k32, process, code_addr, hook)
+        k32.FlushInstructionCache(process, C.c_void_p(code_addr), len(hook))
+
+        patch = abs_jmp(code_addr)
+        assert len(patch) == len(HOOK_ORIGINAL) == 14
+        install_patch(k32, process, hook_addr, patch)
+        patch_installed = True
 
         print(f"GoW.exe PID={pid} base=0x{module_base:X}")
-        print("Build/signatures verified. Resolving the 3 Raven records through GoW itself...")
+        print(f"Passive Raven hook installed at RVA 0x{HOOK_RVA:X}.")
+        print("NOW return to GoW and load/reload the Raven evidence save (or Restart Checkpoint if that reloads it).")
+        print(f"Waiting up to {timeout_s} seconds for all 3 exact Raven records...")
         sys.stdout.flush()
 
+        deadline = time.monotonic() + timeout_s
+        last_seen = (0, 0, 0)
+        vals = (0, 0, 0)
+        seen = (0, 0, 0)
+        while time.monotonic() < deadline:
+            raw = read_mem(k32, process, capture_addr, 48)
+            pairs = struct.unpack("<QQQQQQ", raw)
+            vals = (pairs[0], pairs[2], pairs[4])
+            seen = (pairs[1], pairs[3], pairs[5])
+            if seen != last_seen:
+                for i, (old_seen, new_seen, token) in enumerate(zip(last_seen, seen, vals), start=1):
+                    if old_seen == 0 and new_seen != 0:
+                        print(f"OBSERVED {i}/3 token=0x{token:016X}")
+                sys.stdout.flush()
+                last_seen = seen
+            if all(seen):
+                break
+            time.sleep(0.10)
+        else:
+            raw = read_mem(k32, process, capture_addr, 48)
+            pairs = struct.unpack("<QQQQQQ", raw)
+            vals = (pairs[0], pairs[2], pairs[4])
+            seen = (pairs[1], pairs[3], pairs[5])
+
+        if not all(seen):
+            missing = [str(i + 1) for i, v in enumerate(seen) if not v]
+            raise RuntimeError(
+                "timed out before all Raven records were observed; "
+                f"missing target(s): {', '.join(missing)}. "
+                "The hook only sees records that GoW naturally decodes while it is installed."
+            )
+        zero_tokens = [str(i + 1) for i, v in enumerate(vals) if v == 0]
+        if zero_tokens:
+            raise RuntimeError(
+                "GoW naturally decoded all target record(s), but returned token 0 for target(s): "
+                + ", ".join(zero_tokens)
+                + ". This is now proven in-thread evidence, not a remote-thread artifact."
+            )
+
         rows = []
-        for index, payload in enumerate(TARGETS, start=1):
-            parsed = parse_record(payload)
-            token, consumed, ok = resolve_one(k32, process, module_base + DECODER_RVA, payload, timeout_ms)
+        for i, (payload_hex, obj_hash, token) in enumerate(zip(TARGET_HEX, EXPECTED_OBJECT_HASHES, vals), start=1):
             fields = decode_token(token)
+            if not fields["present"]:
+                raise RuntimeError(f"captured target {i} has no present marker: 0x{token:016X}")
+            if fields["aux_flag"] != 0:
+                raise RuntimeError(f"captured target {i} has unexpected bit-17 aux flag: 0x{token:016X}")
+            if fields["flavour"] != 0:
+                raise RuntimeError(f"captured target {i} has unexpected flavour {fields['flavour']}")
+            if not fields["raven_formula_match"]:
+                raise RuntimeError(f"captured target {i} fails Raven token formula: 0x{token:016X}")
             row = {
-                "index": index,
-                "payload_hex": payload.hex(),
-                "flags": parsed["flags"],
-                "registry_hash_hex": f"0x{parsed['registry_hash']:016X}",
-                "object_hash_hex": f"0x{parsed['object_hash']:016X}",
-                "decoder_return": ok,
-                "decoder_reported_size": consumed,
+                "index": i,
+                "payload_hex": payload_hex,
+                "registry_hash_hex": f"0x{EXPECTED_REGISTRY_HASH:016X}",
+                "object_hash_hex": f"0x{obj_hash:016X}",
                 "token_hex": f"0x{token:016X}",
                 **fields,
             }
             row["reconstructed_raven_token_hex"] = f"0x{int(fields['reconstructed_raven_token']):016X}"
-
-            if ok != 1:
-                raise RuntimeError(f"decoder returned failure for target {index}: {payload.hex()}")
-            if consumed != 17:
-                raise RuntimeError(f"decoder reported size {consumed}, expected 17 for target {index}")
-            if not fields["present"]:
-                raise RuntimeError(f"decoded token missing present marker for target {index}: 0x{token:016X}")
-            if fields["aux_flag"] != 0:
-                raise RuntimeError(f"unexpected bit-17 aux flag for Raven target {index}: 0x{token:016X}")
-            if fields["flavour"] != 0:
-                raise RuntimeError(f"unexpected nonzero Raven flavour for target {index}: {fields['flavour']}")
-            if not fields["raven_formula_match"]:
-                raise RuntimeError(f"Raven token formula mismatch for target {index}: 0x{token:016X}")
-
             rows.append(row)
             print(
-                f"PASS {index}/3 object={row['object_hash_hex']} token={row['token_hex']} "
+                f"PASS {i}/3 object={row['object_hash_hex']} token={row['token_hex']} "
                 f"registry={row['registry']} slot={row['slot']} flavour={row['flavour']}"
             )
-            sys.stdout.flush()
 
         if len({int(r["registry"]) for r in rows}) != 1:
-            raise RuntimeError("the three Raven records unexpectedly resolved to different numeric registries")
+            raise RuntimeError("the three Raven records resolved to different numeric registries")
 
         document = {
-            "schema": "completionist-map.raven-gameobject-token-resolution.v1",
+            "schema": "completionist-map.raven-gameobject-token-resolution.v2",
             "captured_utc": datetime.now(timezone.utc).isoformat(),
-            "source": "live GoW.exe decoder call at RVA 0x5491A0",
+            "source": "passive in-thread hook at GoW.exe RVA 0x5493A1",
             "exe": {
                 "path": exe_path,
                 "sha256": actual_sha,
@@ -385,12 +401,11 @@ def live_resolve(output: Path, timeout_ms: int) -> None:
                 "module_base_hex": f"0x{module_base:X}",
             },
             "verification": {
-                "decoder_rva_hex": f"0x{DECODER_RVA:X}",
-                "decoder_prologue_hex": prologue.hex(),
-                "output_site_rva_hex": f"0x{OUTPUT_SITE_RVA:X}",
-                "output_site_bytes_hex": output_site.hex(),
+                "hook_rva_hex": f"0x{HOOK_RVA:X}",
+                "hook_original_bytes_hex": original.hex(),
                 "all_three_resolved": True,
                 "all_formula_checks_passed": True,
+                "synthetic_decoder_call_used": False,
             },
             "records": rows,
         }
@@ -398,28 +413,48 @@ def live_resolve(output: Path, timeout_ms: int) -> None:
         output.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
         print(f"Evidence written: {output}")
     finally:
+        if patch_installed:
+            try:
+                install_patch(k32, process, hook_addr, HOOK_ORIGINAL)
+                print("Passive hook removed; original GoW code restored.")
+            except Exception as exc:
+                print(f"WARNING: failed to restore hook site: {exc}", file=sys.stderr)
+        if remote:
+            if not k32.VirtualFreeEx(process, remote, 0, MEM_RELEASE):
+                print("WARNING: VirtualFreeEx failed for hook page", file=sys.stderr)
         _close(k32, process)
 
+def self_test() -> None:
+    test = 1 | (0xBEEF << 1) | (0xABCDE << 18)
+    d = decode_token(test)
+    assert d["registry"] == 0xBEEF
+    assert d["slot"] == 0xABCDE
+    assert d["aux_flag"] == 0
+    assert d["flavour"] == 0
+    assert d["raven_formula_match"] is True
+
+    hook = build_hook(0x7FF600001000, 0x7FF600002000, 0x7FF6005493F1, 0x7FF6005493AF)
+    assert len(abs_jmp(0x123456789ABCDEF0)) == 14
+    assert hook.endswith(abs_jmp(0x7FF6005493AF))
+    print(f"SELF-TEST PASS: hook bytes={len(hook)}, token extraction and detour layout valid")
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--output", type=Path, help="JSON evidence output path")
-    ap.add_argument("--timeout-ms", type=int, default=10000, help="timeout for each live decoder call")
-    ap.add_argument("--self-test", action="store_true", help="run platform-independent parser/token tests")
+    ap.add_argument("--timeout-seconds", type=int, default=180)
+    ap.add_argument("--self-test", action="store_true")
     args = ap.parse_args()
-
     try:
         if args.self_test:
             self_test()
             return 0
         if args.output is None:
             ap.error("--output is required unless --self-test is used")
-        live_resolve(args.output.resolve(), args.timeout_ms)
+        capture(args.output.resolve(), args.timeout_seconds)
         return 0
     except Exception as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
-
 
 if __name__ == "__main__":
     raise SystemExit(main())
