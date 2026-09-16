@@ -3,7 +3,7 @@ from __future__ import annotations
 
 
 class RavenRuntimeModel:
-    """Test oracle. Unknown state is hidden and all ownership checks fail closed."""
+    """Test oracle. Catalogue Ravens show unless the current save confirms them collected."""
 
     def __init__(self, catalogue: dict):
         self.rows = {row["catalogue_id"]: row for row in catalogue["ravens"]}
@@ -41,6 +41,26 @@ class RavenRuntimeModel:
             self.selection = None
         self._sync_icons()
 
+    def apply_persisted_kills(self, catalogue_ids) -> int:
+        """Replace cached state with an authoritative persisted killed-Raven set."""
+        self.state = {key: "unknown" for key in self.rows}
+        accepted = 0
+        for catalogue_id in catalogue_ids:
+            if catalogue_id not in self.rows:
+                continue
+            self.state[catalogue_id] = "collected"
+            accepted += 1
+        if (
+            self.active_target is not None
+            and self.active_target[0] == "raven"
+            and self.state.get(self.active_target[1]) == "collected"
+        ):
+            self.active_target = None
+        if self.selection is not None and self.state.get(self.selection) == "collected":
+            self.selection = None
+        self._sync_icons()
+        return accepted
+
     def restore(self, catalogue_id: str, collected: bool):
         self.observe(catalogue_id, collected)
 
@@ -56,7 +76,7 @@ class RavenRuntimeModel:
             return
         self.map_icons = {
             key for key, row in self.rows.items()
-            if row["realm"] == self.realm and self.state[key] == "uncollected"
+            if row["realm"] == self.realm and self.state[key] != "collected"
         }
 
     def collide(self, object_token: str):
@@ -93,7 +113,7 @@ class RavenRuntimeModel:
             return "delegate"
         catalogue_id = self.selection
         self.selection = None
-        if self.state[catalogue_id] != "uncollected":
+        if self.state[catalogue_id] == "collected":
             return "refused"
         target = ("raven", catalogue_id)
         if self.active_target == target:
