@@ -143,18 +143,19 @@ function Invoke-CandidateBuilder {
     }
 
     if ($null -ne $python) {
-        & $python.Source @args
+        & $python.Source @args 2>&1 | Out-Host
     }
     elseif ($null -ne $py) {
-        & $py.Source -3 @args
+        & $py.Source -3 @args 2>&1 | Out-Host
     }
     else {
         throw 'Python 3 was not found in PATH; it is required to rebuild the ignored all-Ravens candidate.'
     }
 
-    if ($LASTEXITCODE -ne 0) {
+    $exitCode = $LASTEXITCODE
+    if ($exitCode -ne 0) {
         $mode = if ($CheckOnly) { 'verification' } else { 'build' }
-        throw "All-Ravens candidate $mode failed with exit code $LASTEXITCODE."
+        throw "All-Ravens candidate $mode failed with exit code $exitCode."
     }
 }
 
@@ -218,7 +219,7 @@ function Write-RunResult {
 function Publish-RunArtifacts {
     param([string]$Outcome)
 
-    & git -C $repo add -- $relativeRunDir
+    & git -C $repo add -- $relativeRunDir 2>&1 | Out-Host
     if ($LASTEXITCODE -ne 0) {
         throw "Could not stage run artifacts: $relativeRunDir"
     }
@@ -230,7 +231,7 @@ function Publish-RunArtifacts {
     }
 
     $message = "field: record all-Ravens install $Outcome $runId"
-    & git -C $repo commit -m $message -- $relativeRunDir
+    & git -C $repo commit -m $message -- $relativeRunDir 2>&1 | Out-Host
     if ($LASTEXITCODE -ne 0) {
         throw 'Could not commit the run artifacts.'
     }
@@ -238,7 +239,7 @@ function Publish-RunArtifacts {
     $commit = Get-RepoHead
     $pushed = $false
     for ($attempt = 1; $attempt -le 3; $attempt++) {
-        & git -C $repo push origin $expectedBranch
+        & git -C $repo push origin $expectedBranch 2>&1 | Out-Host
         if ($LASTEXITCODE -eq 0) {
             $pushed = $true
             break
