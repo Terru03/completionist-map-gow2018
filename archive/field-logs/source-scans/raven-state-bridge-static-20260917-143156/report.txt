@@ -1,0 +1,1602 @@
+Completionist Map - Raven state bridge static discovery
+timestamp=2026-09-17T14:31:57.0155452+03:00
+branch=codex/all-collectibles-production-research
+active_transaction=20260917T102432Z-02d1396b
+active_status=installed
+stock_precisionchallenge_sha256=61e6bc8efe1fcb9b2a6e796aa86ce9a5f74fc18e97229aae7cc52b652a565800
+stock_mapmenu_sha256=16e13b342f3bbe98ac9b87eb34bf0115e6b04340d6e41270f38a557f2ed51493
+game_files_written=false
+save_or_progression_written=false
+game_launched=false
+
+=== PRISTINE PRECISIONCHALLENGE RAVEN/PERSISTENCE CONTEXT ===
+path=C:\Users\david\Documents\GitHub\completionist-map-gow2018-research-live\build\v0.10.5-all-ravens-runtime-test\transaction\transactions\20260917T102432Z-02d1396b\backup\game-root\mods\lua\gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua
+match_lines=25
+--- context around line 4 ---
+     1: local LD = require("design.LevelDesignLibrary")
+     2: local timers = require("level.timer")
+     3: local bIsAnimated, thisObj
+     4: local ravenKilled = false
+     5: local BirdMesh, OnKilledCallbacks, regionSummaryQuest
+     6: -- Completionist Map v0.10.1 Raven lifecycle bridge.
+     7: -- Read-only with respect to progression: it only observes the script's own
+     8: -- ravenKilled state and publishes it to the custom map/HUD prototype.
+     9: local function CompletionistMapV100_IsTargetRaven()
+    10:   if thisObj == nil then
+    11:     return false, nil
+    12:   end
+    13: 
+    14:   local posOK, pos = pcall(function()
+    15:     return thisObj:GetWorldPosition()
+    16:   end)
+    17: 
+    18:   if not posOK or pos == nil then
+    19:     return false, nil
+    20:   end
+    21: 
+    22:   local dx = pos.x - (-64.850898742676)
+--- context around line 5 ---
+    23:   local dy = pos.y - 12.987384796143
+--- context around line 8 ---
+    24:   local dz = pos.z - 787.30694580078
+    25:   local distanceSq = dx * dx + dy * dy + dz * dz
+    26: 
+--- context around line 37 ---
+    27:   return distanceSq <= 0.25, pos
+    28: end
+    29: 
+    30: local function CompletionistMapV100_PublishTargetState(killed, source)
+    31:   local isTarget, pos = CompletionistMapV100_IsTargetRaven()
+    32:   if not isTarget then
+    33:     return
+    34:   end
+    35: 
+    36:   local collected = killed == true
+    37:   _G.CompletionistMapV100TargetRavenKilled = collected
+    38: 
+    39:   if _G.CompletionistMapV100Target ~= nil and
+    40:       _G.CompletionistMapV100Target.type == "Raven" then
+    41:     _G.CompletionistMapV100Target.collected = collected
+    42:     if collected then
+    43:       _G.CompletionistMapV100Target.active = false
+    44:     end
+    45:   end
+    46: 
+    47:   print("[CompletionistMap v0.10.1] RAVEN_STATE" ..
+    48:     " target=true" ..
+    49:     " source=" .. tostring(source) ..
+    50:     " killed=" .. tostring(collected) ..
+    51:     " regionQuest=" .. tostring(regionSummaryQuest) ..
+    52:     " x=" .. tostring(pos and pos.x or "<nil>") ..
+    53:     " y=" .. tostring(pos and pos.y or "<nil>") ..
+    54:     " z=" .. tostring(pos and pos.z or "<nil>"))
+    55: end
+--- context around line 51 ---
+    56: function OnScriptLoaded(level, obj)
+    57:   thisObj = obj
+    58:   OnKilledCallbacks = thisObj:FindLuaTableAttribute("OnKilledEvent")
+    59:   bIsAnimated = thisObj:FindLuaTableAttribute("IsAnimated")
+    60:   regionSummaryQuest = thisObj:FindLuaTableAttribute("regionSummaryQuest")
+    61:   BirdMesh = thisObj:FindSingleGOByName("BirdMesh")
+    62:   SoundInit()
+    63:   game.SubObject.Sleep(obj)
+    64: end
+    65: function OnStart(level, obj)
+    66:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnStart")
+    67:   if ravenKilled == true then
+    68:     HideBird()
+    69:     return
+--- context around line 60 ---
+    70:   elseif BirdMesh ~= nil then
+    71:     BirdMesh:PlayAnimCycle()
+    72:     thisObj:PlayAnimCycle()
+    73:     SoundOnStart()
+    74:   end
+    75: end
+    76: function OnHitByWeapon(level, obj, attacker, weapon)
+    77:   CompletionistMapV100_PublishTargetState(true, "OnHitByWeapon")
+    78:   timers.StartLevelTimer(1.5, HideBird())
+--- context around line 66 ---
+    79:   local questState = game.QuestManager.GetQuestState("Quest_Labor_KillRavens_Parent")
+    80:   if questState == "Inactive" then
+    81:     game.QuestManager.StartQuest("Quest_Labor_KillRavens_Parent")
+    82:   end
+    83:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens", 1)
+    84:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_25", 1)
+--- context around line 67 ---
+    85:   game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_50", 1)
+--- context around line 89 ---
+    86:   if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+    87:     game.UnlockTrophy(25)
+    88:   end
+    89:   ravenKilled = true
+    90:   SpawnFX()
+    91:   PlayDeathSound()
+    92:   OnKilledCallback(level, obj)
+    93:   ActivateRegionSummaryQuest()
+    94:   timers.StartLevelTimer(1, SoftSave)
+    95: end
+    96: function OnKilledCallback(level, obj)
+    97:   if OnKilledCallbacks ~= nil or OnKilledCallbacks ~= "" then
+    98:     LD.ExtractAndExecuteCallbacksForEvent(level, obj, OnKilledCallbacks, "On Killed Event")
+    99:   end
+   100: end
+   101: function ActivateRegionSummaryQuest()
+   102:   if regionSummaryQuest ~= nil and regionSummaryQuest ~= "" then
+   103:     regionSummaryQuest = string.gsub(regionSummaryQuest, "%s+", "")
+   104:     LD.ActivateAndIncrementQuest(regionSummaryQuest)
+   105:   end
+   106: end
+   107: function HideBird()
+--- context around line 93 ---
+   108:   thisObj:Hide()
+   109: end
+   110: function SpawnFX()
+   111:   if BirdMesh ~= nil then
+--- context around line 101 ---
+   112:     local spawnJoint = BirdMesh:GetJointIndex("synchJoint")
+   113:     local spawnJointPos = BirdMesh:GetWorldJointPosition(spawnJoint)
+   114:     local deathFX = game.FX.Spawn("Raven_Death_FX", BirdMesh, {AutoDelete = true})
+   115:     deathFX:SetWorldPosition(spawnJointPos)
+   116:   elseif bIsAnimated ~= nil then
+   117:     local spawnJoint = thisObj:GetJointIndex("synchJoint")
+   118:     local spawnJointPos = thisObj:GetWorldJointPosition(spawnJoint)
+   119:     local deathFX = game.FX.Spawn("Raven_Death_FX", thisObj, {AutoDelete = true})
+--- context around line 102 ---
+   120:     deathFX:SetWorldPosition(spawnJointPos)
+--- context around line 103 ---
+   121:   else
+--- context around line 104 ---
+   122:     local deathFX = game.FX.Spawn("Raven_Death_FX", thisObj, {AutoDelete = true})
+--- context around line 129 ---
+   123:     deathFX:SetWorldPosition(thisObj:GetWorldPosition())
+   124:   end
+   125: end
+   126: function SoftSave(level, obj)
+   127:   game.SubObject.SoftSave(thisObj)
+   128: end
+   129: function OnSaveCheckpoint(level, obj)
+   130:   return {ravenKilled = ravenKilled}
+   131: end
+   132: function OnRestoreCheckpoint(level, obj, tab)
+   133:   ravenKilled = tab.ravenKilled
+   134:   CompletionistMapV100_PublishTargetState(ravenKilled, "OnRestoreCheckpoint")
+   135: end
+   136: local emitter
+   137: function SoundInit()
+   138:   print(string.upper(thisObj:GetName()))
+   139:   if BirdMesh ~= nil then
+   140:     emitter = BirdMesh:FindSingleSoundEmitterByName("SNDRaven")
+   141:   else
+   142:     emitter = thisObj:FindSingleSoundEmitterByName("SNDRaven")
+   143:   end
+   144: end
+   145: local soundEvents = {
+   146:   IdleLoop = "SND_LOOT_Odins_Ravens_Magic_LP",
+   147:   Death = "SND_LOOT_Odins_Ravens_Explode"
+--- context around line 130 ---
+   148: }
+--- context around line 132 ---
+   149: function SoundOnStart()
+   150:   LD.CallFunctionAfterDelay(PlayIdleLoop, 0.1)
+--- context around line 133 ---
+   151: end
+--- context around line 134 ---
+   152: function DisableIdleLoop()
+--- context around line 164 ---
+   153:   LD.StopRestartableSoundLoop(emitter, soundEvents.IdleLoop)
+   154: end
+   155: function PlayIdleLoop()
+   156:   LD.PlayRestartableSoundLoop(emitter, soundEvents.IdleLoop)
+   157: end
+   158: function PlayDeathSound()
+   159:   LD.PlaySound(emitter, soundEvents.Death)
+   160:   LD.StopRestartableSoundLoop(emitter, soundEvents.IdleLoop)
+   161: end
+   162: 
+   163: -- BEGIN COMPLETIONIST V0.10.4 RAVEN LIFECYCLE V3.1 EVENTS
+   164: -- Runs inside persistent Raven gameplay script. Read native ravenKilled only.
+   165: -- Clean exact real CompletionistRaven compass target. Never touch Twin or stock.
+   166: do
+   167:   local prefix = "[CompletionistMap uid-lifecycle-v3.1] "
+   168:   local ravenName = "Completionist_V103_Veithurgard_Raven_01"
+   169:   local ravenClass = "CompletionistRaven"
+   170:   local retryLimit = 20
+   171:   local generation = 0
+   172:   local observedKilled = nil
+   173: 
+   174:   local function log(category, fields)
+   175:     print(prefix .. category .. " " .. fields)
+   176:   end
+   177: 
+   178:   local function realIdentity()
+   179:     local ok, info = pcall(function() return game.Map.GetMarkerInfo(ravenName) end)
+   180:     if not ok or info == nil or info.Id == nil then
+   181:       return nil, "marker_lookup_failed:" .. tostring(info)
+   182:     end
+--- context around line 202 ---
+   184:   end
+   185: 
+   186:   local function realShown()
+   187:     local realId, identityErr = realIdentity()
+   188:     if realId == nil then return false, false, identityErr, nil end
+   189:     local ok, ids = pcall(function()
+   190:       return game.Compass.FindMarkersByIconClass({ravenClass})
+   191:     end)
+   192:     if not ok then return false, false, tostring(ids), realId end
+   193:     for _, id in ipairs(ids or {}) do
+   194:       if tostring(id) == realId then return true, true, nil, realId end
+   195:     end
+   196:     return false, true, nil, realId
+   197:   end
+   198: 
+   199:   local function schedule(source, attempt, ticket, sawReal)
+   200:     local scheduleOK, scheduleErr = pcall(function()
+   201:       timers.StartLevelTimer(0.1, function()
+   202:       if ticket ~= generation or ravenKilled ~= true then return end
+   203:       local shown, queryOK, queryErr, realId = realShown()
+   204:       local nextSawReal = sawReal or shown
+   205:       if shown then
+   206:         local hideOK, hideErr = pcall(function() game.Compass.HideMarker(ravenName) end)
+   207:         log("REAL_HIDE", "source=" .. tostring(source) ..
+   208:             " attempt=" .. tostring(attempt) .. " uid=" .. tostring(realId) ..
+   209:             " ok=" .. tostring(hideOK) .. " error=" .. tostring(hideErr) ..
+   210:             " twinTouched=false stockTouched=false")
+   211:         nextSawReal = true
+   212:       elseif not queryOK and (attempt == 1 or attempt == retryLimit) then
+   213:         log("QUERY_RETRY", "source=" .. tostring(source) ..
+   214:             " attempt=" .. tostring(attempt) .. " error=" .. tostring(queryErr))
+   215:       end
+   216: 
+   217:       if nextSawReal and queryOK and not shown then
+   218:         log("CLEANUP_SETTLED", "source=" .. tostring(source) ..
+   219:             " attempts=" .. tostring(attempt) .. " exactRealAbsent=true")
+   220:         return
+--- context around line 241 ---
+   223:         log("CLEANUP_BOUNDED_END", "source=" .. tostring(source) ..
+   224:             " attempts=" .. tostring(attempt) ..
+   225:             " realSeen=" .. tostring(nextSawReal) ..
+   226:             " queryOK=" .. tostring(queryOK))
+   227:         return
+   228:       end
+   229:       schedule(source, attempt + 1, ticket, nextSawReal)
+   230:       end)
+   231:     end)
+   232:     if not scheduleOK then
+   233:       log("SCHEDULE_FAILED", "source=" .. tostring(source) ..
+   234:           " attempt=" .. tostring(attempt) .. " error=" .. tostring(scheduleErr))
+   235:     end
+   236:   end
+   237: 
+   238:   local function observe(source)
+   239:     local target = CompletionistMapV100_IsTargetRaven()
+   240:     if not target then return end
+   241:     local killed = ravenKilled == true
+   242:     if not killed then
+   243:       generation = generation + 1
+   244:       if observedKilled == true then
+   245:         log("LIFECYCLE_REARM", "source=" .. tostring(source) ..
+   246:             " staleTicketCancelled=true")
+   247:       end
+   248:       observedKilled = false
+   249:       return
+   250:     end
+   251:     if observedKilled == true then return end
+   252: 
+   253:     observedKilled = true
+   254:     generation = generation + 1
+   255:     local ticket = generation
+   256:     local shown, queryOK, queryErr, realId = realShown()
+   257:     local sawReal = shown
+   258:     if shown then
+   259:       local hideOK, hideErr = pcall(function() game.Compass.HideMarker(ravenName) end)
+--- context around line 281 ---
+   263:           " twinTouched=false stockTouched=false")
+   264:     elseif not queryOK then
+   265:       log("QUERY_RETRY", "source=" .. tostring(source) ..
+   266:           " attempt=0 error=" .. tostring(queryErr))
+   267:     end
+   268: 
+   269:     -- One bounded event-local ticket verifies async hide and catches a real show
+   270:     -- queued just before collection. No idle or permanent polling exists.
+   271:     schedule(source, 1, ticket, sawReal)
+   272:   end
+   273: 
+   274:   local hit = OnHitByWeapon
+   275:   function OnHitByWeapon(...)
+   276:     local result = hit(...)
+   277:     observe("OnHitByWeapon")
+   278:     return result
+   279:   end
+   280: 
+   281:   local restore = OnRestoreCheckpoint
+   282:   function OnRestoreCheckpoint(...)
+   283:     local result = restore(...)
+   284:     observe("OnRestoreCheckpoint")
+   285:     return result
+   286:   end
+   287: 
+   288:   local start = OnStart
+   289:   function OnStart(...)
+   290:     local result = start(...)
+   291:     observe("OnStart")
+   292:     return result
+   293:   end
+   294: 
+   295:   log("API", "installed=true cleanupOwner=precisionchallenge" ..
+   296:       " exactMarker=" .. ravenName .. " compassClass=" .. ravenClass ..
+   297:       " boundedRetry=" .. tostring(retryLimit) ..
+   298:       " mapmenuDependency=false progressionWrites=false")
+   299: end
+--- context around line 282 ---
+   300: -- END COMPLETIONIST V0.10.4 RAVEN LIFECYCLE V3.1 EVENTS
+--- context around line 284 ---
+
+=== PRISTINE MAPMENU STATE/API CONTEXT ===
+path=C:\Users\david\Documents\GitHub\completionist-map-gow2018-research-live\build\v0.10.5-all-ravens-runtime-test\transaction\transactions\20260917T102432Z-02d1396b\backup\game-root\mods\lua\gameart\ui\scripts\inworldmenu\mapmenu.lua
+match_lines=95
+--- context around line 23 ---
+    18: local tutorialUtil = require("ui.tutorialUtil")
+    19: local tutorials = require("ui.tutorials")
+    20: local Audio = game.Audio
+    21: local Camera = game.Camera
+    22: local Level = game.Level
+    23: local Map = game.Map
+    24: local Player = game.Player
+    25: local UI = game.UI
+    26: local CALDERA_MAP_POSITION = engine.Vector.New(-0.336, 0, 0.921)
+    27: local enabledShowOnCompassMarkerFlags = {
+    28:   consts.COMPASS_MARKER_TYPE_VENDOR,
+--- context around line 54 ---
+    49: --   While the map is open and Add to Compass is pressed, create a SECOND safe
+    50: --   DockPoint duplicate, detach it from the map hierarchy, and hand it to the
+    51: --   MainHUD script. MainHUD reparents that visual beneath Compass and moves it
+    52: --   across the strip using the already-proven Raven bearing math.
+    53: --
+    54: -- No marker state, quest state, collectible state, or save data is changed.
+    55: _G.CompletionistMapV100NornirRegistry = _G.CompletionistMapV100NornirRegistry or {}
+    56: 
+    57: print("[CompletionistMap v0.10.1] MAP_SCRIPT_LOADED")
+    58: 
+    59: if _G.CompletionistMapV100PlayerMarkerVisible == nil then
+--- context around line 347 ---
+   342:   local byId = {}
+   343:   for i = 1, #self.realmMarkerInfo do
+   344:     local markerInfo = self.realmMarkerInfo[i]
+   345:     local safeOK, safe = pcall(function()
+   346:       return markerInfo.State == tweaks.eTokenState.kDiscovered and
+   347:         Map.MarkerHasAnyFlag(
+   348:           markerInfo.Id,
+   349:           {consts.COMPASS_MARKER_TYPE_DOCK_POINT}
+   350:         )
+   351:     end)
+   352: 
+--- context around line 355 ---
+   353:     if safeOK and safe then
+   354:       markerInfo.regionId = markerInfo.regionId or
+   355:         select(2, Map.FindRegionFromMarker(markerInfo.Id))
+   356:       byId[tostring(markerInfo.Id)] = markerInfo
+   357:     end
+   358:   end
+   359: 
+   360:   local pool = {}
+--- context around line 504 ---
+   499: local function CompletionistMapV100_DestroyNornirPins(self)
+   500:   if self.completionistMapV100NornirPins ~= nil then
+   501:     for _, pin in ipairs(self.completionistMapV100NornirPins) do
+   502:       if pin.iconGO ~= nil then
+   503:         pcall(function()
+   504:           Map.RecycleIcon(pin.iconGO)
+   505:         end)
+   506:       end
+   507:     end
+   508:   end
+   509: 
+--- context around line 553 ---
+   548: 
+   549: local function CompletionistMapV100_DestroyNornirChestPins(self)
+   550:   if type(self.completionistMapV100NornirChestPins) == "table" then
+   551:     for _, pin in ipairs(self.completionistMapV100NornirChestPins) do
+   552:       if pin.iconGO ~= nil then
+   553:         pcall(function() Map.RecycleIcon(pin.iconGO) end)
+   554:       end
+   555:     end
+   556:   end
+   557:   self.completionistMapV100NornirChestPins = {}
+   558:   self.completionistMapV100NornirChestSelected = nil
+--- context around line 623 ---
+   618:           " registryKey=" .. tostring(registryKey))
+   619:       else
+   620:         local mapX, mapZ =
+   621:           CompletionistMapV100_WorldToMidgardMap(entry.x, entry.z)
+   622:         local createOK, iconOrErr = pcall(function()
+   623:           return Map.CreateMarkerIcon(backing.Id, backing.regionId, "")
+   624:         end)
+   625:       if createOK and iconOrErr ~= nil then
+   626:         local pin = {
+   627:           registryKey = registryKey,
+   628:           keyType = entry.keyType,
+--- context around line 649 ---
+   644:             " registryKey=" .. tostring(registryKey) ..
+   645:             " backingId=" .. tostring(backing.Id) ..
+   646:             " mapX=" .. tostring(mapX) ..
+   647:             " mapZ=" .. tostring(mapZ))
+   648:         else
+   649:           pcall(function() Map.RecycleIcon(pin.iconGO) end)
+   650:         end
+   651:       end
+   652:       end
+   653:     end
+   654:   end
+--- context around line 688 ---
+   683:         UI.SetIsClickable(pin.iconGO)
+   684:       end)
+   685:     end
+   686:     if not CompletionistMapV100_IsNornirChestRemaining(pin) then
+   687:       if pin.iconGO ~= nil then
+   688:         pcall(function() Map.RecycleIcon(pin.iconGO) end)
+   689:       end
+   690:       if self.completionistMapV100NornirChestSelected == pin then
+   691:         self.completionistMapV100NornirChestSelected = nil
+   692:       end
+   693:       table.remove(self.completionistMapV100NornirChestPins, i)
+--- context around line 750 ---
+   745:               " reason=safe_dock_not_found")
+   746:           else
+   747:             local mapX, mapZ =
+   748:               CompletionistMapV100_WorldToMidgardMap(key.x, key.z)
+   749:             local createOK, iconOrErr = pcall(function()
+   750:               return Map.CreateMarkerIcon(backing.Id, backing.regionId, "")
+   751:             end)
+   752: 
+   753:             if createOK and iconOrErr ~= nil then
+   754:             local pin = {
+   755:               registryKey = registryKey,
+--- context around line 791 ---
+   786:                 " index=" .. tostring(i) ..
+   787:                 " backingId=" .. tostring(backing.Id) ..
+   788:                 " mapX=" .. tostring(mapX) ..
+   789:                 " mapZ=" .. tostring(mapZ))
+   790:             else
+   791:               pcall(function() Map.RecycleIcon(pin.iconGO) end)
+   792:               print("[CompletionistMap v0.10.1] NORNIR_PIN_CREATE" ..
+   793:                 " ok=false index=" .. tostring(i) ..
+   794:                 " error=" .. tostring(setErr))
+   795:             end
+   796:             end
+--- context around line 855 ---
+   850:     end
+   851: 
+   852:     if not CompletionistMapV100_IsNornirKeyRemaining(pin) then
+   853:       if pin.iconGO ~= nil then
+   854:         pcall(function()
+   855:           Map.RecycleIcon(pin.iconGO)
+   856:         end)
+   857:       end
+   858: 
+   859:       if self.completionistMapV100NornirSelected == pin then
+   860:         self.completionistMapV100NornirSelected = nil
+--- context around line 903 ---
+   898:     return
+   899:   end
+   900: 
+   901:   local oldId = self.currShownMarkerID
+   902:   local hideOK, hideErr = pcall(function()
+   903:     game.Compass.HideMarker(oldId)
+   904:   end)
+   905: 
+   906:   self.currShownMarkerID = nil
+   907: 
+   908:   print("[CompletionistMap v0.10.1] STOCK_COMPASS_CLEAR" ..
+--- context around line 937 ---
+   932: end
+   933: 
+   934: local function CompletionistMapV100_DestroyMapPin(self)
+   935:   if self.completionistMapV100MapIconGO ~= nil then
+   936:     pcall(function()
+   937:       Map.RecycleIcon(self.completionistMapV100MapIconGO)
+   938:     end)
+   939:   end
+   940: 
+   941:   self.completionistMapV100MapIconGO = nil
+   942:   self.completionistMapV100BackingMarker = nil
+--- context around line 971 ---
+   966:       " ok=false reason=safe_dock_not_found")
+   967:     return
+   968:   end
+   969: 
+   970:   local createOK, iconOrErr = pcall(function()
+   971:     return Map.CreateMarkerIcon(
+   972:       backing.Id,
+   973:       backing.regionId,
+   974:       ""
+   975:     )
+   976:   end)
+--- context around line 1573 ---
+  1568:     self.mapSummaryCard_Realm:ShowCard()
+  1569:     self.mapSummaryCard_Realm:SetOnScreen(true, instant)
+  1570:     self:CheckForTutorial()
+  1571:   end
+  1572:   self:UpdateIcons()
+  1573:   local compassMarkers = game.Compass.FindMarkersByIconClass(enabledShowOnCompassMarkerFlags)
+  1574:   if 0 < #compassMarkers then
+  1575:     self.currShownMarkerID = compassMarkers[1]
+  1576:     if 1 < #compassMarkers then
+  1577:       for i = 2, #compassMarkers do
+  1578:         game.Compass.HideMarker(compassMarkers[i])
+--- context around line 1578 ---
+  1579:       end
+  1580:     end
+  1581:   else
+  1582:     self.currShownMarkerID = nil
+  1583:   end
+--- context around line 1683 ---
+  1678:     local pin = self.completionistMapV100NornirChestSelected
+  1679:     if not CompletionistMapV100_IsNornirChestRemaining(pin) then
+  1680:       return false, nil
+  1681:     end
+  1682:     if self.isOpenedForFastTravel or
+  1683:         not game.Compass.HaveCompass() or
+  1684:         self.currRealmName ~= mapUtil.GetPlayerRealm() or
+  1685:         tutorialUtil.CurrentlyShowingStep() then
+  1686:       return false, nil
+  1687:     end
+  1688:     local target = _G.CompletionistMapV100Target
+--- context around line 1705 ---
+  1700:     if not CompletionistMapV100_IsNornirKeyRemaining(pin) then
+  1701:       return false, nil
+  1702:     end
+  1703: 
+  1704:     if self.isOpenedForFastTravel or
+  1705:         not game.Compass.HaveCompass() or
+  1706:         self.currRealmName ~= mapUtil.GetPlayerRealm() or
+  1707:         tutorialUtil.CurrentlyShowingStep() then
+  1708:       return false, nil
+  1709:     end
+  1710: 
+--- context around line 1740 ---
+  1735:     if CompletionistMapV100_IsRavenCollected() then
+  1736:       return false, nil
+  1737:     end
+  1738: 
+  1739:     if self.isOpenedForFastTravel or
+  1740:         not game.Compass.HaveCompass() or
+  1741:         self.currRealmName ~= mapUtil.GetPlayerRealm() or
+  1742:         tutorialUtil.CurrentlyShowingStep() then
+  1743:       return false, nil
+  1744:     end
+  1745: 
+--- context around line 1754 ---
+  1749:       sameTarget and target.active and
+  1750:       lamsConsts.RemoveFromCompass or
+  1751:       lamsConsts.AddToCompass
+  1752: 
+  1753:     return true, "[AdvanceButton] " .. util.GetLAMSMsg(lamsId)
+  1754:   end  if not (not self.isOpenedForFastTravel and game.Compass.HaveCompass()) or self.currRealmName ~= mapUtil.GetPlayerRealm() or self.currMarkerID == nil or tutorialUtil.CurrentlyShowingStep() or not Map.MarkerHasAnyFlag(self.currMarkerID, enabledShowOnCompassMarkerFlags) then
+  1755:     return false, nil
+  1756:   end
+  1757:   local showOnCompassText = lamsConsts.AddToCompass
+  1758:   if self.currMarkerID == nil and self.currShownMarkerID ~= nil or self.currMarkerID == self.currShownMarkerID then
+  1759:     showOnCompassText = lamsConsts.RemoveFromCompass
+--- context around line 2248 ---
+  2243:           self.currMarkerID = markerID
+  2244:           local hasQuest, questName = questUtil.FindQuestForMarker(markerID)
+  2245:           self.currQuestID = hasQuest and questName or nil
+  2246:           showGoToJournal = hasQuest
+  2247:         end
+  2248:         if Map.MarkerHasAnyFlag(markerInfo.Id, fastTravelMarkerFlags) then
+  2249:           local isDiscoveredButLocked = markerInfo.State == tweaks.eTokenState.kDiscoveredButLocked
+  2250:           showConfirmFastTravel = not isDiscoveredButLocked and not self:IsPlayerAtMarker(markerInfo)
+  2251:         end
+  2252:       elseif collisionType == mapConsts.MAP_COLL_PLAYER_ICON then
+  2253:         self.currMarkerPlayerIcon = true
+--- context around line 2285 ---
+  2280:   end
+  2281:   return trackingState
+  2282: end
+  2283: function MapOn:GetMapMarkerTrackingStateFromIconGO(goIcon)
+  2284:   local trackingState = questConsts.TRACKING_STATE_NONE
+  2285:   local markerInfo = Map.FindInfoFromIcon(goIcon)
+  2286:   if markerInfo ~= nil then
+  2287:     trackingState = self:GetMapMarkerTrackingState(markerInfo.Id)
+  2288:   end
+  2289:   return trackingState
+  2290: end
+--- context around line 2300 ---
+  2295:     local goIconTracked = goIcon:FindSingleGOByName("MapIconAreaMainQuest_area")
+  2296:     local goIconTrackedSide = goIcon:FindSingleGOByName("MapIconAreaSideQuest_area")
+  2297:     local goIconUntracked = goIcon:FindSingleGOByName("untracked")
+  2298:     local goIconLock = goIcon:FindSingleGOByName("lock")
+  2299:     local trackingState = self:GetMapMarkerTrackingStateFromIconGO(goIcon)
+  2300:     local isRadiusMarker = Map.MarkerHasAnyFlag(markerInfo.Id, {"RadiusType"})
+  2301:     local isDiscoveredButLocked = markerInfo.State == tweaks.eTokenState.kDiscoveredButLocked
+  2302:     local goMarkerLockIcon = goIcon:FindSingleGOByName("lock")
+  2303:     if goIconLock ~= nil then
+  2304:       if isDiscoveredButLocked == true then
+  2305:         goIconLock:Show()
+--- context around line 2368 ---
+  2363:   local fastTravelList = currState.menu:GetList("FastTravelList")
+  2364:   if self.isOpenedForFastTravel then
+  2365:     local unlockedFastTravelMarkers = {}
+  2366:     for i = 1, #self.markers do
+  2367:       local markerInfo = self.markers[i]
+  2368:       if (markerInfo.State == tweaks.eTokenState.kDiscovered or markerInfo.State == tweaks.eTokenState.kDiscoveredButLocked) and Map.MarkerHasAnyFlag(markerInfo.Id, fastTravelMarkerFlags) then
+  2369:         unlockedFastTravelMarkers[#unlockedFastTravelMarkers + 1] = markerInfo
+  2370:       end
+  2371:     end
+  2372:     fastTravelList:Refresh(unlockedFastTravelMarkers, true, true, nil, function(item)
+  2373:       return util.GetLAMSMsg(item.LamsDescriptionId, item.Id)
+--- context around line 2425 ---
+  2420: end
+  2421: function MapOn:UpdateReticleInfo(currState, markerInfo)
+  2422:   local title = ""
+  2423:   local desc = ""
+  2424:   if markerInfo ~= nil then
+  2425:     local isFastTravelMarker = Map.MarkerHasAnyFlag(markerInfo.Id, fastTravelMarkerFlags)
+  2426:     local isDiscoveredButLocked = markerInfo.State == tweaks.eTokenState.kDiscoveredButLocked
+  2427:     title = util.GetLAMSMsg(markerInfo.LamsNameId, markerInfo.Id)
+  2428:     desc = util.GetLAMSMsg(markerInfo.LamsDescriptionId, markerInfo.Id)
+  2429:     if isDiscoveredButLocked then
+  2430:       desc = isFastTravelMarker and util.GetLAMSMsg(lamsConsts.LockedFastTravelMarker) or util.GetLAMSMsg(lamsConsts.LockedMarker)
+--- context around line 2432 ---
+  2431:     end
+  2432:     if self.isOpenedForFastTravel and Map.MarkerHasAnyFlag(markerInfo.Id, fastTravelMarkerFlags) then
+  2433:       self:SelectFastTravelButtonByMarkerInfo(currState, markerInfo)
+  2434:     end
+  2435:   elseif self.currMarkerPlayerIcon then
+  2436:     title = "[MSG:" .. lamsConsts.Kratos .. "]"
+  2437:   end
+--- context around line 2488 ---
+  2483:   local onScreen = false
+  2484:   self.currentRegionId = nil
+  2485:   self.mapSummaryCard_Region:SetOnScreen(onScreen)
+  2486: end
+  2487: function MapOn:UpdateRealmSummary(realmName)
+  2488:   local realmInfo = game.Map.GetRealmInfo(realmName)
+  2489:   self.mapSummaryCard_Realm:SetProperty("RealmInfo", realmInfo)
+  2490:   local doTransitionAnim = true
+  2491:   self.mapSummaryCard_Realm:Update(doTransitionAnim)
+  2492:   if self.isOpenedForFastTravel or self.mapSummaryCard_Realm:GetProperty("numActiveRows") <= 0 then
+  2493:     self.mapSummaryCard_Realm:HideCard()
+--- context around line 2520 ---
+  2515:       local isRegionDiscovered = mapUtil.RegionInfo_IsDiscovered(regionInfo)
+  2516:       local neverShowSummary = mapUtil.Region_HasFlags(regionInfo.Id, {
+  2517:         "NeverShowSummary"
+  2518:       })
+  2519:       if isRegionDiscovered and not neverShowSummary then
+  2520:         local regionSummaryInfo = Map.GetRegionSummaryInfo(regionInfo.Id)
+  2521:         self.mapSummaryCard_Region:SetProperty("RegionInfo", regionInfo)
+  2522:         self.mapSummaryCard_Region:SetProperty("RegionSummaryInfo", regionSummaryInfo)
+  2523:         if self._previousRegionID ~= regionInfo.Id then
+  2524:           self._previousRegionID = regionInfo.Id
+  2525:           regionIsDifferentFromLastTime = true
+--- context around line 2724 ---
+  2719: end
+  2720: function MapOn:ClearIcons()
+  2721:   for i = 1, #self.realmMarkerInfo do
+  2722:     local markerInfo = self.realmMarkerInfo[i]
+  2723:     if markerInfo.iconGO ~= nil then
+  2724:       Map.RecycleIcon(markerInfo.iconGO)
+  2725:       markerInfo.iconGO = nil
+  2726:     end
+  2727:   end
+  2728: end
+  2729: function MapOn:UpdateIcons()
+--- context around line 2733 ---
+  2730:   for i = 1, #self.realmMarkerInfo do
+  2731:     local markerInfo = self.realmMarkerInfo[i]
+  2732:     if markerInfo.shown and markerInfo.iconGO == nil then
+  2733:       markerInfo.iconGO = Map.CreateMarkerIcon(markerInfo.Id, markerInfo.regionId, "")
+  2734:     elseif markerInfo.iconGO ~= nil then
+  2735:       if markerInfo.shown then
+  2736:         markerInfo.iconGO:Show()
+  2737:       else
+  2738:         markerInfo.iconGO:Hide()
+--- context around line 2754 ---
+  2749:   if self.currRealmName == nil then
+  2750:     return
+  2751:   end
+  2752:   local regionInfoTable = mapUtil.GetAllRegionInfoInRealm(self.currRealmName)
+  2753:   for _, regionInfo in ipairs(regionInfoTable) do
+  2754:     local regionMarkerInfoTable = Map.GetMarkersInfoTable(regionInfo.Id)
+  2755:     for i = 1, #regionMarkerInfoTable do
+  2756:       local markerInfo = regionMarkerInfoTable[i]
+  2757:       local hasQuest, questName = questUtil.FindQuestForMarker(markerInfo.Id)
+  2758:       if not hasQuest or game.QuestManager.GetQuestState(questName) ~= questConsts.QUEST_STATE_COMPLETE then
+  2759:         markerInfo.regionId = regionInfo.Id
+--- context around line 2770 ---
+  2765: end
+  2766: function MapOn:GetAlwaysOnMarkers()
+  2767:   self:ClearMarkers(true)
+  2768:   for i = 1, #self.realmMarkerInfo do
+  2769:     local markerInfo = self.realmMarkerInfo[i]
+  2770:     if Map.MarkerHasAnyFlag(markerInfo.Id, alwaysOnMarkerFlags) and mapUtil.MapMarkerInfoHasStates(markerInfo, markerStates) then
+  2771:       markerInfo.shown = true
+  2772:       tablex.FastInsert(self.alwaysOnMarkers, markerInfo, #self.alwaysOnMarkers + 1)
+  2773:       tablex.FastInsert(self.markers, markerInfo, #self.markers + 1)
+  2774:     end
+  2775:   end
+--- context around line 2781 ---
+  2776: end
+  2777: function MapOn:GetMarkers()
+  2778:   self:ClearMarkers()
+  2779:   for i = 1, #self.realmMarkerInfo do
+  2780:     local markerInfo = self.realmMarkerInfo[i]
+  2781:     if Map.MarkerHasAnyFlag(markerInfo.Id, self.markerIncludeFlags) and mapUtil.MapMarkerInfoHasStates(markerInfo, markerStates) then
+  2782:       markerInfo.shown = true
+  2783:       tablex.FastInsert(self.markers, markerInfo, #self.markers + 1)
+  2784:     end
+  2785:   end
+  2786: end
+--- context around line 2830 ---
+  2825:   self:GetMarkers()
+  2826:   self:UpdateIcons()
+  2827:   self:UpdateMapMarkerHighlights()
+  2828:   self:UpdateFilterUI()
+  2829:   if self.playerIconGO ~= nil then
+  2830:     Map.SetPlayerMapMarkerToPlayerMapTransform(self.playerIconGO, "facingJoint", "arrowJoint")
+  2831:     CompletionistMapV100_LogMapCalibration(self)
+  2832:   end
+  2833:   local showPlayerMarker = self:ShouldShowPlayerMarker()
+  2834:   if showPlayerMarker then
+  2835:     self.playerIconGO:Show()
+--- context around line 2895 ---
+  2890: end
+  2891: function MapOn:ConfirmFastTravel(currState)
+  2892:   local fastTravelList = currState.menu:GetList("FastTravelList")
+  2893:   local currFastTravelMarkerInfo = fastTravelList:GetSelectedItem()
+  2894:   local isDiscoveredButLocked = currFastTravelMarkerInfo.State == tweaks.eTokenState.kDiscoveredButLocked
+  2895:   if self.currMarkerID ~= nil and Map.MarkerHasAnyFlag(self.currMarkerID, fastTravelMarkerFlags) and self:IsPlayerAtMarker(currFastTravelMarkerInfo) == false and self.fastTravelCancelled == false and not isDiscoveredButLocked then
+  2896:     self.fastTravelPointSelected = true
+  2897:     util.CallScriptOnCurrentInteractObject("TriggerFastTravelPointSelected", currFastTravelMarkerInfo.Id)
+  2898:     self:Menu_Options_ReleaseHandler(false)
+  2899:   end
+  2900: end
+--- context around line 3038 ---
+  3033:     end
+  3034:   end
+  3035:   for i = 1, #self.realmMarkerInfo do
+  3036:     local markerInfo = self.realmMarkerInfo[i]
+  3037:     if markerInfo.iconGO ~= nil and UI.GetEventSenderGameObject() == markerInfo.iconGO then
+  3038:       if self.isOpenedForFastTravel and Map.MarkerHasAnyFlag(markerInfo.Id, fastTravelMarkerFlags) then
+  3039:         local fastTravelList = currState.menu:GetList("FastTravelList")
+  3040:         if markerInfo == fastTravelList:GetSelectedItem() then
+  3041:           Camera.PointAtGO(markerInfo.iconGO)
+  3042:         else
+  3043:           self:SelectFastTravelButtonByMarkerInfo(currState, markerInfo)
+--- context around line 3096 ---
+  3091: 
+  3092:   for filterIndex = 2, #markerFilters do
+  3093:     local markerIncludeFlags = markerFilters[filterIndex].markerIncludeFlags
+  3094:     for i = 1, #self.realmMarkerInfo do
+  3095:       local markerInfo = self.realmMarkerInfo[i]
+  3096:       if Map.MarkerHasAnyFlag(markerInfo.Id, markerIncludeFlags) and
+  3097:           mapUtil.MapMarkerInfoHasStates(markerInfo, markerStates) then
+  3098:         self.filterButtonMapping[#self.filterButtonMapping + 1] = filterIndex
+  3099:         break
+  3100:       end
+  3101:     end
+--- context around line 3315 ---
+  3310:       " reason=stock_marker_selected" ..
+  3311:       " type=" .. tostring(completionistTarget.type))
+  3312:   end
+  3313:   local updatePrompt = false
+  3314:   if self.currMarkerID ~= nil then
+  3315:     if not Map.MarkerHasAnyFlag(self.currMarkerID, enabledShowOnCompassMarkerFlags) then
+  3316:       return
+  3317:     end
+  3318:     updatePrompt = true
+  3319:     if self.currMarkerID == self.currShownMarkerID then
+  3320:       game.Compass.HideMarker(self.currShownMarkerID)
+--- context around line 3320 ---
+  3321:       Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
+  3322:       self.currShownMarkerID = nil
+  3323:     else
+  3324:       if self.currShownMarkerID ~= nil then
+  3325:         game.Compass.HideMarker(self.currShownMarkerID)
+--- context around line 3325 ---
+  3326:       end
+  3327:       local markerType
+  3328:       for i = 1, #enabledShowOnCompassMarkerFlags do
+  3329:         local enabledMarkerFlag = enabledShowOnCompassMarkerFlags[i]
+  3330:         if Map.MarkerHasFlag(self.currMarkerID, {enabledMarkerFlag}) then
+--- context around line 3330 ---
+  3331:           markerType = enabledMarkerFlag
+  3332:           break
+  3333:         end
+  3334:       end
+  3335:       assert(markerType ~= nil, "unable to find ShowOnCompass marker type")
+--- context around line 3336 ---
+  3336:       game.Compass.ShowMarker(self.currMarkerID, markerType)
+  3337:       Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
+  3338:       self.currShownMarkerID = self.currMarkerID
+  3339:     end
+  3340:   elseif self.currShownMarkerID ~= nil then
+  3341:     updatePrompt = true
+--- context around line 3342 ---
+  3342:     game.Compass.HideMarker(self.currShownMarkerID)
+  3343:     self.currShownMarkerID = nil
+  3344:   end
+  3345:   if updatePrompt then
+  3346:     local currMenu = currState.menu
+  3347:     local showShowOnCompass, text = self:GetShowOnCompassPrompt(currMenu)
+--- context around line 3506 ---
+  3501:   self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Asgard")
+  3502: end
+  3503: function Asgard:EVT_MOUSE_CLICKED()
+  3504:   self.mapOn:MouseClickHandler(self)
+  3505: end
+  3506: function MapMenu:OnSaveCheckpoint(tab)
+  3507: end
+  3508: function MapMenu:OnRestoreCheckpoint(tab)
+  3509: end
+  3510: 
+  3511: 
+--- context around line 3508 ---
+  3512: 
+  3513: -- BEGIN COMPLETIONIST V0.10.4 RAVEN REGISTERED CLASS RUNTIME PROOF
+--- context around line 3549 ---
+  3544:       local value = safeField(info, name)
+  3545:       if value ~= nil then return value, "marker_info." .. name end
+  3546:     end
+  3547: 
+  3548:     local callOK, found, region = pcall(function()
+  3549:       return game.Map.FindRegionFromMarker(markerId)
+  3550:     end)
+  3551:     if not callOK then
+  3552:       return nil, "FindRegionFromMarker.error=" .. tostring(found)
+  3553:     end
+  3554:     if found ~= true or region == nil then
+--- context around line 3570 ---
+  3565:       log("REGISTERED_RESULT", "active=false reason=raven_collected dockProxyUsed=false")
+  3566:       return
+  3567:     end
+  3568: 
+  3569:     local infoOK, info = pcall(function()
+  3570:       return game.Map.GetMarkerInfo(candidate)
+  3571:     end)
+  3572:     if not infoOK or info == nil then
+  3573:       log("REGISTERED_RESULT",
+  3574:         "active=false reason=marker_info_failed dockProxyUsed=false error=" .. tostring(info))
+  3575:       return
+--- context around line 3603 ---
+  3598:       log("REGISTERED_RESULT", "active=false reason=id_or_region_unresolved dockProxyUsed=false")
+  3599:       return
+  3600:     end
+  3601: 
+  3602:     local createOK, newGO = pcall(function()
+  3603:       return Map.CreateMarkerIcon(markerId, regionId, "")
+  3604:     end)
+  3605:     if not createOK or newGO == nil then
+  3606:       log("REGISTERED_RESULT",
+  3607:         "active=false reason=CreateMarkerIcon_failed regionSource=" .. tostring(regionSource) ..
+  3608:         " dockProxyUsed=false error=" .. tostring(newGO))
+--- context around line 3615 ---
+  3610:     end
+  3611: 
+  3612:     local clickableOK, clickableErr = pcall(function() UI.SetIsClickable(newGO) end)
+  3613:     local showOK, showErr = pcall(function() newGO:Show() end)
+  3614:     if not showOK then
+  3615:       pcall(function() Map.RecycleIcon(newGO) end)
+  3616:       log("REGISTERED_RESULT",
+  3617:         "active=false reason=show_failed dockProxyUsed=false error=" .. tostring(showErr))
+  3618:       return
+  3619:     end
+  3620: 
+--- context around line 3661 ---
+  3656: --
+  3657: -- Visual-only diagnostic layered on the proven corrected registered class.
+  3658: -- The custom Raven texpack is active and this bridge renders the dedicated
+  3659: -- goMapIconCompletionistRaven map object directly. For this diagnostic only,
+  3660: -- the map icon is allowed to render even when the tested Raven has already been
+  3661: -- collected so artwork can still be inspected. No marker state, save state,
+  3662: -- progression value, or native compass state is changed here.
+  3663: do
+  3664:   local prefix = "[CompletionistMap v0.10.4-raven-artwork] "
+  3665:   local candidate = "Completionist_V103_Veithurgard_Raven_01"
+  3666:   local expectedMapResource = "goMapIconCompletionistRaven"
+--- context around line 3662 ---
+  3667: 
+--- context around line 3693 ---
+  3688:       local value = safeField(info, name)
+  3689:       if value ~= nil then return value, "marker_info." .. name end
+  3690:     end
+  3691: 
+  3692:     local callOK, found, region = pcall(function()
+  3693:       return game.Map.FindRegionFromMarker(markerId)
+  3694:     end)
+  3695:     if not callOK then
+  3696:       return nil, "FindRegionFromMarker.error=" .. tostring(found)
+  3697:     end
+  3698:     if found ~= true or region == nil then
+--- context around line 3716 ---
+  3711:       return CompletionistMapV100_IsRavenCollected()
+  3712:     end)
+  3713:     if collectedOK then collected = collectedValue == true end
+  3714: 
+  3715:     local infoOK, info = pcall(function()
+  3716:       return game.Map.GetMarkerInfo(candidate)
+  3717:     end)
+  3718:     if not infoOK or info == nil then
+  3719:       log("ART_RESULT",
+  3720:         "active=false reason=marker_info_failed error=" .. tostring(info) ..
+  3721:         " diagnosticShowEvenIfCollected=true progressionWritten=false")
+--- context around line 3721 ---
+  3722:       return
+  3723:     end
+  3724: 
+  3725:     local markerId = safeField(info, "Id") or safeField(info, "id")
+  3726:     local markerState = safeField(info, "State") or safeField(info, "state")
+--- context around line 3741 ---
+  3736:       " regionSource=" .. tostring(regionSource) ..
+  3737:       " expectedMapResource=" .. expectedMapResource ..
+  3738:       " texpackLoaded=true" ..
+  3739:       " diagnosticShowEvenIfCollected=true" ..
+  3740:       " dockProxyUsed=false" ..
+  3741:       " progressionWritten=false")
+  3742: 
+  3743:     if markerId == nil or regionId == nil then
+  3744:       log("ART_RESULT", "active=false reason=id_or_region_unresolved progressionWritten=false")
+  3745:       return
+  3746:     end
+--- context around line 3744 ---
+  3747: 
+  3748:     local createOK, newGO = pcall(function()
+  3749:       return Map.CreateMarkerIcon(markerId, regionId, "")
+--- context around line 3749 ---
+  3750:     end)
+  3751:     if not createOK or newGO == nil then
+  3752:       log("ART_RESULT",
+  3753:         "active=false reason=CreateMarkerIcon_failed error=" .. tostring(newGO) ..
+  3754:         " progressionWritten=false")
+--- context around line 3754 ---
+  3755:       return
+  3756:     end
+  3757: 
+  3758:     local clickableOK, clickableErr = pcall(function() UI.SetIsClickable(newGO) end)
+  3759:     local showOK, showErr = pcall(function() newGO:Show() end)
+--- context around line 3761 ---
+  3760:     if not showOK then
+  3761:       pcall(function() Map.RecycleIcon(newGO) end)
+  3762:       log("ART_RESULT",
+  3763:         "active=false reason=show_failed error=" .. tostring(showErr) ..
+  3764:         " progressionWritten=false")
+  3765:       return
+  3766:     end
+--- context around line 3764 ---
+  3767: 
+  3768:     self.completionistMapV100MapIconGO = newGO
+  3769:     self.completionistMapV100MapIconFrames = 0
+--- context around line 3791 ---
+  3786:       " position=" .. (posOK and pos ~= nil and
+  3787:         ("x=" .. tostring(pos.x) .. ",y=" .. tostring(pos.y) .. ",z=" .. tostring(pos.z)) or "<unavailable>") ..
+  3788:       " texpackLoaded=true" ..
+  3789:       " diagnosticShowEvenIfCollected=true" ..
+  3790:       " dockProxyUsed=false" ..
+  3791:       " progressionWritten=false")
+  3792:   end
+  3793: 
+  3794:   _G.CompletionistMapV104RavenArtworkDiagnostic = true
+  3795:   log("ART_API",
+  3796:     "installed=true candidate=" .. candidate ..
+--- context around line 3799 ---
+  3797:     " mapResource=" .. expectedMapResource ..
+  3798:     " texpackLoaded=true diagnosticShowEvenIfCollected=true" ..
+  3799:     " compassType=DockPoint dockProxyUsed=false progressionWritten=false")
+  3800: end
+  3801: -- END COMPLETIONIST V0.10.4 RAVEN ARTWORK LAYER PROOF
+  3802: -- BEGIN COMPLETIONIST V0.10.3 NATIVE RAVEN PRODUCTION BRIDGE
+  3803: -- Raven-only production candidate for the native compass path proven in the
+  3804: -- v0.10.3 live field test. This maps the existing Completionist Raven map
+--- context around line 3808 ---
+  3805: -- selection to an independently-authored native map token and lets God of War
+  3806: -- own compass position, distance and route behaviour.
+  3807: --
+  3808: -- No marker progression state is changed here. The native marker remains
+  3809: -- InitState=0 in the authored DCB data and is addressed only by its dedicated ID.
+  3810: do
+  3811:   local prefix = "[CompletionistMap v0.10.3-native] "
+  3812:   local candidate = "Completionist_V103_Veithurgard_Raven_01"
+  3813:   local markerType = "CompletionistRaven"
+--- context around line 3833 ---
+  3828:     return self ~= nil and self.completionistMapV100Selected == true
+  3829:   end
+  3830: 
+  3831:   local function candidateInfo()
+  3832:     local ok, info = pcall(function()
+  3833:       return game.Map.GetMarkerInfo(candidate)
+  3834:     end)
+  3835:     if not ok then
+  3836:       return nil, "lookup_error=" .. tostring(info)
+  3837:     end
+  3838:     if info == nil then
+--- context around line 3848 ---
+  3843: 
+  3844:   local function shownState()
+  3845:     local info = candidateInfo()
+  3846:     local candidateId = info ~= nil and tostring(info.Id) or nil
+  3847:     local ok, ids = pcall(function()
+  3848:       return game.Compass.FindMarkersByIconClass(enabledShowOnCompassMarkerFlags)
+  3849:     end)
+  3850:     if not ok then
+  3851:       return false, {}, false, tostring(ids)
+  3852:     end
+  3853: 
+--- context around line 3920 ---
+  3915:   local function hideCandidate(reason)
+  3916:     local info = candidateInfo()
+  3917:     local id = info ~= nil and tostring(info.Id) or "<missing>"
+  3918:     log("NATIVE_RAVEN_HIDE", "stage=before reason=" .. tostring(reason) .. " id=" .. id)
+  3919:     local ok, err = pcall(function()
+  3920:       game.Compass.HideMarker(candidate)
+  3921:     end)
+  3922:     log("NATIVE_RAVEN_HIDE",
+  3923:       "stage=lua_return ok=" .. tostring(ok) ..
+  3924:       " error=" .. tostring(err))
+  3925:     if ok then
+--- context around line 3937 ---
+  3932:     if ravenSelected(self) then
+  3933:       if CompletionistMapV100_IsRavenCollected() then
+  3934:         return false, nil
+  3935:       end
+  3936:       if self.isOpenedForFastTravel or
+  3937:           not game.Compass.HaveCompass() or
+  3938:           self.currRealmName ~= mapUtil.GetPlayerRealm() or
+  3939:           tutorialUtil.CurrentlyShowingStep() then
+  3940:         return false, nil
+  3941:       end
+  3942: 
+--- context around line 3989 ---
+  3984:       return
+  3985:     end
+  3986: 
+  3987:     local p = info.Coordinates
+  3988:     local flagOK, hasDockFlag = pcall(function()
+  3989:       return Map.MarkerHasFlag(candidate, {markerType})
+  3990:     end)
+  3991:     if not flagOK or hasDockFlag ~= true or p == nil then
+  3992:       log("NATIVE_RAVEN_RESULT",
+  3993:         "refused=preflight_failed flagOK=" .. tostring(flagOK) ..
+  3994:         " dockFlag=" .. tostring(flagOK and hasDockFlag == true) ..
+--- context around line 4020 ---
+  4015: 
+  4016:     -- Match stock Replace in Compass semantics without touching marker state.
+  4017:     -- Hide only currently tracked compass targets returned by the native manager.
+  4018:     for _, id in ipairs(others) do
+  4019:       local hideOK, hideErr = pcall(function()
+  4020:         game.Compass.HideMarker(id)
+  4021:       end)
+  4022:       log("NATIVE_RAVEN_REPLACE",
+  4023:         "oldId=" .. tostring(id) ..
+  4024:         " hideOK=" .. tostring(hideOK) ..
+  4025:         " error=" .. tostring(hideErr))
+--- context around line 4042 ---
+  4037:     log("NATIVE_RAVEN_SHOW",
+  4038:       "stage=before id=" .. tostring(info.Id) ..
+  4039:       " markerType=" .. tostring(markerType))
+  4040: 
+  4041:     local showOK, showErr = pcall(function()
+  4042:       game.Compass.ShowMarker(candidate, markerType)
+  4043:     end)
+  4044:     log("NATIVE_RAVEN_SHOW",
+  4045:       "stage=lua_return ok=" .. tostring(showOK) ..
+  4046:       " error=" .. tostring(showErr))
+  4047: 
+--- context around line 4150 ---
+  4145:     return self ~= nil and self.completionistMapV100Selected == true
+  4146:   end
+  4147: 
+  4148:   local function candidateInfo()
+  4149:     local ok, info = pcall(function()
+  4150:       return game.Map.GetMarkerInfo(ravenCandidate)
+  4151:     end)
+  4152:     if not ok then
+  4153:       return nil, tostring(info)
+  4154:     end
+  4155:     if info == nil then
+--- context around line 4173 ---
+  4168:     if candidateId == nil then
+  4169:       return false, false, "candidate_lookup_failed"
+  4170:     end
+  4171: 
+  4172:     local ok, ids = pcall(function()
+  4173:       return game.Compass.FindMarkersByIconClass({ravenClass})
+  4174:     end)
+  4175:     if not ok then
+  4176:       return false, false, tostring(ids)
+  4177:     end
+  4178: 
+--- context around line 4190 ---
+  4185:   end
+  4186: 
+  4187:   local function stockTargets()
+  4188:     local ravenId = candidateIdString()
+  4189:     local ok, ids = pcall(function()
+  4190:       return game.Compass.FindMarkersByIconClass(enabledShowOnCompassMarkerFlags)
+  4191:     end)
+  4192:     if not ok then
+  4193:       return {}, false, tostring(ids)
+  4194:     end
+  4195: 
+--- context around line 4211 ---
+  4206:     return "[AdvanceButton] " .. util.GetLAMSMsg(lamsId)
+  4207:   end
+  4208: 
+  4209:   local function hideRaven(reason)
+  4210:     local ok, err = pcall(function()
+  4211:       game.Compass.HideMarker(ravenCandidate)
+  4212:     end)
+  4213:     log("HIDE_RAVEN",
+  4214:       "reason=" .. tostring(reason) ..
+  4215:       " ok=" .. tostring(ok) ..
+  4216:       " error=" .. tostring(err))
+--- context around line 4229 ---
+  4224:       return false, 0
+  4225:     end
+  4226: 
+  4227:     for _, id in ipairs(ids) do
+  4228:       local hideOK, hideErr = pcall(function()
+  4229:         game.Compass.HideMarker(id)
+  4230:       end)
+  4231:       log("HIDE_STOCK",
+  4232:         "reason=" .. tostring(reason) ..
+  4233:         " id=" .. tostring(id) ..
+  4234:         " ok=" .. tostring(hideOK) ..
+--- context around line 4373 ---
+  4368:       return
+  4369:     end
+  4370: 
+  4371:     suppressLegacyRavenHud()
+  4372:     local showOK, showErr = pcall(function()
+  4373:       game.Compass.ShowMarker(ravenCandidate, ravenClass)
+  4374:     end)
+  4375:     log("RAVEN_SHOW",
+  4376:       "ok=" .. tostring(showOK) ..
+  4377:       " error=" .. tostring(showErr) ..
+  4378:       " replacedStockCount=" .. tostring(stockCount))
+--- context around line 4481 ---
+  4476:   end
+  4477: 
+  4478:   local function clearTwin(self)
+  4479:     local go = self.completionistSharedLoaderTwinGO
+  4480:     if go ~= nil then
+  4481:       local ok, err = pcall(function() Map.RecycleIcon(go) end)
+  4482:       if not ok then
+  4483:         log("CLEANUP_FAILED error=" .. tostring(err))
+  4484:         return false
+  4485:       end
+  4486:       if self.mapIconCollision == go then self.mapIconCollision = nil end
+--- context around line 4521 ---
+  4516:     -- resource. Its lifetime must not depend on a live production Raven UI object.
+  4517:     local original = self.completionistMapV100MapIconGO
+  4518:     local originalPresent = original ~= nil
+  4519: 
+  4520:     local ok, err = pcall(function()
+  4521:       local info = Map.GetMarkerInfo(twinName)
+  4522:       if info == nil or info.Id == nil then
+  4523:         log("LOOKUP found=false")
+  4524:         return
+  4525:       end
+  4526:       local found, region = Map.FindRegionFromMarker(info.Id)
+--- context around line 4526 ---
+  4527:       log("LOOKUP found=true uid=" .. tostring(info.Id) ..
+  4528:           " state=" .. tostring(info.State) .. " regionFound=" .. tostring(found) ..
+  4529:           " region=" .. tostring(region) .. " originalPresent=" .. tostring(originalPresent))
+  4530:       if found ~= true or region == nil then return end
+  4531:       local go = Map.CreateMarkerIcon(info.Id, region, "")
+--- context around line 4531 ---
+  4532:       if go == nil then
+  4533:         log("CREATE success=false reason=nil_object originalPresent=" .. tostring(originalPresent))
+  4534:         return
+  4535:       end
+  4536:       if originalPresent and go == original then
+--- context around line 4598 ---
+  4593:   local function log(category, fields)
+  4594:     print(prefix .. category .. " " .. fields)
+  4595:   end
+  4596: 
+  4597:   local function markerInfo(name)
+  4598:     local ok, info = pcall(function() return game.Map.GetMarkerInfo(name) end)
+  4599:     if not ok or info == nil or info.Id == nil then
+  4600:       log("MARKER_INFO", "name=" .. tostring(name) .. " ok=" .. tostring(ok) ..
+  4601:           " error=" .. tostring(info))
+  4602:       return nil
+  4603:     end
+--- context around line 4623 ---
+  4618:     }
+  4619:     if name == ravenName then knownRavenIdentity = result end
+  4620:     return result
+  4621:   end
+  4622: 
+  4623:   -- Production bridge publishes native Raven state. False from an older restored
+  4624:   -- checkpoint must win over stale quest state. This is read-only for progression.
+  4625:   CompletionistMapV100_IsRavenCollected = function()
+  4626:     local state = _G.CompletionistMapV100TargetRavenKilled
+  4627:     if type(state) == "boolean" then return state end
+  4628:     local ok, quest = pcall(function()
+--- context around line 4624 ---
+  4629:       return game.QuestManager.GetQuestState("RegionSummary_VF_Raven_Parent")
+--- context around line 4783 ---
+  4778:     return "confirmed_other_custom_prompt"
+  4779:   end
+  4780: 
+  4781:   local function customTargetIds()
+  4782:     local ok, ids = pcall(function()
+  4783:       return game.Compass.FindMarkersByIconClass({ravenClass})
+  4784:     end)
+  4785:     if not ok then return {}, false, tostring(ids) end
+  4786:     return ids or {}, true, nil
+  4787:   end
+  4788: 
+--- context around line 4805 ---
+  4800:     return containsId(ids, selected.IdString), true, nil
+  4801:   end
+  4802: 
+  4803:   local function stockTargets()
+  4804:     local ok, ids = pcall(function()
+  4805:       return game.Compass.FindMarkersByIconClass(enabledShowOnCompassMarkerFlags)
+  4806:     end)
+  4807:     if not ok then return {}, false, tostring(ids) end
+  4808:     return ids or {}, true, nil
+  4809:   end
+  4810: 
+--- context around line 4833 ---
+  4828:     local allHidden = true
+  4829:     for _, id in ipairs(ids) do
+  4830:       if exceptIdString == nil or tostring(id) ~= exceptIdString then
+  4831:         local name = knownNameForId(id)
+  4832:         local target = name or id
+  4833:         local hideOK, hideErr = pcall(function() game.Compass.HideMarker(target) end)
+  4834:         log("HIDE_CUSTOM", "reason=" .. tostring(reason) .. " id=" .. tostring(id) ..
+  4835:             " name=" .. tostring(name) .. " ok=" .. tostring(hideOK) ..
+  4836:             " error=" .. tostring(hideErr))
+  4837:         if hideOK then hidden = hidden + 1 end
+  4838:         if not hideOK then allHidden = false end
+--- context around line 4854 ---
+  4849:       return false, 0
+  4850:     end
+  4851:     local hidden = 0
+  4852:     local allHidden = true
+  4853:     for _, id in ipairs(ids) do
+  4854:       local hideOK, hideErr = pcall(function() game.Compass.HideMarker(id) end)
+  4855:       log("HIDE_STOCK", "reason=" .. tostring(reason) .. " id=" .. tostring(id) ..
+  4856:           " ok=" .. tostring(hideOK) .. " error=" .. tostring(hideErr))
+  4857:       if hideOK then hidden = hidden + 1 end
+  4858:       if not hideOK then allHidden = false end
+  4859:     end
+--- context around line 4980 ---
+  4975:       -- controller knows real Raven but predates Twin UID.
+  4976:       local twin = identity(twinName, "twin")
+  4977:       if twin ~= nil then
+  4978:         local twinShown, queryOK = customShown(twin)
+  4979:         if queryOK and twinShown then
+  4980:           local ok, err = pcall(function() game.Compass.HideMarker(twinName) end)
+  4981:           if not ok then
+  4982:             log("STOCK_REPLACE_TWIN_REFUSED", "uid=" .. twin.IdString ..
+  4983:                 " reason=twin_hide_failed error=" .. tostring(err) ..
+  4984:                 " nativeDelegated=false")
+  4985:             return
+--- context around line 5006 ---
+  5001:       log("ACTION_REFUSED", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
+  5002:           " reason=custom_class_query_failed error=" .. tostring(queryErr))
+  5003:       return
+  5004:     end
+  5005:     if shown then
+  5006:       local hideOK, hideErr = pcall(function() game.Compass.HideMarker(selected.Name) end)
+  5007:       log("REMOVE", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
+  5008:           " ok=" .. tostring(hideOK) .. " error=" .. tostring(hideErr))
+  5009:       if hideOK then
+  5010:         compassPending = {IdString=selected.IdString, State="untracked", Frames=0}
+  5011:         self.currShownMarkerID = nil
+--- context around line 5031 ---
+  5026:           " reason=replace_query_failed")
+  5027:       return
+  5028:     end
+  5029:     suppressLegacyRavenHud()
+  5030:     local showOK, showErr = pcall(function()
+  5031:       game.Compass.ShowMarker(selected.Name, ravenClass)
+  5032:     end)
+  5033:     log("SHOW", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
+  5034:         " class=" .. ravenClass ..
+  5035:         " ok=" .. tostring(showOK) .. " error=" .. tostring(showErr) ..
+  5036:         " replacedCustomCount=" .. tostring(customCount) ..
+--- context around line 5060 ---
+  5055:     local real = identity(ravenName, "real") or knownRavenIdentity
+  5056:     local shown, queryOK, queryErr = customShown(real)
+  5057:     local hideAttempted, hideOK, hideErr = false, true, nil
+  5058:     if shown then
+  5059:       hideAttempted = true
+  5060:       hideOK, hideErr = pcall(function() game.Compass.HideMarker(ravenName) end)
+  5061:     end
+  5062:     if self ~= nil then
+  5063:       local selected = currentSelection(self)
+  5064:       if selected ~= nil and selected.Name == ravenName then clearSelection(self, "raven_collected") end
+  5065:       if real ~= nil and self.currShownMarkerID ~= nil and
+--- context around line 5083 ---
+  5078:       log("LIFECYCLE_CLEAR", "reason=MapOn.Update originalCollected=true" ..
+  5079:           " hideAttempted=" .. tostring(hideAttempted) ..
+  5080:           " hideOK=" .. tostring(hideOK) ..
+  5081:           " hideError=" .. tostring(hideErr or queryErr) ..
+  5082:           " settled=" .. tostring(settled) ..
+  5083:           " twinTouched=false progressionWrites=false")
+  5084:     end
+  5085:     completionObserved = settled
+  5086:   end
+  5087: 
+  5088:   function MapOn:Update(...)
+--- context around line 5136 ---
+  5131:   log("API", "installed=true identitySource=MapOn.MapCollisionChangeHandler_collision_table" ..
+  5132:       " selectionStateMachine=none,candidate-custom,armed-custom" ..
+  5133:       " armedSelectionExpiry=ui_lifecycle_only" ..
+  5134:       " armSignal=GetShowOnCompassPrompt_exact_real_or_same_uid_exact_twin" ..
+  5135:       " stockSignal=currMarkerID_differs_from_exact_custom_candidate" ..
+  5136:       " markerIdentity=Map.GetMarkerInfo compassClass=" .. ravenClass ..
+  5137:       " singleActive=true gameplayCleanup=persistent_precisionchallenge" ..
+  5138:       " progressionWrites=false twinLifecycleIndependent=true")
+  5139: end
+  5140: -- END COMPLETIONIST V0.10.4 UID-AWARE RAVEN COMPASS ROUTING V3.3
+--- context around line 5138 ---
+
+=== SHIPPED LUA ENGINE API SYMBOL INVENTORY ===
+lua_files_scanned=6
+Compass.Hide	1
+Compass.HideAllMarkersOfType	2
+Compass.HideMarker	1
+Compass.SetDesignerForcedHide	1
+Compass.SetHaveCompass	1
+Compass.ShouldBeDisplayed	1
+Compass.Show	1
+Compass.ShowMarker	2
+game.Compass.FindMarkersByIconClass	10
+game.Compass.HaveCompass	5
+game.Compass.HideMarker	20
+game.Compass.MultiCompassTargetQuestSupport	1
+game.Compass.ShowMarker	5
+game.Level.GetVariable	8
+game.Map.FindPlayerRegion	2
+game.Map.FindRegionFromMarker	2
+game.Map.GetMarkerInfo	8
+game.Map.GetRealmInfo	1
+game.Map.GetRegionSummaryInfo	1
+game.World.StoreCheckpoint	2
+Map.CreateMarkerIcon	8
+Map.FindInfoFromIcon	1
+Map.FindRegionFromMarker	3
+Map.GetMarkerInfo	2
+Map.GetMarkersInfoTable	1
+Map.GetRegionSummaryInfo	1
+Map.MarkerHasAnyFlag	13
+Map.MarkerHasFlag	2
+Map.RecycleIcon	12
+Map.SetPlayerMapMarkerToPlayerMapTransform	1
+
+=== SHIPPED LUA PERSISTENCE/GAMEOBJECT LINES ===
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:25: -- WAD. It does not mutate puzzle state, quest state, or save data.
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:285: runeTable[i].runeKey = level:FindSingleGameObject(thisObj:FindLuaTableAttribute("sealBreakable0" .. tostring(i)))
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:351: function OnSaveCheckpoint(level, go)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:359: function OnRestoreCheckpoint(level, go, savedInfo)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:360: state = savedInfo.state
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:361: keysUsed = savedInfo.keysUsed
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:362: challengeComplete = savedInfo.challengeComplete
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:363: interactAvailable = savedInfo.interactAvailable
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:427: function RunicSoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:428: game.SubObject.SoftSave(thisObj)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:432: runeTable[i].runeKey.LuaObjectScript.SoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:437: function ResolveRunicSoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:443: runeTable[i].runeKey.LuaObjectScript.SoftSaveCleanup()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:445: runeTable[i].runeKey.LuaObjectScript.ResolveSoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:495: GameObject = thisObj,
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:506: GameObject = thisObj,
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:5: local checkpointOnOpened = false
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:6: local checkpointOnOpened_Override
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:7: local checkpointRequirementDisabled = false
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:105: checkpointOnOpened = thisObj:GetLuaTableAttribute("CheckpointOnOpened")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:106: checkpointOnOpened_Override = thisObj:GetLuaTableAttribute("CheckpointOnOpened_Override")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:107: if checkpointOnOpened_Override ~= nil and checkpointOnOpened_Override ~= "" then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:108: checkpointOnOpened_Override = GameObjects[checkpointOnOpened_Override]
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:110: checkpointOnOpened_Override = nil
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:132: idleFX:SetInhibitSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:133: parentObj:SetInhibitSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:134: thisObj:SetInhibitSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:136: parentObj:FindSingleGOByName("animatedLid"):SetInhibitSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:148: if (onOpenedEvent or interactionOnFinish) and not checkpointOnOpened and not checkpointRequirementDisabled then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:149: engine.Warning("Chest Error - " .. LD.GetParentTrace(thisObj) .. " has a callback, but isn't set to save a checkpoint. Check the 'CheckpointOnOpened' option in the toolbox to ensure the chest saves correctly")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:159: TypeSpecific_SoftSaveRestore()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:162: function TypeSpecific_SoftSaveRestore()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:182: thisObj.Parent.Parent.LuaObjectScript.ResolveRunicSoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:349: bandit:SetAIDeathCallback(thisObj, "TrapChestSoftSave")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:397: function TrapChestSoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:398: game.SubObject.SoftSave(thisObj)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:532: if checkpointOnOpened then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:533: if checkpointOnOpened_Override ~= nil then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:534: if checkpointOnOpened_Override.IsRefNode then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:535: checkpointOnOpened_Override = checkpointOnOpened_Override.Child
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:537: game.World.StoreCheckpoint({OverrideObject = checkpointOnOpened_Override})
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:539: game.World.StoreCheckpoint()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:542: if game.SubObject.SoftSave then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:543: game.SubObject.SoftSave(thisObj)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:546: thisObj.Parent.Parent.LuaObjectScript.RunicSoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:550: function DisableCheckpointRequirement()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:551: checkpointRequirementDisabled = true
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:553: function OnSaveCheckpoint(level, obj)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:556: function OnRestoreCheckpoint(level, obj, savedInfo)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:557: state = savedInfo.state
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:719: GameObject = parentObj,
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:753: game.SubObject.SoftSave(thisObj)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:769: if not checkpointOnOpened and not checkpointRequirementDisabled then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:770: engine.Warning("Chest Error - " .. LD.GetParentTrace(thisObj) .. " has a callback, but isn't set to save a checkpoint. Check the 'CheckpointOnOpened' option in the toolbox to ensure the chest saves correctly")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:785: if not checkpointOnOpened and not checkpointRequirementDisabled then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:786: engine.Warning("Chest Error - " .. LD.GetParentTrace(thisObj) .. " has a callback, but isn't set to save a checkpoint. Check the 'CheckpointOnOpened' option in the toolbox to ensure the chest saves correctly")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:4: local ravenKilled = false
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:7: -- Read-only with respect to progression: it only observes the script's own
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:8: -- ravenKilled state and publishes it to the custom map/HUD prototype.
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:37: _G.CompletionistMapV100TargetRavenKilled = collected
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:66: CompletionistMapV100_PublishTargetState(ravenKilled, "OnStart")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:67: if ravenKilled == true then
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:89: ravenKilled = true
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:94: timers.StartLevelTimer(1, SoftSave)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:126: function SoftSave(level, obj)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:127: game.SubObject.SoftSave(thisObj)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:129: function OnSaveCheckpoint(level, obj)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:130: return {ravenKilled = ravenKilled}
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:132: function OnRestoreCheckpoint(level, obj, tab)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:133: ravenKilled = tab.ravenKilled
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:134: CompletionistMapV100_PublishTargetState(ravenKilled, "OnRestoreCheckpoint")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:164: -- Runs inside persistent Raven gameplay script. Read native ravenKilled only.
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:202: if ticket ~= generation or ravenKilled ~= true then return end
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:241: local killed = ravenKilled == true
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:281: local restore = OnRestoreCheckpoint
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:282: function OnRestoreCheckpoint(...)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:283: local result = restore(...)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:284: observe("OnRestoreCheckpoint")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:298: " mapmenuDependency=false progressionWrites=false")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:310: {CatalogueId="raven_95b9c6444d479ac68207b1829d02909b",Name="Completionist_V105_Raven_95b9c6444d479ac6",ParentQuest="RegionSummary_ALF_Raven_Parent",X=355.902670263393,Y=-13.4251546010282,Z=150.087953932125},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:311: {CatalogueId="raven_63f2a1a74274de6df3962490fb6552e9",Name="Completionist_V105_Raven_63f2a1a74274de6d",ParentQuest="RegionSummary_ALF_Raven_Parent",X=330.212471220837,Y=9.57608189725386,Z=298.500278896071},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:312: {CatalogueId="raven_a824e12946c803e8511da79bc52a193f",Name="Completionist_V105_Raven_a824e12946c803e8",ParentQuest="RegionSummary_HEL_Raven_Parent",X=100.37760925293,Y=13.2656946182251,Z=50.1039047241211},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:313: {CatalogueId="raven_2811daa04ce30f079ff758b3bf04369d",Name="Completionist_V105_Raven_2811daa04ce30f07",ParentQuest="RegionSummary_HEL_Raven_Parent",X=356.888793945312,Y=-4.4595308303833,Z=31.5798797607422},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:314: {CatalogueId="raven_595d8539488753c54fa471a46631e8c7",Name="Completionist_V105_Raven_595d8539488753c5",ParentQuest="RegionSummary_HEL_Raven_Parent",X=321.863159179688,Y=13.952938079834,Z=79.7303237915039},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:315: {CatalogueId="raven_69a8e9f3434cd84b48c7c688094ed2e4",Name="Completionist_V105_Raven_69a8e9f3434cd84b",ParentQuest="RegionSummary_HEL_Raven_Parent",X=349.126617431641,Y=13.6133966445923,Z=12.3349018096924},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:316: {CatalogueId="raven_7ffab2af4d6e2c7e7a9d42a58943bdf1",Name="Completionist_V105_Raven_7ffab2af4d6e2c7e",ParentQuest="RegionSummary_HEL_Raven_Parent",X=314.640655517578,Y=-27.4914531707764,Z=58.8981285095215},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:317: {CatalogueId="raven_b13e52024ecc5909d1fe478ee2c54e8c",Name="Completionist_V105_Raven_b13e52024ecc5909",ParentQuest="RegionSummary_HEL_Raven_Parent",X=346.504669189453,Y=-2.00611925125122,Z=-74.6015243530273},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:318: {CatalogueId="raven_7ffe9f6e4e18734cebadc892d24801e4",Name="Completionist_V105_Raven_7ffe9f6e4e18734c",ParentQuest="RegionSummary_BC_Raven_Parent",X=130.001189981692,Y=0.936963081359863,Z=-141.655430069183},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:319: {CatalogueId="raven_bc9c2cea4b7e1feaf09bb58f1b691035",Name="Completionist_V105_Raven_bc9c2cea4b7e1fea",ParentQuest="RegionSummary_BC_Raven_Parent",X=63.2450691865632,Y=7.60876417160034,Z=-191.514320076015},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:320: {CatalogueId="raven_2b86b2ad4f6c006d5f6db0af57a190a4",Name="Completionist_V105_Raven_2b86b2ad4f6c006d",ParentQuest="RegionSummary_BM_Raven_Parent",X=-178.000001018187,Y=1.7838077545166,Z=303.99999980491},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:321: {CatalogueId="raven_73ac895445d967756cbf34ac591ac205",Name="Completionist_V105_Raven_73ac895445d96775",ParentQuest="RegionSummary_BSW_Raven_Parent",X=-258.990280144897,Y=5.33059692382812,Z=-285.298244761827},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:322: {CatalogueId="raven_11d083554dd320d5e23ccca24f339acd",Name="Completionist_V105_Raven_11d083554dd320d5",ParentQuest="RegionSummary_BT_Raven_Parent",X=-247.521129680852,Y=15.334071401711,Z=174.190121041686},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:323: {CatalogueId="raven_ef8568004bd6283b79b4819bb3e5cb0f",Name="Completionist_V105_Raven_ef8568004bd6283b",ParentQuest="RegionSummary_BW_Raven_Parent",X=112.027648567456,Y=14.0519285202026,Z=355.299636271641},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:324: {CatalogueId="raven_4b8990ee4053cd00d13299928da1a9fc",Name="Completionist_V105_Raven_4b8990ee4053cd00",ParentQuest="RegionSummary_CALS_Raven_Parent",X=-250.723768859096,Y=-3.53147229364686,Z=-89.2099558240422},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:325: {CatalogueId="raven_df5a6f7543fa157f4cd630a19c038deb",Name="Completionist_V105_Raven_df5a6f7543fa157f",ParentQuest="RegionSummary_CALS_Raven_Parent",X=294.915357133406,Y=-8.76826047897339,Z=-174.666727587869},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:326: {CatalogueId="raven_e4d9b53e4e0330fc07421d8fea348f1d",Name="Completionist_V105_Raven_e4d9b53e4e0330fc",ParentQuest="RegionSummary_FOOT_Raven_Parent",X=-482.668668137819,Y=11.7049910724163,Z=246.15424006169},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:327: {CatalogueId="raven_2862a927444bf9df95a605b6a1cfec2b",Name="Completionist_V105_Raven_2862a927444bf9df",ParentQuest="RegionSummary_FOOT_Raven_Parent",X=-364.428009033203,Y=60.9643630981445,Z=378.847961425781},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:328: {CatalogueId="raven_528d332048f734d84b2f8ca26b3abafc",Name="Completionist_V105_Raven_528d332048f734d8",ParentQuest="RegionSummary_FOR_Raven_Parent",X=-207.533752441406,Y=27.4933643341064,Z=-891.698852539063},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:329: {CatalogueId="raven_3f0baac6405889c7478896801b6a637c",Name="Completionist_V105_Raven_3f0baac6405889c7",ParentQuest="RegionSummary_FD_Raven_Parent",X=10.2952669007519,Y=14.497296333313,Z=-585.053234791918},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:330: {CatalogueId="raven_ad56521740c745076417e99ddf1dd7a4",Name="Completionist_V105_Raven_ad56521740c74507",ParentQuest="RegionSummary_FD_Raven_Parent",X=55.46050852298,Y=12.5715627670288,Z=-560.252033876615},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:331: {CatalogueId="raven_b5ec8398449f573b8a70b7a4fb1154af",Name="Completionist_V105_Raven_b5ec8398449f573b",ParentQuest="RegionSummary_FD_Raven_Parent",X=78.1437570857584,Y=-0.150186061859131,Z=-512.011643855323},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:332: {CatalogueId="raven_14a87a63401390815b4e4ab2b4e619d0",Name="Completionist_V105_Raven_14a87a6340139081",ParentQuest="RegionSummary_FD_Raven_Parent",X=68.9712214782494,Y=7.0696337223053,Z=-385.6933954276},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:333: {CatalogueId="raven_97b753a94e069b45a5e031b81a5b9f91",Name="Completionist_V105_Raven_97b753a94e069b45",ParentQuest="RegionSummary_FD_Raven_Parent",X=70.7724436862145,Y=7.99884366989136,Z=-452.414581433755},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:334: {CatalogueId="raven_09c20f1b44476543307d8d8a444401f7",Name="Completionist_V105_Raven_09c20f1b44476543",ParentQuest="RegionSummary_HTTK_Raven_Parent",X=213.200271606445,Y=-19.5986442565918,Z=-465.167449951172},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:335: {CatalogueId="raven_93bb416243c6d7afd0dadf824507fcb6",Name="Completionist_V105_Raven_93bb416243c6d7af",ParentQuest="RegionSummary_HTTK_Raven_Parent",X=299.866455078125,Y=-29.7612724304199,Z=-386.324096679688},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:336: {CatalogueId="raven_b65148ce40189997a7ee6abb05551d95",Name="Completionist_V105_Raven_b65148ce40189997",ParentQuest="RegionSummary_HTTK_Raven_Parent",X=395.121004104614,Y=-45.5068912506104,Z=-352.832214355469},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:337: {CatalogueId="raven_4f3ed8604f52329654cb89a77cb7b227",Name="Completionist_V105_Raven_4f3ed8604f523296",ParentQuest="RegionSummary_HTTK_Raven_Parent",X=352.256092071533,Y=-30.1093330383301,Z=-475.425933837891},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:338: {CatalogueId="raven_ce4340a84992a449844e0394671c59eb",Name="Completionist_V105_Raven_ce4340a84992a449",ParentQuest="RegionSummary_HTTK_Raven_Parent",X=432.142700195312,Y=-45.9899129867554,Z=-479.911163330078},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:339: {CatalogueId="raven_0b07c75f438ce0cfe8b6feb7731ffc9c",Name="Completionist_V105_Raven_0b07c75f438ce0cf",ParentQuest="RegionSummary_HM01_Raven_Parent",X=-234.014747619629,Y=7.71115684509277,Z=430.845436096191},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:340: {CatalogueId="raven_d869e60744104a9e8865428d5fc2f63a",Name="Completionist_V105_Raven_d869e60744104a9e",ParentQuest="RegionSummary_HM02_Raven_Parent",X=-484.709909439087,Y=-18.9620180130005,Z=-81.9476470947266},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:341: {CatalogueId="raven_349cc1eb4752a6149cf89f9f94644092",Name="Completionist_V105_Raven_349cc1eb4752a614",ParentQuest="RegionSummary_HM02_Raven_Parent",X=-499.053089618683,Y=-8.97603130340576,Z=-174.698647499084},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:342: {CatalogueId="raven_7ea7fe24483df9d884fd4790840bf692",Name="Completionist_V105_Raven_7ea7fe24483df9d8",ParentQuest="RegionSummary_HSH_Raven_Parent",X=742.055877685547,Y=-4.87457370758057,Z=-261.06355381012},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:343: {CatalogueId="raven_e01f95a84dd1e99dde0952856855399d",Name="Completionist_V105_Raven_e01f95a84dd1e99d",ParentQuest="RegionSummary_HSH_Raven_Parent",X=613.454071044922,Y=-14.4896502494812,Z=-131.025337219238},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:344: {CatalogueId="raven_9deba5114d8045898dafc5be9add793b",Name="Completionist_V105_Raven_9deba5114d804589",ParentQuest="RegionSummary_ISA_Raven_Parent",X=99.3590496837271,Y=-8.7858304977417,Z=278.658577850248},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:345: {CatalogueId="raven_62fbf37c443c70aeca40ac840f6084b1",Name="Completionist_V105_Raven_62fbf37c443c70ae",ParentQuest="RegionSummary_ISW_Raven_Parent",X=-195.024169302108,Y=-19.6607341372529,Z=-199.392995631803},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:346: {CatalogueId="raven_fa8d596f445ba456bc5b11905aa4af07",Name="Completionist_V105_Raven_fa8d596f445ba456",ParentQuest="RegionSummary_MT_Raven_Parent",X=176.968307495117,Y=3.7605185508728,Z=163.654830932617},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:347: {CatalogueId="raven_4532135740478ac108377e8b1c51a501",Name="Completionist_V105_Raven_4532135740478ac1",ParentQuest="RegionSummary_PP_Raven_Parent",X=-456.389038085938,Y=100.450210571289,Z=616.507263183594},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:348: {CatalogueId="raven_fb1ebb004216311e237c36b23a10707b",Name="Completionist_V105_Raven_fb1ebb004216311e",ParentQuest="RegionSummary_PP_Raven_Parent",X=-477.010528564453,Y=115.406867980957,Z=894.953552246094},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:349: {CatalogueId="raven_b88e14b5413082e98c4d9cadcbf6ad10",Name="Completionist_V105_Raven_b88e14b5413082e9",ParentQuest="RegionSummary_PP_Raven_Parent",X=-278.19970703125,Y=142.471649169922,Z=781.201049804688},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:350: {CatalogueId="raven_5a498384495d58916e944883eb2c90bb",Name="Completionist_V105_Raven_5a498384495d5891",ParentQuest="RegionSummary_PP_Raven_Parent",X=-336.435485839844,Y=140.173431396484,Z=856.341857910156},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:351: {CatalogueId="raven_100bb5c44d6b69eba68eb895d005f956",Name="Completionist_V105_Raven_100bb5c44d6b69eb",ParentQuest="RegionSummary_RP_Raven_Parent",X=-242.808197021484,Y=92.5402984619141,Z=-455.935913085938},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:352: {CatalogueId="raven_d9db91914694cfe73fa5b9abb208d25d",Name="Completionist_V105_Raven_d9db91914694cfe7",ParentQuest="RegionSummary_RP_Raven_Parent",X=-273.784545898438,Y=89.4121856689453,Z=-547.946472167969},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:353: {CatalogueId="raven_97e41c48491b177e804019a649735e58",Name="Completionist_V105_Raven_97e41c48491b177e",ParentQuest="RegionSummary_RP_Raven_Parent",X=-358.776885986328,Y=108.650001525879,Z=-393.233367919922},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:354: {CatalogueId="raven_ccbc62d64eb0f79bbf76e9a08401a137",Name="Completionist_V105_Raven_ccbc62d64eb0f79b",ParentQuest="RegionSummary_RP_Raven_Parent",X=-346.471710205078,Y=99.9208984375,Z=-328.121917724609},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:355: {CatalogueId="raven_f8fdd3a4438c9697f8aa308323b2465e",Name="Completionist_V105_Raven_f8fdd3a4438c9697",ParentQuest="RegionSummary_RP_Raven_Parent",X=-383.799987792969,Y=75.8000030517578,Z=-276.899993896484},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:356: {CatalogueId="raven_ac45261c43ee745cd2e20a9cf61a817d",Name="Completionist_V105_Raven_ac45261c43ee745c",ParentQuest="RegionSummary_RP_Raven_Parent",X=-405.134735107422,Y=69.8000030517578,Z=0.886073529720306},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:357: {CatalogueId="raven_5a652cfb4af86af517b33c8676dbbfc5",Name="Completionist_V105_Raven_5a652cfb4af86af5",ParentQuest="RegionSummary_RP_Raven_Parent",X=-503.480834960938,Y=25.3998031616211,Z=145.937606811523},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:358: {CatalogueId="raven_8ca357c445d32c015159d6b93e173686",Name="Completionist_V105_Raven_8ca357c445d32c01",ParentQuest="RegionSummary_SM_Raven_Parent",X=456.662017822266,Y=-2.57212233543396,Z=133.628570556641},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:359: {CatalogueId="raven_a70cd386408985c8bedbc98a7aaed456",Name="Completionist_V105_Raven_a70cd386408985c8",ParentQuest="RegionSummary_SM_Raven_Parent",X=574.245178222656,Y=-34.8896942138672,Z=151.699478149414},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:360: {CatalogueId="raven_642d0d164af0a5d4076e77933c549a5d",Name="Completionist_V103_Veithurgard_Raven_01",ParentQuest="RegionSummary_VF_Raven_Parent",X=-64.8508987426758,Y=12.9873847961426,Z=787.306938171387},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:361: {CatalogueId="raven_c945cb53465b58decfcbd4a221cb5326",Name="Completionist_V105_Raven_c945cb53465b58de",ParentQuest="RegionSummary_VF_Raven_Parent",X=122.604850769043,Y=17.3742713928223,Z=679.211616516113},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:362: {CatalogueId="raven_e32f7bab42fd7298890f6aa56a734562",Name="Completionist_V105_Raven_e32f7bab42fd7298",ParentQuest="RegionSummary_VF_Raven_Parent",X=-127.960754394531,Y=15.5776290893555,Z=690.075782775879},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:394: local collected = ravenKilled == true
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:422: if ticket ~= generation or ravenKilled ~= true then return end
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:443: local restore = OnRestoreCheckpoint
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:444: function OnRestoreCheckpoint(...)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:445: local result = restore(...)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:447: publish("OnRestoreCheckpoint")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:460: " nativeField=ravenKilled exactQuestAndPosition=true boundedRetry=" .. tostring(retryLimit) ..
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:461: " polling=false progressionWrites=false")
+gameart\ui\scripts\hud\mainhud.lua:17: -- GameObjects. The safe route is therefore to borrow a pre-authored HUD object
+gameart\ui\scripts\hud\mainhud.lua:113: local function CompletionistMapV100_RestoreProofVisual(self)
+gameart\ui\scripts\hud\mainhud.lua:121: local restoreOK, restoreErr = pcall(function()
+gameart\ui\scripts\hud\mainhud.lua:128: print("[CompletionistMap v0.10.1] HUD_VISUAL_RESTORE" ..
+gameart\ui\scripts\hud\mainhud.lua:129: " ok=" .. tostring(restoreOK) ..
+gameart\ui\scripts\hud\mainhud.lua:130: " error=" .. tostring(restoreErr))
+gameart\ui\scripts\hud\mainhud.lua:213: _G.CompletionistMapV100TargetRavenKilled == true then
+gameart\ui\scripts\hud\mainhud.lua:226: _G.CompletionistMapV100TargetRavenKilled = true
+gameart\ui\scripts\hud\mainhud.lua:251: CompletionistMapV100_RestoreProofVisual(self)
+gameart\ui\scripts\hud\mainhud.lua:257: CompletionistMapV100_RestoreProofVisual(self)
+gameart\ui\scripts\hud\mainhud.lua:583: UI.SoftSavePlayerState()
+gameart\ui\scripts\hud\mainhud.lua:917: function MainHUD:OnSaveCheckpoint(tab)
+gameart\ui\scripts\hud\mainhud.lua:919: function MainHUD:OnRestoreCheckpoint(tab)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:54: -- No marker state, quest state, collectible state, or save data is changed.
+gameart\ui\scripts\inworldmenu\mapmenu.lua:68: regionQuest = "RegionSummary_VF_Raven_Parent",
+gameart\ui\scripts\inworldmenu\mapmenu.lua:199: if _G.CompletionistMapV100TargetRavenKilled == true then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:205: "RegionSummary_VF_Raven_Parent"
+gameart\ui\scripts\inworldmenu\mapmenu.lua:210: _G.CompletionistMapV100TargetRavenKilled = true
+gameart\ui\scripts\inworldmenu\mapmenu.lua:250: if _G.CompletionistMapV100TargetRavenKilled == true then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:259: _G.CompletionistMapV100TargetRavenKilled = true
+gameart\ui\scripts\inworldmenu\mapmenu.lua:657: local function CompletionistMapV100_FindNornirChestCollision(self, collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:658: if type(collisionGameObjectTable) ~= "table" or
+gameart\ui\scripts\inworldmenu\mapmenu.lua:662: for _, collGO in ipairs(collisionGameObjectTable) do
+gameart\ui\scripts\inworldmenu\mapmenu.lua:810: collisionGameObjectTable
+gameart\ui\scripts\inworldmenu\mapmenu.lua:812: if type(collisionGameObjectTable) ~= "table" or
+gameart\ui\scripts\inworldmenu\mapmenu.lua:817: for _, collGO in ipairs(collisionGameObjectTable) do
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1281: collisionGameObjectTable
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1283: if type(collisionGameObjectTable) ~= "table" or
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1288: for _, collGO in ipairs(collisionGameObjectTable) do
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1515: assert(self.playerIconGO ~= nil, "The player indicator gameObject was not found.")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1993: local fogTable = mapConsts.MAP_FOG_GAMEOBJECTS
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2012: local jointName = mapConsts.MAP_TEXT_GAMEOBJECTS[regionName]
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2022: local fogTable = mapConsts.MAP_FOG_GAMEOBJECTS
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2045: local jointName = mapConsts.MAP_TEXT_GAMEOBJECTS[regionName]
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2057: function MapOn:MapCollisionChangeHandler(currState, collisionGameObjectTable, realmName)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2063: collisionGameObjectTable
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2110: self, collisionGameObjectTable
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2135: collisionGameObjectTable
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2182: end  local iconCollInfo, terrainCollInfo = mapUtil.GetPrioritizedIconAndTerrain(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2225: for i = 1, #collisionGameObjectTable do
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2226: local collGO = collisionGameObjectTable[i]
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2501: local goTerrainCollision = mapUtil.GetMapCollisionInfoGameObject(terrainCollInfo)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3026: if UI.GetEventSenderGameObject() == button then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3037: if markerInfo.iconGO ~= nil and UI.GetEventSenderGameObject() == markerInfo.iconGO then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3054: if UI.GetEventSenderGameObject() == self.playerIconGO then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3280: target.regionQuest = "RegionSummary_VF_Raven_Parent"
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3372: function Midgard:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3373: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Midgard")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3388: function Alfheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3389: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Alfheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3404: function Helheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3405: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Helheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3420: function Jotunheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3421: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Jotunheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3436: function Niflheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3437: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Niflheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3452: function Muspelheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3453: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Muspelheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3468: function Svartalheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3469: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Svartalheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3484: function Vanaheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3485: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Vanaheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3500: function Asgard:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3501: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Asgard")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3506: function MapMenu:OnSaveCheckpoint(tab)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3508: function MapMenu:OnRestoreCheckpoint(tab)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3661: -- collected so artwork can still be inspected. No marker state, save state,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3662: -- progression value, or native compass state is changed here.
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3721: " diagnosticShowEvenIfCollected=true progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3741: " progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3744: log("ART_RESULT", "active=false reason=id_or_region_unresolved progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3754: " progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3764: " progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3791: " progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3799: " compassType=DockPoint dockProxyUsed=false progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3808: -- No marker progression state is changed here. The native marker remains
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4623: -- Production bridge publishes native Raven state. False from an older restored
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4624: -- checkpoint must win over stale quest state. This is read-only for progression.
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4626: local state = _G.CompletionistMapV100TargetRavenKilled
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4629: return game.QuestManager.GetQuestState("RegionSummary_VF_Raven_Parent")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4932: function MapOn:MapCollisionChangeHandler(currState, collisionGameObjectTable, realmName)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4934: local selected, source = collisionTableSelection(self, collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4940: return previousCollision(self, currState, collisionGameObjectTable, realmName)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5083: " twinTouched=false progressionWrites=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5138: " progressionWrites=false twinLifecycleIndependent=true")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5572: " source=" .. tostring(source) .. " progressionWrites=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5596: " accepted=" .. tostring(accepted) .. " catalogueDefaultVisible=true progressionWrites=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5607: " staleStateRetained=false catalogueDefaultVisible=true progressionWrites=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5618: " polling=false progressionWrites=false catalogueDefaultVisible=true" ..
