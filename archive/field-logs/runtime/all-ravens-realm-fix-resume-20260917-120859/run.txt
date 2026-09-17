@@ -1,0 +1,132 @@
+=== ALL-RAVENS REALM-FIX INSTALL RESUME ===
+timestamp=20260917-120859
+branch=codex/all-collectibles-production-research
+game=G:\SteamLibrary\steamapps\common\GodOfWar
+purpose=retire verified rolled-back active pointer, revalidate 53-pool candidate, install corrected build
+baseline_source_sha_verification=true
+retired_active_transaction=20260917T083518Z-47d8e7e3
+retired_active_status=rolled-back
+historical_transaction_manifest_preserved=true
+
+=== raven-runtime-model-tests ===
+test_a_b_and_b_a_replacement (__main__.RavenRuntimeTests.test_a_b_and_b_a_replacement) ... ok
+test_collected_hidden_uncollected_shown_and_mixed_save (__main__.RavenRuntimeTests.test_collected_hidden_uncollected_shown_and_mixed_save) ... ok
+test_exact_uid_required_after_exact_collision (__main__.RavenRuntimeTests.test_exact_uid_required_after_exact_collision) ... ok
+test_fully_collected_and_fresh_simulation (__main__.RavenRuntimeTests.test_fully_collected_and_fresh_simulation) ... ok
+test_incidental_collision_noise_preserves_exact_candidate_until_uid_resolution (__main__.RavenRuntimeTests.test_incidental_collision_noise_preserves_exact_candidate_until_uid_resolution) ... ok
+test_kill_tracked_a_removes_a_only (__main__.RavenRuntimeTests.test_kill_tracked_a_removes_a_only) ... ok
+test_killing_a_does_not_remove_b_or_stock (__main__.RavenRuntimeTests.test_killing_a_does_not_remove_b_or_stock) ... ok
+test_legacy_proven_bridge_is_only_nil_uid_exception (__main__.RavenRuntimeTests.test_legacy_proven_bridge_is_only_nil_uid_exception) ... ok
+test_loading_other_save_clears_cached_state_then_defaults_to_catalogue (__main__.RavenRuntimeTests.test_loading_other_save_clears_cached_state_then_defaults_to_catalogue) ... ok
+test_marker_id_alone_never_infers_raven (__main__.RavenRuntimeTests.test_marker_id_alone_never_infers_raven) ... ok
+test_persisted_kill_bootstrap_hides_only_confirmed_ids (__main__.RavenRuntimeTests.test_persisted_kill_bootstrap_hides_only_confirmed_ids) ... ok
+test_persisted_kill_bootstrap_ignores_unknown_ids (__main__.RavenRuntimeTests.test_persisted_kill_bootstrap_ignores_unknown_ids) ... ok
+test_realm_filtering (__main__.RavenRuntimeTests.test_realm_filtering) ... ok
+test_restore_uncollected_reappears_and_recollects (__main__.RavenRuntimeTests.test_restore_uncollected_reappears_and_recollects) ... ok
+test_same_raven_second_click_removes (__main__.RavenRuntimeTests.test_same_raven_second_click_removes) ... ok
+test_stale_selection_cannot_hijack_other_raven_or_stock (__main__.RavenRuntimeTests.test_stale_selection_cannot_hijack_other_raven_or_stock) ... ok
+test_stock_and_nornir_replacement_both_directions (__main__.RavenRuntimeTests.test_stock_and_nornir_replacement_both_directions) ... ok
+test_teardown_cleans_ui_and_no_permanent_polling (__main__.RavenRuntimeTests.test_teardown_cleans_ui_and_no_permanent_polling) ... ok
+test_unknown_state_defaults_visible (__main__.RavenRuntimeTests.test_unknown_state_defaults_visible) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.002s
+
+OK
+exit_code=0
+
+=== all-ravens-lua-tests ===
+test_exact_loaded_instance_publishes_native_bool_and_rearms (__main__.AllRavensEventLuaTests.test_exact_loaded_instance_publishes_native_bool_and_rearms) ... ok
+test_a_b_same_click_stock_and_kill_lifecycle (__main__.AllRavensMapLuaTests.test_a_b_same_click_stock_and_kill_lifecycle) ... ok
+test_catalogue_visible_by_default_restore_and_teardown (__main__.AllRavensMapLuaTests.test_catalogue_visible_by_default_restore_and_teardown) ... ok
+test_persisted_kill_bootstrap_hides_only_confirmed_raven (__main__.AllRavensMapLuaTests.test_persisted_kill_bootstrap_hides_only_confirmed_raven) ... ok
+test_realm_transition_recycles_old_realm_and_builds_midgard (__main__.AllRavensMapLuaTests.test_realm_transition_recycles_old_realm_and_builds_midgard) ... ok
+test_save_load_reset_clears_state_and_target_catalogue_defaults_visible (__main__.AllRavensMapLuaTests.test_save_load_reset_clears_state_and_target_catalogue_defaults_visible) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.006s
+
+OK
+exit_code=0
+
+=== build-release-candidate ===
+ALL_RAVENS_OFFLINE_CANDIDATE_READY_FOR_RUNTIME_TEST
+{
+  "exec/dc/pc_le/mapcoords.dcb": {
+    "bytes": 83712,
+    "sha256": "d6786f9734473fa7bdb8eff39aadac4f3fb2ecd4a83d56bfc5d2832c17435514"
+  },
+  "exec/dc/pc_le/mapmaster.dcb": {
+    "bytes": 104064,
+    "sha256": "7d1d5e05315dce17326712a95901e1e753b6c14c4f1a71012ca337ae7ee9b223"
+  },
+  "exec/dc/pc_le/wad_r_ui.dcb": {
+    "bytes": 5712,
+    "sha256": "c5c38d0f89873b8617f38e049a916eb2fe632f9bf1f17bb5eef4867343ecf45b"
+  },
+  "mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua": {
+    "bytes": 25567,
+    "sha256": "06426ebb8a0b69366298abf06c34c7fd37f5bbe53864f619d80acf442f88791f"
+  },
+  "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": {
+    "bytes": 207981,
+    "sha256": "6e005548e0727b2deb203b0dc376e7998126bb9ade0c7c8507e73139812fa71b"
+  }
+}
+ready_for_runtime_test=true
+exit_code=0
+
+=== all-ravens-build-tests ===
+test_candidate_has_53_real_ravens_and_no_twin (__main__.AllRavensBuildTests.test_candidate_has_53_real_ravens_and_no_twin) ... ok
+test_candidate_has_only_five_scoped_files (__main__.AllRavensBuildTests.test_candidate_has_only_five_scoped_files) ... ok
+test_deterministic_generate (__main__.AllRavensBuildTests.test_deterministic_generate) ... ok
+test_every_marker_uses_one_shared_raven_resource (__main__.AllRavensBuildTests.test_every_marker_uses_one_shared_raven_resource) ... ok
+test_gameplay_hook_has_53_exact_state_rows (__main__.AllRavensBuildTests.test_gameplay_hook_has_53_exact_state_rows) ... ok
+test_hooks_add_no_progression_write (__main__.AllRavensBuildTests.test_hooks_add_no_progression_write) ... ok
+test_lf_and_crlf_templates_render_same (__main__.AllRavensBuildTests.test_lf_and_crlf_templates_render_same) ... ok
+test_lua_has_53_data_rows_and_exact_router_contract (__main__.AllRavensBuildTests.test_lua_has_53_data_rows_and_exact_router_contract) ... ok
+test_pool_capacity_covers_full_catalogue_for_realm_transition (__main__.AllRavensBuildTests.test_pool_capacity_covers_full_catalogue_for_realm_transition) ... ok
+test_release_gate_open_for_catalogue_first_runtime (__main__.AllRavensBuildTests.test_release_gate_open_for_catalogue_first_runtime) ... ok
+test_source_game_files_stay_unchanged (__main__.AllRavensBuildTests.test_source_game_files_stay_unchanged) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.091s
+
+OK
+exit_code=0
+
+=== verify-deterministic-rebuild ===
+ALL_RAVENS_RELEASE_CANDIDATE_REBUILD_VERIFIED
+exit_code=0
+
+=== fake-game-transaction-tests ===
+ALL_RAVENS_TRANSACTION_SELF_TEST_PASSED
+exit_code=0
+
+=== git-diff-check ===
+warning: in the working copy of 'archive/all-ravens/all-ravens-release-candidate-offline.json', LF will be replaced by CRLF the next time Git touches it
+exit_code=0
+candidate_caption_verified=true
+candidate_raven_pool_capacity=53
+
+=== runtime-install ===
+ALL_RAVENS_RUNTIME_TEST_INSTALLED
+  transaction: 20260917T090911Z-7ba7965e
+  files installed: 5
+  catalogue Ravens in candidate: 53
+  backups completed before first game write: true
+  candidate SHA verification: true
+  saves/progression written by installer: false
+  game launched by installer: false
+  manifest: C:\Users\david\Documents\GitHub\completionist-map-gow2018-research-live\build\v0.10.5-all-ravens-runtime-test\transaction\transactions\20260917T090911Z-7ba7965e\manifest.json
+exit_code=0
+
+=== RESULT ===
+RESULT=PASS
+NEW_TRANSACTION_ID=20260917T090911Z-7ba7965e
+NEW_TRANSACTION_STATUS=installed
+NEW_TRANSACTION_FILES=5
+RAVEN_POOL_CAPACITY=53
+RAVEN_MAP_LABEL=Odin's Raven
+OLD_ROLLED_BACK_TRANSACTION_HISTORY_PRESERVED=true
+NEXT_FIELD_TEST=realm switching before Raven kill lifecycle
