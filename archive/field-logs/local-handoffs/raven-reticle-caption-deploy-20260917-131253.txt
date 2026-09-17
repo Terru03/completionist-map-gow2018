@@ -1,0 +1,38 @@
+RAVEN_RETICLE_CAPTION_DEPLOY_V1
+STARTED_LOCAL=2026-09-17T13:12:53.2143674+03:00
+REPO=C:\Users\david\Documents\GitHub\completionist-map-gow2018-research-live
+GAME_ROOT=G:\SteamLibrary\steamapps\common\GodOfWar
+
+=== apply guarded reticle caption patch ===
+RAVEN_RETICLE_CAPTION_PATCH_APPLIED
+
+=== Lua 5.1 Raven runtime tests ===
+test_exact_loaded_instance_publishes_native_bool_and_rearms (__main__.AllRavensEventLuaTests.test_exact_loaded_instance_publishes_native_bool_and_rearms) ... ok
+test_a_b_same_click_stock_and_kill_lifecycle (__main__.AllRavensMapLuaTests.test_a_b_same_click_stock_and_kill_lifecycle) ... ok
+test_catalogue_visible_by_default_restore_and_teardown (__main__.AllRavensMapLuaTests.test_catalogue_visible_by_default_restore_and_teardown) ... ok
+test_exact_raven_collision_populates_stock_cursor_card (__main__.AllRavensMapLuaTests.test_exact_raven_collision_populates_stock_cursor_card) ... FAIL
+test_persisted_kill_bootstrap_hides_only_confirmed_raven (__main__.AllRavensMapLuaTests.test_persisted_kill_bootstrap_hides_only_confirmed_raven) ... ok
+test_realm_transition_recycles_old_realm_and_builds_midgard (__main__.AllRavensMapLuaTests.test_realm_transition_recycles_old_realm_and_builds_midgard) ... ok
+test_save_load_reset_clears_state_and_target_catalogue_defaults_visible (__main__.AllRavensMapLuaTests.test_save_load_reset_clears_state_and_target_catalogue_defaults_visible) ... ok
+
+======================================================================
+FAIL: test_exact_raven_collision_populates_stock_cursor_card (__main__.AllRavensMapLuaTests.test_exact_raven_collision_populates_stock_cursor_card)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-research-live\tools\v0.10.5\test_all_ravens_lua.py", line 184, in test_exact_raven_collision_populates_stock_cursor_card
+    self.assertEqual(self.probe.reticleTitle(), "Odin's Raven")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != "Odin's Raven"
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.014s
+
+FAILED (failures=1)
+
+RESULT=FAILED
+FAILED_PHASE=apply-caption-patch
+ERROR=Lua 5.1 Raven runtime tests failed with exit code 1
+ROLLED_BACK_PREVIOUS_CANDIDATE=false
+NEW_CANDIDATE_INSTALLED=false
+FINISHED_LOCAL=2026-09-17T13:12:53.6632137+03:00
+HEAD is now at e283095 fix: make Raven caption patch safely rerunnable
