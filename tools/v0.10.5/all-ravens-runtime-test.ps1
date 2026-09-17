@@ -2,7 +2,8 @@ param(
     [ValidateSet('Install','Rollback','Status')]
     [string]$Mode = 'Status',
     [string]$GameRoot = 'G:\SteamLibrary\steamapps\common\GodOfWar',
-    [switch]$ConfirmRuntimeTest
+    [switch]$ConfirmRuntimeTest,
+    [switch]$PreserveCurrentBaseline
 )
 
 $ErrorActionPreference = 'Stop'
@@ -96,14 +97,55 @@ function Assert-ExpectedPreInstallGame([object]$Proof) {
     }
 }
 
-function Assert-RestoredGame([object]$Proof) {
-    Assert-ExpectedPreInstallGame -Proof $Proof
+function Assert-CurrentPreInstallGamePresent {
+    foreach ($name in $files.Keys) {
+        $relative = ([string]$files[$name]).Replace('\','/')
+        $path = Resolve-SafeChildPath -Root $GameRoot -Relative $relative -Label 'installed game source'
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Installed game file missing: $relative" }
+        $sha = Get-Sha256 $path
+        if ($sha -notmatch '^[0-9a-f]{64}$') { throw "Could not hash installed game file: $relative" }
+    }
+}
+
+function Assert-ManifestBeforeState([object]$Manifest) {
+    foreach ($entry in @($Manifest.entries)) {
+        $relative = ([string]$entry.relative).Replace('\','/')
+        $path = Resolve-SafeChildPath -Root $GameRoot -Relative $relative -Label 'restored game file'
+        if ([bool]$entry.existed_before) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Restored game file missing: $relative" }
+            $expected = ([string]$entry.before_sha256).ToLowerInvariant()
+            $actual = Get-Sha256 $path
+            if ($actual -ne $expected) { throw "Restored game baseline differs for $relative. Expected $expected, got $actual." }
+        }
+        elseif (Test-Path -LiteralPath $path) {
+            throw "Rollback left a file that did not exist before install: $relative"
+        }
+    }
+}
+
+function Assert-PreInstallPolicy([object]$Proof) {
+    if ($PreserveCurrentBaseline) {
+        Assert-CurrentPreInstallGamePresent
+    }
+    else {
+        Assert-ExpectedPreInstallGame -Proof $Proof
+    }
+}
+
+function Assert-RestoredGame([object]$Proof, [object]$Manifest) {
+    if ($PreserveCurrentBaseline) {
+        Assert-ManifestBeforeState -Manifest $Manifest
+    }
+    else {
+        Assert-ExpectedPreInstallGame -Proof $Proof
+    }
 }
 
 if ($Mode -eq 'Status') {
     Write-Host 'ALL_RAVENS_RUNTIME_TEST_STATUS'
     Write-Host "  candidate: $candidateRoot"
     Write-Host "  proof: $proofPath"
+    Write-Host "  preserve current baseline mode: $([bool]$PreserveCurrentBaseline)"
     if (-not (Test-Path -LiteralPath $activeManifest -PathType Leaf)) {
         Write-Host '  active transaction: none'
         exit 0
@@ -129,7 +171,7 @@ $operationHead = Get-RepoHead
 
 if ($Mode -eq 'Install') {
     if (-not $ConfirmRuntimeTest) { throw 'Install is disarmed. Re-run with -ConfirmRuntimeTest for the controlled 53-Raven field test.' }
-    Assert-ExpectedPreInstallGame -Proof $proof
+    Assert-PreInstallPolicy -Proof $proof
 
     if (Test-Path -LiteralPath $activeManifest -PathType Leaf) {
         $old = Get-ValidatedActiveTransaction -Active $activeManifest -Game $GameRoot -Candidate $candidateRoot -State $stateRoot -ProofPath $proofPath -FileMap $files -CandidateShas $candidateShas -CandidateLabel $candidateLabel -RepoBranch $branch
@@ -143,7 +185,7 @@ if ($Mode -eq 'Install') {
         Assert-RepoHead -ExpectedHead $operationHead
         Assert-TrackedTreeClean
         Assert-GameClosed -Game $GameRoot
-        Assert-ExpectedPreInstallGame -Proof $proof
+        Assert-PreInstallPolicy -Proof $proof
     }
     $writeGuard = {
         Assert-GameClosed -Game $GameRoot
@@ -159,6 +201,7 @@ if ($Mode -eq 'Install') {
     Write-Host '  catalogue Ravens in candidate: 53'
     Write-Host '  backups completed before first game write: true'
     Write-Host '  candidate SHA verification: true'
+    Write-Host "  pre-install rollback baseline: $(if ($PreserveCurrentBaseline) { 'current five-file state' } else { 'frozen v3.3 source state' })"
     Write-Host '  saves/progression written by installer: false'
     Write-Host '  game launched by installer: false'
     Write-Host "  manifest: $(Join-Path ([string]$manifest.transaction_root) 'manifest.json')"
@@ -178,7 +221,7 @@ if ($Mode -eq 'Rollback') {
     $manifest.status = 'rolled-back'
     $manifest.rolled_back_utc = (Get-Date).ToUniversalTime().ToString('o')
     Save-TransactionManifest -Manifest $manifest -Active $activeManifest
-    Assert-RestoredGame -Proof $proof
+    Assert-RestoredGame -Proof $proof -Manifest $manifest
 
     Write-Host 'ALL_RAVENS_RUNTIME_TEST_ROLLED_BACK'
     Write-Host "  transaction: $($manifest.transaction_id)"
