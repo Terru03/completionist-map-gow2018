@@ -11,7 +11,7 @@ Set-StrictMode -Version Latest
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $engine = Join-Path $repo 'tools\v0.10.4\nornir-runtime-candidate3.ps1'
 if (-not (Test-Path -LiteralPath $engine -PathType Leaf)) { throw "Missing transaction engine: $engine" }
-. $engine -LibraryOnly
+. $engine -Mode $Mode -GameRoot $GameRoot -ConfirmRuntimeTest:$ConfirmRuntimeTest -LibraryOnly
 
 $expectedBranch = 'codex/all-collectibles-production-research'
 $candidateLabel = 'all-ravens-v0.10.5-catalogue-first'
