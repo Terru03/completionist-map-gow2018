@@ -8,6 +8,8 @@ Set-StrictMode -Version Latest
 $expectedBranch = 'codex/all-collectibles-production-research'
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $runtimeTest = Join-Path $PSScriptRoot 'all-ravens-runtime-test.ps1'
+$builder = Join-Path $PSScriptRoot 'build-all-ravens-release-candidate.py'
+$candidateRoot = Join-Path $repo 'build\v0.10.5-all-ravens-release-candidate\offline\candidate\game-root'
 $runId = (Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss')
 $relativeRunDir = "archive/field-logs/runtime/all-ravens-working-install-$runId"
 $runDir = Join-Path $repo "archive\field-logs\runtime\all-ravens-working-install-$runId"
@@ -28,6 +30,18 @@ function Get-RepoHead {
         throw 'Could not determine Git HEAD.'
     }
     return $head.ToLowerInvariant()
+}
+
+function Assert-CleanTrackedState {
+    & git -C $repo diff --quiet --ignore-submodules --
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Tracked working-tree changes exist before the all-Ravens run. Commit or revert them first.'
+    }
+
+    & git -C $repo diff --cached --quiet --ignore-submodules --
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Staged changes exist before the all-Ravens run. Commit or unstage them first.'
+    }
 }
 
 function Test-GodOfWarRootCandidate {
@@ -111,23 +125,81 @@ function Resolve-GodOfWarRoot {
     return [System.IO.Path]::GetFullPath($matches[0])
 }
 
+function Invoke-CandidateBuilder {
+    param(
+        [string]$ResolvedGameRoot,
+        [switch]$CheckOnly
+    )
+
+    if (-not (Test-Path -LiteralPath $builder -PathType Leaf)) {
+        throw "Missing candidate builder: $builder"
+    }
+
+    $python = Get-Command python -ErrorAction SilentlyContinue
+    $py = Get-Command py -ErrorAction SilentlyContinue
+    $args = @($builder, '--source-root', $ResolvedGameRoot)
+    if ($CheckOnly) {
+        $args += '--check'
+    }
+
+    if ($null -ne $python) {
+        & $python.Source @args
+    }
+    elseif ($null -ne $py) {
+        & $py.Source -3 @args
+    }
+    else {
+        throw 'Python 3 was not found in PATH; it is required to rebuild the ignored all-Ravens candidate.'
+    }
+
+    if ($LASTEXITCODE -ne 0) {
+        $mode = if ($CheckOnly) { 'verification' } else { 'build' }
+        throw "All-Ravens candidate $mode failed with exit code $LASTEXITCODE."
+    }
+}
+
+function Ensure-AllRavensCandidate {
+    param([string]$ResolvedGameRoot)
+
+    $action = 'verified-existing'
+    if (-not (Test-Path -LiteralPath $candidateRoot -PathType Container)) {
+        Write-Host '  candidate root: missing; rebuilding deterministically'
+        Invoke-CandidateBuilder -ResolvedGameRoot $ResolvedGameRoot
+        $action = 'rebuilt'
+    }
+    else {
+        Write-Host '  candidate root: present; verifying deterministic rebuild'
+    }
+
+    if (-not (Test-Path -LiteralPath $candidateRoot -PathType Container)) {
+        throw "Candidate builder completed but the candidate root is still missing: $candidateRoot"
+    }
+
+    Invoke-CandidateBuilder -ResolvedGameRoot $ResolvedGameRoot -CheckOnly
+    Write-Host "  candidate: $action and verified"
+    return $action
+}
+
 function Write-RunResult {
     param(
         [string]$Outcome,
         [string]$Branch,
         [string]$HeadBefore,
         [string]$ResolvedGameRoot,
+        [string]$CandidateAction,
         [string]$ErrorMessage
     )
 
     $result = [ordered]@{
-        schema = 1
+        schema = 2
         run_id = $runId
         finished_utc = (Get-Date).ToUniversalTime().ToString('o')
         outcome = $Outcome
         branch = $Branch
         repo_head_before = $HeadBefore
         game_root = $ResolvedGameRoot
+        candidate_action = $CandidateAction
+        candidate_root = $candidateRoot
         catalogue_markers = 53
         unknown_raven_state_visible = $true
         live_native_ravenKilled_events = $true
@@ -136,7 +208,11 @@ function Write-RunResult {
     }
 
     $json = $result | ConvertTo-Json -Depth 8
-    [System.IO.File]::WriteAllText($resultPath, $json + [Environment]::NewLine, (New-Object System.Text.UTF8Encoding($false)))
+    [System.IO.File]::WriteAllText(
+        $resultPath,
+        $json + [Environment]::NewLine,
+        (New-Object System.Text.UTF8Encoding($false))
+    )
 }
 
 function Publish-RunArtifacts {
@@ -147,16 +223,16 @@ function Publish-RunArtifacts {
         throw "Could not stage run artifacts: $relativeRunDir"
     }
 
-    & git -C $repo diff --cached --quiet --ignore-submodules --
+    & git -C $repo diff --cached --quiet --ignore-submodules -- $relativeRunDir
     if ($LASTEXITCODE -eq 0) {
-        Write-Host '  GitHub artifact publish: no changes to commit'
+        Write-Host '  GitHub artifact publish: no run-artifact changes to commit'
         return (Get-RepoHead)
     }
 
     $message = "field: record all-Ravens install $Outcome $runId"
-    & git -C $repo commit -m $message
+    & git -C $repo commit -m $message -- $relativeRunDir
     if ($LASTEXITCODE -ne 0) {
-        throw 'Could not commit run artifacts.'
+        throw 'Could not commit the run artifacts.'
     }
 
     $commit = Get-RepoHead
@@ -187,8 +263,10 @@ if ($branch -ne $expectedBranch) {
     throw "Expected branch '$expectedBranch', got '$branch'."
 }
 
+Assert-CleanTrackedState
 $headBefore = Get-RepoHead
 $resolvedGameRoot = $null
+$candidateAction = 'not-attempted'
 $outcome = 'failed'
 $runError = $null
 $transcriptStarted = $false
@@ -212,8 +290,11 @@ try {
     Write-Host '  unknown Raven state: visible'
     Write-Host '  live native ravenKilled events: enabled'
     Write-Host '  save/progression writes by installer: none'
+    Write-Host '  candidate: auto-build/verify before install'
     Write-Host '  transaction: guarded five-file install with pre-write backups'
     Write-Host ''
+
+    $candidateAction = Ensure-AllRavensCandidate -ResolvedGameRoot $resolvedGameRoot
 
     & $runtimeTest -Mode Install -GameRoot $resolvedGameRoot -ConfirmRuntimeTest
     if ($LASTEXITCODE -ne 0) {
@@ -241,7 +322,13 @@ finally {
 }
 
 $errorMessage = if ($null -eq $runError) { $null } else { [string]$runError.Exception.Message }
-Write-RunResult -Outcome $outcome -Branch $branch -HeadBefore $headBefore -ResolvedGameRoot $resolvedGameRoot -ErrorMessage $errorMessage
+Write-RunResult `
+    -Outcome $outcome `
+    -Branch $branch `
+    -HeadBefore $headBefore `
+    -ResolvedGameRoot $resolvedGameRoot `
+    -CandidateAction $candidateAction `
+    -ErrorMessage $errorMessage
 
 try {
     $artifactCommit = Publish-RunArtifacts -Outcome $outcome
