@@ -164,15 +164,15 @@ end
 
     replace_once(
         transaction,
-        '''Assert-True (-not [bool]$proof.ready_for_runtime_test) 'Release gate unexpectedly open.' ''',
-        '''Assert-True ([bool]$proof.ready_for_runtime_test) 'Release gate is not open.' ''',
+        "Assert-True (-not [bool]$proof.ready_for_runtime_test) 'Release gate unexpectedly open.'",
+        "Assert-True ([bool]$proof.ready_for_runtime_test) 'Release gate is not open.'",
         "require open release gate in fake-game transaction test",
     )
 
     replace_once(
         transaction,
-        '''    $branch = 'codex/all-ravens-release-candidate' ''',
-        '''    $branch = 'codex/all-collectibles-production-research' ''',
+        "    $branch = 'codex/all-ravens-release-candidate'",
+        "    $branch = 'codex/all-collectibles-production-research'",
         "record active research branch in transaction manifest",
     )
 
