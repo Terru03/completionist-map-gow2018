@@ -112,6 +112,9 @@ function probe.markerId(name) return markerId(name) end
 function probe.tracked() return CompletionistMapV105TrackedCatalogueId end
 function probe.teardown() MapOn.ClearIcons(self) end
 function probe.reset() return CompletionistMapV105ResetRavenStates("save_load") end
+function probe.persistedOne(id)
+  return CompletionistMapV105ApplyPersistedRavenKills({id},"test")
+end
 '''
 
 
@@ -149,19 +152,29 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
         self.assertIsNotNone(self.probe.icon(self.b["marker"]["name"]))
 
-    def test_unknown_hidden_restore_and_teardown(self):
+    def test_catalogue_visible_by_default_restore_and_teardown(self):
         self.probe.open()
-        self.assertEqual(self.probe.iconCount(), 0)
+        self.assertEqual(self.probe.iconCount(), 2)
         self.probe.publish(self.a["catalogue_id"], False)
-        self.assertEqual(self.probe.iconCount(), 1)
+        self.assertEqual(self.probe.iconCount(), 2)
         self.probe.publish(self.a["catalogue_id"], True)
-        self.assertEqual(self.probe.iconCount(), 0)
-        self.probe.publish(self.a["catalogue_id"], False)
         self.assertEqual(self.probe.iconCount(), 1)
+        self.probe.publish(self.a["catalogue_id"], False)
+        self.assertEqual(self.probe.iconCount(), 2)
         self.probe.teardown()
         self.assertEqual(self.probe.iconCount(), 0)
 
-    def test_save_load_reset_clears_state_and_target_fail_closed(self):
+    def test_persisted_kill_bootstrap_hides_only_confirmed_raven(self):
+        self.probe.open()
+        self.assertEqual(self.probe.iconCount(), 2)
+        ok, accepted = self.probe.persistedOne(self.a["catalogue_id"])
+        self.assertTrue(ok)
+        self.assertEqual(accepted, 1)
+        self.assertEqual(self.probe.iconCount(), 1)
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+        self.assertIsNotNone(self.probe.icon(self.b["marker"]["name"]))
+
+    def test_save_load_reset_clears_state_and_target_catalogue_defaults_visible(self):
         self.probe.publish(self.a["catalogue_id"], False)
         self.probe.open()
         self.probe.click(self.a["marker"]["name"])
@@ -170,7 +183,7 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.iconCount(), 0)
         self.assertIsNone(self.probe.tracked())
         self.probe.open()
-        self.assertEqual(self.probe.iconCount(), 0)
+        self.assertEqual(self.probe.iconCount(), 2)
 
 
 EVENT_PRELUDE = r'''

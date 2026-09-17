@@ -35,7 +35,7 @@ $files = [ordered]@{
     events = 'mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua'
 }
 $proof = Get-Content -LiteralPath $allRavensProofPath -Raw | ConvertFrom-Json
-Assert-True (-not [bool]$proof.ready_for_runtime_test) 'Release gate unexpectedly open.'
+Assert-True ([bool]$proof.ready_for_runtime_test) 'Release gate is not open.'
 Assert-True (@($proof.files.PSObject.Properties).Count -eq 5) 'Proof file count differs.'
 $candidateShas = [ordered]@{}
 foreach ($name in $files.Keys) {
@@ -94,7 +94,7 @@ try {
     $baseline = Snapshot-FakeGame
 
     $label = 'all-ravens-v0.10.5-self-test'
-    $branch = 'codex/all-ravens-release-candidate'
+    $branch = 'codex/all-collectibles-production-research'
     $installed = Invoke-TransactionalInstall -Game $fakeGame -Candidate $allRavensCandidateRoot -State $fakeState -Active $fakeActive -FileMap $files -CandidateShas $candidateShas -CandidateLabel $label -RepoBranch $branch -RepoHead 'self-test' -ProofPath $allRavensProofPath
     Assert-True ($installed.status -eq 'installed') 'Install did not finish.'
     Restore-State -Manifest $installed -Game $fakeGame -Candidate $allRavensCandidateRoot -State $fakeState -Active $fakeActive -ProofPath $allRavensProofPath -FileMap $files -CandidateShas $candidateShas -CandidateLabel $label -RepoBranch $branch -CheckInstalled $true -Force $false
@@ -151,7 +151,7 @@ try {
             all_five_failure_boundaries_rollback = $true
             interruption_recovery = $true
             tamper_refusal = $true
-            release_gate_closed = $true
+            release_gate_open = $true
         }
         safety = [ordered]@{
             fake_game_root_only = $true

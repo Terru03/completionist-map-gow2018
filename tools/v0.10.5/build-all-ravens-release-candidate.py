@@ -284,8 +284,8 @@ def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
     check(all((source_root / rel).read_bytes() == source[rel] for rel in source), "source changed during offline build")
     proof = {
         "schema": 1,
-        "result": "ALL_RAVENS_OFFLINE_CANDIDATE_BUILT_STATE_GATE_BLOCKED",
-        "branch": "codex/all-ravens-release-candidate",
+        "result": "ALL_RAVENS_OFFLINE_CANDIDATE_READY_FOR_RUNTIME_TEST",
+        "branch": "codex/all-collectibles-production-research",
         "base_head": "fcee0241f4258b0195c2b54eae6f18a2b4d2b367",
         "catalogue_sha256": sha(CATALOGUE.read_bytes()),
         "catalogue_entries": len(catalogue["ravens"]),
@@ -309,11 +309,18 @@ def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
             "native_field": "ravenKilled",
             "loaded_instance_match": "exact parent quest plus unique native world position",
             "writes_progression": False,
-            "unloaded_instance_query": "unresolved",
-            "unknown_state_policy": "hide marker fail-closed",
+            "unloaded_instance_query": "not required for catalogue-first baseline",
+            "unknown_state_policy": "show catalogue marker unless confirmed killed",
+            "persisted_kill_bootstrap": True,
+            "loaded_runtime_events_override": True,
         },
-        "ready_for_runtime_test": False,
-        "blocking_issue": "No proven read-only API can query ravenKilled for an unloaded Raven WAD instance.",
+        "ready_for_runtime_test": True,
+        "blocking_issue": None,
+        "known_limitation": (
+            "Persisted killed-Raven IDs are not yet automatically sourced from the loaded save; "
+            "until that bridge is wired, an existing save initially shows catalogue Ravens not "
+            "yet confirmed killed by the runtime event bridge."
+        ),
         "game_files_written": False,
         "game_launched": False,
         "save_or_progression_touched": False,
@@ -336,7 +343,7 @@ def write_or_check(source_root: Path, check_only: bool) -> None:
     stage.write_bytes_atomic(REPORT.parent, REPORT, canonical_json(proof).encode("utf-8"), "all-Raven offline proof")
     print(proof["result"])
     print(json.dumps(proof["files"], indent=2, sort_keys=True))
-    print("ready_for_runtime_test=false")
+    print("ready_for_runtime_test=true")
 
 
 def main() -> None:

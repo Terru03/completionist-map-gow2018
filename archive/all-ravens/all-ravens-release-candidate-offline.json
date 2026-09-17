@@ -1,0 +1,95 @@
+{
+  "base_head": "fcee0241f4258b0195c2b54eae6f18a2b4d2b367",
+  "blocking_issue": null,
+  "branch": "codex/all-collectibles-production-research",
+  "catalogue_entries": 53,
+  "catalogue_sha256": "07a6c3874801ed5732d47ed348bbddcb39348f64a460048080f9549b21bd6437",
+  "files": {
+    "exec/dc/pc_le/mapcoords.dcb": {
+      "bytes": 83712,
+      "sha256": "d6786f9734473fa7bdb8eff39aadac4f3fb2ecd4a83d56bfc5d2832c17435514"
+    },
+    "exec/dc/pc_le/mapmaster.dcb": {
+      "bytes": 104064,
+      "sha256": "7d1d5e05315dce17326712a95901e1e753b6c14c4f1a71012ca337ae7ee9b223"
+    },
+    "exec/dc/pc_le/wad_r_ui.dcb": {
+      "bytes": 5584,
+      "sha256": "2cebb4bfc0a4cf76c0d4145b7408be10ad7c6ad2350d571263c5050c7ab6480a"
+    },
+    "mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua": {
+      "bytes": 25567,
+      "sha256": "06426ebb8a0b69366298abf06c34c7fd37f5bbe53864f619d80acf442f88791f"
+    },
+    "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": {
+      "bytes": 207623,
+      "sha256": "616a6b6740e91d875e8d802475656e9589c0710ade5cea2a695a6a56d6a6ac96"
+    }
+  },
+  "game_files_written": false,
+  "game_launched": false,
+  "known_limitation": "Persisted killed-Raven IDs are not yet automatically sourced from the loaded save; until that bridge is wired, an existing save initially shows catalogue Ravens not yet confirmed killed by the runtime event bridge.",
+  "proofs": {
+    "exec/dc/pc_le/mapcoords.dcb": {
+      "active_raven_coordinates": 53,
+      "active_twin_coordinates": 0,
+      "candidate_coordinates": 458,
+      "canonical_wad_strings": 39,
+      "inverse_exact": true,
+      "source_coordinates": 407
+    },
+    "exec/dc/pc_le/mapmaster.dcb": {
+      "active_raven_markers": 53,
+      "active_twin_markers": 0,
+      "candidate_markers": 435,
+      "changed_region_arrays": 22,
+      "inverse_exact": true,
+      "source_markers": 384
+    },
+    "exec/dc/pc_le/wad_r_ui.dcb": {
+      "candidate_rows": 301,
+      "inverse_exact": true,
+      "raven_capacity_after": 45,
+      "raven_capacity_before": 2,
+      "rows_added": 43,
+      "source_rows": 258
+    }
+  },
+  "ready_for_runtime_test": true,
+  "realms": [
+    "Alfheim",
+    "Helheim",
+    "Midgard"
+  ],
+  "result": "ALL_RAVENS_OFFLINE_CANDIDATE_READY_FOR_RUNTIME_TEST",
+  "router": {
+    "compass_class": "CompletionistRaven",
+    "currMarkerID_alone_infers_raven": false,
+    "data_driven_entries": 53,
+    "exact_collision_object_required_before_uid": true,
+    "permanent_polling": false,
+    "same_raven_second_click_removes": true,
+    "shared_map_resource": "goMapIconCompletionistRaven",
+    "single_active_target": true,
+    "stock_and_nornir_delegate_preserved": true,
+    "synthetic_twin_removed": true
+  },
+  "save_or_progression_touched": false,
+  "schema": 1,
+  "source_sha256": {
+    "exec/dc/pc_le/mapcoords.dcb": "36bd16f8f21c6387b556e156055ea02f5c262b30a6c450cc0efa05734efb1a0c",
+    "exec/dc/pc_le/mapmaster.dcb": "1e1d5086815bc8553490bff915fea210a8be4f80ce6c88b418b62d7050690a31",
+    "exec/dc/pc_le/wad_r_ui.dcb": "9a434a29ed2e333362e60ac7f224d26855fc9dc86834aa94504a170854e22f2b",
+    "mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua": "61e6bc8efe1fcb9b2a6e796aa86ce9a5f74fc18e97229aae7cc52b652a565800",
+    "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": "16e13b342f3bbe98ac9b87eb34bf0115e6b04340d6e41270f38a557f2ed51493"
+  },
+  "state": {
+    "loaded_instance_match": "exact parent quest plus unique native world position",
+    "loaded_runtime_events_override": true,
+    "native_field": "ravenKilled",
+    "persisted_kill_bootstrap": true,
+    "unknown_state_policy": "show catalogue marker unless confirmed killed",
+    "unloaded_instance_query": "not required for catalogue-first baseline",
+    "writes_progression": false
+  }
+}
