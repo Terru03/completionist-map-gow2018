@@ -227,7 +227,8 @@ def build_pool(source: bytes) -> tuple[bytes, dict]:
     raven = [row for row in rows if row["uid"] == RAVEN_ICON_HASH]
     before_capacity = sum(row["capacity"] for row in raven)
     check(before_capacity == 2 and len(raven) == 2, "v3.3 Raven pool capacity changed")
-    add = 45 - before_capacity
+    target_capacity = 53
+    add = target_capacity - before_capacity
     inserted = raven[0]["raw"] * add
     after = bytearray(data[:end] + inserted + data[end:])
     struct.pack_into("<I", after, 8, count + add)
@@ -240,7 +241,7 @@ def build_pool(source: bytes) -> tuple[bytes, dict]:
     new_data = candidate[new_chunk["start"]:new_chunk["end"]]
     new_count, new_rows, new_end = stage.dcb_rows(new_data)
     after_capacity = sum(row["capacity"] for row in new_rows if row["uid"] == RAVEN_ICON_HASH)
-    check(new_count == count + add and after_capacity == 45, "all-Raven pool capacity differs")
+    check(new_count == count + add and after_capacity == target_capacity, "all-Raven pool capacity differs")
     inverse = bytearray(new_data[:end] + new_data[new_end:])
     struct.pack_into("<I", inverse, 8, count)
     inverse[16:24] = data[16:24]

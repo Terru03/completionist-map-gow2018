@@ -57,8 +57,8 @@ class AllRavensBuildTests(unittest.TestCase):
         self.assertEqual(len(rows), 53)
         self.assertEqual({row["icon"] for row in rows}, {"goMapIconCompletionistRaven"})
 
-    def test_pool_capacity_matches_largest_realm(self):
-        self.assertEqual(self.proof["proofs"][build.POOL]["raven_capacity_after"], 45)
+    def test_pool_capacity_covers_full_catalogue_for_realm_transition(self):
+        self.assertEqual(self.proof["proofs"][build.POOL]["raven_capacity_after"], 53)
 
     def test_lua_has_53_data_rows_and_exact_router_contract(self):
         text = self.outputs[build.MAP_LUA].decode("utf-8")

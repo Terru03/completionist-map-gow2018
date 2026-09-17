@@ -26,7 +26,7 @@ CATALOGUE = json.loads(build.CATALOGUE.read_text(encoding="utf-8"))
 
 
 MAP_PRELUDE = r'''
-calls={logs={},previousShow=0,recycled=0}
+calls={logs={},previousShow=0,recycled=0,labels={}}
 customIds={}
 stockIds={}
 local markerIds={}
@@ -58,6 +58,7 @@ CompletionistMapV100_CreateMapPin=function(s,state) return "base" end
 Map={}
 function Map.FindRegionFromMarker(id) return true,"region" end
 function Map.CreateMarkerIcon(id,region,label)
+  calls.labels[#calls.labels+1]=label
   return {id=id,shown=false,Show=function(self) self.shown=true end}
 end
 function Map.RecycleIcon(go) calls.recycled=calls.recycled+1; go.recycled=true end
@@ -105,6 +106,9 @@ function probe.iconCount()
   for _,_ in pairs(self.completionistMapV105RavenIcons or {}) do n=n+1 end
   return n
 end
+function probe.lastLabel() return calls.labels[#calls.labels] end
+function probe.recycled() return calls.recycled end
+function probe.realm(name) self.currRealmName=name; return CompletionistMapV100_CreateMapPin(self,{}) end
 function probe.customCount() return #customIds end
 function probe.stockCount() return #stockIds end
 function probe.customAt(i) return customIds[i] end
@@ -155,6 +159,7 @@ class AllRavensMapLuaTests(unittest.TestCase):
     def test_catalogue_visible_by_default_restore_and_teardown(self):
         self.probe.open()
         self.assertEqual(self.probe.iconCount(), 2)
+        self.assertEqual(self.probe.lastLabel(), "Odin's Raven")
         self.probe.publish(self.a["catalogue_id"], False)
         self.assertEqual(self.probe.iconCount(), 2)
         self.probe.publish(self.a["catalogue_id"], True)
@@ -163,6 +168,14 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.iconCount(), 2)
         self.probe.teardown()
         self.assertEqual(self.probe.iconCount(), 0)
+
+    def test_realm_transition_recycles_old_realm_and_builds_midgard(self):
+        self.probe.open()
+        self.assertEqual(self.probe.iconCount(), 2)
+        self.probe.realm("Midgard")
+        self.assertEqual(self.probe.iconCount(), 45)
+        self.assertGreaterEqual(self.probe.recycled(), 2)
+        self.assertEqual(self.probe.lastLabel(), "Odin's Raven")
 
     def test_persisted_kill_bootstrap_hides_only_confirmed_raven(self):
         self.probe.open()

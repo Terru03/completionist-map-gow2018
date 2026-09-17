@@ -4,6 +4,7 @@ do
   local prefix = "[CompletionistMap v0.10.5-all-ravens] "
   local ravenClass = "CompletionistRaven"
   local mapResource = "goMapIconCompletionistRaven"
+  local markerLabel = "Odin's Raven"
   local provenName = "Completionist_V103_Veithurgard_Raven_01"
   local rows = {
 -- @@RAVEN_CATALOGUE_ROWS@@
@@ -107,6 +108,11 @@ do
     local icons = self.completionistMapV105RavenIcons or {}
     self.completionistMapV105RavenIcons = icons
     local realm = self.currRealmName
+    if self.completionistMapV105LastRealm ~= nil and self.completionistMapV105LastRealm ~= realm then
+      clearSelection(self, "realm_change")
+      log("REALM_CHANGE", "from=" .. tostring(self.completionistMapV105LastRealm) .. " to=" .. tostring(realm))
+    end
+    self.completionistMapV105LastRealm = realm
     for name, go in pairs(icons) do
       local row = byName[name]
       if row == nil or row.Realm ~= realm or isCollected(row.CatalogueId) then
@@ -122,7 +128,7 @@ do
           if info == nil then return nil, "marker_info" end
           local found, region = Map.FindRegionFromMarker(info.Id)
           if found ~= true or region == nil then return nil, "region" end
-          return Map.CreateMarkerIcon(info.Id, region, ""), nil
+          return Map.CreateMarkerIcon(info.Id, region, markerLabel), nil
         end)
         local go = ok and value or nil
         if go ~= nil then
