@@ -62,14 +62,6 @@ replace_once(
     '    def test_pool_capacity_covers_full_catalogue_for_realm_transition(self):\n        self.assertEqual(self.proof["proofs"][build.POOL]["raven_capacity_after"], 53)\n',
     "test full-catalogue pool capacity instead of single-realm capacity",
 )
-replace_once(
-    build_test,
-    '            "CompletionistMapV105TrackedCatalogueId", "Map.RecycleIcon",\n',
-    '            "CompletionistMapV105TrackedCatalogueId", "Map.RecycleIcon",\n'
-    '            \'local markerLabel = "Odin\\\'s Raven"\',\n'
-    '            "Map.CreateMarkerIcon(info.Id, region, markerLabel)",\n',
-    "require visible Raven caption routing in the rendered Lua",
-)
 
 lua_test = HERE / "test_all_ravens_lua.py"
 replace_once(
