@@ -1,0 +1,79 @@
+RAVEN_RETICLE_CAPTION_DEPLOY_V1
+STARTED_LOCAL=2026-09-17T13:18:49.9523506+03:00
+REPO=C:\Users\david\Documents\GitHub\completionist-map-gow2018-research-live
+GAME_ROOT=G:\SteamLibrary\steamapps\common\GodOfWar
+
+=== apply guarded reticle caption patch ===
+RAVEN_RETICLE_CAPTION_PATCH_APPLIED
+
+=== Lua 5.1 Raven runtime tests ===
+test_exact_loaded_instance_publishes_native_bool_and_rearms (__main__.AllRavensEventLuaTests.test_exact_loaded_instance_publishes_native_bool_and_rearms) ... ok
+test_a_b_same_click_stock_and_kill_lifecycle (__main__.AllRavensMapLuaTests.test_a_b_same_click_stock_and_kill_lifecycle) ... ok
+test_catalogue_visible_by_default_restore_and_teardown (__main__.AllRavensMapLuaTests.test_catalogue_visible_by_default_restore_and_teardown) ... ok
+test_exact_raven_collision_populates_stock_cursor_card (__main__.AllRavensMapLuaTests.test_exact_raven_collision_populates_stock_cursor_card) ... ok
+test_persisted_kill_bootstrap_hides_only_confirmed_raven (__main__.AllRavensMapLuaTests.test_persisted_kill_bootstrap_hides_only_confirmed_raven) ... ok
+test_realm_transition_recycles_old_realm_and_builds_midgard (__main__.AllRavensMapLuaTests.test_realm_transition_recycles_old_realm_and_builds_midgard) ... ok
+test_save_load_reset_clears_state_and_target_catalogue_defaults_visible (__main__.AllRavensMapLuaTests.test_save_load_reset_clears_state_and_target_catalogue_defaults_visible) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.013s
+
+OK
+
+=== Raven runtime model tests ===
+test_a_b_and_b_a_replacement (__main__.RavenRuntimeTests.test_a_b_and_b_a_replacement) ... ok
+test_collected_hidden_uncollected_shown_and_mixed_save (__main__.RavenRuntimeTests.test_collected_hidden_uncollected_shown_and_mixed_save) ... ok
+test_exact_uid_required_after_exact_collision (__main__.RavenRuntimeTests.test_exact_uid_required_after_exact_collision) ... ok
+test_fully_collected_and_fresh_simulation (__main__.RavenRuntimeTests.test_fully_collected_and_fresh_simulation) ... ok
+test_incidental_collision_noise_preserves_exact_candidate_until_uid_resolution (__main__.RavenRuntimeTests.test_incidental_collision_noise_preserves_exact_candidate_until_uid_resolution) ... ok
+test_kill_tracked_a_removes_a_only (__main__.RavenRuntimeTests.test_kill_tracked_a_removes_a_only) ... ok
+test_killing_a_does_not_remove_b_or_stock (__main__.RavenRuntimeTests.test_killing_a_does_not_remove_b_or_stock) ... ok
+test_legacy_proven_bridge_is_only_nil_uid_exception (__main__.RavenRuntimeTests.test_legacy_proven_bridge_is_only_nil_uid_exception) ... ok
+test_loading_other_save_clears_cached_state_then_defaults_to_catalogue (__main__.RavenRuntimeTests.test_loading_other_save_clears_cached_state_then_defaults_to_catalogue) ... ok
+test_marker_id_alone_never_infers_raven (__main__.RavenRuntimeTests.test_marker_id_alone_never_infers_raven) ... ok
+test_persisted_kill_bootstrap_hides_only_confirmed_ids (__main__.RavenRuntimeTests.test_persisted_kill_bootstrap_hides_only_confirmed_ids) ... ok
+test_persisted_kill_bootstrap_ignores_unknown_ids (__main__.RavenRuntimeTests.test_persisted_kill_bootstrap_ignores_unknown_ids) ... ok
+test_realm_filtering (__main__.RavenRuntimeTests.test_realm_filtering) ... ok
+test_restore_uncollected_reappears_and_recollects (__main__.RavenRuntimeTests.test_restore_uncollected_reappears_and_recollects) ... ok
+test_same_raven_second_click_removes (__main__.RavenRuntimeTests.test_same_raven_second_click_removes) ... ok
+test_stale_selection_cannot_hijack_other_raven_or_stock (__main__.RavenRuntimeTests.test_stale_selection_cannot_hijack_other_raven_or_stock) ... ok
+test_stock_and_nornir_replacement_both_directions (__main__.RavenRuntimeTests.test_stock_and_nornir_replacement_both_directions) ... ok
+test_teardown_cleans_ui_and_no_permanent_polling (__main__.RavenRuntimeTests.test_teardown_cleans_ui_and_no_permanent_polling) ... ok
+test_unknown_state_defaults_visible (__main__.RavenRuntimeTests.test_unknown_state_defaults_visible) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.002s
+
+OK
+
+=== git diff check after caption patch ===
+warning: in the working copy of 'tools/v0.10.5/all-ravens-map-runtime.lua', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/test_all_ravens_lua.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/all-ravens-map-runtime.lua', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/v0.10.5/test_all_ravens_lua.py', LF will be replaced by CRLF the next time Git touches it
+
+=== git commit: runtime: populate Raven map cursor title ===
+[codex/all-collectibles-production-research c3dd233] runtime: populate Raven map cursor title
+ 2 files changed, 32 insertions(+), 2 deletions(-)
+
+=== git push research branch ===
+To https://github.com/Terru03/completionist-map-gow2018.git
+   a7812a5..c3dd233  codex/all-collectibles-production-research -> codex/all-collectibles-production-research
+PREVIOUS_TRANSACTION_STATUS=installed
+
+=== rollback current all-Ravens runtime candidate ===
+ALL_RAVENS_RUNTIME_TEST_STATUS
+  candidate: C:\Users\david\Documents\GitHub\completionist-map-gow2018-research-live\build\v0.10.5-all-ravens-release-candidate\offline\candidate\game-root
+  proof: C:\Users\david\Documents\GitHub\completionist-map-gow2018-research-live\archive\all-ravens\all-ravens-release-candidate-offline.json
+  transaction: 20260917T090911Z-7ba7965e
+  status: installed
+  files: 5
+  transaction root: C:\Users\david\Documents\GitHub\completionist-map-gow2018-research-live\build\v0.10.5-all-ravens-runtime-test\transaction\transactions\20260917T090911Z-7ba7965e
+
+RESULT=FAILED
+FAILED_PHASE=rollback-current-runtime-candidate
+ERROR=Refusing to archive non-terminal active transaction: installed
+ROLLED_BACK_PREVIOUS_CANDIDATE=true
+NEW_CANDIDATE_INSTALLED=false
+FINISHED_LOCAL=2026-09-17T13:18:53.6937517+03:00
+HEAD is now at c3dd233 runtime: populate Raven map cursor title
