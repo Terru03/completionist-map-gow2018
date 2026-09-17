@@ -38,8 +38,8 @@ runtime_new = '''  function MapOn:MapCollisionChangeHandler(currState, collision
 
     local result = previousCollision(self, currState, collisionTable, realmName)
 
-    if selected ~= nil and type(self.SetReticleInfo) == "function" then
-      local ok, err = pcall(self.SetReticleInfo, self, currState, markerLabel, "")
+    if selected ~= nil and type(MapOn.SetReticleInfo) == "function" then
+      local ok, err = pcall(MapOn.SetReticleInfo, self, currState, markerLabel, "")
       if ok then
         log("RETICLE_TEXT", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
             " title=" .. markerLabel)
