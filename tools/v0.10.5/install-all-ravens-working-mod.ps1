@@ -8,6 +8,11 @@ Set-StrictMode -Version Latest
 $expectedBranch = 'codex/all-collectibles-production-research'
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $runtimeTest = Join-Path $PSScriptRoot 'all-ravens-runtime-test.ps1'
+$runId = (Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss')
+$relativeRunDir = "archive/field-logs/runtime/all-ravens-working-install-$runId"
+$runDir = Join-Path $repo "archive\field-logs\runtime\all-ravens-working-install-$runId"
+$transcriptPath = Join-Path $runDir 'run.txt'
+$resultPath = Join-Path $runDir 'result.json'
 
 function Get-CurrentBranch {
     $branch = (& git -C $repo branch --show-current).Trim()
@@ -17,13 +22,38 @@ function Get-CurrentBranch {
     return $branch
 }
 
+function Get-RepoHead {
+    $head = (& git -C $repo rev-parse HEAD).Trim()
+    if ($LASTEXITCODE -ne 0 -or $head -notmatch '^[0-9a-fA-F]{40}$') {
+        throw 'Could not determine Git HEAD.'
+    }
+    return $head.ToLowerInvariant()
+}
+
+function Test-GodOfWarRootCandidate {
+    param([string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) { return $false }
+    if (-not (Test-Path -LiteralPath $Path -PathType Container)) { return $false }
+
+    $gowExe = Join-Path $Path 'GoW.exe'
+    $godOfWarExe = Join-Path $Path 'GodOfWar.exe'
+    $execDir = Join-Path $Path 'exec'
+
+    $hasGowExe = Test-Path -LiteralPath $gowExe -PathType Leaf
+    $hasGodOfWarExe = Test-Path -LiteralPath $godOfWarExe -PathType Leaf
+    $hasExecDir = Test-Path -LiteralPath $execDir -PathType Container
+
+    return ($hasGowExe -or $hasGodOfWarExe -or $hasExecDir)
+}
+
 function Resolve-GodOfWarRoot {
     param([string]$RequestedRoot)
 
     if (-not [string]::IsNullOrWhiteSpace($RequestedRoot)) {
         $resolved = [System.IO.Path]::GetFullPath($RequestedRoot)
-        if (-not (Test-Path -LiteralPath $resolved -PathType Container)) {
-            throw "God of War root does not exist: $resolved"
+        if (-not (Test-GodOfWarRootCandidate -Path $resolved)) {
+            throw "God of War root is not valid: $resolved"
         }
         return $resolved
     }
@@ -59,7 +89,8 @@ function Resolve-GodOfWarRoot {
         # Registry discovery is optional; fixed/common locations are still checked below.
     }
 
-    foreach ($driveLetter in [char[]](67..90)) {
+    foreach ($code in 67..90) {
+        $driveLetter = [char]$code
         $drive = "$driveLetter`:"
         $candidates.Add("$drive\SteamLibrary\steamapps\common\GodOfWar")
         $candidates.Add("$drive\Steam\steamapps\common\GodOfWar")
@@ -68,12 +99,7 @@ function Resolve-GodOfWarRoot {
     $matches = @(
         $candidates |
             Select-Object -Unique |
-            Where-Object {
-                Test-Path -LiteralPath $_ -PathType Container -and
-                (Test-Path -LiteralPath (Join-Path $_ 'GoW.exe') -PathType Leaf -or
-                 Test-Path -LiteralPath (Join-Path $_ 'GodOfWar.exe') -PathType Leaf -or
-                 Test-Path -LiteralPath (Join-Path $_ 'exec') -PathType Container)
-            }
+            Where-Object { Test-GodOfWarRootCandidate -Path $_ }
     )
 
     if ($matches.Count -eq 0) {
@@ -85,6 +111,73 @@ function Resolve-GodOfWarRoot {
     return [System.IO.Path]::GetFullPath($matches[0])
 }
 
+function Write-RunResult {
+    param(
+        [string]$Outcome,
+        [string]$Branch,
+        [string]$HeadBefore,
+        [string]$ResolvedGameRoot,
+        [string]$ErrorMessage
+    )
+
+    $result = [ordered]@{
+        schema = 1
+        run_id = $runId
+        finished_utc = (Get-Date).ToUniversalTime().ToString('o')
+        outcome = $Outcome
+        branch = $Branch
+        repo_head_before = $HeadBefore
+        game_root = $ResolvedGameRoot
+        catalogue_markers = 53
+        unknown_raven_state_visible = $true
+        live_native_ravenKilled_events = $true
+        installer_writes_save_or_progression = $false
+        error = $ErrorMessage
+    }
+
+    $json = $result | ConvertTo-Json -Depth 8
+    [System.IO.File]::WriteAllText($resultPath, $json + [Environment]::NewLine, (New-Object System.Text.UTF8Encoding($false)))
+}
+
+function Publish-RunArtifacts {
+    param([string]$Outcome)
+
+    & git -C $repo add -- $relativeRunDir
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not stage run artifacts: $relativeRunDir"
+    }
+
+    & git -C $repo diff --cached --quiet --ignore-submodules --
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host '  GitHub artifact publish: no changes to commit'
+        return (Get-RepoHead)
+    }
+
+    $message = "field: record all-Ravens install $Outcome $runId"
+    & git -C $repo commit -m $message
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Could not commit run artifacts.'
+    }
+
+    $commit = Get-RepoHead
+    $pushed = $false
+    for ($attempt = 1; $attempt -le 3; $attempt++) {
+        & git -C $repo push origin $expectedBranch
+        if ($LASTEXITCODE -eq 0) {
+            $pushed = $true
+            break
+        }
+        Start-Sleep -Seconds (2 * $attempt)
+    }
+
+    if (-not $pushed) {
+        throw "Run artifacts were committed locally as $commit but could not be pushed after 3 attempts."
+    }
+
+    Write-Host "  GitHub artifact commit: $commit"
+    return $commit
+}
+
 if (-not (Test-Path -LiteralPath $runtimeTest -PathType Leaf)) {
     throw "Missing runtime transaction script: $runtimeTest"
 }
@@ -94,26 +187,82 @@ if ($branch -ne $expectedBranch) {
     throw "Expected branch '$expectedBranch', got '$branch'."
 }
 
-$resolvedGameRoot = Resolve-GodOfWarRoot -RequestedRoot $GameRoot
+$headBefore = Get-RepoHead
+$resolvedGameRoot = $null
+$outcome = 'failed'
+$runError = $null
+$transcriptStarted = $false
+$artifactCommit = $null
+$publishError = $null
 
-Write-Host 'COMPLETIONIST_MAP_ALL_RAVENS_INSTALL'
-Write-Host "  branch: $branch"
-Write-Host "  game root: $resolvedGameRoot"
-Write-Host '  catalogue markers: 53'
-Write-Host '  unknown Raven state: visible'
-Write-Host '  live native ravenKilled events: enabled'
-Write-Host '  save/progression writes by installer: none'
-Write-Host '  transaction: guarded five-file install with pre-write backups'
-Write-Host ''
+New-Item -ItemType Directory -Force -Path $runDir | Out-Null
 
-& $runtimeTest -Mode Install -GameRoot $resolvedGameRoot -ConfirmRuntimeTest
-if ($LASTEXITCODE -ne 0) {
-    throw "All-Ravens runtime installer failed with exit code $LASTEXITCODE."
+try {
+    Start-Transcript -LiteralPath $transcriptPath -Force | Out-Null
+    $transcriptStarted = $true
+
+    $resolvedGameRoot = Resolve-GodOfWarRoot -RequestedRoot $GameRoot
+
+    Write-Host 'COMPLETIONIST_MAP_ALL_RAVENS_INSTALL'
+    Write-Host "  run id: $runId"
+    Write-Host "  branch: $branch"
+    Write-Host "  repo head: $headBefore"
+    Write-Host "  game root: $resolvedGameRoot"
+    Write-Host '  catalogue markers: 53'
+    Write-Host '  unknown Raven state: visible'
+    Write-Host '  live native ravenKilled events: enabled'
+    Write-Host '  save/progression writes by installer: none'
+    Write-Host '  transaction: guarded five-file install with pre-write backups'
+    Write-Host ''
+
+    & $runtimeTest -Mode Install -GameRoot $resolvedGameRoot -ConfirmRuntimeTest
+    if ($LASTEXITCODE -ne 0) {
+        throw "All-Ravens runtime installer failed with exit code $LASTEXITCODE."
+    }
+
+    $outcome = 'installed'
+    Write-Host ''
+    Write-Host 'COMPLETIONIST_MAP_ALL_RAVENS_READY'
+    Write-Host '  The 53-Raven catalogue build is installed.'
+    Write-Host '  A Raven killed during this runtime is hidden by its exact native ravenKilled event.'
+    Write-Host '  Existing kills from an old save are not yet reconstructed until the persisted-kill bootstrap is completed.'
+    Write-Host '  Fresh/unknown Raven state remains visible by design.'
+}
+catch {
+    $runError = $_
+    Write-Host ''
+    Write-Host 'COMPLETIONIST_MAP_ALL_RAVENS_FAILED'
+    Write-Host "  $($_.Exception.Message)"
+}
+finally {
+    if ($transcriptStarted) {
+        try { Stop-Transcript | Out-Null } catch {}
+    }
 }
 
-Write-Host ''
-Write-Host 'COMPLETIONIST_MAP_ALL_RAVENS_READY'
-Write-Host '  The 53-Raven catalogue build is installed.'
-Write-Host '  A Raven killed during this runtime is hidden by its exact native ravenKilled event.'
-Write-Host '  Existing kills from an old save are not yet reconstructed until the persisted-kill bootstrap is completed.'
-Write-Host '  Fresh/unknown Raven state remains visible by design.'
+$errorMessage = if ($null -eq $runError) { $null } else { [string]$runError.Exception.Message }
+Write-RunResult -Outcome $outcome -Branch $branch -HeadBefore $headBefore -ResolvedGameRoot $resolvedGameRoot -ErrorMessage $errorMessage
+
+try {
+    $artifactCommit = Publish-RunArtifacts -Outcome $outcome
+}
+catch {
+    $publishError = $_
+    Write-Host "GitHub auto-publish failed: $($_.Exception.Message)"
+}
+
+if ($null -ne $runError) {
+    if ($null -ne $artifactCommit) {
+        throw "All-Ravens install failed; its transcript/result were pushed in commit $artifactCommit. Error: $errorMessage"
+    }
+    if ($null -ne $publishError) {
+        throw "All-Ravens install failed, and its automatic GitHub publish also failed. Install error: $errorMessage | Publish error: $($publishError.Exception.Message)"
+    }
+    throw "All-Ravens install failed: $errorMessage"
+}
+
+if ($null -ne $publishError) {
+    throw "The all-Ravens install completed, but automatic GitHub publishing failed: $($publishError.Exception.Message)"
+}
+
+Write-Host "COMPLETIONIST_MAP_ALL_RAVENS_RESULT_PUSHED $artifactCommit"
