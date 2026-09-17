@@ -280,7 +280,21 @@ do
     lastMapOnSelf = self
     local selected = collisionSelection(self, collisionTable)
     if selected ~= nil then captureSelection(self, selected) end
-    return previousCollision(self, currState, collisionTable, realmName)
+
+    local result = previousCollision(self, currState, collisionTable, realmName)
+
+    if selected ~= nil and type(MapOn.SetReticleInfo) == "function" then
+      local ok, err = pcall(MapOn.SetReticleInfo, self, currState, markerLabel, "")
+      if ok then
+        log("RETICLE_TEXT", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
+            " title=" .. markerLabel)
+      else
+        log("RETICLE_TEXT_FAILED", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
+            " error=" .. tostring(err))
+      end
+    end
+
+    return result
   end
 
   function MapOn:GetShowOnCompassPrompt(currMenu)

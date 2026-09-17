@@ -26,7 +26,7 @@ CATALOGUE = json.loads(build.CATALOGUE.read_text(encoding="utf-8"))
 
 
 MAP_PRELUDE = r'''
-calls={logs={},previousShow=0,recycled=0,labels={}}
+calls={logs={},previousShow=0,recycled=0,labels={},reticleTitle=nil,reticleDesc=nil,reticleCalls=0}
 customIds={}
 stockIds={}
 local markerIds={}
@@ -50,6 +50,11 @@ function MapOn.GetShowOnCompassPrompt(s,m) return s.currMarkerID~=nil,"base" end
 function MapOn.ShowOnCompass(s,state) calls.previousShow=calls.previousShow+1; stockIds={"stock"} end
 function MapOn.MapCollisionChangeHandler(s,state,collisions,realm)
   if collisions and collisions[1] then s.currMarkerID=collisions[1].id else s.currMarkerID=nil end
+end
+function MapOn.SetReticleInfo(s,state,title,desc)
+  calls.reticleTitle=title
+  calls.reticleDesc=desc
+  calls.reticleCalls=calls.reticleCalls+1
 end
 function MapOn.SubmenuExit(s) end
 function MapOn.Exit(s) end
@@ -107,6 +112,9 @@ function probe.iconCount()
   return n
 end
 function probe.lastLabel() return calls.labels[#calls.labels] end
+function probe.reticleTitle() return calls.reticleTitle end
+function probe.reticleDesc() return calls.reticleDesc end
+function probe.reticleCalls() return calls.reticleCalls end
 function probe.recycled() return calls.recycled end
 function probe.realm(name) self.currRealmName=name; return CompletionistMapV100_CreateMapPin(self,{}) end
 function probe.customCount() return #customIds end
@@ -168,6 +176,14 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.iconCount(), 2)
         self.probe.teardown()
         self.assertEqual(self.probe.iconCount(), 0)
+
+    def test_exact_raven_collision_populates_stock_cursor_card(self):
+        self.probe.open()
+        show, _ = self.probe.click(self.a["marker"]["name"])
+        self.assertTrue(show)
+        self.assertEqual(self.probe.reticleTitle(), "Odin's Raven")
+        self.assertEqual(self.probe.reticleDesc(), "")
+        self.assertGreaterEqual(self.probe.reticleCalls(), 1)
 
     def test_realm_transition_recycles_old_realm_and_builds_midgard(self):
         self.probe.open()
