@@ -114,12 +114,16 @@ patches = [
     (test_calls_old, test_calls_new, "test calls state"),
     (test_collision_old, test_collision_new, "test SetReticleInfo stub"),
     (test_probe_old, test_probe_new, "test reticle probes"),
-    (test_method_anchor, test_method_new, "test reticle regression"),
 ]
 for old, new, label in patches:
-    if new in tests and old not in tests:
+    if new in tests:
+        if old in tests:
+            raise RuntimeError(f"{label}: old and new blocks are both present")
         continue
     tests = replace_once(tests, old, new, label)
+
+if test_method_new not in tests:
+    tests = replace_once(tests, test_method_anchor, test_method_new, "test reticle regression")
 
 RUNTIME.write_text(runtime, encoding="utf-8", newline="\n")
 TESTS.write_text(tests, encoding="utf-8", newline="\n")
