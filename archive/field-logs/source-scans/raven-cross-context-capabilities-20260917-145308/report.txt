@@ -1,0 +1,544 @@
+Completionist Map - broad Raven cross-context capability scan
+timestamp=2026-09-17T14:53:08.6849030+03:00
+branch=codex/all-collectibles-production-research
+lua_files_scanned=6
+game_files_written=false
+save_or_progression_written=false
+game_launched=false
+
+=== STANDARD LUA CROSS-CONTEXT CHANNELS ===
+require	35
+
+=== BROAD ENGINE/MANAGER SYMBOLS ===
+game.AI.FindSon	1
+game.Audio.PlayBanter	1
+game.Audio.PlayBanterNonCritical	10
+game.Audio.PlaySound	3
+game.Audio.SetBanterFact	2
+game.Audio.StartMusic	1
+game.build.GOLD_VERSION	1
+game.Camera.Recenter	2
+game.Cinematics.IsInCinematicMode	1
+game.Combat.GetCombatStatus	2
+game.Compass.FindMarkersByIconClass	10
+game.Compass.HaveCompass	5
+game.Compass.HideMarker	20
+game.Compass.MultiCompassTargetQuestSupport	1
+game.Compass.ShowMarker	5
+game.FX.Spawn	6
+game.Interact.DisableTags	1
+game.Level.GetVariable	8
+game.Loot.AlertChestOpened	2
+game.Loot.AlertTripleChestBreakableBroken	2
+game.Loot.AlertTripleChestOpened	2
+game.Map.FindPlayerRegion	2
+game.Map.FindRegionFromMarker	2
+game.Map.GetMarkerInfo	8
+game.Map.GetRealmInfo	1
+game.Map.GetRegionSummaryInfo	1
+game.Player.FindPlayer	6
+game.QuestManager.GetQuestProgressAndGoal	2
+game.QuestManager.GetQuestState	11
+game.QuestManager.IncrementQuestProgress	4
+game.QuestManager.StartQuest	2
+game.SubObject.Sleep	3
+game.SubObject.SoftSave	6
+game.UI.GetUserCombatHUDSetting	11
+game.UI.GetUserCompassSetting	4
+game.Wallets.AddResource	2
+game.Wallets.GetResourceValue	22
+game.World.StoreCheckpoint	2
+QuestManager.GetQuestProgressAndGoal	2
+QuestManager.GetQuestState	11
+QuestManager.IncrementQuestProgress	4
+QuestManager.StartQuest	2
+
+=== PERSISTENCE/CROSS-CONTEXT SOURCE LINES ===
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:1: local LD = require("design.LevelDesignLibrary")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:2: local color = require("core.color")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:3: local TUT = require("game.GlobalTutorials")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:25: -- WAD. It does not mutate puzzle state, quest state, or save data.
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:27: _G.CompletionistMapV100NornirRegistry =
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:28: _G.CompletionistMapV100NornirRegistry or {}
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:57: local registryKey =
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:63: _G.CompletionistMapV100NornirRegistry[registryKey]
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:66: registryKey = registryKey,
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:153: -- Conservative persisted-state inference. If the stock aggregate says N
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:156: -- be the persisted broken seals. If the numbers do not match, show the
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:165: print("[CompletionistMap v0.10.1] NORNIR_PERSISTED_INFER" ..
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:166: " registryKey=" .. tostring(registryKey) ..
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:203: _G.CompletionistMapV100NornirRegistry[registryKey] = entry
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:217: " registryKey=" .. tostring(registryKey))
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:285: runeTable[i].runeKey = level:FindSingleGameObject(thisObj:FindLuaTableAttribute("sealBreakable0" .. tostring(i)))
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:351: function OnSaveCheckpoint(level, go)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:359: function OnRestoreCheckpoint(level, go, savedInfo)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:360: state = savedInfo.state
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:361: keysUsed = savedInfo.keysUsed
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:362: challengeComplete = savedInfo.challengeComplete
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:363: interactAvailable = savedInfo.interactAvailable
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:427: function RunicSoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:428: game.SubObject.SoftSave(thisObj)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:432: runeTable[i].runeKey.LuaObjectScript.SoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:437: function ResolveRunicSoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:443: runeTable[i].runeKey.LuaObjectScript.SoftSaveCleanup()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:445: runeTable[i].runeKey.LuaObjectScript.ResolveSoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:495: GameObject = thisObj,
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_runic.lua:506: GameObject = thisObj,
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:1: local LD = require("design.LevelDesignLibrary")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:5: local checkpointOnOpened = false
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:6: local checkpointOnOpened_Override
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:7: local checkpointRequirementDisabled = false
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:17: uiCalls = require("ui.uicalls")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:22: TUT = require("game.GlobalTutorials")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:48: local registryKey =
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:54: registryKey = registryKey,
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:76: " registryKey=" .. tostring(registryKey))
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:105: checkpointOnOpened = thisObj:GetLuaTableAttribute("CheckpointOnOpened")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:106: checkpointOnOpened_Override = thisObj:GetLuaTableAttribute("CheckpointOnOpened_Override")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:107: if checkpointOnOpened_Override ~= nil and checkpointOnOpened_Override ~= "" then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:108: checkpointOnOpened_Override = GameObjects[checkpointOnOpened_Override]
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:110: checkpointOnOpened_Override = nil
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:132: idleFX:SetInhibitSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:133: parentObj:SetInhibitSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:134: thisObj:SetInhibitSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:136: parentObj:FindSingleGOByName("animatedLid"):SetInhibitSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:148: if (onOpenedEvent or interactionOnFinish) and not checkpointOnOpened and not checkpointRequirementDisabled then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:149: engine.Warning("Chest Error - " .. LD.GetParentTrace(thisObj) .. " has a callback, but isn't set to save a checkpoint. Check the 'CheckpointOnOpened' option in the toolbox to ensure the chest saves correctly")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:159: TypeSpecific_SoftSaveRestore()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:162: function TypeSpecific_SoftSaveRestore()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:182: thisObj.Parent.Parent.LuaObjectScript.ResolveRunicSoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:269: local IncrementQuest = function(parent, child, pieces)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:270: local questState = game.QuestManager.GetQuestState(parent)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:271: if questState == "Inactive" then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:272: game.QuestManager.StartQuest(parent)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:274: local _, progress = game.QuestManager.GetQuestProgressAndGoal(child)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:275: game.QuestManager.IncrementQuestProgress(child, pieces - progress)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:278: IncrementQuest("Quest_SonLanguage_Muspelheim_Parent", "Quest_SonLanguage_Muspelheim", game.Wallets.GetResourceValue("HERO", "MuspelheimCipherPiece"))
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:287: IncrementQuest("Quest_SonLanguage_Niflheim_Parent", "Quest_SonLanguage_Niflheim", game.Wallets.GetResourceValue("HERO", "NiflheimCipherPiece"))
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:288: local _, progress = game.QuestManager.GetQuestProgressAndGoal("Quest_SonLanguage_Niflheim")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:297: elseif chestType == "Custom_HammerQuest" then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:298: branchName = "BRA_EnvContainerCustomHammerQuest"
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:310: if game.QuestManager.GetQuestState("Quest_SonLanguage_Muspelheim") == "Complete" and game.QuestManager.GetQuestState("Quest_SonLanguage_Niflheim") == "Complete" then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:319: player:RequestInteract(thisObj, {InteractZone = interactZone, LerpObject = lootObject})
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:323: player:RequestInteract(thisObj, {InteractZone = interactZone, LerpObject = lootObject})
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:349: bandit:SetAIDeathCallback(thisObj, "TrapChestSoftSave")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:397: function TrapChestSoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:398: game.SubObject.SoftSave(thisObj)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:412: uiCalls.UI_Global_Menu_Clear_Exclusive_Access("GlobalInWorldMenu")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:441: LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TyrsVault")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:443: LD.ActivateAndIncrementQuest("RegionSummary_LegendaryChest_Parent_TheHallofTyr")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:454: LD.ActivateAndIncrementQuest("RegionSummary_RunicChest_Parent_TyrsVault")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:476: local regionQuest = tostring("RegionSummary_" .. categoryName .. "_Parent_" .. regionStringName)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:477: print("DOING LEGENDARY QUEST....", regionQuest)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:478: LD.ActivateAndIncrementQuest(regionQuest)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:496: uiCalls.UI_Global_Menu_Set_Exclusive_Access("GlobalInWorldMenu")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:505: if lootObjectName == "Custom_HammerQuest" then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:506: game.Wallets.AddResource("HERO", "AndvarisHammer", 1, "Quest")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:517: uiCalls.UI_Global_Menu_Clear_Exclusive_Access("GlobalInWorldMenu")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:532: if checkpointOnOpened then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:533: if checkpointOnOpened_Override ~= nil then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:534: if checkpointOnOpened_Override.IsRefNode then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:535: checkpointOnOpened_Override = checkpointOnOpened_Override.Child
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:537: game.World.StoreCheckpoint({OverrideObject = checkpointOnOpened_Override})
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:539: game.World.StoreCheckpoint()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:542: if game.SubObject.SoftSave then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:543: game.SubObject.SoftSave(thisObj)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:546: thisObj.Parent.Parent.LuaObjectScript.RunicSoftSave()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:550: function DisableCheckpointRequirement()
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:551: checkpointRequirementDisabled = true
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:553: function OnSaveCheckpoint(level, obj)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:556: function OnRestoreCheckpoint(level, obj, savedInfo)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:557: state = savedInfo.state
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:719: GameObject = parentObj,
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:750: game.Audio.PlayBanter("Niflheim_Armor_Quest")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:751: LD.ActivateQuest("Quest_NiflheimArmorChest_Parent")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:752: LD.CompleteQuest("Quest_NiflheimArmorChest_01")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:753: game.SubObject.SoftSave(thisObj)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:769: if not checkpointOnOpened and not checkpointRequirementDisabled then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:770: engine.Warning("Chest Error - " .. LD.GetParentTrace(thisObj) .. " has a callback, but isn't set to save a checkpoint. Check the 'CheckpointOnOpened' option in the toolbox to ensure the chest saves correctly")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:785: if not checkpointOnOpened and not checkpointRequirementDisabled then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:786: engine.Warning("Chest Error - " .. LD.GetParentTrace(thisObj) .. " has a callback, but isn't set to save a checkpoint. Check the 'CheckpointOnOpened' option in the toolbox to ensure the chest saves correctly")
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:817: Custom_HammerQuest_Idle = "SND_LOOT_Shard_Orange_LP",
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:843: elseif chestType == "Legendary" or chestType == "Custom_HammerQuest" or chestType == "Custom_MimirsEye" then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:858: elseif chestType == "Legendary" or chestType == "Custom_HammerQuest" or chestType == "Custom_MimirsEye" then
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:896: LD.PlaySound(lootSoundEmitter, lootSoundEvents.Custom_HammerQuest_Idle)
+gameart\scripts\levels\gameplaymodules\progression\interact_chest_standard.lua:919: LD.StopSound(lootSoundEmitter, lootSoundEvents.Custom_HammerQuest_Idle)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:1: local LD = require("design.LevelDesignLibrary")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:2: local timers = require("level.timer")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:4: local ravenKilled = false
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:5: local BirdMesh, OnKilledCallbacks, regionSummaryQuest
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:7: -- Read-only with respect to progression: it only observes the script's own
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:8: -- ravenKilled state and publishes it to the custom map/HUD prototype.
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:37: _G.CompletionistMapV100TargetRavenKilled = collected
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:51: " regionQuest=" .. tostring(regionSummaryQuest) ..
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:60: regionSummaryQuest = thisObj:FindLuaTableAttribute("regionSummaryQuest")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:66: CompletionistMapV100_PublishTargetState(ravenKilled, "OnStart")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:67: if ravenKilled == true then
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:79: local questState = game.QuestManager.GetQuestState("Quest_Labor_KillRavens_Parent")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:80: if questState == "Inactive" then
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:81: game.QuestManager.StartQuest("Quest_Labor_KillRavens_Parent")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:83: game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens", 1)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:84: game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_25", 1)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:85: game.QuestManager.IncrementQuestProgress("Quest_Labor_KillRavens_50", 1)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:86: if game.QuestManager.GetQuestState("Quest_Labor_KillRavens") == "Complete" then
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:89: ravenKilled = true
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:93: ActivateRegionSummaryQuest()
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:94: timers.StartLevelTimer(1, SoftSave)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:101: function ActivateRegionSummaryQuest()
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:102: if regionSummaryQuest ~= nil and regionSummaryQuest ~= "" then
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:103: regionSummaryQuest = string.gsub(regionSummaryQuest, "%s+", "")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:104: LD.ActivateAndIncrementQuest(regionSummaryQuest)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:126: function SoftSave(level, obj)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:127: game.SubObject.SoftSave(thisObj)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:129: function OnSaveCheckpoint(level, obj)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:130: return {ravenKilled = ravenKilled}
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:132: function OnRestoreCheckpoint(level, obj, tab)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:133: ravenKilled = tab.ravenKilled
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:134: CompletionistMapV100_PublishTargetState(ravenKilled, "OnRestoreCheckpoint")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:164: -- Runs inside persistent Raven gameplay script. Read native ravenKilled only.
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:202: if ticket ~= generation or ravenKilled ~= true then return end
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:241: local killed = ravenKilled == true
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:281: local restore = OnRestoreCheckpoint
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:282: function OnRestoreCheckpoint(...)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:283: local result = restore(...)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:284: observe("OnRestoreCheckpoint")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:298: " mapmenuDependency=false progressionWrites=false")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:303: -- Read own Raven bool. Match one native quest and static world point.
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:310: {CatalogueId="raven_95b9c6444d479ac68207b1829d02909b",Name="Completionist_V105_Raven_95b9c6444d479ac6",ParentQuest="RegionSummary_ALF_Raven_Parent",X=355.902670263393,Y=-13.4251546010282,Z=150.087953932125},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:311: {CatalogueId="raven_63f2a1a74274de6df3962490fb6552e9",Name="Completionist_V105_Raven_63f2a1a74274de6d",ParentQuest="RegionSummary_ALF_Raven_Parent",X=330.212471220837,Y=9.57608189725386,Z=298.500278896071},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:312: {CatalogueId="raven_a824e12946c803e8511da79bc52a193f",Name="Completionist_V105_Raven_a824e12946c803e8",ParentQuest="RegionSummary_HEL_Raven_Parent",X=100.37760925293,Y=13.2656946182251,Z=50.1039047241211},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:313: {CatalogueId="raven_2811daa04ce30f079ff758b3bf04369d",Name="Completionist_V105_Raven_2811daa04ce30f07",ParentQuest="RegionSummary_HEL_Raven_Parent",X=356.888793945312,Y=-4.4595308303833,Z=31.5798797607422},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:314: {CatalogueId="raven_595d8539488753c54fa471a46631e8c7",Name="Completionist_V105_Raven_595d8539488753c5",ParentQuest="RegionSummary_HEL_Raven_Parent",X=321.863159179688,Y=13.952938079834,Z=79.7303237915039},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:315: {CatalogueId="raven_69a8e9f3434cd84b48c7c688094ed2e4",Name="Completionist_V105_Raven_69a8e9f3434cd84b",ParentQuest="RegionSummary_HEL_Raven_Parent",X=349.126617431641,Y=13.6133966445923,Z=12.3349018096924},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:316: {CatalogueId="raven_7ffab2af4d6e2c7e7a9d42a58943bdf1",Name="Completionist_V105_Raven_7ffab2af4d6e2c7e",ParentQuest="RegionSummary_HEL_Raven_Parent",X=314.640655517578,Y=-27.4914531707764,Z=58.8981285095215},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:317: {CatalogueId="raven_b13e52024ecc5909d1fe478ee2c54e8c",Name="Completionist_V105_Raven_b13e52024ecc5909",ParentQuest="RegionSummary_HEL_Raven_Parent",X=346.504669189453,Y=-2.00611925125122,Z=-74.6015243530273},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:318: {CatalogueId="raven_7ffe9f6e4e18734cebadc892d24801e4",Name="Completionist_V105_Raven_7ffe9f6e4e18734c",ParentQuest="RegionSummary_BC_Raven_Parent",X=130.001189981692,Y=0.936963081359863,Z=-141.655430069183},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:319: {CatalogueId="raven_bc9c2cea4b7e1feaf09bb58f1b691035",Name="Completionist_V105_Raven_bc9c2cea4b7e1fea",ParentQuest="RegionSummary_BC_Raven_Parent",X=63.2450691865632,Y=7.60876417160034,Z=-191.514320076015},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:320: {CatalogueId="raven_2b86b2ad4f6c006d5f6db0af57a190a4",Name="Completionist_V105_Raven_2b86b2ad4f6c006d",ParentQuest="RegionSummary_BM_Raven_Parent",X=-178.000001018187,Y=1.7838077545166,Z=303.99999980491},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:321: {CatalogueId="raven_73ac895445d967756cbf34ac591ac205",Name="Completionist_V105_Raven_73ac895445d96775",ParentQuest="RegionSummary_BSW_Raven_Parent",X=-258.990280144897,Y=5.33059692382812,Z=-285.298244761827},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:322: {CatalogueId="raven_11d083554dd320d5e23ccca24f339acd",Name="Completionist_V105_Raven_11d083554dd320d5",ParentQuest="RegionSummary_BT_Raven_Parent",X=-247.521129680852,Y=15.334071401711,Z=174.190121041686},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:323: {CatalogueId="raven_ef8568004bd6283b79b4819bb3e5cb0f",Name="Completionist_V105_Raven_ef8568004bd6283b",ParentQuest="RegionSummary_BW_Raven_Parent",X=112.027648567456,Y=14.0519285202026,Z=355.299636271641},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:324: {CatalogueId="raven_4b8990ee4053cd00d13299928da1a9fc",Name="Completionist_V105_Raven_4b8990ee4053cd00",ParentQuest="RegionSummary_CALS_Raven_Parent",X=-250.723768859096,Y=-3.53147229364686,Z=-89.2099558240422},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:325: {CatalogueId="raven_df5a6f7543fa157f4cd630a19c038deb",Name="Completionist_V105_Raven_df5a6f7543fa157f",ParentQuest="RegionSummary_CALS_Raven_Parent",X=294.915357133406,Y=-8.76826047897339,Z=-174.666727587869},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:326: {CatalogueId="raven_e4d9b53e4e0330fc07421d8fea348f1d",Name="Completionist_V105_Raven_e4d9b53e4e0330fc",ParentQuest="RegionSummary_FOOT_Raven_Parent",X=-482.668668137819,Y=11.7049910724163,Z=246.15424006169},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:327: {CatalogueId="raven_2862a927444bf9df95a605b6a1cfec2b",Name="Completionist_V105_Raven_2862a927444bf9df",ParentQuest="RegionSummary_FOOT_Raven_Parent",X=-364.428009033203,Y=60.9643630981445,Z=378.847961425781},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:328: {CatalogueId="raven_528d332048f734d84b2f8ca26b3abafc",Name="Completionist_V105_Raven_528d332048f734d8",ParentQuest="RegionSummary_FOR_Raven_Parent",X=-207.533752441406,Y=27.4933643341064,Z=-891.698852539063},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:329: {CatalogueId="raven_3f0baac6405889c7478896801b6a637c",Name="Completionist_V105_Raven_3f0baac6405889c7",ParentQuest="RegionSummary_FD_Raven_Parent",X=10.2952669007519,Y=14.497296333313,Z=-585.053234791918},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:330: {CatalogueId="raven_ad56521740c745076417e99ddf1dd7a4",Name="Completionist_V105_Raven_ad56521740c74507",ParentQuest="RegionSummary_FD_Raven_Parent",X=55.46050852298,Y=12.5715627670288,Z=-560.252033876615},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:331: {CatalogueId="raven_b5ec8398449f573b8a70b7a4fb1154af",Name="Completionist_V105_Raven_b5ec8398449f573b",ParentQuest="RegionSummary_FD_Raven_Parent",X=78.1437570857584,Y=-0.150186061859131,Z=-512.011643855323},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:332: {CatalogueId="raven_14a87a63401390815b4e4ab2b4e619d0",Name="Completionist_V105_Raven_14a87a6340139081",ParentQuest="RegionSummary_FD_Raven_Parent",X=68.9712214782494,Y=7.0696337223053,Z=-385.6933954276},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:333: {CatalogueId="raven_97b753a94e069b45a5e031b81a5b9f91",Name="Completionist_V105_Raven_97b753a94e069b45",ParentQuest="RegionSummary_FD_Raven_Parent",X=70.7724436862145,Y=7.99884366989136,Z=-452.414581433755},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:334: {CatalogueId="raven_09c20f1b44476543307d8d8a444401f7",Name="Completionist_V105_Raven_09c20f1b44476543",ParentQuest="RegionSummary_HTTK_Raven_Parent",X=213.200271606445,Y=-19.5986442565918,Z=-465.167449951172},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:335: {CatalogueId="raven_93bb416243c6d7afd0dadf824507fcb6",Name="Completionist_V105_Raven_93bb416243c6d7af",ParentQuest="RegionSummary_HTTK_Raven_Parent",X=299.866455078125,Y=-29.7612724304199,Z=-386.324096679688},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:336: {CatalogueId="raven_b65148ce40189997a7ee6abb05551d95",Name="Completionist_V105_Raven_b65148ce40189997",ParentQuest="RegionSummary_HTTK_Raven_Parent",X=395.121004104614,Y=-45.5068912506104,Z=-352.832214355469},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:337: {CatalogueId="raven_4f3ed8604f52329654cb89a77cb7b227",Name="Completionist_V105_Raven_4f3ed8604f523296",ParentQuest="RegionSummary_HTTK_Raven_Parent",X=352.256092071533,Y=-30.1093330383301,Z=-475.425933837891},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:338: {CatalogueId="raven_ce4340a84992a449844e0394671c59eb",Name="Completionist_V105_Raven_ce4340a84992a449",ParentQuest="RegionSummary_HTTK_Raven_Parent",X=432.142700195312,Y=-45.9899129867554,Z=-479.911163330078},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:339: {CatalogueId="raven_0b07c75f438ce0cfe8b6feb7731ffc9c",Name="Completionist_V105_Raven_0b07c75f438ce0cf",ParentQuest="RegionSummary_HM01_Raven_Parent",X=-234.014747619629,Y=7.71115684509277,Z=430.845436096191},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:340: {CatalogueId="raven_d869e60744104a9e8865428d5fc2f63a",Name="Completionist_V105_Raven_d869e60744104a9e",ParentQuest="RegionSummary_HM02_Raven_Parent",X=-484.709909439087,Y=-18.9620180130005,Z=-81.9476470947266},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:341: {CatalogueId="raven_349cc1eb4752a6149cf89f9f94644092",Name="Completionist_V105_Raven_349cc1eb4752a614",ParentQuest="RegionSummary_HM02_Raven_Parent",X=-499.053089618683,Y=-8.97603130340576,Z=-174.698647499084},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:342: {CatalogueId="raven_7ea7fe24483df9d884fd4790840bf692",Name="Completionist_V105_Raven_7ea7fe24483df9d8",ParentQuest="RegionSummary_HSH_Raven_Parent",X=742.055877685547,Y=-4.87457370758057,Z=-261.06355381012},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:343: {CatalogueId="raven_e01f95a84dd1e99dde0952856855399d",Name="Completionist_V105_Raven_e01f95a84dd1e99d",ParentQuest="RegionSummary_HSH_Raven_Parent",X=613.454071044922,Y=-14.4896502494812,Z=-131.025337219238},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:344: {CatalogueId="raven_9deba5114d8045898dafc5be9add793b",Name="Completionist_V105_Raven_9deba5114d804589",ParentQuest="RegionSummary_ISA_Raven_Parent",X=99.3590496837271,Y=-8.7858304977417,Z=278.658577850248},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:345: {CatalogueId="raven_62fbf37c443c70aeca40ac840f6084b1",Name="Completionist_V105_Raven_62fbf37c443c70ae",ParentQuest="RegionSummary_ISW_Raven_Parent",X=-195.024169302108,Y=-19.6607341372529,Z=-199.392995631803},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:346: {CatalogueId="raven_fa8d596f445ba456bc5b11905aa4af07",Name="Completionist_V105_Raven_fa8d596f445ba456",ParentQuest="RegionSummary_MT_Raven_Parent",X=176.968307495117,Y=3.7605185508728,Z=163.654830932617},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:347: {CatalogueId="raven_4532135740478ac108377e8b1c51a501",Name="Completionist_V105_Raven_4532135740478ac1",ParentQuest="RegionSummary_PP_Raven_Parent",X=-456.389038085938,Y=100.450210571289,Z=616.507263183594},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:348: {CatalogueId="raven_fb1ebb004216311e237c36b23a10707b",Name="Completionist_V105_Raven_fb1ebb004216311e",ParentQuest="RegionSummary_PP_Raven_Parent",X=-477.010528564453,Y=115.406867980957,Z=894.953552246094},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:349: {CatalogueId="raven_b88e14b5413082e98c4d9cadcbf6ad10",Name="Completionist_V105_Raven_b88e14b5413082e9",ParentQuest="RegionSummary_PP_Raven_Parent",X=-278.19970703125,Y=142.471649169922,Z=781.201049804688},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:350: {CatalogueId="raven_5a498384495d58916e944883eb2c90bb",Name="Completionist_V105_Raven_5a498384495d5891",ParentQuest="RegionSummary_PP_Raven_Parent",X=-336.435485839844,Y=140.173431396484,Z=856.341857910156},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:351: {CatalogueId="raven_100bb5c44d6b69eba68eb895d005f956",Name="Completionist_V105_Raven_100bb5c44d6b69eb",ParentQuest="RegionSummary_RP_Raven_Parent",X=-242.808197021484,Y=92.5402984619141,Z=-455.935913085938},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:352: {CatalogueId="raven_d9db91914694cfe73fa5b9abb208d25d",Name="Completionist_V105_Raven_d9db91914694cfe7",ParentQuest="RegionSummary_RP_Raven_Parent",X=-273.784545898438,Y=89.4121856689453,Z=-547.946472167969},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:353: {CatalogueId="raven_97e41c48491b177e804019a649735e58",Name="Completionist_V105_Raven_97e41c48491b177e",ParentQuest="RegionSummary_RP_Raven_Parent",X=-358.776885986328,Y=108.650001525879,Z=-393.233367919922},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:354: {CatalogueId="raven_ccbc62d64eb0f79bbf76e9a08401a137",Name="Completionist_V105_Raven_ccbc62d64eb0f79b",ParentQuest="RegionSummary_RP_Raven_Parent",X=-346.471710205078,Y=99.9208984375,Z=-328.121917724609},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:355: {CatalogueId="raven_f8fdd3a4438c9697f8aa308323b2465e",Name="Completionist_V105_Raven_f8fdd3a4438c9697",ParentQuest="RegionSummary_RP_Raven_Parent",X=-383.799987792969,Y=75.8000030517578,Z=-276.899993896484},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:356: {CatalogueId="raven_ac45261c43ee745cd2e20a9cf61a817d",Name="Completionist_V105_Raven_ac45261c43ee745c",ParentQuest="RegionSummary_RP_Raven_Parent",X=-405.134735107422,Y=69.8000030517578,Z=0.886073529720306},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:357: {CatalogueId="raven_5a652cfb4af86af517b33c8676dbbfc5",Name="Completionist_V105_Raven_5a652cfb4af86af5",ParentQuest="RegionSummary_RP_Raven_Parent",X=-503.480834960938,Y=25.3998031616211,Z=145.937606811523},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:358: {CatalogueId="raven_8ca357c445d32c015159d6b93e173686",Name="Completionist_V105_Raven_8ca357c445d32c01",ParentQuest="RegionSummary_SM_Raven_Parent",X=456.662017822266,Y=-2.57212233543396,Z=133.628570556641},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:359: {CatalogueId="raven_a70cd386408985c8bedbc98a7aaed456",Name="Completionist_V105_Raven_a70cd386408985c8",ParentQuest="RegionSummary_SM_Raven_Parent",X=574.245178222656,Y=-34.8896942138672,Z=151.699478149414},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:360: {CatalogueId="raven_642d0d164af0a5d4076e77933c549a5d",Name="Completionist_V103_Veithurgard_Raven_01",ParentQuest="RegionSummary_VF_Raven_Parent",X=-64.8508987426758,Y=12.9873847961426,Z=787.306938171387},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:361: {CatalogueId="raven_c945cb53465b58decfcbd4a221cb5326",Name="Completionist_V105_Raven_c945cb53465b58de",ParentQuest="RegionSummary_VF_Raven_Parent",X=122.604850769043,Y=17.3742713928223,Z=679.211616516113},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:362: {CatalogueId="raven_e32f7bab42fd7298890f6aa56a734562",Name="Completionist_V105_Raven_e32f7bab42fd7298",ParentQuest="RegionSummary_VF_Raven_Parent",X=-127.960754394531,Y=15.5776290893555,Z=690.075782775879},
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:373: local quest = string.gsub(tostring(regionSummaryQuest or ""), "%s+", "")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:376: if row.ParentQuest == quest then
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:394: local collected = ravenKilled == true
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:422: if ticket ~= generation or ravenKilled ~= true then return end
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:443: local restore = OnRestoreCheckpoint
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:444: function OnRestoreCheckpoint(...)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:445: local result = restore(...)
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:447: publish("OnRestoreCheckpoint")
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:460: " nativeField=ravenKilled exactQuestAndPosition=true boundedRetry=" .. tostring(retryLimit) ..
+gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua:461: " polling=false progressionWrites=false")
+gameart\ui\scripts\hud\mainhud.lua:1: local classlib = require("core.class")
+gameart\ui\scripts\hud\mainhud.lua:2: local consts = require("ui.consts")
+gameart\ui\scripts\hud\mainhud.lua:3: local fsm = require("ui.fsm")
+gameart\ui\scripts\hud\mainhud.lua:4: local hudConsts = require("ui.hudConsts")
+gameart\ui\scripts\hud\mainhud.lua:5: local util = require("ui.util")
+gameart\ui\scripts\hud\mainhud.lua:6: local priorityList = require("ui.priorityList")
+gameart\ui\scripts\hud\mainhud.lua:7: local timer = require("level.timer")
+gameart\ui\scripts\hud\mainhud.lua:8: local uiCalls = require("ui.uicalls")
+gameart\ui\scripts\hud\mainhud.lua:17: -- GameObjects. The safe route is therefore to borrow a pre-authored HUD object
+gameart\ui\scripts\hud\mainhud.lua:91: " requested=" .. tostring(name) ..
+gameart\ui\scripts\hud\mainhud.lua:113: local function CompletionistMapV100_RestoreProofVisual(self)
+gameart\ui\scripts\hud\mainhud.lua:121: local restoreOK, restoreErr = pcall(function()
+gameart\ui\scripts\hud\mainhud.lua:128: print("[CompletionistMap v0.10.1] HUD_VISUAL_RESTORE" ..
+gameart\ui\scripts\hud\mainhud.lua:129: " ok=" .. tostring(restoreOK) ..
+gameart\ui\scripts\hud\mainhud.lua:130: " error=" .. tostring(restoreErr))
+gameart\ui\scripts\hud\mainhud.lua:137: if args == nil or args.registryKey == nil then return end
+gameart\ui\scripts\hud\mainhud.lua:138: _G.CompletionistMapV100NornirRegistry =
+gameart\ui\scripts\hud\mainhud.lua:139: _G.CompletionistMapV100NornirRegistry or {}
+gameart\ui\scripts\hud\mainhud.lua:140: _G.CompletionistMapV100NornirRegistry[args.registryKey] = args
+gameart\ui\scripts\hud\mainhud.lua:143: if target ~= nil and target.registryKey == args.registryKey then
+gameart\ui\scripts\hud\mainhud.lua:158: " registryKey=" .. tostring(args.registryKey) ..
+gameart\ui\scripts\hud\mainhud.lua:170: if args == nil or args.registryKey == nil then return end
+gameart\ui\scripts\hud\mainhud.lua:172: _G.CompletionistMapV100NornirRegistry =
+gameart\ui\scripts\hud\mainhud.lua:173: _G.CompletionistMapV100NornirRegistry or {}
+gameart\ui\scripts\hud\mainhud.lua:175: local entry = _G.CompletionistMapV100NornirRegistry[args.registryKey]
+gameart\ui\scripts\hud\mainhud.lua:178: registryKey = args.registryKey,
+gameart\ui\scripts\hud\mainhud.lua:186: _G.CompletionistMapV100NornirRegistry[args.registryKey] = entry
+gameart\ui\scripts\hud\mainhud.lua:193: target.registryKey == args.registryKey and
+gameart\ui\scripts\hud\mainhud.lua:200: " registryKey=" .. tostring(args.registryKey) ..
+gameart\ui\scripts\hud\mainhud.lua:213: _G.CompletionistMapV100TargetRavenKilled == true then
+gameart\ui\scripts\hud\mainhud.lua:219: target.regionQuest ~= nil then
+gameart\ui\scripts\hud\mainhud.lua:221: return game.QuestManager.GetQuestState(target.regionQuest)
+gameart\ui\scripts\hud\mainhud.lua:226: _G.CompletionistMapV100TargetRavenKilled = true
+gameart\ui\scripts\hud\mainhud.lua:239: " registryLookup=false" ..
+gameart\ui\scripts\hud\mainhud.lua:251: CompletionistMapV100_RestoreProofVisual(self)
+gameart\ui\scripts\hud\mainhud.lua:257: CompletionistMapV100_RestoreProofVisual(self)
+gameart\ui\scripts\hud\mainhud.lua:583: UI.SoftSavePlayerState()
+gameart\ui\scripts\hud\mainhud.lua:615: function MainHUD:GetMarkerType(isMainQuest)
+gameart\ui\scripts\hud\mainhud.lua:616: return isMainQuest == true and consts.COMPASS_MARKER_TYPE_MAIN or consts.COMPASS_MARKER_TYPE_SIDE
+gameart\ui\scripts\hud\mainhud.lua:724: function MainHUD:EVT_ClearCompassMarkersForQuest(isMainQuest)
+gameart\ui\scripts\hud\mainhud.lua:725: local markerType = self:GetMarkerType(isMainQuest)
+gameart\ui\scripts\hud\mainhud.lua:728: function MainHUD:EVT_ShowCompassMarkerForQuest(isMainQuest, markerNameHash)
+gameart\ui\scripts\hud\mainhud.lua:729: local markerType = self:GetMarkerType(isMainQuest)
+gameart\ui\scripts\hud\mainhud.lua:730: if not game.Compass.MultiCompassTargetQuestSupport then
+gameart\ui\scripts\hud\mainhud.lua:735: function MainHUD:EVT_HideCompassMarkerForQuest(isMainQuest, markerNameHash)
+gameart\ui\scripts\hud\mainhud.lua:917: function MainHUD:OnSaveCheckpoint(tab)
+gameart\ui\scripts\hud\mainhud.lua:919: function MainHUD:OnRestoreCheckpoint(tab)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1: local classlib = require("core.class")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2: local tablex = require("core.tablex")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3: local animationUtil = require("ui.animationUtil")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4: local buttonUtil = require("ui.buttonUtil")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5: local colors = require("ui.colors")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:6: local consts = require("ui.consts")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:7: local fsm = require("ui.fsm")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:8: local lamsConsts = require("ui.lamsConsts")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:9: local list = require("ui.list")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:10: local mapConsts = require("ui.mapConsts")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:11: local mapSummaryCard = require("ui.mapSummaryCard")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:12: local mapUtil = require("ui.mapUtil")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:13: local menu = require("ui.menu")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:14: local pickupUtil = require("ui.pickupUtil")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:15: local questConsts = require("ui.questConsts")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:16: local questUtil = require("ui.questUtil")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:17: local util = require("ui.util")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:18: local tutorialUtil = require("ui.tutorialUtil")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:19: local tutorials = require("ui.tutorials")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:54: -- No marker state, quest state, collectible state, or save data is changed.
+gameart\ui\scripts\inworldmenu\mapmenu.lua:55: _G.CompletionistMapV100NornirRegistry = _G.CompletionistMapV100NornirRegistry or {}
+gameart\ui\scripts\inworldmenu\mapmenu.lua:68: regionQuest = "RegionSummary_VF_Raven_Parent",
+gameart\ui\scripts\inworldmenu\mapmenu.lua:76: local CompletionistMapV100_GetNornirRegistry
+gameart\ui\scripts\inworldmenu\mapmenu.lua:199: if _G.CompletionistMapV100TargetRavenKilled == true then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:204: return game.QuestManager.GetQuestState(
+gameart\ui\scripts\inworldmenu\mapmenu.lua:210: _G.CompletionistMapV100TargetRavenKilled = true
+gameart\ui\scripts\inworldmenu\mapmenu.lua:226: " registryKey=" .. tostring(target.registryKey) ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:230: local registry = CompletionistMapV100_GetNornirRegistry()
+gameart\ui\scripts\inworldmenu\mapmenu.lua:231: local entry = registry and registry[target.registryKey] or nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:250: if _G.CompletionistMapV100TargetRavenKilled == true then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:253: if not target.collected and target.regionQuest ~= nil then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:255: return game.QuestManager.GetQuestState(target.regionQuest)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:259: _G.CompletionistMapV100TargetRavenKilled = true
+gameart\ui\scripts\inworldmenu\mapmenu.lua:431: CompletionistMapV100_GetNornirRegistry = function()
+gameart\ui\scripts\inworldmenu\mapmenu.lua:432: local uiRegistry = _G.CompletionistMapV100NornirRegistry
+gameart\ui\scripts\inworldmenu\mapmenu.lua:433: if type(uiRegistry) == "table" and next(uiRegistry) ~= nil then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:434: if not _G.CompletionistMapV100RegistryLogged then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:435: _G.CompletionistMapV100RegistryLogged = true
+gameart\ui\scripts\inworldmenu\mapmenu.lua:436: print("[CompletionistMap v0.10.1] NORNIR_REGISTRY" ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:439: return uiRegistry, "ui_call_event"
+gameart\ui\scripts\inworldmenu\mapmenu.lua:444: -- pins are deliberately NOT created from this fallback because persisted
+gameart\ui\scripts\inworldmenu\mapmenu.lua:446: local registryKey =
+gameart\ui\scripts\inworldmenu\mapmenu.lua:449: fallback[registryKey] = {
+gameart\ui\scripts\inworldmenu\mapmenu.lua:450: registryKey = registryKey,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:478: local registry = CompletionistMapV100_GetNornirRegistry()
+gameart\ui\scripts\inworldmenu\mapmenu.lua:479: local entry = registry and registry[pin.registryKey] or nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:516: self.currQuestID = nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:539: target.registryKey == pin.registryKey and
+gameart\ui\scripts\inworldmenu\mapmenu.lua:563: local registry = CompletionistMapV100_GetNornirRegistry()
+gameart\ui\scripts\inworldmenu\mapmenu.lua:564: local entry = registry and registry[pin.registryKey] or nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:569: self.currQuestID = nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:576: local registry = CompletionistMapV100_GetNornirRegistry()
+gameart\ui\scripts\inworldmenu\mapmenu.lua:577: local entry = registry and registry[pin.registryKey] or nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:600: local registry, registrySource = CompletionistMapV100_GetNornirRegistry()
+gameart\ui\scripts\inworldmenu\mapmenu.lua:609: for registryKey, entry in pairs(registry or {}) do
+gameart\ui\scripts\inworldmenu\mapmenu.lua:618: " registryKey=" .. tostring(registryKey))
+gameart\ui\scripts\inworldmenu\mapmenu.lua:627: registryKey = registryKey,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:643: " ok=true source=" .. tostring(registrySource) ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:644: " registryKey=" .. tostring(registryKey) ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:657: local function CompletionistMapV100_FindNornirChestCollision(self, collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:658: if type(collisionGameObjectTable) ~= "table" or
+gameart\ui\scripts\inworldmenu\mapmenu.lua:662: for _, collGO in ipairs(collisionGameObjectTable) do
+gameart\ui\scripts\inworldmenu\mapmenu.lua:695: " registryKey=" .. tostring(pin.registryKey))
+gameart\ui\scripts\inworldmenu\mapmenu.lua:707: local registry, registrySource =
+gameart\ui\scripts\inworldmenu\mapmenu.lua:708: CompletionistMapV100_GetNornirRegistry()
+gameart\ui\scripts\inworldmenu\mapmenu.lua:710: if registrySource ~= "ui_call_event" then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:725: for registryKey, entry in pairs(registry) do
+gameart\ui\scripts\inworldmenu\mapmenu.lua:755: registryKey = registryKey,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:784: " ok=true registryKey=" .. tostring(registryKey) ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:805: " source=" .. tostring(registrySource))
+gameart\ui\scripts\inworldmenu\mapmenu.lua:810: collisionGameObjectTable
+gameart\ui\scripts\inworldmenu\mapmenu.lua:812: if type(collisionGameObjectTable) ~= "table" or
+gameart\ui\scripts\inworldmenu\mapmenu.lua:817: for _, collGO in ipairs(collisionGameObjectTable) do
+gameart\ui\scripts\inworldmenu\mapmenu.lua:866: " registryKey=" .. tostring(pin.registryKey) ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:916: self.currQuestID = nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1186: local registry = CompletionistMapV100_GetNornirRegistry()
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1231: local entry = registry and registry[pin.registryKey] or nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1251: registry and registry[selectedPin.registryKey] or nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1281: collisionGameObjectTable
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1283: if type(collisionGameObjectTable) ~= "table" or
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1288: for _, collGO in ipairs(collisionGameObjectTable) do
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1297: "PrimaryQuest",
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1298: "SecondaryQuest"
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1447: self.currQuestID = nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1515: assert(self.playerIconGO ~= nil, "The player indicator gameObject was not found.")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1614: self.currQuestID = nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1643: self:SendEventToUIFsm("globalMenu", "EVT_TURN_OFF_GLOBAL_MENU")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1691: target.registryKey == pin.registryKey
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1715: target.registryKey == pin.registryKey and
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1798: currMenu:UpdateFooterButton("Quest", true)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1814: local GetGlobalVar = game.Level.GetVariable
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1815: local completedCineNumber = GetGlobalVar("CompletedCineNumber")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1820: local jotunheimRevealed = GetGlobalVar("_GBL_JotTowerRevealed")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1850: if GetGlobalVar("ALF_TrenchOpen") then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1889: if GetGlobalVar("ThorStatueBroken") or game.QuestManager.GetQuestState("Quest_UnfinishedBusiness03_Objective_01") == questConsts.QUEST_STATE_COMPLETE then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1927: local GetGlobalVar = game.Level.GetVariable
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1928: local boatState = GetGlobalVar("Hel_MapState")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:1993: local fogTable = mapConsts.MAP_FOG_GAMEOBJECTS
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2012: local jointName = mapConsts.MAP_TEXT_GAMEOBJECTS[regionName]
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2022: local fogTable = mapConsts.MAP_FOG_GAMEOBJECTS
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2045: local jointName = mapConsts.MAP_TEXT_GAMEOBJECTS[regionName]
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2057: function MapOn:MapCollisionChangeHandler(currState, collisionGameObjectTable, realmName)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2063: collisionGameObjectTable
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2084: " registryKey=" ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2085: tostring(completionistMapV100NornirPin.registryKey) ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2110: self, collisionGameObjectTable
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2122: " active=true registryKey=" ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2123: tostring(completionistMapV100ChestPin.registryKey) ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2135: collisionGameObjectTable
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2182: end  local iconCollInfo, terrainCollInfo = mapUtil.GetPrioritizedIconAndTerrain(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2186: self.currQuestID = nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2225: for i = 1, #collisionGameObjectTable do
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2226: local collGO = collisionGameObjectTable[i]
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2244: local hasQuest, questName = questUtil.FindQuestForMarker(markerID)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2245: self.currQuestID = hasQuest and questName or nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2246: showGoToJournal = hasQuest
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2272: local trackingState = questConsts.TRACKING_STATE_NONE
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2273: local hasQuest, questID = questUtil.FindQuestForMarker(markerID)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2274: if hasQuest then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2275: local trackingInfo = questUtil.GetTrackingInfo(questID)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2276: trackingState = questUtil.TrackingInfo_GetTrackingState(trackingInfo, questID)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2279: trackingState = questConsts.TRACKING_STATE_TRACKED
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2284: local trackingState = questConsts.TRACKING_STATE_NONE
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2295: local goIconTracked = goIcon:FindSingleGOByName("MapIconAreaMainQuest_area")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2296: local goIconTrackedSide = goIcon:FindSingleGOByName("MapIconAreaSideQuest_area")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2314: if trackingState == questConsts.TRACKING_STATE_TRACKED then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2320: if trackingState == questConsts.TRACKING_STATE_TRACKED then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2464: elseif self.currQuestID ~= nil then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2501: local goTerrainCollision = mapUtil.GetMapCollisionInfoGameObject(terrainCollInfo)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2612: self:SendEventToUIFsm("globalMenu", "EVT_GO_TO_WEAPON")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2627: self:SendEventToUIFsm("globalMenu", "EVT_GO_TO_SKILL_TREE")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2633: Item = "Quest",
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2638: "EVT_GO_TO_QUEST_MENU"
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2641: self:SendEventToUIFsm("globalMenu", "EVT_GO_TO_QUEST")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2757: local hasQuest, questName = questUtil.FindQuestForMarker(markerInfo.Id)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2758: if not hasQuest or game.QuestManager.GetQuestState(questName) ~= questConsts.QUEST_STATE_COMPLETE then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2906: self:SendEventToUIFsm("globalMenu", "EVT_TURN_OFF_GLOBAL_MENU")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2909: local currRootQuestID = questUtil.GetRootQuestID(self.currQuestID)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2911: if not questUtil.IsValidID(currRootQuestID) then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2944: end  local currRootQuestID = questUtil.GetRootQuestID(self.currQuestID)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2945: if questUtil.IsValidID(currRootQuestID) then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2952: self:SendEventToUIFsm("globalMenu", "EVT_GO_TO_QUEST", currRootQuestID)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2957: self:SendEventToUIFsm("globalMenu", "EVT_OPEN_SETTINGS_MENU")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2974: trackedMarker = self.jumpToMarkerIndex == 0 or self:GetMapMarkerTrackingState(self.markers[self.jumpToMarkerIndex].Id) == questConsts.TRACKING_STATE_TRACKED
+gameart\ui\scripts\inworldmenu\mapmenu.lua:2977: if self.jumpToMarkerIndex == 0 and not self:ShouldShowPlayerMarker() and mapUtil.GetPlayerRealm() == self.currRealmName and self.markers[1] ~= nil and self:GetMapMarkerTrackingState(self.markers[1].Id) == questConsts.TRACKING_STATE_TRACKED then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3026: if UI.GetEventSenderGameObject() == button then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3037: if markerInfo.iconGO ~= nil and UI.GetEventSenderGameObject() == markerInfo.iconGO then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3054: if UI.GetEventSenderGameObject() == self.playerIconGO then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3176: target.registryKey == pin.registryKey
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3183: target.registryKey = pin.registryKey
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3185: target.regionQuest = nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3201: " registryKey=" .. tostring(pin.registryKey) ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3221: target.registryKey == pin.registryKey and
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3230: target.registryKey = pin.registryKey
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3233: target.regionQuest = nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3250: " registryKey=" .. tostring(pin.registryKey) ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3280: target.regionQuest = "RegionSummary_VF_Raven_Parent"
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3281: target.registryKey = nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3372: function Midgard:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3373: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Midgard")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3388: function Alfheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3389: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Alfheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3404: function Helheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3405: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Helheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3420: function Jotunheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3421: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Jotunheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3436: function Niflheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3437: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Niflheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3452: function Muspelheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3453: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Muspelheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3468: function Svartalheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3469: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Svartalheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3484: function Vanaheim:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3485: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Vanaheim")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3500: function Asgard:EVT_HandleMapCollisionChangeHook(collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3501: self.mapOn:MapCollisionChangeHandler(self, collisionGameObjectTable, "Asgard")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3506: function MapMenu:OnSaveCheckpoint(tab)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3508: function MapMenu:OnRestoreCheckpoint(tab)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3661: -- collected so artwork can still be inspected. No marker state, save state,
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3662: -- progression value, or native compass state is changed here.
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3721: " diagnosticShowEvenIfCollected=true progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3741: " progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3744: log("ART_RESULT", "active=false reason=id_or_region_unresolved progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3754: " progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3764: " progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3791: " progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3799: " compassType=DockPoint dockProxyUsed=false progressionWritten=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3808: -- No marker progression state is changed here. The native marker remains
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3881: -- also honours promptIntent until the manager reports the requested state.
+gameart\ui\scripts\inworldmenu\mapmenu.lua:3947: -- on the user's requested state until shownState catches up, otherwise
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4061: log("NATIVE_RAVEN_RESULT", "request_queued=true active=true")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4280: -- During an asynchronous user action, reflect the requested state immediately.
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4359: log("RAVEN_REMOVE", "request_queued=true")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4467: -- BEGIN COMPLETIONIST SHARED LOADER TWIN PROBE
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4472: local prefix = "[CompletionistMap shared-loader-twin] "
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4479: local go = self.completionistSharedLoaderTwinGO
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4487: self.completionistSharedLoaderTwinGO = nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4510: if self.completionistSharedLoaderTwinGO ~= nil then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4540: self.completionistSharedLoaderTwinGO = go
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4546: log("CREATE success=true distinctObjects=true sharedLoader=goMapIconCompletionistRaven" ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4555: log("CREATE success=true distinctObjects=not_applicable sharedLoader=goMapIconCompletionistRaven" ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4570: -- END COMPLETIONIST SHARED LOADER TWIN PROBE
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4623: -- Production bridge publishes native Raven state. False from an older restored
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4624: -- checkpoint must win over stale quest state. This is read-only for progression.
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4626: local state = _G.CompletionistMapV100TargetRavenKilled
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4628: local ok, quest = pcall(function()
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4629: return game.QuestManager.GetQuestState("RegionSummary_VF_Raven_Parent")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4631: if not ok or quest == nil then return nil end
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4632: return tostring(quest) == "Complete"
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4643: if self.completionistSharedLoaderTwinGO ~= nil and
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4644: collision == self.completionistSharedLoaderTwinGO then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4932: function MapOn:MapCollisionChangeHandler(currState, collisionGameObjectTable, realmName)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4934: local selected, source = collisionTableSelection(self, collisionGameObjectTable)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:4940: return previousCollision(self, currState, collisionGameObjectTable, realmName)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5083: " twinTouched=false progressionWrites=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5137: " singleActive=true gameplayCleanup=persistent_precisionchallenge" ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5138: " progressionWrites=false twinLifecycleIndependent=true")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5265: if self.completionistSharedLoaderTwinGO ~= nil then
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5266: recycle(self.completionistSharedLoaderTwinGO)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5267: self.completionistSharedLoaderTwinGO = nil
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5572: " source=" .. tostring(source) .. " progressionWrites=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5576: _G.CompletionistMapV105ApplyPersistedRavenKills = function(catalogueIds, source)
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5594: if lastMapOnSelf ~= nil then syncIcons(lastMapOnSelf, "persisted:" .. tostring(source)) end
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5595: log("PERSISTED_KILLS", "source=" .. tostring(source) ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5596: " accepted=" .. tostring(accepted) .. " catalogueDefaultVisible=true progressionWrites=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5607: " staleStateRetained=false catalogueDefaultVisible=true progressionWrites=false")
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5618: " polling=false progressionWrites=false catalogueDefaultVisible=true" ..
+gameart\ui\scripts\inworldmenu\mapmenu.lua:5619: " persistedKillBootstrap=true")
