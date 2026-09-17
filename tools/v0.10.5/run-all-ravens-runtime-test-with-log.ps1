@@ -60,7 +60,8 @@ catch {
 if (Test-Path -LiteralPath $activeManifest -PathType Leaf) {
     try {
         Copy-Item -LiteralPath $activeManifest -Destination $manifestCopy -Force
-        Append-Line "manifest_archived=$(Get-SafeRelativePath -Root $repo -Path $manifestCopy -Label 'archived runtime manifest')"
+        $relativeManifest = [IO.Path]::GetRelativePath($repo, $manifestCopy).Replace('\','/')
+        Append-Line "manifest_archived=$relativeManifest"
     }
     catch {
         Append-Line "manifest_archive_error=$($_.Exception.Message)"
