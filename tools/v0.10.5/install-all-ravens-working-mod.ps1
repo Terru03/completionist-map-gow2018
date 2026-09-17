@@ -10,11 +10,22 @@ $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $runtimeTest = Join-Path $PSScriptRoot 'all-ravens-runtime-test.ps1'
 $builder = Join-Path $PSScriptRoot 'build-all-ravens-release-candidate.py'
 $candidateRoot = Join-Path $repo 'build\v0.10.5-all-ravens-release-candidate\offline\candidate\game-root'
+$frozenSourceRoot = Join-Path $repo 'build\v0.10.5-all-ravens-release-candidate\frozen-source\game-root'
+$proofRelative = 'archive/all-ravens/all-ravens-release-candidate-offline.json'
+$proofPath = Join-Path $repo 'archive\all-ravens\all-ravens-release-candidate-offline.json'
 $runId = (Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss')
 $relativeRunDir = "archive/field-logs/runtime/all-ravens-working-install-$runId"
 $runDir = Join-Path $repo "archive\field-logs\runtime\all-ravens-working-install-$runId"
 $transcriptPath = Join-Path $runDir 'run.txt'
 $resultPath = Join-Path $runDir 'result.json'
+
+$sourceFiles = [ordered]@{
+    'exec/dc/pc_le/mapmaster.dcb' = '1e1d5086815bc8553490bff915fea210a8be4f80ce6c88b418b62d7050690a31'
+    'exec/dc/pc_le/mapcoords.dcb' = '36bd16f8f21c6387b556e156055ea02f5c262b30a6c450cc0efa05734efb1a0c'
+    'exec/dc/pc_le/wad_r_ui.dcb' = '9a434a29ed2e333362e60ac7f224d26855fc9dc86834aa94504a170854e22f2b'
+    'mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua' = '16e13b342f3bbe98ac9b87eb34bf0115e6b04340d6e41270f38a557f2ed51493'
+    'mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua' = '61e6bc8efe1fcb9b2a6e796aa86ce9a5f74fc18e97229aae7cc52b652a565800'
+}
 
 function Get-CurrentBranch {
     $branch = (& git -C $repo branch --show-current).Trim()
@@ -30,6 +41,12 @@ function Get-RepoHead {
         throw 'Could not determine Git HEAD.'
     }
     return $head.ToLowerInvariant()
+}
+
+function Get-Sha256 {
+    param([string]$Path)
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { return $null }
+    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
 }
 
 function Assert-CleanTrackedState {
@@ -125,9 +142,93 @@ function Resolve-GodOfWarRoot {
     return [System.IO.Path]::GetFullPath($matches[0])
 }
 
+function Get-SiblingResearchRoots {
+    $parent = Split-Path $repo -Parent
+    $roots = New-Object System.Collections.Generic.List[string]
+    $roots.Add($repo)
+    if (Test-Path -LiteralPath $parent -PathType Container) {
+        foreach ($dir in @(Get-ChildItem -LiteralPath $parent -Directory -ErrorAction SilentlyContinue)) {
+            if ($dir.Name -like 'completionist-map-gow2018*') {
+                $roots.Add($dir.FullName)
+            }
+        }
+    }
+    return @($roots | Select-Object -Unique)
+}
+
+function Find-VerifiedFrozenSourceFile {
+    param(
+        [string]$Relative,
+        [string]$ExpectedSha,
+        [string]$ResolvedGameRoot
+    )
+
+    $candidates = New-Object System.Collections.Generic.List[string]
+    $candidates.Add((Join-Path $ResolvedGameRoot $Relative))
+
+    foreach ($researchRoot in @(Get-SiblingResearchRoots)) {
+        $transactionBase = Join-Path $researchRoot 'build\v0.10.5-all-ravens-runtime-test\transaction\transactions'
+        if (Test-Path -LiteralPath $transactionBase -PathType Container) {
+            foreach ($transaction in @(Get-ChildItem -LiteralPath $transactionBase -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending)) {
+                $candidates.Add((Join-Path $transaction.FullName ("backup\game-root\" + $Relative.Replace('/', '\'))))
+            }
+        }
+    }
+
+    foreach ($candidate in @($candidates | Select-Object -Unique)) {
+        if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) { continue }
+        $actual = Get-Sha256 -Path $candidate
+        if ($actual -eq $ExpectedSha.ToLowerInvariant()) {
+            return [System.IO.Path]::GetFullPath($candidate)
+        }
+    }
+
+    throw "Could not find frozen verified source for $Relative (expected SHA256 $ExpectedSha). Checked current game plus all sibling completionist-map-gow2018 runtime transaction backups."
+}
+
+function Ensure-FrozenSourceRoot {
+    param([string]$ResolvedGameRoot)
+
+    $complete = Test-Path -LiteralPath $frozenSourceRoot -PathType Container
+    if ($complete) {
+        foreach ($relative in $sourceFiles.Keys) {
+            $path = Join-Path $frozenSourceRoot $relative
+            if ((Get-Sha256 -Path $path) -ne ([string]$sourceFiles[$relative]).ToLowerInvariant()) {
+                $complete = $false
+                break
+            }
+        }
+    }
+
+    if ($complete) {
+        Write-Host '  frozen source: existing verified five-file source root'
+        return 'verified-existing'
+    }
+
+    if (Test-Path -LiteralPath $frozenSourceRoot) {
+        Remove-Item -LiteralPath $frozenSourceRoot -Recurse -Force
+    }
+    New-Item -ItemType Directory -Force -Path $frozenSourceRoot | Out-Null
+
+    foreach ($relative in $sourceFiles.Keys) {
+        $expected = ([string]$sourceFiles[$relative]).ToLowerInvariant()
+        $source = Find-VerifiedFrozenSourceFile -Relative $relative -ExpectedSha $expected -ResolvedGameRoot $ResolvedGameRoot
+        $destination = Join-Path $frozenSourceRoot $relative
+        New-Item -ItemType Directory -Force -Path (Split-Path $destination -Parent) | Out-Null
+        Copy-Item -LiteralPath $source -Destination $destination -Force
+        $copiedSha = Get-Sha256 -Path $destination
+        if ($copiedSha -ne $expected) {
+            throw "Frozen source copy SHA mismatch for $relative."
+        }
+        Write-Host "  frozen source verified: $relative"
+    }
+
+    return 'assembled-from-verified-transaction-backups'
+}
+
 function Invoke-CandidateBuilder {
     param(
-        [string]$ResolvedGameRoot,
+        [string]$SourceRoot,
         [switch]$CheckOnly
     )
 
@@ -137,7 +238,7 @@ function Invoke-CandidateBuilder {
 
     $python = Get-Command python -ErrorAction SilentlyContinue
     $py = Get-Command py -ErrorAction SilentlyContinue
-    $args = @($builder, '--source-root', $ResolvedGameRoot)
+    $args = @($builder, '--source-root', $SourceRoot)
     if ($CheckOnly) {
         $args += '--check'
     }
@@ -160,47 +261,75 @@ function Invoke-CandidateBuilder {
 }
 
 function Ensure-AllRavensCandidate {
-    param([string]$ResolvedGameRoot)
+    param([string]$SourceRoot)
 
-    $action = 'verified-existing'
-    if (-not (Test-Path -LiteralPath $candidateRoot -PathType Container)) {
-        Write-Host '  candidate root: missing; rebuilding deterministically'
-        Invoke-CandidateBuilder -ResolvedGameRoot $ResolvedGameRoot
-        $action = 'rebuilt'
+    if (Test-Path -LiteralPath $candidateRoot) {
+        Remove-Item -LiteralPath $candidateRoot -Recurse -Force
     }
-    else {
-        Write-Host '  candidate root: present; verifying deterministic rebuild'
-    }
+
+    Write-Host '  candidate: rebuilding deterministically from frozen verified source'
+    Invoke-CandidateBuilder -SourceRoot $SourceRoot
 
     if (-not (Test-Path -LiteralPath $candidateRoot -PathType Container)) {
         throw "Candidate builder completed but the candidate root is still missing: $candidateRoot"
     }
 
-    Invoke-CandidateBuilder -ResolvedGameRoot $ResolvedGameRoot -CheckOnly
-    Write-Host "  candidate: $action and verified"
-    return $action
+    Invoke-CandidateBuilder -SourceRoot $SourceRoot -CheckOnly
+    Write-Host '  candidate: rebuilt and deterministic rebuild verified'
+    return 'rebuilt-from-frozen-source'
+}
+
+function Publish-CandidateProofIfChanged {
+    & git -C $repo diff --quiet --ignore-submodules -- $proofRelative
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host '  candidate proof: tracked proof already matches rebuilt candidate'
+        return $null
+    }
+
+    if (-not (Test-Path -LiteralPath $proofPath -PathType Leaf)) {
+        throw "Candidate build changed proof state but proof file is missing: $proofPath"
+    }
+
+    & git -C $repo add -- $proofRelative 2>&1 | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw 'Could not stage refreshed all-Ravens candidate proof.' }
+
+    & git -C $repo commit -m 'build(v0.10.5): refresh all-ravens candidate proof' -- $proofRelative 2>&1 | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw 'Could not commit refreshed all-Ravens candidate proof.' }
+
+    $commit = Get-RepoHead
+    & git -C $repo push origin $expectedBranch 2>&1 | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw "Candidate proof committed locally as $commit but push failed." }
+
+    Write-Host "  candidate proof commit: $commit"
+    return $commit
 }
 
 function Write-RunResult {
     param(
         [string]$Outcome,
         [string]$Branch,
-        [string]$HeadBefore,
+        [string]$InitialHead,
         [string]$ResolvedGameRoot,
+        [string]$FrozenSourceAction,
         [string]$CandidateAction,
+        [string]$ProofCommit,
         [string]$ErrorMessage
     )
 
     $result = [ordered]@{
-        schema = 2
+        schema = 3
         run_id = $runId
         finished_utc = (Get-Date).ToUniversalTime().ToString('o')
         outcome = $Outcome
         branch = $Branch
-        repo_head_before = $HeadBefore
+        repo_head_at_start = $InitialHead
         game_root = $ResolvedGameRoot
+        frozen_source_action = $FrozenSourceAction
+        frozen_source_root = $frozenSourceRoot
         candidate_action = $CandidateAction
         candidate_root = $candidateRoot
+        candidate_proof_commit = $ProofCommit
+        install_baseline_policy = 'preserve current five-file game state for rollback'
         catalogue_markers = 53
         unknown_raven_state_visible = $true
         live_native_ravenKilled_events = $true
@@ -265,9 +394,11 @@ if ($branch -ne $expectedBranch) {
 }
 
 Assert-CleanTrackedState
-$headBefore = Get-RepoHead
+$initialHead = Get-RepoHead
 $resolvedGameRoot = $null
+$frozenSourceAction = 'not-attempted'
 $candidateAction = 'not-attempted'
+$proofCommit = $null
 $outcome = 'failed'
 $runError = $null
 $transcriptStarted = $false
@@ -285,19 +416,23 @@ try {
     Write-Host 'COMPLETIONIST_MAP_ALL_RAVENS_INSTALL'
     Write-Host "  run id: $runId"
     Write-Host "  branch: $branch"
-    Write-Host "  repo head: $headBefore"
+    Write-Host "  repo head at start: $initialHead"
     Write-Host "  game root: $resolvedGameRoot"
     Write-Host '  catalogue markers: 53'
     Write-Host '  unknown Raven state: visible'
     Write-Host '  live native ravenKilled events: enabled'
     Write-Host '  save/progression writes by installer: none'
-    Write-Host '  candidate: auto-build/verify before install'
+    Write-Host '  candidate source: frozen SHA-verified transaction backups'
+    Write-Host '  pre-install game state: preserved as rollback baseline'
     Write-Host '  transaction: guarded five-file install with pre-write backups'
     Write-Host ''
 
-    $candidateAction = Ensure-AllRavensCandidate -ResolvedGameRoot $resolvedGameRoot
+    $frozenSourceAction = Ensure-FrozenSourceRoot -ResolvedGameRoot $resolvedGameRoot
+    $candidateAction = Ensure-AllRavensCandidate -SourceRoot $frozenSourceRoot
+    $proofCommit = Publish-CandidateProofIfChanged
+    Assert-CleanTrackedState
 
-    & $runtimeTest -Mode Install -GameRoot $resolvedGameRoot -ConfirmRuntimeTest
+    & $runtimeTest -Mode Install -GameRoot $resolvedGameRoot -ConfirmRuntimeTest -PreserveCurrentBaseline
     if ($LASTEXITCODE -ne 0) {
         throw "All-Ravens runtime installer failed with exit code $LASTEXITCODE."
     }
@@ -306,6 +441,7 @@ try {
     Write-Host ''
     Write-Host 'COMPLETIONIST_MAP_ALL_RAVENS_READY'
     Write-Host '  The 53-Raven catalogue build is installed.'
+    Write-Host '  The exact five game files present before this run are the rollback baseline.'
     Write-Host '  A Raven killed during this runtime is hidden by its exact native ravenKilled event.'
     Write-Host '  Existing kills from an old save are not yet reconstructed until the persisted-kill bootstrap is completed.'
     Write-Host '  Fresh/unknown Raven state remains visible by design.'
@@ -326,9 +462,11 @@ $errorMessage = if ($null -eq $runError) { $null } else { [string]$runError.Exce
 Write-RunResult `
     -Outcome $outcome `
     -Branch $branch `
-    -HeadBefore $headBefore `
+    -InitialHead $initialHead `
     -ResolvedGameRoot $resolvedGameRoot `
+    -FrozenSourceAction $frozenSourceAction `
     -CandidateAction $candidateAction `
+    -ProofCommit $proofCommit `
     -ErrorMessage $errorMessage
 
 try {
