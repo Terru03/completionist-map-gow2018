@@ -92,7 +92,8 @@ function Collect-ApiSymbols([string]$LuaRoot) {
             }
         }
     }
-    return [pscustomobject]@{ Symbols = $symbols; Interesting = @($interesting); FilesScanned = $files.Count }
+    $interestingArray = $interesting.ToArray()
+    return [pscustomobject]@{ Symbols = $symbols; Interesting = $interestingArray; FilesScanned = $files.Count }
 }
 
 try {
@@ -200,13 +201,12 @@ catch {
         'save_or_progression_written=false',
         'game_launched=false'
     ) | Set-Content -LiteralPath $resultPath -Encoding UTF8
+    Push-Location $repo
     try {
-        Push-Location $repo
         git add -- $archive
-        git commit -m "research: capture failed Raven state bridge static evidence $timestamp" | Out-Host
+        git commit -m "research: capture failed Raven state bridge static evidence $timestamp"
         if ($LASTEXITCODE -eq 0) { git push origin $expectedBranch | Out-Host }
     }
-    catch {}
-    finally { try { Pop-Location } catch {} }
+    finally { Pop-Location }
     throw
 }
