@@ -366,6 +366,73 @@ function Invoke-CandidateBuilder {
     }
 }
 
+function Save-LegacyTransactionManifest {
+    param([object]$Manifest)
+    $json = ($Manifest | ConvertTo-Json -Depth 12) + [Environment]::NewLine
+    $encoding = New-Object Text.UTF8Encoding($false)
+    [IO.File]::WriteAllText($activeManifest, $json, $encoding)
+    $transactionManifest = Join-Path ([string]$Manifest.transaction_root) 'manifest.json'
+    [IO.File]::WriteAllText($transactionManifest, $json, $encoding)
+}
+
+function Restore-LegacyFiveFileTransaction {
+    param([object]$Manifest, [string]$ResolvedGameRoot)
+
+    if (@($Manifest.entries).Count -ne 5) { throw 'Legacy rollback requires exactly five entries.' }
+    if ([string]$Manifest.status -ne 'installed') { throw "Legacy transaction status is '$($Manifest.status)', not installed." }
+    if (([IO.Path]::GetFullPath([string]$Manifest.game_root)) -ne ([IO.Path]::GetFullPath($ResolvedGameRoot))) {
+        throw 'Legacy transaction belongs to a different game root.'
+    }
+    if (Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -in @('GoW','GodOfWar') }) {
+        throw 'God of War must be closed before legacy all-Ravens rollback.'
+    }
+
+    $entries = @($Manifest.entries)
+    foreach ($entry in $entries) {
+        if ([string]$entry.write_state -ne 'installed') { throw "Legacy entry is not installed: $($entry.name)" }
+        $dest = Join-Path $ResolvedGameRoot ([string]$entry.relative)
+        if (-not (Test-Path -LiteralPath $dest -PathType Leaf)) { throw "Legacy installed file missing: $($entry.relative)" }
+        if ((Get-Sha256 -Path $dest) -ne ([string]$entry.candidate_sha256).ToLowerInvariant()) {
+            throw "Legacy installed file changed since install: $($entry.relative)"
+        }
+        if ([bool]$entry.existed_before) {
+            $backup = Join-Path ([string]$Manifest.transaction_root) ([string]$entry.backup_relative)
+            if (-not (Test-Path -LiteralPath $backup -PathType Leaf)) { throw "Legacy backup missing: $($entry.relative)" }
+            if ((Get-Sha256 -Path $backup) -ne ([string]$entry.before_sha256).ToLowerInvariant()) {
+                throw "Legacy backup SHA differs: $($entry.relative)"
+            }
+        }
+    }
+
+    $Manifest.status = 'rolling-back'
+    Save-LegacyTransactionManifest -Manifest $Manifest
+
+    $reverse = @($entries)
+    [array]::Reverse($reverse)
+    foreach ($entry in $reverse) {
+        $dest = Join-Path $ResolvedGameRoot ([string]$entry.relative)
+        if ([bool]$entry.existed_before) {
+            $backup = Join-Path ([string]$Manifest.transaction_root) ([string]$entry.backup_relative)
+            New-Item -ItemType Directory -Force -Path (Split-Path $dest -Parent) | Out-Null
+            Copy-Item -LiteralPath $backup -Destination $dest -Force
+            if ((Get-Sha256 -Path $dest) -ne ([string]$entry.before_sha256).ToLowerInvariant()) {
+                throw "Legacy rollback verification failed: $($entry.relative)"
+            }
+        }
+        else {
+            Remove-Item -LiteralPath $dest -Force -ErrorAction Stop
+            if (Test-Path -LiteralPath $dest) { throw "Legacy rollback could not remove: $($entry.relative)" }
+        }
+        $entry.write_state = 'restored'
+        Save-LegacyTransactionManifest -Manifest $Manifest
+    }
+
+    $Manifest.status = 'rolled-back'
+    $Manifest.rolled_back_utc = (Get-Date).ToUniversalTime().ToString('o')
+    Save-LegacyTransactionManifest -Manifest $Manifest
+    Write-Host "  legacy five-file transaction rolled back exactly: $($Manifest.transaction_id)"
+}
+
 function Rollback-ExistingAllRavensInstall {
     param([string]$ResolvedGameRoot)
 
@@ -383,10 +450,16 @@ function Rollback-ExistingAllRavensInstall {
     }
 
     Write-Host "  previous all-Ravens transaction: $($active.transaction_id) ($status)"
-    Write-Host '  upgrade: restoring its exact pre-install six-file baseline before rebuild'
-    & $runtimeTest -Mode Rollback -GameRoot $ResolvedGameRoot -PreserveCurrentBaseline
-    if ($LASTEXITCODE -ne 0) {
-        throw "Existing all-Ravens rollback failed with exit code $LASTEXITCODE."
+    if (@($active.entries).Count -eq 5) {
+        Write-Host '  upgrade: restoring legacy exact five-file baseline before six-file bridge build'
+        Restore-LegacyFiveFileTransaction -Manifest $active -ResolvedGameRoot $ResolvedGameRoot
+    }
+    else {
+        Write-Host '  upgrade: restoring its exact pre-install six-file baseline before rebuild'
+        & $runtimeTest -Mode Rollback -GameRoot $ResolvedGameRoot -PreserveCurrentBaseline
+        if ($LASTEXITCODE -ne 0) {
+            throw "Existing all-Ravens rollback failed with exit code $LASTEXITCODE."
+        }
     }
 
     $after = Get-Content -LiteralPath $activeManifest -Raw | ConvertFrom-Json
