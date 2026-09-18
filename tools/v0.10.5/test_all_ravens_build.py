@@ -12,6 +12,7 @@ import unittest
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 GAME = Path("G:/SteamLibrary/steamapps/common/GodOfWar")
+FROZEN = REPO / "build/v0.10.5-all-ravens-release-candidate/frozen-source/game-root"
 BUILD_PATH = HERE / "build-all-ravens-release-candidate.py"
 spec = importlib.util.spec_from_file_location("all_ravens_build_test", BUILD_PATH)
 build = importlib.util.module_from_spec(spec)
@@ -27,10 +28,11 @@ def file_sha(path: Path) -> str:
 class AllRavensBuildTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.before = {relative: file_sha(GAME / relative) for relative in build.SOURCE_HASHES}
-        cls.outputs, cls.proof = build.generate(GAME)
+        cls.source_root = FROZEN if (FROZEN / build.HUD_LUA).is_file() else GAME
+        cls.before = {relative: file_sha(cls.source_root / relative) for relative in build.SOURCE_HASHES}
+        cls.outputs, cls.proof = build.generate(cls.source_root)
         cls.catalogue = json.loads(build.CATALOGUE.read_text(encoding="utf-8"))
-        cls.after = {relative: file_sha(GAME / relative) for relative in build.SOURCE_HASHES}
+        cls.after = {relative: file_sha(cls.source_root / relative) for relative in build.SOURCE_HASHES}
 
     def test_source_game_files_stay_unchanged(self):
         self.assertEqual(self.before, self.after)
@@ -108,7 +110,7 @@ class AllRavensBuildTests(unittest.TestCase):
                 self.assertNotIn(token, suffix)
 
     def test_deterministic_generate(self):
-        second, proof = build.generate(GAME)
+        second, proof = build.generate(self.source_root)
         self.assertEqual(self.outputs, second)
         self.assertEqual(self.proof, proof)
 
