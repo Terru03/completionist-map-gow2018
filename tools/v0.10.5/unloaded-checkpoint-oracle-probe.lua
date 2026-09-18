@@ -97,6 +97,29 @@ do
       if ok and type(mt) == "table" then
         for key, member in pairs(mt) do names[#names + 1] = safeToString(key) .. ":" .. type(member) end
         table.sort(names)
+
+        local identity = rawget(mt, "__identity")
+        fields[#fields + 1] = "metaIdentityType=" .. type(identity)
+        fields[#fields + 1] = "metaIdentity=" .. safeToString(identity)
+        fields[#fields + 1] = "metaIdentityHex=" .. safeToString(binaryHex(identity, 256))
+
+        local debuggerToString = rawget(mt, "__tostring_debugger")
+        if type(debuggerToString) == "function" then
+          local dbgOK, dbgValue = pcall(debuggerToString, value)
+          fields[#fields + 1] = "debuggerToStringOk=" .. tostring(dbgOK)
+          fields[#fields + 1] = "debuggerToString=" .. safeToString(dbgValue)
+          fields[#fields + 1] = "debuggerToStringHex=" .. safeToString(binaryHex(dbgValue, 256))
+        else
+          fields[#fields + 1] = "debuggerToStringOk=false"
+          fields[#fields + 1] = "debuggerToString=<not_function>"
+        end
+
+        local ordinaryToString = rawget(mt, "__tostring")
+        if type(ordinaryToString) == "function" then
+          local tostringOK, tostringValue = pcall(ordinaryToString, value)
+          fields[#fields + 1] = "metaToStringOk=" .. tostring(tostringOK)
+          fields[#fields + 1] = "metaToString=" .. safeToString(tostringValue)
+        end
       end
       fields[#fields + 1] = "metatableOk=" .. tostring(ok)
       fields[#fields + 1] = "metatable=" .. table.concat(names, ",")
