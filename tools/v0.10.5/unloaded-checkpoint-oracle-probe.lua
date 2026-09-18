@@ -359,8 +359,9 @@ do
   local function aggregate(parent)
     if type(game) ~= "table" or type(game.QuestManager) ~= "table" or
        type(game.QuestManager.GetQuestProgressAndGoal) ~= "function" then return nil, nil end
-    local ok, progress, goal = pcall(game.QuestManager.GetQuestProgressAndGoal, parent)
-    if not ok then return nil, nil end
+    local callOK, queryOK, progress, goal =
+      pcall(game.QuestManager.GetQuestProgressAndGoal, parent)
+    if not callOK or queryOK ~= true then return nil, nil end
     return progress, goal
   end
 
