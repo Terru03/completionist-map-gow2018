@@ -93,6 +93,62 @@ do
         " emitted=" .. tostring(emitted))
   end
 
+  local function inspectMapStateBindings(self)
+    if self == nil then
+      log("SELF_BINDINGS self_nil=true")
+      return
+    end
+
+    local names = {
+      "GetCounter", "GetCounterChild", "GetCounterChildrenCount",
+      "GetCounterName", "GetRefBool", "GetRefInt", "GetRefFloat",
+      "GetRefString", "LevelWads", "UIWads", "LoadCheck",
+      "FindLevel", "EvaluateLoadZones", "ResolveGameObject",
+      "GetCurrentSlot", "GetLatestSlot", "GetSlotCount",
+      "StartTimer",
+    }
+    local funcs = {}
+    for _, name in ipairs(names) do
+      local ok, member = pcall(function() return self[name] end)
+      funcs[name] = ok and member or nil
+      log("SELF_TYPE name=" .. name .. " lookupOK=" .. tostring(ok) ..
+          " type=" .. type(funcs[name]))
+    end
+
+    local parent = "RegionSummary_VF_Raven_Parent"
+    local knownGuid = "642d0d16-4af0-a5d4-076e-77933c549a5d"
+    local probes = {
+      {"GetCounter(parent)", "GetCounter", {parent}},
+      {"GetCounterChildrenCount(parent)", "GetCounterChildrenCount", {parent}},
+      {"GetCounterChild(parent,0)", "GetCounterChild", {parent, 0}},
+      {"GetCounterChild(parent,1)", "GetCounterChild", {parent, 1}},
+      {"GetCounterChild(parent,2)", "GetCounterChild", {parent, 2}},
+      {"GetCounterName(parent)", "GetCounterName", {parent}},
+      {"GetRefBool(guid)", "GetRefBool", {knownGuid}},
+      {"LevelWads()", "LevelWads", {}},
+      {"UIWads()", "UIWads", {}},
+      {"LoadCheck()", "LoadCheck", {}},
+      {"ResolveGameObject(guid)", "ResolveGameObject", {knownGuid}},
+      {"GetCurrentSlot()", "GetCurrentSlot", {}},
+      {"GetLatestSlot()", "GetLatestSlot", {}},
+      {"GetSlotCount()", "GetSlotCount", {}},
+    }
+
+    for _, probe in ipairs(probes) do
+      local label, name, args = probe[1], probe[2], probe[3]
+      local fn = funcs[name]
+      if type(fn) == "function" then
+        safeCall("SELF " .. label, function()
+          return fn(self, table.unpack(args))
+        end)
+      else
+        log("SELF_CALL label=" .. label .. " skipped=true type=" .. type(fn))
+      end
+    end
+
+    log("SELF_BINDINGS_DONE progressionWrites=false questWrites=false")
+  end
+
   local function inspectGlobalBindings()
     local names = {
       "GetCounter", "GetCounterChild", "GetCounterChildrenCount",
@@ -286,7 +342,7 @@ do
     log("QUEST_END id=" .. tostring(questId))
   end
 
-  local function run(reason)
+  local function run(reason, self)
     if ran then return end
     ran = true
     log("RUN reason=" .. tostring(reason) .. " progressionWrites=false questWrites=false childKeyEnumeration=true")
@@ -302,6 +358,7 @@ do
       return
     end
 
+    inspectMapStateBindings(self)
     inspectGlobalBindings()
     inspectDirectGameBindings()
     inspectRegistryOwners()
@@ -316,13 +373,13 @@ do
   if type(MapOn) == "table" and type(MapOn.MapCollisionChangeHandler) == "function" then
     local previous = MapOn.MapCollisionChangeHandler
     MapOn.MapCollisionChangeHandler = function(self, ...)
-      run("MapCollisionChangeHandler")
+      run("MapCollisionChangeHandler", self)
       return previous(self, ...)
     end
     log("HOOK installed=MapOn.MapCollisionChangeHandler questManagerApi=true childKeyEnumeration=true")
   else
     log("HOOK unavailable=true fallback=script_load")
-    run("script_load_fallback")
+    run("script_load_fallback", nil)
   end
 end
 -- END COMPLETIONIST GENERIC COUNTER RUNTIME PROBE
