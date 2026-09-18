@@ -1,0 +1,144 @@
+Completionist Map - native counter/ref getter CFG
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+game_launched=false active_save_opened=false game_written=false save_or_progression_written=false
+
+ROOTS
+GetCounter signature=i_s|i_i entry=0x841E50 fn=0x841E50-0x841E79
+GetCounterChild signature=i_si|i_ii entry=0x841CE0 fn=0x841CE0-0x841D49
+GetCounterChildrenCount signature=i_s|i_i entry=0x841D50 fn=0x841D50-0x841D91
+GetRefBool signature=b_s entry=0x845700 fn=<no_pdata_leaf>
+
+FUNCTION 0x841CE0-0x841D49 size=105 via=GetCounterChild@0
+  RIP_REFS
+    0x841D02 -> 0x22E7988 ascii=None mov rax, qword ptr [rip + 0x1aa5c7f]
+  EDGES
+    call 0x841CF4 -> 0x841EC0 targetFn=0x841EC0
+  DISASM
+    0x841CE0: 48895c2408               mov qword ptr [rsp + 8], rbx
+    0x841CE5: 57                       push rdi
+    0x841CE6: 4883ec20                 sub rsp, 0x20
+    0x841CEA: 488d5938                 lea rbx, [rcx + 0x38]
+    0x841CEE: 488bfa                   mov rdi, rdx
+    0x841CF1: 488bcb                   mov rcx, rbx
+    0x841CF4: e8c7010000               call 0x140841ec0
+    0x841CF9: 4885c0                   test rax, rax
+    0x841CFC: 743b                     je 0x140841d39
+    0x841CFE: 4c634008                 movsxd r8, dword ptr [rax + 8]
+    0x841D02: 488b057f5caa01           mov rax, qword ptr [rip + 0x1aa5c7f]
+    0x841D09: 49c1e006                 shl r8, 6
+    0x841D0D: 4c0380100b0000           add r8, qword ptr [rax + 0xb10]
+    0x841D14: 7423                     je 0x140841d39
+    0x841D16: 8b8340020000             mov eax, dword ptr [rbx + 0x240]
+    0x841D1C: 2b8344020000             sub eax, dword ptr [rbx + 0x244]
+    0x841D22: ffc0                     inc eax
+    0x841D24: 48630cc3                 movsxd rcx, dword ptr [rbx + rax*8]
+    0x841D28: 413b4810                 cmp ecx, dword ptr [r8 + 0x10]
+    0x841D2C: 7d0b                     jge 0x140841d39
+    0x841D2E: 498b4008                 mov rax, qword ptr [r8 + 8]
+    0x841D32: 488b0cc8                 mov rcx, qword ptr [rax + rcx*8]
+    0x841D36: 48890f                   mov qword ptr [rdi], rcx
+    0x841D39: 488b5c2430               mov rbx, qword ptr [rsp + 0x30]
+    0x841D3E: b801000000               mov eax, 1
+    0x841D43: 4883c420                 add rsp, 0x20
+    0x841D47: 5f                       pop rdi
+    0x841D48: c3                       ret 
+
+FUNCTION 0x841D50-0x841D91 size=65 via=GetCounterChildrenCount@0
+  RIP_REFS
+    0x841D6B -> 0x22E7988 ascii=None mov rax, qword ptr [rip + 0x1aa5c16]
+  EDGES
+    call 0x841D5D -> 0x841EC0 targetFn=0x841EC0
+  DISASM
+    0x841D50: 4053                     push rbx
+    0x841D52: 4883ec20                 sub rsp, 0x20
+    0x841D56: 4883c138                 add rcx, 0x38
+    0x841D5A: 488bda                   mov rbx, rdx
+    0x841D5D: e85e010000               call 0x140841ec0
+    0x841D62: 4885c0                   test rax, rax
+    0x841D65: 741f                     je 0x140841d86
+    0x841D67: 48634808                 movsxd rcx, dword ptr [rax + 8]
+    0x841D6B: 488b05165caa01           mov rax, qword ptr [rip + 0x1aa5c16]
+    0x841D72: 48c1e106                 shl rcx, 6
+    0x841D76: 480388100b0000           add rcx, qword ptr [rax + 0xb10]
+    0x841D7D: 7407                     je 0x140841d86
+    0x841D7F: 48634110                 movsxd rax, dword ptr [rcx + 0x10]
+    0x841D83: 488903                   mov qword ptr [rbx], rax
+    0x841D86: b801000000               mov eax, 1
+    0x841D8B: 4883c420                 add rsp, 0x20
+    0x841D8F: 5b                       pop rbx
+    0x841D90: c3                       ret 
+
+FUNCTION 0x841E50-0x841E79 size=41 via=GetCounter@0
+  EDGES
+    call 0x841E5D -> 0x841EC0 targetFn=0x841EC0
+  DISASM
+    0x841E50: 4053                     push rbx
+    0x841E52: 4883ec20                 sub rsp, 0x20
+    0x841E56: 4883c138                 add rcx, 0x38
+    0x841E5A: 488bda                   mov rbx, rdx
+    0x841E5D: e85e000000               call 0x140841ec0
+    0x841E62: 4885c0                   test rax, rax
+    0x841E65: 7407                     je 0x140841e6e
+    0x841E67: 4863400c                 movsxd rax, dword ptr [rax + 0xc]
+    0x841E6B: 488903                   mov qword ptr [rbx], rax
+    0x841E6E: b801000000               mov eax, 1
+    0x841E73: 4883c420                 add rsp, 0x20
+    0x841E77: 5b                       pop rbx
+    0x841E78: c3                       ret 
+
+FUNCTION 0x841EC0-0x841F7B size=187 via=GetCounter@1,GetCounterChild@1,GetCounterChildrenCount@1
+  RIP_REFS
+    0x841F41 -> 0x22F2B5C ascii=None movsxd r8, dword ptr [rip + 0x1ab0c14]
+    0x841F4D -> 0x22F2B60 ascii=None mov rdx, qword ptr [rip + 0x1ab0c0c]
+    0x841F5F -> 0x245C20 ascii=None lea rax, [rip - 0x5fc346]
+    0x841F70 -> 0xD49058 ascii=None call qword ptr [rip + 0x5070e2]
+  EDGES
+    jmp 0x841F3C -> 0x841F41 targetFn=0x841EC0
+  DISASM
+    0x841EC0: 4883ec48                 sub rsp, 0x48
+    0x841EC4: 8b8140020000             mov eax, dword ptr [rcx + 0x240]
+    0x841ECA: 4533db                   xor r11d, r11d
+    0x841ECD: 2b8144020000             sub eax, dword ptr [rcx + 0x244]
+    0x841ED3: 80bc080002000003         cmp byte ptr [rax + rcx + 0x200], 3
+    0x841EDB: 4c8d04c1                 lea r8, [rcx + rax*8]
+    0x841EDF: 755d                     jne 0x140841f3e
+    0x841EE1: 4d8b10                   mov r10, qword ptr [r8]
+    0x841EE4: 418bc3                   mov eax, r11d
+    0x841EE7: 4d85d2                   test r10, r10
+    0x841EEA: 7455                     je 0x140841f41
+    0x841EEC: 450fb60a                 movzx r9d, byte ptr [r10]
+    0x841EF0: 4584c9                   test r9b, r9b
+    0x841EF3: 744c                     je 0x140841f41
+    0x841EF5: 49ffc2                   inc r10
+    0x841EF8: 4584c9                   test r9b, r9b
+    0x841EFB: 7444                     je 0x140841f41
+    0x841EFD: 0f1f00                   nop dword ptr [rax]
+    0x841F00: 450fb6c1                 movzx r8d, r9b
+    0x841F04: 4d8d5201                 lea r10, [r10 + 1]
+    0x841F08: 4180e961                 sub r9b, 0x61
+    0x841F0C: 4180f919                 cmp r9b, 0x19
+    0x841F10: 450fb64aff               movzx r9d, byte ptr [r10 - 1]
+    0x841F15: 418d48e0                 lea ecx, [r8 - 0x20]
+    0x841F19: 0fb6d1                   movzx edx, cl
+    0x841F1C: 410f47d0                 cmova edx, r8d
+    0x841F20: 0fb6ca                   movzx ecx, dl
+    0x841F23: 4803c8                   add rcx, rax
+    0x841F26: 4869c101040000           imul rax, rcx, 0x401
+    0x841F2D: 488bc8                   mov rcx, rax
+    0x841F30: 48c1e906                 shr rcx, 6
+    0x841F34: 4833c1                   xor rax, rcx
+    0x841F37: 4584c9                   test r9b, r9b
+    0x841F3A: 75c4                     jne 0x140841f00
+    0x841F3C: eb03                     jmp 0x140841f41
+    0x841F3E: 498b00                   mov rax, qword ptr [r8]
+    0x841F41: 4c6305140cab01           movsxd r8, dword ptr [rip + 0x1ab0c14]
+    0x841F48: 488d4c2430               lea rcx, [rsp + 0x30]
+    0x841F4D: 488b150c0cab01           mov rdx, qword ptr [rip + 0x1ab0c0c]
+    0x841F54: 41b910000000             mov r9d, 0x10
+    0x841F5A: 4889442430               mov qword ptr [rsp + 0x30], rax
+    0x841F5F: 488d05ba3ca0ff           lea rax, [rip - 0x5fc346]
+    0x841F66: 4889442420               mov qword ptr [rsp + 0x20], rax
+    0x841F6B: 4c895c2438               mov qword ptr [rsp + 0x38], r11
+    0x841F70: ff15e2705000             call qword ptr [rip + 0x5070e2]
+    0x841F76: 4883c448                 add rsp, 0x48
+    0x841F7A: c3                       ret 
