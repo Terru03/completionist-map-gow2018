@@ -42,6 +42,19 @@ Assert-True ($runtimeText.Contains("Assert-TerminalAllRavensTransactionSummary")
 Assert-True ($runtimeText.Contains("historical candidate SHAs are intentionally not compared with the replacement candidate")) 'Terminal upgrade must skip replacement SHA comparison.'
 $allRavensInstaller = Join-Path $repo 'tools\v0.10.5\install-all-ravens-working-mod.ps1'
 Assert-True (Test-Path -LiteralPath $allRavensInstaller -PathType Leaf) "Missing installer: $allRavensInstaller"
+$allRavensLauncher = Join-Path $repo 'tools\v0.10.5\run-all-ravens-working-mod.ps1'
+Assert-True (Test-Path -LiteralPath $allRavensLauncher -PathType Leaf) "Missing outer recovery launcher: $allRavensLauncher"
+$launcherTokens = $null
+$launcherParseErrors = $null
+[void][System.Management.Automation.Language.Parser]::ParseFile(
+    $allRavensLauncher,
+    [ref]$launcherTokens,
+    [ref]$launcherParseErrors
+)
+Assert-True (@($launcherParseErrors).Count -eq 0) ("Outer launcher has PowerShell parse errors: " + ((@($launcherParseErrors | ForEach-Object { $_.Message })) -join ' | '))
+$launcherText = [IO.File]::ReadAllText($allRavensLauncher)
+Assert-True ($launcherText.Contains('Get-UnpublishedRavenRunDirs')) 'Outer launcher must salvage unpublished Raven run directories.'
+Assert-True ($launcherText.Contains('Assert-Parses -Path $installer')) 'Outer launcher must parse-check the installer before child execution.'
 $installerTokens = $null
 $installerParseErrors = $null
 [void][System.Management.Automation.Language.Parser]::ParseFile(
@@ -196,6 +209,7 @@ try {
             success_and_failure_run_archiving = $true
             powershell_parse_preflight = $true
             fake_transaction_gate_before_real_install = $true
+            outer_failure_recovery_launcher = $true
         }
         safety = [ordered]@{
             fake_game_root_only = $true
