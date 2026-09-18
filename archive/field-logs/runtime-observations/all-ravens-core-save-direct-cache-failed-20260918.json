@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "date": "2026-09-18",
+  "source": "user field test",
+  "installed_transaction": "20260918T080159Z-05bcd6d0",
+  "candidate_proof_commit": "9eb75849b0b09b8bf87fa9a2a8595d28df568083",
+  "installed_event_sha256": "83e01586c0944e94bc95beb15ebbeb0c4ebbf88af17d463cbfadb618ff8c7b91",
+  "implementation_under_test": "precisionchallenge -> require('core.save').GetSaveState('__CompletionistMapV105Cache')",
+  "observation": {
+    "killed_raven_marker_removed_during_session": true,
+    "manual_save_created_after_observed_state": true,
+    "game_closed": true,
+    "exact_save_reloaded": true,
+    "killed_raven_marker_persisted_after_process_restart": false
+  },
+  "result": "DIRECT_CORE_SAVE_CACHE_PERSISTENCE_FAILED",
+  "next_required_diagnosis": [
+    "scan active game.sav for __CompletionistMapV105Cache evidence",
+    "inspect loader log for CACHE_UPDATE/CACHE_REPLAY/CACHE_RECV"
+  ],
+  "no_progression_write_by_mod": true
+}
