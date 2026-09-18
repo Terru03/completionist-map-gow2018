@@ -4,7 +4,6 @@
 do
   local prefix = "[CompletionistMap v0.10.5-raven-events] "
   local ravenClass = "CompletionistRaven"
-  local CACHE_KEY = "__CompletionistMapV105Cache"
   local retryLimit = 20
   local generation = 0
   local rows = {
@@ -13,77 +12,6 @@ do
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
-  end
-
-  local function getCheckpointCache(create)
-    local okRequire, saveLib = pcall(require, "core.save")
-    if not okRequire or type(saveLib) ~= "table" or type(saveLib.GetSaveState) ~= "function" then
-      return nil, "core_save_unavailable"
-    end
-
-    local okState, cache = pcall(saveLib.GetSaveState, CACHE_KEY)
-    if not okState or type(cache) ~= "table" then
-      return nil, "cache_state_unavailable"
-    end
-
-    if create then
-      cache.schema = 1
-      if type(cache.ravens) ~= "table" then cache.ravens = {} end
-    end
-    return cache, nil
-  end
-
-  local function updateCheckpointCache(catalogueId, killed, source)
-    local cache, err = getCheckpointCache(true)
-    if cache == nil then
-      log("CACHE_UPDATE_REFUSED", "catalogueId=" .. tostring(catalogueId) ..
-          " source=" .. tostring(source) ..
-          " reason=" .. tostring(err))
-      return false
-    end
-    cache.ravens[catalogueId] = killed == true
-    log("CACHE_UPDATE", "catalogueId=" .. tostring(catalogueId) ..
-        " killed=" .. tostring(killed == true) ..
-        " source=" .. tostring(source) ..
-        " storage=core.save.GetSaveState nativeProgressionTouched=false")
-    return true
-  end
-
-  local function replayCheckpointCache(source)
-    local cache, err = getCheckpointCache(false)
-    if cache == nil or type(cache.ravens) ~= "table" then
-      log("CACHE_REPLAY", "source=" .. tostring(source) ..
-          " known=0 killed=0 alive=0 sent=0 reason=" .. tostring(err or "empty") ..
-          " nativeProgressionTouched=false")
-      return
-    end
-
-    local known, killedCount, aliveCount, sent = 0, 0, 0, 0
-    for catalogueId, killed in pairs(cache.ravens) do
-      if type(catalogueId) == "string" and type(killed) == "boolean" then
-        known = known + 1
-        if killed then killedCount = killedCount + 1 else aliveCount = aliveCount + 1 end
-        local ok = pcall(function()
-          engine.SendHook(
-            "UI_CALL_EVENT",
-            engine.GetUIWad(),
-            "EVT_COMPLETIONIST_V105_RAVEN_CACHE_RESTORE",
-            {
-              catalogueId = catalogueId,
-              killed = killed,
-              source = "gameplay_cache:" .. tostring(source)
-            }
-          )
-        end)
-        if ok then sent = sent + 1 end
-      end
-    end
-    log("CACHE_REPLAY", "source=" .. tostring(source) ..
-        " known=" .. tostring(known) ..
-        " killed=" .. tostring(killedCount) ..
-        " alive=" .. tostring(aliveCount) ..
-        " sent=" .. tostring(sent) ..
-        " nativeProgressionTouched=false")
   end
 
   local function identify()
@@ -124,16 +52,13 @@ do
         payload
       )
     end)
-    local cacheOK = updateCheckpointCache(row.CatalogueId, payload.killed, source)
-
     log("STATE_SEND", "catalogueId=" .. row.CatalogueId ..
         " marker=" .. row.Name ..
         " killed=" .. tostring(payload.killed) ..
         " source=" .. tostring(source) ..
         " ok=" .. tostring(ok) ..
         " error=" .. tostring(err) ..
-        " checkpointCacheUpdated=" .. tostring(cacheOK) ..
-        " progressionWrites=false")
+        " sidecarOwner=MainHUD progressionWrites=false")
     return ok
   end
 
@@ -230,7 +155,6 @@ do
   function OnRestoreCheckpoint(...)
     local result = restore(...)
     generation = generation + 1
-    replayCheckpointCache("OnRestoreCheckpoint")
     local row = publish("OnRestoreCheckpoint")
     if row ~= nil and ravenKilled == true then
       local _, shown = hideExact(row, "OnRestoreCheckpoint", 0)
@@ -243,7 +167,6 @@ do
   function OnStart(...)
     local result = start(...)
     generation = generation + 1
-    replayCheckpointCache("OnStart")
     local row = publish("OnStart")
     if row ~= nil and ravenKilled == true then
       local _, shown = hideExact(row, "OnStart", 0)
@@ -255,7 +178,7 @@ do
   log("API", "installed=true catalogueCount=" .. tostring(#rows) ..
       " nativeField=ravenKilled exactQuestAndPosition=true" ..
       " transport=UI_CALL_EVENT exactGameplayCleanup=true boundedRetry=" .. tostring(retryLimit) ..
-      " checkpointCache=core.save.GetSaveState replayFromGameplay=true" ..
+      " checkpointCache=savePointIdPlusMainHUDSidecar" ..
       " polling=false progressionWrites=false")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVEN EVENTS
