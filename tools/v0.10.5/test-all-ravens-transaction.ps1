@@ -86,17 +86,19 @@ foreach ($requiredArtifact in @(
     Assert-True ($installerText.Contains($requiredArtifact)) "Installer run evidence contract misses $requiredArtifact"
 }
 Assert-True ($installerText.Contains('Publish-RunArtifacts -Outcome $outcome')) 'Installer must publish run evidence for final outcome.'
+Assert-True ($installerText.Contains('mods/lua/gameart/ui/scripts/hud/mainhud.lua')) 'Installer must freeze the MainHUD bridge baseline.'
 
 $files = [ordered]@{
     mapmaster = 'exec/dc/pc_le/mapmaster.dcb'
     mapcoords = 'exec/dc/pc_le/mapcoords.dcb'
     ui = 'exec/dc/pc_le/wad_r_ui.dcb'
     mapmenu = 'mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua'
+    mainhud = 'mods/lua/gameart/ui/scripts/hud/mainhud.lua'
     events = 'mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua'
 }
 $proof = Get-Content -LiteralPath $allRavensProofPath -Raw | ConvertFrom-Json
 Assert-True ([bool]$proof.ready_for_runtime_test) 'Release gate is not open.'
-Assert-True (@($proof.files.PSObject.Properties).Count -eq 5) 'Proof file count differs.'
+Assert-True (@($proof.files.PSObject.Properties).Count -eq 6) 'Proof file count differs.'
 $candidateShas = [ordered]@{}
 foreach ($name in $files.Keys) {
     $relative = [string]$files[$name]
@@ -160,7 +162,7 @@ try {
     Restore-State -Manifest $installed -Game $fakeGame -Candidate $allRavensCandidateRoot -State $fakeState -Active $fakeActive -ProofPath $allRavensProofPath -FileMap $files -CandidateShas $candidateShas -CandidateLabel $label -RepoBranch $branch -CheckInstalled $true -Force $false
     Assert-Snapshot $baseline
 
-    foreach ($failureIndex in 1..5) {
+    foreach ($failureIndex in 1..6) {
         Remove-Item -LiteralPath $fakeState -Recurse -Force
         New-Item -ItemType Directory -Force -Path $fakeState | Out-Null
         $caught = $false
@@ -203,12 +205,12 @@ try {
     $report = [ordered]@{
         schema = 1
         result = 'ALL_RAVENS_TRANSACTION_SELF_TEST_PASSED'
-        candidate_file_count = 5
+        candidate_file_count = 6
         candidate_hashes = $candidateShas
         transaction_engine_sha256 = $expectedEngineSha
         proofs = [ordered]@{
             exact_install_and_rollback = $true
-            all_five_failure_boundaries_rollback = $true
+            all_six_failure_boundaries_rollback = $true
             interruption_recovery = $true
             tamper_refusal = $true
             release_gate_open = $true
@@ -219,6 +221,8 @@ try {
             outer_failure_recovery_launcher = $true
             outer_launcher_plain_array_orphan_scan = $true
             runtime_transaction_tail_single_copy = $true
+            raven_ui_event_bridge = $true
+            mainhud_transactional_receiver = $true
         }
         safety = [ordered]@{
             fake_game_root_only = $true
