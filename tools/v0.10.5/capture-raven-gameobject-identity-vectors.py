@@ -151,7 +151,8 @@ def close_handle(k32, handle) -> None:
         k32.CloseHandle(handle)
 
 
-def find_process(k32, exe_name: str) -> int:
+def find_supported_process(k32) -> tuple[int, str]:
+    candidates = {"gow.exe", "godofwar.exe"}
     snap = k32.CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
     if C.cast(snap, C.c_void_p).value == INVALID_HANDLE_VALUE:
         raise winerr("CreateToolhelp32Snapshot(processes) failed")
@@ -159,13 +160,19 @@ def find_process(k32, exe_name: str) -> int:
         pe = PROCESSENTRY32W()
         pe.dwSize = C.sizeof(pe)
         ok = k32.Process32FirstW(snap, C.byref(pe))
+        found: list[tuple[int, str]] = []
         while ok:
-            if pe.szExeFile.lower() == exe_name.lower():
-                return int(pe.th32ProcessID)
+            name = str(pe.szExeFile)
+            if name.lower() in candidates:
+                found.append((int(pe.th32ProcessID), name))
             ok = k32.Process32NextW(snap, C.byref(pe))
     finally:
         close_handle(k32, snap)
-    raise RuntimeError(f"{exe_name} is not running")
+    if not found:
+        raise RuntimeError("God of War is not running (expected GoW.exe or GodOfWar.exe)")
+    if len(found) > 1:
+        raise RuntimeError(f"multiple God of War candidate processes are running: {found}")
+    return found[0]
 
 
 def get_main_module(k32, pid: int, exe_name: str) -> tuple[int, str]:
@@ -471,8 +478,8 @@ def capture(output: Path, timeout_s: int, catalogue_path: Path) -> None:
             raise RuntimeError(f"catalogue no longer contains {catalogue_id}")
 
     k32 = configure_kernel32()
-    pid = find_process(k32, "GoW.exe")
-    module_base, exe_path = get_main_module(k32, pid, "GoW.exe")
+    pid, exe_name = find_supported_process(k32)
+    module_base, exe_path = get_main_module(k32, pid, exe_name)
     actual_sha = sha256_file(exe_path)
     if actual_sha.lower() != EXPECTED_EXE_SHA256:
         raise RuntimeError(
@@ -513,7 +520,7 @@ def capture(output: Path, timeout_s: int, catalogue_path: Path) -> None:
         patch_byte(k32, process, hook_addr, 0xCC)
         breakpoint_installed = True
 
-        print(f"GoW.exe PID={pid} base=0x{module_base:X}")
+        print(f"{exe_name} PID={pid} base=0x{module_base:X}")
         print(
             f"Identity-vector breakpoint installed after RVA 0x{call['call_rva']:X} "
             f"at RVA 0x{call['post_call_rva']:X}."
