@@ -56,6 +56,28 @@ function Get-Sha256 {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
 }
 
+function Assert-PowerShellScriptParses {
+    param([string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        throw "PowerShell script is missing: $Path"
+    }
+
+    $tokens = $null
+    $parseErrors = $null
+    [void][System.Management.Automation.Language.Parser]::ParseFile(
+        $Path,
+        [ref]$tokens,
+        [ref]$parseErrors
+    )
+    if (@($parseErrors).Count -gt 0) {
+        $details = @($parseErrors | ForEach-Object {
+            "line $($_.Extent.StartLineNumber): $($_.Message)"
+        }) -join ' | '
+        throw "PowerShell syntax preflight failed for $Path: $details"
+    }
+}
+
 function Write-GitStateSnapshot {
     param([string]$Phase)
     $lines = @(
@@ -481,17 +503,8 @@ function Publish-RunArtifacts {
     return $commit
 }
 
-if (-not (Test-Path -LiteralPath $runtimeTest -PathType Leaf)) {
-    throw "Missing runtime transaction script: $runtimeTest"
-}
-
-$branch = Get-CurrentBranch
-if ($branch -ne $expectedBranch) {
-    throw "Expected branch '$expectedBranch', got '$branch'."
-}
-
-Assert-CleanTrackedState
-$initialHead = Get-RepoHead
+$branch = ''
+$initialHead = ''
 $resolvedGameRoot = $null
 $frozenSourceAction = 'not-attempted'
 $candidateAction = 'not-attempted'
@@ -509,6 +522,20 @@ try {
     $transcriptStarted = $true
     Write-GitStateSnapshot -Phase 'start'
     Copy-RunSnapshot -Source $activeManifest -Destination $activeBeforePath
+
+    if (-not (Test-Path -LiteralPath $runtimeTest -PathType Leaf)) {
+        throw "Missing runtime transaction script: $runtimeTest"
+    }
+    $branch = Get-CurrentBranch
+    if ($branch -ne $expectedBranch) {
+        throw "Expected branch '$expectedBranch', got '$branch'."
+    }
+    Assert-CleanTrackedState
+    $initialHead = Get-RepoHead
+
+    Assert-PowerShellScriptParses -Path $runtimeTest
+    Assert-PowerShellScriptParses -Path (Join-Path $PSScriptRoot 'test-all-ravens-transaction.ps1')
+    Write-Host '  PowerShell syntax preflight: passed'
 
     $resolvedGameRoot = Resolve-GodOfWarRoot -RequestedRoot $GameRoot
 
