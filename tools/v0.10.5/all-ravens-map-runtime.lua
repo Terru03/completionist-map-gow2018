@@ -279,9 +279,26 @@ do
     return roots > 0, killedCount, aliveCount
   end
 
+  local function logUIStateBootstrap(source)
+    local known, killed, alive = 0, 0, 0
+    for catalogueId, value in pairs(states) do
+      if byCatalogueId[catalogueId] ~= nil and type(value) == "boolean" then
+        known = known + 1
+        if value then killed = killed + 1 else alive = alive + 1 end
+      end
+    end
+    log("UI_STATE_BOOTSTRAP", "source=" .. tostring(source) ..
+        " known=" .. tostring(known) ..
+        " killed=" .. tostring(killed) ..
+        " alive=" .. tostring(alive) ..
+        " generation=" .. tostring(_G.CompletionistMapV105RavenStateGeneration or 0) ..
+        " progressionWrites=false")
+  end
+
   local createPins = CompletionistMapV100_CreateMapPin
   CompletionistMapV100_CreateMapPin = function(self, currState)
     local result = createPins(self, currState)
+    logUIStateBootstrap("map_create")
     bootstrapPersistedRavenState("map_create")
     syncIcons(self, "map_create")
     return result
