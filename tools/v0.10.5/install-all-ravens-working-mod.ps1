@@ -286,26 +286,31 @@ function Ensure-FrozenSourceRoot {
         if ($hudText.Contains('BEGIN COMPLETIONIST V0.10.5 ALL RAVEN UI STATE RECEIVER')) {
             throw 'Frozen MainHUD source unexpectedly already contains the v0.10.5 Raven receiver.'
         }
-        Write-Host '  frozen source: existing verified six-file source root + MainHUD baseline'
+        Write-Host '  frozen source: existing verified five-file source root + MainHUD baseline'
         return 'verified-existing-with-mainhud'
     }
 
-    if (Test-Path -LiteralPath $frozenSourceRoot) {
-        Remove-Item -LiteralPath $frozenSourceRoot -Recurse -Force
-    }
-    New-Item -ItemType Directory -Force -Path $frozenSourceRoot | Out-Null
-
-    foreach ($relative in $sourceFiles.Keys) {
-        $expected = ([string]$sourceFiles[$relative]).ToLowerInvariant()
-        $source = Find-VerifiedFrozenSourceFile -Relative $relative -ExpectedSha $expected -ResolvedGameRoot $ResolvedGameRoot
-        $destination = Join-Path $frozenSourceRoot $relative
-        New-Item -ItemType Directory -Force -Path (Split-Path $destination -Parent) | Out-Null
-        Copy-Item -LiteralPath $source -Destination $destination -Force
-        $copiedSha = Get-Sha256 -Path $destination
-        if ($copiedSha -ne $expected) {
-            throw "Frozen source copy SHA mismatch for $relative."
+    if (-not $complete) {
+        if (Test-Path -LiteralPath $frozenSourceRoot) {
+            Remove-Item -LiteralPath $frozenSourceRoot -Recurse -Force
         }
-        Write-Host "  frozen source verified: $relative"
+        New-Item -ItemType Directory -Force -Path $frozenSourceRoot | Out-Null
+
+        foreach ($relative in $sourceFiles.Keys) {
+            $expected = ([string]$sourceFiles[$relative]).ToLowerInvariant()
+            $source = Find-VerifiedFrozenSourceFile -Relative $relative -ExpectedSha $expected -ResolvedGameRoot $ResolvedGameRoot
+            $destination = Join-Path $frozenSourceRoot $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path $destination -Parent) | Out-Null
+            Copy-Item -LiteralPath $source -Destination $destination -Force
+            $copiedSha = Get-Sha256 -Path $destination
+            if ($copiedSha -ne $expected) {
+                throw "Frozen source copy SHA mismatch for $relative."
+            }
+            Write-Host "  frozen source verified: $relative"
+        }
+    }
+    else {
+        Write-Host '  frozen source: preserving verified five-file source root while adding MainHUD baseline'
     }
 
     $mainHudCandidates = @(
