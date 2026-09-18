@@ -91,8 +91,10 @@ class AllRavensBuildTests(unittest.TestCase):
         self.assertEqual(suffix.count("{CatalogueId="), 53)
         self.assertEqual(suffix.count("WadKey="), 53)
         self.assertEqual(suffix.count("ObjectKey="), 53)
+        self.assertEqual(suffix.count("AggregateSafe="), 53)
         for token in (
             "exact_collision_object", "currMarkerID", "CompletionistRaven",
+            "GetQuestProgressAndGoal", "AGGREGATE_SCAN",
             "goMapIconCompletionistRaven", "markerIdAloneInfersRaven=false",
             "CompletionistMapV105TrackedCatalogueId", "Map.RecycleIcon",
         ):
