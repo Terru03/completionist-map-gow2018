@@ -1,0 +1,163 @@
+Completionist Map - Raven GameObject identity method real CFG
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+seed=0x550700
+encoder_virtual_callsite=0x5495C9
+pdata={'begin': 5572352, 'end': 5572432, 'size': 80}
+real_cfg blocks=5 instructions=47 range=0x550700-0x5507DF span=0xDF limits_hit=False
+
+DIRECT CALLS
+  0x550740 -> 0x1029C0 0x1401029c0
+  0x550768 -> 0x1029C0 0x1401029c0
+  0x550775 -> 0x101680 0x140101680
+  0x550787 -> 0x1017F0 0x1401017f0
+  0x5507AA -> 0x3ED39A 0x1403ed39a
+  0x5507D1 -> 0x3EB970 0x1403eb970
+
+RIP REFERENCES
+  0x550709 -> 0x105A208
+
+OUTPUT-RELATIVE ACCESSES (RDX/RDI)
+  0x550736 rdi++0x180 mov dword ptr [rdi + 0x180], 0
+  0x55078C rdi++0x180 mov ecx, dword ptr [rdi + 0x180]
+  0x5507B5 rdi++0x180 add dword ptr [rdi + 0x180], eax
+
+GAMEOBJECT RCX-RELATIVE ACCESSES
+  0x55071B rcx++0x30 mov rax, qword ptr [rcx + 0x30]
+  0x550747 rcx++0x40 movups xmm0, xmmword ptr [rcx + 0x40]
+
+REAL REACHABLE DISASSEMBLY
+  0x00550700  4057                     push     rdi
+  0x00550702  4881ec60030000           sub      rsp, 0x360
+  0x00550709  488b05f89ab000           mov      rax, qword ptr [rip + 0xb09af8]
+  0x00550710  4833c4                   xor      rax, rsp
+  0x00550713  4889842450030000         mov      qword ptr [rsp + 0x350], rax
+  0x0055071B  488b4130                 mov      rax, qword ptr [rcx + 0x30]
+  0x0055071F  488bfa                   mov      rdi, rdx
+  0x00550722  80780201                 cmp      byte ptr [rax + 2], 1
+  0x00550726  741f                     je       0x140550747
+  0x00550728  8b5068                   mov      edx, dword ptr [rax + 0x68]
+  0x0055072B  c1ea13                   shr      edx, 0x13
+  0x0055072E  f6c201                   test     dl, 1
+  0x00550731  7414                     je       0x140550747
+  0x00550733  488bd7                   mov      rdx, rdi
+  0x00550736  c7878001000000000000     mov      dword ptr [rdi + 0x180], 0
+  0x00550740  e87b22bbff               call     0x1401029c0
+  0x00550745  eb7c                     jmp      0x1405507c3
+  0x00550747  0f104140                 movups   xmm0, xmmword ptr [rcx + 0x40]
+  0x0055074B  488d542430               lea      rdx, [rsp + 0x30]
+  0x00550750  48899c2480030000         mov      qword ptr [rsp + 0x380], rbx
+  0x00550758  c78424b001000000000000   mov      dword ptr [rsp + 0x1b0], 0
+  0x00550763  0f11442420               movups   xmmword ptr [rsp + 0x20], xmm0
+  0x00550768  e85322bbff               call     0x1401029c0
+  0x0055076D  488d542430               lea      rdx, [rsp + 0x30]
+  0x00550772  488bcf                   mov      rcx, rdi
+  0x00550775  e8060fbbff               call     0x140101680
+  0x0055077A  488d542420               lea      rdx, [rsp + 0x20]
+  0x0055077F  488d8c24c0010000         lea      rcx, [rsp + 0x1c0]
+  0x00550787  e86410bbff               call     0x1401017f0
+  0x0055078C  8b8f80010000             mov      ecx, dword ptr [rdi + 0x180]
+  0x00550792  488bd0                   mov      rdx, rax
+  0x00550795  48c1e104                 shl      rcx, 4
+  0x00550799  488bd8                   mov      rbx, rax
+  0x0055079C  4803cf                   add      rcx, rdi
+  0x0055079F  448b8080010000           mov      r8d, dword ptr [rax + 0x180]
+  0x005507A6  49c1e004                 shl      r8, 4
+  0x005507AA  e8ebcbe9ff               call     0x1403ed39a
+  0x005507AF  8b8380010000             mov      eax, dword ptr [rbx + 0x180]
+  0x005507B5  018780010000             add      dword ptr [rdi + 0x180], eax
+  0x005507BB  488b9c2480030000         mov      rbx, qword ptr [rsp + 0x380]
+  0x005507C3  488bc7                   mov      rax, rdi
+  0x005507C6  488b8c2450030000         mov      rcx, qword ptr [rsp + 0x350]
+  0x005507CE  4833cc                   xor      rcx, rsp
+  0x005507D1  e89ab1e9ff               call     0x1403eb970
+  0x005507D6  4881c460030000           add      rsp, 0x360
+  0x005507DD  5f                       pop      rdi
+  0x005507DE  c3                       ret      
+
+DIRECT CALLEE SUMMARIES
+CALLEE target=0x101680 function={'begin': 1054336, 'end': 1054689, 'size': 353} truncated=False
+  0x0010168F  48894108                 mov      qword ptr [rcx + 8], rax
+  0x00101696  488901                   mov      qword ptr [rcx], rax
+  0x00101699  48894118                 mov      qword ptr [rcx + 0x18], rax
+  0x0010169D  48894110                 mov      qword ptr [rcx + 0x10], rax
+  0x001016A1  48894128                 mov      qword ptr [rcx + 0x28], rax
+  0x001016A5  48894120                 mov      qword ptr [rcx + 0x20], rax
+  0x001016A9  48894138                 mov      qword ptr [rcx + 0x38], rax
+  0x001016AD  48894130                 mov      qword ptr [rcx + 0x30], rax
+  0x001016B1  48894148                 mov      qword ptr [rcx + 0x48], rax
+  0x001016B5  48894140                 mov      qword ptr [rcx + 0x40], rax
+  0x001016B9  48894158                 mov      qword ptr [rcx + 0x58], rax
+  0x001016BD  48894150                 mov      qword ptr [rcx + 0x50], rax
+  0x001016C1  48894168                 mov      qword ptr [rcx + 0x68], rax
+  0x001016C5  48894160                 mov      qword ptr [rcx + 0x60], rax
+  0x001016C9  48894178                 mov      qword ptr [rcx + 0x78], rax
+  0x001016CD  48894170                 mov      qword ptr [rcx + 0x70], rax
+  0x001016D1  48898188000000           mov      qword ptr [rcx + 0x88], rax
+  0x001016D8  48898180000000           mov      qword ptr [rcx + 0x80], rax
+  0x001016DF  48898198000000           mov      qword ptr [rcx + 0x98], rax
+  0x001016E6  48898190000000           mov      qword ptr [rcx + 0x90], rax
+  0x001016ED  488981a8000000           mov      qword ptr [rcx + 0xa8], rax
+  0x001016F4  488981a0000000           mov      qword ptr [rcx + 0xa0], rax
+  0x001016FB  488981b8000000           mov      qword ptr [rcx + 0xb8], rax
+  0x00101702  488981b0000000           mov      qword ptr [rcx + 0xb0], rax
+  0x00101709  488981c8000000           mov      qword ptr [rcx + 0xc8], rax
+  0x00101710  488981c0000000           mov      qword ptr [rcx + 0xc0], rax
+  0x00101717  488981d8000000           mov      qword ptr [rcx + 0xd8], rax
+  0x0010171E  488981d0000000           mov      qword ptr [rcx + 0xd0], rax
+  0x00101725  488981e8000000           mov      qword ptr [rcx + 0xe8], rax
+  0x0010172C  488981e0000000           mov      qword ptr [rcx + 0xe0], rax
+  0x00101733  488981f8000000           mov      qword ptr [rcx + 0xf8], rax
+  0x0010173A  488981f0000000           mov      qword ptr [rcx + 0xf0], rax
+  0x00101741  48898108010000           mov      qword ptr [rcx + 0x108], rax
+  0x00101748  48898100010000           mov      qword ptr [rcx + 0x100], rax
+  0x0010174F  48898118010000           mov      qword ptr [rcx + 0x118], rax
+  0x00101756  48898110010000           mov      qword ptr [rcx + 0x110], rax
+  0x0010175D  48898128010000           mov      qword ptr [rcx + 0x128], rax
+  0x00101764  48898120010000           mov      qword ptr [rcx + 0x120], rax
+  0x0010176B  48898138010000           mov      qword ptr [rcx + 0x138], rax
+  0x00101772  48898130010000           mov      qword ptr [rcx + 0x130], rax
+  0x00101779  48898148010000           mov      qword ptr [rcx + 0x148], rax
+  0x00101780  48898140010000           mov      qword ptr [rcx + 0x140], rax
+  0x00101787  48898158010000           mov      qword ptr [rcx + 0x158], rax
+  0x0010178E  48898150010000           mov      qword ptr [rcx + 0x150], rax
+  0x00101795  48898168010000           mov      qword ptr [rcx + 0x168], rax
+  0x0010179C  48898160010000           mov      qword ptr [rcx + 0x160], rax
+  0x001017A3  48898178010000           mov      qword ptr [rcx + 0x178], rax
+  0x001017AA  48898170010000           mov      qword ptr [rcx + 0x170], rax
+  0x001017B1  898180010000             mov      dword ptr [rcx + 0x180], eax
+  0x001017B7  448b8280010000           mov      r8d, dword ptr [rdx + 0x180]
+  0x001017C2  e8d3bb2e00               call     0x1403ed39a
+  0x001017D2  898780010000             mov      dword ptr [rdi + 0x180], eax
+CALLEE target=0x1017F0 function=None truncated=None
+CALLEE target=0x1029C0 function={'begin': 1059264, 'end': 1059490, 'size': 226} truncated=False
+  0x001029D0  488b9140020000           mov      rdx, qword ptr [rcx + 0x240]
+  0x001029EE  f6817802000080           test     byte ptr [rcx + 0x278], 0x80
+  0x001029FB  488b4928                 mov      rcx, qword ptr [rcx + 0x28]
+  0x00102A07  e8b4ffffff               call     0x1401029c0
+  0x00102A10  4180780202               cmp      byte ptr [r8 + 2], 2
+  0x00102A1B  4d8b80b0000000           mov      r8, qword ptr [r8 + 0xb0]
+  0x00102A27  4d8b4010                 mov      r8, qword ptr [r8 + 0x10]
+  0x00102A30  418b08                   mov      ecx, dword ptr [r8]
+  0x00102A33  4d8d4804                 lea      r9, [r8 + 4]
+  0x00102A37  448b9780010000           mov      r10d, dword ptr [rdi + 0x180]
+  0x00102A4E  498d4004                 lea      rax, [r8 + 4]
+  0x00102A62  890a                     mov      dword ptr [rdx], ecx
+  0x00102A64  488d5210                 lea      rdx, [rdx + 0x10]
+  0x00102A6B  894af4                   mov      dword ptr [rdx - 0xc], ecx
+  0x00102A71  894af8                   mov      dword ptr [rdx - 8], ecx
+  0x00102A7B  894afc                   mov      dword ptr [rdx - 4], ecx
+  0x00102A83  448b9780010000           mov      r10d, dword ptr [rdi + 0x180]
+  0x00102A8A  418b08                   mov      ecx, dword ptr [r8]
+  0x00102A8D  428d0411                 lea      eax, [rcx + r10]
+  0x00102A91  898780010000             mov      dword ptr [rdi + 0x180], eax
+CALLEE target=0x3EB970 function={'begin': 4110704, 'end': 4110737, 'size': 33} truncated=False
+  0x003EB970  483b0d91e8c600           cmp      rcx, qword ptr [rip + 0xc6e891]
+CALLEE target=0x3ED39A function=None truncated=None
+
+SAFETY
+game_launched=false
+process_opened=false
+debugger_attached=false
+process_memory_written=false
+save_or_progression_written=false
+exe_modified=false
