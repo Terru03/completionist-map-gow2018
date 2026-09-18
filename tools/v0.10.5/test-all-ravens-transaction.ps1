@@ -88,6 +88,7 @@ foreach ($requiredArtifact in @(
 Assert-True ($installerText.Contains('Publish-RunArtifacts -Outcome $outcome')) 'Installer must publish run evidence for final outcome.'
 Assert-True ($installerText.Contains('mods/lua/gameart/ui/scripts/hud/mainhud.lua')) 'Installer must freeze the MainHUD bridge baseline.'
 Assert-True ($installerText.Contains('mods/lua/gameart/scripts/libraries/core/save.lua')) 'Installer must freeze the core.save checkpoint-cache baseline.'
+Assert-True ($installerText.Contains('mods\completionist-map-cache')) 'Installer must provision the Raven sidecar cache directory.'
 
 $files = [ordered]@{
     mapmaster = 'exec/dc/pc_le/mapmaster.dcb'
