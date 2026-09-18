@@ -51,8 +51,8 @@ $logText = Read-SharedText $loaderLog
 
 $lines = @($logText -split "\r?\n")
 $completionist = @($lines | Where-Object {
-    $_ -like '*[CompletionistMap v0.10.5-all-ravens]*' -or
-    $_ -like '*[CompletionistMap v0.10.5-raven-events]*'
+    $_ -like '*CompletionistMap v0.10.5-all-ravens*' -or
+    $_ -like '*CompletionistMap v0.10.5-raven-events*'
 })
 $completionist | Set-Content -LiteralPath (Join-Path $outDir 'completionist-extract.txt') -Encoding UTF8
 
@@ -61,12 +61,12 @@ $interesting = @($lines | Where-Object {
 })
 $interesting | Select-Object -Last 800 | Set-Content -LiteralPath (Join-Path $outDir 'interesting-tail.txt') -Encoding UTF8
 
-$mapApi = @($completionist | Where-Object { $_ -like '*v0.10.5-all-ravens* API *' }).Count
-$eventApi = @($completionist | Where-Object { $_ -like '*v0.10.5-raven-events* API *' }).Count
-$persisted = @($completionist | Where-Object { $_ -like '* PERSISTED_SCAN*' -or $_ -like '* PERSISTED_SCAN_REFUSED*' })
-$states = @($completionist | Where-Object { $_ -like '* v0.10.5-all-ravens* STATE *' })
-$eventRefused = @($completionist | Where-Object { $_ -like '*v0.10.5-raven-events* STATE_REFUSED *' })
-$eventScheduleFailures = @($completionist | Where-Object { $_ -like '*v0.10.5-raven-events* SCHEDULE_FAILED *' })
+$mapApi = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-all-ravens\] API ' }).Count
+$eventApi = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-events\] API ' }).Count
+$persisted = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-all-ravens\] PERSISTED_SCAN(_REFUSED)? ' })
+$states = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-all-ravens\] STATE ' })
+$eventRefused = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-events\] STATE_REFUSED ' })
+$eventScheduleFailures = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-events\] SCHEDULE_FAILED ' })
 
 $mapText = Read-SharedText $mapLua
 $eventText = Read-SharedText $eventLua
