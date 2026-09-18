@@ -30,12 +30,37 @@ KNOWN = {
 }
 
 
+MASK64 = 0xFFFFFFFFFFFFFFFF
+MULTIPLIER = 0x401
+MULTIPLIER_INV = pow(MULTIPLIER, -1, 1 << 64)
+
+
+def hash_update(value: int, data: bytes) -> int:
+    for byte in data:
+        value = ((value + byte) * MULTIPLIER) & MASK64
+        value ^= value >> 6
+    return value
+
+
 def raw_identity_hash(data: bytes) -> int:
     """Exact encoder loop at 0x5495E1: byte-add, *0x401, xor >> 6."""
-    value = 0
-    for byte in data:
-        value = ((value + byte) * 0x401) & 0xFFFFFFFFFFFFFFFF
-        value ^= value >> 6
+    return hash_update(0, data)
+
+
+def invert_xor_shift_right(value: int, shift: int = 6) -> int:
+    result = value
+    distance = shift
+    while distance < 64:
+        result ^= value >> distance
+        distance += shift
+    return result & MASK64
+
+
+def hash_rewind(value: int, data: bytes) -> int:
+    for byte in reversed(data):
+        before_xor = invert_xor_shift_right(value)
+        value = ((before_xor * MULTIPLIER_INV) & MASK64)
+        value = (value - byte) & MASK64
     return value
 
 
@@ -156,24 +181,53 @@ def search_common_recipe(
     maps: dict[str, dict[str, bytes]],
     max_length: int,
 ) -> list[dict]:
+    """Meet-in-the-middle search of shared authored 16-byte identity elements.
+
+    The byte hash is reversible because 0x401 is odd and xor-right-shift is
+    invertible. This keeps exhaustive searches through six elements small and
+    deterministic instead of evaluating tens of millions of full prefixes.
+    """
     common = sorted(set.intersection(*(set(maps[row["catalogue_id"]]) for row in rows)))
     targets = [KNOWN[row["catalogue_id"]] for row in rows]
     first_map = maps[rows[0]["catalogue_id"]]
-    matches = []
+    matches: list[dict] = []
+
+    def validate(recipe: tuple[str, ...]) -> bool:
+        if len(set(recipe)) != len(recipe):
+            return False
+        return all(
+            raw_identity_hash(recipe_bytes(maps[row["catalogue_id"]], recipe)) == target
+            for row, target in zip(rows, targets)
+        )
 
     for length in range(1, max_length + 1):
-        for recipe in itertools.permutations(common, length):
-            if raw_identity_hash(recipe_bytes(first_map, recipe)) != targets[0]:
-                continue
-            if all(
-                raw_identity_hash(recipe_bytes(maps[row["catalogue_id"]], recipe)) == target
-                for row, target in zip(rows[1:], targets[1:])
-            ):
-                matches.append({
-                    "recipe": list(recipe),
-                    "elements": length,
-                    "bytes": length * 16,
-                })
+        left_len = length // 2
+        right_len = length - left_len
+        if left_len == 0:
+            for recipe in itertools.permutations(common, right_len):
+                if validate(recipe):
+                    matches.append({"recipe": list(recipe), "elements": length, "bytes": length * 16})
+            if matches:
+                return matches
+            continue
+
+        forward: dict[int, list[tuple[str, ...]]] = {}
+        for left in itertools.permutations(common, left_len):
+            value = 0
+            for name in left:
+                value = hash_update(value, first_map[name])
+            forward.setdefault(value, []).append(left)
+
+        for right in itertools.permutations(common, right_len):
+            value = targets[0]
+            for name in reversed(right):
+                value = hash_rewind(value, first_map[name])
+            for left in forward.get(value, ()):
+                recipe = left + right
+                if validate(recipe):
+                    matches.append({"recipe": list(recipe), "elements": length, "bytes": length * 16})
+        if matches:
+            return matches
     return matches
 
 
@@ -215,7 +269,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--game-root", type=Path, default=Path("G:/SteamLibrary/steamapps/common/GodOfWar"))
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--max-recipe-length", type=int, default=5)
+    parser.add_argument("--max-recipe-length", type=int, default=6)
     args = parser.parse_args()
 
     catalogue = json.loads(CATALOGUE.read_text(encoding="utf-8"))
