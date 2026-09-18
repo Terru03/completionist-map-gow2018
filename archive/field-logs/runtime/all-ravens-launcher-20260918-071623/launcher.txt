@@ -1,0 +1,115 @@
+launcher_run_id=20260918-071623
+started_utc=2026-09-18T07:16:23.4771773Z
+branch=codex/all-collectibles-production-research
+head_at_start=5b49f65bc8dadfbe2706a40796aa5bd4311cd6a7
+orphan_scan_before_count=0
+installer_parse_preflight=passed
+child_command=C:\Program Files\PowerShell\7\pwsh.exe -NoProfile -ExecutionPolicy Bypass -File C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\install-all-ravens-working-mod.ps1
+  PowerShell syntax preflight: passed
+COMPLETIONIST_MAP_ALL_RAVENS_INSTALL
+  run id: 20260918-071624
+  branch: codex/all-collectibles-production-research
+  repo head at start: 5b49f65bc8dadfbe2706a40796aa5bd4311cd6a7
+  game root: G:\SteamLibrary\steamapps\common\GodOfWar
+  catalogue markers: 53
+  unknown Raven state: visible
+  live native ravenKilled events: enabled
+  old-save bootstrap: read-only persisted GameObject scan on map open
+  persisted identity: exact unique WAD + GameObject name
+  save/progression writes by installer: none
+  candidate source: frozen SHA-verified transaction backups
+  pre-install game state: preserved as rollback baseline
+  transaction: guarded seven-file install with pre-write backups
+  upgrade policy: safely roll back any active prior all-Ravens install before rebuilding
+
+  previous all-Ravens transaction: 20260918T054855Z-7b1ddcb5 (installed)
+  upgrade: restoring legacy exact 6-file baseline before seven-file checkpoint-cache build
+  legacy 6-file transaction rolled back exactly: 20260918T054855Z-7b1ddcb5
+  upgrade rollback: exact previous baseline restored
+  frozen source: preserving verified five-file source root while adding MainHUD baseline
+  frozen source captured: mods/lua/gameart/ui/scripts/hud/mainhud.lua SHA256=f15d1400e8a6f3f9ec17b128a97b790d6ecfa35a8aff69295ca319941e47d4bf
+  frozen source captured: mods/lua/gameart/scripts/libraries/core/save.lua SHA256=6f0e9da18e485b06238285beeec8145a6c497ade08e943a096a70601d85be1ef
+  candidate: rebuilding deterministically from frozen verified source
+ALL_RAVENS_OFFLINE_CANDIDATE_READY_FOR_RUNTIME_TEST
+{
+  "exec/dc/pc_le/mapcoords.dcb": {
+    "bytes": 83712,
+    "sha256": "d6786f9734473fa7bdb8eff39aadac4f3fb2ecd4a83d56bfc5d2832c17435514"
+  },
+  "exec/dc/pc_le/mapmaster.dcb": {
+    "bytes": 104064,
+    "sha256": "7d1d5e05315dce17326712a95901e1e753b6c14c4f1a71012ca337ae7ee9b223"
+  },
+  "exec/dc/pc_le/wad_r_ui.dcb": {
+    "bytes": 5712,
+    "sha256": "c5c38d0f89873b8617f38e049a916eb2fe632f9bf1f17bb5eef4867343ecf45b"
+  },
+  "mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua": {
+    "bytes": 28579,
+    "sha256": "1d2794af5b26050706fd05e5f5ee8fb6919e7156f15bffdbce6e26918a14bcfc"
+  },
+  "mods/lua/gameart/scripts/libraries/core/save.lua": {
+    "bytes": 9365,
+    "sha256": "ffe4c15346aa738e7d19afcb0628ecaecf3da9e92e4794fc69e3bbfe4a100104"
+  },
+  "mods/lua/gameart/ui/scripts/hud/mainhud.lua": {
+    "bytes": 44342,
+    "sha256": "76bf5d873c1c5789421f09a8b9023cedac3bd25bce3a0e190336363304a164be"
+  },
+  "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": {
+    "bytes": 219035,
+    "sha256": "57a32501f2abf874dc5277165b62c77ce35834ff22a06b80b4689308978efa0d"
+  }
+}
+ready_for_runtime_test=true
+ALL_RAVENS_RELEASE_CANDIDATE_REBUILD_VERIFIED
+  candidate: rebuilt and deterministic rebuild verified
+warning: in the working copy of 'archive/all-ravens/all-ravens-release-candidate-offline.json', LF will be replaced by CRLF the next time Git touches it
+[31;1mwarning: in the working copy of 'archive/all-ravens/all-ravens-release-candidate-offline.json', LF will be replaced by CRLF the next time Git touches it[0m
+[31;1mwarning: in the working copy of 'archive/all-ravens/all-ravens-release-candidate-offline.json', LF will be replaced by CRLF the next time Git touches it[0m
+[31;1mwarning: in the working copy of 'archive/all-ravens/all-ravens-release-candidate-offline.json', LF will be replaced by CRLF the next time Git touches it[0m
+[codex/all-collectibles-production-research 432d663] build(v0.10.5): refresh all-ravens candidate proof
+ 1 file changed, 17 insertions(+), 5 deletions(-)
+[31;1mTo https://github.com/Terru03/completionist-map-gow2018.git[0m
+[31;1m   5b49f65..432d663  codex/all-collectibles-production-research -> codex/all-collectibles-production-research[0m
+  candidate proof commit: 432d6635136a27ddb28d93df8ea4e54d7d13fe64
+  transaction self-test: running against temporary fake game
+ALL_RAVENS_TRANSACTION_SELF_TEST_PASSED
+  transaction self-test: passed
+  previous terminal transaction retained as history: 20260918T054855Z-7b1ddcb5 (rolled-back)
+  historical candidate SHAs are intentionally not compared with the replacement candidate
+ALL_RAVENS_RUNTIME_TEST_INSTALLED
+  transaction: 20260918T071644Z-db4f119a
+  files installed: 7
+  catalogue Ravens in candidate: 53
+  backups completed before first game write: true
+  candidate SHA verification: true
+  pre-install rollback baseline: current seven-file state
+  saves/progression written by installer: false
+  game launched by installer: false
+  manifest: C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\build\v0.10.5-all-ravens-runtime-test\transaction\transactions\20260918T071644Z-db4f119a\manifest.json
+
+COMPLETIONIST_MAP_ALL_RAVENS_READY
+  The 53-Raven catalogue build is installed.
+  The exact seven game files present before this run are the rollback baseline.
+  A Raven killed during this runtime is hidden by its exact native ravenKilled event.
+  Existing kills are reconstructed read-only from persisted Raven GameObjects when the map opens.
+  Fresh saves still show all 53 Ravens; unmatched/ambiguous state remains visible by design.
+[31;1mwarning: in the working copy of 'archive/field-logs/runtime/all-ravens-working-install-20260918-071624/candidate-proof-used.json', LF will be replaced by CRLF the next time Git touches it[0m
+[31;1mwarning: in the working copy of 'archive/field-logs/runtime/all-ravens-working-install-20260918-071624/candidate-proof-used.json', LF will be replaced by CRLF the next time Git touches it[0m
+[codex/all-collectibles-production-research 261246c] field: record all-Ravens install installed 20260918-071624
+ 8 files changed, 559 insertions(+)
+ create mode 100644 archive/field-logs/runtime/all-ravens-working-install-20260918-071624/active-transaction-after.json
+ create mode 100644 archive/field-logs/runtime/all-ravens-working-install-20260918-071624/active-transaction-before.json
+ create mode 100644 archive/field-logs/runtime/all-ravens-working-install-20260918-071624/candidate-files.json
+ create mode 100644 archive/field-logs/runtime/all-ravens-working-install-20260918-071624/candidate-proof-used.json
+ create mode 100644 archive/field-logs/runtime/all-ravens-working-install-20260918-071624/git-state.txt
+ create mode 100644 archive/field-logs/runtime/all-ravens-working-install-20260918-071624/result.json
+ create mode 100644 archive/field-logs/runtime/all-ravens-working-install-20260918-071624/run.txt
+ create mode 100644 archive/field-logs/runtime/all-ravens-working-install-20260918-071624/transaction-self-test.json
+[31;1mTo https://github.com/Terru03/completionist-map-gow2018.git[0m
+[31;1m   432d663..261246c  codex/all-collectibles-production-research -> codex/all-collectibles-production-research[0m
+  GitHub artifact commit: 261246c065b39a854ac0e50cfc859782ae2abae5
+COMPLETIONIST_MAP_ALL_RAVENS_RESULT_PUSHED 261246c065b39a854ac0e50cfc859782ae2abae5
+child_exit_code=0
+orphan_scan_after_count=0
