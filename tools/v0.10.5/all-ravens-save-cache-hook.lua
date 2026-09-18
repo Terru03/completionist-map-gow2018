@@ -1,99 +1,96 @@
 -- BEGIN COMPLETIONIST V0.10.5 RAVEN CHECKPOINT CACHE
--- Mod-owned checkpoint cache only. Native Raven progression remains authoritative.
+-- Stores only an opaque Completionist save-point ID inside GoW's Lua checkpoint state.
+-- The full Raven snapshot lives in the MainHUD sidecar cache keyed by this ID.
 do
   local prefix = "[CompletionistMap v0.10.5-raven-cache] "
-  local CACHE_KEY = "__CompletionistMapV105Cache"
-  local valid = {
--- @@RAVEN_CACHE_IDS@@
-  }
+  local SAVEPOINT_KEY = "__CompletionistMapV105SavePoint"
+  local sequence = 0
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
   end
 
-  local function getCache(create)
-    local cache = object_savestate[CACHE_KEY]
-    if type(cache) ~= "table" and create then
-      cache = {schema = 1, ravens = {}}
-      object_savestate[CACHE_KEY] = cache
-    end
-    if type(cache) == "table" then
-      if type(cache.ravens) ~= "table" then cache.ravens = {} end
-      cache.schema = 1
-    end
-    return cache
+  local function sanitize(value)
+    return tostring(value or ""):gsub("[^%w_-]", "")
   end
 
-  _G.CompletionistMapV105CacheRavenState = function(catalogueId, killed, source)
-    if valid[catalogueId] ~= true then
-      log("UPDATE_REFUSED", "reason=unknown_catalogue_id catalogueId=" .. tostring(catalogueId))
-      return false
+  local function newSavePointId()
+    sequence = sequence + 1
+    local epoch = 0
+    if type(os) == "table" and type(os.time) == "function" then
+      local ok, value = pcall(os.time)
+      if ok and type(value) == "number" then epoch = value end
     end
-    if type(killed) ~= "boolean" then
-      log("UPDATE_REFUSED", "reason=killed_not_boolean catalogueId=" .. tostring(catalogueId))
-      return false
+    local random = 0
+    if type(math) == "table" and type(math.random) == "function" then
+      local ok, value = pcall(math.random, 0, 2147483647)
+      if ok and type(value) == "number" then random = value end
     end
-    local cache = getCache(true)
-    cache.ravens[catalogueId] = killed
-    log("UPDATE", "catalogueId=" .. catalogueId ..
-        " killed=" .. tostring(killed) ..
+    local pointer = sanitize(tostring({}))
+    return sanitize(
+      "sp_" .. tostring(epoch) .. "_" .. tostring(sequence) ..
+      "_" .. tostring(random) .. "_" .. pointer
+    )
+  end
+
+  local function sendEvent(eventName, savePointId, source)
+    local ok, err = pcall(function()
+      engine.SendHook(
+        "UI_CALL_EVENT",
+        engine.GetUIWad(),
+        eventName,
+        {
+          savePointId = savePointId,
+          source = source
+        }
+      )
+    end)
+    log("SAVEPOINT_EVENT", "event=" .. tostring(eventName) ..
+        " savePointId=" .. tostring(savePointId) ..
         " source=" .. tostring(source) ..
+        " ok=" .. tostring(ok) ..
+        " error=" .. tostring(err) ..
         " nativeProgressionTouched=false")
-    return true
+    return ok
   end
 
-  local function replayCache(source)
-    local cache = getCache(false)
-    local known, killed, alive, sent = 0, 0, 0, 0
-    if type(cache) == "table" and type(cache.ravens) == "table" then
-      for catalogueId, value in pairs(cache.ravens) do
-        if valid[catalogueId] == true and type(value) == "boolean" then
-          known = known + 1
-          if value then killed = killed + 1 else alive = alive + 1 end
-          local ok = pcall(function()
-            engine.SendHook(
-              "UI_CALL_EVENT",
-              engine.GetUIWad(),
-              "EVT_COMPLETIONIST_V105_RAVEN_CACHE_RESTORE",
-              {
-                catalogueId = catalogueId,
-                killed = value,
-                source = source
-              }
-            )
-          end)
-          if ok then sent = sent + 1 end
-        end
-      end
+  local baseSave = Save
+  Save = function()
+    local meta = object_savestate[SAVEPOINT_KEY]
+    if type(meta) ~= "table" then
+      meta = {}
+      object_savestate[SAVEPOINT_KEY] = meta
     end
-    log("RESTORE_REPLAY", "source=" .. tostring(source) ..
-        " known=" .. tostring(known) ..
-        " killed=" .. tostring(killed) ..
-        " alive=" .. tostring(alive) ..
-        " sent=" .. tostring(sent) ..
-        " nativeProgressionTouched=false")
+    meta.schema = 1
+    meta.id = newSavePointId()
+
+    sendEvent(
+      "EVT_COMPLETIONIST_V105_SAVEPOINT_CAPTURE",
+      meta.id,
+      "core.save.Save"
+    )
+
+    return baseSave()
   end
 
   local baseRestore = Restore
   Restore = function(savestate)
     baseRestore(savestate)
 
-    local restoredCache = nil
-    if type(savestate) == "table" then
-      restoredCache = savestate[CACHE_KEY]
+    local meta = nil
+    if type(object_savestate) == "table" then
+      meta = object_savestate[SAVEPOINT_KEY]
     end
-    if type(restoredCache) ~= "table" then
-      object_savestate[CACHE_KEY] = nil
-    end
+    local savePointId = type(meta) == "table" and sanitize(meta.id) or ""
 
-    replayCache("core.save.Restore")
+    sendEvent(
+      "EVT_COMPLETIONIST_V105_SAVEPOINT_RESTORE",
+      savePointId,
+      "core.save.Restore"
+    )
   end
 
-  _G.CompletionistMapV105ReplayRavenCache = function(source)
-    replayCache(source or "manual")
-  end
-
-  log("API", "installed=true cacheKey=" .. CACHE_KEY ..
-      " scope=checkpointLuaState nativeProgressionTouched=false")
+  log("API", "installed=true savePointKey=" .. SAVEPOINT_KEY ..
+      " payload=opaqueIdOnly sidecarOwner=MainHUD nativeProgressionTouched=false")
 end
 -- END COMPLETIONIST V0.10.5 RAVEN CHECKPOINT CACHE
