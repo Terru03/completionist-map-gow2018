@@ -28,6 +28,19 @@ class CollectibleRuntimeModel:
         self.rows = {row["catalogue_id"]: row for row in catalogue["collectibles"]}
         self.by_uid = {normalize_uid(row["marker"]["uid"]): row for row in self.rows.values()}
         self.enabled_families = None if enabled_families is None else set(enabled_families)
+        self.by_state_identity = {}
+        for row in self.rows.values():
+            progression = row.get("progression", {})
+            instance_keys = progression.get("instance_keys")
+            if not instance_keys:
+                instance_key = progression.get("instance_key")
+                instance_keys = [instance_key] if instance_key else []
+            for instance_key in instance_keys:
+                identity = (row["source"]["wad"].lower(), instance_key)
+                previous = self.by_state_identity.get(identity)
+                if previous is not None and previous["catalogue_id"] != row["catalogue_id"]:
+                    raise ValueError(f"duplicate collectible state identity: {identity!r}")
+                self.by_state_identity[identity] = row
         self.state = {key: "unknown" for key in self.rows}
         self.map_open = False
         self.realm = None
@@ -93,6 +106,22 @@ class CollectibleRuntimeModel:
         if complete and self.active_target == ("custom", key):
             self.active_target = None
         self._sync()
+
+    def observe_instance(self, wad: str, instance_key: str, complete: bool):
+        """Apply an authoritative state reply using its exact static identity.
+
+        Raw instance keys are not globally unique. The native source WAD plus
+        instance key is collision-free in the v0.10.5 catalogue and therefore
+        forms the minimum safe lookup key for unloaded-state integration.
+        Unknown identities fail closed and do not mutate UI state.
+        """
+        if not isinstance(wad, str) or not isinstance(instance_key, str):
+            return None
+        row = self.by_state_identity.get((wad.lower(), instance_key))
+        if row is None:
+            return None
+        self.observe(row["catalogue_id"], complete)
+        return row["catalogue_id"]
 
     def load_save(self):
         self.state = {key: "unknown" for key in self.rows}
