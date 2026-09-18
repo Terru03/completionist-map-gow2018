@@ -54,6 +54,22 @@ try{
   if($LASTEXITCODE -ne 0){throw 'git push failed'}
   Write-Host "QM_NATIVE_CLOSURE_CAPTURE_PUSHED $((& git rev-parse HEAD).Trim())" -ForegroundColor Green
   Write-Host 'Capture complete; you can close God of War.' -ForegroundColor Cyan
+}catch{
+  $err = $_.Exception.ToString()
+  try { $err | Set-Content -LiteralPath (Join-Path $out 'error.txt') -Encoding UTF8 } catch {}
+  try { Restore-Map } catch {}
+  try {
+    & git add -f -- $rel
+    if($LASTEXITCODE -eq 0){
+      & git diff --cached --quiet -- $rel
+      if($LASTEXITCODE -eq 1){
+        & git commit -m "research(v0.10.5): archive failed QuestManager native closure capture $stamp" -- $rel | Out-Host
+        if($LASTEXITCODE -eq 0){ & git push origin $branch | Out-Host }
+      }
+    }
+  } catch {}
+  Write-Host "QM_NATIVE_CLOSURE_CAPTURE_FAILED: $($_.Exception.Message)" -ForegroundColor Red
+  exit 1
 }finally{
   try{Restore-Map}catch{}
   if(Test-Path $bak){Remove-Item $bak -Force -ErrorAction SilentlyContinue}
