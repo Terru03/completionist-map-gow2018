@@ -33,14 +33,15 @@ try{
   [Array]::Copy($orig,0,$all,0,$orig.Length);[Array]::Copy($append,0,$all,$orig.Length,$append.Length)
   [IO.File]::WriteAllBytes($map,$all)
   Start-Process -FilePath $exe -WorkingDirectory $GameRoot|Out-Null
-  Read-Host 'Load the almost-done save, open the world map, move the cursor once, Alt-Tab here while GoW is STILL RUNNING, then press Enter'|Out-Null
+  Read-Host 'Load the almost-done save and wait until gameplay is fully loaded. Keep GoW RUNNING, Alt-Tab here, then press Enter'|Out-Null
   if(-not(Get-Process -Name GoW -ErrorAction SilentlyContinue)){throw 'GoW is no longer running'}
   if(-not(Test-Path $loader)){throw 'loader_log.txt missing'}
   Copy-Item $loader (Join-Path $out 'loader_log.txt') -Force
   $lines=@(Select-String -LiteralPath $loader -SimpleMatch '[CompletionistCounterProbe]'|ForEach-Object {$_.Line})
   $lines|Set-Content (Join-Path $out 'probe-extract.txt') -Encoding UTF8
   $closure=@($lines|Where-Object {$_ -match 'QM_CLOSURE name=.* type=function tostring=function:'})
-  if($closure.Count -lt 4){throw "Expected QuestManager closure lines; found $($closure.Count)"}
+  if($closure.Count -lt 4){throw "Expected QuestManager closure lines; found $($closure.Count). Immediate map-load logging did not execute."}
+  $closure | Set-Content (Join-Path $out 'closure-lines.txt') -Encoding UTF8
   & python $py --loader-log $loader --output (Join-Path $out 'closure-report.json') 2>&1 | Tee-Object -FilePath (Join-Path $out 'closure-console.txt') | Out-Host
   if($LASTEXITCODE -ne 0){throw 'Closure memory capture failed'}
   Restore-Map
