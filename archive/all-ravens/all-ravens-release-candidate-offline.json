@@ -18,16 +18,16 @@
       "sha256": "c5c38d0f89873b8617f38e049a916eb2fe632f9bf1f17bb5eef4867343ecf45b"
     },
     "mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua": {
-      "bytes": 31115,
-      "sha256": "83e01586c0944e94bc95beb15ebbeb0c4ebbf88af17d463cbfadb618ff8c7b91"
+      "bytes": 28274,
+      "sha256": "cef409c9893c3312c5a8eaf959e637f98537457925f78d85907d1f4b0659e01f"
     },
     "mods/lua/gameart/scripts/libraries/core/save.lua": {
-      "bytes": 9365,
-      "sha256": "ffe4c15346aa738e7d19afcb0628ecaecf3da9e92e4794fc69e3bbfe4a100104"
+      "bytes": 6254,
+      "sha256": "7bf9dba947a4d2a03de1553e959456ac6233c5869a06f7aea3f8867051f87d46"
     },
     "mods/lua/gameart/ui/scripts/hud/mainhud.lua": {
-      "bytes": 44342,
-      "sha256": "76bf5d873c1c5789421f09a8b9023cedac3bd25bce3a0e190336363304a164be"
+      "bytes": 49481,
+      "sha256": "c3cc32728469c1811e5d603622d3aa6b72335f372204db96495df26095f8239d"
     },
     "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": {
       "bytes": 219035,
@@ -36,7 +36,7 @@
   },
   "game_files_written": false,
   "game_launched": false,
-  "known_limitation": "Old saves created before the Completionist cache exists still seed incrementally from loaded WADs; after a normal save/checkpoint, the observed Raven cache follows that save point across reloads.",
+  "known_limitation": "Old saves created before the Completionist save-point ID exists seed incrementally from loaded WADs; after a normal save/checkpoint, the global Raven sidecar snapshot is keyed to that exact save point.",
   "proofs": {
     "exec/dc/pc_le/mapcoords.dcb": {
       "active_raven_coordinates": 53,
@@ -96,10 +96,13 @@
   "state": {
     "checkpoint_cache": {
       "enabled": true,
-      "key": "__CompletionistMapV105Cache",
       "native_progression_written": false,
       "native_raven_state_authoritative": true,
-      "scope": "per-save-point core.save Lua checkpoint state"
+      "save_payload": "opaque save-point ID only",
+      "savepoint_key": "__CompletionistMapV105SavePoint",
+      "sidecar_directory": "mods/completionist-map-cache",
+      "sidecar_owner": "MainHUD",
+      "snapshot_scope": "all observed Raven states in persistent UI session"
     },
     "gameplay_exact_compass_cleanup": true,
     "live_state_transport": "engine.SendHook UI_CALL_EVENT -> MainHUD receiver -> UI global -> map runtime",
