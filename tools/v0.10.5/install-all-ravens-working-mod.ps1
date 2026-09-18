@@ -294,10 +294,10 @@ function Ensure-FrozenSourceRoot {
             throw 'Frozen MainHUD source unexpectedly already contains the v0.10.5 Raven receiver.'
         }
         if ($saveText.Contains('BEGIN COMPLETIONIST V0.10.5 RAVEN CHECKPOINT CACHE')) {
-            throw 'Frozen core.save source unexpectedly already contains the v0.10.5 Raven checkpoint cache.'
+            throw 'Frozen core.save source unexpectedly contains the disabled Raven persistence experiment.'
         }
         Write-Host '  frozen source: verified base files + MainHUD + core.save baselines'
-        return 'verified-existing-with-ui-and-save-cache-baselines'
+        return 'verified-existing-with-ui-and-pristine-core-save-baselines'
     }
 
     if (-not $complete) {
@@ -359,14 +359,14 @@ function Ensure-FrozenSourceRoot {
         break
     }
     if ($null -eq $coreSaveSource) {
-        throw 'Could not find an unmodified core.save baseline for the Raven checkpoint cache.'
+        throw 'Could not find an unmodified core.save baseline for the recovery transaction.'
     }
     $coreSaveDestination = Join-Path $frozenSourceRoot $coreSaveRelative
     New-Item -ItemType Directory -Force -Path (Split-Path $coreSaveDestination -Parent) | Out-Null
     Copy-Item -LiteralPath $coreSaveSource -Destination $coreSaveDestination -Force
     Write-Host "  frozen source captured: $coreSaveRelative SHA256=$(Get-Sha256 -Path $coreSaveDestination)"
 
-    return 'assembled-from-verified-transaction-backups-with-mainhud-and-core-save'
+    return 'assembled-from-verified-transaction-backups-with-mainhud-and-pristine-core-save'
 }
 
 function Invoke-CandidateBuilder {
