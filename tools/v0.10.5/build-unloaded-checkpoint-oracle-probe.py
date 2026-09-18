@@ -38,14 +38,15 @@ def build(template: str, catalogue: dict, native_module: str | None = None) -> s
                     f"{runtime_identity!r} maps to {previous!r} and {row['catalogue_id']!r}"
                 )
             runtime_identities[runtime_identity] = row["catalogue_id"]
+        x, y, z = row["source"]["native_world_position"]
         rendered.append(
-            "    { CatalogueId = %s, Wad = %s, ObjectName = %s, ParentQuest = %s },"
-            % tuple(
-                lua_quote(value)
-                for value in (
-                    row["catalogue_id"], wad, object_name,
-                    row["progression"]["parent_quest"],
-                )
+            "    { CatalogueId = %s, Wad = %s, ObjectName = %s, ParentQuest = %s, X = %.15g, Y = %.15g, Z = %.15g },"
+            % (
+                lua_quote(row["catalogue_id"]),
+                lua_quote(wad),
+                lua_quote(object_name),
+                lua_quote(row["progression"]["parent_quest"]),
+                x, y, z,
             )
         )
     if len(rows) != 53:

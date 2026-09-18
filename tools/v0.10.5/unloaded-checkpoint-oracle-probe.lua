@@ -143,6 +143,36 @@ do
     return nil
   end
 
+  local function rowFromExactPosition(wad, object)
+    if wad == nil or object == nil then return nil end
+    local ok, pos = pcall(function() return object:GetWorldPosition() end)
+    if not ok or pos == nil or tonumber(pos.x) == nil or tonumber(pos.y) == nil or tonumber(pos.z) == nil then
+      return nil
+    end
+    local found = nil
+    for _, row in ipairs(catalogue) do
+      if string.lower(row.Wad) == string.lower(wad) then
+        local dx = tonumber(pos.x) - row.X
+        local dy = tonumber(pos.y) - row.Y
+        local dz = tonumber(pos.z) - row.Z
+        if dx * dx + dy * dy + dz * dz <= 0.25 then
+          if found ~= nil and found.CatalogueId ~= row.CatalogueId then
+            log("POSITION_IDENTITY_REFUSED reason=ambiguous first=" .. found.CatalogueId ..
+                " second=" .. row.CatalogueId)
+            return nil
+          end
+          found = row
+        end
+      end
+    end
+    if found ~= nil then
+      log("POSITION_IDENTITY catalogueId=" .. found.CatalogueId ..
+          " wad=" .. found.Wad ..
+          " x=" .. tostring(pos.x) .. " y=" .. tostring(pos.y) .. " z=" .. tostring(pos.z))
+    end
+    return found
+  end
+
   local exactRows = {}
   for _, row in ipairs(catalogue) do
     local names = { row.ObjectName }
@@ -367,7 +397,8 @@ do
                 local wad = exactObjectWad(object)
                 local objectName = exactObjectName(object)
                 local lookup = wad ~= nil and objectName ~= nil and string.lower(wad .. "|" .. objectName) or nil
-                local row = lookup ~= nil and exactRows[lookup] or nil
+                local row = rowFromExactPosition(wad, object)
+                if row == nil then row = lookup ~= nil and exactRows[lookup] or nil end
                 if row == nil then row = rowFromExactReferences(wad, object, discoveredRoots) end
                 local resident = residentStatus(wad, active, executingWad)
                 if row ~= nil then
@@ -399,9 +430,11 @@ do
     end
 
     local groups = {}
+    local allParents = {}
     local matched = 0
     local unloaded = 0
     for _, row in ipairs(catalogue) do
+      allParents[row.ParentQuest] = true
       local value = matchedById[row.CatalogueId]
       if value ~= nil then
         matched = matched + 1
@@ -412,7 +445,8 @@ do
         if residentStatus(row.Wad, active, executingWad) == "false" then unloaded = unloaded + 1 end
       end
     end
-    for parent, group in pairs(groups) do
+    for parent, _ in pairs(allParents) do
+      local group = groups[parent] or { seen = 0, killed = 0 }
       local progress, goal = aggregate(parent)
       log("REGION_CHECK parent=" .. parent .. " exactSeen=" .. tostring(group.seen) ..
           " exactKilled=" .. tostring(group.killed) .. " aggregateProgress=" .. safeToString(progress) ..
