@@ -57,7 +57,7 @@ function Assert-Parses {
         $details = (@($errors | ForEach-Object {
             "line $($_.Extent.StartLineNumber): $($_.Message)"
         }) -join ' | ')
-        throw "PowerShell parse failure in $Path: $details"
+        throw "PowerShell parse failure in ${Path}: $details"
     }
 }
 
