@@ -327,7 +327,13 @@ def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
     pool, pool_proof = build_pool(source[POOL])
     map_hook = render_lua(catalogue, HERE / "all-ravens-map-runtime.lua", "-- @@RAVEN_CATALOGUE_ROWS@@")
     hud_hook = render_lua(catalogue, HERE / "all-ravens-hud-state-receiver.lua", "-- @@RAVEN_RECEIVER_ROWS@@")
-    cache_hook = render_lua(catalogue, HERE / "all-ravens-save-cache-hook.lua", "-- @@RAVEN_CACHE_IDS@@")
+    cache_hook = (
+        (HERE / "all-ravens-save-cache-hook.lua")
+        .read_text(encoding="utf-8")
+        .replace("\r\n", "\n")
+        .replace("\r", "\n")
+        .encode("utf-8")
+    )
     event_hook = render_lua(catalogue, HERE / "all-ravens-gameplay-events.lua", "-- @@RAVEN_STATE_ROWS@@", True)
     forbidden = ("SetMarkerState", "SetToken", "SetProgress", "IncrementQuestProgress", "StartQuest")
     for token in forbidden:
@@ -387,8 +393,11 @@ def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
             "gameplay_exact_compass_cleanup": True,
             "checkpoint_cache": {
                 "enabled": True,
-                "key": "__CompletionistMapV105Cache",
-                "scope": "per-save-point core.save Lua checkpoint state",
+                "savepoint_key": "__CompletionistMapV105SavePoint",
+                "save_payload": "opaque save-point ID only",
+                "sidecar_owner": "MainHUD",
+                "sidecar_directory": "mods/completionist-map-cache",
+                "snapshot_scope": "all observed Raven states in persistent UI session",
                 "native_progression_written": False,
                 "native_raven_state_authoritative": True,
             },
@@ -397,8 +406,8 @@ def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
         "ready_for_runtime_test": True,
         "blocking_issue": None,
         "known_limitation": (
-            "Old saves created before the Completionist cache exists still seed incrementally from loaded WADs; "
-            "after a normal save/checkpoint, the observed Raven cache follows that save point across reloads."
+            "Old saves created before the Completionist save-point ID exists seed incrementally from loaded WADs; "
+            "after a normal save/checkpoint, the global Raven sidecar snapshot is keyed to that exact save point."
         ),
         "game_files_written": False,
         "game_launched": False,
