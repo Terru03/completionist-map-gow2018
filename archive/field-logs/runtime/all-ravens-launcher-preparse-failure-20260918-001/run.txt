@@ -1,0 +1,26 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+PS C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research> cd "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research"; git pull --rebase --autostash origin codex/all-collectibles-production-research; pwsh -NoProfile -ExecutionPolicy Bypass -File ".\tools\v0.10.5\run-all-ravens-working-mod.ps1"
+remote: Enumerating objects: 27, done.
+remote: Counting objects: 100% (27/27), done.
+remote: Compressing objects: 100% (20/20), done.
+remote: Total 20 (delta 15), reused 0 (delta 0), pack-reused 0 (from 0)
+Unpacking objects: 100% (20/20), 5.11 KiB | 78.00 KiB/s, done.
+From https://github.com/Terru03/completionist-map-gow2018
+ * branch            codex/all-collectibles-production-research -> FETCH_HEAD
+   4a0e80e..56cf84e  codex/all-collectibles-production-research -> origin/codex/all-collectibles-production-research
+Updating 4a0e80e..56cf84e
+Fast-forward
+ docs/research/all-ravens-run-artifact-policy.md |  19 ++
+ tools/v0.10.5/run-all-ravens-working-mod.ps1    | 232 ++++++++++++++++++++++++
+ tools/v0.10.5/test-all-ravens-transaction.ps1   |  14 ++
+ 3 files changed, 265 insertions(+)
+ create mode 100644 tools/v0.10.5/run-all-ravens-working-mod.ps1
+ParserError: C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\run-all-ravens-working-mod.ps1:60
+Line |
+  60 |          throw "PowerShell parse failure in $Path: $details"
+     |                                             ~~~~~~
+     | Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to
+     | delimit the name.
+PS C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research>
