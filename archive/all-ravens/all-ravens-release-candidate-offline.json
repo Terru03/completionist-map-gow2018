@@ -22,13 +22,13 @@
       "sha256": "06426ebb8a0b69366298abf06c34c7fd37f5bbe53864f619d80acf442f88791f"
     },
     "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": {
-      "bytes": 208474,
-      "sha256": "24a10fdf76d7e4bfadbcbf8b74c6310a2668664ad770903544c84c45f30197ae"
+      "bytes": 218358,
+      "sha256": "8633d305d8f7f420cad360da39f1f257d2804e6530197f92878cc55fe80f9b3d"
     }
   },
   "game_files_written": false,
   "game_launched": false,
-  "known_limitation": "Persisted killed-Raven IDs are not yet automatically sourced from the loaded save; until that bridge is wired, an existing save initially shows catalogue Ravens not yet confirmed killed by the runtime event bridge.",
+  "known_limitation": "Persisted Raven records that cannot be joined unambiguously by their read-only WAD level and GameObject name remain visible rather than risking a false hide.",
   "proofs": {
     "exec/dc/pc_le/mapcoords.dcb": {
       "active_raven_coordinates": 53,
@@ -87,7 +87,9 @@
     "loaded_instance_match": "exact parent quest plus unique native world position",
     "loaded_runtime_events_override": true,
     "native_field": "ravenKilled",
+    "persisted_identity_join": "unique normalized WAD level plus GameObject name",
     "persisted_kill_bootstrap": true,
+    "persisted_source": "read-only debug registry __PickleTable/__SoftPickleTable __subobjs",
     "unknown_state_policy": "show catalogue marker unless confirmed killed",
     "unloaded_instance_query": "not required for catalogue-first baseline",
     "writes_progression": false
