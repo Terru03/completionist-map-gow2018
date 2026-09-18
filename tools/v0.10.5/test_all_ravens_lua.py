@@ -252,7 +252,8 @@ class AllRavensMapLuaTests(unittest.TestCase):
 
 
 EVENT_PRELUDE = r'''
-calls={sent={},timers=0,hides={},cache={}}
+calls={sent={},timers=0,hides={}}
+cacheStore={}
 print=function(s) end
 ravenKilled=false
 regionSummaryQuest=QUEST
@@ -266,9 +267,16 @@ function engine.GetUIWad() return "uiwad" end
 function engine.SendHook(kind,wad,event,payload)
   calls.sent[#calls.sent+1]={kind=kind,wad=wad,event=event,payload=payload}
 end
-_G.CompletionistMapV105CacheRavenState=function(id,killed,source)
-  calls.cache[#calls.cache+1]={id=id,killed=killed,source=source}
-  return true
+require=function(name)
+  if name=="core.save" then
+    return {
+      GetSaveState=function(key)
+        cacheStore[key]=cacheStore[key] or {}
+        return cacheStore[key]
+      end
+    }
+  end
+  error("unexpected require: "..tostring(name))
 end
 game={Map={},Compass={}}
 function game.Map.GetMarkerInfo(name) return {Id=name} end
@@ -289,8 +297,17 @@ function probe.kind(i) return calls.sent[i].kind end
 function probe.timerCount() return calls.timers end
 function probe.hideCount() return #calls.hides end
 function probe.hideName(i) return calls.hides[i] end
-function probe.cacheCount() return #calls.cache end
-function probe.cacheValue(i) return calls.cache[i].killed end
+function probe.cacheCount()
+  local c=cacheStore["__CompletionistMapV105Cache"]
+  if type(c)~="table" or type(c.ravens)~="table" then return 0 end
+  local n=0
+  for _ in pairs(c.ravens) do n=n+1 end
+  return n
+end
+function probe.cacheValue(id)
+  local c=cacheStore["__CompletionistMapV105Cache"]
+  return c and c.ravens and c.ravens[id] or nil
+end
 '''
 
 
@@ -315,16 +332,19 @@ class AllRavensEventLuaTests(unittest.TestCase):
         self.assertEqual(probe.kind(1), "UI_CALL_EVENT")
         self.assertEqual(probe.event(1), "EVT_COMPLETIONIST_V105_RAVEN_STATE")
         self.assertEqual(probe.cacheCount(), 1)
-        self.assertFalse(probe.cacheValue(1))
+        self.assertFalse(probe.cacheValue(row["catalogue_id"]))
         probe.hit()
         self.assertTrue(probe.value(2))
-        self.assertEqual(probe.cacheCount(), 2)
-        self.assertTrue(probe.cacheValue(2))
+        self.assertEqual(probe.cacheCount(), 1)
+        self.assertTrue(probe.cacheValue(row["catalogue_id"]))
         self.assertGreaterEqual(probe.hideCount(), 1)
         self.assertEqual(probe.hideName(1), row["marker"]["name"])
         self.assertEqual(probe.timerCount(), 1)
+        before_restore = probe.count()
         probe.restore(False)
-        self.assertFalse(probe.value(3))
+        self.assertGreaterEqual(probe.count(), before_restore + 2)
+        self.assertFalse(probe.value(probe.count()))
+        self.assertFalse(probe.cacheValue(row["catalogue_id"]))
 
 
 HUD_PRELUDE = r'''
