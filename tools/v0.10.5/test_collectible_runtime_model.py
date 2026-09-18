@@ -30,10 +30,22 @@ class CollectibleRuntimeModelTests(unittest.TestCase):
                      if row["progression"].get("parent_catalogue_id") == cls.seal_parent["catalogue_id"]]
         cls.a = next(row for row in rows if row["family"] == "artefact" and row["realm"] == "Midgard")
         cls.b = next(row for row in rows if row["family"] == "legendary_chest"
-                     and row["realm"] == cls.a["realm"])
+                     and row["realm"] == cls.a["realm"]
+                     and row.get("production_eligibility") == "tracked_collectible")
+        cls.excluded_legendary = next(
+            row for row in rows
+            if row["family"] == "legendary_chest"
+            and row.get("production_eligibility", "").startswith("exclude_"))
+        cls.unresolved_legendary = next(
+            row for row in rows
+            if row["family"] == "legendary_chest"
+            and row.get("production_eligibility") == "unresolved")
+        cls.rollout = json.loads(
+            (REPO / "config" / "collectibles" / "v0.10.5" /
+             "family-rollout.json").read_text(encoding="utf-8"))
 
-    def model(self):
-        return CollectibleRuntimeModel(self.catalogue)
+    def model(self, enabled_families=None):
+        return CollectibleRuntimeModel(self.catalogue, enabled_families=enabled_families)
 
     def test_unknown_state_hides_every_parent(self):
         model = self.model()
@@ -76,6 +88,42 @@ class CollectibleRuntimeModelTests(unittest.TestCase):
         self.assertIn(self.seals[0]["catalogue_id"], model.map_icons)
         model.observe(self.seals[0]["catalogue_id"], True)
         self.assertNotIn(self.seals[0]["catalogue_id"], model.map_icons)
+
+
+    def test_non_collectible_legendary_rows_never_render(self):
+        model = self.model()
+        for row in (self.excluded_legendary, self.unresolved_legendary):
+            model.observe(row["catalogue_id"], False)
+            model.open_map(row["realm"])
+            self.assertNotIn(row["catalogue_id"], model.map_icons)
+            self.assertIsNone(model.collide(row["catalogue_id"]))
+
+    def test_runtime_family_gate_is_independent_from_user_filter(self):
+        model = self.model(enabled_families={"artefact"})
+        model.observe(self.a["catalogue_id"], False)
+        model.observe(self.b["catalogue_id"], False)
+        model.open_map(self.a["realm"])
+        self.assertIn(self.a["catalogue_id"], model.map_icons)
+        self.assertNotIn(self.b["catalogue_id"], model.map_icons)
+
+    def test_rollout_contract_matches_static_catalogue(self):
+        families = self.rollout["families"]
+        counts = {}
+        for row in self.catalogue["collectibles"]:
+            counts[row["family"]] = counts.get(row["family"], 0) + 1
+        for family in (
+            "artefact", "lore_marker", "legendary_chest", "nornir_chest",
+            "nornir_seal", "nornir_bell", "nornir_mechanism",
+        ):
+            self.assertEqual(families[family]["static_rows"], counts[family])
+            self.assertFalse(families[family]["runtime_enabled"])
+        self.assertEqual(self.rollout["catalogue_rows"], sum(counts.values()))
+        self.assertEqual(families["legendary_chest"]["tracked_collectible_rows"], 33)
+        self.assertEqual(families["legendary_chest"]["excluded_trial_reward_rows"], 27)
+        self.assertEqual(families["legendary_chest"]["unresolved_rows"], 4)
+        self.assertEqual(families["nornir_chest"]["tracked_native_target"], 21)
+        self.assertEqual(families["nornir_chest"]["exact_binding_pass_rows"], 0)
+        self.assertEqual(families["nornir_chest"]["blocked_exact_binding_rows"], 22)
 
     def test_numeric_marker_id_normalization(self):
         uid = self.a["marker"]["uid"]
