@@ -40,6 +40,15 @@ class CollectibleRuntimeModelTests(unittest.TestCase):
             row for row in rows
             if row["family"] == "legendary_chest"
             and row.get("production_eligibility") == "unresolved")
+        lore_by_instance = {}
+        for row in rows:
+            if row["family"] != "lore_marker":
+                continue
+            instance_key = row["progression"].get("instance_key")
+            if instance_key:
+                lore_by_instance.setdefault(instance_key, []).append(row)
+        cls.shared_lore_instance_rows = next(
+            group for group in lore_by_instance.values() if len(group) > 1)
         cls.rollout = json.loads(
             (REPO / "config" / "collectibles" / "v0.10.5" /
              "family-rollout.json").read_text(encoding="utf-8"))
@@ -89,6 +98,35 @@ class CollectibleRuntimeModelTests(unittest.TestCase):
         model.observe(self.seals[0]["catalogue_id"], True)
         self.assertNotIn(self.seals[0]["catalogue_id"], model.map_icons)
 
+
+    def test_exact_wad_plus_instance_key_resolves_state(self):
+        model = self.model()
+        instance_key = self.a["progression"]["instance_key"]
+        self.assertEqual(
+            model.observe_instance(self.a["source"]["wad"], instance_key, False),
+            self.a["catalogue_id"])
+        model.open_map(self.a["realm"])
+        self.assertIn(self.a["catalogue_id"], model.map_icons)
+        self.assertEqual(len(model.by_state_identity), 195)
+
+    def test_raw_instance_key_is_not_used_without_wad_disambiguation(self):
+        first, second = self.shared_lore_instance_rows[:2]
+        self.assertEqual(first["progression"]["instance_key"],
+                         second["progression"]["instance_key"])
+        self.assertNotEqual(first["source"]["wad"].lower(), second["source"]["wad"].lower())
+        model = self.model()
+        shared_key = first["progression"]["instance_key"]
+        self.assertEqual(
+            model.observe_instance(first["source"]["wad"].upper(), shared_key, False),
+            first["catalogue_id"])
+        self.assertEqual(model.state[first["catalogue_id"]], "remaining")
+        self.assertEqual(model.state[second["catalogue_id"]], "unknown")
+
+    def test_unknown_state_identity_fails_closed(self):
+        model = self.model()
+        before = dict(model.state)
+        self.assertIsNone(model.observe_instance("not_a_real.wad", "not-a-real-key", False))
+        self.assertEqual(model.state, before)
 
     def test_non_collectible_legendary_rows_never_render(self):
         model = self.model()
