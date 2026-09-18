@@ -26,6 +26,7 @@ $files = [ordered]@{
     mapcoords  = 'exec/dc/pc_le/mapcoords.dcb'
     ui         = 'exec/dc/pc_le/wad_r_ui.dcb'
     mapmenu    = 'mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua'
+    mainhud    = 'mods/lua/gameart/ui/scripts/hud/mainhud.lua'
     events     = 'mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua'
 }
 
@@ -50,10 +51,10 @@ function Assert-AllRavensProof {
     if (-not [bool]$proof.state.persisted_kill_bootstrap) { throw 'Persisted-kill bootstrap contract is missing.' }
 
     $properties = @($proof.files.PSObject.Properties)
-    if ($properties.Count -ne 5) { throw "All-Ravens proof must contain exactly five files; found $($properties.Count)." }
+    if ($properties.Count -ne 6) { throw "All-Ravens proof must contain exactly six files; found $($properties.Count)." }
     $expectedPaths = @($files.Values | ForEach-Object { ([string]$_).Replace('\','/') } | Sort-Object)
     $actualPaths = @($properties.Name | ForEach-Object { ([string]$_).Replace('\','/') } | Sort-Object)
-    if (($expectedPaths -join "`n") -ne ($actualPaths -join "`n")) { throw 'All-Ravens proof file set differs from the approved five-file set.' }
+    if (($expectedPaths -join "`n") -ne ($actualPaths -join "`n")) { throw 'All-Ravens proof file set differs from the approved six-file set.' }
     return $proof
 }
 
@@ -225,11 +226,11 @@ if ($Mode -eq 'Install') {
 
     Write-Host 'ALL_RAVENS_RUNTIME_TEST_INSTALLED'
     Write-Host "  transaction: $($manifest.transaction_id)"
-    Write-Host '  files installed: 5'
+    Write-Host '  files installed: 6'
     Write-Host '  catalogue Ravens in candidate: 53'
     Write-Host '  backups completed before first game write: true'
     Write-Host '  candidate SHA verification: true'
-    Write-Host "  pre-install rollback baseline: $(if ($PreserveCurrentBaseline) { 'current five-file state' } else { 'frozen v3.3 source state' })"
+    Write-Host "  pre-install rollback baseline: $(if ($PreserveCurrentBaseline) { 'current six-file state' } else { 'frozen v3.3 source state' })"
     Write-Host '  saves/progression written by installer: false'
     Write-Host '  game launched by installer: false'
     Write-Host "  manifest: $(Join-Path ([string]$manifest.transaction_root) 'manifest.json')"
@@ -253,7 +254,7 @@ if ($Mode -eq 'Rollback') {
 
     Write-Host 'ALL_RAVENS_RUNTIME_TEST_ROLLED_BACK'
     Write-Host "  transaction: $($manifest.transaction_id)"
-    Write-Host '  exact five-file pre-install state restored: true'
+    Write-Host '  exact six-file pre-install state restored: true'
     Write-Host '  source SHA verification: true'
     Write-Host '  saves/progression touched by rollback: false'
     exit 0
