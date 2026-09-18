@@ -16,10 +16,11 @@ $jsonPath = Join-Path $outDir 'raven-object-hash-static.json'
 $logPath = Join-Path $outDir 'console-log.txt'
 $resultPath = Join-Path $outDir 'result.txt'
 
-function Invoke-Git([string[]]$Args) {
-    & git -C $repo @Args
+function Invoke-Git {
+    param([Parameter(Mandatory=$true)][string[]]$GitArgs)
+    & git -C $repo @GitArgs
     if ($LASTEXITCODE -ne 0) {
-        throw "git $($Args -join ' ') failed with exit code $LASTEXITCODE"
+        throw "git $($GitArgs -join ' ') failed with exit code $LASTEXITCODE"
     }
 }
 
