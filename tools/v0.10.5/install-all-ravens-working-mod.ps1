@@ -24,6 +24,8 @@ $activeBeforePath = Join-Path $runDir 'active-transaction-before.json'
 $activeAfterPath = Join-Path $runDir 'active-transaction-after.json'
 $proofSnapshotPath = Join-Path $runDir 'candidate-proof-used.json'
 $candidateManifestPath = Join-Path $runDir 'candidate-files.json'
+$transactionSelfTestPath = Join-Path $PSScriptRoot 'test-all-ravens-transaction.ps1'
+$transactionSelfTestReportPath = Join-Path $runDir 'transaction-self-test.json'
 $activeManifest = Join-Path $repo 'build\v0.10.5-all-ravens-runtime-test\transaction\active.json'
 
 $sourceFiles = [ordered]@{
@@ -445,6 +447,7 @@ function Write-RunResult {
             active_transaction_after = $(if (Test-Path -LiteralPath $activeAfterPath) { 'active-transaction-after.json' } else { $null })
             candidate_proof_used = $(if (Test-Path -LiteralPath $proofSnapshotPath) { 'candidate-proof-used.json' } else { $null })
             candidate_files = $(if (Test-Path -LiteralPath $candidateManifestPath) { 'candidate-files.json' } else { $null })
+            transaction_self_test = $(if (Test-Path -LiteralPath $transactionSelfTestReportPath) { 'transaction-self-test.json' } else { $null })
         }
         install_baseline_policy = 'preserve current five-file game state for rollback'
         catalogue_markers = 53
@@ -534,7 +537,7 @@ try {
     $initialHead = Get-RepoHead
 
     Assert-PowerShellScriptParses -Path $runtimeTest
-    Assert-PowerShellScriptParses -Path (Join-Path $PSScriptRoot 'test-all-ravens-transaction.ps1')
+    Assert-PowerShellScriptParses -Path $transactionSelfTestPath
     Write-Host '  PowerShell syntax preflight: passed'
 
     $resolvedGameRoot = Resolve-GodOfWarRoot -RequestedRoot $GameRoot
@@ -566,6 +569,11 @@ try {
     Write-CandidateFileManifest
     $proofCommit = Publish-CandidateProofIfChanged
     Copy-RunSnapshot -Source $proofPath -Destination $proofSnapshotPath
+    Assert-CleanTrackedState
+
+    Write-Host '  transaction self-test: running against temporary fake game'
+    & $transactionSelfTestPath -ReportPath $transactionSelfTestReportPath
+    Write-Host '  transaction self-test: passed'
     Assert-CleanTrackedState
 
     & $runtimeTest -Mode Install -GameRoot $resolvedGameRoot -ConfirmRuntimeTest -PreserveCurrentBaseline
