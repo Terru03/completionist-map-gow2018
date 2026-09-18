@@ -1,0 +1,28 @@
+System.Management.Automation.ParseException: At C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\all-ravens-runtime-test.ps1:154 char:94
++ … {8}T\d{6}Z-[0-9a-f]{8}    Write-Host 'ALL_RAVENS_RUNTIME_TEST_STATUS'
++                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Unexpected token 'ALL_RAVENS_RUNTIME_TEST_STATUS'
+    Write-Host "  candidate: $candidateRoot"
+    Write-Host "  proof: $proofPath"
+    Write-Host "  preserve current baseline mode: $([bool]$PreserveCurrentBaseline)"
+    if (-not (Test-Path -LiteralPath $activeManifest -PathType Leaf)) {
+        Write-Host '' in expression or statement.
+
+At C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\all-ravens-runtime-test.ps1:154 char:94
++ … {8}T\d{6}Z-[0-9a-f]{8}    Write-Host 'ALL_RAVENS_RUNTIME_TEST_STATUS'
++                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Missing closing ')' after expression in 'if' statement.
+
+At C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\all-ravens-runtime-test.ps1:346 char:63
++     Write-Host '  saves/progression touched by rollback: false'
++                                                               ~
+The string is missing the terminator: '.
+
+At C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\all-ravens-runtime-test.ps1:144 char:72
++ … ction Assert-TerminalAllRavensTransactionSummary([object]$Manifest) {
++                                                                       ~
+Missing closing '}' in statement block or type definition.
+   at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+   at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)
+   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
+   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)

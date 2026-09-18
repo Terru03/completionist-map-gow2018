@@ -1,0 +1,31 @@
+{
+  "schema": 4,
+  "run_id": "20260918-042046",
+  "finished_utc": "2026-09-18T04:20:47.6733415Z",
+  "outcome": "failed",
+  "branch": "codex/all-collectibles-production-research",
+  "repo_head_at_start": "4d77ad2f12f4e995615892f7eb34dee3282880ff",
+  "game_root": "G:\\SteamLibrary\\steamapps\\common\\GodOfWar",
+  "frozen_source_action": "verified-existing",
+  "frozen_source_root": "C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018-all-collectibles-production-research\\build\\v0.10.5-all-ravens-release-candidate\\frozen-source\\game-root",
+  "candidate_action": "rebuilt-from-frozen-source",
+  "candidate_root": "C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018-all-collectibles-production-research\\build\\v0.10.5-all-ravens-release-candidate\\offline\\candidate\\game-root",
+  "candidate_proof_commit": "",
+  "evidence": {
+    "transcript": "run.txt",
+    "error_detail": "error.txt",
+    "git_state": "git-state.txt",
+    "active_transaction_before": "active-transaction-before.json",
+    "active_transaction_after": "active-transaction-after.json",
+    "candidate_proof_used": "candidate-proof-used.json",
+    "candidate_files": "candidate-files.json"
+  },
+  "install_baseline_policy": "preserve current five-file game state for rollback",
+  "catalogue_markers": 53,
+  "unknown_raven_state_visible": true,
+  "live_native_ravenKilled_events": true,
+  "persisted_raven_bootstrap": "read-only pickle GameObject WAD/object join on map open",
+  "persisted_unmatched_policy": "visible",
+  "installer_writes_save_or_progression": false,
+  "error": "At C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018-all-collectibles-production-research\\tools\\v0.10.5\\all-ravens-runtime-test.ps1:154 char:94\r\n+ … {8}T\\d{6}Z-[0-9a-f]{8}    Write-Host 'ALL_RAVENS_RUNTIME_TEST_STATUS'\r\n+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\nUnexpected token 'ALL_RAVENS_RUNTIME_TEST_STATUS'\r\n    Write-Host \"  candidate: $candidateRoot\"\r\n    Write-Host \"  proof: $proofPath\"\r\n    Write-Host \"  preserve current baseline mode: $([bool]$PreserveCurrentBaseline)\"\r\n    if (-not (Test-Path -LiteralPath $activeManifest -PathType Leaf)) {\r\n        Write-Host '' in expression or statement.\r\n\r\nAt C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018-all-collectibles-production-research\\tools\\v0.10.5\\all-ravens-runtime-test.ps1:154 char:94\r\n+ … {8}T\\d{6}Z-[0-9a-f]{8}    Write-Host 'ALL_RAVENS_RUNTIME_TEST_STATUS'\r\n+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\nMissing closing ')' after expression in 'if' statement.\r\n\r\nAt C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018-all-collectibles-production-research\\tools\\v0.10.5\\all-ravens-runtime-test.ps1:346 char:63\r\n+     Write-Host '  saves/progression touched by rollback: false'\r\n+                                                               ~\r\nThe string is missing the terminator: '.\r\n\r\nAt C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018-all-collectibles-production-research\\tools\\v0.10.5\\all-ravens-runtime-test.ps1:144 char:72\r\n+ … ction Assert-TerminalAllRavensTransactionSummary([object]$Manifest) {\r\n+                                                                       ~\r\nMissing closing '}' in statement block or type definition."
+}
