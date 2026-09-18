@@ -24,9 +24,10 @@ def normalize_uid(value) -> str | None:
 class CollectibleRuntimeModel:
     """UI oracle. Unknown progression never creates a marker."""
 
-    def __init__(self, catalogue: dict):
+    def __init__(self, catalogue: dict, enabled_families=None):
         self.rows = {row["catalogue_id"]: row for row in catalogue["collectibles"]}
         self.by_uid = {normalize_uid(row["marker"]["uid"]): row for row in self.rows.values()}
+        self.enabled_families = None if enabled_families is None else set(enabled_families)
         self.state = {key: "unknown" for key in self.rows}
         self.map_open = False
         self.realm = None
@@ -38,10 +39,26 @@ class CollectibleRuntimeModel:
         self.permanent_polling = False
 
     def _family_enabled(self, family: str) -> bool:
+        if self.enabled_families is not None and family not in self.enabled_families:
+            return False
         return not self.filters or family in self.filters
+
+    @staticmethod
+    def _row_eligible(row: dict) -> bool:
+        """Exclude rows that native evidence says are not production collectibles.
+
+        Most families are catalogue members by construction and therefore have no
+        explicit production_eligibility field. Legendary Chest research keeps raw
+        membership separate from production eligibility, so only its positively
+        tracked rows may ever surface.
+        """
+        eligibility = row.get("production_eligibility")
+        return eligibility is None or eligibility == "tracked_collectible"
 
     def _visible(self, key: str) -> bool:
         row = self.rows[key]
+        if not self._row_eligible(row):
+            return False
         if not self.map_open or row["realm"] != self.realm or not self._family_enabled(row["family"]):
             return False
         parent = row["progression"].get("parent_catalogue_id")
