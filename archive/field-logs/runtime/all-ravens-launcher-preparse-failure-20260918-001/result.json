@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "outcome": "failed-before-launcher-execution",
+  "date": "2026-09-18",
+  "branch": "codex/all-collectibles-production-research",
+  "pulled_from": "4a0e80ea650b6054cc9fda941adbbbfc6fe38a7b",
+  "pulled_to": "56cf84ee79f67f38d99746e46fd20fee1686ca2c",
+  "failing_script": "tools/v0.10.5/run-all-ravens-working-mod.ps1",
+  "parser_error_line": 60,
+  "parser_error": "Variable reference is not valid. ':' was not followed by a valid variable name character.",
+  "offending_text": "throw \"PowerShell parse failure in $Path: $details\"",
+  "fix_commit": "bc39d61ec67d2a30ec938268228af4df0dfe991f",
+  "fix": "delimit variable as ${Path}:",
+  "launcher_body_executed": false,
+  "game_files_touched_by_failed_launcher": false,
+  "save_or_progression_written": false,
+  "source": "user-provided console transcript"
+}
