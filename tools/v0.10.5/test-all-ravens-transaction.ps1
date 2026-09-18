@@ -40,6 +40,10 @@ Assert-True (@($runtimeParseErrors).Count -eq 0) ("Runtime test has PowerShell p
 $runtimeText = [IO.File]::ReadAllText($allRavensRuntimeTest)
 Assert-True ($runtimeText.Contains("Assert-TerminalAllRavensTransactionSummary")) 'Terminal transaction compatibility guard is missing.'
 Assert-True ($runtimeText.Contains("historical candidate SHAs are intentionally not compared with the replacement candidate")) 'Terminal upgrade must skip replacement SHA comparison.'
+Assert-True ((@([regex]::Matches($runtimeText, [regex]::Escape("if (`$Mode -eq 'Status')"))).Count -eq 1)) 'Runtime test must contain exactly one Status block.'
+Assert-True ((@([regex]::Matches($runtimeText, [regex]::Escape("if (`$Mode -eq 'Install')"))).Count -eq 1)) 'Runtime test must contain exactly one Install block.'
+Assert-True ((@([regex]::Matches($runtimeText, [regex]::Escape("if (`$Mode -eq 'Rollback')"))).Count -eq 1)) 'Runtime test must contain exactly one Rollback block.'
+Assert-True ((@([regex]::Matches($runtimeText, [regex]::Escape('function Assert-TerminalAllRavensTransactionSummary'))).Count -eq 1)) 'Runtime test must contain exactly one terminal transaction helper.'
 $allRavensInstaller = Join-Path $repo 'tools\v0.10.5\install-all-ravens-working-mod.ps1'
 Assert-True (Test-Path -LiteralPath $allRavensInstaller -PathType Leaf) "Missing installer: $allRavensInstaller"
 $allRavensLauncher = Join-Path $repo 'tools\v0.10.5\run-all-ravens-working-mod.ps1'
@@ -214,6 +218,7 @@ try {
             fake_transaction_gate_before_real_install = $true
             outer_failure_recovery_launcher = $true
             outer_launcher_plain_array_orphan_scan = $true
+            runtime_transaction_tail_single_copy = $true
         }
         safety = [ordered]@{
             fake_game_root_only = $true
