@@ -722,6 +722,14 @@ try {
     Write-Host '  upgrade policy: safely roll back any active prior all-Ravens install before rebuilding'
     Write-Host ''
 
+    if ((Test-Path -LiteralPath (Join-Path $frozenSourceRoot $mainHudRelative) -PathType Leaf) -and
+        (Test-Path -LiteralPath (Join-Path $frozenSourceRoot $coreSaveRelative) -PathType Leaf)) {
+        Write-Host '  pre-rollback behavior gate: validating recovery runtime against frozen source'
+        Invoke-PythonBehaviorTest -Path $buildBehaviorTest
+        Invoke-PythonBehaviorTest -Path $luaBehaviorTest
+        Write-Host '  pre-rollback behavior gate: passed'
+    }
+
     $previousRuntimeAction = Rollback-ExistingAllRavensInstall -ResolvedGameRoot $resolvedGameRoot
     if ($previousRuntimeAction -eq 'rolled-back') {
         Assert-CleanTrackedState
