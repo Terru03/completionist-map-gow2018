@@ -333,6 +333,8 @@ function Write-RunResult {
         catalogue_markers = 53
         unknown_raven_state_visible = $true
         live_native_ravenKilled_events = $true
+        persisted_raven_bootstrap = 'read-only pickle GameObject WAD/object join on map open'
+        persisted_unmatched_policy = 'visible'
         installer_writes_save_or_progression = $false
         error = $ErrorMessage
     }
@@ -421,6 +423,8 @@ try {
     Write-Host '  catalogue markers: 53'
     Write-Host '  unknown Raven state: visible'
     Write-Host '  live native ravenKilled events: enabled'
+    Write-Host '  old-save bootstrap: read-only persisted GameObject scan on map open'
+    Write-Host '  persisted identity: exact unique WAD + GameObject name'
     Write-Host '  save/progression writes by installer: none'
     Write-Host '  candidate source: frozen SHA-verified transaction backups'
     Write-Host '  pre-install game state: preserved as rollback baseline'
@@ -443,8 +447,8 @@ try {
     Write-Host '  The 53-Raven catalogue build is installed.'
     Write-Host '  The exact five game files present before this run are the rollback baseline.'
     Write-Host '  A Raven killed during this runtime is hidden by its exact native ravenKilled event.'
-    Write-Host '  Existing kills from an old save are not yet reconstructed until the persisted-kill bootstrap is completed.'
-    Write-Host '  Fresh/unknown Raven state remains visible by design.'
+    Write-Host '  Existing kills are reconstructed read-only from persisted Raven GameObjects when the map opens.'
+    Write-Host '  Fresh saves still show all 53 Ravens; unmatched/ambiguous state remains visible by design.'
 }
 catch {
     $runError = $_
