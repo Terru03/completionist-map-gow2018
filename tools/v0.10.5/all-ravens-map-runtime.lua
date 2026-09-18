@@ -432,6 +432,49 @@ do
     return actionText(lamsConsts.AddToCompass)
   end
 
+  local function refreshPrompt(self, currState, selected, forcedLamsId, reason)
+    if self == nil or selected == nil then return end
+    local show = shouldShow(selected.CatalogueId)
+    local text = show and actionText(forcedLamsId or lamsConsts.AddToCompass) or ""
+
+    local cursorOK, cursorErr = pcall(function()
+      local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
+      if goMapCursorText == nil then return end
+      goMapCursorText:Show()
+      local top = goMapCursorText:FindSingleGOByName("CursorInfo_Top")
+      if top == nil then return end
+      local handle = util.GetTextHandle(top, "CursorAction_Text")
+      if handle ~= nil then
+        UI.SetTextIsClickable(handle)
+        UI.SetText(handle, text)
+      end
+      if show then top:Show() else top:Hide() end
+    end)
+
+    local menu = nil
+    if type(currState) == "table" then menu = currState.menu end
+    if menu == nil then menu = self.menu end
+    local footerOK, footerErr = true, nil
+    if menu ~= nil and type(menu.UpdateFooterButton) == "function" then
+      footerOK, footerErr = pcall(function()
+        menu:UpdateFooterButton("ShowOnCompass", show, text)
+        if type(menu.UpdateFooterButtonText) == "function" then
+          menu:UpdateFooterButtonText()
+        end
+      end)
+    end
+
+    log("PROMPT_REFRESH", "reason=" .. tostring(reason) ..
+        " name=" .. selected.Name ..
+        " uid=" .. selected.IdString ..
+        " visible=" .. tostring(show) ..
+        " text=" .. tostring(text) ..
+        " cursorOK=" .. tostring(cursorOK) ..
+        " cursorError=" .. tostring(cursorErr) ..
+        " footerOK=" .. tostring(footerOK) ..
+        " footerError=" .. tostring(footerErr))
+  end
+
   function MapOn:MapCollisionChangeHandler(currState, collisionTable, realmName)
     lastMapOnSelf = self
     local selected = collisionSelection(self, collisionTable)
@@ -492,6 +535,7 @@ do
         end
         self.currShownMarkerID = nil
         Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
+        refreshPrompt(self, currState, selected, lamsConsts.AddToCompass, "remove")
         log("REMOVE", "name=" .. selected.Name .. " uid=" .. selected.IdString)
       end
       return
@@ -509,6 +553,7 @@ do
     _G.CompletionistMapV105TrackedCatalogueId = selected.CatalogueId
     self.currShownMarkerID = selected.Id
     Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
+    refreshPrompt(self, currState, selected, lamsConsts.RemoveFromCompass, "show")
     log("SHOW", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
         " replacedCustomCount=" .. tostring(customCount) ..
         " replacedStockCount=" .. tostring(stockCount))
