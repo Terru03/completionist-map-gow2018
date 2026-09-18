@@ -1,0 +1,3515 @@
+{
+  "schema": 1,
+  "captured_utc": "2026-09-18T12:07:33.321380+00:00",
+  "result": "RAVEN_EXACT_IDENTITY_VECTOR_CAPTURED",
+  "process": {
+    "pid": 5168,
+    "exe_name": "GoW.exe",
+    "module_base": "0x7FF6406E0000",
+    "module_size": 85839872,
+    "exe_sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452"
+  },
+  "native_rvas": {
+    "identity_method": "0x550700",
+    "recursive_append": "0x1029C0",
+    "single_element_builder": "0x1017F0",
+    "external_vector_append": "0x101A90"
+  },
+  "records": [
+    {
+      "catalogue_id": "raven_642d0d164af0a5d4076e77933c549a5d",
+      "token_hex": "0x1C1001DD",
+      "expected_object_hash_hex": "0x165CD520758061E5",
+      "reconstructed_object_hash_hex": "0x165CD520758061E5",
+      "hash_matches": true,
+      "resolved": {
+        "registry": 238,
+        "flavor": 0,
+        "slot": 1796,
+        "object_ptr": "0x7FF2B96A1B10"
+      },
+      "builder": {
+        "path": "recursive_then_object_plus_40",
+        "object_ptr": "0x7FF2B96A1B10",
+        "metadata_ptr": "0x7FF2B6311D00",
+        "metadata_type_byte": 2,
+        "metadata_flags_68_hex": "0x0000000D",
+        "special_flag_bit19": false,
+        "object_plus_40_hex": "cacb11a97fc10343aa475a1e0a92df1f",
+        "events": [
+          {
+            "kind": "external_vector",
+            "object_ptr": "0x7FF2B96A1B10",
+            "depth": 0,
+            "source": "object+0x240 depth=0",
+            "ptr": "0x7FF2B96B83D0",
+            "count": 4,
+            "elements_hex": [
+              "6a40442bc7277743a15f2986a3279901",
+              "82bdafe150a9ea49ac27331f1525d1d5",
+              "0ab993b107a42f41af27749c6648728d",
+              "7cec70af54e4db4f8f96e1f0d549e0f2"
+            ]
+          },
+          {
+            "kind": "object_plus_40_element",
+            "object_ptr": "0x7FF2B96A1B10",
+            "depth": 0,
+            "element_hex": "cacb11a97fc10343aa475a1e0a92df1f"
+          }
+        ]
+      },
+      "identity_element_count": 5,
+      "identity_elements": [
+        {
+          "index": 0,
+          "hex": "6a40442bc7277743a15f2986a3279901",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x5F9C300",
+              "where": "record_payload",
+              "record_name": "corpserare02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5F99DA0",
+              "offset_within_record": "0x2560"
+            },
+            {
+              "wad_offset": "0x5F9C380",
+              "where": "record_payload",
+              "record_name": "corpserare02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5F99DA0",
+              "offset_within_record": "0x25E0"
+            },
+            {
+              "wad_offset": "0x5FB0A10",
+              "where": "record_payload",
+              "record_name": "hornmesh01_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FB0350",
+              "offset_within_record": "0x6C0"
+            },
+            {
+              "wad_offset": "0x5FBD250",
+              "where": "record_payload",
+              "record_name": "corpsemesh_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FBB510",
+              "offset_within_record": "0x1D40"
+            },
+            {
+              "wad_offset": "0x5FC3F90",
+              "where": "record_payload",
+              "record_name": "hornmesh02_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FC38D0",
+              "offset_within_record": "0x6C0"
+            },
+            {
+              "wad_offset": "0x5FCAFF0",
+              "where": "record_payload",
+              "record_name": "hornmesh03_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FCA930",
+              "offset_within_record": "0x6C0"
+            },
+            {
+              "wad_offset": "0x5FDA760",
+              "where": "record_payload",
+              "record_name": "corpselegendary02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FD8A20",
+              "offset_within_record": "0x1D40"
+            },
+            {
+              "wad_offset": "0x5FDF180",
+              "where": "record_payload",
+              "record_name": "hornmesh05_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FDEAC0",
+              "offset_within_record": "0x6C0"
+            },
+            {
+              "wad_offset": "0x62DDE00",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x11F30"
+            },
+            {
+              "wad_offset": "0x62DDE80",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x11FB0"
+            },
+            {
+              "wad_offset": "0x62DDF00",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12030"
+            },
+            {
+              "wad_offset": "0x62DDF80",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x120B0"
+            },
+            {
+              "wad_offset": "0x62DE000",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12130"
+            },
+            {
+              "wad_offset": "0x62DE080",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x121B0"
+            },
+            {
+              "wad_offset": "0x62DE100",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12230"
+            },
+            {
+              "wad_offset": "0x6423AB0",
+              "where": "record_payload",
+              "record_name": "meshes_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6421CC0",
+              "offset_within_record": "0x1DF0"
+            },
+            {
+              "wad_offset": "0x661B290",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3EF0"
+            },
+            {
+              "wad_offset": "0x661B300",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3F60"
+            },
+            {
+              "wad_offset": "0x661B370",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3FD0"
+            },
+            {
+              "wad_offset": "0x6666670",
+              "where": "record_payload",
+              "record_name": "shadowproxy_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6666290",
+              "offset_within_record": "0x3E0"
+            },
+            {
+              "wad_offset": "0x6666700",
+              "where": "record_payload",
+              "record_name": "shadowproxy_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6666290",
+              "offset_within_record": "0x470"
+            },
+            {
+              "wad_offset": "0x667E080",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5060"
+            },
+            {
+              "wad_offset": "0x667E0F0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x50D0"
+            },
+            {
+              "wad_offset": "0x667E160",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5140"
+            },
+            {
+              "wad_offset": "0x667E1D0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x51B0"
+            },
+            {
+              "wad_offset": "0x667E240",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5220"
+            },
+            {
+              "wad_offset": "0x667E2B0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5290"
+            },
+            {
+              "wad_offset": "0x66B9060",
+              "where": "record_payload",
+              "record_name": "commoncorpse06_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66B6D10",
+              "offset_within_record": "0x2350"
+            },
+            {
+              "wad_offset": "0x684FBF0",
+              "where": "record_payload",
+              "record_name": "dragondispel_root_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x684EFE0",
+              "offset_within_record": "0xC10"
+            },
+            {
+              "wad_offset": "0x684FC60",
+              "where": "record_payload",
+              "record_name": "dragondispel_root_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x684EFE0",
+              "offset_within_record": "0xC80"
+            },
+            {
+              "wad_offset": "0x68AEB20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EB20"
+            },
+            {
+              "wad_offset": "0x68AEBA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EBA0"
+            },
+            {
+              "wad_offset": "0x68AEC20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EC20"
+            },
+            {
+              "wad_offset": "0x68AECA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4ECA0"
+            },
+            {
+              "wad_offset": "0x68AED20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4ED20"
+            },
+            {
+              "wad_offset": "0x68AEDA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EDA0"
+            },
+            {
+              "wad_offset": "0x68AEE20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EE20"
+            },
+            {
+              "wad_offset": "0x68AEEA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EEA0"
+            },
+            {
+              "wad_offset": "0x68AEF20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EF20"
+            },
+            {
+              "wad_offset": "0x68AEFA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EFA0"
+            },
+            {
+              "wad_offset": "0x68AF020",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F020"
+            },
+            {
+              "wad_offset": "0x68AF0A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F0A0"
+            },
+            {
+              "wad_offset": "0x68AF120",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F120"
+            },
+            {
+              "wad_offset": "0x68AF1A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F1A0"
+            },
+            {
+              "wad_offset": "0x68AF220",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F220"
+            },
+            {
+              "wad_offset": "0x68AF2A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F2A0"
+            },
+            {
+              "wad_offset": "0x68AF320",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F320"
+            },
+            {
+              "wad_offset": "0x68AF3A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F3A0"
+            },
+            {
+              "wad_offset": "0x68AF420",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F420"
+            },
+            {
+              "wad_offset": "0x68AF4A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F4A0"
+            },
+            {
+              "wad_offset": "0x68AF520",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F520"
+            },
+            {
+              "wad_offset": "0x68AF5A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F5A0"
+            },
+            {
+              "wad_offset": "0x68AF620",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F620"
+            },
+            {
+              "wad_offset": "0x68AF6A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F6A0"
+            },
+            {
+              "wad_offset": "0x68AF720",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F720"
+            },
+            {
+              "wad_offset": "0x68AF7A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F7A0"
+            },
+            {
+              "wad_offset": "0x68AF820",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F820"
+            },
+            {
+              "wad_offset": "0x68AF8A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F8A0"
+            },
+            {
+              "wad_offset": "0x68AF920",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F920"
+            },
+            {
+              "wad_offset": "0x68AF9A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F9A0"
+            },
+            {
+              "wad_offset": "0x68AFA20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FA20"
+            },
+            {
+              "wad_offset": "0x68AFAA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FAA0"
+            },
+            {
+              "wad_offset": "0x68AFB20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FB20"
+            },
+            {
+              "wad_offset": "0x68AFBA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FBA0"
+            }
+          ],
+          "wad_exact_hit_count": 64
+        },
+        {
+          "index": 1,
+          "hex": "82bdafe150a9ea49ac27331f1525d1d5",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x5F9C310",
+              "where": "record_payload",
+              "record_name": "corpserare02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5F99DA0",
+              "offset_within_record": "0x2570"
+            },
+            {
+              "wad_offset": "0x5F9C390",
+              "where": "record_payload",
+              "record_name": "corpserare02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5F99DA0",
+              "offset_within_record": "0x25F0"
+            },
+            {
+              "wad_offset": "0x5FB0A20",
+              "where": "record_payload",
+              "record_name": "hornmesh01_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FB0350",
+              "offset_within_record": "0x6D0"
+            },
+            {
+              "wad_offset": "0x5FBD260",
+              "where": "record_payload",
+              "record_name": "corpsemesh_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FBB510",
+              "offset_within_record": "0x1D50"
+            },
+            {
+              "wad_offset": "0x5FC3FA0",
+              "where": "record_payload",
+              "record_name": "hornmesh02_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FC38D0",
+              "offset_within_record": "0x6D0"
+            },
+            {
+              "wad_offset": "0x5FCB000",
+              "where": "record_payload",
+              "record_name": "hornmesh03_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FCA930",
+              "offset_within_record": "0x6D0"
+            },
+            {
+              "wad_offset": "0x5FDA770",
+              "where": "record_payload",
+              "record_name": "corpselegendary02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FD8A20",
+              "offset_within_record": "0x1D50"
+            },
+            {
+              "wad_offset": "0x5FDF190",
+              "where": "record_payload",
+              "record_name": "hornmesh05_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FDEAC0",
+              "offset_within_record": "0x6D0"
+            },
+            {
+              "wad_offset": "0x62DDE10",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x11F40"
+            },
+            {
+              "wad_offset": "0x62DDE90",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x11FC0"
+            },
+            {
+              "wad_offset": "0x62DDF10",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12040"
+            },
+            {
+              "wad_offset": "0x62DDF90",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x120C0"
+            },
+            {
+              "wad_offset": "0x62DE010",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12140"
+            },
+            {
+              "wad_offset": "0x62DE090",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x121C0"
+            },
+            {
+              "wad_offset": "0x62DE110",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12240"
+            },
+            {
+              "wad_offset": "0x6423AC0",
+              "where": "record_payload",
+              "record_name": "meshes_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6421CC0",
+              "offset_within_record": "0x1E00"
+            },
+            {
+              "wad_offset": "0x661B2A0",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3F00"
+            },
+            {
+              "wad_offset": "0x661B310",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3F70"
+            },
+            {
+              "wad_offset": "0x661B380",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3FE0"
+            },
+            {
+              "wad_offset": "0x6666680",
+              "where": "record_payload",
+              "record_name": "shadowproxy_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6666290",
+              "offset_within_record": "0x3F0"
+            },
+            {
+              "wad_offset": "0x6666710",
+              "where": "record_payload",
+              "record_name": "shadowproxy_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6666290",
+              "offset_within_record": "0x480"
+            },
+            {
+              "wad_offset": "0x667E090",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5070"
+            },
+            {
+              "wad_offset": "0x667E100",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x50E0"
+            },
+            {
+              "wad_offset": "0x667E170",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5150"
+            },
+            {
+              "wad_offset": "0x667E1E0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x51C0"
+            },
+            {
+              "wad_offset": "0x667E250",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5230"
+            },
+            {
+              "wad_offset": "0x667E2C0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x52A0"
+            },
+            {
+              "wad_offset": "0x66B9070",
+              "where": "record_payload",
+              "record_name": "commoncorpse06_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66B6D10",
+              "offset_within_record": "0x2360"
+            },
+            {
+              "wad_offset": "0x684FC00",
+              "where": "record_payload",
+              "record_name": "dragondispel_root_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x684EFE0",
+              "offset_within_record": "0xC20"
+            },
+            {
+              "wad_offset": "0x684FC70",
+              "where": "record_payload",
+              "record_name": "dragondispel_root_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x684EFE0",
+              "offset_within_record": "0xC90"
+            },
+            {
+              "wad_offset": "0x68AEB30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EB30"
+            },
+            {
+              "wad_offset": "0x68AEBB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EBB0"
+            },
+            {
+              "wad_offset": "0x68AEC30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EC30"
+            },
+            {
+              "wad_offset": "0x68AECB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4ECB0"
+            },
+            {
+              "wad_offset": "0x68AED30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4ED30"
+            },
+            {
+              "wad_offset": "0x68AEDB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EDB0"
+            },
+            {
+              "wad_offset": "0x68AEE30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EE30"
+            },
+            {
+              "wad_offset": "0x68AEEB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EEB0"
+            },
+            {
+              "wad_offset": "0x68AEF30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EF30"
+            },
+            {
+              "wad_offset": "0x68AEFB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EFB0"
+            },
+            {
+              "wad_offset": "0x68AF030",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F030"
+            },
+            {
+              "wad_offset": "0x68AF0B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F0B0"
+            },
+            {
+              "wad_offset": "0x68AF130",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F130"
+            },
+            {
+              "wad_offset": "0x68AF1B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F1B0"
+            },
+            {
+              "wad_offset": "0x68AF230",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F230"
+            },
+            {
+              "wad_offset": "0x68AF2B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F2B0"
+            },
+            {
+              "wad_offset": "0x68AF330",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F330"
+            },
+            {
+              "wad_offset": "0x68AF3B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F3B0"
+            },
+            {
+              "wad_offset": "0x68AF430",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F430"
+            },
+            {
+              "wad_offset": "0x68AF4B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F4B0"
+            },
+            {
+              "wad_offset": "0x68AF530",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F530"
+            },
+            {
+              "wad_offset": "0x68AF5B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F5B0"
+            },
+            {
+              "wad_offset": "0x68AF630",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F630"
+            },
+            {
+              "wad_offset": "0x68AF6B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F6B0"
+            },
+            {
+              "wad_offset": "0x68AF730",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F730"
+            },
+            {
+              "wad_offset": "0x68AF7B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F7B0"
+            },
+            {
+              "wad_offset": "0x68AF830",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F830"
+            },
+            {
+              "wad_offset": "0x68AF8B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F8B0"
+            },
+            {
+              "wad_offset": "0x68AF930",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F930"
+            },
+            {
+              "wad_offset": "0x68AF9B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F9B0"
+            },
+            {
+              "wad_offset": "0x68AFA30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FA30"
+            },
+            {
+              "wad_offset": "0x68AFAB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FAB0"
+            },
+            {
+              "wad_offset": "0x68AFB30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FB30"
+            },
+            {
+              "wad_offset": "0x68AFBB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FBB0"
+            }
+          ],
+          "wad_exact_hit_count": 64
+        },
+        {
+          "index": 2,
+          "hex": "0ab993b107a42f41af27749c6648728d",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x7642D30",
+              "where": "record_payload",
+              "record_name": "questloremarkerbase_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x76422B0",
+              "offset_within_record": "0xA80"
+            },
+            {
+              "wad_offset": "0x85D134C",
+              "where": "record_payload",
+              "record_name": "gobeachloremarker_overrideInst",
+              "record_kind": 1,
+              "record_offset": "0x85D1240",
+              "offset_within_record": "0x10C"
+            }
+          ],
+          "wad_exact_hit_count": 2
+        },
+        {
+          "index": 3,
+          "hex": "7cec70af54e4db4f8f96e1f0d549e0f2",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x7640D64",
+              "where": "record_payload",
+              "record_name": "gopsoninteractrune_overrideInst",
+              "record_kind": 1,
+              "record_offset": "0x7640C10",
+              "offset_within_record": "0x154"
+            }
+          ],
+          "wad_exact_hit_count": 1
+        },
+        {
+          "index": 4,
+          "hex": "cacb11a97fc10343aa475a1e0a92df1f",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x763BD24",
+              "where": "record_payload",
+              "record_name": "gogenericsoninteract",
+              "record_kind": 1,
+              "record_offset": "0x763BC70",
+              "offset_within_record": "0xB4"
+            },
+            {
+              "wad_offset": "0x763C038",
+              "where": "record_header",
+              "record_name": "goProtopSonReadRune",
+              "record_kind": 1,
+              "record_offset": "0x763C030",
+              "offset_within_record": "0x8"
+            },
+            {
+              "wad_offset": "0x763C2F8",
+              "where": "record_payload",
+              "record_name": "goProtopSonReadRune",
+              "record_kind": 1,
+              "record_offset": "0x763C030",
+              "offset_within_record": "0x2C8"
+            },
+            {
+              "wad_offset": "0x763C5EC",
+              "where": "record_payload",
+              "record_name": "gopsonreadrune",
+              "record_kind": 1,
+              "record_offset": "0x763C580",
+              "offset_within_record": "0x6C"
+            }
+          ],
+          "wad_exact_hit_count": 4
+        }
+      ],
+      "read_process_memory_calls": 7,
+      "wad": "xpl200_funeral.wad"
+    },
+    {
+      "catalogue_id": "raven_c945cb53465b58decfcbd4a221cb5326",
+      "token_hex": "0x1C4801DD",
+      "expected_object_hash_hex": "0xADB72E5C5003A8A0",
+      "reconstructed_object_hash_hex": "0xADB72E5C5003A8A0",
+      "hash_matches": true,
+      "resolved": {
+        "registry": 238,
+        "flavor": 0,
+        "slot": 1810,
+        "object_ptr": "0x7FF2B96BA720"
+      },
+      "builder": {
+        "path": "recursive_then_object_plus_40",
+        "object_ptr": "0x7FF2B96BA720",
+        "metadata_ptr": "0x7FF2B6311D00",
+        "metadata_type_byte": 2,
+        "metadata_flags_68_hex": "0x0000000D",
+        "special_flag_bit19": false,
+        "object_plus_40_hex": "cacb11a97fc10343aa475a1e0a92df1f",
+        "events": [
+          {
+            "kind": "external_vector",
+            "object_ptr": "0x7FF2B96BA720",
+            "depth": 0,
+            "source": "object+0x240 depth=0",
+            "ptr": "0x7FF2B96C9F80",
+            "count": 4,
+            "elements_hex": [
+              "6a40442bc7277743a15f2986a3279901",
+              "82bdafe150a9ea49ac27331f1525d1d5",
+              "f8ceaf9fdf59ef4c97b6d4398b22bb9d",
+              "7cec70af54e4db4f8f96e1f0d549e0f2"
+            ]
+          },
+          {
+            "kind": "object_plus_40_element",
+            "object_ptr": "0x7FF2B96BA720",
+            "depth": 0,
+            "element_hex": "cacb11a97fc10343aa475a1e0a92df1f"
+          }
+        ]
+      },
+      "identity_element_count": 5,
+      "identity_elements": [
+        {
+          "index": 0,
+          "hex": "6a40442bc7277743a15f2986a3279901",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x5F9C300",
+              "where": "record_payload",
+              "record_name": "corpserare02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5F99DA0",
+              "offset_within_record": "0x2560"
+            },
+            {
+              "wad_offset": "0x5F9C380",
+              "where": "record_payload",
+              "record_name": "corpserare02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5F99DA0",
+              "offset_within_record": "0x25E0"
+            },
+            {
+              "wad_offset": "0x5FB0A10",
+              "where": "record_payload",
+              "record_name": "hornmesh01_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FB0350",
+              "offset_within_record": "0x6C0"
+            },
+            {
+              "wad_offset": "0x5FBD250",
+              "where": "record_payload",
+              "record_name": "corpsemesh_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FBB510",
+              "offset_within_record": "0x1D40"
+            },
+            {
+              "wad_offset": "0x5FC3F90",
+              "where": "record_payload",
+              "record_name": "hornmesh02_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FC38D0",
+              "offset_within_record": "0x6C0"
+            },
+            {
+              "wad_offset": "0x5FCAFF0",
+              "where": "record_payload",
+              "record_name": "hornmesh03_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FCA930",
+              "offset_within_record": "0x6C0"
+            },
+            {
+              "wad_offset": "0x5FDA760",
+              "where": "record_payload",
+              "record_name": "corpselegendary02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FD8A20",
+              "offset_within_record": "0x1D40"
+            },
+            {
+              "wad_offset": "0x5FDF180",
+              "where": "record_payload",
+              "record_name": "hornmesh05_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FDEAC0",
+              "offset_within_record": "0x6C0"
+            },
+            {
+              "wad_offset": "0x62DDE00",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x11F30"
+            },
+            {
+              "wad_offset": "0x62DDE80",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x11FB0"
+            },
+            {
+              "wad_offset": "0x62DDF00",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12030"
+            },
+            {
+              "wad_offset": "0x62DDF80",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x120B0"
+            },
+            {
+              "wad_offset": "0x62DE000",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12130"
+            },
+            {
+              "wad_offset": "0x62DE080",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x121B0"
+            },
+            {
+              "wad_offset": "0x62DE100",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12230"
+            },
+            {
+              "wad_offset": "0x6423AB0",
+              "where": "record_payload",
+              "record_name": "meshes_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6421CC0",
+              "offset_within_record": "0x1DF0"
+            },
+            {
+              "wad_offset": "0x661B290",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3EF0"
+            },
+            {
+              "wad_offset": "0x661B300",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3F60"
+            },
+            {
+              "wad_offset": "0x661B370",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3FD0"
+            },
+            {
+              "wad_offset": "0x6666670",
+              "where": "record_payload",
+              "record_name": "shadowproxy_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6666290",
+              "offset_within_record": "0x3E0"
+            },
+            {
+              "wad_offset": "0x6666700",
+              "where": "record_payload",
+              "record_name": "shadowproxy_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6666290",
+              "offset_within_record": "0x470"
+            },
+            {
+              "wad_offset": "0x667E080",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5060"
+            },
+            {
+              "wad_offset": "0x667E0F0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x50D0"
+            },
+            {
+              "wad_offset": "0x667E160",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5140"
+            },
+            {
+              "wad_offset": "0x667E1D0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x51B0"
+            },
+            {
+              "wad_offset": "0x667E240",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5220"
+            },
+            {
+              "wad_offset": "0x667E2B0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5290"
+            },
+            {
+              "wad_offset": "0x66B9060",
+              "where": "record_payload",
+              "record_name": "commoncorpse06_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66B6D10",
+              "offset_within_record": "0x2350"
+            },
+            {
+              "wad_offset": "0x684FBF0",
+              "where": "record_payload",
+              "record_name": "dragondispel_root_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x684EFE0",
+              "offset_within_record": "0xC10"
+            },
+            {
+              "wad_offset": "0x684FC60",
+              "where": "record_payload",
+              "record_name": "dragondispel_root_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x684EFE0",
+              "offset_within_record": "0xC80"
+            },
+            {
+              "wad_offset": "0x68AEB20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EB20"
+            },
+            {
+              "wad_offset": "0x68AEBA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EBA0"
+            },
+            {
+              "wad_offset": "0x68AEC20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EC20"
+            },
+            {
+              "wad_offset": "0x68AECA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4ECA0"
+            },
+            {
+              "wad_offset": "0x68AED20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4ED20"
+            },
+            {
+              "wad_offset": "0x68AEDA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EDA0"
+            },
+            {
+              "wad_offset": "0x68AEE20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EE20"
+            },
+            {
+              "wad_offset": "0x68AEEA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EEA0"
+            },
+            {
+              "wad_offset": "0x68AEF20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EF20"
+            },
+            {
+              "wad_offset": "0x68AEFA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EFA0"
+            },
+            {
+              "wad_offset": "0x68AF020",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F020"
+            },
+            {
+              "wad_offset": "0x68AF0A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F0A0"
+            },
+            {
+              "wad_offset": "0x68AF120",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F120"
+            },
+            {
+              "wad_offset": "0x68AF1A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F1A0"
+            },
+            {
+              "wad_offset": "0x68AF220",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F220"
+            },
+            {
+              "wad_offset": "0x68AF2A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F2A0"
+            },
+            {
+              "wad_offset": "0x68AF320",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F320"
+            },
+            {
+              "wad_offset": "0x68AF3A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F3A0"
+            },
+            {
+              "wad_offset": "0x68AF420",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F420"
+            },
+            {
+              "wad_offset": "0x68AF4A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F4A0"
+            },
+            {
+              "wad_offset": "0x68AF520",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F520"
+            },
+            {
+              "wad_offset": "0x68AF5A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F5A0"
+            },
+            {
+              "wad_offset": "0x68AF620",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F620"
+            },
+            {
+              "wad_offset": "0x68AF6A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F6A0"
+            },
+            {
+              "wad_offset": "0x68AF720",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F720"
+            },
+            {
+              "wad_offset": "0x68AF7A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F7A0"
+            },
+            {
+              "wad_offset": "0x68AF820",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F820"
+            },
+            {
+              "wad_offset": "0x68AF8A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F8A0"
+            },
+            {
+              "wad_offset": "0x68AF920",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F920"
+            },
+            {
+              "wad_offset": "0x68AF9A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F9A0"
+            },
+            {
+              "wad_offset": "0x68AFA20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FA20"
+            },
+            {
+              "wad_offset": "0x68AFAA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FAA0"
+            },
+            {
+              "wad_offset": "0x68AFB20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FB20"
+            },
+            {
+              "wad_offset": "0x68AFBA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FBA0"
+            }
+          ],
+          "wad_exact_hit_count": 64
+        },
+        {
+          "index": 1,
+          "hex": "82bdafe150a9ea49ac27331f1525d1d5",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x5F9C310",
+              "where": "record_payload",
+              "record_name": "corpserare02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5F99DA0",
+              "offset_within_record": "0x2570"
+            },
+            {
+              "wad_offset": "0x5F9C390",
+              "where": "record_payload",
+              "record_name": "corpserare02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5F99DA0",
+              "offset_within_record": "0x25F0"
+            },
+            {
+              "wad_offset": "0x5FB0A20",
+              "where": "record_payload",
+              "record_name": "hornmesh01_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FB0350",
+              "offset_within_record": "0x6D0"
+            },
+            {
+              "wad_offset": "0x5FBD260",
+              "where": "record_payload",
+              "record_name": "corpsemesh_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FBB510",
+              "offset_within_record": "0x1D50"
+            },
+            {
+              "wad_offset": "0x5FC3FA0",
+              "where": "record_payload",
+              "record_name": "hornmesh02_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FC38D0",
+              "offset_within_record": "0x6D0"
+            },
+            {
+              "wad_offset": "0x5FCB000",
+              "where": "record_payload",
+              "record_name": "hornmesh03_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FCA930",
+              "offset_within_record": "0x6D0"
+            },
+            {
+              "wad_offset": "0x5FDA770",
+              "where": "record_payload",
+              "record_name": "corpselegendary02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FD8A20",
+              "offset_within_record": "0x1D50"
+            },
+            {
+              "wad_offset": "0x5FDF190",
+              "where": "record_payload",
+              "record_name": "hornmesh05_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FDEAC0",
+              "offset_within_record": "0x6D0"
+            },
+            {
+              "wad_offset": "0x62DDE10",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x11F40"
+            },
+            {
+              "wad_offset": "0x62DDE90",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x11FC0"
+            },
+            {
+              "wad_offset": "0x62DDF10",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12040"
+            },
+            {
+              "wad_offset": "0x62DDF90",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x120C0"
+            },
+            {
+              "wad_offset": "0x62DE010",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12140"
+            },
+            {
+              "wad_offset": "0x62DE090",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x121C0"
+            },
+            {
+              "wad_offset": "0x62DE110",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12240"
+            },
+            {
+              "wad_offset": "0x6423AC0",
+              "where": "record_payload",
+              "record_name": "meshes_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6421CC0",
+              "offset_within_record": "0x1E00"
+            },
+            {
+              "wad_offset": "0x661B2A0",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3F00"
+            },
+            {
+              "wad_offset": "0x661B310",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3F70"
+            },
+            {
+              "wad_offset": "0x661B380",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3FE0"
+            },
+            {
+              "wad_offset": "0x6666680",
+              "where": "record_payload",
+              "record_name": "shadowproxy_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6666290",
+              "offset_within_record": "0x3F0"
+            },
+            {
+              "wad_offset": "0x6666710",
+              "where": "record_payload",
+              "record_name": "shadowproxy_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6666290",
+              "offset_within_record": "0x480"
+            },
+            {
+              "wad_offset": "0x667E090",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5070"
+            },
+            {
+              "wad_offset": "0x667E100",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x50E0"
+            },
+            {
+              "wad_offset": "0x667E170",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5150"
+            },
+            {
+              "wad_offset": "0x667E1E0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x51C0"
+            },
+            {
+              "wad_offset": "0x667E250",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5230"
+            },
+            {
+              "wad_offset": "0x667E2C0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x52A0"
+            },
+            {
+              "wad_offset": "0x66B9070",
+              "where": "record_payload",
+              "record_name": "commoncorpse06_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66B6D10",
+              "offset_within_record": "0x2360"
+            },
+            {
+              "wad_offset": "0x684FC00",
+              "where": "record_payload",
+              "record_name": "dragondispel_root_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x684EFE0",
+              "offset_within_record": "0xC20"
+            },
+            {
+              "wad_offset": "0x684FC70",
+              "where": "record_payload",
+              "record_name": "dragondispel_root_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x684EFE0",
+              "offset_within_record": "0xC90"
+            },
+            {
+              "wad_offset": "0x68AEB30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EB30"
+            },
+            {
+              "wad_offset": "0x68AEBB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EBB0"
+            },
+            {
+              "wad_offset": "0x68AEC30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EC30"
+            },
+            {
+              "wad_offset": "0x68AECB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4ECB0"
+            },
+            {
+              "wad_offset": "0x68AED30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4ED30"
+            },
+            {
+              "wad_offset": "0x68AEDB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EDB0"
+            },
+            {
+              "wad_offset": "0x68AEE30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EE30"
+            },
+            {
+              "wad_offset": "0x68AEEB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EEB0"
+            },
+            {
+              "wad_offset": "0x68AEF30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EF30"
+            },
+            {
+              "wad_offset": "0x68AEFB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EFB0"
+            },
+            {
+              "wad_offset": "0x68AF030",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F030"
+            },
+            {
+              "wad_offset": "0x68AF0B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F0B0"
+            },
+            {
+              "wad_offset": "0x68AF130",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F130"
+            },
+            {
+              "wad_offset": "0x68AF1B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F1B0"
+            },
+            {
+              "wad_offset": "0x68AF230",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F230"
+            },
+            {
+              "wad_offset": "0x68AF2B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F2B0"
+            },
+            {
+              "wad_offset": "0x68AF330",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F330"
+            },
+            {
+              "wad_offset": "0x68AF3B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F3B0"
+            },
+            {
+              "wad_offset": "0x68AF430",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F430"
+            },
+            {
+              "wad_offset": "0x68AF4B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F4B0"
+            },
+            {
+              "wad_offset": "0x68AF530",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F530"
+            },
+            {
+              "wad_offset": "0x68AF5B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F5B0"
+            },
+            {
+              "wad_offset": "0x68AF630",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F630"
+            },
+            {
+              "wad_offset": "0x68AF6B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F6B0"
+            },
+            {
+              "wad_offset": "0x68AF730",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F730"
+            },
+            {
+              "wad_offset": "0x68AF7B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F7B0"
+            },
+            {
+              "wad_offset": "0x68AF830",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F830"
+            },
+            {
+              "wad_offset": "0x68AF8B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F8B0"
+            },
+            {
+              "wad_offset": "0x68AF930",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F930"
+            },
+            {
+              "wad_offset": "0x68AF9B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F9B0"
+            },
+            {
+              "wad_offset": "0x68AFA30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FA30"
+            },
+            {
+              "wad_offset": "0x68AFAB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FAB0"
+            },
+            {
+              "wad_offset": "0x68AFB30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FB30"
+            },
+            {
+              "wad_offset": "0x68AFBB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FBB0"
+            }
+          ],
+          "wad_exact_hit_count": 64
+        },
+        {
+          "index": 2,
+          "hex": "f8ceaf9fdf59ef4c97b6d4398b22bb9d",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x7642DA0",
+              "where": "record_payload",
+              "record_name": "questloremarkerbase_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x76422B0",
+              "offset_within_record": "0xAF0"
+            },
+            {
+              "wad_offset": "0x85D1804",
+              "where": "record_payload",
+              "record_name": "gocastleloremarker_overrideInst",
+              "record_kind": 1,
+              "record_offset": "0x85D1740",
+              "offset_within_record": "0xC4"
+            }
+          ],
+          "wad_exact_hit_count": 2
+        },
+        {
+          "index": 3,
+          "hex": "7cec70af54e4db4f8f96e1f0d549e0f2",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x7640D64",
+              "where": "record_payload",
+              "record_name": "gopsoninteractrune_overrideInst",
+              "record_kind": 1,
+              "record_offset": "0x7640C10",
+              "offset_within_record": "0x154"
+            }
+          ],
+          "wad_exact_hit_count": 1
+        },
+        {
+          "index": 4,
+          "hex": "cacb11a97fc10343aa475a1e0a92df1f",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x763BD24",
+              "where": "record_payload",
+              "record_name": "gogenericsoninteract",
+              "record_kind": 1,
+              "record_offset": "0x763BC70",
+              "offset_within_record": "0xB4"
+            },
+            {
+              "wad_offset": "0x763C038",
+              "where": "record_header",
+              "record_name": "goProtopSonReadRune",
+              "record_kind": 1,
+              "record_offset": "0x763C030",
+              "offset_within_record": "0x8"
+            },
+            {
+              "wad_offset": "0x763C2F8",
+              "where": "record_payload",
+              "record_name": "goProtopSonReadRune",
+              "record_kind": 1,
+              "record_offset": "0x763C030",
+              "offset_within_record": "0x2C8"
+            },
+            {
+              "wad_offset": "0x763C5EC",
+              "where": "record_payload",
+              "record_name": "gopsonreadrune",
+              "record_kind": 1,
+              "record_offset": "0x763C580",
+              "offset_within_record": "0x6C"
+            }
+          ],
+          "wad_exact_hit_count": 4
+        }
+      ],
+      "read_process_memory_calls": 7,
+      "wad": "xpl200_funeral.wad"
+    },
+    {
+      "catalogue_id": "raven_e32f7bab42fd7298890f6aa56a734562",
+      "token_hex": "0x1BB001DD",
+      "expected_object_hash_hex": "0x98BE1707BA2D65A9",
+      "reconstructed_object_hash_hex": "0x98BE1707BA2D65A9",
+      "hash_matches": true,
+      "resolved": {
+        "registry": 238,
+        "flavor": 0,
+        "slot": 1772,
+        "object_ptr": "0x7FF2B969DC10"
+      },
+      "builder": {
+        "path": "recursive_then_object_plus_40",
+        "object_ptr": "0x7FF2B969DC10",
+        "metadata_ptr": "0x7FF2B63065D0",
+        "metadata_type_byte": 2,
+        "metadata_flags_68_hex": "0x00000005",
+        "special_flag_bit19": false,
+        "object_plus_40_hex": "805b030bf339564cb157837c52906465",
+        "events": [
+          {
+            "kind": "external_vector",
+            "object_ptr": "0x7FF2B969DC10",
+            "depth": 0,
+            "source": "object+0x240 depth=0",
+            "ptr": "0x7FF2B96A4900",
+            "count": 3,
+            "elements_hex": [
+              "6a40442bc7277743a15f2986a3279901",
+              "82bdafe150a9ea49ac27331f1525d1d5",
+              "160d2d64d4a5f04a93776e075d9a543c"
+            ]
+          },
+          {
+            "kind": "object_plus_40_element",
+            "object_ptr": "0x7FF2B969DC10",
+            "depth": 0,
+            "element_hex": "805b030bf339564cb157837c52906465"
+          }
+        ]
+      },
+      "identity_element_count": 4,
+      "identity_elements": [
+        {
+          "index": 0,
+          "hex": "6a40442bc7277743a15f2986a3279901",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x5F9C300",
+              "where": "record_payload",
+              "record_name": "corpserare02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5F99DA0",
+              "offset_within_record": "0x2560"
+            },
+            {
+              "wad_offset": "0x5F9C380",
+              "where": "record_payload",
+              "record_name": "corpserare02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5F99DA0",
+              "offset_within_record": "0x25E0"
+            },
+            {
+              "wad_offset": "0x5FB0A10",
+              "where": "record_payload",
+              "record_name": "hornmesh01_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FB0350",
+              "offset_within_record": "0x6C0"
+            },
+            {
+              "wad_offset": "0x5FBD250",
+              "where": "record_payload",
+              "record_name": "corpsemesh_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FBB510",
+              "offset_within_record": "0x1D40"
+            },
+            {
+              "wad_offset": "0x5FC3F90",
+              "where": "record_payload",
+              "record_name": "hornmesh02_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FC38D0",
+              "offset_within_record": "0x6C0"
+            },
+            {
+              "wad_offset": "0x5FCAFF0",
+              "where": "record_payload",
+              "record_name": "hornmesh03_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FCA930",
+              "offset_within_record": "0x6C0"
+            },
+            {
+              "wad_offset": "0x5FDA760",
+              "where": "record_payload",
+              "record_name": "corpselegendary02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FD8A20",
+              "offset_within_record": "0x1D40"
+            },
+            {
+              "wad_offset": "0x5FDF180",
+              "where": "record_payload",
+              "record_name": "hornmesh05_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FDEAC0",
+              "offset_within_record": "0x6C0"
+            },
+            {
+              "wad_offset": "0x62DDE00",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x11F30"
+            },
+            {
+              "wad_offset": "0x62DDE80",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x11FB0"
+            },
+            {
+              "wad_offset": "0x62DDF00",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12030"
+            },
+            {
+              "wad_offset": "0x62DDF80",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x120B0"
+            },
+            {
+              "wad_offset": "0x62DE000",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12130"
+            },
+            {
+              "wad_offset": "0x62DE080",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x121B0"
+            },
+            {
+              "wad_offset": "0x62DE100",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12230"
+            },
+            {
+              "wad_offset": "0x6423AB0",
+              "where": "record_payload",
+              "record_name": "meshes_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6421CC0",
+              "offset_within_record": "0x1DF0"
+            },
+            {
+              "wad_offset": "0x661B290",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3EF0"
+            },
+            {
+              "wad_offset": "0x661B300",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3F60"
+            },
+            {
+              "wad_offset": "0x661B370",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3FD0"
+            },
+            {
+              "wad_offset": "0x6666670",
+              "where": "record_payload",
+              "record_name": "shadowproxy_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6666290",
+              "offset_within_record": "0x3E0"
+            },
+            {
+              "wad_offset": "0x6666700",
+              "where": "record_payload",
+              "record_name": "shadowproxy_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6666290",
+              "offset_within_record": "0x470"
+            },
+            {
+              "wad_offset": "0x667E080",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5060"
+            },
+            {
+              "wad_offset": "0x667E0F0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x50D0"
+            },
+            {
+              "wad_offset": "0x667E160",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5140"
+            },
+            {
+              "wad_offset": "0x667E1D0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x51B0"
+            },
+            {
+              "wad_offset": "0x667E240",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5220"
+            },
+            {
+              "wad_offset": "0x667E2B0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5290"
+            },
+            {
+              "wad_offset": "0x66B9060",
+              "where": "record_payload",
+              "record_name": "commoncorpse06_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66B6D10",
+              "offset_within_record": "0x2350"
+            },
+            {
+              "wad_offset": "0x684FBF0",
+              "where": "record_payload",
+              "record_name": "dragondispel_root_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x684EFE0",
+              "offset_within_record": "0xC10"
+            },
+            {
+              "wad_offset": "0x684FC60",
+              "where": "record_payload",
+              "record_name": "dragondispel_root_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x684EFE0",
+              "offset_within_record": "0xC80"
+            },
+            {
+              "wad_offset": "0x68AEB20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EB20"
+            },
+            {
+              "wad_offset": "0x68AEBA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EBA0"
+            },
+            {
+              "wad_offset": "0x68AEC20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EC20"
+            },
+            {
+              "wad_offset": "0x68AECA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4ECA0"
+            },
+            {
+              "wad_offset": "0x68AED20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4ED20"
+            },
+            {
+              "wad_offset": "0x68AEDA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EDA0"
+            },
+            {
+              "wad_offset": "0x68AEE20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EE20"
+            },
+            {
+              "wad_offset": "0x68AEEA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EEA0"
+            },
+            {
+              "wad_offset": "0x68AEF20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EF20"
+            },
+            {
+              "wad_offset": "0x68AEFA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EFA0"
+            },
+            {
+              "wad_offset": "0x68AF020",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F020"
+            },
+            {
+              "wad_offset": "0x68AF0A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F0A0"
+            },
+            {
+              "wad_offset": "0x68AF120",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F120"
+            },
+            {
+              "wad_offset": "0x68AF1A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F1A0"
+            },
+            {
+              "wad_offset": "0x68AF220",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F220"
+            },
+            {
+              "wad_offset": "0x68AF2A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F2A0"
+            },
+            {
+              "wad_offset": "0x68AF320",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F320"
+            },
+            {
+              "wad_offset": "0x68AF3A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F3A0"
+            },
+            {
+              "wad_offset": "0x68AF420",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F420"
+            },
+            {
+              "wad_offset": "0x68AF4A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F4A0"
+            },
+            {
+              "wad_offset": "0x68AF520",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F520"
+            },
+            {
+              "wad_offset": "0x68AF5A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F5A0"
+            },
+            {
+              "wad_offset": "0x68AF620",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F620"
+            },
+            {
+              "wad_offset": "0x68AF6A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F6A0"
+            },
+            {
+              "wad_offset": "0x68AF720",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F720"
+            },
+            {
+              "wad_offset": "0x68AF7A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F7A0"
+            },
+            {
+              "wad_offset": "0x68AF820",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F820"
+            },
+            {
+              "wad_offset": "0x68AF8A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F8A0"
+            },
+            {
+              "wad_offset": "0x68AF920",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F920"
+            },
+            {
+              "wad_offset": "0x68AF9A0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F9A0"
+            },
+            {
+              "wad_offset": "0x68AFA20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FA20"
+            },
+            {
+              "wad_offset": "0x68AFAA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FAA0"
+            },
+            {
+              "wad_offset": "0x68AFB20",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FB20"
+            },
+            {
+              "wad_offset": "0x68AFBA0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FBA0"
+            }
+          ],
+          "wad_exact_hit_count": 64
+        },
+        {
+          "index": 1,
+          "hex": "82bdafe150a9ea49ac27331f1525d1d5",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x5F9C310",
+              "where": "record_payload",
+              "record_name": "corpserare02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5F99DA0",
+              "offset_within_record": "0x2570"
+            },
+            {
+              "wad_offset": "0x5F9C390",
+              "where": "record_payload",
+              "record_name": "corpserare02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5F99DA0",
+              "offset_within_record": "0x25F0"
+            },
+            {
+              "wad_offset": "0x5FB0A20",
+              "where": "record_payload",
+              "record_name": "hornmesh01_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FB0350",
+              "offset_within_record": "0x6D0"
+            },
+            {
+              "wad_offset": "0x5FBD260",
+              "where": "record_payload",
+              "record_name": "corpsemesh_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FBB510",
+              "offset_within_record": "0x1D50"
+            },
+            {
+              "wad_offset": "0x5FC3FA0",
+              "where": "record_payload",
+              "record_name": "hornmesh02_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FC38D0",
+              "offset_within_record": "0x6D0"
+            },
+            {
+              "wad_offset": "0x5FCB000",
+              "where": "record_payload",
+              "record_name": "hornmesh03_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FCA930",
+              "offset_within_record": "0x6D0"
+            },
+            {
+              "wad_offset": "0x5FDA770",
+              "where": "record_payload",
+              "record_name": "corpselegendary02_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FD8A20",
+              "offset_within_record": "0x1D50"
+            },
+            {
+              "wad_offset": "0x5FDF190",
+              "where": "record_payload",
+              "record_name": "hornmesh05_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x5FDEAC0",
+              "offset_within_record": "0x6D0"
+            },
+            {
+              "wad_offset": "0x62DDE10",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x11F40"
+            },
+            {
+              "wad_offset": "0x62DDE90",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x11FC0"
+            },
+            {
+              "wad_offset": "0x62DDF10",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12040"
+            },
+            {
+              "wad_offset": "0x62DDF90",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x120C0"
+            },
+            {
+              "wad_offset": "0x62DE010",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12140"
+            },
+            {
+              "wad_offset": "0x62DE090",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x121C0"
+            },
+            {
+              "wad_offset": "0x62DE110",
+              "where": "record_payload",
+              "record_name": "pplane5_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x62CBED0",
+              "offset_within_record": "0x12240"
+            },
+            {
+              "wad_offset": "0x6423AC0",
+              "where": "record_payload",
+              "record_name": "meshes_lodgroup_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6421CC0",
+              "offset_within_record": "0x1E00"
+            },
+            {
+              "wad_offset": "0x661B2A0",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3F00"
+            },
+            {
+              "wad_offset": "0x661B310",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3F70"
+            },
+            {
+              "wad_offset": "0x661B380",
+              "where": "record_payload",
+              "record_name": "chest_locked_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66173A0",
+              "offset_within_record": "0x3FE0"
+            },
+            {
+              "wad_offset": "0x6666680",
+              "where": "record_payload",
+              "record_name": "shadowproxy_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6666290",
+              "offset_within_record": "0x3F0"
+            },
+            {
+              "wad_offset": "0x6666710",
+              "where": "record_payload",
+              "record_name": "shadowproxy_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6666290",
+              "offset_within_record": "0x480"
+            },
+            {
+              "wad_offset": "0x667E090",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5070"
+            },
+            {
+              "wad_offset": "0x667E100",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x50E0"
+            },
+            {
+              "wad_offset": "0x667E170",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5150"
+            },
+            {
+              "wad_offset": "0x667E1E0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x51C0"
+            },
+            {
+              "wad_offset": "0x667E250",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x5230"
+            },
+            {
+              "wad_offset": "0x667E2C0",
+              "where": "record_payload",
+              "record_name": "coffin_parent_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6679020",
+              "offset_within_record": "0x52A0"
+            },
+            {
+              "wad_offset": "0x66B9070",
+              "where": "record_payload",
+              "record_name": "commoncorpse06_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x66B6D10",
+              "offset_within_record": "0x2360"
+            },
+            {
+              "wad_offset": "0x684FC00",
+              "where": "record_payload",
+              "record_name": "dragondispel_root_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x684EFE0",
+              "offset_within_record": "0xC20"
+            },
+            {
+              "wad_offset": "0x684FC70",
+              "where": "record_payload",
+              "record_name": "dragondispel_root_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x684EFE0",
+              "offset_within_record": "0xC90"
+            },
+            {
+              "wad_offset": "0x68AEB30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EB30"
+            },
+            {
+              "wad_offset": "0x68AEBB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EBB0"
+            },
+            {
+              "wad_offset": "0x68AEC30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EC30"
+            },
+            {
+              "wad_offset": "0x68AECB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4ECB0"
+            },
+            {
+              "wad_offset": "0x68AED30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4ED30"
+            },
+            {
+              "wad_offset": "0x68AEDB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EDB0"
+            },
+            {
+              "wad_offset": "0x68AEE30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EE30"
+            },
+            {
+              "wad_offset": "0x68AEEB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EEB0"
+            },
+            {
+              "wad_offset": "0x68AEF30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EF30"
+            },
+            {
+              "wad_offset": "0x68AEFB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4EFB0"
+            },
+            {
+              "wad_offset": "0x68AF030",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F030"
+            },
+            {
+              "wad_offset": "0x68AF0B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F0B0"
+            },
+            {
+              "wad_offset": "0x68AF130",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F130"
+            },
+            {
+              "wad_offset": "0x68AF1B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F1B0"
+            },
+            {
+              "wad_offset": "0x68AF230",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F230"
+            },
+            {
+              "wad_offset": "0x68AF2B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F2B0"
+            },
+            {
+              "wad_offset": "0x68AF330",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F330"
+            },
+            {
+              "wad_offset": "0x68AF3B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F3B0"
+            },
+            {
+              "wad_offset": "0x68AF430",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F430"
+            },
+            {
+              "wad_offset": "0x68AF4B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F4B0"
+            },
+            {
+              "wad_offset": "0x68AF530",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F530"
+            },
+            {
+              "wad_offset": "0x68AF5B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F5B0"
+            },
+            {
+              "wad_offset": "0x68AF630",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F630"
+            },
+            {
+              "wad_offset": "0x68AF6B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F6B0"
+            },
+            {
+              "wad_offset": "0x68AF730",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F730"
+            },
+            {
+              "wad_offset": "0x68AF7B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F7B0"
+            },
+            {
+              "wad_offset": "0x68AF830",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F830"
+            },
+            {
+              "wad_offset": "0x68AF8B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F8B0"
+            },
+            {
+              "wad_offset": "0x68AF930",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F930"
+            },
+            {
+              "wad_offset": "0x68AF9B0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4F9B0"
+            },
+            {
+              "wad_offset": "0x68AFA30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FA30"
+            },
+            {
+              "wad_offset": "0x68AFAB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FAB0"
+            },
+            {
+              "wad_offset": "0x68AFB30",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FB30"
+            },
+            {
+              "wad_offset": "0x68AFBB0",
+              "where": "record_payload",
+              "record_name": "grass_0_smsh_data",
+              "record_kind": 1,
+              "record_offset": "0x6860000",
+              "offset_within_record": "0x4FBB0"
+            }
+          ],
+          "wad_exact_hit_count": 64
+        },
+        {
+          "index": 2,
+          "hex": "160d2d64d4a5f04a93776e075d9a543c",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x85CCE1C",
+              "where": "record_payload",
+              "record_name": "goprecisionchallenge_raven_perch_overrideInst",
+              "record_kind": 1,
+              "record_offset": "0x85CCD70",
+              "offset_within_record": "0xAC"
+            }
+          ],
+          "wad_exact_hit_count": 1
+        },
+        {
+          "index": 3,
+          "hex": "805b030bf339564cb157837c52906465",
+          "catalogue_variant_matches": [],
+          "wad_exact_hits": [
+            {
+              "wad_offset": "0x76242B8",
+              "where": "record_header",
+              "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+              "record_kind": 1,
+              "record_offset": "0x76242B0",
+              "offset_within_record": "0x8"
+            },
+            {
+              "wad_offset": "0x76296B8",
+              "where": "record_payload",
+              "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+              "record_kind": 1,
+              "record_offset": "0x76242B0",
+              "offset_within_record": "0x5408"
+            },
+            {
+              "wad_offset": "0x762BF9C",
+              "where": "record_payload",
+              "record_name": "goprecision_challenge_raven_perch",
+              "record_kind": 1,
+              "record_offset": "0x762BF30",
+              "offset_within_record": "0x6C"
+            }
+          ],
+          "wad_exact_hit_count": 3
+        }
+      ],
+      "read_process_memory_calls": 7,
+      "wad": "xpl200_funeral.wad"
+    }
+  ],
+  "shared_structure": {
+    "vector_lengths": [
+      5,
+      5,
+      4
+    ],
+    "shared_prefix_elements": 2,
+    "shared_suffix_elements": 0,
+    "shared_prefix_hex": [
+      "6a40442bc7277743a15f2986a3279901",
+      "82bdafe150a9ea49ac27331f1525d1d5"
+    ],
+    "shared_suffix_hex": []
+  },
+  "safety": {
+    "open_process_access": "PROCESS_VM_READ|PROCESS_QUERY_INFORMATION",
+    "debugger_attached": false,
+    "remote_game_code_called": false,
+    "process_memory_written": false,
+    "save_or_progression_written": false
+  }
+}
