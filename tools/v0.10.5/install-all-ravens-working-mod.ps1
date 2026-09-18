@@ -18,6 +18,12 @@ $relativeRunDir = "archive/field-logs/runtime/all-ravens-working-install-$runId"
 $runDir = Join-Path $repo "archive\field-logs\runtime\all-ravens-working-install-$runId"
 $transcriptPath = Join-Path $runDir 'run.txt'
 $resultPath = Join-Path $runDir 'result.json'
+$errorDetailPath = Join-Path $runDir 'error.txt'
+$gitStatePath = Join-Path $runDir 'git-state.txt'
+$activeBeforePath = Join-Path $runDir 'active-transaction-before.json'
+$activeAfterPath = Join-Path $runDir 'active-transaction-after.json'
+$proofSnapshotPath = Join-Path $runDir 'candidate-proof-used.json'
+$candidateManifestPath = Join-Path $runDir 'candidate-files.json'
 $activeManifest = Join-Path $repo 'build\v0.10.5-all-ravens-runtime-test\transaction\active.json'
 
 $sourceFiles = [ordered]@{
@@ -48,6 +54,54 @@ function Get-Sha256 {
     param([string]$Path)
     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { return $null }
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+}
+
+function Write-GitStateSnapshot {
+    param([string]$Phase)
+    $lines = @(
+        "phase=$Phase"
+        "timestamp_utc=$((Get-Date).ToUniversalTime().ToString('o'))"
+        "branch=$((& git -C $repo branch --show-current).Trim())"
+        "head=$((& git -C $repo rev-parse HEAD).Trim())"
+        "status_begin"
+    )
+    $lines += @(& git -C $repo status --short --branch)
+    $lines += @(
+        "status_end"
+        ""
+    )
+    Add-Content -LiteralPath $gitStatePath -Value $lines -Encoding UTF8
+}
+
+function Copy-RunSnapshot {
+    param([string]$Source, [string]$Destination)
+    if (Test-Path -LiteralPath $Source -PathType Leaf) {
+        Copy-Item -LiteralPath $Source -Destination $Destination -Force
+    }
+}
+
+function Write-CandidateFileManifest {
+    if (-not (Test-Path -LiteralPath $candidateRoot -PathType Container)) { return }
+    $rows = @()
+    foreach ($file in @(Get-ChildItem -LiteralPath $candidateRoot -Recurse -File | Sort-Object FullName)) {
+        $relative = [IO.Path]::GetRelativePath($candidateRoot, $file.FullName).Replace('\','/')
+        $rows += [ordered]@{
+            path = $relative
+            bytes = [int64]$file.Length
+            sha256 = Get-Sha256 -Path $file.FullName
+        }
+    }
+    $payload = [ordered]@{
+        schema = 1
+        captured_utc = (Get-Date).ToUniversalTime().ToString('o')
+        file_count = @($rows).Count
+        files = $rows
+    }
+    [IO.File]::WriteAllText(
+        $candidateManifestPath,
+        (($payload | ConvertTo-Json -Depth 8) + [Environment]::NewLine),
+        (New-Object Text.UTF8Encoding($false))
+    )
 }
 
 function Assert-CleanTrackedState {
@@ -349,7 +403,7 @@ function Write-RunResult {
     )
 
     $result = [ordered]@{
-        schema = 3
+        schema = 4
         run_id = $runId
         finished_utc = (Get-Date).ToUniversalTime().ToString('o')
         outcome = $Outcome
@@ -361,6 +415,15 @@ function Write-RunResult {
         candidate_action = $CandidateAction
         candidate_root = $candidateRoot
         candidate_proof_commit = $ProofCommit
+        evidence = [ordered]@{
+            transcript = 'run.txt'
+            error_detail = $(if ($null -eq $runError) { $null } else { 'error.txt' })
+            git_state = 'git-state.txt'
+            active_transaction_before = $(if (Test-Path -LiteralPath $activeBeforePath) { 'active-transaction-before.json' } else { $null })
+            active_transaction_after = $(if (Test-Path -LiteralPath $activeAfterPath) { 'active-transaction-after.json' } else { $null })
+            candidate_proof_used = $(if (Test-Path -LiteralPath $proofSnapshotPath) { 'candidate-proof-used.json' } else { $null })
+            candidate_files = $(if (Test-Path -LiteralPath $candidateManifestPath) { 'candidate-files.json' } else { $null })
+        }
         install_baseline_policy = 'preserve current five-file game state for rollback'
         catalogue_markers = 53
         unknown_raven_state_visible = $true
@@ -444,6 +507,8 @@ New-Item -ItemType Directory -Force -Path $runDir | Out-Null
 try {
     Start-Transcript -LiteralPath $transcriptPath -Force | Out-Null
     $transcriptStarted = $true
+    Write-GitStateSnapshot -Phase 'start'
+    Copy-RunSnapshot -Source $activeManifest -Destination $activeBeforePath
 
     $resolvedGameRoot = Resolve-GodOfWarRoot -RequestedRoot $GameRoot
 
@@ -471,7 +536,9 @@ try {
 
     $frozenSourceAction = Ensure-FrozenSourceRoot -ResolvedGameRoot $resolvedGameRoot
     $candidateAction = Ensure-AllRavensCandidate -SourceRoot $frozenSourceRoot
+    Write-CandidateFileManifest
     $proofCommit = Publish-CandidateProofIfChanged
+    Copy-RunSnapshot -Source $proofPath -Destination $proofSnapshotPath
     Assert-CleanTrackedState
 
     & $runtimeTest -Mode Install -GameRoot $resolvedGameRoot -ConfirmRuntimeTest -PreserveCurrentBaseline
@@ -490,11 +557,22 @@ try {
 }
 catch {
     $runError = $_
+    try {
+        [IO.File]::WriteAllText(
+            $errorDetailPath,
+            ($_.Exception.ToString() + [Environment]::NewLine),
+            (New-Object Text.UTF8Encoding($false))
+        )
+    } catch {}
     Write-Host ''
     Write-Host 'COMPLETIONIST_MAP_ALL_RAVENS_FAILED'
     Write-Host "  $($_.Exception.Message)"
 }
 finally {
+    try { Copy-RunSnapshot -Source $activeManifest -Destination $activeAfterPath } catch {}
+    try { Copy-RunSnapshot -Source $proofPath -Destination $proofSnapshotPath } catch {}
+    try { Write-CandidateFileManifest } catch {}
+    try { Write-GitStateSnapshot -Phase 'finish-before-artifact-commit' } catch {}
     if ($transcriptStarted) {
         try { Stop-Transcript | Out-Null } catch {}
     }
