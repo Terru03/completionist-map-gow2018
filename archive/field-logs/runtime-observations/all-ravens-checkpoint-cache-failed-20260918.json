@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "date": "2026-09-18",
+  "branch": "codex/all-collectibles-production-research",
+  "source": "user field test",
+  "installed_transaction": "20260918T071644Z-db4f119a",
+  "installed_build_head": "432d6635136a27ddb28d93df8ea4e54d7d13fe64",
+  "observation": {
+    "zone_1_loaded_and_killed_ravens_removed": true,
+    "zone_2_loaded_and_killed_ravens_removed": true,
+    "manual_save_created_in_zone_2": true,
+    "game_closed": true,
+    "exact_manual_save_reloaded": true,
+    "zone_1_killed_ravens_returned_on_map_after_reload": true
+  },
+  "result": "CHECKPOINT_CACHE_PERSISTENCE_FAILED",
+  "confirmed_working": {
+    "live_kill_removal": true,
+    "per_loaded_zone_native_reconstruction": true
+  },
+  "failed_contract": {
+    "cross_zone_cache_survives_manual_save_reload": false
+  },
+  "current_diagnosis": {
+    "core_save_loose_override_installed": true,
+    "raven_subobject_gameplay_context_cannot_directly_see_core_save_global_state": true,
+    "likely_cache_update_cross_environment_failure": true,
+    "decisive_save_and_runtime_capture_required": true
+  },
+  "native_progression_modified_by_mod": false
+}
