@@ -46,7 +46,10 @@ CHUNK=4*1024*1024
 def load_helper(name,path):
     spec=importlib.util.spec_from_file_location(name,path)
     if spec is None or spec.loader is None: raise RuntimeError(f"cannot load {path}")
-    m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m
+    m=importlib.util.module_from_spec(spec)
+    sys.modules[name]=m
+    spec.loader.exec_module(m)
+    return m
 
 MEM=load_helper("gow_mem",HERE/"read-raven-gameobject-identity-memory.py")
 CARRIER=load_helper("gow_carrier",HERE/"gow-custom-userdata-carrier.py")
