@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\capture-luaclient-pickle-buffers.py", line 52, in <module>
+    CARRIER=load_helper("gow_carrier",HERE/"gow-custom-userdata-carrier.py")
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\capture-luaclient-pickle-buffers.py", line 49, in load_helper
+    m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m
+                                             ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "<frozen importlib._bootstrap_external>", line 762, in exec_module
+  File "<frozen importlib._bootstrap>", line 491, in _call_with_frames_removed
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\gow-custom-userdata-carrier.py", line 27, in <module>
+    @dataclass(frozen=True)
+     ~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Python314\Lib\dataclasses.py", line 1360, in wrap
+    return _process_class(cls, init, repr, eq, order, unsafe_hash,
+                          frozen, match_args, kw_only, slots,
+                          weakref_slot)
+  File "C:\Python314\Lib\dataclasses.py", line 1003, in _process_class
+    and _is_type(type, cls, dataclasses, dataclasses.KW_ONLY,
+        ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 _is_kw_only))):
+                 ^^^^^^^^^^^^
+  File "C:\Python314\Lib\dataclasses.py", line 762, in _is_type
+    ns = sys.modules.get(cls.__module__).__dict__
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute '__dict__'. Did you mean: '__dir__'?
