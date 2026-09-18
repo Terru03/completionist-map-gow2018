@@ -98,6 +98,11 @@ class AllRavensBuildTests(unittest.TestCase):
         ):
             self.assertIn(token, suffix)
 
+        self.assertIn("PROMPT_REFRESH", suffix)
+        self.assertIn('UpdateFooterButton("ShowOnCompass"', suffix)
+        self.assertIn("UpdateFooterButtonText", suffix)
+        self.assertIn('UI.SetText(handle, text)', suffix)
+
     def test_gameplay_hook_has_53_exact_state_rows(self):
         text = self.outputs[build.EVENT_LUA].decode("utf-8")
         suffix = text[text.index("-- BEGIN COMPLETIONIST V0.10.5 ALL RAVEN EVENTS"):]
