@@ -252,7 +252,7 @@ class AllRavensMapLuaTests(unittest.TestCase):
 
 
 EVENT_PRELUDE = r'''
-calls={published={},timers=0}
+calls={sent={},timers=0,hides={}}
 print=function(s) end
 ravenKilled=false
 regionSummaryQuest=QUEST
@@ -261,22 +261,32 @@ timers={StartLevelTimer=function(delay,fn) calls.timers=calls.timers+1 end}
 OnHitByWeapon=function(...) ravenKilled=true end
 OnRestoreCheckpoint=function(...) end
 OnStart=function(...) end
+engine={}
+function engine.GetUIWad() return "uiwad" end
+function engine.SendHook(kind,wad,event,payload)
+  calls.sent[#calls.sent+1]={kind=kind,wad=wad,event=event,payload=payload}
+end
 game={Map={},Compass={}}
 function game.Map.GetMarkerInfo(name) return {Id=name} end
-function game.Compass.FindMarkersByIconClass(classes) return {} end
-CompletionistMapV105PublishRavenState=function(id,value,source)
-  calls.published[#calls.published+1]={id=id,value=value,source=source}
-  return true
+function game.Compass.FindMarkersByIconClass(classes)
+  if ravenKilled then return {MARKER} end
+  return {}
 end
+function game.Compass.HideMarker(name) calls.hides[#calls.hides+1]=name end
 probe={}
 function probe.start() OnStart() end
 function probe.hit() OnHitByWeapon() end
 function probe.restore(value) ravenKilled=value; OnRestoreCheckpoint() end
-function probe.count() return #calls.published end
-function probe.id(i) return calls.published[i].id end
-function probe.value(i) return calls.published[i].value end
+function probe.count() return #calls.sent end
+function probe.id(i) return calls.sent[i].payload.catalogueId end
+function probe.value(i) return calls.sent[i].payload.killed end
+function probe.event(i) return calls.sent[i].event end
+function probe.kind(i) return calls.sent[i].kind end
 function probe.timerCount() return calls.timers end
+function probe.hideCount() return #calls.hides end
+function probe.hideName(i) return calls.hides[i] end
 '''
+
 
 
 @unittest.skipIf(LuaRuntime is None, "Lua 5.1 test runtime unavailable")
@@ -288,6 +298,7 @@ class AllRavensEventLuaTests(unittest.TestCase):
         globals_ = lua.globals()
         globals_.QUEST = row["progression"]["parent_quest"]
         globals_.PX, globals_.PY, globals_.PZ = x, y, z
+        globals_.MARKER = row["marker"]["name"]
         lua.execute(EVENT_PRELUDE)
         hook = build.render_lua(CATALOGUE, HERE / "all-ravens-gameplay-events.lua", "-- @@RAVEN_STATE_ROWS@@", True)
         lua.execute(hook.decode("utf-8"))
@@ -295,11 +306,83 @@ class AllRavensEventLuaTests(unittest.TestCase):
         probe.start()
         self.assertEqual(probe.id(1), row["catalogue_id"])
         self.assertFalse(probe.value(1))
+        self.assertEqual(probe.kind(1), "UI_CALL_EVENT")
+        self.assertEqual(probe.event(1), "EVT_COMPLETIONIST_V105_RAVEN_STATE")
         probe.hit()
         self.assertTrue(probe.value(2))
+        self.assertGreaterEqual(probe.hideCount(), 1)
+        self.assertEqual(probe.hideName(1), row["marker"]["name"])
         self.assertEqual(probe.timerCount(), 1)
         probe.restore(False)
         self.assertFalse(probe.value(3))
+
+
+HUD_PRELUDE = r'''
+calls={logs={}}
+print=function(s) calls.logs[#calls.logs+1]=s end
+_G.CompletionistMapV105RavenState={}
+_G.CompletionistMapV105PublishRavenState=function(id,killed,source)
+  calls.published={id=id,killed=killed,source=source}
+  return true
+end
+MainHUD={}
+probe={}
+function probe.recv(args) MainHUD:EVT_COMPLETIONIST_V105_RAVEN_STATE(args) end
+function probe.state(id) return _G.CompletionistMapV105RavenState[id] end
+function probe.publishedId() return calls.published and calls.published.id or nil end
+'''
+
+
+@unittest.skipIf(LuaRuntime is None, "Lua 5.1 test runtime unavailable")
+class AllRavensHudBridgeLuaTests(unittest.TestCase):
+    def test_valid_payload_crosses_ui_receiver_and_republishes_to_open_map(self):
+        row = CATALOGUE["ravens"][0]
+        x, y, z = row["source"]["native_world_position"]
+        lua = LuaRuntime(unpack_returned_tuples=True)
+        lua.execute(HUD_PRELUDE)
+        hook = build.render_lua(
+            CATALOGUE,
+            HERE / "all-ravens-hud-state-receiver.lua",
+            "-- @@RAVEN_RECEIVER_ROWS@@",
+        )
+        lua.execute(hook.decode("utf-8"))
+        payload = lua.table_from({
+            "catalogueId": row["catalogue_id"],
+            "marker": row["marker"]["name"],
+            "killed": True,
+            "x": x,
+            "y": y,
+            "z": z,
+            "source": "test",
+        })
+        probe = lua.globals().probe
+        probe.recv(payload)
+        self.assertTrue(probe.state(row["catalogue_id"]))
+        self.assertEqual(probe.publishedId(), row["catalogue_id"])
+
+    def test_receiver_rejects_wrong_marker_identity(self):
+        row = CATALOGUE["ravens"][0]
+        x, y, z = row["source"]["native_world_position"]
+        lua = LuaRuntime(unpack_returned_tuples=True)
+        lua.execute(HUD_PRELUDE)
+        hook = build.render_lua(
+            CATALOGUE,
+            HERE / "all-ravens-hud-state-receiver.lua",
+            "-- @@RAVEN_RECEIVER_ROWS@@",
+        )
+        lua.execute(hook.decode("utf-8"))
+        payload = lua.table_from({
+            "catalogueId": row["catalogue_id"],
+            "marker": "wrong",
+            "killed": True,
+            "x": x,
+            "y": y,
+            "z": z,
+            "source": "test",
+        })
+        probe = lua.globals().probe
+        probe.recv(payload)
+        self.assertIsNone(probe.state(row["catalogue_id"]))
 
 
 if __name__ == "__main__":
