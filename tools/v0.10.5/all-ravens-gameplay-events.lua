@@ -52,12 +52,25 @@ do
         payload
       )
     end)
+    local cacheFn = _G.CompletionistMapV105CacheRavenState
+    local cacheOK = false
+    if type(cacheFn) == "function" then
+      local cacheCallOK, cacheAccepted = pcall(
+        cacheFn,
+        row.CatalogueId,
+        payload.killed,
+        source
+      )
+      cacheOK = cacheCallOK and cacheAccepted == true
+    end
+
     log("STATE_SEND", "catalogueId=" .. row.CatalogueId ..
         " marker=" .. row.Name ..
         " killed=" .. tostring(payload.killed) ..
         " source=" .. tostring(source) ..
         " ok=" .. tostring(ok) ..
         " error=" .. tostring(err) ..
+        " checkpointCacheUpdated=" .. tostring(cacheOK) ..
         " progressionWrites=false")
     return ok
   end
