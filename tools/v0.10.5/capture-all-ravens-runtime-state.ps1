@@ -17,6 +17,7 @@ New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 
 $loaderLog = Join-Path $GameRoot 'mods\loader_log.txt'
 $mapLua = Join-Path $GameRoot 'mods\lua\gameart\ui\scripts\inworldmenu\mapmenu.lua'
+$hudLua = Join-Path $GameRoot 'mods\lua\gameart\ui\scripts\hud\mainhud.lua'
 $eventLua = Join-Path $GameRoot 'mods\lua\gameart\scripts\levels\gameplaymodules\progression\precisionchallenge.lua'
 $activeManifest = Join-Path $repo 'build\v0.10.5-all-ravens-runtime-test\transaction\active.json'
 
@@ -38,7 +39,7 @@ function Sha256([string]$Path) {
 $branch = (& git branch --show-current).Trim()
 if ($branch -ne $expectedBranch) { throw "Wrong branch: $branch" }
 
-foreach ($path in @($loaderLog, $mapLua, $eventLua)) {
+foreach ($path in @($loaderLog, $mapLua, $hudLua, $eventLua)) {
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Missing file: $path" }
 }
 
@@ -52,7 +53,8 @@ $logText = Read-SharedText $loaderLog
 $lines = @($logText -split "\r?\n")
 $completionist = @($lines | Where-Object {
     $_ -like '*CompletionistMap v0.10.5-all-ravens*' -or
-    $_ -like '*CompletionistMap v0.10.5-raven-events*'
+    $_ -like '*CompletionistMap v0.10.5-raven-events*' -or
+    $_ -like '*CompletionistMap v0.10.5-raven-ui-bridge*'
 })
 $completionist | Set-Content -LiteralPath (Join-Path $outDir 'completionist-extract.txt') -Encoding UTF8
 
@@ -67,8 +69,15 @@ $persisted = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\
 $states = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-all-ravens\] STATE ' })
 $eventRefused = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-events\] STATE_REFUSED ' })
 $eventScheduleFailures = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-events\] SCHEDULE_FAILED ' })
+$stateSends = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-events\] STATE_SEND ' })
+$exactHides = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-events\] EXACT_HIDE ' })
+$bridgeApi = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-ui-bridge\] API ' })
+$bridgeReceives = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-ui-bridge\] RECV ' })
+$bridgeRefused = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-ui-bridge\] RECV_REFUSED ' })
+$uiBootstrap = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-all-ravens\] UI_STATE_BOOTSTRAP ' })
 
 $mapText = Read-SharedText $mapLua
+$hudText = Read-SharedText $hudLua
 $eventText = Read-SharedText $eventLua
 $result = [ordered]@{
     schema = 1
@@ -78,8 +87,10 @@ $result = [ordered]@{
     game_running = [bool](@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -in @('GoW','GodOfWar') }).Count -gt 0)
     files = [ordered]@{
         mapmenu_sha256 = Sha256 $mapLua
+        mainhud_sha256 = Sha256 $hudLua
         precisionchallenge_sha256 = Sha256 $eventLua
         map_runtime_marker_present = $mapText.Contains('BEGIN COMPLETIONIST V0.10.5 ALL RAVENS')
+        hud_receiver_marker_present = $hudText.Contains('BEGIN COMPLETIONIST V0.10.5 ALL RAVEN UI STATE RECEIVER')
         event_runtime_marker_present = $eventText.Contains('BEGIN COMPLETIONIST V0.10.5 ALL RAVEN EVENTS')
     }
     log = [ordered]@{
@@ -90,6 +101,12 @@ $result = [ordered]@{
         state_publish_lines = $states.Count
         event_refused_lines = $eventRefused.Count
         schedule_failure_lines = $eventScheduleFailures.Count
+        state_send_lines = $stateSends.Count
+        exact_hide_lines = $exactHides.Count
+        bridge_api_lines = $bridgeApi.Count
+        bridge_receive_lines = $bridgeReceives.Count
+        bridge_refused_lines = $bridgeRefused.Count
+        ui_state_bootstrap_lines = $uiBootstrap.Count
     }
     read_only_capture = $true
     game_files_written = $false
@@ -120,3 +137,7 @@ Write-Host "  event API lines: $eventApi"
 Write-Host "  persisted scan lines: $($persisted.Count)"
 Write-Host "  state publish lines: $($states.Count)"
 Write-Host "  event refused lines: $($eventRefused.Count)"
+Write-Host "  state send lines: $($stateSends.Count)"
+Write-Host "  bridge receive lines: $($bridgeReceives.Count)"
+Write-Host "  exact hide lines: $($exactHides.Count)"
+Write-Host "  UI state bootstrap lines: $($uiBootstrap.Count)"
