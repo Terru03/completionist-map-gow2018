@@ -56,43 +56,61 @@ def infer_metadata(data: bytes, pair_count: int, max_candidates: int = 128):
     Restore proves tag <= 5 and encoded widths in {2,3,5}. It consumes two
     tagged scalars per metadata entry. We assign widths lazily per observed tag
     and require exactly 2*pair_count tokens to consume the complete span.
+
+    Large checkpoint carriers can contain more than 1,000 tagged tokens, so an
+    explicit stack is used instead of recursive DFS. The effective candidate
+    ordering remains the same as the previous recursive implementation.
     """
     token_count = 2 * pair_count
     results: list[dict] = []
 
-    def visit(pos: int, token_index: int, mapping: dict[int, int], tokens: list[MetadataToken]):
-        if len(results) >= max_candidates:
-            return
+    # Token tuples are kept immutable per branch. The mapping state space is
+    # tiny because only tags 0..5 exist and each tag can choose one of 3 widths.
+    stack: list[tuple[int, int, dict[int, int], tuple[MetadataToken, ...]]] = [
+        (0, 0, {}, ())
+    ]
+    seen: set[tuple[int, int, tuple[tuple[int, int], ...]]] = set()
+
+    while stack and len(results) < max_candidates:
+        pos, token_index, mapping, tokens = stack.pop()
+        state = (pos, token_index, tuple(sorted(mapping.items())))
+        if state in seen:
+            continue
+        seen.add(state)
+
         if token_index == token_count:
             if pos == len(data):
                 results.append({
                     "used_tag_widths": {str(k): v for k, v in sorted(mapping.items())},
                     "tokens": [asdict(t) for t in tokens],
                 })
-            return
+            continue
+
         remaining_tokens = token_count - token_index
         remaining_bytes = len(data) - pos
         if remaining_bytes < 2 * remaining_tokens or remaining_bytes > 5 * remaining_tokens:
-            return
+            continue
         if pos >= len(data):
-            return
+            continue
 
         tag = data[pos]
         if tag > 5:
-            return
+            continue
+
         choices = (mapping[tag],) if tag in mapping else WIDTHS
-        for width in choices:
+        # Reverse push order to preserve recursive DFS choice order 2,3,5.
+        for width in reversed(tuple(choices)):
             end = pos + width
             if end > len(data):
                 continue
-            new_mapping = mapping
-            if tag not in mapping:
+            if tag in mapping:
+                new_mapping = mapping
+            else:
                 new_mapping = dict(mapping)
                 new_mapping[tag] = width
             token = MetadataToken(token_index, tag, width, data[pos:end].hex())
-            visit(end, token_index + 1, new_mapping, tokens + [token])
+            stack.append((end, token_index + 1, new_mapping, tokens + (token,)))
 
-    visit(0, 0, {}, [])
     return results
 
 
