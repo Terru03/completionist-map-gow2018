@@ -252,7 +252,7 @@ class AllRavensMapLuaTests(unittest.TestCase):
 
 
 EVENT_PRELUDE = r'''
-calls={sent={},timers=0,hides={}}
+calls={sent={},timers=0,hides={},cache={}}
 print=function(s) end
 ravenKilled=false
 regionSummaryQuest=QUEST
@@ -265,6 +265,10 @@ engine={}
 function engine.GetUIWad() return "uiwad" end
 function engine.SendHook(kind,wad,event,payload)
   calls.sent[#calls.sent+1]={kind=kind,wad=wad,event=event,payload=payload}
+end
+_G.CompletionistMapV105CacheRavenState=function(id,killed,source)
+  calls.cache[#calls.cache+1]={id=id,killed=killed,source=source}
+  return true
 end
 game={Map={},Compass={}}
 function game.Map.GetMarkerInfo(name) return {Id=name} end
@@ -285,6 +289,8 @@ function probe.kind(i) return calls.sent[i].kind end
 function probe.timerCount() return calls.timers end
 function probe.hideCount() return #calls.hides end
 function probe.hideName(i) return calls.hides[i] end
+function probe.cacheCount() return #calls.cache end
+function probe.cacheValue(i) return calls.cache[i].killed end
 '''
 
 
@@ -308,8 +314,12 @@ class AllRavensEventLuaTests(unittest.TestCase):
         self.assertFalse(probe.value(1))
         self.assertEqual(probe.kind(1), "UI_CALL_EVENT")
         self.assertEqual(probe.event(1), "EVT_COMPLETIONIST_V105_RAVEN_STATE")
+        self.assertEqual(probe.cacheCount(), 1)
+        self.assertFalse(probe.cacheValue(1))
         probe.hit()
         self.assertTrue(probe.value(2))
+        self.assertEqual(probe.cacheCount(), 2)
+        self.assertTrue(probe.cacheValue(2))
         self.assertGreaterEqual(probe.hideCount(), 1)
         self.assertEqual(probe.hideName(1), row["marker"]["name"])
         self.assertEqual(probe.timerCount(), 1)
@@ -328,6 +338,7 @@ end
 MainHUD={}
 probe={}
 function probe.recv(args) MainHUD:EVT_COMPLETIONIST_V105_RAVEN_STATE(args) end
+function probe.cacheRecv(args) MainHUD:EVT_COMPLETIONIST_V105_RAVEN_CACHE_RESTORE(args) end
 function probe.state(id) return _G.CompletionistMapV105RavenState[id] end
 function probe.publishedId() return calls.published and calls.published.id or nil end
 '''
@@ -360,6 +371,26 @@ class AllRavensHudBridgeLuaTests(unittest.TestCase):
         self.assertTrue(probe.state(row["catalogue_id"]))
         self.assertEqual(probe.publishedId(), row["catalogue_id"])
 
+    def test_checkpoint_cache_restore_uses_catalogue_id_and_boolean(self):
+        row = CATALOGUE["ravens"][0]
+        lua = LuaRuntime(unpack_returned_tuples=True)
+        lua.execute(HUD_PRELUDE)
+        hook = build.render_lua(
+            CATALOGUE,
+            HERE / "all-ravens-hud-state-receiver.lua",
+            "-- @@RAVEN_RECEIVER_ROWS@@",
+        )
+        lua.execute(hook.decode("utf-8"))
+        payload = lua.table_from({
+            "catalogueId": row["catalogue_id"],
+            "killed": True,
+            "source": "core.save.Restore",
+        })
+        probe = lua.globals().probe
+        probe.cacheRecv(payload)
+        self.assertTrue(probe.state(row["catalogue_id"]))
+        self.assertEqual(probe.publishedId(), row["catalogue_id"])
+
     def test_receiver_rejects_wrong_marker_identity(self):
         row = CATALOGUE["ravens"][0]
         x, y, z = row["source"]["native_world_position"]
@@ -383,6 +414,71 @@ class AllRavensHudBridgeLuaTests(unittest.TestCase):
         probe = lua.globals().probe
         probe.recv(payload)
         self.assertIsNone(probe.state(row["catalogue_id"]))
+
+
+CACHE_PRELUDE = r'''
+calls={sent={},logs={}}
+print=function(s) calls.logs[#calls.logs+1]=s end
+object_savestate={}
+engine={}
+function engine.GetUIWad() return "uiwad" end
+function engine.SendHook(kind,wad,event,payload)
+  calls.sent[#calls.sent+1]={kind=kind,wad=wad,event=event,payload=payload}
+end
+Restore=function(savestate)
+  if type(savestate)=="table" and next(savestate)~=nil then
+    object_savestate=savestate
+  end
+end
+probe={}
+function probe.update(id,value) return CompletionistMapV105CacheRavenState(id,value,"test") end
+function probe.snapshot() return object_savestate end
+function probe.restore(value) Restore(value) end
+function probe.sentCount() return #calls.sent end
+function probe.sentId(i) return calls.sent[i].payload.catalogueId end
+function probe.sentValue(i) return calls.sent[i].payload.killed end
+function probe.sentEvent(i) return calls.sent[i].event end
+'''
+
+
+@unittest.skipIf(LuaRuntime is None, "Lua 5.1 test runtime unavailable")
+class AllRavensCheckpointCacheLuaTests(unittest.TestCase):
+    def _runtime(self):
+        lua = LuaRuntime(unpack_returned_tuples=True)
+        lua.execute(CACHE_PRELUDE)
+        hook = build.render_lua(
+            CATALOGUE,
+            HERE / "all-ravens-save-cache-hook.lua",
+            "-- @@RAVEN_CACHE_IDS@@",
+        )
+        lua.execute(hook.decode("utf-8"))
+        return lua, lua.globals().probe
+
+    def test_cache_round_trip_replays_per_checkpoint_state(self):
+        lua, probe = self._runtime()
+        a, b = CATALOGUE["ravens"][:2]
+        self.assertTrue(probe.update(a["catalogue_id"], True))
+        self.assertTrue(probe.update(b["catalogue_id"], False))
+        snapshot = probe.snapshot()
+        probe.restore(snapshot)
+        self.assertEqual(probe.sentCount(), 2)
+        values = {
+            probe.sentId(1): probe.sentValue(1),
+            probe.sentId(2): probe.sentValue(2),
+        }
+        self.assertTrue(values[a["catalogue_id"]])
+        self.assertFalse(values[b["catalogue_id"]])
+        self.assertEqual(
+            probe.sentEvent(1),
+            "EVT_COMPLETIONIST_V105_RAVEN_CACHE_RESTORE",
+        )
+
+    def test_unknown_catalogue_id_is_not_cached(self):
+        _, probe = self._runtime()
+        self.assertFalse(probe.update("raven_not_real", True))
+        snapshot = probe.snapshot()
+        probe.restore(snapshot)
+        self.assertEqual(probe.sentCount(), 0)
 
 
 if __name__ == "__main__":
