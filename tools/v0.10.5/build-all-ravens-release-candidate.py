@@ -59,6 +59,15 @@ def lua_quote(value: str) -> str:
     return json.dumps(value, ensure_ascii=True)
 
 
+def runtime_identity_component(value: str, *, wad: bool = False) -> str:
+    text = value.lower()
+    if wad and text.endswith(".wad"):
+        text = text[:-4]
+    if wad and text.startswith("wad_"):
+        text = text[4:]
+    return "".join(ch for ch in text if ch.isalnum())
+
+
 def render_lua(catalogue: dict, template_path: Path, token: str, state_rows: bool = False) -> bytes:
     lines = []
     for row in catalogue["ravens"]:
@@ -70,11 +79,14 @@ def render_lua(catalogue: dict, template_path: Path, token: str, state_rows: boo
                    lua_quote(row["progression"]["parent_quest"]), x, y, z)
             )
         else:
+            wad_key = runtime_identity_component(row["source"]["wad"], wad=True)
+            object_key = runtime_identity_component(row["native"]["object_name"])
             lines.append(
-                "    {CatalogueId=%s,Name=%s,UidHex=%s,Realm=%s,RegionId=%s},"
+                "    {CatalogueId=%s,Name=%s,UidHex=%s,Realm=%s,RegionId=%s,WadKey=%s,ObjectKey=%s},"
                 % (
                     lua_quote(row["catalogue_id"]), lua_quote(row["marker"]["name"]),
                     lua_quote(row["marker"]["uid"]), lua_quote(row["realm"]), lua_quote(row["region_id"]),
+                    lua_quote(wad_key), lua_quote(object_key),
                 )
             )
     text = template_path.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
@@ -261,6 +273,25 @@ def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
     source_root = source_root.resolve()
     catalogue = json.loads(CATALOGUE.read_text(encoding="utf-8"))
     validate_catalogue(catalogue)
+    persisted_keys = [
+        (
+            runtime_identity_component(row["source"]["wad"], wad=True),
+            runtime_identity_component(row["native"]["object_name"]),
+        )
+        for row in catalogue["ravens"]
+    ]
+    check(
+        len(persisted_keys) == 53 and len(set(persisted_keys)) == 53,
+        "persisted Raven WAD/object identity join is not one-to-one",
+    )
+    persisted_no_go_keys = [
+        (wad_key, object_key[2:] if object_key.startswith("go") else object_key)
+        for wad_key, object_key in persisted_keys
+    ]
+    check(
+        len(set(persisted_no_go_keys)) == 53,
+        "persisted Raven GetName fallback identity join is not one-to-one",
+    )
     source = {}
     for relative, expected in SOURCE_HASHES.items():
         raw = (source_root / relative).read_bytes()
@@ -313,14 +344,15 @@ def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
             "unloaded_instance_query": "not required for catalogue-first baseline",
             "unknown_state_policy": "show catalogue marker unless confirmed killed",
             "persisted_kill_bootstrap": True,
+            "persisted_identity_join": "unique normalized WAD level plus GameObject name",
+            "persisted_source": "read-only debug registry __PickleTable/__SoftPickleTable __subobjs",
             "loaded_runtime_events_override": True,
         },
         "ready_for_runtime_test": True,
         "blocking_issue": None,
         "known_limitation": (
-            "Persisted killed-Raven IDs are not yet automatically sourced from the loaded save; "
-            "until that bridge is wired, an existing save initially shows catalogue Ravens not "
-            "yet confirmed killed by the runtime event bridge."
+            "Persisted Raven records that cannot be joined unambiguously by their read-only "
+            "WAD level and GameObject name remain visible rather than risking a false hide."
         ),
         "game_files_written": False,
         "game_launched": False,
