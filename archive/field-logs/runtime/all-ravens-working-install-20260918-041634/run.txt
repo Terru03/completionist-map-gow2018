@@ -1,0 +1,95 @@
+**********************
+PowerShell transcript start
+Start time: 20260918071634
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\install-all-ravens-working-mod.ps1
+Process ID: 29984
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+COMPLETIONIST_MAP_ALL_RAVENS_INSTALL
+  run id: 20260918-041634
+  branch: codex/all-collectibles-production-research
+  repo head at start: 7b911d6a82b7d2d830832f0fbbad6f8eba641b49
+  game root: G:\SteamLibrary\steamapps\common\GodOfWar
+  catalogue markers: 53
+  unknown Raven state: visible
+  live native ravenKilled events: enabled
+  old-save bootstrap: read-only persisted GameObject scan on map open
+  persisted identity: exact unique WAD + GameObject name
+  save/progression writes by installer: none
+  candidate source: frozen SHA-verified transaction backups
+  pre-install game state: preserved as rollback baseline
+  transaction: guarded five-file install with pre-write backups
+  upgrade policy: safely roll back any active prior all-Ravens install before rebuilding
+
+  previous all-Ravens transaction: 20260917T202522Z-e113449b (installed)
+  upgrade: restoring its exact pre-install five-file baseline before rebuild
+ALL_RAVENS_RUNTIME_TEST_ROLLED_BACK
+  transaction: 20260917T202522Z-e113449b
+  exact five-file pre-install state restored: true
+  source SHA verification: true
+  saves/progression touched by rollback: false
+  upgrade rollback: exact previous baseline restored
+
+
+  frozen source: existing verified five-file source root
+  candidate: rebuilding deterministically from frozen verified source
+ALL_RAVENS_OFFLINE_CANDIDATE_READY_FOR_RUNTIME_TEST
+{
+  "exec/dc/pc_le/mapcoords.dcb": {
+    "bytes": 83712,
+    "sha256": "d6786f9734473fa7bdb8eff39aadac4f3fb2ecd4a83d56bfc5d2832c17435514"
+  },
+  "exec/dc/pc_le/mapmaster.dcb": {
+    "bytes": 104064,
+    "sha256": "7d1d5e05315dce17326712a95901e1e753b6c14c4f1a71012ca337ae7ee9b223"
+  },
+  "exec/dc/pc_le/wad_r_ui.dcb": {
+    "bytes": 5712,
+    "sha256": "c5c38d0f89873b8617f38e049a916eb2fe632f9bf1f17bb5eef4867343ecf45b"
+  },
+  "mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua": {
+    "bytes": 25567,
+    "sha256": "06426ebb8a0b69366298abf06c34c7fd37f5bbe53864f619d80acf442f88791f"
+  },
+  "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": {
+    "bytes": 218358,
+    "sha256": "8633d305d8f7f420cad360da39f1f257d2804e6530197f92878cc55fe80f9b3d"
+  }
+}
+ready_for_runtime_test=true
+ALL_RAVENS_RELEASE_CANDIDATE_REBUILD_VERIFIED
+  candidate: rebuilt and deterministic rebuild verified
+warning: in the working copy of 'archive/all-ravens/all-ravens-release-candidate-offline.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'archive/all-ravens/all-ravens-release-candidate-offline.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'archive/all-ravens/all-ravens-release-candidate-offline.json', LF will be replaced by CRLF the next time Git touches it
+[codex/all-collectibles-production-research 89cda20] build(v0.10.5): refresh all-ravens candidate proof
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+To https://github.com/Terru03/completionist-map-gow2018.git
+   7b911d6..89cda20  codex/all-collectibles-production-research -> codex/all-collectibles-production-research
+  candidate proof commit: 89cda2009d55207ebbf7797e1fdcb60e980af53b
+
+
+
+
+PS>TerminatingError(): "Candidate 3 transaction SHA changed: mapmenu"
+>> TerminatingError(): "Candidate 3 transaction SHA changed: mapmenu"
+>> TerminatingError(): "Candidate 3 transaction SHA changed: mapmenu"
+
+COMPLETIONIST_MAP_ALL_RAVENS_FAILED
+  Candidate 3 transaction SHA changed: mapmenu
+**********************
+PowerShell transcript end
+End time: 20260918071639
+**********************
