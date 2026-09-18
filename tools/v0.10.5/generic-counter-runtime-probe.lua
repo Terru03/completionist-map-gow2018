@@ -539,6 +539,10 @@ do
       return previous(self, ...)
     end
     log("HOOK installed=MapOn.MapCollisionChangeHandler questManagerApi=true childKeyEnumeration=true")
+    if type(game) == "table" and type(game.QuestManager) == "table" then
+      inspectQuestManagerClosureAddresses(game.QuestManager)
+      log("QM_CLOSURE_IMMEDIATE_DONE trigger=mapmenu_load")
+    end
   else
     log("HOOK unavailable=true fallback=script_load")
     run("script_load_fallback", nil)
