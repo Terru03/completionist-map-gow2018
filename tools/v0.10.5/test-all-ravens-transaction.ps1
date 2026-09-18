@@ -31,6 +31,22 @@ Assert-True (Test-Path -LiteralPath $allRavensRuntimeTest -PathType Leaf) "Missi
 $runtimeText = [IO.File]::ReadAllText($allRavensRuntimeTest)
 Assert-True ($runtimeText.Contains("Assert-TerminalAllRavensTransactionSummary")) 'Terminal transaction compatibility guard is missing.'
 Assert-True ($runtimeText.Contains("historical candidate SHAs are intentionally not compared with the replacement candidate")) 'Terminal upgrade must skip replacement SHA comparison.'
+$allRavensInstaller = Join-Path $repo 'tools\v0.10.5\install-all-ravens-working-mod.ps1'
+Assert-True (Test-Path -LiteralPath $allRavensInstaller -PathType Leaf) "Missing installer: $allRavensInstaller"
+$installerText = [IO.File]::ReadAllText($allRavensInstaller)
+foreach ($requiredArtifact in @(
+    'run.txt',
+    'result.json',
+    'error.txt',
+    'git-state.txt',
+    'active-transaction-before.json',
+    'active-transaction-after.json',
+    'candidate-proof-used.json',
+    'candidate-files.json'
+)) {
+    Assert-True ($installerText.Contains($requiredArtifact)) "Installer run evidence contract misses $requiredArtifact"
+}
+Assert-True ($installerText.Contains('Publish-RunArtifacts -Outcome $outcome')) 'Installer must publish run evidence for final outcome.'
 
 $files = [ordered]@{
     mapmaster = 'exec/dc/pc_le/mapmaster.dcb'
@@ -158,6 +174,7 @@ try {
             tamper_refusal = $true
             release_gate_open = $true
             terminal_historical_manifest_upgrade = $true
+            success_and_failure_run_archiving = $true
         }
         safety = [ordered]@{
             fake_game_root_only = $true
