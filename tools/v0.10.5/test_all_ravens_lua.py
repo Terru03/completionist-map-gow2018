@@ -339,7 +339,7 @@ function io.open(path,mode)
     local value=files[path]
     if value==nil then return nil,"missing" end
     local f={buf=value}
-    function f:lines() return string.gmatch(self.buf,"[^\\r\\n]+") end
+    function f:lines() return string.gmatch(self.buf,"[^\n]+") end
     function f:close() end
     return f
   end
