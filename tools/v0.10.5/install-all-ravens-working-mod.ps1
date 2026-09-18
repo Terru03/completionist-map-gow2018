@@ -29,6 +29,7 @@ $transactionSelfTestReportPath = Join-Path $runDir 'transaction-self-test.json'
 $activeManifest = Join-Path $repo 'build\v0.10.5-all-ravens-runtime-test\transaction\active.json'
 $mainHudRelative = 'mods/lua/gameart/ui/scripts/hud/mainhud.lua'
 $coreSaveRelative = 'mods/lua/gameart/scripts/libraries/core/save.lua'
+$sidecarCacheRelative = 'mods\completionist-map-cache'
 
 $sourceFiles = [ordered]@{
     'exec/dc/pc_le/mapmaster.dcb' = '1e1d5086815bc8553490bff915fea210a8be4f80ce6c88b418b62d7050690a31'
@@ -717,14 +718,19 @@ try {
         throw "All-Ravens runtime installer failed with exit code $LASTEXITCODE."
     }
 
+    $sidecarCacheDir = Join-Path $resolvedGameRoot $sidecarCacheRelative
+    New-Item -ItemType Directory -Force -Path $sidecarCacheDir | Out-Null
+    Write-Host "  sidecar cache directory: $sidecarCacheDir"
+
     $outcome = 'installed'
     Write-Host ''
     Write-Host 'COMPLETIONIST_MAP_ALL_RAVENS_READY'
     Write-Host '  The 53-Raven catalogue build is installed.'
     Write-Host '  The exact seven game files present before this run are the rollback baseline.'
     Write-Host '  A Raven killed during this runtime is hidden by its exact native ravenKilled event.'
-    Write-Host '  Existing kills are reconstructed read-only from persisted Raven GameObjects when the map opens.'
-    Write-Host '  Fresh saves still show all 53 Ravens; unmatched/ambiguous state remains visible by design.'
+    Write-Host '  Existing kills are reconstructed from native state as zones load.'
+    Write-Host '  Save points carry only an opaque Completionist ID; global Raven snapshots live in mods\completionist-map-cache.'
+    Write-Host '  Fresh/uncached saves still show all 53 Ravens until native state is observed.'
 }
 catch {
     $runError = $_
