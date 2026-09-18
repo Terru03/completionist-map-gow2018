@@ -59,11 +59,25 @@ def id_variants(raw: bytes) -> dict[str, bytes]:
     }
 
 
-def one_record(records: list[dict], record_id_hex: str) -> tuple[int, dict]:
+def one_record(
+    records: list[dict],
+    record_id_hex: str,
+    *,
+    expected_offset: int | None = None,
+    expected_name: str | None = None,
+) -> tuple[int, dict]:
     target = bytes.fromhex(record_id_hex)
     hits = [(i, row) for i, row in enumerate(records) if row["id"] == target]
+    if expected_offset is not None:
+        hits = [(i, row) for i, row in hits if row["offset"] == expected_offset]
+    if expected_name is not None:
+        hits = [(i, row) for i, row in hits if row["name"] == expected_name]
     if len(hits) != 1:
-        raise ValueError(f"record {record_id_hex} expected once, found {len(hits)}")
+        offsets = [f"0x{row['offset']:X}:{row['name']}" for _, row in hits]
+        raise ValueError(
+            f"record {record_id_hex} expected once after authored identity filters, "
+            f"found {len(hits)} candidates={offsets}"
+        )
     return hits[0]
 
 
@@ -78,8 +92,18 @@ def group_chain(records: list[dict], record: dict) -> list[dict]:
 
 
 def element_map(row: dict, records: list[dict]) -> tuple[dict[str, bytes], dict]:
-    final_index, final = one_record(records, row["native"]["final_record_id"])
-    override_index, override = one_record(records, row["native"]["override_record_id"])
+    final_index, final = one_record(
+        records,
+        row["native"]["final_record_id"],
+        expected_offset=int(row["source"]["final_offset"], 16),
+        expected_name=row["native"]["object_name"],
+    )
+    override_index, override = one_record(
+        records,
+        row["native"]["override_record_id"],
+        expected_offset=int(row["source"]["override_offset"], 16),
+        expected_name=row["native"]["override_name"],
+    )
     groups = group_chain(records, final)
 
     elements: dict[str, bytes] = {}
@@ -154,8 +178,18 @@ def search_common_recipe(
 
 
 def structural_candidates(row: dict, records: list[dict]) -> list[dict]:
-    _, final = one_record(records, row["native"]["final_record_id"])
-    _, override = one_record(records, row["native"]["override_record_id"])
+    _, final = one_record(
+        records,
+        row["native"]["final_record_id"],
+        expected_offset=int(row["source"]["final_offset"], 16),
+        expected_name=row["native"]["object_name"],
+    )
+    _, override = one_record(
+        records,
+        row["native"]["override_record_id"],
+        expected_offset=int(row["source"]["override_offset"], 16),
+        expected_name=row["native"]["override_name"],
+    )
     groups = group_chain(records, final)
     candidates: list[tuple[str, list[bytes]]] = [
         ("final", [final["id"]]),
