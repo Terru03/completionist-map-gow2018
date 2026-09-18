@@ -87,8 +87,7 @@ foreach ($requiredArtifact in @(
 }
 Assert-True ($installerText.Contains('Publish-RunArtifacts -Outcome $outcome')) 'Installer must publish run evidence for final outcome.'
 Assert-True ($installerText.Contains('mods/lua/gameart/ui/scripts/hud/mainhud.lua')) 'Installer must freeze the MainHUD bridge baseline.'
-Assert-True ($installerText.Contains('mods/lua/gameart/scripts/libraries/core/save.lua')) 'Installer must freeze the core.save checkpoint-cache baseline.'
-Assert-True ($installerText.Contains('mods\completionist-map-cache')) 'Installer must provision the Raven sidecar cache directory.'
+Assert-True ($installerText.Contains('mods/lua/gameart/scripts/libraries/core/save.lua')) 'Installer must freeze the pristine core.save transaction baseline.'
 
 $files = [ordered]@{
     mapmaster = 'exec/dc/pc_le/mapmaster.dcb'
@@ -226,8 +225,8 @@ try {
             runtime_transaction_tail_single_copy = $true
             raven_ui_event_bridge = $true
             mainhud_transactional_receiver = $true
-            checkpoint_cache_core_save_hook = $true
-            per_save_point_raven_cache = $true
+            pristine_core_save_pass_through = $true
+            persistence_experiment_disabled = $true
         }
         safety = [ordered]@{
             fake_game_root_only = $true
