@@ -1,0 +1,293 @@
+Completionist Map - LuaClient vtable-family + field-address lineage
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+known_vtable_rva=0xE04018
+anchors=3 vtables=5 methods=5 states=14 hits=12 writes=4 indirect=0
+game_launched=false process_opened=false save_opened=false exe_modified=false save_modified=false progression_written=false
+
+ANCHORS
+  fn=0x175CF0 site=0x175D09 lea rax, [rip + 0xc8e308]
+    candidate_vtable=0xE04018 site=0x175D09 lea rax, [rip + 0xc8e308]
+  fn=0x4654A0 site=0x46586A lea rax, [rip + 0x99e7a7]
+    candidate_vtable=0xE03B78 site=0x465531 lea rax, [rip + 0x99e640]
+    candidate_vtable=0xE03328 site=0x465576 lea rax, [rip + 0x99ddab]
+    candidate_vtable=0xE03F18 site=0x465633 lea rax, [rip + 0x99e8de]
+    candidate_vtable=0xE036F0 site=0x4657D2 lea rax, [rip + 0x99df17]
+    candidate_vtable=0xE04018 site=0x46586A lea rax, [rip + 0x99e7a7]
+  fn=0x5B24D0 site=0x5B24E5 lea rax, [rip + 0x851b2c]
+    candidate_vtable=0xE04018 site=0x5B24E5 lea rax, [rip + 0x851b2c]
+
+VTABLE_FAMILY
+  VTABLE 0xE03328 slots=1 root_offsets=[] source=anchor_0x4654A0
+    slot=000 fn=0x173C20 size=0x81
+  VTABLE 0xE036F0 slots=1 root_offsets=[] source=anchor_0x4654A0
+    slot=000 fn=0x174280 size=0x81
+  VTABLE 0xE03B78 slots=1 root_offsets=[] source=anchor_0x4654A0
+    slot=000 fn=0x1748C0 size=0xCB
+  VTABLE 0xE03F18 slots=1 root_offsets=[] source=anchor_0x4654A0
+    slot=000 fn=0x174A60 size=0x81
+  VTABLE 0xE04018 slots=1 root_offsets=[0] source=known
+    slot=000 fn=0x175CF0 size=0x81
+
+FIELD_HITS
+  READ field=0x70 fn=0x5A6CD0 site=0x5A6CF1 depth=1 seed=rcx(+0x0) base=rcx(+0x0) disp=+0x70 op=mov rdx, qword ptr [rcx + 0x70]
+    path=vtable_0xE04018@root+0x0[0]=>0x175CF0 | 0x175CF0@0x175D13->rcx(+0x0):0x5A6CD0
+    snippet:
+         0x5A6CD0: 4057                     push rdi
+         0x5A6CD2: 4883ec30                 sub rsp, 0x30
+         0x5A6CD6: 48c7442420feffffff       mov qword ptr [rsp + 0x20], 0xfffffffffffffffe
+         0x5A6CDF: 48895c2440               mov qword ptr [rsp + 0x40], rbx
+         0x5A6CE4: 488bf9                   mov rdi, rcx
+         0x5A6CE7: 488d056ac98500           lea rax, [rip + 0x85c96a]
+         0x5A6CEE: 488901                   mov qword ptr [rcx], rax
+      >> 0x5A6CF1: 488b5170                 mov rdx, qword ptr [rcx + 0x70]
+         0x5A6CF5: 4885d2                   test rdx, rdx
+         0x5A6CF8: 740e                     je 0x1405a6d08
+         0x5A6CFA: 488b4968                 mov rcx, qword ptr [rcx + 0x68]
+         0x5A6CFE: 488b4928                 mov rcx, qword ptr [rcx + 0x28]
+         0x5A6D02: e8c9b07700               call 0x140d21dd0
+         0x5A6D07: 90                       nop 
+         0x5A6D08: 33db                     xor ebx, ebx
+         0x5A6D0A: 48895f70                 mov qword ptr [rdi + 0x70], rbx
+         0x5A6D0E: 488b5778                 mov rdx, qword ptr [rdi + 0x78]
+  READ field=0x70 fn=0x5A6270 site=0x5A632C depth=3 seed=rcx(+0x0) base=rbx(+0x0) disp=+0x70 op=mov rax, qword ptr [rbx + 0x70]
+    path=vtable_0xE04018@root+0x0[0]=>0x175CF0 | 0x175CF0@0x175D13->rcx(+0x0):0x5A6CD0 | 0x5A6CD0@0x5A6D4D->rcx(+0x0):0x5A7720 | 0x5A7720@0x5A7ADD->rcx(+0x0):0x5A6270
+    snippet:
+         0x5A6306: 482b06                   sub rax, qword ptr [rsi]
+         0x5A6309: 4803c5                   add rax, rbp
+         0x5A630C: 89460c                   mov dword ptr [rsi + 0xc], eax
+         0x5A630F: 4c63c7                   movsxd r8, edi
+         0x5A6312: 488b9380000000           mov rdx, qword ptr [rbx + 0x80]
+         0x5A6319: 4883c204                 add rdx, 4
+         0x5A631D: 488bcd                   mov rcx, rbp
+         0x5A6320: e87570e4ff               call 0x1403ed39a
+         0x5A6325: 4c89b380000000           mov qword ptr [rbx + 0x80], r14
+      >> 0x5A632C: 488b4370                 mov rax, qword ptr [rbx + 0x70]
+         0x5A6330: 4885c0                   test rax, rax
+         0x5A6333: 743b                     je 0x1405a6370
+         0x5A6335: 486310                   movsxd rdx, dword ptr [rax]
+         0x5A6338: 89942480000000           mov dword ptr [rsp + 0x80], edx
+         0x5A633F: 4c63660c                 movsxd r12, dword ptr [rsi + 0xc]
+         0x5A6343: 4983c40f                 add r12, 0xf
+         0x5A6347: 4c0326                   add r12, qword ptr [rsi]
+         0x5A634A: 4983e4f0                 and r12, 0xfffffffffffffff0
+         0x5A634E: 8bc2                     mov eax, edx
+  READ field=0x70 fn=0x5A6270 site=0x5A635C depth=3 seed=rcx(+0x0) base=rbx(+0x0) disp=+0x70 op=mov rdx, qword ptr [rbx + 0x70]
+    path=vtable_0xE04018@root+0x0[0]=>0x175CF0 | 0x175CF0@0x175D13->rcx(+0x0):0x5A6CD0 | 0x5A6CD0@0x5A6D4D->rcx(+0x0):0x5A7720 | 0x5A7720@0x5A7ADD->rcx(+0x0):0x5A6270
+    snippet:
+         0x5A633F: 4c63660c                 movsxd r12, dword ptr [rsi + 0xc]
+         0x5A6343: 4983c40f                 add r12, 0xf
+         0x5A6347: 4c0326                   add r12, qword ptr [rsi]
+         0x5A634A: 4983e4f0                 and r12, 0xfffffffffffffff0
+         0x5A634E: 8bc2                     mov eax, edx
+         0x5A6350: 482b06                   sub rax, qword ptr [rsi]
+         0x5A6353: 4903c4                   add rax, r12
+         0x5A6356: 89460c                   mov dword ptr [rsi + 0xc], eax
+         0x5A6359: 4c8bc2                   mov r8, rdx
+      >> 0x5A635C: 488b5370                 mov rdx, qword ptr [rbx + 0x70]
+         0x5A6360: 4883c204                 add rdx, 4
+         0x5A6364: 498bcc                   mov rcx, r12
+         0x5A6367: e82e70e4ff               call 0x1403ed39a
+         0x5A636C: 4c897370                 mov qword ptr [rbx + 0x70], r14
+         0x5A6370: 488b4378                 mov rax, qword ptr [rbx + 0x78]
+         0x5A6374: 4885c0                   test rax, rax
+         0x5A6377: 743f                     je 0x1405a63b8
+         0x5A6379: 486310                   movsxd rdx, dword ptr [rax]
+         0x5A637C: 89942488000000           mov dword ptr [rsp + 0x88], edx
+  READ field=0x70 fn=0x5A6270 site=0x5A63E1 depth=3 seed=rcx(+0x0) base=rbx(+0x0) disp=+0x70 op=lea rcx, [rbx + 0x70]
+    path=vtable_0xE04018@root+0x0[0]=>0x175CF0 | 0x175CF0@0x175D13->rcx(+0x0):0x5A6CD0 | 0x5A6CD0@0x5A6D4D->rcx(+0x0):0x5A7720 | 0x5A7720@0x5A7ADD->rcx(+0x0):0x5A6270
+    snippet:
+         0x5A63C1: 85ff                     test edi, edi
+         0x5A63C3: 7e0e                     jle 0x1405a63d3
+         0x5A63C5: 448bc7                   mov r8d, edi
+         0x5A63C8: 488bd5                   mov rdx, rbp
+         0x5A63CB: 488bcb                   mov rcx, rbx
+         0x5A63CE: e85deeffff               call 0x1405a5230
+         0x5A63D3: 4c8b4b68                 mov r9, qword ptr [rbx + 0x68]
+         0x5A63D7: 4d8bc4                   mov r8, r12
+         0x5A63DA: 8b942480000000           mov edx, dword ptr [rsp + 0x80]
+      >> 0x5A63E1: 488d4b70                 lea rcx, [rbx + 0x70]
+         0x5A63E5: e846000000               call 0x1405a6430
+         0x5A63EA: 4c8b4b68                 mov r9, qword ptr [rbx + 0x68]
+         0x5A63EE: 4d8bc5                   mov r8, r13
+         0x5A63F1: 8b942488000000           mov edx, dword ptr [rsp + 0x88]
+         0x5A63F8: 488d4b78                 lea rcx, [rbx + 0x78]
+         0x5A63FC: e82f000000               call 0x1405a6430
+         0x5A6401: 90                       nop 
+         0x5A6402: 8b842490000000           mov eax, dword ptr [rsp + 0x90]
+         0x5A6409: 89460c                   mov dword ptr [rsi + 0xc], eax
+  WRITE field=0x70 fn=0x5A6CD0 site=0x5A6D0A depth=1 seed=rcx(+0x0) base=rdi(+0x0) disp=+0x70 op=mov qword ptr [rdi + 0x70], rbx
+    path=vtable_0xE04018@root+0x0[0]=>0x175CF0 | 0x175CF0@0x175D13->rcx(+0x0):0x5A6CD0
+    snippet:
+         0x5A6CEE: 488901                   mov qword ptr [rcx], rax
+         0x5A6CF1: 488b5170                 mov rdx, qword ptr [rcx + 0x70]
+         0x5A6CF5: 4885d2                   test rdx, rdx
+         0x5A6CF8: 740e                     je 0x1405a6d08
+         0x5A6CFA: 488b4968                 mov rcx, qword ptr [rcx + 0x68]
+         0x5A6CFE: 488b4928                 mov rcx, qword ptr [rcx + 0x28]
+         0x5A6D02: e8c9b07700               call 0x140d21dd0
+         0x5A6D07: 90                       nop 
+         0x5A6D08: 33db                     xor ebx, ebx
+      >> 0x5A6D0A: 48895f70                 mov qword ptr [rdi + 0x70], rbx
+         0x5A6D0E: 488b5778                 mov rdx, qword ptr [rdi + 0x78]
+         0x5A6D12: 4885d2                   test rdx, rdx
+         0x5A6D15: 740e                     je 0x1405a6d25
+         0x5A6D17: 488b4f68                 mov rcx, qword ptr [rdi + 0x68]
+         0x5A6D1B: 488b4928                 mov rcx, qword ptr [rcx + 0x28]
+         0x5A6D1F: e8acb07700               call 0x140d21dd0
+         0x5A6D24: 90                       nop 
+         0x5A6D25: 48895f78                 mov qword ptr [rdi + 0x78], rbx
+         0x5A6D29: 488b9780000000           mov rdx, qword ptr [rdi + 0x80]
+  WRITE field=0x70 fn=0x5A6270 site=0x5A636C depth=3 seed=rcx(+0x0) base=rbx(+0x0) disp=+0x70 op=mov qword ptr [rbx + 0x70], r14
+    path=vtable_0xE04018@root+0x0[0]=>0x175CF0 | 0x175CF0@0x175D13->rcx(+0x0):0x5A6CD0 | 0x5A6CD0@0x5A6D4D->rcx(+0x0):0x5A7720 | 0x5A7720@0x5A7ADD->rcx(+0x0):0x5A6270
+    snippet:
+         0x5A634E: 8bc2                     mov eax, edx
+         0x5A6350: 482b06                   sub rax, qword ptr [rsi]
+         0x5A6353: 4903c4                   add rax, r12
+         0x5A6356: 89460c                   mov dword ptr [rsi + 0xc], eax
+         0x5A6359: 4c8bc2                   mov r8, rdx
+         0x5A635C: 488b5370                 mov rdx, qword ptr [rbx + 0x70]
+         0x5A6360: 4883c204                 add rdx, 4
+         0x5A6364: 498bcc                   mov rcx, r12
+         0x5A6367: e82e70e4ff               call 0x1403ed39a
+      >> 0x5A636C: 4c897370                 mov qword ptr [rbx + 0x70], r14
+         0x5A6370: 488b4378                 mov rax, qword ptr [rbx + 0x78]
+         0x5A6374: 4885c0                   test rax, rax
+         0x5A6377: 743f                     je 0x1405a63b8
+         0x5A6379: 486310                   movsxd rdx, dword ptr [rax]
+         0x5A637C: 89942488000000           mov dword ptr [rsp + 0x88], edx
+         0x5A6383: 4c636e0c                 movsxd r13, dword ptr [rsi + 0xc]
+         0x5A6387: 4983c50f                 add r13, 0xf
+         0x5A638B: 4c032e                   add r13, qword ptr [rsi]
+         0x5A638E: 4983e5f0                 and r13, 0xfffffffffffffff0
+  READ field=0x78 fn=0x5A6CD0 site=0x5A6D0E depth=1 seed=rcx(+0x0) base=rdi(+0x0) disp=+0x78 op=mov rdx, qword ptr [rdi + 0x78]
+    path=vtable_0xE04018@root+0x0[0]=>0x175CF0 | 0x175CF0@0x175D13->rcx(+0x0):0x5A6CD0
+    snippet:
+         0x5A6CF1: 488b5170                 mov rdx, qword ptr [rcx + 0x70]
+         0x5A6CF5: 4885d2                   test rdx, rdx
+         0x5A6CF8: 740e                     je 0x1405a6d08
+         0x5A6CFA: 488b4968                 mov rcx, qword ptr [rcx + 0x68]
+         0x5A6CFE: 488b4928                 mov rcx, qword ptr [rcx + 0x28]
+         0x5A6D02: e8c9b07700               call 0x140d21dd0
+         0x5A6D07: 90                       nop 
+         0x5A6D08: 33db                     xor ebx, ebx
+         0x5A6D0A: 48895f70                 mov qword ptr [rdi + 0x70], rbx
+      >> 0x5A6D0E: 488b5778                 mov rdx, qword ptr [rdi + 0x78]
+         0x5A6D12: 4885d2                   test rdx, rdx
+         0x5A6D15: 740e                     je 0x1405a6d25
+         0x5A6D17: 488b4f68                 mov rcx, qword ptr [rdi + 0x68]
+         0x5A6D1B: 488b4928                 mov rcx, qword ptr [rcx + 0x28]
+         0x5A6D1F: e8acb07700               call 0x140d21dd0
+         0x5A6D24: 90                       nop 
+         0x5A6D25: 48895f78                 mov qword ptr [rdi + 0x78], rbx
+         0x5A6D29: 488b9780000000           mov rdx, qword ptr [rdi + 0x80]
+         0x5A6D30: 4885d2                   test rdx, rdx
+  READ field=0x78 fn=0x5A6270 site=0x5A6370 depth=3 seed=rcx(+0x0) base=rbx(+0x0) disp=+0x78 op=mov rax, qword ptr [rbx + 0x78]
+    path=vtable_0xE04018@root+0x0[0]=>0x175CF0 | 0x175CF0@0x175D13->rcx(+0x0):0x5A6CD0 | 0x5A6CD0@0x5A6D4D->rcx(+0x0):0x5A7720 | 0x5A7720@0x5A7ADD->rcx(+0x0):0x5A6270
+    snippet:
+         0x5A6350: 482b06                   sub rax, qword ptr [rsi]
+         0x5A6353: 4903c4                   add rax, r12
+         0x5A6356: 89460c                   mov dword ptr [rsi + 0xc], eax
+         0x5A6359: 4c8bc2                   mov r8, rdx
+         0x5A635C: 488b5370                 mov rdx, qword ptr [rbx + 0x70]
+         0x5A6360: 4883c204                 add rdx, 4
+         0x5A6364: 498bcc                   mov rcx, r12
+         0x5A6367: e82e70e4ff               call 0x1403ed39a
+         0x5A636C: 4c897370                 mov qword ptr [rbx + 0x70], r14
+      >> 0x5A6370: 488b4378                 mov rax, qword ptr [rbx + 0x78]
+         0x5A6374: 4885c0                   test rax, rax
+         0x5A6377: 743f                     je 0x1405a63b8
+         0x5A6379: 486310                   movsxd rdx, dword ptr [rax]
+         0x5A637C: 89942488000000           mov dword ptr [rsp + 0x88], edx
+         0x5A6383: 4c636e0c                 movsxd r13, dword ptr [rsi + 0xc]
+         0x5A6387: 4983c50f                 add r13, 0xf
+         0x5A638B: 4c032e                   add r13, qword ptr [rsi]
+         0x5A638E: 4983e5f0                 and r13, 0xfffffffffffffff0
+         0x5A6392: 8bc2                     mov eax, edx
+  READ field=0x78 fn=0x5A6270 site=0x5A63A0 depth=3 seed=rcx(+0x0) base=rbx(+0x0) disp=+0x78 op=mov rdx, qword ptr [rbx + 0x78]
+    path=vtable_0xE04018@root+0x0[0]=>0x175CF0 | 0x175CF0@0x175D13->rcx(+0x0):0x5A6CD0 | 0x5A6CD0@0x5A6D4D->rcx(+0x0):0x5A7720 | 0x5A7720@0x5A7ADD->rcx(+0x0):0x5A6270
+    snippet:
+         0x5A6383: 4c636e0c                 movsxd r13, dword ptr [rsi + 0xc]
+         0x5A6387: 4983c50f                 add r13, 0xf
+         0x5A638B: 4c032e                   add r13, qword ptr [rsi]
+         0x5A638E: 4983e5f0                 and r13, 0xfffffffffffffff0
+         0x5A6392: 8bc2                     mov eax, edx
+         0x5A6394: 482b06                   sub rax, qword ptr [rsi]
+         0x5A6397: 4903c5                   add rax, r13
+         0x5A639A: 89460c                   mov dword ptr [rsi + 0xc], eax
+         0x5A639D: 4c8bc2                   mov r8, rdx
+      >> 0x5A63A0: 488b5378                 mov rdx, qword ptr [rbx + 0x78]
+         0x5A63A4: 4883c204                 add rdx, 4
+         0x5A63A8: 498bcd                   mov rcx, r13
+         0x5A63AB: e8ea6fe4ff               call 0x1403ed39a
+         0x5A63B0: 48c7437800000000         mov qword ptr [rbx + 0x78], 0
+         0x5A63B8: 488b4b68                 mov rcx, qword ptr [rbx + 0x68]
+         0x5A63BC: e89fd8ebff               call 0x140463c60
+         0x5A63C1: 85ff                     test edi, edi
+         0x5A63C3: 7e0e                     jle 0x1405a63d3
+         0x5A63C5: 448bc7                   mov r8d, edi
+  READ field=0x78 fn=0x5A6270 site=0x5A63F8 depth=3 seed=rcx(+0x0) base=rbx(+0x0) disp=+0x78 op=lea rcx, [rbx + 0x78]
+    path=vtable_0xE04018@root+0x0[0]=>0x175CF0 | 0x175CF0@0x175D13->rcx(+0x0):0x5A6CD0 | 0x5A6CD0@0x5A6D4D->rcx(+0x0):0x5A7720 | 0x5A7720@0x5A7ADD->rcx(+0x0):0x5A6270
+    snippet:
+         0x5A63CE: e85deeffff               call 0x1405a5230
+         0x5A63D3: 4c8b4b68                 mov r9, qword ptr [rbx + 0x68]
+         0x5A63D7: 4d8bc4                   mov r8, r12
+         0x5A63DA: 8b942480000000           mov edx, dword ptr [rsp + 0x80]
+         0x5A63E1: 488d4b70                 lea rcx, [rbx + 0x70]
+         0x5A63E5: e846000000               call 0x1405a6430
+         0x5A63EA: 4c8b4b68                 mov r9, qword ptr [rbx + 0x68]
+         0x5A63EE: 4d8bc5                   mov r8, r13
+         0x5A63F1: 8b942488000000           mov edx, dword ptr [rsp + 0x88]
+      >> 0x5A63F8: 488d4b78                 lea rcx, [rbx + 0x78]
+         0x5A63FC: e82f000000               call 0x1405a6430
+         0x5A6401: 90                       nop 
+         0x5A6402: 8b842490000000           mov eax, dword ptr [rsp + 0x90]
+         0x5A6409: 89460c                   mov dword ptr [rsi + 0xc], eax
+         0x5A640C: 488b9c2498000000         mov rbx, qword ptr [rsp + 0x98]
+         0x5A6414: 4883c440                 add rsp, 0x40
+         0x5A6418: 415f                     pop r15
+         0x5A641A: 415e                     pop r14
+         0x5A641C: 415d                     pop r13
+  WRITE field=0x78 fn=0x5A6CD0 site=0x5A6D25 depth=1 seed=rcx(+0x0) base=rdi(+0x0) disp=+0x78 op=mov qword ptr [rdi + 0x78], rbx
+    path=vtable_0xE04018@root+0x0[0]=>0x175CF0 | 0x175CF0@0x175D13->rcx(+0x0):0x5A6CD0
+    snippet:
+         0x5A6D08: 33db                     xor ebx, ebx
+         0x5A6D0A: 48895f70                 mov qword ptr [rdi + 0x70], rbx
+         0x5A6D0E: 488b5778                 mov rdx, qword ptr [rdi + 0x78]
+         0x5A6D12: 4885d2                   test rdx, rdx
+         0x5A6D15: 740e                     je 0x1405a6d25
+         0x5A6D17: 488b4f68                 mov rcx, qword ptr [rdi + 0x68]
+         0x5A6D1B: 488b4928                 mov rcx, qword ptr [rcx + 0x28]
+         0x5A6D1F: e8acb07700               call 0x140d21dd0
+         0x5A6D24: 90                       nop 
+      >> 0x5A6D25: 48895f78                 mov qword ptr [rdi + 0x78], rbx
+         0x5A6D29: 488b9780000000           mov rdx, qword ptr [rdi + 0x80]
+         0x5A6D30: 4885d2                   test rdx, rdx
+         0x5A6D33: 740e                     je 0x1405a6d43
+         0x5A6D35: 488b4f68                 mov rcx, qword ptr [rdi + 0x68]
+         0x5A6D39: 488b4928                 mov rcx, qword ptr [rcx + 0x28]
+         0x5A6D3D: e88eb07700               call 0x140d21dd0
+         0x5A6D42: 90                       nop 
+         0x5A6D43: 48899f80000000           mov qword ptr [rdi + 0x80], rbx
+         0x5A6D4A: 488bcf                   mov rcx, rdi
+  WRITE field=0x78 fn=0x5A6270 site=0x5A63B0 depth=3 seed=rcx(+0x0) base=rbx(+0x0) disp=+0x78 op=mov qword ptr [rbx + 0x78], 0
+    path=vtable_0xE04018@root+0x0[0]=>0x175CF0 | 0x175CF0@0x175D13->rcx(+0x0):0x5A6CD0 | 0x5A6CD0@0x5A6D4D->rcx(+0x0):0x5A7720 | 0x5A7720@0x5A7ADD->rcx(+0x0):0x5A6270
+    snippet:
+         0x5A6392: 8bc2                     mov eax, edx
+         0x5A6394: 482b06                   sub rax, qword ptr [rsi]
+         0x5A6397: 4903c5                   add rax, r13
+         0x5A639A: 89460c                   mov dword ptr [rsi + 0xc], eax
+         0x5A639D: 4c8bc2                   mov r8, rdx
+         0x5A63A0: 488b5378                 mov rdx, qword ptr [rbx + 0x78]
+         0x5A63A4: 4883c204                 add rdx, 4
+         0x5A63A8: 498bcd                   mov rcx, r13
+         0x5A63AB: e8ea6fe4ff               call 0x1403ed39a
+      >> 0x5A63B0: 48c7437800000000         mov qword ptr [rbx + 0x78], 0
+         0x5A63B8: 488b4b68                 mov rcx, qword ptr [rbx + 0x68]
+         0x5A63BC: e89fd8ebff               call 0x140463c60
+         0x5A63C1: 85ff                     test edi, edi
+         0x5A63C3: 7e0e                     jle 0x1405a63d3
+         0x5A63C5: 448bc7                   mov r8d, edi
+         0x5A63C8: 488bd5                   mov rdx, rbp
+         0x5A63CB: 488bcb                   mov rcx, rbx
+         0x5A63CE: e85deeffff               call 0x1405a5230
+         0x5A63D3: 4c8b4b68                 mov r9, qword ptr [rbx + 0x68]
