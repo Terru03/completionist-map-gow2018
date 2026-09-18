@@ -5,7 +5,7 @@ This tool never debugs, pauses, patches, or writes the God of War process.
 It uses only OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION) and
 ReadProcessMemory.
 
-For the three frozen VikingFuneral Raven save tokens it:
+For the three frozen carrier GameObject tokens (only one is the inserted Raven) it:
 1) reproduces the proven RVA 0x4EF0B0 token resolver using memory reads;
 2) resolves each token to a live GameObject pointer;
 3) reads identity-related fields +0x278/+0x280/+0x284 and vtable +0x38;
@@ -45,17 +45,20 @@ MASK64 = 0xFFFFFFFFFFFFFFFF
 
 KNOWN = [
     {
-        "catalogue_id": "raven_642d0d164af0a5d4076e77933c549a5d",
+        "record_role": "alive_baseline_record_0",
+        "catalogue_id": None,
         "token": 0x1C1001DD,
         "object_hash": 0x165CD520758061E5,
     },
     {
-        "catalogue_id": "raven_c945cb53465b58decfcbd4a221cb5326",
+        "record_role": "alive_baseline_record_1",
+        "catalogue_id": None,
         "token": 0x1C4801DD,
         "object_hash": 0xADB72E5C5003A8A0,
     },
     {
-        "catalogue_id": "raven_e32f7bab42fd7298890f6aa56a734562",
+        "record_role": "inserted_ravenKilled_record",
+        "catalogue_id": "raven_642d0d164af0a5d4076e77933c549a5d",
         "token": 0x1BB001DD,
         "object_hash": 0x98BE1707BA2D65A9,
     },

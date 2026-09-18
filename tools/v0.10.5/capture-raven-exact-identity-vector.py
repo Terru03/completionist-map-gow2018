@@ -11,7 +11,7 @@ Only PROCESS_VM_READ | PROCESS_QUERY_INFORMATION are requested. No debugger,
 remote thread, game-code call, process write, save write, or progression write
 is performed.
 
-For the three frozen VikingFuneral Raven tokens, the tool reconstructs the
+For the proven inserted VikingFuneral Raven token, the tool reconstructs the
 exact vector, verifies the native hash against the proven save object_hash, and
 correlates every 16-byte element back to authored WAD bytes and catalogue IDs.
 """
@@ -29,9 +29,8 @@ import uuid
 
 EXPECTED_EXE_SHA256 = "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452"
 KNOWN = (
-    ("raven_642d0d164af0a5d4076e77933c549a5d", 0x1C1001DD, 0x165CD520758061E5),
-    ("raven_c945cb53465b58decfcbd4a221cb5326", 0x1C4801DD, 0xADB72E5C5003A8A0),
-    ("raven_e32f7bab42fd7298890f6aa56a734562", 0x1BB001DD, 0x98BE1707BA2D65A9),
+    # Only this record is inserted with ravenKilled in the frozen DEAD carrier.
+    ("raven_642d0d164af0a5d4076e77933c549a5d", 0x1BB001DD, 0x98BE1707BA2D65A9),
 )
 MAX_VECTOR_COUNT = 256
 MAX_PARENT_DEPTH = 64

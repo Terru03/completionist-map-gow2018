@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Resolve Raven serialized object-hash provenance from native WAD identity paths.
 
-Read-only. Uses the three runtime-proven Veithurgard Raven object hashes as
+Read-only. Uses the runtime-proven inserted Veithurgard Raven object hash as
 ground truth, then tests authored WAD record/group identity elements and native
 GUID fields against GoW's exact raw-byte hash loop observed at RVA 0x5495E1.
 
@@ -24,9 +24,8 @@ import raven_catalogue as rc
 CATALOGUE = REPO / "catalogue/odins-ravens.json"
 
 KNOWN = {
-    "raven_642d0d164af0a5d4076e77933c549a5d": 0x165CD520758061E5,
-    "raven_c945cb53465b58decfcbd4a221cb5326": 0xADB72E5C5003A8A0,
-    "raven_e32f7bab42fd7298890f6aa56a734562": 0x98BE1707BA2D65A9,
+    # Frozen DEAD inserts only this GameObject record with ravenKilled.
+    "raven_642d0d164af0a5d4076e77933c549a5d": 0x98BE1707BA2D65A9,
 }
 
 
