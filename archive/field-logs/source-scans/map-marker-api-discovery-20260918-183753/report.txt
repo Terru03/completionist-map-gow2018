@@ -1,0 +1,988 @@
+Completionist Map - map/marker Lua API discovery
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+anchors=10 api_strings=38426 xrefs=196 enum_candidates=24
+game_launched=false process_opened=false save_opened=false exe_modified=false
+
+ENUMERATION_CANDIDATES
+  0xE2DC08 score=18 'FindMarkersByIconClass'
+  0xE11090 score=8 'ClearCompassMarkersForQuest'
+  0xE2D5F8 score=6 'FindQuestForMarker'
+  0xE2D628 score=6 'AddMarkersToCompass'
+  0xE2E178 score=6 'FindRegionFromMarker'
+  0x1203040 score=6 '.?AV?$RequestWithType@VHideAllMarkersOfTypeRequest@?1??HideAllMarkersOfType@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+  0x12030C0 score=6 '.?AVHideAllMarkersOfTypeRequest@?1??HideAllMarkersOfType@LuaCompass@@YAHPEAUlua_State@@@Z@'
+  0xE03858 score=4 'ManualInitProfileMarkers'
+  0xE06C08 score=4 'DisablePointTestMarkers'
+  0xE0B5B8 score=4 'LatencyMarkers'
+  0xE0E658 score=4 'FindGameObjectsByMarker'
+  0xE0EFE0 score=4 'Markers'
+  0xE1ED28 score=4 'GetLatencyMarkers'
+  0xE1ED40 score=4 'SetLatencyMarkers'
+  0xE2DB88 score=4 'HideAllMarkersOfType'
+  0xE2DF58 score=4 'GetMarkersInfoTableInRealmWithFlags'
+  0xE2DF80 score=4 'GetMarkersInfoTable'
+  0xE2E028 score=4 'ChangeMarkerState'
+  0xE89FF8 score=4 'goCSMoveSafeSpotMarkers'
+  0xEC4BB8 score=4 'MarkerIDFilterList'
+  0xECDF78 score=4 'MultiRealmMarkers'
+  0xED6C80 score=4 'MarkersGameObjectName'
+  0xEE0048 score=4 'FilterData::MarkerIDFilterList'
+  0xEE0068 score=4 'FilterDataMarkerIDFilterList'
+
+ANCHOR_NEIGHBOURHOODS
+  ANCHOR 0xE2DB50:HideMarker
+    d=0x0 rva=0xE2DB50 score=16 'HideMarker'
+    d=0x10 rva=0xE2DB60 score=16 'ShowMarker'
+    d=0x10 rva=0xE2DB40 score=4 'IsMarkerVisible'
+    d=0x20 rva=0xE2DB70 score=4 'SetGatewayMarkerIsOpen'
+    d=0x28 rva=0xE2DB28 score=4 'SetMarkerVisible'
+    d=0x38 rva=0xE2DB18 score=4 'HaveCompass'
+    d=0x38 rva=0xE2DB88 score=4 'HideAllMarkersOfType'
+    d=0x48 rva=0xE2DB08 score=2 'IsHidden'
+    d=0x50 rva=0xE2DBA0 score=6 'MultiCompassTargetQuestSupport'
+    d=0x70 rva=0xE2DBC0 score=2 'SetAlpha'
+    d=0x80 rva=0xE2DAD0 score=2 "trying to hide compass targets of invalid type '%s'"
+    d=0x80 rva=0xE2DBD0 score=2 'SetDesignerForcedHide'
+    d=0x90 rva=0xE2DAC0 score=4 'SetHaveCompass'
+    d=0x98 rva=0xE2DBE8 score=2 'ShouldBeDisplayed'
+    d=0xAC rva=0xE2DBFC score=2 'OnWarp'
+    d=0xB8 rva=0xE2DC08 score=18 'FindMarkersByIconClass'
+    d=0xC8 rva=0xE2DA88 score=4 "trying to set invalid type '%s' on compass marker '%s'"
+    d=0xD0 rva=0xE2DC20 score=4 'GetNearbyMarkerBiasBehindPlayer'
+    d=0xF8 rva=0xE2DA58 score=4 "trying to hide unknown compass marker: '%s'"
+    d=0x128 rva=0xE2DA28 score=4 "trying to show unknown compass marker: '%s'"
+    d=0x140 rva=0xE2DA10 score=4 'Compass'
+    d=0x178 rva=0xE2D9D8 score=4 "querying visibility of unknown compass marker: '%s'"
+    d=0x190 rva=0xE2D9C0 score=2 'NGP_ClearProfile'
+    d=0x1B0 rva=0xE2D9A0 score=2 'GetGivePlayerPickupAtStage'
+    d=0x1D8 rva=0xE2D978 score=2 'NGP_RelinquishPickupAndClearProfile'
+    d=0x210 rva=0xE2D940 score=2 'GetProfileStageCooldown_StageParameterCheckFeature'
+    d=0x228 rva=0xE2D928 score=2 'GetGemAttributes'
+    d=0x240 rva=0xE2D910 score=2 'GetProfileStageCooldown'
+    d=0x260 rva=0xE2D8F0 score=2 'GetProfileStageAdjustedCooldown'
+    d=0x270 rva=0xE2D8E0 score=2 'GetSocketCount'
+    d=0x280 rva=0xE2D8D0 score=2 'GetProfileStage'
+    d=0x290 rva=0xE2D8C0 score=2 'GetSlotName'
+    d=0x298 rva=0xE2D8B8 score=2 'HasTags'
+    d=0x2B0 rva=0xE2D8A0 score=2 'GetPickupsInSlot'
+    d=0x2C0 rva=0xE2D890 score=2 'GetSlotId'
+    d=0x2CC rva=0xE2D884 score=2 'GetId'
+    d=0x2D8 rva=0xE2D878 score=2 'GetMaxStage'
+    d=0x2F0 rva=0xE2D860 score=2 'GetDisplayStageId'
+    d=0x300 rva=0xE2D850 score=4 'GetIconId'
+    d=0x310 rva=0xE2DE60 score=8 'goMapIconAreaMainQuest'
+    d=0x320 rva=0xE2D830 score=2 'GetSecondDisplayDescriptionId'
+    d=0x328 rva=0xE2DE78 score=8 'goMapIconAreaMainQuest_area'
+    d=0x338 rva=0xE2D818 score=2 'GetDisplayNameId'
+    d=0x348 rva=0xE2DE98 score=8 'goMapIconAreaSideQuest'
+    d=0x350 rva=0xE2D800 score=2 'GetCharacterClass'
+    d=0x360 rva=0xE2DEB0 score=2 'OnFastTravelWadsLoaded'
+    d=0x368 rva=0xE2D7E8 score=2 'GetDisplayDescriptionId'
+    d=0x378 rva=0xE2DEC8 score=8 'goMapIconAreaSideQuest_area'
+    d=0x378 rva=0xE2D7D8 score=2 'GetAttribute'
+    d=0x388 rva=0xE2D7C8 score=2 'GetButton'
+    d=0x398 rva=0xE2DEE8 score=4 'GetRegionInfo'
+    d=0x3A8 rva=0xE2DEF8 score=2 'GetRealmInfo'
+    d=0x3B8 rva=0xE2DF08 score=2 'GetRealmSummary'
+    d=0x3C8 rva=0xE2DF18 score=16 'GetMarkerInfo'
+    d=0x3D8 rva=0xE2DF28 score=4 'GetRegionsInfoTable'
+    d=0x3F0 rva=0xE2DF40 score=2 'GetRealmsInfoTable'
+    d=0x408 rva=0xE2DF58 score=4 'GetMarkersInfoTableInRealmWithFlags'
+    d=0x430 rva=0xE2DF80 score=4 'GetMarkersInfoTable'
+    d=0x448 rva=0xE2DF98 score=4 'RegionHasFlag'
+    d=0x458 rva=0xE2DFA8 score=2 'RealmHasFlag'
+    d=0x468 rva=0xE2DFB8 score=4 'MarkerHasAnyFlag'
+    d=0x468 rva=0xE2D6E8 score=2 'NameHash'
+    d=0x470 rva=0xE2D6E0 score=2 'StageId'
+    d=0x480 rva=0xE2DFD0 score=16 'MarkerHasFlag'
+    d=0x490 rva=0xE2DFE0 score=4 'ChangeRegionState'
+    d=0x490 rva=0xE2D6C0 score=2 'Invalid pickup ID requested.'
+    d=0x4A0 rva=0xE2D6B0 score=2 'PickupId'
+    d=0x4A8 rva=0xE2DFF8 score=2 'ChangeRealmState'
+    d=0x4B8 rva=0xE2D698 score=4 'AllMainQuestsCompleted'
+    d=0x4C0 rva=0xE2E010 score=4 'GetMarkerCoordinates'
+    d=0x4D0 rva=0xE2D680 score=2 'CompletionResolved'
+    d=0x4D8 rva=0xE2E028 score=4 'ChangeMarkerState'
+    d=0x4E0 rva=0xE2D670 score=4 'GetQuestLoot'
+    d=0x4F0 rva=0xE2E040 score=6 'CreateRegionIcon'
+    d=0x4F0 rva=0xE2D660 score=2 'GetTrackingInfo'
+    d=0x500 rva=0xE2D650 score=4 'UntrackQuest'
+    d=0x508 rva=0xE2E058 score=4 'GetMarkerForwardDir'
+    d=0x510 rva=0xE2D640 score=4 'TrackQuest'
+    d=0x520 rva=0xE2E070 score=4 'RecycleIcon'
+    d=0x528 rva=0xE2D628 score=6 'AddMarkersToCompass'
+  ANCHOR 0xE2DB60:ShowMarker
+    d=0x0 rva=0xE2DB60 score=16 'ShowMarker'
+    d=0x10 rva=0xE2DB50 score=16 'HideMarker'
+    d=0x10 rva=0xE2DB70 score=4 'SetGatewayMarkerIsOpen'
+    d=0x20 rva=0xE2DB40 score=4 'IsMarkerVisible'
+    d=0x28 rva=0xE2DB88 score=4 'HideAllMarkersOfType'
+    d=0x38 rva=0xE2DB28 score=4 'SetMarkerVisible'
+    d=0x40 rva=0xE2DBA0 score=6 'MultiCompassTargetQuestSupport'
+    d=0x48 rva=0xE2DB18 score=4 'HaveCompass'
+    d=0x58 rva=0xE2DB08 score=2 'IsHidden'
+    d=0x60 rva=0xE2DBC0 score=2 'SetAlpha'
+    d=0x70 rva=0xE2DBD0 score=2 'SetDesignerForcedHide'
+    d=0x88 rva=0xE2DBE8 score=2 'ShouldBeDisplayed'
+    d=0x90 rva=0xE2DAD0 score=2 "trying to hide compass targets of invalid type '%s'"
+    d=0x9C rva=0xE2DBFC score=2 'OnWarp'
+    d=0xA0 rva=0xE2DAC0 score=4 'SetHaveCompass'
+    d=0xA8 rva=0xE2DC08 score=18 'FindMarkersByIconClass'
+    d=0xC0 rva=0xE2DC20 score=4 'GetNearbyMarkerBiasBehindPlayer'
+    d=0xD8 rva=0xE2DA88 score=4 "trying to set invalid type '%s' on compass marker '%s'"
+    d=0x108 rva=0xE2DA58 score=4 "trying to hide unknown compass marker: '%s'"
+    d=0x138 rva=0xE2DA28 score=4 "trying to show unknown compass marker: '%s'"
+    d=0x150 rva=0xE2DA10 score=4 'Compass'
+    d=0x188 rva=0xE2D9D8 score=4 "querying visibility of unknown compass marker: '%s'"
+    d=0x1A0 rva=0xE2D9C0 score=2 'NGP_ClearProfile'
+    d=0x1C0 rva=0xE2D9A0 score=2 'GetGivePlayerPickupAtStage'
+    d=0x1E8 rva=0xE2D978 score=2 'NGP_RelinquishPickupAndClearProfile'
+    d=0x220 rva=0xE2D940 score=2 'GetProfileStageCooldown_StageParameterCheckFeature'
+    d=0x238 rva=0xE2D928 score=2 'GetGemAttributes'
+    d=0x250 rva=0xE2D910 score=2 'GetProfileStageCooldown'
+    d=0x270 rva=0xE2D8F0 score=2 'GetProfileStageAdjustedCooldown'
+    d=0x280 rva=0xE2D8E0 score=2 'GetSocketCount'
+    d=0x290 rva=0xE2D8D0 score=2 'GetProfileStage'
+    d=0x2A0 rva=0xE2D8C0 score=2 'GetSlotName'
+    d=0x2A8 rva=0xE2D8B8 score=2 'HasTags'
+    d=0x2C0 rva=0xE2D8A0 score=2 'GetPickupsInSlot'
+    d=0x2D0 rva=0xE2D890 score=2 'GetSlotId'
+    d=0x2DC rva=0xE2D884 score=2 'GetId'
+    d=0x2E8 rva=0xE2D878 score=2 'GetMaxStage'
+    d=0x300 rva=0xE2DE60 score=8 'goMapIconAreaMainQuest'
+    d=0x300 rva=0xE2D860 score=2 'GetDisplayStageId'
+    d=0x310 rva=0xE2D850 score=4 'GetIconId'
+    d=0x318 rva=0xE2DE78 score=8 'goMapIconAreaMainQuest_area'
+    d=0x330 rva=0xE2D830 score=2 'GetSecondDisplayDescriptionId'
+    d=0x338 rva=0xE2DE98 score=8 'goMapIconAreaSideQuest'
+    d=0x348 rva=0xE2D818 score=2 'GetDisplayNameId'
+    d=0x350 rva=0xE2DEB0 score=2 'OnFastTravelWadsLoaded'
+    d=0x360 rva=0xE2D800 score=2 'GetCharacterClass'
+    d=0x368 rva=0xE2DEC8 score=8 'goMapIconAreaSideQuest_area'
+    d=0x378 rva=0xE2D7E8 score=2 'GetDisplayDescriptionId'
+    d=0x388 rva=0xE2DEE8 score=4 'GetRegionInfo'
+    d=0x388 rva=0xE2D7D8 score=2 'GetAttribute'
+    d=0x398 rva=0xE2D7C8 score=2 'GetButton'
+    d=0x398 rva=0xE2DEF8 score=2 'GetRealmInfo'
+    d=0x3A8 rva=0xE2DF08 score=2 'GetRealmSummary'
+    d=0x3B8 rva=0xE2DF18 score=16 'GetMarkerInfo'
+    d=0x3C8 rva=0xE2DF28 score=4 'GetRegionsInfoTable'
+    d=0x3E0 rva=0xE2DF40 score=2 'GetRealmsInfoTable'
+    d=0x3F8 rva=0xE2DF58 score=4 'GetMarkersInfoTableInRealmWithFlags'
+    d=0x420 rva=0xE2DF80 score=4 'GetMarkersInfoTable'
+    d=0x438 rva=0xE2DF98 score=4 'RegionHasFlag'
+    d=0x448 rva=0xE2DFA8 score=2 'RealmHasFlag'
+    d=0x458 rva=0xE2DFB8 score=4 'MarkerHasAnyFlag'
+    d=0x470 rva=0xE2DFD0 score=16 'MarkerHasFlag'
+    d=0x478 rva=0xE2D6E8 score=2 'NameHash'
+    d=0x480 rva=0xE2DFE0 score=4 'ChangeRegionState'
+    d=0x480 rva=0xE2D6E0 score=2 'StageId'
+    d=0x498 rva=0xE2DFF8 score=2 'ChangeRealmState'
+    d=0x4A0 rva=0xE2D6C0 score=2 'Invalid pickup ID requested.'
+    d=0x4B0 rva=0xE2E010 score=4 'GetMarkerCoordinates'
+    d=0x4B0 rva=0xE2D6B0 score=2 'PickupId'
+    d=0x4C8 rva=0xE2D698 score=4 'AllMainQuestsCompleted'
+    d=0x4C8 rva=0xE2E028 score=4 'ChangeMarkerState'
+    d=0x4E0 rva=0xE2E040 score=6 'CreateRegionIcon'
+    d=0x4E0 rva=0xE2D680 score=2 'CompletionResolved'
+    d=0x4F0 rva=0xE2D670 score=4 'GetQuestLoot'
+    d=0x4F8 rva=0xE2E058 score=4 'GetMarkerForwardDir'
+    d=0x500 rva=0xE2D660 score=2 'GetTrackingInfo'
+    d=0x510 rva=0xE2D650 score=4 'UntrackQuest'
+    d=0x510 rva=0xE2E070 score=4 'RecycleIcon'
+    d=0x520 rva=0xE2E080 score=18 'CreateMarkerIcon'
+    d=0x520 rva=0xE2D640 score=4 'TrackQuest'
+  ANCHOR 0xE2DC08:FindMarkersByIconClass
+    d=0x0 rva=0xE2DC08 score=18 'FindMarkersByIconClass'
+    d=0xC rva=0xE2DBFC score=2 'OnWarp'
+    d=0x18 rva=0xE2DC20 score=4 'GetNearbyMarkerBiasBehindPlayer'
+    d=0x20 rva=0xE2DBE8 score=2 'ShouldBeDisplayed'
+    d=0x38 rva=0xE2DBD0 score=2 'SetDesignerForcedHide'
+    d=0x48 rva=0xE2DBC0 score=2 'SetAlpha'
+    d=0x68 rva=0xE2DBA0 score=6 'MultiCompassTargetQuestSupport'
+    d=0x80 rva=0xE2DB88 score=4 'HideAllMarkersOfType'
+    d=0x98 rva=0xE2DB70 score=4 'SetGatewayMarkerIsOpen'
+    d=0xA8 rva=0xE2DB60 score=16 'ShowMarker'
+    d=0xB8 rva=0xE2DB50 score=16 'HideMarker'
+    d=0xC8 rva=0xE2DB40 score=4 'IsMarkerVisible'
+    d=0xE0 rva=0xE2DB28 score=4 'SetMarkerVisible'
+    d=0xF0 rva=0xE2DB18 score=4 'HaveCompass'
+    d=0x100 rva=0xE2DB08 score=2 'IsHidden'
+    d=0x138 rva=0xE2DAD0 score=2 "trying to hide compass targets of invalid type '%s'"
+    d=0x148 rva=0xE2DAC0 score=4 'SetHaveCompass'
+    d=0x180 rva=0xE2DA88 score=4 "trying to set invalid type '%s' on compass marker '%s'"
+    d=0x1B0 rva=0xE2DA58 score=4 "trying to hide unknown compass marker: '%s'"
+    d=0x1E0 rva=0xE2DA28 score=4 "trying to show unknown compass marker: '%s'"
+    d=0x1F8 rva=0xE2DA10 score=4 'Compass'
+    d=0x230 rva=0xE2D9D8 score=4 "querying visibility of unknown compass marker: '%s'"
+    d=0x248 rva=0xE2D9C0 score=2 'NGP_ClearProfile'
+    d=0x258 rva=0xE2DE60 score=8 'goMapIconAreaMainQuest'
+    d=0x268 rva=0xE2D9A0 score=2 'GetGivePlayerPickupAtStage'
+    d=0x270 rva=0xE2DE78 score=8 'goMapIconAreaMainQuest_area'
+    d=0x290 rva=0xE2DE98 score=8 'goMapIconAreaSideQuest'
+    d=0x290 rva=0xE2D978 score=2 'NGP_RelinquishPickupAndClearProfile'
+    d=0x2A8 rva=0xE2DEB0 score=2 'OnFastTravelWadsLoaded'
+    d=0x2C0 rva=0xE2DEC8 score=8 'goMapIconAreaSideQuest_area'
+    d=0x2C8 rva=0xE2D940 score=2 'GetProfileStageCooldown_StageParameterCheckFeature'
+    d=0x2E0 rva=0xE2DEE8 score=4 'GetRegionInfo'
+    d=0x2E0 rva=0xE2D928 score=2 'GetGemAttributes'
+    d=0x2F0 rva=0xE2DEF8 score=2 'GetRealmInfo'
+    d=0x2F8 rva=0xE2D910 score=2 'GetProfileStageCooldown'
+    d=0x300 rva=0xE2DF08 score=2 'GetRealmSummary'
+    d=0x310 rva=0xE2DF18 score=16 'GetMarkerInfo'
+    d=0x318 rva=0xE2D8F0 score=2 'GetProfileStageAdjustedCooldown'
+    d=0x320 rva=0xE2DF28 score=4 'GetRegionsInfoTable'
+    d=0x328 rva=0xE2D8E0 score=2 'GetSocketCount'
+    d=0x338 rva=0xE2D8D0 score=2 'GetProfileStage'
+    d=0x338 rva=0xE2DF40 score=2 'GetRealmsInfoTable'
+    d=0x348 rva=0xE2D8C0 score=2 'GetSlotName'
+    d=0x350 rva=0xE2DF58 score=4 'GetMarkersInfoTableInRealmWithFlags'
+    d=0x350 rva=0xE2D8B8 score=2 'HasTags'
+    d=0x368 rva=0xE2D8A0 score=2 'GetPickupsInSlot'
+    d=0x378 rva=0xE2DF80 score=4 'GetMarkersInfoTable'
+    d=0x378 rva=0xE2D890 score=2 'GetSlotId'
+    d=0x384 rva=0xE2D884 score=2 'GetId'
+    d=0x390 rva=0xE2DF98 score=4 'RegionHasFlag'
+    d=0x390 rva=0xE2D878 score=2 'GetMaxStage'
+    d=0x3A0 rva=0xE2DFA8 score=2 'RealmHasFlag'
+    d=0x3A8 rva=0xE2D860 score=2 'GetDisplayStageId'
+    d=0x3B0 rva=0xE2DFB8 score=4 'MarkerHasAnyFlag'
+    d=0x3B8 rva=0xE2D850 score=4 'GetIconId'
+    d=0x3C8 rva=0xE2DFD0 score=16 'MarkerHasFlag'
+    d=0x3D8 rva=0xE2DFE0 score=4 'ChangeRegionState'
+    d=0x3D8 rva=0xE2D830 score=2 'GetSecondDisplayDescriptionId'
+    d=0x3F0 rva=0xE2D818 score=2 'GetDisplayNameId'
+    d=0x3F0 rva=0xE2DFF8 score=2 'ChangeRealmState'
+    d=0x408 rva=0xE2E010 score=4 'GetMarkerCoordinates'
+    d=0x408 rva=0xE2D800 score=2 'GetCharacterClass'
+    d=0x420 rva=0xE2E028 score=4 'ChangeMarkerState'
+    d=0x420 rva=0xE2D7E8 score=2 'GetDisplayDescriptionId'
+    d=0x430 rva=0xE2D7D8 score=2 'GetAttribute'
+    d=0x438 rva=0xE2E040 score=6 'CreateRegionIcon'
+    d=0x440 rva=0xE2D7C8 score=2 'GetButton'
+    d=0x450 rva=0xE2E058 score=4 'GetMarkerForwardDir'
+    d=0x468 rva=0xE2E070 score=4 'RecycleIcon'
+    d=0x478 rva=0xE2E080 score=18 'CreateMarkerIcon'
+    d=0x490 rva=0xE2E098 score=4 'GetRegionSummaryInfo'
+    d=0x4A8 rva=0xE2E0B0 score=4 'FindInfoFromIcon'
+    d=0x4C0 rva=0xE2E0C8 score=4 'IsRegionGoalDiscovered'
+    d=0x4D8 rva=0xE2E0E0 score=4 'DiscoverRegionGoal'
+    d=0x4F0 rva=0xE2E0F8 score=4 'FindPlayerRegion'
+    d=0x508 rva=0xE2E110 score=4 'SetRegionPowerLevelOverride'
+    d=0x520 rva=0xE2D6E8 score=2 'NameHash'
+    d=0x528 rva=0xE2E130 score=4 'FindRealmFromRegion'
+    d=0x528 rva=0xE2D6E0 score=2 'StageId'
+    d=0x540 rva=0xE2E148 score=4 'FindRegionInfoFromWad'
+  ANCHOR 0xE2DF18:GetMarkerInfo
+    d=0x0 rva=0xE2DF18 score=16 'GetMarkerInfo'
+    d=0x10 rva=0xE2DF28 score=4 'GetRegionsInfoTable'
+    d=0x10 rva=0xE2DF08 score=2 'GetRealmSummary'
+    d=0x20 rva=0xE2DEF8 score=2 'GetRealmInfo'
+    d=0x28 rva=0xE2DF40 score=2 'GetRealmsInfoTable'
+    d=0x30 rva=0xE2DEE8 score=4 'GetRegionInfo'
+    d=0x40 rva=0xE2DF58 score=4 'GetMarkersInfoTableInRealmWithFlags'
+    d=0x50 rva=0xE2DEC8 score=8 'goMapIconAreaSideQuest_area'
+    d=0x68 rva=0xE2DF80 score=4 'GetMarkersInfoTable'
+    d=0x68 rva=0xE2DEB0 score=2 'OnFastTravelWadsLoaded'
+    d=0x80 rva=0xE2DE98 score=8 'goMapIconAreaSideQuest'
+    d=0x80 rva=0xE2DF98 score=4 'RegionHasFlag'
+    d=0x90 rva=0xE2DFA8 score=2 'RealmHasFlag'
+    d=0xA0 rva=0xE2DE78 score=8 'goMapIconAreaMainQuest_area'
+    d=0xA0 rva=0xE2DFB8 score=4 'MarkerHasAnyFlag'
+    d=0xB8 rva=0xE2DFD0 score=16 'MarkerHasFlag'
+    d=0xB8 rva=0xE2DE60 score=8 'goMapIconAreaMainQuest'
+    d=0xC8 rva=0xE2DFE0 score=4 'ChangeRegionState'
+    d=0xE0 rva=0xE2DFF8 score=2 'ChangeRealmState'
+    d=0xF8 rva=0xE2E010 score=4 'GetMarkerCoordinates'
+    d=0x110 rva=0xE2E028 score=4 'ChangeMarkerState'
+    d=0x128 rva=0xE2E040 score=6 'CreateRegionIcon'
+    d=0x140 rva=0xE2E058 score=4 'GetMarkerForwardDir'
+    d=0x158 rva=0xE2E070 score=4 'RecycleIcon'
+    d=0x168 rva=0xE2E080 score=18 'CreateMarkerIcon'
+    d=0x180 rva=0xE2E098 score=4 'GetRegionSummaryInfo'
+    d=0x198 rva=0xE2E0B0 score=4 'FindInfoFromIcon'
+    d=0x1B0 rva=0xE2E0C8 score=4 'IsRegionGoalDiscovered'
+    d=0x1C8 rva=0xE2E0E0 score=4 'DiscoverRegionGoal'
+    d=0x1E0 rva=0xE2E0F8 score=4 'FindPlayerRegion'
+    d=0x1F8 rva=0xE2E110 score=4 'SetRegionPowerLevelOverride'
+    d=0x218 rva=0xE2E130 score=4 'FindRealmFromRegion'
+    d=0x230 rva=0xE2E148 score=4 'FindRegionInfoFromWad'
+    d=0x248 rva=0xE2E160 score=2 'LoadFastTravelWads'
+    d=0x260 rva=0xE2E178 score=6 'FindRegionFromMarker'
+    d=0x278 rva=0xE2E190 score=2 'TerminateFastTravel'
+    d=0x290 rva=0xE2E1A8 score=2 'SpecialFastTravelRestart'
+    d=0x2B0 rva=0xE2E1C8 score=4 'SetGOToPlayerMapTransform'
+    d=0x2D0 rva=0xE2E1E8 score=2 'IsBusyLoadingFastTravelWads'
+    d=0x2F0 rva=0xE2E208 score=4 'AllRegionSummariesCompleted'
+    d=0x2F8 rva=0xE2DC20 score=4 'GetNearbyMarkerBiasBehindPlayer'
+    d=0x310 rva=0xE2DC08 score=18 'FindMarkersByIconClass'
+    d=0x310 rva=0xE2E228 score=6 'SetPlayerMapMarkerToPlayerMapTransform'
+    d=0x31C rva=0xE2DBFC score=2 'OnWarp'
+    d=0x330 rva=0xE2DBE8 score=2 'ShouldBeDisplayed'
+    d=0x338 rva=0xE2E250 score=2 'InstantlySnapToNextCursorTarget'
+    d=0x348 rva=0xE2DBD0 score=2 'SetDesignerForcedHide'
+    d=0x358 rva=0xE2DBC0 score=2 'SetAlpha'
+    d=0x378 rva=0xE2DBA0 score=6 'MultiCompassTargetQuestSupport'
+    d=0x390 rva=0xE2DB88 score=4 'HideAllMarkersOfType'
+    d=0x3A8 rva=0xE2DB70 score=4 'SetGatewayMarkerIsOpen'
+    d=0x3B8 rva=0xE2DB60 score=16 'ShowMarker'
+    d=0x3C8 rva=0xE2DB50 score=16 'HideMarker'
+    d=0x3D8 rva=0xE2DB40 score=4 'IsMarkerVisible'
+    d=0x3F0 rva=0xE2DB28 score=4 'SetMarkerVisible'
+    d=0x400 rva=0xE2DB18 score=4 'HaveCompass'
+    d=0x410 rva=0xE2DB08 score=2 'IsHidden'
+    d=0x448 rva=0xE2DAD0 score=2 "trying to hide compass targets of invalid type '%s'"
+    d=0x448 rva=0xE2E360 score=2 'UseGoal'
+    d=0x458 rva=0xE2DAC0 score=4 'SetHaveCompass'
+    d=0x490 rva=0xE2DA88 score=4 "trying to set invalid type '%s' on compass marker '%s'"
+    d=0x4C0 rva=0xE2DA58 score=4 "trying to hide unknown compass marker: '%s'"
+    d=0x4E0 rva=0xE2E3F8 score=2 'FinalPosition'
+    d=0x4F0 rva=0xE2DA28 score=4 "trying to show unknown compass marker: '%s'"
+    d=0x4F0 rva=0xE2E408 score=2 'CurrentValue'
+    d=0x500 rva=0xE2E418 score=2 'Path'
+    d=0x508 rva=0xE2DA10 score=4 'Compass'
+    d=0x508 rva=0xE2E420 score=2 'FinalValue'
+    d=0x518 rva=0xE2E430 score=2 'IsInsideZone'
+    d=0x528 rva=0xE2E440 score=2 'DoesPathExist'
+    d=0x540 rva=0xE2D9D8 score=4 "querying visibility of unknown compass marker: '%s'"
+    d=0x558 rva=0xE2D9C0 score=2 'NGP_ClearProfile'
+    d=0x578 rva=0xE2D9A0 score=2 'GetGivePlayerPickupAtStage'
+    d=0x580 rva=0xE2E498 score=2 'IsTargetInsideZone'
+    d=0x598 rva=0xE2E4B0 score=2 'SelectedIndex'
+    d=0x5A0 rva=0xE2D978 score=2 'NGP_RelinquishPickupAndClearProfile'
+    d=0x5A8 rva=0xE2E4C0 score=2 'FollowTarget'
+    d=0x5B8 rva=0xE2E4D0 score=2 'AreAllPointsBad'
+    d=0x5C8 rva=0xE2E4E0 score=2 'AreAllPointsValid'
+    d=0x5D8 rva=0xE2D940 score=2 'GetProfileStageCooldown_StageParameterCheckFeature'
+  ANCHOR 0xE2DFD0:MarkerHasFlag
+    d=0x0 rva=0xE2DFD0 score=16 'MarkerHasFlag'
+    d=0x10 rva=0xE2DFE0 score=4 'ChangeRegionState'
+    d=0x18 rva=0xE2DFB8 score=4 'MarkerHasAnyFlag'
+    d=0x28 rva=0xE2DFA8 score=2 'RealmHasFlag'
+    d=0x28 rva=0xE2DFF8 score=2 'ChangeRealmState'
+    d=0x38 rva=0xE2DF98 score=4 'RegionHasFlag'
+    d=0x40 rva=0xE2E010 score=4 'GetMarkerCoordinates'
+    d=0x50 rva=0xE2DF80 score=4 'GetMarkersInfoTable'
+    d=0x58 rva=0xE2E028 score=4 'ChangeMarkerState'
+    d=0x70 rva=0xE2E040 score=6 'CreateRegionIcon'
+    d=0x78 rva=0xE2DF58 score=4 'GetMarkersInfoTableInRealmWithFlags'
+    d=0x88 rva=0xE2E058 score=4 'GetMarkerForwardDir'
+    d=0x90 rva=0xE2DF40 score=2 'GetRealmsInfoTable'
+    d=0xA0 rva=0xE2E070 score=4 'RecycleIcon'
+    d=0xA8 rva=0xE2DF28 score=4 'GetRegionsInfoTable'
+    d=0xB0 rva=0xE2E080 score=18 'CreateMarkerIcon'
+    d=0xB8 rva=0xE2DF18 score=16 'GetMarkerInfo'
+    d=0xC8 rva=0xE2E098 score=4 'GetRegionSummaryInfo'
+    d=0xC8 rva=0xE2DF08 score=2 'GetRealmSummary'
+    d=0xD8 rva=0xE2DEF8 score=2 'GetRealmInfo'
+    d=0xE0 rva=0xE2E0B0 score=4 'FindInfoFromIcon'
+    d=0xE8 rva=0xE2DEE8 score=4 'GetRegionInfo'
+    d=0xF8 rva=0xE2E0C8 score=4 'IsRegionGoalDiscovered'
+    d=0x108 rva=0xE2DEC8 score=8 'goMapIconAreaSideQuest_area'
+    d=0x110 rva=0xE2E0E0 score=4 'DiscoverRegionGoal'
+    d=0x120 rva=0xE2DEB0 score=2 'OnFastTravelWadsLoaded'
+    d=0x128 rva=0xE2E0F8 score=4 'FindPlayerRegion'
+    d=0x138 rva=0xE2DE98 score=8 'goMapIconAreaSideQuest'
+    d=0x140 rva=0xE2E110 score=4 'SetRegionPowerLevelOverride'
+    d=0x158 rva=0xE2DE78 score=8 'goMapIconAreaMainQuest_area'
+    d=0x160 rva=0xE2E130 score=4 'FindRealmFromRegion'
+    d=0x170 rva=0xE2DE60 score=8 'goMapIconAreaMainQuest'
+    d=0x178 rva=0xE2E148 score=4 'FindRegionInfoFromWad'
+    d=0x190 rva=0xE2E160 score=2 'LoadFastTravelWads'
+    d=0x1A8 rva=0xE2E178 score=6 'FindRegionFromMarker'
+    d=0x1C0 rva=0xE2E190 score=2 'TerminateFastTravel'
+    d=0x1D8 rva=0xE2E1A8 score=2 'SpecialFastTravelRestart'
+    d=0x1F8 rva=0xE2E1C8 score=4 'SetGOToPlayerMapTransform'
+    d=0x218 rva=0xE2E1E8 score=2 'IsBusyLoadingFastTravelWads'
+    d=0x238 rva=0xE2E208 score=4 'AllRegionSummariesCompleted'
+    d=0x258 rva=0xE2E228 score=6 'SetPlayerMapMarkerToPlayerMapTransform'
+    d=0x280 rva=0xE2E250 score=2 'InstantlySnapToNextCursorTarget'
+    d=0x390 rva=0xE2E360 score=2 'UseGoal'
+    d=0x3B0 rva=0xE2DC20 score=4 'GetNearbyMarkerBiasBehindPlayer'
+    d=0x3C8 rva=0xE2DC08 score=18 'FindMarkersByIconClass'
+    d=0x3D4 rva=0xE2DBFC score=2 'OnWarp'
+    d=0x3E8 rva=0xE2DBE8 score=2 'ShouldBeDisplayed'
+    d=0x400 rva=0xE2DBD0 score=2 'SetDesignerForcedHide'
+    d=0x410 rva=0xE2DBC0 score=2 'SetAlpha'
+    d=0x428 rva=0xE2E3F8 score=2 'FinalPosition'
+    d=0x430 rva=0xE2DBA0 score=6 'MultiCompassTargetQuestSupport'
+    d=0x438 rva=0xE2E408 score=2 'CurrentValue'
+    d=0x448 rva=0xE2DB88 score=4 'HideAllMarkersOfType'
+    d=0x448 rva=0xE2E418 score=2 'Path'
+    d=0x450 rva=0xE2E420 score=2 'FinalValue'
+    d=0x460 rva=0xE2DB70 score=4 'SetGatewayMarkerIsOpen'
+    d=0x460 rva=0xE2E430 score=2 'IsInsideZone'
+    d=0x470 rva=0xE2DB60 score=16 'ShowMarker'
+    d=0x470 rva=0xE2E440 score=2 'DoesPathExist'
+    d=0x480 rva=0xE2DB50 score=16 'HideMarker'
+    d=0x490 rva=0xE2DB40 score=4 'IsMarkerVisible'
+    d=0x4A8 rva=0xE2DB28 score=4 'SetMarkerVisible'
+    d=0x4B8 rva=0xE2DB18 score=4 'HaveCompass'
+    d=0x4C8 rva=0xE2DB08 score=2 'IsHidden'
+    d=0x4C8 rva=0xE2E498 score=2 'IsTargetInsideZone'
+    d=0x4E0 rva=0xE2E4B0 score=2 'SelectedIndex'
+    d=0x4F0 rva=0xE2E4C0 score=2 'FollowTarget'
+    d=0x500 rva=0xE2DAD0 score=2 "trying to hide compass targets of invalid type '%s'"
+    d=0x500 rva=0xE2E4D0 score=2 'AreAllPointsBad'
+    d=0x510 rva=0xE2DAC0 score=4 'SetHaveCompass'
+    d=0x510 rva=0xE2E4E0 score=2 'AreAllPointsValid'
+    d=0x524 rva=0xE2E4F4 score=2 'AIUtil'
+    d=0x530 rva=0xE2E500 score=2 'AreAllPointsUnusable'
+    d=0x548 rva=0xE2DA88 score=4 "trying to set invalid type '%s' on compass marker '%s'"
+    d=0x548 rva=0xE2E518 score=2 'TheaterOfOperationsUpdate'
+    d=0x568 rva=0xE2E538 score=2 'DetectCreatureIntersection'
+    d=0x578 rva=0xE2DA58 score=4 "trying to hide unknown compass marker: '%s'"
+    d=0x588 rva=0xE2E558 score=2 'FollowPointCloudUpdate'
+    d=0x5A0 rva=0xE2E570 score=2 'TheaterOfOperationsCalculateResult'
+    d=0x5A8 rva=0xE2DA28 score=4 "trying to show unknown compass marker: '%s'"
+  ANCHOR 0xE2E080:CreateMarkerIcon
+    d=0x0 rva=0xE2E080 score=18 'CreateMarkerIcon'
+    d=0x10 rva=0xE2E070 score=4 'RecycleIcon'
+    d=0x18 rva=0xE2E098 score=4 'GetRegionSummaryInfo'
+    d=0x28 rva=0xE2E058 score=4 'GetMarkerForwardDir'
+    d=0x30 rva=0xE2E0B0 score=4 'FindInfoFromIcon'
+    d=0x40 rva=0xE2E040 score=6 'CreateRegionIcon'
+    d=0x48 rva=0xE2E0C8 score=4 'IsRegionGoalDiscovered'
+    d=0x58 rva=0xE2E028 score=4 'ChangeMarkerState'
+    d=0x60 rva=0xE2E0E0 score=4 'DiscoverRegionGoal'
+    d=0x70 rva=0xE2E010 score=4 'GetMarkerCoordinates'
+    d=0x78 rva=0xE2E0F8 score=4 'FindPlayerRegion'
+    d=0x88 rva=0xE2DFF8 score=2 'ChangeRealmState'
+    d=0x90 rva=0xE2E110 score=4 'SetRegionPowerLevelOverride'
+    d=0xA0 rva=0xE2DFE0 score=4 'ChangeRegionState'
+    d=0xB0 rva=0xE2DFD0 score=16 'MarkerHasFlag'
+    d=0xB0 rva=0xE2E130 score=4 'FindRealmFromRegion'
+    d=0xC8 rva=0xE2DFB8 score=4 'MarkerHasAnyFlag'
+    d=0xC8 rva=0xE2E148 score=4 'FindRegionInfoFromWad'
+    d=0xD8 rva=0xE2DFA8 score=2 'RealmHasFlag'
+    d=0xE0 rva=0xE2E160 score=2 'LoadFastTravelWads'
+    d=0xE8 rva=0xE2DF98 score=4 'RegionHasFlag'
+    d=0xF8 rva=0xE2E178 score=6 'FindRegionFromMarker'
+    d=0x100 rva=0xE2DF80 score=4 'GetMarkersInfoTable'
+    d=0x110 rva=0xE2E190 score=2 'TerminateFastTravel'
+    d=0x128 rva=0xE2DF58 score=4 'GetMarkersInfoTableInRealmWithFlags'
+    d=0x128 rva=0xE2E1A8 score=2 'SpecialFastTravelRestart'
+    d=0x140 rva=0xE2DF40 score=2 'GetRealmsInfoTable'
+    d=0x148 rva=0xE2E1C8 score=4 'SetGOToPlayerMapTransform'
+    d=0x158 rva=0xE2DF28 score=4 'GetRegionsInfoTable'
+    d=0x168 rva=0xE2DF18 score=16 'GetMarkerInfo'
+    d=0x168 rva=0xE2E1E8 score=2 'IsBusyLoadingFastTravelWads'
+    d=0x178 rva=0xE2DF08 score=2 'GetRealmSummary'
+    d=0x188 rva=0xE2E208 score=4 'AllRegionSummariesCompleted'
+    d=0x188 rva=0xE2DEF8 score=2 'GetRealmInfo'
+    d=0x198 rva=0xE2DEE8 score=4 'GetRegionInfo'
+    d=0x1A8 rva=0xE2E228 score=6 'SetPlayerMapMarkerToPlayerMapTransform'
+    d=0x1B8 rva=0xE2DEC8 score=8 'goMapIconAreaSideQuest_area'
+    d=0x1D0 rva=0xE2DEB0 score=2 'OnFastTravelWadsLoaded'
+    d=0x1D0 rva=0xE2E250 score=2 'InstantlySnapToNextCursorTarget'
+    d=0x1E8 rva=0xE2DE98 score=8 'goMapIconAreaSideQuest'
+    d=0x208 rva=0xE2DE78 score=8 'goMapIconAreaMainQuest_area'
+    d=0x220 rva=0xE2DE60 score=8 'goMapIconAreaMainQuest'
+    d=0x2E0 rva=0xE2E360 score=2 'UseGoal'
+    d=0x378 rva=0xE2E3F8 score=2 'FinalPosition'
+    d=0x388 rva=0xE2E408 score=2 'CurrentValue'
+    d=0x398 rva=0xE2E418 score=2 'Path'
+    d=0x3A0 rva=0xE2E420 score=2 'FinalValue'
+    d=0x3B0 rva=0xE2E430 score=2 'IsInsideZone'
+    d=0x3C0 rva=0xE2E440 score=2 'DoesPathExist'
+    d=0x418 rva=0xE2E498 score=2 'IsTargetInsideZone'
+    d=0x430 rva=0xE2E4B0 score=2 'SelectedIndex'
+    d=0x440 rva=0xE2E4C0 score=2 'FollowTarget'
+    d=0x450 rva=0xE2E4D0 score=2 'AreAllPointsBad'
+    d=0x460 rva=0xE2DC20 score=4 'GetNearbyMarkerBiasBehindPlayer'
+    d=0x460 rva=0xE2E4E0 score=2 'AreAllPointsValid'
+    d=0x474 rva=0xE2E4F4 score=2 'AIUtil'
+    d=0x478 rva=0xE2DC08 score=18 'FindMarkersByIconClass'
+    d=0x480 rva=0xE2E500 score=2 'AreAllPointsUnusable'
+    d=0x484 rva=0xE2DBFC score=2 'OnWarp'
+    d=0x498 rva=0xE2DBE8 score=2 'ShouldBeDisplayed'
+    d=0x498 rva=0xE2E518 score=2 'TheaterOfOperationsUpdate'
+    d=0x4B0 rva=0xE2DBD0 score=2 'SetDesignerForcedHide'
+    d=0x4B8 rva=0xE2E538 score=2 'DetectCreatureIntersection'
+    d=0x4C0 rva=0xE2DBC0 score=2 'SetAlpha'
+    d=0x4D8 rva=0xE2E558 score=2 'FollowPointCloudUpdate'
+    d=0x4E0 rva=0xE2DBA0 score=6 'MultiCompassTargetQuestSupport'
+    d=0x4F0 rva=0xE2E570 score=2 'TheaterOfOperationsCalculateResult'
+    d=0x4F8 rva=0xE2DB88 score=4 'HideAllMarkersOfType'
+    d=0x510 rva=0xE2DB70 score=4 'SetGatewayMarkerIsOpen'
+    d=0x518 rva=0xE2E598 score=2 'LineSegmentXZIntersectLineSegment'
+    d=0x520 rva=0xE2DB60 score=16 'ShowMarker'
+    d=0x530 rva=0xE2DB50 score=16 'HideMarker'
+    d=0x540 rva=0xE2DB40 score=4 'IsMarkerVisible'
+    d=0x540 rva=0xE2E5C0 score=2 'LineSegmentXZIntersectCircle'
+    d=0x558 rva=0xE2DB28 score=4 'SetMarkerVisible'
+    d=0x560 rva=0xE2E5E0 score=2 'DistanceXZ'
+    d=0x568 rva=0xE2DB18 score=4 'HaveCompass'
+    d=0x570 rva=0xE2E5F0 score=2 'IntersectPointCone'
+    d=0x578 rva=0xE2DB08 score=2 'IsHidden'
+    d=0x588 rva=0xE2E608 score=2 'VerticalAngle'
+  ANCHOR 0x1203200:.?AV?$RequestWithType@VHideMarkerRequest@?1??HideMarker@LuaCompass@@YAHPEAUlua_State@@@Z@@@
+    d=0x0 rva=0x1203200 score=18 '.?AV?$RequestWithType@VHideMarkerRequest@?1??HideMarker@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x60 rva=0x12031A0 score=4 '.?AVShowCompassRequest@?1??Show@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x70 rva=0x1203270 score=4 '.?AV?$RequestWithType@VSetHaveCompassRequest@?1??SetHaveCompass@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0xD0 rva=0x1203130 score=4 '.?AV?$RequestWithType@VSetAlphaRequest@?1??SetAlpha@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0xF0 rva=0x12032F0 score=6 '.?AVSetMarkerVisibleRequest@?1??SetMarkerVisible@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x140 rva=0x12030C0 score=6 '.?AVHideAllMarkersOfTypeRequest@?1??HideAllMarkersOfType@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x160 rva=0x1203360 score=4 '.?AVOnWarpResetPathfindingRequest@?1??OnWarp@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x1C0 rva=0x12033C0 score=18 '.?AV?$RequestWithType@VShowMarkerRequest@?1??ShowMarker@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1C0 rva=0x1203040 score=6 '.?AV?$RequestWithType@VHideAllMarkersOfTypeRequest@?1??HideAllMarkersOfType@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x220 rva=0x1202FE0 score=4 '.?AVSetHaveCompassRequest@?1??SetHaveCompass@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x230 rva=0x1203430 score=4 '.?AV?$RequestWithType@VOnWarpResetPathfindingRequest@?1??OnWarp@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x2A0 rva=0x1202F60 score=6 '.?AV?$RequestWithType@VSetMarkerVisibleRequest@?1??SetMarkerVisible@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x2B0 rva=0x12034B0 score=4 '.?AVSetDesignerForcedHideRequest@?1??SetDesignerForcedHide@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x300 rva=0x1202F00 score=4 '.?AVHideCompassRequest@?1??Hide@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x320 rva=0x1203520 score=6 '.?AVSetGatewayMarkerIsOpenRequest@?1??SetGatewayMarkerIsOpen@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x370 rva=0x1202E90 score=4 '.?AV?$RequestWithType@VShowCompassRequest@?1??Show@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x390 rva=0x1203590 score=4 '.?AV?$RequestWithType@VSetDesignerForcedHideRequest@?1??SetDesignerForcedHide@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x3E8 rva=0x1202E18 score=2 '.?AVAddInteractZoneRequest@@'
+    d=0x420 rva=0x1203620 score=4 '.?AV?$RequestWithType@VHideCompassRequest@?1??Hide@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x470 rva=0x1202D90 score=2 '.?AVHandleSonInteractButtonPressedRequest@?1??LuaInteractZone_HandleSonInteractButtonPressed@@YAHPEAUlua_State@@@Z@'
+    d=0x490 rva=0x1203690 score=4 '.?AVSetAlphaRequest@?1??SetAlpha@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x4F0 rva=0x12036F0 score=6 '.?AV?$RequestWithType@VSetGatewayMarkerIsOpenRequest@?1??SetGatewayMarkerIsOpen@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x500 rva=0x1202D00 score=2 '.?AVSonInteractButtonPressedOccupiedRequest@?1??LuaInteractZone_SonInteractButtonPressedOccupied@@YAHPEAUlua_State@@@Z@'
+    d=0x580 rva=0x1203780 score=18 '.?AVHideMarkerRequest@?1??HideMarker@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x5A0 rva=0x1202C60 score=2 '.?AV?$RequestWithType@VHandleSonInteractButtonPressedRequest@?1??LuaInteractZone_HandleSonInteractButtonPressed@@YAHPEAUlua_State@@@Z@@@'
+    d=0x5E0 rva=0x12037E0 score=18 '.?AVShowMarkerRequest@?1??ShowMarker@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x640 rva=0x1202BC0 score=2 '.?AV?$RequestWithType@VSonInteractButtonPressedOccupiedRequest@?1??LuaInteractZone_SonInteractButtonPressedOccupied@@YAHPEAUlua_State@@@Z@@@'
+    d=0x690 rva=0x1202B70 score=2 '.?AV?$RequestWithType@VAddInteractZoneRequest@@@@'
+    d=0x6D0 rva=0x1202B30 score=2 '.?AVRemoveAndDestroyInteractZoneRequest@@'
+    d=0x720 rva=0x1202AE0 score=2 '.?AV?$RequestWithType@VRemoveAndDestroyInteractZoneRequest@@@@'
+    d=0x840 rva=0x12029C0 score=2 '.?AV?$RequestWithType@VRemoveLookAtPriorityOverrideRequest@PriorityOverride@@@@'
+    d=0x880 rva=0x1202980 score=2 '.?AVAddGlobalLookAtTargetRequest@GlobalTarget@@'
+    d=0x8D0 rva=0x1202930 score=2 '.?AVRemoveGlobalLookAtTargetRequest@GlobalTarget@@'
+    d=0x920 rva=0x12028E0 score=2 '.?AVRemoveLookAtPriorityOverrideRequest@PriorityOverride@@'
+    d=0x980 rva=0x1202880 score=2 '.?AV?$RequestWithType@VClearForcedLookAtToObjectRequest@GlobalTarget@@@@'
+    d=0x9E0 rva=0x1202820 score=2 '.?AV?$RequestWithType@VForceLookAtToObjectRequest@GlobalTarget@@@@'
+    d=0xA40 rva=0x12027C0 score=2 '.?AV?$RequestWithType@VRemoveLookAtTargetRequest@PrivateTarget@@@@'
+    d=0xA90 rva=0x1202770 score=2 '.?AVClearForcedLookAtToObjectRequest@GlobalTarget@@'
+    d=0xAD8 rva=0x1202728 score=2 '.?AVAddLookAtTargetRequest@PrivateTarget@@'
+    d=0xB18 rva=0x12026E8 score=2 '.?AVRemoveLookAtTargetRequest@PrivateTarget@@'
+    d=0xB60 rva=0x12026A0 score=2 '.?AVAddLookAtPriorityOverrideRequest@PriorityOverride@@'
+    d=0xBC0 rva=0x1202640 score=2 '.?AV?$RequestWithType@VAddGlobalLookAtTargetRequest@GlobalTarget@@@@'
+    d=0xC20 rva=0x12025E0 score=2 '.?AV?$RequestWithType@VRemoveGlobalLookAtTargetRequest@GlobalTarget@@@@'
+    d=0xC80 rva=0x1202580 score=2 '.?AV?$RequestWithType@VAddLookAtPriorityOverrideRequest@PriorityOverride@@@@'
+    d=0xCD0 rva=0x1202530 score=2 '.?AV?$RequestWithType@VAddLookAtTargetRequest@PrivateTarget@@@@'
+    d=0xD18 rva=0x12024E8 score=2 '.?AVForceLookAtToObjectRequest@GlobalTarget@@'
+    d=0xE10 rva=0x12023F0 score=2 '.?AVRegion@@'
+    d=0xE50 rva=0x12023B0 score=2 '.?AVMapToken@@'
+    d=0xE70 rva=0x1202390 score=2 '.?AVMarker@@'
+    d=0xEC8 rva=0x1202338 score=2 '.?AVQuestStateChangeMessage@@'
+    d=0x1038 rva=0x12021C8 score=2 '.?AVCreateBeamRequest@@'
+    d=0x1068 rva=0x1202198 score=2 '.?AVDestroyBeamRequest@@'
+    d=0x10A8 rva=0x1202158 score=2 '.?AV?$RequestWithType@VCreateBeamRequest@@@@'
+    d=0x10E8 rva=0x1202118 score=2 '.?AV?$RequestWithType@VDestroyBeamRequest@@@@'
+    d=0x17B0 rva=0x1201A50 score=2 '.?AVReenableAllRequest@?1??LuaInteract_ReenableAll@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1830 rva=0x12019D0 score=2 '.?AV?$RequestWithType@VDisableAllRequest@?1??LuaInteract_DisableAll@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x18A0 rva=0x1201960 score=2 '.?AVDisableTagsRequest@?1??LuaInteract_DisableTags@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1910 rva=0x12018F0 score=2 '.?AVDisableAllRequest@?1??LuaInteract_DisableAll@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x19A0 rva=0x1201860 score=2 '.?AV?$RequestWithType@VClearExclusiveEnableRequest@?1??LuaInteract_ClearExclusiveEnable@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1A20 rva=0x12017E0 score=2 '.?AV?$RequestWithType@VEnableTagsRequest@?1??LuaInteract_EnableTags@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1AC0 rva=0x1201740 score=2 '.?AVStartInteractRequest@?1??RequestInteractStart@LuaInteract@@YAXPEAUlua_State@@QEAVgoCreature@@QEAVgoGameObject@@PEAVInteractZone@@2@Z@'
+    d=0x1B30 rva=0x12016D0 score=2 '.?AVEndInteractRequest@?1??EndInteract@LuaInteract@@YAXPEAUlua_State@@QEAVgoCreature@@@Z@'
+    d=0x1BB0 rva=0x1201650 score=2 '.?AV?$RequestWithType@VReenableAllRequest@?1??LuaInteract_ReenableAll@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1C40 rva=0x12015C0 score=2 '.?AV?$RequestWithType@VExclusiveEnableRequest@?1??LuaInteract_ExclusiveEnable@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1CB0 rva=0x1201550 score=2 '.?AVExclusiveEnableRequest@?1??LuaInteract_ExclusiveEnable@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1D20 rva=0x12014E0 score=2 '.?AVEnableTagsRequest@?1??LuaInteract_EnableTags@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1D90 rva=0x1201470 score=2 '.?AVEnableAllTagsRequest@?1??LuaInteract_EnableAllTags@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1E10 rva=0x12013F0 score=2 '.?AV?$RequestWithType@VEndInteractRequest@?1??EndInteract@LuaInteract@@YAXPEAUlua_State@@QEAVgoCreature@@@Z@@@'
+    d=0x1E90 rva=0x1201370 score=2 '.?AV?$RequestWithType@VDisableTagsRequest@?1??LuaInteract_DisableTags@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1F10 rva=0x12012F0 score=2 '.?AVClearExclusiveEnableRequest@?1??LuaInteract_ClearExclusiveEnable@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1F90 rva=0x1201270 score=2 '.?AV?$RequestWithType@VEnableAllTagsRequest@?1??LuaInteract_EnableAllTags@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x2000 rva=0x1201200 score=2 '.?AVAbortInteractRequest@?1??AbortInteract@LuaInteract@@YAXPEAUlua_State@@QEAVgoCreature@@@Z@'
+  ANCHOR 0x12033C0:.?AV?$RequestWithType@VShowMarkerRequest@?1??ShowMarker@LuaCompass@@YAHPEAUlua_State@@@Z@@@
+    d=0x0 rva=0x12033C0 score=18 '.?AV?$RequestWithType@VShowMarkerRequest@?1??ShowMarker@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x60 rva=0x1203360 score=4 '.?AVOnWarpResetPathfindingRequest@?1??OnWarp@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x70 rva=0x1203430 score=4 '.?AV?$RequestWithType@VOnWarpResetPathfindingRequest@?1??OnWarp@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0xD0 rva=0x12032F0 score=6 '.?AVSetMarkerVisibleRequest@?1??SetMarkerVisible@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0xF0 rva=0x12034B0 score=4 '.?AVSetDesignerForcedHideRequest@?1??SetDesignerForcedHide@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x150 rva=0x1203270 score=4 '.?AV?$RequestWithType@VSetHaveCompassRequest@?1??SetHaveCompass@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x160 rva=0x1203520 score=6 '.?AVSetGatewayMarkerIsOpenRequest@?1??SetGatewayMarkerIsOpen@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x1C0 rva=0x1203200 score=18 '.?AV?$RequestWithType@VHideMarkerRequest@?1??HideMarker@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1D0 rva=0x1203590 score=4 '.?AV?$RequestWithType@VSetDesignerForcedHideRequest@?1??SetDesignerForcedHide@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x220 rva=0x12031A0 score=4 '.?AVShowCompassRequest@?1??Show@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x260 rva=0x1203620 score=4 '.?AV?$RequestWithType@VHideCompassRequest@?1??Hide@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x290 rva=0x1203130 score=4 '.?AV?$RequestWithType@VSetAlphaRequest@?1??SetAlpha@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x2D0 rva=0x1203690 score=4 '.?AVSetAlphaRequest@?1??SetAlpha@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x300 rva=0x12030C0 score=6 '.?AVHideAllMarkersOfTypeRequest@?1??HideAllMarkersOfType@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x330 rva=0x12036F0 score=6 '.?AV?$RequestWithType@VSetGatewayMarkerIsOpenRequest@?1??SetGatewayMarkerIsOpen@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x380 rva=0x1203040 score=6 '.?AV?$RequestWithType@VHideAllMarkersOfTypeRequest@?1??HideAllMarkersOfType@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x3C0 rva=0x1203780 score=18 '.?AVHideMarkerRequest@?1??HideMarker@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x3E0 rva=0x1202FE0 score=4 '.?AVSetHaveCompassRequest@?1??SetHaveCompass@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x420 rva=0x12037E0 score=18 '.?AVShowMarkerRequest@?1??ShowMarker@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x460 rva=0x1202F60 score=6 '.?AV?$RequestWithType@VSetMarkerVisibleRequest@?1??SetMarkerVisible@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x4C0 rva=0x1202F00 score=4 '.?AVHideCompassRequest@?1??Hide@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x530 rva=0x1202E90 score=4 '.?AV?$RequestWithType@VShowCompassRequest@?1??Show@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x5A8 rva=0x1202E18 score=2 '.?AVAddInteractZoneRequest@@'
+    d=0x630 rva=0x1202D90 score=2 '.?AVHandleSonInteractButtonPressedRequest@?1??LuaInteractZone_HandleSonInteractButtonPressed@@YAHPEAUlua_State@@@Z@'
+    d=0x6C0 rva=0x1202D00 score=2 '.?AVSonInteractButtonPressedOccupiedRequest@?1??LuaInteractZone_SonInteractButtonPressedOccupied@@YAHPEAUlua_State@@@Z@'
+    d=0x760 rva=0x1202C60 score=2 '.?AV?$RequestWithType@VHandleSonInteractButtonPressedRequest@?1??LuaInteractZone_HandleSonInteractButtonPressed@@YAHPEAUlua_State@@@Z@@@'
+    d=0x800 rva=0x1202BC0 score=2 '.?AV?$RequestWithType@VSonInteractButtonPressedOccupiedRequest@?1??LuaInteractZone_SonInteractButtonPressedOccupied@@YAHPEAUlua_State@@@Z@@@'
+    d=0x850 rva=0x1202B70 score=2 '.?AV?$RequestWithType@VAddInteractZoneRequest@@@@'
+    d=0x890 rva=0x1202B30 score=2 '.?AVRemoveAndDestroyInteractZoneRequest@@'
+    d=0x8E0 rva=0x1202AE0 score=2 '.?AV?$RequestWithType@VRemoveAndDestroyInteractZoneRequest@@@@'
+    d=0xA00 rva=0x12029C0 score=2 '.?AV?$RequestWithType@VRemoveLookAtPriorityOverrideRequest@PriorityOverride@@@@'
+    d=0xA40 rva=0x1202980 score=2 '.?AVAddGlobalLookAtTargetRequest@GlobalTarget@@'
+    d=0xA90 rva=0x1202930 score=2 '.?AVRemoveGlobalLookAtTargetRequest@GlobalTarget@@'
+    d=0xAE0 rva=0x12028E0 score=2 '.?AVRemoveLookAtPriorityOverrideRequest@PriorityOverride@@'
+    d=0xB40 rva=0x1202880 score=2 '.?AV?$RequestWithType@VClearForcedLookAtToObjectRequest@GlobalTarget@@@@'
+    d=0xBA0 rva=0x1202820 score=2 '.?AV?$RequestWithType@VForceLookAtToObjectRequest@GlobalTarget@@@@'
+    d=0xC00 rva=0x12027C0 score=2 '.?AV?$RequestWithType@VRemoveLookAtTargetRequest@PrivateTarget@@@@'
+    d=0xC50 rva=0x1202770 score=2 '.?AVClearForcedLookAtToObjectRequest@GlobalTarget@@'
+    d=0xC98 rva=0x1202728 score=2 '.?AVAddLookAtTargetRequest@PrivateTarget@@'
+    d=0xCD8 rva=0x12026E8 score=2 '.?AVRemoveLookAtTargetRequest@PrivateTarget@@'
+    d=0xD20 rva=0x12026A0 score=2 '.?AVAddLookAtPriorityOverrideRequest@PriorityOverride@@'
+    d=0xD80 rva=0x1202640 score=2 '.?AV?$RequestWithType@VAddGlobalLookAtTargetRequest@GlobalTarget@@@@'
+    d=0xDE0 rva=0x12025E0 score=2 '.?AV?$RequestWithType@VRemoveGlobalLookAtTargetRequest@GlobalTarget@@@@'
+    d=0xE40 rva=0x1202580 score=2 '.?AV?$RequestWithType@VAddLookAtPriorityOverrideRequest@PriorityOverride@@@@'
+    d=0xE90 rva=0x1202530 score=2 '.?AV?$RequestWithType@VAddLookAtTargetRequest@PrivateTarget@@@@'
+    d=0xED8 rva=0x12024E8 score=2 '.?AVForceLookAtToObjectRequest@GlobalTarget@@'
+    d=0xFD0 rva=0x12023F0 score=2 '.?AVRegion@@'
+    d=0x1010 rva=0x12023B0 score=2 '.?AVMapToken@@'
+    d=0x1030 rva=0x1202390 score=2 '.?AVMarker@@'
+    d=0x1088 rva=0x1202338 score=2 '.?AVQuestStateChangeMessage@@'
+    d=0x11F8 rva=0x12021C8 score=2 '.?AVCreateBeamRequest@@'
+    d=0x1228 rva=0x1202198 score=2 '.?AVDestroyBeamRequest@@'
+    d=0x1268 rva=0x1202158 score=2 '.?AV?$RequestWithType@VCreateBeamRequest@@@@'
+    d=0x12A8 rva=0x1202118 score=2 '.?AV?$RequestWithType@VDestroyBeamRequest@@@@'
+    d=0x1970 rva=0x1201A50 score=2 '.?AVReenableAllRequest@?1??LuaInteract_ReenableAll@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x19F0 rva=0x12019D0 score=2 '.?AV?$RequestWithType@VDisableAllRequest@?1??LuaInteract_DisableAll@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1A60 rva=0x1201960 score=2 '.?AVDisableTagsRequest@?1??LuaInteract_DisableTags@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1AD0 rva=0x12018F0 score=2 '.?AVDisableAllRequest@?1??LuaInteract_DisableAll@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1B60 rva=0x1201860 score=2 '.?AV?$RequestWithType@VClearExclusiveEnableRequest@?1??LuaInteract_ClearExclusiveEnable@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1BE0 rva=0x12017E0 score=2 '.?AV?$RequestWithType@VEnableTagsRequest@?1??LuaInteract_EnableTags@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1C80 rva=0x1201740 score=2 '.?AVStartInteractRequest@?1??RequestInteractStart@LuaInteract@@YAXPEAUlua_State@@QEAVgoCreature@@QEAVgoGameObject@@PEAVInteractZone@@2@Z@'
+    d=0x1CF0 rva=0x12016D0 score=2 '.?AVEndInteractRequest@?1??EndInteract@LuaInteract@@YAXPEAUlua_State@@QEAVgoCreature@@@Z@'
+    d=0x1D70 rva=0x1201650 score=2 '.?AV?$RequestWithType@VReenableAllRequest@?1??LuaInteract_ReenableAll@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1E00 rva=0x12015C0 score=2 '.?AV?$RequestWithType@VExclusiveEnableRequest@?1??LuaInteract_ExclusiveEnable@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1E70 rva=0x1201550 score=2 '.?AVExclusiveEnableRequest@?1??LuaInteract_ExclusiveEnable@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1EE0 rva=0x12014E0 score=2 '.?AVEnableTagsRequest@?1??LuaInteract_EnableTags@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1F10 rva=0x12052D0 score=2 '.?AVSCR_MPIcon@@'
+    d=0x1F38 rva=0x12052F8 score=2 '.?AVSCR_MPIconSlotVis@@'
+    d=0x1F50 rva=0x1201470 score=2 '.?AVEnableAllTagsRequest@?1??LuaInteract_EnableAllTags@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1FD0 rva=0x12013F0 score=2 '.?AV?$RequestWithType@VEndInteractRequest@?1??EndInteract@LuaInteract@@YAXPEAUlua_State@@QEAVgoCreature@@@Z@@@'
+  ANCHOR 0x1203780:.?AVHideMarkerRequest@?1??HideMarker@LuaCompass@@YAHPEAUlua_State@@@Z@
+    d=0x0 rva=0x1203780 score=18 '.?AVHideMarkerRequest@?1??HideMarker@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x60 rva=0x12037E0 score=18 '.?AVShowMarkerRequest@?1??ShowMarker@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x90 rva=0x12036F0 score=6 '.?AV?$RequestWithType@VSetGatewayMarkerIsOpenRequest@?1??SetGatewayMarkerIsOpen@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0xF0 rva=0x1203690 score=4 '.?AVSetAlphaRequest@?1??SetAlpha@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x160 rva=0x1203620 score=4 '.?AV?$RequestWithType@VHideCompassRequest@?1??Hide@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1F0 rva=0x1203590 score=4 '.?AV?$RequestWithType@VSetDesignerForcedHideRequest@?1??SetDesignerForcedHide@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x260 rva=0x1203520 score=6 '.?AVSetGatewayMarkerIsOpenRequest@?1??SetGatewayMarkerIsOpen@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x2D0 rva=0x12034B0 score=4 '.?AVSetDesignerForcedHideRequest@?1??SetDesignerForcedHide@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x350 rva=0x1203430 score=4 '.?AV?$RequestWithType@VOnWarpResetPathfindingRequest@?1??OnWarp@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x3C0 rva=0x12033C0 score=18 '.?AV?$RequestWithType@VShowMarkerRequest@?1??ShowMarker@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x420 rva=0x1203360 score=4 '.?AVOnWarpResetPathfindingRequest@?1??OnWarp@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x490 rva=0x12032F0 score=6 '.?AVSetMarkerVisibleRequest@?1??SetMarkerVisible@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x510 rva=0x1203270 score=4 '.?AV?$RequestWithType@VSetHaveCompassRequest@?1??SetHaveCompass@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x580 rva=0x1203200 score=18 '.?AV?$RequestWithType@VHideMarkerRequest@?1??HideMarker@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x5E0 rva=0x12031A0 score=4 '.?AVShowCompassRequest@?1??Show@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x650 rva=0x1203130 score=4 '.?AV?$RequestWithType@VSetAlphaRequest@?1??SetAlpha@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x6C0 rva=0x12030C0 score=6 '.?AVHideAllMarkersOfTypeRequest@?1??HideAllMarkersOfType@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x740 rva=0x1203040 score=6 '.?AV?$RequestWithType@VHideAllMarkersOfTypeRequest@?1??HideAllMarkersOfType@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x7A0 rva=0x1202FE0 score=4 '.?AVSetHaveCompassRequest@?1??SetHaveCompass@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x820 rva=0x1202F60 score=6 '.?AV?$RequestWithType@VSetMarkerVisibleRequest@?1??SetMarkerVisible@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x880 rva=0x1202F00 score=4 '.?AVHideCompassRequest@?1??Hide@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x8F0 rva=0x1202E90 score=4 '.?AV?$RequestWithType@VShowCompassRequest@?1??Show@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x968 rva=0x1202E18 score=2 '.?AVAddInteractZoneRequest@@'
+    d=0x9F0 rva=0x1202D90 score=2 '.?AVHandleSonInteractButtonPressedRequest@?1??LuaInteractZone_HandleSonInteractButtonPressed@@YAHPEAUlua_State@@@Z@'
+    d=0xA80 rva=0x1202D00 score=2 '.?AVSonInteractButtonPressedOccupiedRequest@?1??LuaInteractZone_SonInteractButtonPressedOccupied@@YAHPEAUlua_State@@@Z@'
+    d=0xB20 rva=0x1202C60 score=2 '.?AV?$RequestWithType@VHandleSonInteractButtonPressedRequest@?1??LuaInteractZone_HandleSonInteractButtonPressed@@YAHPEAUlua_State@@@Z@@@'
+    d=0xBC0 rva=0x1202BC0 score=2 '.?AV?$RequestWithType@VSonInteractButtonPressedOccupiedRequest@?1??LuaInteractZone_SonInteractButtonPressedOccupied@@YAHPEAUlua_State@@@Z@@@'
+    d=0xC10 rva=0x1202B70 score=2 '.?AV?$RequestWithType@VAddInteractZoneRequest@@@@'
+    d=0xC50 rva=0x1202B30 score=2 '.?AVRemoveAndDestroyInteractZoneRequest@@'
+    d=0xCA0 rva=0x1202AE0 score=2 '.?AV?$RequestWithType@VRemoveAndDestroyInteractZoneRequest@@@@'
+    d=0xDC0 rva=0x12029C0 score=2 '.?AV?$RequestWithType@VRemoveLookAtPriorityOverrideRequest@PriorityOverride@@@@'
+    d=0xE00 rva=0x1202980 score=2 '.?AVAddGlobalLookAtTargetRequest@GlobalTarget@@'
+    d=0xE50 rva=0x1202930 score=2 '.?AVRemoveGlobalLookAtTargetRequest@GlobalTarget@@'
+    d=0xEA0 rva=0x12028E0 score=2 '.?AVRemoveLookAtPriorityOverrideRequest@PriorityOverride@@'
+    d=0xF00 rva=0x1202880 score=2 '.?AV?$RequestWithType@VClearForcedLookAtToObjectRequest@GlobalTarget@@@@'
+    d=0xF60 rva=0x1202820 score=2 '.?AV?$RequestWithType@VForceLookAtToObjectRequest@GlobalTarget@@@@'
+    d=0xFC0 rva=0x12027C0 score=2 '.?AV?$RequestWithType@VRemoveLookAtTargetRequest@PrivateTarget@@@@'
+    d=0x1010 rva=0x1202770 score=2 '.?AVClearForcedLookAtToObjectRequest@GlobalTarget@@'
+    d=0x1058 rva=0x1202728 score=2 '.?AVAddLookAtTargetRequest@PrivateTarget@@'
+    d=0x1098 rva=0x12026E8 score=2 '.?AVRemoveLookAtTargetRequest@PrivateTarget@@'
+    d=0x10E0 rva=0x12026A0 score=2 '.?AVAddLookAtPriorityOverrideRequest@PriorityOverride@@'
+    d=0x1140 rva=0x1202640 score=2 '.?AV?$RequestWithType@VAddGlobalLookAtTargetRequest@GlobalTarget@@@@'
+    d=0x11A0 rva=0x12025E0 score=2 '.?AV?$RequestWithType@VRemoveGlobalLookAtTargetRequest@GlobalTarget@@@@'
+    d=0x1200 rva=0x1202580 score=2 '.?AV?$RequestWithType@VAddLookAtPriorityOverrideRequest@PriorityOverride@@@@'
+    d=0x1250 rva=0x1202530 score=2 '.?AV?$RequestWithType@VAddLookAtTargetRequest@PrivateTarget@@@@'
+    d=0x1298 rva=0x12024E8 score=2 '.?AVForceLookAtToObjectRequest@GlobalTarget@@'
+    d=0x1390 rva=0x12023F0 score=2 '.?AVRegion@@'
+    d=0x13D0 rva=0x12023B0 score=2 '.?AVMapToken@@'
+    d=0x13F0 rva=0x1202390 score=2 '.?AVMarker@@'
+    d=0x1448 rva=0x1202338 score=2 '.?AVQuestStateChangeMessage@@'
+    d=0x15B8 rva=0x12021C8 score=2 '.?AVCreateBeamRequest@@'
+    d=0x15E8 rva=0x1202198 score=2 '.?AVDestroyBeamRequest@@'
+    d=0x1628 rva=0x1202158 score=2 '.?AV?$RequestWithType@VCreateBeamRequest@@@@'
+    d=0x1668 rva=0x1202118 score=2 '.?AV?$RequestWithType@VDestroyBeamRequest@@@@'
+    d=0x1B50 rva=0x12052D0 score=2 '.?AVSCR_MPIcon@@'
+    d=0x1B78 rva=0x12052F8 score=2 '.?AVSCR_MPIconSlotVis@@'
+    d=0x1D30 rva=0x1201A50 score=2 '.?AVReenableAllRequest@?1??LuaInteract_ReenableAll@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1DB0 rva=0x12019D0 score=2 '.?AV?$RequestWithType@VDisableAllRequest@?1??LuaInteract_DisableAll@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1E20 rva=0x1201960 score=2 '.?AVDisableTagsRequest@?1??LuaInteract_DisableTags@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1E90 rva=0x12018F0 score=2 '.?AVDisableAllRequest@?1??LuaInteract_DisableAll@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1F20 rva=0x1201860 score=2 '.?AV?$RequestWithType@VClearExclusiveEnableRequest@?1??LuaInteract_ClearExclusiveEnable@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1F68 rva=0x12056E8 score=2 '.?AVSCR_ClearLockOnRequest@@'
+    d=0x1FA0 rva=0x12017E0 score=2 '.?AV?$RequestWithType@VEnableTagsRequest@?1??LuaInteract_EnableTags@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+  ANCHOR 0x12037E0:.?AVShowMarkerRequest@?1??ShowMarker@LuaCompass@@YAHPEAUlua_State@@@Z@
+    d=0x0 rva=0x12037E0 score=18 '.?AVShowMarkerRequest@?1??ShowMarker@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x60 rva=0x1203780 score=18 '.?AVHideMarkerRequest@?1??HideMarker@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0xF0 rva=0x12036F0 score=6 '.?AV?$RequestWithType@VSetGatewayMarkerIsOpenRequest@?1??SetGatewayMarkerIsOpen@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x150 rva=0x1203690 score=4 '.?AVSetAlphaRequest@?1??SetAlpha@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x1C0 rva=0x1203620 score=4 '.?AV?$RequestWithType@VHideCompassRequest@?1??Hide@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x250 rva=0x1203590 score=4 '.?AV?$RequestWithType@VSetDesignerForcedHideRequest@?1??SetDesignerForcedHide@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x2C0 rva=0x1203520 score=6 '.?AVSetGatewayMarkerIsOpenRequest@?1??SetGatewayMarkerIsOpen@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x330 rva=0x12034B0 score=4 '.?AVSetDesignerForcedHideRequest@?1??SetDesignerForcedHide@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x3B0 rva=0x1203430 score=4 '.?AV?$RequestWithType@VOnWarpResetPathfindingRequest@?1??OnWarp@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x420 rva=0x12033C0 score=18 '.?AV?$RequestWithType@VShowMarkerRequest@?1??ShowMarker@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x480 rva=0x1203360 score=4 '.?AVOnWarpResetPathfindingRequest@?1??OnWarp@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x4F0 rva=0x12032F0 score=6 '.?AVSetMarkerVisibleRequest@?1??SetMarkerVisible@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x570 rva=0x1203270 score=4 '.?AV?$RequestWithType@VSetHaveCompassRequest@?1??SetHaveCompass@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x5E0 rva=0x1203200 score=18 '.?AV?$RequestWithType@VHideMarkerRequest@?1??HideMarker@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x640 rva=0x12031A0 score=4 '.?AVShowCompassRequest@?1??Show@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x6B0 rva=0x1203130 score=4 '.?AV?$RequestWithType@VSetAlphaRequest@?1??SetAlpha@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x720 rva=0x12030C0 score=6 '.?AVHideAllMarkersOfTypeRequest@?1??HideAllMarkersOfType@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x7A0 rva=0x1203040 score=6 '.?AV?$RequestWithType@VHideAllMarkersOfTypeRequest@?1??HideAllMarkersOfType@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x800 rva=0x1202FE0 score=4 '.?AVSetHaveCompassRequest@?1??SetHaveCompass@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x880 rva=0x1202F60 score=6 '.?AV?$RequestWithType@VSetMarkerVisibleRequest@?1??SetMarkerVisible@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x8E0 rva=0x1202F00 score=4 '.?AVHideCompassRequest@?1??Hide@LuaCompass@@YAHPEAUlua_State@@@Z@'
+    d=0x950 rva=0x1202E90 score=4 '.?AV?$RequestWithType@VShowCompassRequest@?1??Show@LuaCompass@@YAHPEAUlua_State@@@Z@@@'
+    d=0x9C8 rva=0x1202E18 score=2 '.?AVAddInteractZoneRequest@@'
+    d=0xA50 rva=0x1202D90 score=2 '.?AVHandleSonInteractButtonPressedRequest@?1??LuaInteractZone_HandleSonInteractButtonPressed@@YAHPEAUlua_State@@@Z@'
+    d=0xAE0 rva=0x1202D00 score=2 '.?AVSonInteractButtonPressedOccupiedRequest@?1??LuaInteractZone_SonInteractButtonPressedOccupied@@YAHPEAUlua_State@@@Z@'
+    d=0xB80 rva=0x1202C60 score=2 '.?AV?$RequestWithType@VHandleSonInteractButtonPressedRequest@?1??LuaInteractZone_HandleSonInteractButtonPressed@@YAHPEAUlua_State@@@Z@@@'
+    d=0xC20 rva=0x1202BC0 score=2 '.?AV?$RequestWithType@VSonInteractButtonPressedOccupiedRequest@?1??LuaInteractZone_SonInteractButtonPressedOccupied@@YAHPEAUlua_State@@@Z@@@'
+    d=0xC70 rva=0x1202B70 score=2 '.?AV?$RequestWithType@VAddInteractZoneRequest@@@@'
+    d=0xCB0 rva=0x1202B30 score=2 '.?AVRemoveAndDestroyInteractZoneRequest@@'
+    d=0xD00 rva=0x1202AE0 score=2 '.?AV?$RequestWithType@VRemoveAndDestroyInteractZoneRequest@@@@'
+    d=0xE20 rva=0x12029C0 score=2 '.?AV?$RequestWithType@VRemoveLookAtPriorityOverrideRequest@PriorityOverride@@@@'
+    d=0xE60 rva=0x1202980 score=2 '.?AVAddGlobalLookAtTargetRequest@GlobalTarget@@'
+    d=0xEB0 rva=0x1202930 score=2 '.?AVRemoveGlobalLookAtTargetRequest@GlobalTarget@@'
+    d=0xF00 rva=0x12028E0 score=2 '.?AVRemoveLookAtPriorityOverrideRequest@PriorityOverride@@'
+    d=0xF60 rva=0x1202880 score=2 '.?AV?$RequestWithType@VClearForcedLookAtToObjectRequest@GlobalTarget@@@@'
+    d=0xFC0 rva=0x1202820 score=2 '.?AV?$RequestWithType@VForceLookAtToObjectRequest@GlobalTarget@@@@'
+    d=0x1020 rva=0x12027C0 score=2 '.?AV?$RequestWithType@VRemoveLookAtTargetRequest@PrivateTarget@@@@'
+    d=0x1070 rva=0x1202770 score=2 '.?AVClearForcedLookAtToObjectRequest@GlobalTarget@@'
+    d=0x10B8 rva=0x1202728 score=2 '.?AVAddLookAtTargetRequest@PrivateTarget@@'
+    d=0x10F8 rva=0x12026E8 score=2 '.?AVRemoveLookAtTargetRequest@PrivateTarget@@'
+    d=0x1140 rva=0x12026A0 score=2 '.?AVAddLookAtPriorityOverrideRequest@PriorityOverride@@'
+    d=0x11A0 rva=0x1202640 score=2 '.?AV?$RequestWithType@VAddGlobalLookAtTargetRequest@GlobalTarget@@@@'
+    d=0x1200 rva=0x12025E0 score=2 '.?AV?$RequestWithType@VRemoveGlobalLookAtTargetRequest@GlobalTarget@@@@'
+    d=0x1260 rva=0x1202580 score=2 '.?AV?$RequestWithType@VAddLookAtPriorityOverrideRequest@PriorityOverride@@@@'
+    d=0x12B0 rva=0x1202530 score=2 '.?AV?$RequestWithType@VAddLookAtTargetRequest@PrivateTarget@@@@'
+    d=0x12F8 rva=0x12024E8 score=2 '.?AVForceLookAtToObjectRequest@GlobalTarget@@'
+    d=0x13F0 rva=0x12023F0 score=2 '.?AVRegion@@'
+    d=0x1430 rva=0x12023B0 score=2 '.?AVMapToken@@'
+    d=0x1450 rva=0x1202390 score=2 '.?AVMarker@@'
+    d=0x14A8 rva=0x1202338 score=2 '.?AVQuestStateChangeMessage@@'
+    d=0x1618 rva=0x12021C8 score=2 '.?AVCreateBeamRequest@@'
+    d=0x1648 rva=0x1202198 score=2 '.?AVDestroyBeamRequest@@'
+    d=0x1688 rva=0x1202158 score=2 '.?AV?$RequestWithType@VCreateBeamRequest@@@@'
+    d=0x16C8 rva=0x1202118 score=2 '.?AV?$RequestWithType@VDestroyBeamRequest@@@@'
+    d=0x1AF0 rva=0x12052D0 score=2 '.?AVSCR_MPIcon@@'
+    d=0x1B18 rva=0x12052F8 score=2 '.?AVSCR_MPIconSlotVis@@'
+    d=0x1D90 rva=0x1201A50 score=2 '.?AVReenableAllRequest@?1??LuaInteract_ReenableAll@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1E10 rva=0x12019D0 score=2 '.?AV?$RequestWithType@VDisableAllRequest@?1??LuaInteract_DisableAll@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x1E80 rva=0x1201960 score=2 '.?AVDisableTagsRequest@?1??LuaInteract_DisableTags@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1EF0 rva=0x12018F0 score=2 '.?AVDisableAllRequest@?1??LuaInteract_DisableAll@LuaInteract@@YAHPEAUlua_State@@@Z@'
+    d=0x1F08 rva=0x12056E8 score=2 '.?AVSCR_ClearLockOnRequest@@'
+    d=0x1F80 rva=0x1201860 score=2 '.?AV?$RequestWithType@VClearExclusiveEnableRequest@?1??LuaInteract_ClearExclusiveEnable@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+    d=0x2000 rva=0x12017E0 score=2 '.?AV?$RequestWithType@VEnableTagsRequest@?1??LuaInteract_EnableTags@LuaInteract@@YAHPEAUlua_State@@@Z@@@'
+
+XREFS
+  fn=0xC39A0 site=0xC39B1 -> 0xDEFC48 'STEAMAPPS_INTERFACE_VERSION008' | lea rdx, [rip + 0xd2c290]
+  fn=0x1E2190 site=0x1E24D7 -> 0xE0E658 'FindGameObjectsByMarker' | lea rax, [rip + 0xc2c17a]
+  fn=0x1F5C60 site=0x1F5C66 -> 0xE0F628 'CharacterFX_JointMappings' | lea rcx, [rip + 0xc199bb]
+  fn=0x2032A0 site=0x2032A5 -> 0xE11090 'ClearCompassMarkersForQuest' | lea r8, [rip + 0xc0dde4]
+  fn=0x2032A0 site=0x2032DB -> 0xE11090 'ClearCompassMarkersForQuest' | lea r8, [rip + 0xc0ddae]
+  fn=0x203C00 site=0x203C05 -> 0xE11090 'ClearCompassMarkersForQuest' | lea r8, [rip + 0xc0d484]
+  fn=0x203C00 site=0x203C3B -> 0xE11090 'ClearCompassMarkersForQuest' | lea r8, [rip + 0xc0d44e]
+  fn=0x21AFE0 site=0x21B113 -> 0xE159C0 'GetDockingState' | lea rax, [rip + 0xbfa8a6]
+  fn=0x21AFE0 site=0x21B457 -> 0xE15B60 'XXX_KeepTimeInBoatWhenDocking' | lea rax, [rip + 0xbfa702]
+  fn=0x264C20 site=0x264C8E -> 0xE25F08 'SCR_CircleIcon' | lea rax, [rip + 0xbc1273]
+  fn=0x264D10 site=0x264D7E -> 0xE259B8 'SCR_AddMarker' | lea rax, [rip + 0xbc0c33]
+  fn=0x26A620 site=0x26A68E -> 0xE259B8 'SCR_AddMarker' | lea rax, [rip + 0xbbb323]
+  fn=0x26A710 site=0x26A77E -> 0xE25F08 'SCR_CircleIcon' | lea rax, [rip + 0xbbb783]
+  fn=0x297C30 site=0x297C6D -> 0xE0FF3C 'Quest' | lea rdx, [rip + 0xb782c8]
+  fn=0x297C30 site=0x297EAA -> 0xE293B0 'QuestGoal' | lea rdx, [rip + 0xb914ff]
+  fn=0x297C30 site=0x297F1D -> 0xE29408 'QuestCount' | lea rdx, [rip + 0xb914e4]
+  fn=0x2A7330 site=0x2A7579 -> 0xE2C2B0 'GetIconName' | lea rax, [rip + 0xb84d30]
+  fn=0x2AA380 site=0x2AAE03 -> 0xE2D0E0 'RequestEncounterEnemyPrestream' | lea rax, [rip + 0xb822d6]
+  fn=0x2AA380 site=0x2AAEA7 -> 0xE2D118 'RequestGlobalCharacterPrestream' | lea rax, [rip + 0xb8226a]
+  fn=0x2AA380 site=0x2AAEF9 -> 0xE2D138 'ClearGlobalCharacterPrestreamRequest' | lea rax, [rip + 0xb82238]
+  fn=0x2ABB20 site=0x2ABB2A -> 0xE2D460 'QuestManager' | lea rdx, [rip + 0xb8192f]
+  fn=0x2ABB20 site=0x2ABBE3 -> 0xE2D698 'AllMainQuestsCompleted' | lea rax, [rip + 0xb81aae]
+  fn=0x2ABB20 site=0x2ABC73 -> 0xE2D470 'GetQuestTitleLams' | lea rax, [rip + 0xb817f6]
+  fn=0x2ABB20 site=0x2ABCC5 -> 0xE2D488 'GetQuestDescriptionLams' | lea rax, [rip + 0xb817bc]
+  fn=0x2ABB20 site=0x2ABD17 -> 0xE2D4A0 'GetQuestRewardLams' | lea rax, [rip + 0xb81782]
+  fn=0x2ABB20 site=0x2ABD69 -> 0xE2D4B8 'StartQuest' | lea rax, [rip + 0xb81748]
+  fn=0x2ABB20 site=0x2ABDC3 -> 0xE2D4C8 'ProposeQuestState' | lea rax, [rip + 0xb816fe]
+  fn=0x2ABB20 site=0x2ABE15 -> 0xE2D4E0 'ProposeQuestCompleted' | lea rax, [rip + 0xb816c4]
+  fn=0x2ABB20 site=0x2ABE67 -> 0xE2D4F8 'GetQuestState' | lea rax, [rip + 0xb8168a]
+  fn=0x2ABB20 site=0x2ABEB9 -> 0xE2D508 'GetQuestStateInt' | lea rax, [rip + 0xb81648]
+  fn=0x2ABB20 site=0x2ABF13 -> 0xE2D520 'IncrementQuestProgress' | lea rax, [rip + 0xb81606]
+  fn=0x2ABB20 site=0x2ABF65 -> 0xE2D538 'GetQuestProgressAndGoal' | lea rax, [rip + 0xb815cc]
+  fn=0x2ABB20 site=0x2ABFB7 -> 0xE2D550 'QuestHasFlag' | lea rax, [rip + 0xb81592]
+  fn=0x2ABB20 site=0x2AC0B5 -> 0xE2D590 'GetInOrderActiveQuestIds' | lea rax, [rip + 0xb814d4]
+  fn=0x2ABB20 site=0x2AC107 -> 0xE2D5B0 'GetActiveRootQuestIds' | lea rax, [rip + 0xb814a2]
+  fn=0x2ABB20 site=0x2AC159 -> 0xE2D5C8 'IsActiveRootQuestId' | lea rax, [rip + 0xb81468]
+  fn=0x2ABB20 site=0x2AC1B3 -> 0xE2D5E0 'GetChildrenQuestIds' | lea rax, [rip + 0xb81426]
+  fn=0x2ABB20 site=0x2AC205 -> 0xE2D5F8 'FindQuestForMarker' | lea rax, [rip + 0xb813ec]
+  fn=0x2ABB20 site=0x2AC2A9 -> 0xE2D628 'AddMarkersToCompass' | lea rax, [rip + 0xb81378]
+  fn=0x2ABB20 site=0x2AC303 -> 0xE2D640 'TrackQuest' | lea rax, [rip + 0xb81336]
+  fn=0x2ABB20 site=0x2AC355 -> 0xE2D650 'UntrackQuest' | lea rax, [rip + 0xb812f4]
+  fn=0x2ABB20 site=0x2AC3F9 -> 0xE2D670 'GetQuestLoot' | lea rax, [rip + 0xb81270]
+  fn=0x2AC510 site=0x2AC903 -> 0xE2D850 'GetIconId' | lea rax, [rip + 0xb80f46]
+  fn=0x2AC510 site=0x2ACE37 -> 0xE08050 'RequestLoadHighMips' | lea rax, [rip + 0xb5b212]
+  fn=0x2AEF40 site=0x2AF0E5 -> 0xE2DEE8 'GetRegionInfo' | lea rax, [rip + 0xb7edfc]
+  fn=0x2AEF40 site=0x2AF137 -> 0xE2DF18 'GetMarkerInfo' | lea rax, [rip + 0xb7edda]
+  fn=0x2AEF40 site=0x2AF235 -> 0xE2DF28 'GetRegionsInfoTable' | lea rax, [rip + 0xb7ecec]
+  fn=0x2AEF40 site=0x2AF287 -> 0xE2DF80 'GetMarkersInfoTable' | lea rax, [rip + 0xb7ecf2]
+  fn=0x2AEF40 site=0x2AF2D9 -> 0xE2DF58 'GetMarkersInfoTableInRealmWithFlags' | lea rax, [rip + 0xb7ec78]
+  fn=0x2AEF40 site=0x2AF385 -> 0xE2DF98 'RegionHasFlag' | lea rax, [rip + 0xb7ec0c]
+  fn=0x2AEF40 site=0x2AF3D7 -> 0xE2DFD0 'MarkerHasFlag' | lea rax, [rip + 0xb7ebf2]
+  fn=0x2AEF40 site=0x2AF429 -> 0xE2DFB8 'MarkerHasAnyFlag' | lea rax, [rip + 0xb7eb88]
+  fn=0x2AEF40 site=0x2AF4D5 -> 0xE2DFE0 'ChangeRegionState' | lea rax, [rip + 0xb7eb04]
+  fn=0x2AEF40 site=0x2AF527 -> 0xE2E028 'ChangeMarkerState' | lea rax, [rip + 0xb7eafa]
+  fn=0x2AEF40 site=0x2AF579 -> 0xE2E010 'GetMarkerCoordinates' | lea rax, [rip + 0xb7ea90]
+  fn=0x2AEF40 site=0x2AF5D3 -> 0xE2E058 'GetMarkerForwardDir' | lea rax, [rip + 0xb7ea7e]
+  fn=0x2AEF40 site=0x2AF625 -> 0xE2E040 'CreateRegionIcon' | lea rax, [rip + 0xb7ea14]
+  fn=0x2AEF40 site=0x2AF677 -> 0xE2E080 'CreateMarkerIcon' | lea rax, [rip + 0xb7ea02]
+  fn=0x2AEF40 site=0x2AF6C9 -> 0xE2E070 'RecycleIcon' | lea rax, [rip + 0xb7e9a0]
+  fn=0x2AEF40 site=0x2AF723 -> 0xE2E0B0 'FindInfoFromIcon' | lea rax, [rip + 0xb7e986]
+  fn=0x2AEF40 site=0x2AF775 -> 0xE2E098 'GetRegionSummaryInfo' | lea rax, [rip + 0xb7e91c]
+  fn=0x2AEF40 site=0x2AF7C7 -> 0xE2E0E0 'DiscoverRegionGoal' | lea rax, [rip + 0xb7e912]
+  fn=0x2AEF40 site=0x2AF819 -> 0xE2E0C8 'IsRegionGoalDiscovered' | lea rax, [rip + 0xb7e8a8]
+  fn=0x2AEF40 site=0x2AF873 -> 0xE2E110 'SetRegionPowerLevelOverride' | lea rax, [rip + 0xb7e896]
+  fn=0x2AEF40 site=0x2AF8C5 -> 0xE2E0F8 'FindPlayerRegion' | lea rax, [rip + 0xb7e82c]
+  fn=0x2AEF40 site=0x2AF917 -> 0xE2E148 'FindRegionInfoFromWad' | lea rax, [rip + 0xb7e82a]
+  fn=0x2AEF40 site=0x2AF969 -> 0xE2E130 'FindRealmFromRegion' | lea rax, [rip + 0xb7e7c0]
+  fn=0x2AEF40 site=0x2AF9C3 -> 0xE2E178 'FindRegionFromMarker' | lea rax, [rip + 0xb7e7ae]
+  fn=0x2AEF40 site=0x2AFB65 -> 0xE2E1C8 'SetGOToPlayerMapTransform' | lea rax, [rip + 0xb7e65c]
+  fn=0x2AEF40 site=0x2AFBB7 -> 0xE2E228 'SetPlayerMapMarkerToPlayerMapTransform' | lea rax, [rip + 0xb7e66a]
+  fn=0x2AEF40 site=0x2AFC09 -> 0xE2E208 'AllRegionSummariesCompleted' | lea rax, [rip + 0xb7e5f8]
+  fn=0x2E76B0 site=0x2E771E -> 0xE323D8 'SCR_MPIcon' | lea rax, [rip + 0xb4acb3]
+  fn=0x2E77A0 site=0x2E780E -> 0xE323E8 'SCR_MPIconSlotVis' | lea rax, [rip + 0xb4abd3]
+  fn=0x2E7890 site=0x2E78FE -> 0xE323E8 'SCR_MPIconSlotVis' | lea rax, [rip + 0xb4aae3]
+  fn=0x2E7980 site=0x2E79EE -> 0xE323D8 'SCR_MPIcon' | lea rax, [rip + 0xb4a9e3]
+  fn=0x2ED460 site=0x2ED4CE -> 0xE32970 'SCR_ClearLockOnRequest' | lea rax, [rip + 0xb4549b]
+  fn=0x2ED730 site=0x2ED79E -> 0xE32970 'SCR_ClearLockOnRequest' | lea rax, [rip + 0xb451cb]
+  fn=0x2F2290 site=0x2F22FE -> 0xE33050 'SCR_ShowTalkIcons' | lea rax, [rip + 0xb40d4b]
+  fn=0x2F2380 site=0x2F23EE -> 0xE33050 'SCR_ShowTalkIcons' | lea rax, [rip + 0xb40c5b]
+  fn=0x3DD1F0 site=0x3DD23F -> 0xD4E7E0 'AmdExtRequestMgpuAppControl' | lea rdx, [rip + 0x97159a]
+  fn=0x3DD334 site=0x3DD3A8 -> 0xD4E7E0 'AmdExtRequestMgpuAppControl' | lea rdx, [rip + 0x971431]
+  fn=0x3DE3B0 site=0x3DE5B3 -> 0xD526B0 'ADL2_Display_DisplayMapConfig_Get' | lea rdx, [rip + 0x9740f6]
+  fn=0x3DE3B0 site=0x3DE5CA -> 0xD526D8 'ADL2_Display_SLSMapIndex_Get' | lea rdx, [rip + 0x974107]
+  fn=0x3DE3B0 site=0x3DE5E1 -> 0xD526F8 'ADL2_Display_SLSMapConfig_Get' | lea rdx, [rip + 0x974110]
+  fn=0x402250 site=0x402283 -> 0xDEBEE0 'crs_add_memory_region' | lea rdx, [rip + 0x9e9c56]
+  fn=0x406820 site=0x40961F -> 0xE0EF30 'AllMainQuestAndSummariesCompleted' | lea rcx, [rip + 0xa0590a]
+  fn=0x421320 site=0x42134D -> 0xDEFBA8 'npEntitlements::UpdateSemaphore' | lea rdx, [rip + 0x9ce854]
+  fn=0x42B8E0 site=0x42BB4B -> 0xDFF134 'region' | lea r8, [rip + 0x9d35e2]
+  fn=0x4D2175 site=0x4D23C9 -> 0xE09048 'MapMenuCam' | lea rdx, [rip + 0x936c78]
+  fn=0x4DE310 site=0x4DE31C -> 0xDF9048 'tonemapping_lut.hlsl' | lea rcx, [rip + 0x91ad25]
+  fn=0x4F8A50 site=0x4F8B1A -> 0xDFA328 'MarkerID' | lea rdx, [rip + 0x901807]
+  fn=0x4F8BD0 site=0x4F8C81 -> 0xDFA328 'MarkerID' | lea rdx, [rip + 0x9016a0]
+  fn=0x4FA59F site=0x4FA65C -> 0xDFA328 'MarkerID' | lea rdx, [rip + 0x8ffcc5]
+  fn=0x4FB890 site=0x4FB8C5 -> 0xDFA328 'MarkerID' | lea rdx, [rip + 0x8fea5c]
+  fn=0x4FBED0 site=0x4FC132 -> 0xDFA328 'MarkerID' | lea rdx, [rip + 0x8fe1ef]
+  fn=0x4FC18C site=0x4FC225 -> 0xDFA328 'MarkerID' | lea rdx, [rip + 0x8fe0fc]
+  fn=0x4FDB0A site=0x4FDB0F -> 0xDFA328 'MarkerID' | lea rdx, [rip + 0x8fc812]
+  fn=0x4FE7E0 site=0x4FE953 -> 0xE0CE38 'OnMarkerExitZone' | lea r8, [rip + 0x90e4de]
+  fn=0x4FEBB0 site=0x4FF113 -> 0xE0CE20 'OnMarkerEnterZone' | lea r8, [rip + 0x90dd06]
+  fn=0x534390 site=0x5343E9 -> 0xDFEA88 'QuestProgressed' | lea rdx, [rip + 0x8ca698]
+  fn=0x534390 site=0x5344A9 -> 0xDFEA98 'MainQuest' | lea r8, [rip + 0x8ca5e8]
+  fn=0x534630 site=0x5346D1 -> 0xDFEA68 'DockingOnBeach' | lea r8, [rip + 0x8ca390]
+  fn=0x535C6F site=0x535F48 -> 0xE0EEF0 'CurrentMainQuest' | lea r8, [rip + 0x8d8fa1]
+  fn=0x537F40 site=0x538049 -> 0xDFF134 'region' | lea r8, [rip + 0x8c70e4]
+  fn=0x5A8610 site=0x5A883B -> 0xE03748 'LuaGCSchedulerReadySemaphore' | lea rdx, [rip + 0x85af06]
+  fn=0x5A8610 site=0x5A8894 -> 0xE03768 'LuaGCSchedulerDoneSemaphore' | lea rdx, [rip + 0x85aecd]
+  fn=0x5A8940 site=0x5A8CC5 -> 0xE03788 'PushProfileMarker' | lea rdx, [rip + 0x85aabc]
+  fn=0x5A8940 site=0x5A8D46 -> 0xE037A0 'PopProfileMarker' | lea rdx, [rip + 0x85aa53]
+  fn=0x5A8940 site=0x5A8E48 -> 0xE038A0 'RegisterProfileMarkerForFunction' | lea rdx, [rip + 0x85aa51]
+  fn=0x5A8940 site=0x5A8EC9 -> 0xE03858 'ManualInitProfileMarkers' | lea rdx, [rip + 0x85a988]
+  fn=0x5FFC20 site=0x600503 -> 0xE06C08 'DisablePointTestMarkers' | lea rdx, [rip + 0x8066fe]
+  fn=0x609000 site=0x609382 -> 0xE061C8 '_Quest' | lea rdx, [rip + 0x7fce3f]
+  fn=0x609000 site=0x6093AA -> 0xE06168 '_QuestStart' | lea rdx, [rip + 0x7fcdb7]
+  fn=0x609000 site=0x6093E0 -> 0xE06178 '_QuestComplete' | lea rdx, [rip + 0x7fcd91]
+  fn=0x609000 site=0x6098A1 -> 0xE060A0 'quest_name' | lea rdx, [rip + 0x7fc7f8]
+  fn=0x61B850 site=0x61B8B2 -> 0xE115E8 'EVT_MAPCURSOR_ARRIVED_AT_TARGET' | lea r8, [rip + 0x7f5d2f]
+  fn=0x61B850 site=0x61B8FE -> 0xE115E8 'EVT_MAPCURSOR_ARRIVED_AT_TARGET' | lea r8, [rip + 0x7f5ce3]
+  fn=0x61C6C0 site=0x61C824 -> 0xE115E8 'EVT_MAPCURSOR_ARRIVED_AT_TARGET' | lea r8, [rip + 0x7f4dbd]
+  fn=0x61C6C0 site=0x61C863 -> 0xE115E8 'EVT_MAPCURSOR_ARRIVED_AT_TARGET' | lea r8, [rip + 0x7f4d7e]
+  fn=0x61C6C0 site=0x61CA68 -> 0xE115E8 'EVT_MAPCURSOR_ARRIVED_AT_TARGET' | lea r8, [rip + 0x7f4b79]
+  fn=0x61C6C0 site=0x61CAAD -> 0xE115E8 'EVT_MAPCURSOR_ARRIVED_AT_TARGET' | lea r8, [rip + 0x7f4b34]
+  fn=0x61D280 site=0x61D298 -> 0xE09048 'MapMenuCam' | lea rdx, [rip + 0x7ebda9]
+  fn=0x6647E0 site=0x66537E -> 0xE0B5B8 'LatencyMarkers' | lea rdx, [rip + 0x7a6233]
+  fn=0x666190 site=0x666730 -> 0xE0B5B8 'LatencyMarkers' | lea rcx, [rip + 0x7a4e81]
+  fn=0x690260 site=0x690316 -> 0xE0CE38 'OnMarkerExitZone' | lea r8, [rip + 0x77cb1b]
+  fn=0x690360 site=0x690416 -> 0xE0CE20 'OnMarkerEnterZone' | lea r8, [rip + 0x77ca03]
+  fn=0x6C1410 site=0x6C1516 -> 0xE111F8 'EVT_COMPASS_ACQUIRED' | lea r8, [rip + 0x74fcdb]
+  fn=0x6C1410 site=0x6C1533 -> 0xE111F8 'EVT_COMPASS_ACQUIRED' | lea r8, [rip + 0x74fcbe]
+  fn=0x710E10 site=0x710FAF -> 0xE11090 'ClearCompassMarkersForQuest' | lea r8, [rip + 0x7000da]
+  fn=0x710E10 site=0x710FE2 -> 0xE11090 'ClearCompassMarkersForQuest' | lea r8, [rip + 0x7000a7]
+  fn=0x7110C0 site=0x711192 -> 0xE0EFE8 'RootQuest' | lea rdx, [rip + 0x6fde4f]
+  fn=0x7110C0 site=0x711425 -> 0xE0EFF8 'QuestId' | lea rdx, [rip + 0x6fdbcc]
+  fn=0x7110C0 site=0x7117F7 -> 0xE0EFE0 'Markers' | lea rdx, [rip + 0x6fd7e2]
+  fn=0x7110C0 site=0x711965 -> 0xE0EFC8 'Quests' | lea rdx, [rip + 0x6fd65c]
+  fn=0x713470 site=0x7134C3 -> 0xE29380 'Handle_Quest_ChildCompleted' | lea r8, [rip + 0x715eb6]
+  fn=0x7163A0 site=0x716467 -> 0xE0EEF0 'CurrentMainQuest' | lea r8, [rip + 0x6f8a82]
+  fn=0x716490 site=0x7164ED -> 0xE0EF30 'AllMainQuestAndSummariesCompleted' | lea rcx, [rip + 0x6f8a3c]
+  fn=0x76828E site=0x768A11 -> 0xE11D60 'regionLams' | lea rdx, [rip + 0x6a9348]
+  fn=0x76828E site=0x768A4B -> 0xE11D70 'questLams' | lea rdx, [rip + 0x6a931e]
+  fn=0x76C406 site=0x76CC57 -> 0xE10E28 'EVT_MARKER_ONSCREEN' | lea rdx, [rip + 0x6a41ca]
+  fn=0x76C406 site=0x76CCE6 -> 0xE10E40 'EVT_MARKER_OFFSCREEN' | lea rdx, [rip + 0x6a4153]
+  fn=0x771610 site=0x771670 -> 0xE11230 'HandleWithinCompassMarkerRadius' | lea rdx, [rip + 0x69fbb9]
+  fn=0x7716B0 site=0x771710 -> 0xE110D0 'HideCompassMarkerForQuest' | lea rdx, [rip + 0x69f9b9]
+  fn=0x771750 site=0x7717B0 -> 0xE110B0 'ShowCompassMarkerForQuest' | lea rdx, [rip + 0x69f8f9]
+  fn=0x772220 site=0x772284 -> 0xE11148 'EVT_COMPASS_TOGGLE_CHEAT' | lea r8, [rip + 0x69eebd]
+  fn=0x772220 site=0x7722D0 -> 0xE11148 'EVT_COMPASS_TOGGLE_CHEAT' | lea r8, [rip + 0x69ee71]
+  fn=0x7740B0 site=0x77414D -> 0xE11090 'ClearCompassMarkersForQuest' | lea r8, [rip + 0x69cf3c]
+  fn=0x7740B0 site=0x774183 -> 0xE11090 'ClearCompassMarkersForQuest' | lea r8, [rip + 0x69cf06]
+  fn=0x774460 site=0x774546 -> 0xE111F8 'EVT_COMPASS_ACQUIRED' | lea r8, [rip + 0x69ccab]
+  fn=0x774460 site=0x774563 -> 0xE111F8 'EVT_COMPASS_ACQUIRED' | lea r8, [rip + 0x69cc8e]
+  fn=0x774F50 site=0x775120 -> 0xE11070 'MapCollisionChangeHook' | lea r8, [rip + 0x69bf49]
+  fn=0x774F50 site=0x7751A0 -> 0xE11070 'MapCollisionChangeHook' | lea r8, [rip + 0x69bec9]
+  fn=0x7751F0 site=0x77524B -> 0xE115E8 'EVT_MAPCURSOR_ARRIVED_AT_TARGET' | lea r8, [rip + 0x69c396]
+  fn=0x7751F0 site=0x775297 -> 0xE115E8 'EVT_MAPCURSOR_ARRIVED_AT_TARGET' | lea r8, [rip + 0x69c34a]
+  fn=0x7823E0 site=0x7823F8 -> 0xE13B88 '__REQUESTQUEUE' | lea rdx, [rip + 0x691789]
+  fn=0x7823E0 site=0x78249D -> 0xE13B88 '__REQUESTQUEUE' | lea rdx, [rip + 0x6916e4]
+  fn=0x782572 site=0x782577 -> 0xE13B88 '__REQUESTQUEUE' | lea rdx, [rip + 0x69160a]
+  fn=0x782572 site=0x78261D -> 0xE13B88 '__REQUESTQUEUE' | lea rdx, [rip + 0x691564]
+  fn=0x782740 site=0x782753 -> 0xE13B88 '__REQUESTQUEUE' | lea rdx, [rip + 0x69142e]
+  fn=0x7829E0 site=0x782A49 -> 0xE13B88 '__REQUESTQUEUE' | lea rdx, [rip + 0x691138]
+  fn=0x7B2BB0 site=0x7B2C66 -> 0xE0CE38 'OnMarkerExitZone' | lea r8, [rip + 0x65a1cb]
+  fn=0x7B2CB0 site=0x7B2D66 -> 0xE0CE20 'OnMarkerEnterZone' | lea r8, [rip + 0x65a0b3]
+  fn=0x803760 site=0x80398E -> 0xDFEA68 'DockingOnBeach' | lea r8, [rip + 0x5fb0d3]
+  fn=0x83AA20 site=0x83AC6B -> 0xE1D968 'slash_questionmarkkey' | lea rax, [rip + 0x5e2cf6]
+  fn=0x83AA20 site=0x83AE8A -> 0xE1DFC0 'iquestkey' | lea rax, [rip + 0x5e312f]
+  fn=0x858320 site=0x858911 -> 0xDFA328 'MarkerID' | lea rdx, [rip + 0x5a1a10]
+  fn=0x858320 site=0x859349 -> 0xDFA328 'MarkerID' | lea rdx, [rip + 0x5a0fd8]
+  fn=0x860970 site=0x860D0F -> 0xE0FF3C 'Quest' | lea rdx, [rip + 0x5af226]
+  fn=0x8E65B1 site=0x8E65F9 -> 0xE29380 'Handle_Quest_ChildCompleted' | lea r8, [rip + 0x542d80]
+  fn=0x8E678A site=0x8E678E -> 0xE293A0 'QuestLoot' | lea r8, [rip + 0x542c0b]
+  fn=0x8E678A site=0x8E6936 -> 0xE293A0 'QuestLoot' | lea r8, [rip + 0x542a63]
+  fn=0x8E79B0 site=0x8E79DE -> 0xE293A0 'QuestLoot' | lea r11, [rip + 0x5419bb]
+  fn=0x8E79E5 site=0x8E7D17 -> 0xE293A0 'QuestLoot' | lea r11, [rip + 0x541682]
+  fn=0x8E8650 site=0x8E8671 -> 0xE29380 'Handle_Quest_ChildCompleted' | lea r8, [rip + 0x540d08]
+  fn=0x8E86B0 site=0x8E87EE -> 0xE110B0 'ShowCompassMarkerForQuest' | lea rdx, [rip + 0x5288bb]
+  fn=0x8E86B0 site=0x8E8839 -> 0xE110D0 'HideCompassMarkerForQuest' | lea rdx, [rip + 0x528890]
+  fn=0x9034C0 site=0x903580 -> 0xDFA300 'Marker' | lea rdx, [rip + 0x4f6d79]
+  fn=0x903A80 site=0x903B36 -> 0xE29648 'Region' | lea rdx, [rip + 0x525b0b]
+  fn=0x948AC0 site=0x948DBE -> 0xE2D458 'questId' | lea rdx, [rip + 0x4e4693]
+  fn=0x94FE60 site=0x94FF4D -> 0xE2DA58 "trying to hide unknown compass marker: '%s'" | lea rdx, [rip + 0x4ddb04]
+  fn=0x94FF80 site=0x950154 -> 0xE2DA88 "trying to set invalid type '%s' on compass marker '%s'" | lea rdx, [rip + 0x4dd92d]
+  fn=0x94FF80 site=0x950179 -> 0xE2DA28 "trying to show unknown compass marker: '%s'" | lea rdx, [rip + 0x4dd8a8]
+  fn=0x9502F0 site=0x950438 -> 0xE2DA28 "trying to show unknown compass marker: '%s'" | lea rdx, [rip + 0x4dd5e9]
+  fn=0x95056E site=0x950578 -> 0xE2D9D8 "querying visibility of unknown compass marker: '%s'" | lea rdx, [rip + 0x4dd459]
+  fn=0x966440 site=0x966581 -> 0xDFA328 'MarkerID' | lea rdx, [rip + 0x493da0]
+  fn=0x973400 site=0x973476 -> 0xE323D8 'SCR_MPIcon' | lea rax, [rip + 0x4bef5b]
+  fn=0x973400 site=0x973541 -> 0xE323E8 'SCR_MPIconSlotVis' | lea rax, [rip + 0x4beea0]
+  fn=0x974950 site=0x975044 -> 0xE32970 'SCR_ClearLockOnRequest' | lea rax, [rip + 0x4bd925]
+  fn=0x975B60 site=0x975BCE -> 0xE33050 'SCR_ShowTalkIcons' | lea rax, [rip + 0x4bd47b]
+  fn=0x998200 site=0x998290 -> 0xE348C8 'DxTextureVirtualMemoryPool::map' | lea rcx, [rip + 0x49c631]
+  fn=0x99B700 site=0x99B9A7 -> 0xE356B8 'TonemapperType' | lea rdx, [rip + 0x499d0a]
+  fn=0x9BD0B0 site=0x9BDDD7 -> 0xE625E0 'More scanlines requested than are available in WIC bitmap.' | lea r8, [rip + 0x4a4802]
+  fn=0xB3D490 site=0xB3D656 -> 0xE6FA28 'SEC_E_KDC_INVALID_REQUEST' | lea r9, [rip + 0x3323cb]
+  fn=0xB424C0 site=0xB426BB -> 0xE70554 'IMAP.' | lea rcx, [rip + 0x32de92]
+  fn=0xB424C0 site=0xB426D0 -> 0xE7055C 'IMAP' | lea r15, [rip + 0x32de85]
+  fn=0xB5B920 site=0xB5BA7B -> 0xE729A8 'requested' | lea rcx, [rip + 0x316f26]
