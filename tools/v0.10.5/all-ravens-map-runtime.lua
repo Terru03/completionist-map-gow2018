@@ -9,17 +9,38 @@ do
   local rows = {
 -- @@RAVEN_CATALOGUE_ROWS@@
   }
+  local function compactIdentity(value)
+    return string.gsub(string.lower(tostring(value or "")), "[^a-z0-9]", "")
+  end
+
+  local function compactWadIdentity(value)
+    local text = string.lower(tostring(value or ""))
+    text = string.gsub(text, "%.wad$", "")
+    text = string.gsub(text, "^wad_", "")
+    return string.gsub(text, "[^a-z0-9]", "")
+  end
+
   local byName = {}
   local byCatalogueId = {}
+  local byPersistedIdentity = {}
+  local byPersistedIdentityNoGo = {}
   for _, row in ipairs(rows) do
     byName[row.Name] = row
     byCatalogueId[row.CatalogueId] = row
+    local fullKey = row.WadKey .. "|" .. row.ObjectKey
+    assert(byPersistedIdentity[fullKey] == nil, "Duplicate persisted Raven identity: " .. fullKey)
+    byPersistedIdentity[fullKey] = row
+    local noGoObject = string.gsub(row.ObjectKey, "^go", "")
+    local noGoKey = row.WadKey .. "|" .. noGoObject
+    assert(byPersistedIdentityNoGo[noGoKey] == nil, "Duplicate persisted Raven fallback identity: " .. noGoKey)
+    byPersistedIdentityNoGo[noGoKey] = row
   end
 
   local byMarkerId = {}
 
   local states = _G.CompletionistMapV105RavenState or {}
   _G.CompletionistMapV105RavenState = states
+  local liveStatePublished = {}
   local previousPrompt = MapOn.GetShowOnCompassPrompt
   local previousShow = MapOn.ShowOnCompass
   local previousCollision = MapOn.MapCollisionChangeHandler
@@ -141,9 +162,126 @@ do
     end
   end
 
+  local function quotedIdentity(value)
+    local text = tostring(value or "")
+    return string.match(text, "'([^']+)'") or text
+  end
+
+  local function persistedRowForObject(object)
+    if object == nil then return nil, "object_nil" end
+    local levelOK, level = pcall(function() return object.Level end)
+    if not levelOK or level == nil then return nil, "level_unavailable" end
+    local wadKey = compactWadIdentity(quotedIdentity(level))
+    if wadKey == "" then return nil, "level_identity_empty" end
+
+    local candidates = {}
+    local function addCandidate(value)
+      if value == nil then return end
+      local key = compactIdentity(quotedIdentity(value))
+      if key ~= "" then candidates[#candidates + 1] = key end
+    end
+    addCandidate(object)
+    local debugPathOK, debugPath = pcall(function() return object:GetDebugPath() end)
+    if debugPathOK then addCandidate(debugPath) end
+    local nameOK, objectName = pcall(function() return object:GetName() end)
+    if nameOK then addCandidate(objectName) end
+
+    local hit = nil
+    for _, objectKey in ipairs(candidates) do
+      local row = byPersistedIdentity[wadKey .. "|" .. objectKey]
+      if row == nil then
+        local noGoObject = string.gsub(objectKey, "^go", "")
+        row = byPersistedIdentityNoGo[wadKey .. "|" .. noGoObject]
+      end
+      if row ~= nil then
+        if hit ~= nil and hit.CatalogueId ~= row.CatalogueId then
+          return nil, "ambiguous_identity"
+        end
+        hit = row
+      end
+    end
+    if hit == nil then return nil, "no_catalogue_identity" end
+    return hit, nil
+  end
+
+  local function bootstrapPersistedRavenState(source)
+    if type(debug) ~= "table" or type(debug.getregistry) ~= "function" then
+      log("PERSISTED_SCAN_REFUSED", "source=" .. tostring(source) .. " reason=registry_unavailable")
+      return false, 0, 0
+    end
+    local registryOK, registry = pcall(debug.getregistry)
+    if not registryOK or type(registry) ~= "table" then
+      log("PERSISTED_SCAN_REFUSED", "source=" .. tostring(source) .. " reason=registry_failed")
+      return false, 0, 0
+    end
+
+    local seenPickles = {}
+    local observed = {}
+    local observedRank = {}
+    local conflicted = {}
+    local roots, records, matched, ambiguous = 0, 0, 0, 0
+    for _, root in pairs(registry) do
+      if type(root) == "table" then
+        for _, pickleName in ipairs({"__PickleTable", "__SoftPickleTable"}) do
+          local pickle = rawget(root, pickleName)
+          if type(pickle) == "table" and not seenPickles[pickle] then
+            seenPickles[pickle] = true
+            roots = roots + 1
+            local rank = pickleName == "__PickleTable" and 2 or 1
+            local subobjects = rawget(pickle, "__subobjs")
+            if type(subobjects) == "table" then
+              for object, savedInfo in pairs(subobjects) do
+                local killed = type(savedInfo) == "table" and rawget(savedInfo, "ravenKilled") or nil
+                if type(killed) == "boolean" then
+                  records = records + 1
+                  local row = persistedRowForObject(object)
+                  if row ~= nil then
+                    matched = matched + 1
+                    local id = row.CatalogueId
+                    local previousRank = observedRank[id]
+                    if previousRank == nil or rank > previousRank then
+                      observed[id] = killed
+                      observedRank[id] = rank
+                      conflicted[id] = nil
+                    elseif rank == previousRank and observed[id] ~= killed then
+                      conflicted[id] = true
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+
+    local killedCount, aliveCount = 0, 0
+    for catalogueId, killed in pairs(observed) do
+      if conflicted[catalogueId] then
+        ambiguous = ambiguous + 1
+      elseif not liveStatePublished[catalogueId] then
+        states[catalogueId] = killed
+        local row = byCatalogueId[catalogueId]
+        if killed then
+          killedCount = killedCount + 1
+          hideExactTracked(row)
+        else
+          aliveCount = aliveCount + 1
+        end
+      end
+    end
+    log("PERSISTED_SCAN", "source=" .. tostring(source) ..
+        " roots=" .. tostring(roots) .. " records=" .. tostring(records) ..
+        " matched=" .. tostring(matched) .. " killed=" .. tostring(killedCount) ..
+        " alive=" .. tostring(aliveCount) .. " ambiguous=" .. tostring(ambiguous) ..
+        " liveOverrides=true progressionWrites=false")
+    return roots > 0, killedCount, aliveCount
+  end
+
   local createPins = CompletionistMapV100_CreateMapPin
   CompletionistMapV100_CreateMapPin = function(self, currState)
     local result = createPins(self, currState)
+    bootstrapPersistedRavenState("map_create")
     syncIcons(self, "map_create")
     return result
   end
@@ -372,6 +510,7 @@ do
   _G.CompletionistMapV105PublishRavenState = function(catalogueId, collected, source)
     local row = byCatalogueId[catalogueId]
     if row == nil or type(collected) ~= "boolean" then return false end
+    liveStatePublished[catalogueId] = true
     states[catalogueId] = collected
     if collected then hideExactTracked(row) end
     if lastMapOnSelf ~= nil then syncIcons(lastMapOnSelf, "state:" .. tostring(source)) end
@@ -383,6 +522,7 @@ do
   _G.CompletionistMapV105ApplyPersistedRavenKills = function(catalogueIds, source)
     if type(catalogueIds) ~= "table" then return false, 0 end
     for catalogueId, _ in pairs(states) do states[catalogueId] = nil end
+    for catalogueId, _ in pairs(liveStatePublished) do liveStatePublished[catalogueId] = nil end
     local accepted = 0
     for key, value in pairs(catalogueIds) do
       local catalogueId = nil
@@ -404,8 +544,15 @@ do
     return true, accepted
   end
 
+  _G.CompletionistMapV105BootstrapPersistedRavenState = function(source)
+    local ok, killed, alive = bootstrapPersistedRavenState(source or "api")
+    if lastMapOnSelf ~= nil then syncIcons(lastMapOnSelf, "persisted_scan:" .. tostring(source)) end
+    return ok, killed, alive
+  end
+
   _G.CompletionistMapV105ResetRavenStates = function(source)
     for catalogueId, _ in pairs(states) do states[catalogueId] = nil end
+    for catalogueId, _ in pairs(liveStatePublished) do liveStatePublished[catalogueId] = nil end
     if lastMapOnSelf ~= nil then
       clearIcons(lastMapOnSelf, "state_reset:" .. tostring(source))
     end
@@ -423,6 +570,7 @@ do
       " mapResource=" .. mapResource .. " compassClass=" .. ravenClass ..
       " exactCollisionRequired=true markerIdAloneInfersRaven=false" ..
       " polling=false progressionWrites=false catalogueDefaultVisible=true" ..
-      " persistedKillBootstrap=true")
+      " persistedKillBootstrap=automaticReadOnlyPickleScan" ..
+      " persistedIdentity=wadPlusGameObject liveOverridesPersisted=true")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVENS
