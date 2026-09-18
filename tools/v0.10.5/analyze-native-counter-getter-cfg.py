@@ -111,9 +111,19 @@ def main()->int:
     queue=[]; roots={}
     for name,meta in TARGETS.items():
         fn=pe.function_for(meta["rva"])
-        if fn is None: raise RuntimeError(f"{name}: no pdata function for 0x{meta['rva']:X}")
+        if fn is None:
+            # Some tiny native binding shims (currently GetRefBool) are leaf
+            # code without an x64 exception-directory / pdata row. Counter
+            # getters have normal pdata and are the authoritative targets for
+            # this analysis, so record the leaf as unresolved instead of
+            # aborting the entire scan.
+            roots[name]={"entry_rva":meta["rva"],"signature":meta["signature"],
+                         "function_begin":None,"function_end":None,
+                         "pdata_missing":True}
+            continue
         roots[name]={"entry_rva":meta["rva"],"signature":meta["signature"],
-                     "function_begin":fn["begin"],"function_end":fn["end"]}
+                     "function_begin":fn["begin"],"function_end":fn["end"],
+                     "pdata_missing":False}
         queue.append((fn["begin"],0,name))
 
     funcs={}; provenance={}
@@ -158,7 +168,10 @@ def main()->int:
         "ROOTS",
     ]
     for name,r in roots.items():
-        lines.append(f"{name} signature={r['signature']} entry=0x{r['entry_rva']:X} fn=0x{r['function_begin']:X}-0x{r['function_end']:X}")
+        if r.get("function_begin") is None:
+            lines.append(f"{name} signature={r['signature']} entry=0x{r['entry_rva']:X} fn=<no_pdata_leaf>")
+        else:
+            lines.append(f"{name} signature={r['signature']} entry=0x{r['entry_rva']:X} fn=0x{r['function_begin']:X}-0x{r['function_end']:X}")
     for begin,rep in sorted(funcs.items()):
         prov=",".join(f"{p['root']}@{p['depth']}" for p in rep.get("provenance",[]))
         lines+=["",f"FUNCTION 0x{begin:X}-0x{rep['end']:X} size={rep['size']} via={prov}"]
