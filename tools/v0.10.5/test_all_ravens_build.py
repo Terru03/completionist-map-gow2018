@@ -36,8 +36,11 @@ class AllRavensBuildTests(unittest.TestCase):
         self.assertEqual(self.before, self.after)
         self.assertEqual(self.after, build.SOURCE_HASHES)
 
-    def test_candidate_has_only_five_scoped_files(self):
-        self.assertEqual(set(self.outputs), {build.MASTER, build.COORDS, build.POOL, build.MAP_LUA, build.EVENT_LUA})
+    def test_candidate_has_only_six_scoped_files(self):
+        self.assertEqual(
+            set(self.outputs),
+            {build.MASTER, build.COORDS, build.POOL, build.MAP_LUA, build.HUD_LUA, build.EVENT_LUA},
+        )
 
     def test_candidate_has_53_real_ravens_and_no_twin(self):
         master = build.parse_candidate(self.outputs[build.MASTER], build.MASTER)
@@ -79,11 +82,25 @@ class AllRavensBuildTests(unittest.TestCase):
         self.assertEqual(suffix.count("{CatalogueId="), 53)
         self.assertIn("ravenKilled == true", suffix)
         self.assertIn("dx * dx + dy * dy + dz * dz <= 0.25", suffix)
+        self.assertIn('engine.SendHook(', suffix)
+        self.assertIn('"UI_CALL_EVENT"', suffix)
+        self.assertIn('"EVT_COMPLETIONIST_V105_RAVEN_STATE"', suffix)
+        self.assertIn('game.Compass.HideMarker(row.Name)', suffix)
+
+    def test_hud_receiver_has_53_validated_rows_and_ui_state_bridge(self):
+        text = self.outputs[build.HUD_LUA].decode("utf-8")
+        suffix = text[text.index("-- BEGIN COMPLETIONIST V0.10.5 ALL RAVEN UI STATE RECEIVER"):]
+        self.assertEqual(suffix.count("{CatalogueId="), 53)
+        self.assertIn("MainHUD:EVT_COMPLETIONIST_V105_RAVEN_STATE", suffix)
+        self.assertIn("_G.CompletionistMapV105RavenState", suffix)
+        self.assertIn("_G.CompletionistMapV105PublishRavenState", suffix)
+        self.assertIn("position_mismatch", suffix)
 
     def test_hooks_add_no_progression_write(self):
         forbidden = ("SetMarkerState", "SetToken", "SetProgress", "IncrementQuestProgress", "StartQuest")
         for relative, marker in (
             (build.MAP_LUA, "-- BEGIN COMPLETIONIST V0.10.5 ALL RAVENS"),
+            (build.HUD_LUA, "-- BEGIN COMPLETIONIST V0.10.5 ALL RAVEN UI STATE RECEIVER"),
             (build.EVENT_LUA, "-- BEGIN COMPLETIONIST V0.10.5 ALL RAVEN EVENTS"),
         ):
             suffix = self.outputs[relative].decode("utf-8").split(marker, 1)[1]
@@ -117,7 +134,12 @@ class AllRavensBuildTests(unittest.TestCase):
             self.proof["state"]["persisted_identity_join"],
             "unique normalized WAD level plus GameObject name",
         )
-        self.assertIn("__PickleTable", self.proof["state"]["persisted_source"])
+        self.assertIn("UI-side received native ravenKilled states", self.proof["state"]["persisted_source"])
+        self.assertEqual(
+            self.proof["state"]["live_state_transport"],
+            "engine.SendHook UI_CALL_EVENT -> MainHUD receiver -> UI global -> map runtime",
+        )
+        self.assertTrue(self.proof["state"]["gameplay_exact_compass_cleanup"])
 
 
 if __name__ == "__main__":
