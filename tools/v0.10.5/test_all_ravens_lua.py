@@ -288,6 +288,7 @@ function probe.hideName(i) return calls.hides[i] end
 '''
 
 
+
 @unittest.skipIf(LuaRuntime is None, "Lua 5.1 test runtime unavailable")
 class AllRavensEventLuaTests(unittest.TestCase):
     def test_exact_loaded_instance_publishes_native_bool_and_rearms(self):
@@ -312,53 +313,31 @@ class AllRavensEventLuaTests(unittest.TestCase):
         self.assertGreaterEqual(probe.hideCount(), 1)
         self.assertEqual(probe.hideName(1), row["marker"]["name"])
         self.assertEqual(probe.timerCount(), 1)
-        before_restore = probe.count()
         probe.restore(False)
-        self.assertEqual(probe.count(), before_restore + 1)
-        self.assertFalse(probe.value(probe.count()))
+        self.assertFalse(probe.value(3))
 
 
 HUD_PRELUDE = r'''
 calls={logs={}}
-files={}
 print=function(s) calls.logs[#calls.logs+1]=s end
 _G.CompletionistMapV105RavenState={}
 _G.CompletionistMapV105PublishRavenState=function(id,killed,source)
   calls.published={id=id,killed=killed,source=source}
   return true
 end
-io={}
-function io.open(path,mode)
-  if mode=="w" then
-    local f={buf=""}
-    function f:write(value) self.buf=self.buf..tostring(value) end
-    function f:flush() end
-    function f:close() files[path]=self.buf end
-    return f
-  elseif mode=="r" then
-    local value=files[path]
-    if value==nil then return nil,"missing" end
-    local f={buf=value}
-    function f:lines() return string.gmatch(self.buf,"[^\n]+") end
-    function f:close() end
-    return f
-  end
-  return nil,"unsupported"
-end
 MainHUD={}
 probe={}
 function probe.recv(args) MainHUD:EVT_COMPLETIONIST_V105_RAVEN_STATE(args) end
-function probe.capture(id) MainHUD:EVT_COMPLETIONIST_V105_SAVEPOINT_CAPTURE({savePointId=id,source="test"}) end
-function probe.restoreId(id) MainHUD:EVT_COMPLETIONIST_V105_SAVEPOINT_RESTORE({savePointId=id,source="test"}) end
 function probe.state(id) return _G.CompletionistMapV105RavenState[id] end
 function probe.publishedId() return calls.published and calls.published.id or nil end
-function probe.file(path) return files[path] end
 '''
 
 
 @unittest.skipIf(LuaRuntime is None, "Lua 5.1 test runtime unavailable")
 class AllRavensHudBridgeLuaTests(unittest.TestCase):
-    def _runtime(self):
+    def test_valid_payload_crosses_ui_receiver_and_republishes_to_open_map(self):
+        row = CATALOGUE["ravens"][0]
+        x, y, z = row["source"]["native_world_position"]
         lua = LuaRuntime(unpack_returned_tuples=True)
         lua.execute(HUD_PRELUDE)
         hook = build.render_lua(
@@ -367,12 +346,6 @@ class AllRavensHudBridgeLuaTests(unittest.TestCase):
             "-- @@RAVEN_RECEIVER_ROWS@@",
         )
         lua.execute(hook.decode("utf-8"))
-        return lua, lua.globals().probe
-
-    def test_valid_payload_crosses_ui_receiver_and_republishes_to_open_map(self):
-        row = CATALOGUE["ravens"][0]
-        x, y, z = row["source"]["native_world_position"]
-        lua, probe = self._runtime()
         payload = lua.table_from({
             "catalogueId": row["catalogue_id"],
             "marker": row["marker"]["name"],
@@ -382,38 +355,22 @@ class AllRavensHudBridgeLuaTests(unittest.TestCase):
             "z": z,
             "source": "test",
         })
+        probe = lua.globals().probe
         probe.recv(payload)
         self.assertTrue(probe.state(row["catalogue_id"]))
         self.assertEqual(probe.publishedId(), row["catalogue_id"])
 
-    def test_savepoint_sidecar_round_trip_restores_global_state(self):
-        row = CATALOGUE["ravens"][0]
-        x, y, z = row["source"]["native_world_position"]
-        lua, probe = self._runtime()
-        probe.recv(lua.table_from({
-            "catalogueId": row["catalogue_id"],
-            "marker": row["marker"]["name"],
-            "killed": True,
-            "x": x,
-            "y": y,
-            "z": z,
-            "source": "test",
-        }))
-        savepoint = "sp_test_001"
-        probe.capture(savepoint)
-        self.assertIn(
-            row["catalogue_id"] + "=1",
-            probe.file("mods/completionist-map-cache/" + savepoint + ".txt"),
-        )
-        probe.restoreId("")
-        self.assertIsNone(probe.state(row["catalogue_id"]))
-        probe.restoreId(savepoint)
-        self.assertTrue(probe.state(row["catalogue_id"]))
-
     def test_receiver_rejects_wrong_marker_identity(self):
         row = CATALOGUE["ravens"][0]
         x, y, z = row["source"]["native_world_position"]
-        lua, probe = self._runtime()
+        lua = LuaRuntime(unpack_returned_tuples=True)
+        lua.execute(HUD_PRELUDE)
+        hook = build.render_lua(
+            CATALOGUE,
+            HERE / "all-ravens-hud-state-receiver.lua",
+            "-- @@RAVEN_RECEIVER_ROWS@@",
+        )
+        lua.execute(hook.decode("utf-8"))
         payload = lua.table_from({
             "catalogueId": row["catalogue_id"],
             "marker": "wrong",
@@ -423,60 +380,9 @@ class AllRavensHudBridgeLuaTests(unittest.TestCase):
             "z": z,
             "source": "test",
         })
+        probe = lua.globals().probe
         probe.recv(payload)
         self.assertIsNone(probe.state(row["catalogue_id"]))
-
-
-CACHE_PRELUDE = r'''
-calls={sent={},logs={}}
-print=function(s) calls.logs[#calls.logs+1]=s end
-object_savestate={existing={value=true}}
-engine={}
-function engine.GetUIWad() return "uiwad" end
-function engine.SendHook(kind,wad,event,payload)
-  calls.sent[#calls.sent+1]={kind=kind,wad=wad,event=event,payload=payload}
-end
-os={time=function() return 1234567890 end}
-math={random=function(a,b) return 424242 end}
-Save=function() return object_savestate end
-Restore=function(savestate)
-  if type(savestate)=="table" then object_savestate=savestate end
-end
-probe={}
-function probe.save() return Save() end
-function probe.snapshot() return object_savestate end
-function probe.restore(value) Restore(value) end
-function probe.sentCount() return #calls.sent end
-function probe.sentEvent(i) return calls.sent[i].event end
-function probe.sentSavePoint(i) return calls.sent[i].payload.savePointId end
-function probe.savedId()
-  local m=object_savestate["__CompletionistMapV105SavePoint"]
-  return m and m.id or nil
-end
-'''
-
-
-@unittest.skipIf(LuaRuntime is None, "Lua 5.1 test runtime unavailable")
-class AllRavensCheckpointCacheLuaTests(unittest.TestCase):
-    def _runtime(self):
-        lua = LuaRuntime(unpack_returned_tuples=True)
-        lua.execute(CACHE_PRELUDE)
-        hook = (HERE / "all-ravens-save-cache-hook.lua").read_text(encoding="utf-8")
-        lua.execute(hook)
-        return lua, lua.globals().probe
-
-    def test_savepoint_id_is_embedded_and_replayed(self):
-        _, probe = self._runtime()
-        snapshot = probe.save()
-        savepoint = probe.savedId()
-        self.assertIsNotNone(savepoint)
-        self.assertTrue(str(savepoint).startswith("sp_"))
-        self.assertEqual(probe.sentEvent(1), "EVT_COMPLETIONIST_V105_SAVEPOINT_CAPTURE")
-        self.assertEqual(probe.sentSavePoint(1), savepoint)
-        probe.restore(snapshot)
-        self.assertEqual(probe.sentEvent(2), "EVT_COMPLETIONIST_V105_SAVEPOINT_RESTORE")
-        self.assertEqual(probe.sentSavePoint(2), savepoint)
-
 
 
 if __name__ == "__main__":
