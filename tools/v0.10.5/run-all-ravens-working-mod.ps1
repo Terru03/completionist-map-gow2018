@@ -62,7 +62,7 @@ function Assert-Parses {
 }
 
 function Get-UnpublishedRavenRunDirs {
-    if (-not (Test-Path -LiteralPath $archiveRoot -PathType Container)) { return @() }
+    if (-not (Test-Path -LiteralPath $archiveRoot -PathType Container)) { return }
 
     $dirs = @(
         Get-ChildItem -LiteralPath $archiveRoot -Directory -ErrorAction SilentlyContinue |
@@ -70,18 +70,20 @@ function Get-UnpublishedRavenRunDirs {
             Sort-Object Name
     )
 
-    $result = New-Object System.Collections.Generic.List[object]
     foreach ($dir in $dirs) {
         $relative = [IO.Path]::GetRelativePath($repo, $dir.FullName).Replace('\','/')
-        $status = @(& git -C $repo status --porcelain --untracked-files=all -- $relative)
+        [string[]]$status = @(& git -C $repo status --porcelain --untracked-files=all -- $relative)
         if ($LASTEXITCODE -ne 0) {
             throw "Could not inspect Git state for $relative"
         }
-        if (@($status).Count -gt 0) {
-            $result.Add([pscustomobject]@{ FullName = $dir.FullName; Relative = $relative; Name = $dir.Name })
+        if ($status.Count -gt 0) {
+            [pscustomobject]@{
+                FullName = [string]$dir.FullName
+                Relative = [string]$relative
+                Name = [string]$dir.Name
+            }
         }
     }
-    return @($result)
 }
 
 function Publish-Paths {
@@ -141,9 +143,11 @@ try {
     "head_at_start=$headAtStart" | Add-Content -LiteralPath $launcherLog -Encoding UTF8
 
     $salvagedBefore = @(Get-UnpublishedRavenRunDirs)
+    "orphan_scan_before_count=$($salvagedBefore.Count)" | Add-Content -LiteralPath $launcherLog -Encoding UTF8
     if ($salvagedBefore.Count -gt 0) {
-        "salvaging_before=$($salvagedBefore.Relative -join ';')" | Add-Content -LiteralPath $launcherLog -Encoding UTF8
-        $commit = Publish-Paths -Paths @($salvagedBefore.Relative) -Message "field: salvage orphaned all-Ravens run evidence $launcherRunId"
+        [string[]]$salvageBeforePaths = @($salvagedBefore | ForEach-Object { [string]$_.Relative })
+        "salvaging_before=$($salvageBeforePaths -join ';')" | Add-Content -LiteralPath $launcherLog -Encoding UTF8
+        $commit = Publish-Paths -Paths $salvageBeforePaths -Message "field: salvage orphaned all-Ravens run evidence $launcherRunId"
         if ($null -ne $commit) {
             "salvage_before_commit=$commit" | Add-Content -LiteralPath $launcherLog -Encoding UTF8
         }
@@ -176,9 +180,11 @@ catch {
 finally {
     try {
         $salvagedAfter = @(Get-UnpublishedRavenRunDirs)
+        "orphan_scan_after_count=$($salvagedAfter.Count)" | Add-Content -LiteralPath $launcherLog -Encoding UTF8
         if ($salvagedAfter.Count -gt 0) {
-            "salvaging_after=$($salvagedAfter.Relative -join ';')" | Add-Content -LiteralPath $launcherLog -Encoding UTF8
-            $commit = Publish-Paths -Paths @($salvagedAfter.Relative) -Message "field: salvage failed all-Ravens child evidence $launcherRunId"
+            [string[]]$salvageAfterPaths = @($salvagedAfter | ForEach-Object { [string]$_.Relative })
+            "salvaging_after=$($salvageAfterPaths -join ';')" | Add-Content -LiteralPath $launcherLog -Encoding UTF8
+            $commit = Publish-Paths -Paths $salvageAfterPaths -Message "field: salvage failed all-Ravens child evidence $launcherRunId"
             if ($null -ne $commit) {
                 "salvage_after_commit=$commit" | Add-Content -LiteralPath $launcherLog -Encoding UTF8
             }
@@ -201,8 +207,8 @@ finally {
         head_at_start = $headAtStart
         child_exit_code = $childExitCode
         installer = $installer
-        salvaged_before = @($salvagedBefore | ForEach-Object { $_.Relative })
-        salvaged_after = @($salvagedAfter | ForEach-Object { $_.Relative })
+        salvaged_before = @($salvagedBefore | ForEach-Object { [string]$_.Relative })
+        salvaged_after = @($salvagedAfter | ForEach-Object { [string]$_.Relative })
         error = $errorText
     }
     [IO.File]::WriteAllText(
