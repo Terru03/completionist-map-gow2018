@@ -151,7 +151,20 @@ function Assert-TerminalAllRavensTransactionSummary([object]$Manifest) {
     if ([string]$Manifest.repo_branch -ne $expectedBranch) {
         throw "Terminal transaction branch differs: $($Manifest.repo_branch)"
     }
-    if ([string]$Manifest.transaction_id -notmatch '^\d{8}T\d{6}Z-[0-9a-f]{8}    Write-Host 'ALL_RAVENS_RUNTIME_TEST_STATUS'
+    if ([string]$Manifest.transaction_id -notmatch '^\d{8}T\d{6}Z-[0-9a-f]{8}$') {
+        throw 'Terminal transaction ID is invalid.'
+    }
+    if ((Get-FullPath ([string]$Manifest.game_root)) -ne (Get-FullPath $GameRoot)) {
+        throw "Terminal transaction belongs to a different game root: $($Manifest.game_root)"
+    }
+    if (@($Manifest.entries).Count -ne @($files.Keys).Count) {
+        throw "Terminal transaction entry count differs: $(@($Manifest.entries).Count)"
+    }
+    return $Manifest
+}
+
+if ($Mode -eq 'Status') {
+    Write-Host 'ALL_RAVENS_RUNTIME_TEST_STATUS'
     Write-Host "  candidate: $candidateRoot"
     Write-Host "  proof: $proofPath"
     Write-Host "  preserve current baseline mode: $([bool]$PreserveCurrentBaseline)"
