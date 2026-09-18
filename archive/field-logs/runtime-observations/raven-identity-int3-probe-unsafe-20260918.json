@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "date": "2026-09-18",
+  "source": "user field test + pushed resolver evidence",
+  "failed_capture_commit": "456cbc33a3b50961a777c93e684f36e29af67e15",
+  "observation": {
+    "debugger_attached": true,
+    "temporary_int3_installed_at_rva": "0x5495CC",
+    "valid_identity_vectors_captured": 0,
+    "game_process_exited_without_normal_GoW_crash_report": true,
+    "breakpoint_restore_after_process_exit_failed": "WinError 5 Access is denied",
+    "probe_timed_out": true
+  },
+  "conclusion": "Debugger/INT3 identity-vector capture is unsafe for further field use and must not be retried.",
+  "replacement_direction": {
+    "debugger_attach": false,
+    "process_code_writes": false,
+    "access": "OpenProcess + ReadProcessMemory only",
+    "input_tokens": [
+      "0x1C1001DD",
+      "0x1C4801DD",
+      "0x1BB001DD"
+    ],
+    "resolver_rva": "0x4EF0B0",
+    "resolver_global_registry_table_rva_range": "0x22A98C0-0x22A9AC0"
+  },
+  "save_or_progression_written_by_failed_probe": false
+}
