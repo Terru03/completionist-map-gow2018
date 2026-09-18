@@ -1,0 +1,4615 @@
+{
+  "catalogue": "completionist-map-gow2018-odins-ravens-save-identities",
+  "derivation": {
+    "object_hash_rule": "for each byte: value=((value+byte)*0x401)&u64; value^=value>>6",
+    "prototype_rule": "resolve native.prototype_id loader record, match its Raven behaviour path, and append the corroborated goProto Raven header identity",
+    "transform_order": "root_to_leaf",
+    "transform_record_id_rule": "copy 16-byte record id and decrement byte index 12 by one"
+  },
+  "frozen_binding_correction": {
+    "alive_existing_object_hashes_not_ravens": [
+      "0x165CD520758061E5",
+      "0xADB72E5C5003A8A0"
+    ],
+    "inserted_ravenKilled_object_hash": "0x98BE1707BA2D65A9",
+    "inserted_raven_catalogue_id": "raven_642d0d164af0a5d4076e77933c549a5d",
+    "proof": "exact live identity vector matches transformed native WAD chain and frozen DEAD inserted record"
+  },
+  "generated_utc": "2026-09-18T12:25:43.493587+00:00",
+  "identities": [
+    {
+      "catalogue_id": "raven_09c20f1b44476543307d8d8a444401f7",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "4673de13c1575443bcee2231a401699e",
+        "5deea84c940f5b44a00b3c3a3f5d405a",
+        "1b0fc209436547448a8d7d30f7014444",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "09c20f1b-4447-6543-307d-8d8a444401f7",
+      "object_hash_hex": "0x6928490D6854DE36",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Hop",
+            "offset": "0x703B3E0"
+          },
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x7069E40"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x7071C90",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x700B480",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x700B480"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Hop",
+            "record_offset": "0x703B3E0",
+            "semantic_ratio": 0.39344262295081966
+          },
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x7069E40",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 2058
+      },
+      "realm": "Midgard",
+      "region": "HTTK",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e36de54680d492869",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "4673de13c1575443bcee2231a401699e",
+          "source_offset": "0x7A54490",
+          "source_record_id": "4673de13c1575443bcee2231a501699e",
+          "source_record_name": "goxpl100_ents"
+        },
+        {
+          "identity_hex": "5deea84c940f5b44a00b3c3a3f5d405a",
+          "source_offset": "0x7790DE0",
+          "source_record_id": "5deea84c940f5b44a00b3c3a405d405a",
+          "source_record_name": "goxpl100_ents_nooffset"
+        },
+        {
+          "identity_hex": "1b0fc209436547448a8d7d30f7014444",
+          "source_offset": "0x7667100",
+          "source_record_id": "1b0fc209436547448a8d7d30f8014444",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "xpl100_httk.wad"
+    },
+    {
+      "catalogue_id": "raven_0b07c75f438ce0cfe8b6feb7731ffc9c",
+      "identity_element_count": 5,
+      "identity_elements_hex": [
+        "baa054ff2521c64ab003b3475400bf5e",
+        "d8955cf7bcbd8d4e905d41725ddebb6b",
+        "54b3e06eefa4d24c9cf0e194e02adb91",
+        "5fc7070bcfe08c43b7feb6e89cfc1f73",
+        "50dafefd65605b41a2aed011a5f4ce22"
+      ],
+      "instance_guid": "0b07c75f-438c-e0cf-e8b6-feb7731ffc9c",
+      "object_hash_hex": "0x5AC779AA6A979D4D",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecisionChallenge_RavenHover",
+            "offset": "0x1FCBF70"
+          }
+        ],
+        "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+        "loader_record_id": "cbd08dc1fea41249375bb6b2fa795111",
+        "loader_record_name": "goProtoNW1338854A",
+        "loader_record_offset": "0x1FCC8E0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+          "NW1338854A",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x1F9FA70",
+              "semantic_ratio": 0.12962962962962962
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x1F9FA70"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 408
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+            "record_name": "goProtoPrecisionChallenge_RavenHover",
+            "record_offset": "0x1FCBF70",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "HuldraMine01",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e4d9d976aaa79c75a",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "baa054ff2521c64ab003b3475400bf5e",
+          "source_offset": "0x2580260",
+          "source_record_id": "baa054ff2521c64ab003b3475500bf5e",
+          "source_record_name": "goxpl425_ents"
+        },
+        {
+          "identity_hex": "d8955cf7bcbd8d4e905d41725ddebb6b",
+          "source_offset": "0x2492BF0",
+          "source_record_id": "d8955cf7bcbd8d4e905d41725edebb6b",
+          "source_record_name": "goxpl425_ents_nooffset"
+        },
+        {
+          "identity_hex": "54b3e06eefa4d24c9cf0e194e02adb91",
+          "source_offset": "0x22F4A80",
+          "source_record_id": "54b3e06eefa4d24c9cf0e194e12adb91",
+          "source_record_name": "gochallenges"
+        },
+        {
+          "identity_hex": "5fc7070bcfe08c43b7feb6e89cfc1f73",
+          "source_offset": "0x22F4420",
+          "source_record_id": "5fc7070bcfe08c43b7feb6e89dfc1f73",
+          "source_record_name": "goprecisionchallenge_raven_hover"
+        }
+      ],
+      "wad": "xpl425_huldramineslh.wad"
+    },
+    {
+      "catalogue_id": "raven_100bb5c44d6b69eba68eb895d005f956",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "9a623cbb2e8e504699b5f9fde2bd348e",
+        "c4b50b10eb696b4d95b88ea656f905d0",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "100bb5c4-4d6b-69eb-a68e-b895d005f956",
+      "object_hash_hex": "0x0F427F78CDD154A5",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x6628550"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x66303A0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x65FE830",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x65FE830"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x6628550",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Riverpass",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24ea554d1cd787f420f",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "9a623cbb2e8e504699b5f9fde2bd348e",
+          "source_offset": "0x896AC70",
+          "source_record_id": "9a623cbb2e8e504699b5f9fde3bd348e",
+          "source_record_name": "goriv200_cbt"
+        },
+        {
+          "identity_hex": "c4b50b10eb696b4d95b88ea656f905d0",
+          "source_offset": "0x6B6A880",
+          "source_record_id": "c4b50b10eb696b4d95b88ea657f905d0",
+          "source_record_name": "goraven_perch1"
+        }
+      ],
+      "wad": "riv200_dangersmain.wad"
+    },
+    {
+      "catalogue_id": "raven_11d083554dd320d5e23ccca24f339acd",
+      "identity_element_count": 5,
+      "identity_elements_hex": [
+        "3a34385e35a16d4cbeb4dda7408afe78",
+        "4ad0cc40a5c22948b1d75ad5aee1a0e9",
+        "d9fd2438b7928b45bfeee16b4c07a905",
+        "5583d011d520d34da2cc3ce2cd9a334f",
+        "50dafefd65605b41a2aed011a5f4ce22"
+      ],
+      "instance_guid": "11d08355-4dd3-20d5-e23c-cca24f339acd",
+      "object_hash_hex": "0x7BE630FB2301C929",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecisionChallenge_RavenHover",
+            "offset": "0x1E3FF10"
+          }
+        ],
+        "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+        "loader_record_id": "bd01be1157e065d6910e0c26c6fae6ab",
+        "loader_record_name": "goProtoNWD271B4FD",
+        "loader_record_offset": "0x1E40A10",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover02.mb|NWD271B4FD",
+          "NWD271B4FD",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NWD271B4FD",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x1E13930",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x1E13930"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover02.mb|NWD271B4FD",
+            "record_name": "goProtoPrecisionChallenge_RavenHover",
+            "record_offset": "0x1E3FF10",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "BeachTower",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e29c90123fb30e67b",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "3a34385e35a16d4cbeb4dda7408afe78",
+          "source_offset": "0x21D8290",
+          "source_record_id": "3a34385e35a16d4cbeb4dda7418afe78",
+          "source_record_name": "goxpl970_ents"
+        },
+        {
+          "identity_hex": "4ad0cc40a5c22948b1d75ad5aee1a0e9",
+          "source_offset": "0x218D990",
+          "source_record_id": "4ad0cc40a5c22948b1d75ad5afe1a0e9",
+          "source_record_name": "goxpl970_ents_nooffset"
+        },
+        {
+          "identity_hex": "d9fd2438b7928b45bfeee16b4c07a905",
+          "source_offset": "0x21876B0",
+          "source_record_id": "d9fd2438b7928b45bfeee16b4d07a905",
+          "source_record_name": "goraven_01"
+        },
+        {
+          "identity_hex": "5583d011d520d34da2cc3ce2cd9a334f",
+          "source_offset": "0x2187050",
+          "source_record_id": "5583d011d520d34da2cc3ce2ce9a334f",
+          "source_record_name": "goprecisionchallenge_raven_hover02_001"
+        }
+      ],
+      "wad": "xpl970_beachtower.wad"
+    },
+    {
+      "catalogue_id": "raven_14a87a63401390815b4e4ab2b4e619d0",
+      "identity_element_count": 5,
+      "identity_elements_hex": [
+        "0f1c2fc825b56a4f90a6b572e99edebf",
+        "7f65aafeb75e3246a691662b18ba4869",
+        "18eabb9df4b5494895878b10888be360",
+        "637aa81481901340b24a4e5bd019e6b4",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "14a87a63-4013-9081-5b4e-4ab2b4e619d0",
+      "object_hash_hex": "0xD608C5A69DAB6CAE",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x2827F10"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x282FD60",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+              "record_name": "goProtoPrecisionChallenge_RavenHover",
+              "record_offset": "0x2800A50",
+              "semantic_ratio": 0.4032258064516129
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoPrecisionChallenge_RavenHover",
+              "offset": "0x2800A50"
+            }
+          ],
+          "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+          "score": 490
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x2827F10",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "ForestDungeon",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24eae6cab9da6c508d6",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "0f1c2fc825b56a4f90a6b572e99edebf",
+          "source_offset": "0x34469C0",
+          "source_record_id": "0f1c2fc825b56a4f90a6b572ea9edebf",
+          "source_record_name": "goxpl875_ents"
+        },
+        {
+          "identity_hex": "7f65aafeb75e3246a691662b18ba4869",
+          "source_offset": "0x3053190",
+          "source_record_id": "7f65aafeb75e3246a691662b19ba4869",
+          "source_record_name": "goxpl875_ents_nooffset"
+        },
+        {
+          "identity_hex": "18eabb9df4b5494895878b10888be360",
+          "source_offset": "0x303F6F0",
+          "source_record_id": "18eabb9df4b5494895878b10898be360",
+          "source_record_name": "goravens"
+        },
+        {
+          "identity_hex": "637aa81481901340b24a4e5bd019e6b4",
+          "source_offset": "0x303F030",
+          "source_record_id": "637aa81481901340b24a4e5bd119e6b4",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "xpl875_dungeonforestlh.wad"
+    },
+    {
+      "catalogue_id": "raven_2811daa04ce30f079ff758b3bf04369d",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "67ab361036be924385eb1940b9251406",
+        "a0da1128070fe34cb358f79f9d3604bf",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "2811daa0-4ce3-0f07-9ff7-58b3bf04369d",
+      "object_hash_hex": "0xE72A1D8CB72E6EA8",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x3BE6230"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x3BEE080",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+              "record_name": "goProtoPrecisionChallenge_RavenHover",
+              "record_offset": "0x3BBEBE0",
+              "semantic_ratio": 0.4032258064516129
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoPrecisionChallenge_RavenHover",
+              "offset": "0x3BBEBE0"
+            }
+          ],
+          "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+          "score": 490
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x3BE6230",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Helheim",
+      "region": "Helheim",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24ea86e2eb78c1d2ae7",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "67ab361036be924385eb1940b9251406",
+          "source_offset": "0x4CFB750",
+          "source_record_id": "67ab361036be924385eb1940ba251406",
+          "source_record_name": "gohel300_ents"
+        },
+        {
+          "identity_hex": "a0da1128070fe34cb358f79f9d3604bf",
+          "source_offset": "0x3FBAE50",
+          "source_record_id": "a0da1128070fe34cb358f79f9e3604bf",
+          "source_record_name": "goprecisionchallenge_raven_perch3"
+        }
+      ],
+      "wad": "hel300_mainbridge.wad"
+    },
+    {
+      "catalogue_id": "raven_2862a927444bf9df95a605b6a1cfec2b",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "49770d45d172ef4e90c97e83ed202d02",
+        "a12bceb5e8132148ab40ef0903c5d996",
+        "27a96228dff94b44b605a6952beccfa1",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "2862a927-444b-f9df-95a6-05b6a1cfec2b",
+      "object_hash_hex": "0x95DAC02E3C56A673",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Hop",
+            "offset": "0x4E61210"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "408280c2887ca5d7cba94feea56888d0",
+        "loader_record_name": "goProtoNW3E3EF288",
+        "loader_record_offset": "0x4E69120",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+          "NW3E3EF288",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW3E3EF288",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x4E31310",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x4E31310"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+            "record_name": "goProtoPrecision_Challenge_Raven_Hop",
+            "record_offset": "0x4E61210",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Foothills",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e73a6563c2ec0da95",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "49770d45d172ef4e90c97e83ed202d02",
+          "source_offset": "0x5D0CA20",
+          "source_record_id": "49770d45d172ef4e90c97e83ee202d02",
+          "source_record_name": "gofoot500_ents_offset"
+        },
+        {
+          "identity_hex": "a12bceb5e8132148ab40ef0903c5d996",
+          "source_offset": "0x4FD1030",
+          "source_record_id": "a12bceb5e8132148ab40ef0904c5d996",
+          "source_record_name": "gofoot500_ents"
+        },
+        {
+          "identity_hex": "27a96228dff94b44b605a6952beccfa1",
+          "source_offset": "0x4F5C6B0",
+          "source_record_id": "27a96228dff94b44b605a6952ceccfa1",
+          "source_record_name": "goprecisionchallenge_raven_hop"
+        }
+      ],
+      "wad": "foot500_top.wad"
+    },
+    {
+      "catalogue_id": "raven_2b86b2ad4f6c006d5f6db0af57a190a4",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "3e01ad4d041bd0469cacce2672e55ee3",
+        "5b963a961e48194d88223b4808ffc4c3",
+        "adb2862b6d006c4fafb06d5fa490a157",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "2b86b2ad-4f6c-006d-5f6d-b0af57a190a4",
+      "object_hash_hex": "0x434E6EB7C1B77862",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x2FAB400"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x2FB3250",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x2F819E0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x2F819E0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x2FAB400",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "BeachMaze",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e6278b7c1b76e4e43",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "3e01ad4d041bd0469cacce2672e55ee3",
+          "source_offset": "0x32E9A30",
+          "source_record_id": "3e01ad4d041bd0469cacce2673e55ee3",
+          "source_record_name": "goxpl950_ents"
+        },
+        {
+          "identity_hex": "5b963a961e48194d88223b4808ffc4c3",
+          "source_offset": "0x3271440",
+          "source_record_id": "5b963a961e48194d88223b4809ffc4c3",
+          "source_record_name": "goxpl950_ents_nooffset"
+        },
+        {
+          "identity_hex": "adb2862b6d006c4fafb06d5fa490a157",
+          "source_offset": "0x325A070",
+          "source_record_id": "adb2862b6d006c4fafb06d5fa590a157",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "xpl950_beachmaze.wad"
+    },
+    {
+      "catalogue_id": "raven_349cc1eb4752a6149cf89f9f94644092",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "a0b7ca88bbbbd748b1774f48590c7c4b",
+        "474f8032cf79a14aa7be9a0dec4b66ce",
+        "ebc19c3414a652479f9ff89c92406494",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "349cc1eb-4752-a614-9cf8-9f9f94644092",
+      "object_hash_hex": "0x349FD917EBF3E0FE",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x21142B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x211C100",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x20E22E0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x20E22E0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x21142B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "HuldraMine02",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24efee0f3eb17d99f34",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "a0b7ca88bbbbd748b1774f48590c7c4b",
+          "source_offset": "0x27EEE50",
+          "source_record_id": "a0b7ca88bbbbd748b1774f485a0c7c4b",
+          "source_record_name": "goxpl475_ents"
+        },
+        {
+          "identity_hex": "474f8032cf79a14aa7be9a0dec4b66ce",
+          "source_offset": "0x23AA700",
+          "source_record_id": "474f8032cf79a14aa7be9a0ded4b66ce",
+          "source_record_name": "goxpl475_ents_nooffset"
+        },
+        {
+          "identity_hex": "ebc19c3414a652479f9ff89c92406494",
+          "source_offset": "0x2398300",
+          "source_record_id": "ebc19c3414a652479f9ff89c93406494",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "xpl475_huldramineslh.wad"
+    },
+    {
+      "catalogue_id": "raven_3f0baac6405889c7478896801b6a637c",
+      "identity_element_count": 5,
+      "identity_elements_hex": [
+        "f602a353203cd34998f84857d965a27b",
+        "4ca23a299d98154b9c507feaadb8b8fb",
+        "420fb6b15aed63448af5de6431eb3d65",
+        "c6aa0b3fc7895840809688477c636a1b",
+        "50dafefd65605b41a2aed011a5f4ce22"
+      ],
+      "instance_guid": "3f0baac6-4058-89c7-4788-96801b6a637c",
+      "object_hash_hex": "0xF9426A2A1C09B17B",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecisionChallenge_RavenHover",
+            "offset": "0x7B97090"
+          }
+        ],
+        "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+        "loader_record_id": "cbd08dc1fea41249375bb6b2fa795111",
+        "loader_record_name": "goProtoNW1338854A",
+        "loader_record_offset": "0x7B97A00",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+          "NW1338854A",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+              "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+              "record_offset": "0x7BBE550",
+              "semantic_ratio": 0.4032258064516129
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoPrecision_Challenge_Raven_Perch",
+              "offset": "0x7BBE550"
+            }
+          ],
+          "identity_hex": "805b030bf339564cb157837c52906465",
+          "score": 490
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+            "record_name": "goProtoPrecisionChallenge_RavenHover",
+            "record_offset": "0x7B97090",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "ForestDungeon",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e7bb1091c2a6a42f9",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "f602a353203cd34998f84857d965a27b",
+          "source_offset": "0x944A760",
+          "source_record_id": "f602a353203cd34998f84857da65a27b",
+          "source_record_name": "goxpl850_ents"
+        },
+        {
+          "identity_hex": "4ca23a299d98154b9c507feaadb8b8fb",
+          "source_offset": "0x85FC2C0",
+          "source_record_id": "4ca23a299d98154b9c507feaaeb8b8fb",
+          "source_record_name": "goxpl850_ents_nooffset"
+        },
+        {
+          "identity_hex": "420fb6b15aed63448af5de6431eb3d65",
+          "source_offset": "0x85B1170",
+          "source_record_id": "420fb6b15aed63448af5de6432eb3d65",
+          "source_record_name": "goravens"
+        },
+        {
+          "identity_hex": "c6aa0b3fc7895840809688477c636a1b",
+          "source_offset": "0x85B0A50",
+          "source_record_id": "c6aa0b3fc7895840809688477d636a1b",
+          "source_record_name": "goprecisionchallenge_raven_hover1"
+        }
+      ],
+      "wad": "xpl850_dungeonforest.wad"
+    },
+    {
+      "catalogue_id": "raven_4532135740478ac108377e8b1c51a501",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "96233e7f9241efee58b41d8248d875ab",
+        "57133245c18a47408b7e370801a5511c",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "45321357-4047-8ac1-0837-7e8b1c51a501",
+      "object_hash_hex": "0x180011EE89DEDC1B",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Hop",
+            "offset": "0x511A7F0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "408280c2887ca5d7cba94feea56888d0",
+        "loader_record_name": "goProtoNW3E3EF288",
+        "loader_record_offset": "0x5122700",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+          "NW3E3EF288",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW3E3EF288",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x50E8FB0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x50E8FB0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+            "record_name": "goProtoPrecision_Challenge_Raven_Hop",
+            "record_offset": "0x511A7F0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Peakspass",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e1bdcde89ee110018",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "96233e7f9241efee58b41d8248d875ab",
+          "source_offset": "0x62ACB30",
+          "source_record_id": "96233e7f9241efee58b41d8249d875ab",
+          "source_record_name": "gopeak140_ents"
+        },
+        {
+          "identity_hex": "57133245c18a47408b7e370801a5511c",
+          "source_offset": "0x52C60A0",
+          "source_record_id": "57133245c18a47408b7e370802a5511c",
+          "source_record_name": "goprecisionchallenge_raven_hover"
+        }
+      ],
+      "wad": "peak140_caverndark.wad"
+    },
+    {
+      "catalogue_id": "raven_4b8990ee4053cd00d13299928da1a9fc",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "04de77b2b14ea8418e178c47584171f5",
+        "7aeb78e5e9bd1441945a20a7713445e5",
+        "ee90894b00cd5340929932d1fca9a18d",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "4b8990ee-4053-cd00-d132-99928da1a9fc",
+      "object_hash_hex": "0x23F06014D387EE7F",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x22F0A10"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x22F8860",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x22C6FF0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x22C6FF0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x22F0A10",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "CalderaShores",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e7fee87d31460f023",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "04de77b2b14ea8418e178c47584171f5",
+          "source_offset": "0x264A640",
+          "source_record_id": "04de77b2b14ea8418e178c47594171f5",
+          "source_record_name": "goxpl910_ents"
+        },
+        {
+          "identity_hex": "7aeb78e5e9bd1441945a20a7713445e5",
+          "source_offset": "0x25F9150",
+          "source_record_id": "7aeb78e5e9bd1441945a20a7723445e5",
+          "source_record_name": "goxpl910_ents_nooffset"
+        },
+        {
+          "identity_hex": "ee90894b00cd5340929932d1fca9a18d",
+          "source_offset": "0x25F6D50",
+          "source_record_id": "ee90894b00cd5340929932d1fda9a18d",
+          "source_record_name": "goprecisionchallenge_raven_perch1"
+        }
+      ],
+      "wad": "xpl910_islandshipwreck.wad"
+    },
+    {
+      "catalogue_id": "raven_4f3ed8604f52329654cb89a77cb7b227",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "98d6030d85afc14b939686e2f37dde62",
+        "33a3b5306f884446865fed1bb7627310",
+        "60d83e4f9632524fa789cb5427b2b77c",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "4f3ed860-4f52-3296-54cb-89a77cb7b227",
+      "object_hash_hex": "0x0D13E8E6EA49307B",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x4277380"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x427F1D0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x424D6C0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x424D6C0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x4277380",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "HTTK",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e7b3049eae6e8130d",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "98d6030d85afc14b939686e2f37dde62",
+          "source_offset": "0x49EA010",
+          "source_record_id": "98d6030d85afc14b939686e2f47dde62",
+          "source_record_name": "goxpl150_ents"
+        },
+        {
+          "identity_hex": "33a3b5306f884446865fed1bb7627310",
+          "source_offset": "0x46E6560",
+          "source_record_id": "33a3b5306f884446865fed1bb8627310",
+          "source_record_name": "goxpl150_ents_nooffset"
+        },
+        {
+          "identity_hex": "60d83e4f9632524fa789cb5427b2b77c",
+          "source_offset": "0x46DAE70",
+          "source_record_id": "60d83e4f9632524fa789cb5428b2b77c",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "xpl150_httktemple.wad"
+    },
+    {
+      "catalogue_id": "raven_528d332048f734d84b2f8ca26b3abafc",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "61a1baa7a4790342b8a1ba4f29a2a63f",
+        "20338d52d834f748a28c2f4bfcba3a6b",
+        "50dafefd65605b41a2aed011a5f4ce22"
+      ],
+      "instance_guid": "528d3320-48f7-34d8-4b2f-8ca26b3abafc",
+      "object_hash_hex": "0xE0D01E0D0CCB4206",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecisionChallenge_RavenHover",
+            "offset": "0x3479120"
+          }
+        ],
+        "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+        "loader_record_id": "0c397df6a1dcb23d8859241c3c713ac1",
+        "loader_record_name": "goProtoNWCCFDB7C7",
+        "loader_record_offset": "0x3479C20",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover03.mb|NWCCFDB7C7",
+          "NWCCFDB7C7",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NWCCFDB7C7",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x344C7F0",
+              "semantic_ratio": 0.18181818181818182
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x344C7F0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 424
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover03.mb|NWCCFDB7C7",
+            "record_name": "goProtoPrecisionChallenge_RavenHover",
+            "record_offset": "0x3479120",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Forest",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e0642cb0c0d1ed0e0",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "61a1baa7a4790342b8a1ba4f29a2a63f",
+          "source_offset": "0x35EA970",
+          "source_record_id": "61a1baa7a4790342b8a1ba4f2aa2a63f",
+          "source_record_name": "gofor260_ents"
+        },
+        {
+          "identity_hex": "20338d52d834f748a28c2f4bfcba3a6b",
+          "source_offset": "0x3557A10",
+          "source_record_id": "20338d52d834f748a28c2f4bfdba3a6b",
+          "source_record_name": "goprecisionchallenge_raven_hover03"
+        }
+      ],
+      "wad": "for260_chiseldungeon.wad"
+    },
+    {
+      "catalogue_id": "raven_595d8539488753c54fa471a46631e8c7",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "67ab361036be924385eb1940b9251406",
+        "39855d59c5538748a471a44fc7e83166",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "595d8539-4887-53c5-4fa4-71a46631e8c7",
+      "object_hash_hex": "0x6FF82C9365D92887",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x3BE6230"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x3BEE080",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+              "record_name": "goProtoPrecisionChallenge_RavenHover",
+              "record_offset": "0x3BBEBE0",
+              "semantic_ratio": 0.4032258064516129
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoPrecisionChallenge_RavenHover",
+              "offset": "0x3BBEBE0"
+            }
+          ],
+          "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+          "score": 490
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x3BE6230",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Helheim",
+      "region": "Helheim",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e8728d965932cf86f",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "67ab361036be924385eb1940b9251406",
+          "source_offset": "0x4CFB750",
+          "source_record_id": "67ab361036be924385eb1940ba251406",
+          "source_record_name": "gohel300_ents"
+        },
+        {
+          "identity_hex": "39855d59c5538748a471a44fc7e83166",
+          "source_offset": "0x3FBA4F0",
+          "source_record_id": "39855d59c5538748a471a44fc8e83166",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "hel300_mainbridge.wad"
+    },
+    {
+      "catalogue_id": "raven_5a498384495d58916e944883eb2c90bb",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "901dd6eeb946248391be4fb03826051b",
+        "8483495a91585d498348946ebb902ceb",
+        "50dafefd65605b41a2aed011a5f4ce22"
+      ],
+      "instance_guid": "5a498384-495d-5891-6e94-4883eb2c90bb",
+      "object_hash_hex": "0xF97A13C494158B98",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecisionChallenge_RavenHover",
+            "offset": "0x2588870"
+          }
+        ],
+        "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+        "loader_record_id": "cbd08dc1fea41249375bb6b2fa795111",
+        "loader_record_name": "goProtoNW1338854A",
+        "loader_record_offset": "0x25891E0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+          "NW1338854A",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x255B040",
+              "semantic_ratio": 0.12962962962962962
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x255B040"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 408
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+            "record_name": "goProtoPrecisionChallenge_RavenHover",
+            "record_offset": "0x2588870",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Peakspass",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e988b1594c4137af9",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "901dd6eeb946248391be4fb03826051b",
+          "source_offset": "0x303EE30",
+          "source_record_id": "901dd6eeb946248391be4fb03926051b",
+          "source_record_name": "gopeak260_ents"
+        },
+        {
+          "identity_hex": "8483495a91585d498348946ebb902ceb",
+          "source_offset": "0x2713740",
+          "source_record_id": "8483495a91585d498348946ebc902ceb",
+          "source_record_name": "goprecisionchallenge_raven_hover"
+        }
+      ],
+      "wad": "peak260_chimneylowhall.wad"
+    },
+    {
+      "catalogue_id": "raven_5a652cfb4af86af517b33c8676dbbfc5",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "b117a720a844a540907d855428442d2e",
+        "c112eccd8a65c84bba154eb969675096",
+        "fb2c655af56af84a863cb317c5bfdb76",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "5a652cfb-4af8-6af5-17b3-3c8676dbbfc5",
+      "object_hash_hex": "0xE6F619F5936335BC",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x2A242B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x2A2C100",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x29F8A30",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x29F8A30"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x2A242B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Riverpass",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24ebc356393f519f6e6",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "b117a720a844a540907d855428442d2e",
+          "source_offset": "0x30C83B0",
+          "source_record_id": "b117a720a844a540907d855429442d2e",
+          "source_record_name": "goriv975_ents"
+        },
+        {
+          "identity_hex": "c112eccd8a65c84bba154eb969675096",
+          "source_offset": "0x2BB83E0",
+          "source_record_id": "c112eccd8a65c84bba154eb96a675096",
+          "source_record_name": "goriv975_ents_nooffset"
+        },
+        {
+          "identity_hex": "fb2c655af56af84a863cb317c5bfdb76",
+          "source_offset": "0x2BB4430",
+          "source_record_id": "fb2c655af56af84a863cb317c6bfdb76",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "riv975_chiselarena.wad"
+    },
+    {
+      "catalogue_id": "raven_62fbf37c443c70aeca40ac840f6084b1",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "04de77b2b14ea8418e178c47584171f5",
+        "7aeb78e5e9bd1441945a20a7713445e5",
+        "7cf3fb62ae703c4484ac40cab184600f",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "62fbf37c-443c-70ae-ca40-ac840f6084b1",
+      "object_hash_hex": "0xECF02DCE7371E32E",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x22F0A10"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x22F8860",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x22C6FF0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x22C6FF0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x22F0A10",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "IslandShipwreck",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e2ee37173ce2df0ec",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "04de77b2b14ea8418e178c47584171f5",
+          "source_offset": "0x264A640",
+          "source_record_id": "04de77b2b14ea8418e178c47594171f5",
+          "source_record_name": "goxpl910_ents"
+        },
+        {
+          "identity_hex": "7aeb78e5e9bd1441945a20a7713445e5",
+          "source_offset": "0x25F9150",
+          "source_record_id": "7aeb78e5e9bd1441945a20a7723445e5",
+          "source_record_name": "goxpl910_ents_nooffset"
+        },
+        {
+          "identity_hex": "7cf3fb62ae703c4484ac40cab184600f",
+          "source_offset": "0x25F7070",
+          "source_record_id": "7cf3fb62ae703c4484ac40cab284600f",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "xpl910_islandshipwreck.wad"
+    },
+    {
+      "catalogue_id": "raven_63f2a1a74274de6df3962490fb6552e9",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "dced71f83c4af2dc67cbdaaae8684701",
+        "06fe71e35bd2f742acdb201012f8eae6",
+        "a7a1f2636dde7442902496f3e95265fb",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "63f2a1a7-4274-de6d-f396-2490fb6552e9",
+      "object_hash_hex": "0x9B227E6F813EBC3C",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x15AAED0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x15B2D20",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x1581210",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x1581210"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x15AAED0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Alfheim",
+      "region": "Alfheim",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e3cbc3e816f7e229b",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "dced71f83c4af2dc67cbdaaae8684701",
+          "source_offset": "0x16E4420",
+          "source_record_id": "dced71f83c4af2dc67cbdaaae9684701",
+          "source_record_name": "goalfdgn210_ents"
+        },
+        {
+          "identity_hex": "06fe71e35bd2f742acdb201012f8eae6",
+          "source_offset": "0x15CE880",
+          "source_record_id": "06fe71e35bd2f742acdb201013f8eae6",
+          "source_record_name": "goalfdgn210_ents_nooffset"
+        },
+        {
+          "identity_hex": "a7a1f2636dde7442902496f3e95265fb",
+          "source_offset": "0x15C8860",
+          "source_record_id": "a7a1f2636dde7442902496f3ea5265fb",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "alfdgn210_main.wad"
+    },
+    {
+      "catalogue_id": "raven_642d0d164af0a5d4076e77933c549a5d",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "6a40442bc7277743a15f2986a3279901",
+        "82bdafe150a9ea49ac27331f1525d1d5",
+        "160d2d64d4a5f04a93776e075d9a543c",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "642d0d16-4af0-a5d4-076e-77933c549a5d",
+      "object_hash_hex": "0x98BE1707BA2D65A9",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x76242B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x762C100",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+              "record_name": "goProtoPrecisionChallenge_RavenHover",
+              "record_offset": "0x75F8A30",
+              "semantic_ratio": 0.4032258064516129
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoPrecisionChallenge_RavenHover",
+              "offset": "0x75F8A30"
+            }
+          ],
+          "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+          "score": 490
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x76242B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "VikingFuneral",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24ea9652dba0717be98",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "6a40442bc7277743a15f2986a3279901",
+          "source_offset": "0x9598680",
+          "source_record_id": "6a40442bc7277743a15f2986a4279901",
+          "source_record_name": "goxpl200_ents"
+        },
+        {
+          "identity_hex": "82bdafe150a9ea49ac27331f1525d1d5",
+          "source_offset": "0x85FA520",
+          "source_record_id": "82bdafe150a9ea49ac27331f1625d1d5",
+          "source_record_name": "goxpl200_ents_nooffset"
+        },
+        {
+          "identity_hex": "160d2d64d4a5f04a93776e075d9a543c",
+          "source_offset": "0x85CCF20",
+          "source_record_id": "160d2d64d4a5f04a93776e075e9a543c",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "xpl200_funeral.wad"
+    },
+    {
+      "catalogue_id": "raven_69a8e9f3434cd84b48c7c688094ed2e4",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "67ab361036be924385eb1940b9251406",
+        "f3e9a8694bd84c4388c6c748e4d24e09",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "69a8e9f3-434c-d84b-48c7-c688094ed2e4",
+      "object_hash_hex": "0xDD6C3761D3780EF1",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x3BE6230"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x3BEE080",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+              "record_name": "goProtoPrecisionChallenge_RavenHover",
+              "record_offset": "0x3BBEBE0",
+              "semantic_ratio": 0.4032258064516129
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoPrecisionChallenge_RavenHover",
+              "offset": "0x3BBEBE0"
+            }
+          ],
+          "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+          "score": 490
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x3BE6230",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Helheim",
+      "region": "Helheim",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24ef10e78d361376cdd",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "67ab361036be924385eb1940b9251406",
+          "source_offset": "0x4CFB750",
+          "source_record_id": "67ab361036be924385eb1940ba251406",
+          "source_record_name": "gohel300_ents"
+        },
+        {
+          "identity_hex": "f3e9a8694bd84c4388c6c748e4d24e09",
+          "source_offset": "0x3FBAB30",
+          "source_record_id": "f3e9a8694bd84c4388c6c748e5d24e09",
+          "source_record_name": "goprecisionchallenge_raven_perch2"
+        }
+      ],
+      "wad": "hel300_mainbridge.wad"
+    },
+    {
+      "catalogue_id": "raven_73ac895445d967756cbf34ac591ac205",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "673cb41f7e231e40b761f446340c15dd",
+        "ca804158fe0f2b4fb68f1bb66393b322",
+        "5489ac737567d945ac34bf6c05c21a59",
+        "50dafefd65605b41a2aed011a5f4ce22"
+      ],
+      "instance_guid": "73ac8954-45d9-6775-6cbf-34ac591ac205",
+      "object_hash_hex": "0x27AFBC05D830D9CE",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecisionChallenge_RavenHover",
+            "offset": "0x2297170"
+          }
+        ],
+        "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+        "loader_record_id": "bd01be1157e065d6910e0c26c6fae6ab",
+        "loader_record_name": "goProtoNWD271B4FD",
+        "loader_record_offset": "0x2297C70",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover02.mb|NWD271B4FD",
+          "NWD271B4FD",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NWD271B4FD",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x2261DA0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x2261DA0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover02.mb|NWD271B4FD",
+            "record_name": "goProtoPrecisionChallenge_RavenHover",
+            "record_offset": "0x2297170",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "BeachShipwreck",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24eced930d805bcaf27",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "673cb41f7e231e40b761f446340c15dd",
+          "source_offset": "0x260C150",
+          "source_record_id": "673cb41f7e231e40b761f446350c15dd",
+          "source_record_name": "goxpl960_ents"
+        },
+        {
+          "identity_hex": "ca804158fe0f2b4fb68f1bb66393b322",
+          "source_offset": "0x2593CA0",
+          "source_record_id": "ca804158fe0f2b4fb68f1bb66493b322",
+          "source_record_name": "goxpl960_ents_nooffset"
+        },
+        {
+          "identity_hex": "5489ac737567d945ac34bf6c05c21a59",
+          "source_offset": "0x2591CC0",
+          "source_record_id": "5489ac737567d945ac34bf6c06c21a59",
+          "source_record_name": "goprecisionchallenge_raven_hoop"
+        }
+      ],
+      "wad": "xpl960_beachship.wad"
+    },
+    {
+      "catalogue_id": "raven_7ea7fe24483df9d884fd4790840bf692",
+      "identity_element_count": 5,
+      "identity_elements_hex": [
+        "f25ea6f208b8ee439502040742a21a0f",
+        "9d8a814e7a7b3c4e819535191717a13b",
+        "6bc4b8f81d1c7148816d22022b9654e0",
+        "24fea77ed8f93d489047fd8492f60b84",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "7ea7fe24-483d-f9d8-84fd-4790840bf692",
+      "object_hash_hex": "0xD32B7A358BCCC0E3",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x4F242B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x4F2C100",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x4EEB750",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x4EEB750"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x4F242B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "HuldraStronghold",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24ee3c0cc8b357a2bd3",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "f25ea6f208b8ee439502040742a21a0f",
+          "source_offset": "0x764A290",
+          "source_record_id": "f25ea6f208b8ee439502040743a21a0f",
+          "source_record_name": "goxpl300_ents"
+        },
+        {
+          "identity_hex": "9d8a814e7a7b3c4e819535191717a13b",
+          "source_offset": "0x6693790",
+          "source_record_id": "9d8a814e7a7b3c4e819535191817a13b",
+          "source_record_name": "goxpl300_ents_nooffset"
+        },
+        {
+          "identity_hex": "6bc4b8f81d1c7148816d22022b9654e0",
+          "source_offset": "0x6671A50",
+          "source_record_id": "6bc4b8f81d1c7148816d22022c9654e0",
+          "source_record_name": "gospecial_ravens_03"
+        },
+        {
+          "identity_hex": "24fea77ed8f93d489047fd8492f60b84",
+          "source_offset": "0x6671070",
+          "source_record_id": "24fea77ed8f93d489047fd8493f60b84",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "xpl300_stronghold.wad"
+    },
+    {
+      "catalogue_id": "raven_7ffab2af4d6e2c7e7a9d42a58943bdf1",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "67ab361036be924385eb1940b9251406",
+        "afb2fa7f7e2c6e4da5429d7af1bd4389",
+        "50dafefd65605b41a2aed011a5f4ce22"
+      ],
+      "instance_guid": "7ffab2af-4d6e-2c7e-7a9d-42a58943bdf1",
+      "object_hash_hex": "0x0E9A5F4FBAF1F8C5",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecisionChallenge_RavenHover",
+            "offset": "0x3BBEBE0"
+          }
+        ],
+        "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+        "loader_record_id": "bd01be1157e065d6910e0c26c6fae6ab",
+        "loader_record_name": "goProtoNWD271B4FD",
+        "loader_record_offset": "0x3BBF6E0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover02.mb|NWD271B4FD",
+          "NWD271B4FD",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover02.mb|NWD271B4FD",
+              "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+              "record_offset": "0x3BE6230",
+              "semantic_ratio": 0.3968253968253968
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoPrecision_Challenge_Raven_Perch",
+              "offset": "0x3BE6230"
+            }
+          ],
+          "identity_hex": "805b030bf339564cb157837c52906465",
+          "score": 489
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover02.mb|NWD271B4FD",
+            "record_name": "goProtoPrecisionChallenge_RavenHover",
+            "record_offset": "0x3BBEBE0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Helheim",
+      "region": "Helheim",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24ec5f8f1ba4f5f9a0e",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "67ab361036be924385eb1940b9251406",
+          "source_offset": "0x4CFB750",
+          "source_record_id": "67ab361036be924385eb1940ba251406",
+          "source_record_name": "gohel300_ents"
+        },
+        {
+          "identity_hex": "afb2fa7f7e2c6e4da5429d7af1bd4389",
+          "source_offset": "0x3FBA810",
+          "source_record_id": "afb2fa7f7e2c6e4da5429d7af2bd4389",
+          "source_record_name": "goprecisionchallenge_raven_hover2"
+        }
+      ],
+      "wad": "hel300_mainbridge.wad"
+    },
+    {
+      "catalogue_id": "raven_7ffe9f6e4e18734cebadc892d24801e4",
+      "identity_element_count": 5,
+      "identity_elements_hex": [
+        "6359804b9880f74599c87d0708a302c0",
+        "9776a3bae1e33e4db6a43ab23fb334a8",
+        "d84ba6c28c10634cb2e77fd68abce851",
+        "6e9ffe7f4c73184e92c8adebe40148d2",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "7ffe9f6e-4e18-734c-ebad-c892d24801e4",
+      "object_hash_hex": "0x9D98DCD9CAF48971",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x2B242B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x2B2C100",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x2AF3970",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x2AF3970"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x2B242B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "BeachCave",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e7189f4cad9dc989d",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "6359804b9880f74599c87d0708a302c0",
+          "source_offset": "0x2ED1E70",
+          "source_record_id": "6359804b9880f74599c87d0709a302c0",
+          "source_record_name": "goxpl940_ents"
+        },
+        {
+          "identity_hex": "9776a3bae1e33e4db6a43ab23fb334a8",
+          "source_offset": "0x2E31C70",
+          "source_record_id": "9776a3bae1e33e4db6a43ab240b334a8",
+          "source_record_name": "goxpl940_ents_nooffset"
+        },
+        {
+          "identity_hex": "d84ba6c28c10634cb2e77fd68abce851",
+          "source_offset": "0x2E04530",
+          "source_record_id": "d84ba6c28c10634cb2e77fd68bbce851",
+          "source_record_name": "goraven_03"
+        },
+        {
+          "identity_hex": "6e9ffe7f4c73184e92c8adebe40148d2",
+          "source_offset": "0x2E03E70",
+          "source_record_id": "6e9ffe7f4c73184e92c8adebe50148d2",
+          "source_record_name": "goprecisionchallenge_raven_perch_04"
+        }
+      ],
+      "wad": "xpl940_beachcave.wad"
+    },
+    {
+      "catalogue_id": "raven_8ca357c445d32c015159d6b93e173686",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "c6daa125a540134687d27d54ac274660",
+        "ca2a9f7a817f844bbd34fc1d1c562f34",
+        "c457a38c012cd345b9d659518636173e",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "8ca357c4-45d3-2c01-5159-d6b93e173686",
+      "object_hash_hex": "0x18DC35CFEBC9E14F",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Hop",
+            "offset": "0xD0D5B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "408280c2887ca5d7cba94feea56888d0",
+        "loader_record_name": "goProtoNW3E3EF288",
+        "loader_record_offset": "0xD154C0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+          "NW3E3EF288",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW3E3EF288",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0xCDCEB0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0xCDCEB0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+            "record_name": "goProtoPrecision_Challenge_Raven_Hop",
+            "record_offset": "0xD0D5B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Stonemason",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e4fe1c9ebcf35dc18",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "c6daa125a540134687d27d54ac274660",
+          "source_offset": "0x110B790",
+          "source_record_id": "c6daa125a540134687d27d54ad274660",
+          "source_record_name": "gostn090_ents"
+        },
+        {
+          "identity_hex": "ca2a9f7a817f844bbd34fc1d1c562f34",
+          "source_offset": "0xD60D70",
+          "source_record_id": "ca2a9f7a817f844bbd34fc1d1d562f34",
+          "source_record_name": "gostn090_ents_nooffset"
+        },
+        {
+          "identity_hex": "c457a38c012cd345b9d659518636173e",
+          "source_offset": "0xD605C0",
+          "source_record_id": "c457a38c012cd345b9d659518736173e",
+          "source_record_name": "goprecisionchallenge_raven_hop"
+        }
+      ],
+      "wad": "stn090_lakevista.wad"
+    },
+    {
+      "catalogue_id": "raven_93bb416243c6d7afd0dadf824507fcb6",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "4673de13c1575443bcee2231a401699e",
+        "5deea84c940f5b44a00b3c3a3f5d405a",
+        "6241bb93afd7c64382dfdad0b6fc0745",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "93bb4162-43c6-d7af-d0da-df824507fcb6",
+      "object_hash_hex": "0xFFD790347480ED2A",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Hop",
+            "offset": "0x703B3E0"
+          },
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x7069E40"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "408280c2887ca5d7cba94feea56888d0",
+        "loader_record_name": "goProtoNW3E3EF288",
+        "loader_record_offset": "0x70432F0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+          "NW3E3EF288",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW3E3EF288",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x700B480",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x700B480"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+            "record_name": "goProtoPrecision_Challenge_Raven_Hop",
+            "record_offset": "0x703B3E0",
+            "semantic_ratio": 1.0
+          },
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x7069E40",
+            "semantic_ratio": 0.4098360655737705
+          }
+        ],
+        "winning_score": 2062
+      },
+      "realm": "Midgard",
+      "region": "HTTK",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e2aed80743490d7ff",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "4673de13c1575443bcee2231a401699e",
+          "source_offset": "0x7A54490",
+          "source_record_id": "4673de13c1575443bcee2231a501699e",
+          "source_record_name": "goxpl100_ents"
+        },
+        {
+          "identity_hex": "5deea84c940f5b44a00b3c3a3f5d405a",
+          "source_offset": "0x7790DE0",
+          "source_record_id": "5deea84c940f5b44a00b3c3a405d405a",
+          "source_record_name": "goxpl100_ents_nooffset"
+        },
+        {
+          "identity_hex": "6241bb93afd7c64382dfdad0b6fc0745",
+          "source_offset": "0x7749400",
+          "source_record_id": "6241bb93afd7c64382dfdad0b7fc0745",
+          "source_record_name": "goprecisionchallenge_raven_hop"
+        }
+      ],
+      "wad": "xpl100_httk.wad"
+    },
+    {
+      "catalogue_id": "raven_95b9c6444d479ac68207b1829d02909b",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "0155276a7fd5304fb7d0c99275a1d6d8",
+        "5ded34b0e67dd24cb8749789aa4fd890",
+        "44c6b995c69a474d82b107829b90029d",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "95b9c644-4d47-9ac6-8207-b1829d02909b",
+      "object_hash_hex": "0x674BDA63AF6FF385",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x32142B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x321C100",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x31E4E40",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x31E4E40"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x32142B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Alfheim",
+      "region": "Alfheim",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e85f36faf63da4b67",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "0155276a7fd5304fb7d0c99275a1d6d8",
+          "source_offset": "0x3E87750",
+          "source_record_id": "0155276a7fd5304fb7d0c99276a1d6d8",
+          "source_record_name": "goalf355_ents"
+        },
+        {
+          "identity_hex": "5ded34b0e67dd24cb8749789aa4fd890",
+          "source_offset": "0x32E6140",
+          "source_record_id": "5ded34b0e67dd24cb8749789ab4fd890",
+          "source_record_name": "goalf355_ents_nooffset"
+        },
+        {
+          "identity_hex": "44c6b995c69a474d82b107829b90029d",
+          "source_offset": "0x32E3C60",
+          "source_record_id": "44c6b995c69a474d82b107829c90029d",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "alf355_chiseldungeon.wad"
+    },
+    {
+      "catalogue_id": "raven_97b753a94e069b45a5e031b81a5b9f91",
+      "identity_element_count": 5,
+      "identity_elements_hex": [
+        "0f1c2fc825b56a4f90a6b572e99edebf",
+        "7f65aafeb75e3246a691662b18ba4869",
+        "18eabb9df4b5494895878b10888be360",
+        "a953b797459b064eb831e0a5919f5b1a",
+        "50dafefd65605b41a2aed011a5f4ce22"
+      ],
+      "instance_guid": "97b753a9-4e06-9b45-a5e0-31b81a5b9f91",
+      "object_hash_hex": "0xCD2B8BE414941388",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecisionChallenge_RavenHover",
+            "offset": "0x2800A50"
+          }
+        ],
+        "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+        "loader_record_id": "cbd08dc1fea41249375bb6b2fa795111",
+        "loader_record_name": "goProtoNW1338854A",
+        "loader_record_offset": "0x28013C0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+          "NW1338854A",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+              "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+              "record_offset": "0x2827F10",
+              "semantic_ratio": 0.4032258064516129
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoPrecision_Challenge_Raven_Perch",
+              "offset": "0x2827F10"
+            }
+          ],
+          "identity_hex": "805b030bf339564cb157837c52906465",
+          "score": 490
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+            "record_name": "goProtoPrecisionChallenge_RavenHover",
+            "record_offset": "0x2800A50",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "ForestDungeon",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e88139414e48b2bcd",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "0f1c2fc825b56a4f90a6b572e99edebf",
+          "source_offset": "0x34469C0",
+          "source_record_id": "0f1c2fc825b56a4f90a6b572ea9edebf",
+          "source_record_name": "goxpl875_ents"
+        },
+        {
+          "identity_hex": "7f65aafeb75e3246a691662b18ba4869",
+          "source_offset": "0x3053190",
+          "source_record_id": "7f65aafeb75e3246a691662b19ba4869",
+          "source_record_name": "goxpl875_ents_nooffset"
+        },
+        {
+          "identity_hex": "18eabb9df4b5494895878b10888be360",
+          "source_offset": "0x303F6F0",
+          "source_record_id": "18eabb9df4b5494895878b10898be360",
+          "source_record_name": "goravens"
+        },
+        {
+          "identity_hex": "a953b797459b064eb831e0a5919f5b1a",
+          "source_offset": "0x303ED10",
+          "source_record_id": "a953b797459b064eb831e0a5929f5b1a",
+          "source_record_name": "goprecisionchallenge_raven_hover"
+        }
+      ],
+      "wad": "xpl875_dungeonforestlh.wad"
+    },
+    {
+      "catalogue_id": "raven_97e41c48491b177e804019a649735e58",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "6145a79686af474bb0467f69d6cdb87b",
+        "481ce4977e171b49a6194080585e7349",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "97e41c48-491b-177e-8040-19a649735e58",
+      "object_hash_hex": "0x0185D62C072FB4CE",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x19528D0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x195A720",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x1928EB0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x1928EB0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x19528D0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Riverpass",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24eceb42f072cd68501",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "6145a79686af474bb0467f69d6cdb87b",
+          "source_offset": "0x1F552B0",
+          "source_record_id": "6145a79686af474bb0467f69d7cdb87b",
+          "source_record_name": "goriv400_cbt"
+        },
+        {
+          "identity_hex": "481ce4977e171b49a6194080585e7349",
+          "source_offset": "0x1964D00",
+          "source_record_id": "481ce4977e171b49a6194080595e7349",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "riv400_forestintro.wad"
+    },
+    {
+      "catalogue_id": "raven_9deba5114d8045898dafc5be9add793b",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "badcb3dc0159da4d9f8b05706dab3ae6",
+        "b07f02b25137e34e9fd8ec039da7de94",
+        "11a5eb9d8945804dbec5af8d3b79dd9a",
+        "50dafefd65605b41a2aed011a5f4ce22"
+      ],
+      "instance_guid": "9deba511-4d80-4589-8daf-c5be9add793b",
+      "object_hash_hex": "0x2331B2AE0A4AC0B0",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecisionChallenge_RavenHover",
+            "offset": "0x10888E0"
+          }
+        ],
+        "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+        "loader_record_id": "3a519f6b5782fea73e617a71a7c726ce",
+        "loader_record_name": "goProtoNW1856C8C8",
+        "loader_record_offset": "0x10893E0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover01.mb|NW1856C8C8",
+          "NW1856C8C8",
+          ">azq",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": ">azq",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x1055860",
+              "semantic_ratio": 0.13333333333333333
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x1055860"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 410
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover01.mb|NW1856C8C8",
+            "record_name": "goProtoPrecisionChallenge_RavenHover",
+            "record_offset": "0x10888E0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "IslandArch",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24eb0c04a0aaeb23123",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "badcb3dc0159da4d9f8b05706dab3ae6",
+          "source_offset": "0x12FE650",
+          "source_record_id": "badcb3dc0159da4d9f8b05706eab3ae6",
+          "source_record_name": "goxpl900_ents"
+        },
+        {
+          "identity_hex": "b07f02b25137e34e9fd8ec039da7de94",
+          "source_offset": "0x12B6BC0",
+          "source_record_id": "b07f02b25137e34e9fd8ec039ea7de94",
+          "source_record_name": "goxpl900_ents_nooffset"
+        },
+        {
+          "identity_hex": "11a5eb9d8945804dbec5af8d3b79dd9a",
+          "source_offset": "0x12B55C0",
+          "source_record_id": "11a5eb9d8945804dbec5af8d3c79dd9a",
+          "source_record_name": "goprecisionchallenge_raven_hop1"
+        }
+      ],
+      "wad": "xpl900_islandarch.wad"
+    },
+    {
+      "catalogue_id": "raven_a70cd386408985c8bedbc98a7aaed456",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "924b63ade5a4fd46aeaf2a0414777f9b",
+        "692c7d8e5b5fb5408076194f2ee1f45b",
+        "86d30ca7c88589408ac9dbbe56d4ae7a",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "a70cd386-4089-85c8-bedb-c98a7aaed456",
+      "object_hash_hex": "0x1E8C8926B7FDCB11",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x36942B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x369C100",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x36602B0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x36602B0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x36942B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Stonemason",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e11cbfdb726898c1e",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "924b63ade5a4fd46aeaf2a0414777f9b",
+          "source_offset": "0x38846B0",
+          "source_record_id": "924b63ade5a4fd46aeaf2a0415777f9b",
+          "source_record_name": "gostn110_ents"
+        },
+        {
+          "identity_hex": "692c7d8e5b5fb5408076194f2ee1f45b",
+          "source_offset": "0x37DE9D0",
+          "source_record_id": "692c7d8e5b5fb5408076194f2fe1f45b",
+          "source_record_name": "gostn110_ents_nooffset"
+        },
+        {
+          "identity_hex": "86d30ca7c88589408ac9dbbe56d4ae7a",
+          "source_offset": "0x37DC8B0",
+          "source_record_id": "86d30ca7c88589408ac9dbbe57d4ae7a",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "stn110_chiselarena.wad"
+    },
+    {
+      "catalogue_id": "raven_a824e12946c803e8511da79bc52a193f",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "a6db8b7a9bae0f41b249a112896601a3",
+        "29e124a8e803c8469ba71d513f192ac5",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "a824e129-46c8-03e8-511d-a79bc52a193f",
+      "object_hash_hex": "0xBF4B40E5D8AE0386",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x42C5380"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x42CD1D0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x429B6C0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x429B6C0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x42C5380",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Helheim",
+      "region": "Helheim",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e8603aed8e5404bbf",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "a6db8b7a9bae0f41b249a112896601a3",
+          "source_offset": "0x523B660",
+          "source_record_id": "a6db8b7a9bae0f41b249a1128a6601a3",
+          "source_record_name": "gohel100_ents"
+        },
+        {
+          "identity_hex": "29e124a8e803c8469ba71d513f192ac5",
+          "source_offset": "0x42EBF40",
+          "source_record_id": "29e124a8e803c8469ba71d5140192ac5",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "hel100_calderaheldressing.wad"
+    },
+    {
+      "catalogue_id": "raven_ac45261c43ee745cd2e20a9cf61a817d",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "a2388023810224458167908977be1317",
+        "1c2645ac5c74ee439c0ae2d27d811af6",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "ac45261c-43ee-745c-d2e2-0a9cf61a817d",
+      "object_hash_hex": "0x3F5AEDF862BE0738",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x46BC850"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x46C46A0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x4694720",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x4694720"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x46BC850",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Riverpass",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e3807be62f8ed5a3f",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "a2388023810224458167908977be1317",
+          "source_offset": "0x612F820",
+          "source_record_id": "a2388023810224458167908978be1317",
+          "source_record_name": "goriv475_cbt"
+        },
+        {
+          "identity_hex": "1c2645ac5c74ee439c0ae2d27d811af6",
+          "source_offset": "0x4739FD0",
+          "source_record_id": "1c2645ac5c74ee439c0ae2d27e811af6",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "riv475_freyahouseext.wad"
+    },
+    {
+      "catalogue_id": "raven_ad56521740c745076417e99ddf1dd7a4",
+      "identity_element_count": 5,
+      "identity_elements_hex": [
+        "f602a353203cd34998f84857d965a27b",
+        "4ca23a299d98154b9c507feaadb8b8fb",
+        "420fb6b15aed63448af5de6431eb3d65",
+        "175256ad0745c7409de91764a4d71ddf",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "ad565217-40c7-4507-6417-e99ddf1dd7a4",
+      "object_hash_hex": "0x8CF793330BB66515",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x7BBE550"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x7BC63A0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+              "record_name": "goProtoPrecisionChallenge_RavenHover",
+              "record_offset": "0x7B97090",
+              "semantic_ratio": 0.4032258064516129
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoPrecisionChallenge_RavenHover",
+              "offset": "0x7B97090"
+            }
+          ],
+          "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+          "score": 490
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x7BBE550",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "ForestDungeon",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e1565b60b3393f78c",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "f602a353203cd34998f84857d965a27b",
+          "source_offset": "0x944A760",
+          "source_record_id": "f602a353203cd34998f84857da65a27b",
+          "source_record_name": "goxpl850_ents"
+        },
+        {
+          "identity_hex": "4ca23a299d98154b9c507feaadb8b8fb",
+          "source_offset": "0x85FC2C0",
+          "source_record_id": "4ca23a299d98154b9c507feaaeb8b8fb",
+          "source_record_name": "goxpl850_ents_nooffset"
+        },
+        {
+          "identity_hex": "420fb6b15aed63448af5de6431eb3d65",
+          "source_offset": "0x85B1170",
+          "source_record_id": "420fb6b15aed63448af5de6432eb3d65",
+          "source_record_name": "goravens"
+        },
+        {
+          "identity_hex": "175256ad0745c7409de91764a4d71ddf",
+          "source_offset": "0x85B03A0",
+          "source_record_id": "175256ad0745c7409de91764a5d71ddf",
+          "source_record_name": "goprecisionchallenge_raven_perch1"
+        }
+      ],
+      "wad": "xpl850_dungeonforest.wad"
+    },
+    {
+      "catalogue_id": "raven_b13e52024ecc5909d1fe478ee2c54e8c",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "311519306f7efa4a8f5700015fdc078a",
+        "115dd12f025c704cb8ef287610d4bbf3",
+        "02523eb10959cc4e8e47fed18c4ec5e2",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "b13e5202-4ecc-5909-d1fe-478ee2c54e8c",
+      "object_hash_hex": "0x2CB002BD7175B247",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x31242B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x312C100",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x30F8B00",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x30F8B00"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x31242B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Helheim",
+      "region": "Helheim",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e47b27571bd02b02c",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "311519306f7efa4a8f5700015fdc078a",
+          "source_offset": "0x35E5A50",
+          "source_record_id": "311519306f7efa4a8f57000160dc078a",
+          "source_record_name": "gohel350_ents"
+        },
+        {
+          "identity_hex": "115dd12f025c704cb8ef287610d4bbf3",
+          "source_offset": "0x31F3920",
+          "source_record_id": "115dd12f025c704cb8ef287611d4bbf3",
+          "source_record_name": "gohel350_ents_nooffset"
+        },
+        {
+          "identity_hex": "02523eb10959cc4e8e47fed18c4ec5e2",
+          "source_offset": "0x31F1350",
+          "source_record_id": "02523eb10959cc4e8e47fed18d4ec5e2",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "hel350_chiselarena.wad"
+    },
+    {
+      "catalogue_id": "raven_b5ec8398449f573b8a70b7a4fb1154af",
+      "identity_element_count": 5,
+      "identity_elements_hex": [
+        "f602a353203cd34998f84857d965a27b",
+        "4ca23a299d98154b9c507feaadb8b8fb",
+        "420fb6b15aed63448af5de6431eb3d65",
+        "9883ecb53b579f44a4b7708aaf5411fb",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "b5ec8398-449f-573b-8a70-b7a4fb1154af",
+      "object_hash_hex": "0x6BCD334C6AA7EC19",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x7BBE550"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x7BC63A0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+              "record_name": "goProtoPrecisionChallenge_RavenHover",
+              "record_offset": "0x7B97090",
+              "semantic_ratio": 0.4032258064516129
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoPrecisionChallenge_RavenHover",
+              "offset": "0x7B97090"
+            }
+          ],
+          "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+          "score": 490
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x7BBE550",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "ForestDungeon",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e19eca76a4c33cd6b",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "f602a353203cd34998f84857d965a27b",
+          "source_offset": "0x944A760",
+          "source_record_id": "f602a353203cd34998f84857da65a27b",
+          "source_record_name": "goxpl850_ents"
+        },
+        {
+          "identity_hex": "4ca23a299d98154b9c507feaadb8b8fb",
+          "source_offset": "0x85FC2C0",
+          "source_record_id": "4ca23a299d98154b9c507feaaeb8b8fb",
+          "source_record_name": "goxpl850_ents_nooffset"
+        },
+        {
+          "identity_hex": "420fb6b15aed63448af5de6431eb3d65",
+          "source_offset": "0x85B1170",
+          "source_record_id": "420fb6b15aed63448af5de6432eb3d65",
+          "source_record_name": "goravens"
+        },
+        {
+          "identity_hex": "9883ecb53b579f44a4b7708aaf5411fb",
+          "source_offset": "0x85B0730",
+          "source_record_id": "9883ecb53b579f44a4b7708ab05411fb",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "xpl850_dungeonforest.wad"
+    },
+    {
+      "catalogue_id": "raven_b65148ce40189997a7ee6abb05551d95",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "4673de13c1575443bcee2231a401699e",
+        "5deea84c940f5b44a00b3c3a3f5d405a",
+        "ce4851b697991840bb6aeea7951d5505",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "b65148ce-4018-9997-a7ee-6abb05551d95",
+      "object_hash_hex": "0x48EB03BC8BE4F1D3",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Hop",
+            "offset": "0x703B3E0"
+          },
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x7069E40"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x7071C90",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x700B480",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x700B480"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Hop",
+            "record_offset": "0x703B3E0",
+            "semantic_ratio": 0.39344262295081966
+          },
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x7069E40",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 2058
+      },
+      "realm": "Midgard",
+      "region": "HTTK",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24ed3f1e48bbc03eb48",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "4673de13c1575443bcee2231a401699e",
+          "source_offset": "0x7A54490",
+          "source_record_id": "4673de13c1575443bcee2231a501699e",
+          "source_record_name": "goxpl100_ents"
+        },
+        {
+          "identity_hex": "5deea84c940f5b44a00b3c3a3f5d405a",
+          "source_offset": "0x7790DE0",
+          "source_record_id": "5deea84c940f5b44a00b3c3a405d405a",
+          "source_record_name": "goxpl100_ents_nooffset"
+        },
+        {
+          "identity_hex": "ce4851b697991840bb6aeea7951d5505",
+          "source_offset": "0x77490E0",
+          "source_record_id": "ce4851b697991840bb6aeea7961d5505",
+          "source_record_name": "goprecisionchallenge_raven_perch1"
+        }
+      ],
+      "wad": "xpl100_httk.wad"
+    },
+    {
+      "catalogue_id": "raven_b88e14b5413082e98c4d9cadcbf6ad10",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "d78596ff8b4df538b169dcac4854363f",
+        "7bf4a8719c05ec4f8ac309e0170bbdd3",
+        "b5148eb8e9823041ad9c4d8c10adf6cb",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "b88e14b5-4130-82e9-8c4d-9cadcbf6ad10",
+      "object_hash_hex": "0xD4317994032D0939",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x4462700"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x446A550",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x4438CE0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x4438CE0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x4462700",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Peakspass",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e39092d03947931d4",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "d78596ff8b4df538b169dcac4854363f",
+          "source_offset": "0x4DA6510",
+          "source_record_id": "d78596ff8b4df538b169dcac4954363f",
+          "source_record_name": "gopeak210_ents"
+        },
+        {
+          "identity_hex": "7bf4a8719c05ec4f8ac309e0170bbdd3",
+          "source_offset": "0x4612F40",
+          "source_record_id": "7bf4a8719c05ec4f8ac309e0180bbdd3",
+          "source_record_name": "gopeak210_ents_nooffset"
+        },
+        {
+          "identity_hex": "b5148eb8e9823041ad9c4d8c10adf6cb",
+          "source_offset": "0x46069D0",
+          "source_record_id": "b5148eb8e9823041ad9c4d8c11adf6cb",
+          "source_record_name": "goraven"
+        }
+      ],
+      "wad": "peak210_rollerroomlh.wad"
+    },
+    {
+      "catalogue_id": "raven_bc9c2cea4b7e1feaf09bb58f1b691035",
+      "identity_element_count": 5,
+      "identity_elements_hex": [
+        "6359804b9880f74599c87d0708a302c0",
+        "9776a3bae1e33e4db6a43ab23fb334a8",
+        "d84ba6c28c10634cb2e77fd68abce851",
+        "ea2c9cbcea1f7e4b8fb59bf03510691b",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "bc9c2cea-4b7e-1fea-f09b-b58f1b691035",
+      "object_hash_hex": "0x035842203349CC8A",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x2B242B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x2B2C100",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x2AF3970",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x2AF3970"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x2B242B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "BeachCave",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e8acc493320425803",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "6359804b9880f74599c87d0708a302c0",
+          "source_offset": "0x2ED1E70",
+          "source_record_id": "6359804b9880f74599c87d0709a302c0",
+          "source_record_name": "goxpl940_ents"
+        },
+        {
+          "identity_hex": "9776a3bae1e33e4db6a43ab23fb334a8",
+          "source_offset": "0x2E31C70",
+          "source_record_id": "9776a3bae1e33e4db6a43ab240b334a8",
+          "source_record_name": "goxpl940_ents_nooffset"
+        },
+        {
+          "identity_hex": "d84ba6c28c10634cb2e77fd68abce851",
+          "source_offset": "0x2E04530",
+          "source_record_id": "d84ba6c28c10634cb2e77fd68bbce851",
+          "source_record_name": "goraven_03"
+        },
+        {
+          "identity_hex": "ea2c9cbcea1f7e4b8fb59bf03510691b",
+          "source_offset": "0x2E03B50",
+          "source_record_id": "ea2c9cbcea1f7e4b8fb59bf03610691b",
+          "source_record_name": "goprecisionchallenge_raven_perch_03"
+        }
+      ],
+      "wad": "xpl940_beachcave.wad"
+    },
+    {
+      "catalogue_id": "raven_c945cb53465b58decfcbd4a221cb5326",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "6a40442bc7277743a15f2986a3279901",
+        "82bdafe150a9ea49ac27331f1525d1d5",
+        "53cb45c9de585b46a2d4cbcf2653cb21",
+        "50dafefd65605b41a2aed011a5f4ce22"
+      ],
+      "instance_guid": "c945cb53-465b-58de-cfcb-d4a221cb5326",
+      "object_hash_hex": "0x24E46347632096AB",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecisionChallenge_RavenHover",
+            "offset": "0x75F8A30"
+          }
+        ],
+        "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+        "loader_record_id": "cbd08dc1fea41249375bb6b2fa795111",
+        "loader_record_name": "goProtoNW1338854A",
+        "loader_record_offset": "0x75F93A0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+          "NW1338854A",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+              "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+              "record_offset": "0x76242B0",
+              "semantic_ratio": 0.4032258064516129
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoPrecision_Challenge_Raven_Perch",
+              "offset": "0x76242B0"
+            }
+          ],
+          "identity_hex": "805b030bf339564cb157837c52906465",
+          "score": 490
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hover.mb|NW1338854A",
+            "record_name": "goProtoPrecisionChallenge_RavenHover",
+            "record_offset": "0x75F8A30",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "VikingFuneral",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24eab9620634763e424",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "6a40442bc7277743a15f2986a3279901",
+          "source_offset": "0x9598680",
+          "source_record_id": "6a40442bc7277743a15f2986a4279901",
+          "source_record_name": "goxpl200_ents"
+        },
+        {
+          "identity_hex": "82bdafe150a9ea49ac27331f1525d1d5",
+          "source_offset": "0x85FA520",
+          "source_record_id": "82bdafe150a9ea49ac27331f1625d1d5",
+          "source_record_name": "goxpl200_ents_nooffset"
+        },
+        {
+          "identity_hex": "53cb45c9de585b46a2d4cbcf2653cb21",
+          "source_offset": "0x85CD560",
+          "source_record_id": "53cb45c9de585b46a2d4cbcf2753cb21",
+          "source_record_name": "goprecisionchallenge_raven_hover"
+        }
+      ],
+      "wad": "xpl200_funeral.wad"
+    },
+    {
+      "catalogue_id": "raven_ccbc62d64eb0f79bbf76e9a08401a137",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "4a79dca9a180e74390437d354f50d09d",
+        "d662bccc9bf7b04ea0e976bf37a10184",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "ccbc62d6-4eb0-f79b-bf76-e9a08401a137",
+      "object_hash_hex": "0x415B82E2A135AF18",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x40D3030"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x40DAE80",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x40A9370",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x40A9370"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x40D3030",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Riverpass",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e18af35a1e2825b41",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "4a79dca9a180e74390437d354f50d09d",
+          "source_offset": "0x5850F20",
+          "source_record_id": "4a79dca9a180e74390437d355050d09d",
+          "source_record_name": "goriv420_cbt"
+        },
+        {
+          "identity_hex": "d662bccc9bf7b04ea0e976bf37a10184",
+          "source_offset": "0x41257B0",
+          "source_record_id": "d662bccc9bf7b04ea0e976bf38a10184",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "riv420_forestboarstart.wad"
+    },
+    {
+      "catalogue_id": "raven_ce4340a84992a449844e0394671c59eb",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "c1102deef2e8d449be849a35614279ca",
+        "420cc6ac03480f4488e871816c3e2624",
+        "a84043ce49a4924994034e84eb591c67",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "ce4340a8-4992-a449-844e-0394671c59eb",
+      "object_hash_hex": "0x03026C15CF13B7D5",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x19142B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x191C100",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x18E0EA0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x18E0EA0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x19142B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "HTTK",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24ed5b713cf156c0203",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "c1102deef2e8d449be849a35614279ca",
+          "source_offset": "0x1EA3090",
+          "source_record_id": "c1102deef2e8d449be849a35624279ca",
+          "source_record_name": "goxpl170_ents"
+        },
+        {
+          "identity_hex": "420cc6ac03480f4488e871816c3e2624",
+          "source_offset": "0x1CEFD40",
+          "source_record_id": "420cc6ac03480f4488e871816d3e2624",
+          "source_record_name": "goxpl170_ents_nooffset"
+        },
+        {
+          "identity_hex": "a84043ce49a4924994034e84eb591c67",
+          "source_offset": "0x1CE5AD0",
+          "source_record_id": "a84043ce49a4924994034e84ec591c67",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "xpl170_httkcaver.wad"
+    },
+    {
+      "catalogue_id": "raven_d869e60744104a9e8865428d5fc2f63a",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "7d8b1e119b162947a0298310bb292ec3",
+        "3be0c743f9452f47a97d25729dca23c8",
+        "07e669d89e4a10448d4265883af6c25f",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "d869e607-4410-4a9e-8865-428d5fc2f63a",
+      "object_hash_hex": "0xBF646021ABE869D9",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x5237520"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x523F370",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x520DB00",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x520DB00"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x5237520",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "HuldraMine02",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24ed969e8ab216064bf",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "7d8b1e119b162947a0298310bb292ec3",
+          "source_offset": "0x81BDEA0",
+          "source_record_id": "7d8b1e119b162947a0298310bc292ec3",
+          "source_record_name": "goxpl450_ents"
+        },
+        {
+          "identity_hex": "3be0c743f9452f47a97d25729dca23c8",
+          "source_offset": "0x6A6C250",
+          "source_record_id": "3be0c743f9452f47a97d25729eca23c8",
+          "source_record_name": "goxpl450_ents_nooffset"
+        },
+        {
+          "identity_hex": "07e669d89e4a10448d4265883af6c25f",
+          "source_offset": "0x6A5FB80",
+          "source_record_id": "07e669d89e4a10448d4265883bf6c25f",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "xpl450_huldramines.wad"
+    },
+    {
+      "catalogue_id": "raven_d9db91914694cfe73fa5b9abb208d25d",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "9a623cbb2e8e504699b5f9fde2bd348e",
+        "9191dbd9e7cf9446abb9a53f5dd208b2",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "d9db9191-4694-cfe7-3fa5-b9abb208d25d",
+      "object_hash_hex": "0x9B27F033D5098A48",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x6628550"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x66303A0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x65FE830",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x65FE830"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x6628550",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Riverpass",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e488a09d533f0279b",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "9a623cbb2e8e504699b5f9fde2bd348e",
+          "source_offset": "0x896AC70",
+          "source_record_id": "9a623cbb2e8e504699b5f9fde3bd348e",
+          "source_record_name": "goriv200_cbt"
+        },
+        {
+          "identity_hex": "9191dbd9e7cf9446abb9a53f5dd208b2",
+          "source_offset": "0x6B6A500",
+          "source_record_id": "9191dbd9e7cf9446abb9a53f5ed208b2",
+          "source_record_name": "goraven_perch"
+        }
+      ],
+      "wad": "riv200_dangersmain.wad"
+    },
+    {
+      "catalogue_id": "raven_df5a6f7543fa157f4cd630a19c038deb",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "785aa280e1b9a84ea7e4f94adf644bcf",
+        "d3105ad1094d2547a0f107d31b6d7c8b",
+        "756f5adf7f15fa43a130d64ceb8d039c",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "df5a6f75-43fa-157f-4cd6-30a19c038deb",
+      "object_hash_hex": "0x15EC6B7D19AA7DA5",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x1136450"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x113E2A0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x110C790",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x110C790"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x1136450",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "CalderaShores",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24ea57daa197d6bec15",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "785aa280e1b9a84ea7e4f94adf644bcf",
+          "source_offset": "0x1240480",
+          "source_record_id": "785aa280e1b9a84ea7e4f94ae0644bcf",
+          "source_record_name": "goxpl930_ents"
+        },
+        {
+          "identity_hex": "d3105ad1094d2547a0f107d31b6d7c8b",
+          "source_offset": "0x12045D0",
+          "source_record_id": "d3105ad1094d2547a0f107d31c6d7c8b",
+          "source_record_name": "goxpl930_ents_nooffset"
+        },
+        {
+          "identity_hex": "756f5adf7f15fa43a130d64ceb8d039c",
+          "source_offset": "0x12039A0",
+          "source_record_id": "756f5adf7f15fa43a130d64cec8d039c",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "xpl930_beachruins.wad"
+    },
+    {
+      "catalogue_id": "raven_e01f95a84dd1e99dde0952856855399d",
+      "identity_element_count": 5,
+      "identity_elements_hex": [
+        "f25ea6f208b8ee439502040742a21a0f",
+        "9d8a814e7a7b3c4e819535191717a13b",
+        "6bc4b8f81d1c7148816d22022b9654e0",
+        "a8951fe09de9d14d855209de9d395568",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "e01f95a8-4dd1-e99d-de09-52856855399d",
+      "object_hash_hex": "0xC245F2E62BA671E4",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x4F242B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x4F2C100",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x4EEB750",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x4EEB750"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x4F242B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "HuldraStronghold",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24ee471a62be6f245c2",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "f25ea6f208b8ee439502040742a21a0f",
+          "source_offset": "0x764A290",
+          "source_record_id": "f25ea6f208b8ee439502040743a21a0f",
+          "source_record_name": "goxpl300_ents"
+        },
+        {
+          "identity_hex": "9d8a814e7a7b3c4e819535191717a13b",
+          "source_offset": "0x6693790",
+          "source_record_id": "9d8a814e7a7b3c4e819535191817a13b",
+          "source_record_name": "goxpl300_ents_nooffset"
+        },
+        {
+          "identity_hex": "6bc4b8f81d1c7148816d22022b9654e0",
+          "source_offset": "0x6671A50",
+          "source_record_id": "6bc4b8f81d1c7148816d22022c9654e0",
+          "source_record_name": "gospecial_ravens_03"
+        },
+        {
+          "identity_hex": "a8951fe09de9d14d855209de9d395568",
+          "source_offset": "0x6671390",
+          "source_record_id": "a8951fe09de9d14d855209de9e395568",
+          "source_record_name": "goprecisionchallenge_raven_perch1"
+        }
+      ],
+      "wad": "xpl300_stronghold.wad"
+    },
+    {
+      "catalogue_id": "raven_e32f7bab42fd7298890f6aa56a734562",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "6a40442bc7277743a15f2986a3279901",
+        "82bdafe150a9ea49ac27331f1525d1d5",
+        "ab7b2fe39872fd42a56a0f896245736a",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "e32f7bab-42fd-7298-890f-6aa56a734562",
+      "object_hash_hex": "0xB581E3C335739D54",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x76242B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x762C100",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+              "record_name": "goProtoPrecisionChallenge_RavenHover",
+              "record_offset": "0x75F8A30",
+              "semantic_ratio": 0.4032258064516129
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoPrecisionChallenge_RavenHover",
+              "offset": "0x75F8A30"
+            }
+          ],
+          "identity_hex": "50dafefd65605b41a2aed011a5f4ce22",
+          "score": 490
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x76242B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "VikingFuneral",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e549d7335c3e381b5",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "6a40442bc7277743a15f2986a3279901",
+          "source_offset": "0x9598680",
+          "source_record_id": "6a40442bc7277743a15f2986a4279901",
+          "source_record_name": "goxpl200_ents"
+        },
+        {
+          "identity_hex": "82bdafe150a9ea49ac27331f1525d1d5",
+          "source_offset": "0x85FA520",
+          "source_record_id": "82bdafe150a9ea49ac27331f1625d1d5",
+          "source_record_name": "goxpl200_ents_nooffset"
+        },
+        {
+          "identity_hex": "ab7b2fe39872fd42a56a0f896245736a",
+          "source_offset": "0x85CD240",
+          "source_record_id": "ab7b2fe39872fd42a56a0f896345736a",
+          "source_record_name": "goprecisionchallenge_raven_perch1"
+        }
+      ],
+      "wad": "xpl200_funeral.wad"
+    },
+    {
+      "catalogue_id": "raven_e4d9b53e4e0330fc07421d8fea348f1d",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "d37793eef8059b46b98583292f71047c",
+        "897201a6471d5444b01c2326846ff9dd",
+        "3eb5d9e4fc30034e8f1d42071d8f34ea",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "e4d9b53e-4e03-30fc-0742-1d8fea348f1d",
+      "object_hash_hex": "0x60B7001A3C79C312",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Hop",
+            "offset": "0x3344960"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "408280c2887ca5d7cba94feea56888d0",
+        "loader_record_name": "goProtoNW3E3EF288",
+        "loader_record_offset": "0x334C870",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+          "NW3E3EF288",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW3E3EF288",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x3314A60",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x3314A60"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+            "record_name": "goProtoPrecision_Challenge_Raven_Hop",
+            "record_offset": "0x3344960",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Foothills",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e12c3793c1a00b760",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "d37793eef8059b46b98583292f71047c",
+          "source_offset": "0x34D37A0",
+          "source_record_id": "d37793eef8059b46b98583293071047c",
+          "source_record_name": "gofoot250_ents"
+        },
+        {
+          "identity_hex": "897201a6471d5444b01c2326846ff9dd",
+          "source_offset": "0x342EFA0",
+          "source_record_id": "897201a6471d5444b01c2326856ff9dd",
+          "source_record_name": "gofoot250_ents_nooffset"
+        },
+        {
+          "identity_hex": "3eb5d9e4fc30034e8f1d42071d8f34ea",
+          "source_offset": "0x342AFC0",
+          "source_record_id": "3eb5d9e4fc30034e8f1d42071e8f34ea",
+          "source_record_name": "goprecisionchallenge_raven_hop"
+        }
+      ],
+      "wad": "foot250_chiselarena.wad"
+    },
+    {
+      "catalogue_id": "raven_ef8568004bd6283b79b4819bb3e5cb0f",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "543241da6641524e94c22bfaddd757fc",
+        "e9a5e43c31e1d045bc0527b3d3677f53",
+        "006885ef3b28d64b9b81b4790fcbe5b3",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "ef856800-4bd6-283b-79b4-819bb3e5cb0f",
+      "object_hash_hex": "0xD91E06C995AD708C",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Hop",
+            "offset": "0x2739FB0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "408280c2887ca5d7cba94feea56888d0",
+        "loader_record_name": "goProtoNW3E3EF288",
+        "loader_record_offset": "0x2741EC0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+          "NW3E3EF288",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW3E3EF288",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x270A0B0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x270A0B0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+            "record_name": "goProtoPrecision_Challenge_Raven_Hop",
+            "record_offset": "0x2739FB0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "BeachWaterfall",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e8c70ad95c9061ed9",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "543241da6641524e94c22bfaddd757fc",
+          "source_offset": "0x2D45F00",
+          "source_record_id": "543241da6641524e94c22bfaded757fc",
+          "source_record_name": "goxpl980_ents"
+        },
+        {
+          "identity_hex": "e9a5e43c31e1d045bc0527b3d3677f53",
+          "source_offset": "0x2CC6A20",
+          "source_record_id": "e9a5e43c31e1d045bc0527b3d4677f53",
+          "source_record_name": "goxpl980_ents_nooffset"
+        },
+        {
+          "identity_hex": "006885ef3b28d64b9b81b4790fcbe5b3",
+          "source_offset": "0x2CC5060",
+          "source_record_id": "006885ef3b28d64b9b81b47910cbe5b3",
+          "source_record_name": "goprecisionchallenge_raven_hop"
+        }
+      ],
+      "wad": "xpl980_beachwaterfall.wad"
+    },
+    {
+      "catalogue_id": "raven_f8fdd3a4438c9697f8aa308323b2465e",
+      "identity_element_count": 3,
+      "identity_elements_hex": [
+        "aba5d08996b89e4fb1f02b19564ca42f",
+        "a4d3fdf897968c438330aaf85e46b223",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "f8fdd3a4-438c-9697-f8aa-308323b2465e",
+      "object_hash_hex": "0xA5358552E218F761",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x35A82B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x35B0100",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x357DE10",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x357DE10"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x35A82B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Riverpass",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e61f718e2528535a5",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "aba5d08996b89e4fb1f02b19564ca42f",
+          "source_offset": "0x42A9D50",
+          "source_record_id": "aba5d08996b89e4fb1f02b19574ca42f",
+          "source_record_name": "goriv430_cbt"
+        },
+        {
+          "identity_hex": "a4d3fdf897968c438330aaf85e46b223",
+          "source_offset": "0x35E1CA0",
+          "source_record_id": "a4d3fdf897968c438330aaf85f46b223",
+          "source_record_name": "goprecisionchallenge_raven_perch"
+        }
+      ],
+      "wad": "riv430_forestboartrack.wad"
+    },
+    {
+      "catalogue_id": "raven_fa8d596f445ba456bc5b11905aa4af07",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "f6487b0ebd791d4eaaebee66b3b0f4ac",
+        "d36724bcc12ae648934cf216b52c5b62",
+        "6f598dfa56a45b4490115bbc07afa45a",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "fa8d596f-445b-a456-bc5b-11905aa4af07",
+      "object_hash_hex": "0x0C34F3B499FCB527",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Perch",
+            "offset": "0x1E32A60"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "f4f22e4546b2194891ad7f9a7c5b6dc4",
+        "loader_record_name": "goProtoNW711ED14F",
+        "loader_record_offset": "0x1E3A8B0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+          "NW711ED14F",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW711ED14F",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x1E08DA0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x1E08DA0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_perch.mb|NW711ED14F",
+            "record_name": "goProtoPrecision_Challenge_Raven_Perch",
+            "record_offset": "0x1E32A60",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "MasonTrail",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24e27b5fc99b4f3340c",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "f6487b0ebd791d4eaaebee66b3b0f4ac",
+          "source_offset": "0x237C830",
+          "source_record_id": "f6487b0ebd791d4eaaebee66b4b0f4ac",
+          "source_record_name": "gocal270_ents"
+        },
+        {
+          "identity_hex": "d36724bcc12ae648934cf216b52c5b62",
+          "source_offset": "0x1FD8920",
+          "source_record_id": "d36724bcc12ae648934cf216b62c5b62",
+          "source_record_name": "gocal270_ents_nooffset"
+        },
+        {
+          "identity_hex": "6f598dfa56a45b4490115bbc07afa45a",
+          "source_offset": "0x1FC7FC0",
+          "source_record_id": "6f598dfa56a45b4490115bbc08afa45a",
+          "source_record_name": "goodinsravin03"
+        }
+      ],
+      "wad": "cal270_stonemasonlh.wad"
+    },
+    {
+      "catalogue_id": "raven_fb1ebb004216311e237c36b23a10707b",
+      "identity_element_count": 4,
+      "identity_elements_hex": [
+        "ab6587d8c9530449b9382559e06fb2f7",
+        "ce9177b61cb53544b0ba00e9f520e4a9",
+        "00bb1efb1e311642b2367c237b70103a",
+        "805b030bf339564cb157837c52906465"
+      ],
+      "instance_guid": "fb1ebb00-4216-311e-237c-36b23a10707b",
+      "object_hash_hex": "0xABC63EE4290194D9",
+      "prototype_identity": {
+        "identity_header_records": [
+          {
+            "kind": 1,
+            "name": "goProtoPrecision_Challenge_Raven_Hop",
+            "offset": "0x320D5B0"
+          }
+        ],
+        "identity_hex": "805b030bf339564cb157837c52906465",
+        "loader_record_id": "408280c2887ca5d7cba94feea56888d0",
+        "loader_record_name": "goProtoNW3E3EF288",
+        "loader_record_offset": "0x32154C0",
+        "loader_strings": [
+          "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+          "NW3E3EF288",
+          "00000000"
+        ],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
+        "runner_up": {
+          "evidence": [
+            {
+              "kind": "raven_goProto_header",
+              "matched_loader_string": "NW3E3EF288",
+              "record_name": "goProtoRaven_Death_FX",
+              "record_offset": "0x31D2AF0",
+              "semantic_ratio": 0.2727272727272727
+            }
+          ],
+          "header_records": [
+            {
+              "kind": 1,
+              "name": "goProtoRaven_Death_FX",
+              "offset": "0x31D2AF0"
+            }
+          ],
+          "identity_hex": "892957a0e8b34b40afce748e40823b00",
+          "score": 451
+        },
+        "winning_evidence": [
+          {
+            "kind": "raven_goProto_header",
+            "matched_loader_string": "z:/int8/gameart/levels/gameplaymodules/progression/quests/labors/precisionchallenge_raven_hop.mb|NW3E3EF288",
+            "record_name": "goProtoPrecision_Challenge_Raven_Hop",
+            "record_offset": "0x320D5B0",
+            "semantic_ratio": 1.0
+          }
+        ],
+        "winning_score": 1570
+      },
+      "realm": "Midgard",
+      "region": "Peakspass",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "serialized_payload_hex": "01b0b227342530c24ed9940129e43ec6ab",
+      "transform_identity_elements": [
+        {
+          "identity_hex": "ab6587d8c9530449b9382559e06fb2f7",
+          "source_offset": "0x33F5A00",
+          "source_record_id": "ab6587d8c9530449b9382559e16fb2f7",
+          "source_record_name": "gopeak205_ents"
+        },
+        {
+          "identity_hex": "ce9177b61cb53544b0ba00e9f520e4a9",
+          "source_offset": "0x32E6EA0",
+          "source_record_id": "ce9177b61cb53544b0ba00e9f620e4a9",
+          "source_record_name": "gopeak205_ents_nooffset"
+        },
+        {
+          "identity_hex": "00bb1efb1e311642b2367c237b70103a",
+          "source_offset": "0x32E47B0",
+          "source_record_id": "00bb1efb1e311642b2367c237c70103a",
+          "source_record_name": "goprecisionchallenge_raven_hop"
+        }
+      ],
+      "wad": "peak205_chiselarena.wad"
+    }
+  ],
+  "identity_count": 53,
+  "proof_checks": {
+    "identity_vector_exact": true,
+    "object_hash_exact": true,
+    "serialized_payload_exact": true
+  },
+  "record_format": "01 + registry_hash_le_u64 + object_hash_le_u64",
+  "registry_hash_hex": "0x4EC230253427B2B0",
+  "safety": {
+    "active_save_opened": false,
+    "game_files_written": false,
+    "game_launched": false,
+    "process_opened": false,
+    "repository_files_written": true,
+    "save_or_progression_written": false
+  },
+  "schema_version": 1,
+  "source_authority": "native_pc_wad_identity_recipe_plus_frozen_ravenKilled_proof",
+  "unique_object_hash_count": 53,
+  "unique_serialized_payload_count": 53
+}
