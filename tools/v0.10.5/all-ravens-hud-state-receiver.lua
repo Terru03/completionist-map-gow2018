@@ -64,7 +64,48 @@ do
         " progressionWrites=false")
   end
 
+
+  function MainHUD:EVT_COMPLETIONIST_V105_RAVEN_CACHE_RESTORE(args)
+    if type(args) ~= "table" then
+      log("CACHE_RECV_REFUSED", "reason=payload_not_table")
+      return
+    end
+    local row = byCatalogueId[tostring(args.catalogueId or "")]
+    if row == nil then
+      log("CACHE_RECV_REFUSED", "reason=unknown_catalogue_id catalogueId=" .. tostring(args.catalogueId))
+      return
+    end
+    if type(args.killed) ~= "boolean" then
+      log("CACHE_RECV_REFUSED", "reason=killed_not_boolean catalogueId=" .. row.CatalogueId)
+      return
+    end
+
+    _G.CompletionistMapV105RavenState = _G.CompletionistMapV105RavenState or {}
+    _G.CompletionistMapV105RavenState[row.CatalogueId] = args.killed
+    _G.CompletionistMapV105RavenStateGeneration =
+      (tonumber(_G.CompletionistMapV105RavenStateGeneration) or 0) + 1
+
+    local publish = _G.CompletionistMapV105PublishRavenState
+    local published = false
+    if type(publish) == "function" then
+      local ok, accepted = pcall(
+        publish,
+        row.CatalogueId,
+        args.killed,
+        "checkpoint_cache:" .. tostring(args.source)
+      )
+      published = ok and accepted == true
+    end
+
+    log("CACHE_RECV", "catalogueId=" .. row.CatalogueId ..
+        " killed=" .. tostring(args.killed) ..
+        " source=" .. tostring(args.source) ..
+        " generation=" .. tostring(_G.CompletionistMapV105RavenStateGeneration) ..
+        " mapRuntimePublished=" .. tostring(published) ..
+        " progressionWrites=false")
+  end
+
   log("API", "installed=true catalogueCount=" .. tostring(#rows) ..
-      " transport=UI_CALL_EVENT stateScope=uiGlobal progressionWrites=false")
+      " transport=UI_CALL_EVENT stateScope=uiGlobal checkpointCacheReceiver=true progressionWrites=false")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVEN UI STATE RECEIVER
