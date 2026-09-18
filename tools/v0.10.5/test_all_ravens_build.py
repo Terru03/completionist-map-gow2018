@@ -99,21 +99,19 @@ class AllRavensBuildTests(unittest.TestCase):
         self.assertIn('engine.SendHook(', suffix)
         self.assertIn('"UI_CALL_EVENT"', suffix)
         self.assertIn('"EVT_COMPLETIONIST_V105_RAVEN_STATE"', suffix)
-        self.assertIn('require, "core.save"', suffix)
-        self.assertIn("GetSaveState", suffix)
-        self.assertIn("__CompletionistMapV105Cache", suffix)
-        self.assertIn("checkpointCache=core.save.GetSaveState replayFromGameplay=true", suffix)
+        self.assertNotIn("GetSaveState", suffix)
+        self.assertIn("checkpointCache=savePointIdPlusMainHUDSidecar", suffix)
         self.assertIn('game.Compass.HideMarker(row.Name)', suffix)
 
-    def test_checkpoint_cache_has_53_ids_and_wraps_core_restore(self):
+    def test_checkpoint_cache_wraps_core_save_with_opaque_savepoint_id_only(self):
         text = self.outputs[build.SAVE_LUA].decode("utf-8")
         suffix = text[text.index("-- BEGIN COMPLETIONIST V0.10.5 RAVEN CHECKPOINT CACHE"):]
-        self.assertEqual(suffix.count('["raven_'), 53)
-        self.assertIn('__CompletionistMapV105Cache', suffix)
-        self.assertIn("CompletionistMapV105CacheRavenState", suffix)
-        self.assertIn("EVT_COMPLETIONIST_V105_RAVEN_CACHE_RESTORE", suffix)
+        self.assertNotIn("raven_", suffix)
+        self.assertIn("__CompletionistMapV105SavePoint", suffix)
+        self.assertIn("EVT_COMPLETIONIST_V105_SAVEPOINT_CAPTURE", suffix)
+        self.assertIn("EVT_COMPLETIONIST_V105_SAVEPOINT_RESTORE", suffix)
+        self.assertIn("local baseSave = Save", suffix)
         self.assertIn("local baseRestore = Restore", suffix)
-        self.assertIn("Restore = function(savestate)", suffix)
         self.assertIn("nativeProgressionTouched=false", suffix)
 
     def test_hud_receiver_has_53_validated_rows_and_ui_state_bridge(self):
@@ -123,6 +121,10 @@ class AllRavensBuildTests(unittest.TestCase):
         self.assertIn("MainHUD:EVT_COMPLETIONIST_V105_RAVEN_STATE", suffix)
         self.assertIn("_G.CompletionistMapV105RavenState", suffix)
         self.assertIn("_G.CompletionistMapV105PublishRavenState", suffix)
+        self.assertIn("EVT_COMPLETIONIST_V105_SAVEPOINT_CAPTURE", suffix)
+        self.assertIn("EVT_COMPLETIONIST_V105_SAVEPOINT_RESTORE", suffix)
+        self.assertIn("mods/completionist-map-cache/", suffix)
+        self.assertIn("io.open", suffix)
         self.assertIn("position_mismatch", suffix)
 
     def test_hooks_add_no_progression_write(self):
@@ -172,8 +174,12 @@ class AllRavensBuildTests(unittest.TestCase):
         self.assertTrue(self.proof["state"]["gameplay_exact_compass_cleanup"])
         self.assertTrue(self.proof["state"]["checkpoint_cache"]["enabled"])
         self.assertEqual(
-            self.proof["state"]["checkpoint_cache"]["key"],
-            "__CompletionistMapV105Cache",
+            self.proof["state"]["checkpoint_cache"]["savepoint_key"],
+            "__CompletionistMapV105SavePoint",
+        )
+        self.assertEqual(
+            self.proof["state"]["checkpoint_cache"]["sidecar_owner"],
+            "MainHUD",
         )
         self.assertFalse(
             self.proof["state"]["checkpoint_cache"]["native_progression_written"]
