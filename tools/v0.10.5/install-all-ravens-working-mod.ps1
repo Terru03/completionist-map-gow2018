@@ -9,6 +9,8 @@ $expectedBranch = 'codex/all-collectibles-production-research'
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $runtimeTest = Join-Path $PSScriptRoot 'all-ravens-runtime-test.ps1'
 $builder = Join-Path $PSScriptRoot 'build-all-ravens-release-candidate.py'
+$buildBehaviorTest = Join-Path $PSScriptRoot 'test_all_ravens_build.py'
+$luaBehaviorTest = Join-Path $PSScriptRoot 'test_all_ravens_lua.py'
 $candidateRoot = Join-Path $repo 'build\v0.10.5-all-ravens-release-candidate\offline\candidate\game-root'
 $frozenSourceRoot = Join-Path $repo 'build\v0.10.5-all-ravens-release-candidate\frozen-source\game-root'
 $proofRelative = 'archive/all-ravens/all-ravens-release-candidate-offline.json'
@@ -402,6 +404,31 @@ function Invoke-CandidateBuilder {
     }
 }
 
+function Invoke-PythonBehaviorTest {
+    param([string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        throw "Missing Python behavior test: $Path"
+    }
+
+    $python = Get-Command python -ErrorAction SilentlyContinue
+    $py = Get-Command py -ErrorAction SilentlyContinue
+
+    if ($null -ne $python) {
+        & $python.Source $Path 2>&1 | Out-Host
+    }
+    elseif ($null -ne $py) {
+        & $py.Source -3 $Path 2>&1 | Out-Host
+    }
+    else {
+        throw 'Python 3 was not found in PATH; it is required for all-Ravens behavior tests.'
+    }
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "Behavior test failed: $Path (exit code $LASTEXITCODE)"
+    }
+}
+
 function Save-LegacyTransactionManifest {
     param([object]$Manifest)
     $json = ($Manifest | ConvertTo-Json -Depth 12) + [Environment]::NewLine
@@ -706,6 +733,13 @@ try {
     Write-CandidateFileManifest
     $proofCommit = Publish-CandidateProofIfChanged
     Copy-RunSnapshot -Source $proofPath -Destination $proofSnapshotPath
+    Assert-CleanTrackedState
+
+    Write-Host '  behavior tests: all-Ravens offline build contract'
+    Invoke-PythonBehaviorTest -Path $buildBehaviorTest
+    Write-Host '  behavior tests: Raven Lua lifecycle/sidecar contract'
+    Invoke-PythonBehaviorTest -Path $luaBehaviorTest
+    Write-Host '  behavior tests: passed'
     Assert-CleanTrackedState
 
     Write-Host '  transaction self-test: running against temporary fake game'
