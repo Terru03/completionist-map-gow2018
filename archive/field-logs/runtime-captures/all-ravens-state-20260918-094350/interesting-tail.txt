@@ -1,0 +1,800 @@
+[09:36:54] [info] [CompletionistMap v0.10.1] RAVEN_STATE target=true source=OnStart killed=false regionQuest=RegionSummary_VF_Raven_Parent x=-64.850898742676 y=12.987384796143 z=787.30694580078 
+[09:36:54] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_642d0d164af0a5d4076e77933c549a5d marker=Completionist_V103_Veithurgard_Raven_01 killed=false source=OnStart ok=true error=nil progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_e32f7bab42fd7298890f6aa56a734562 marker=Completionist_V105_Raven_e32f7bab42fd7298 killed=true source=OnStart ok=true error=nil progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_c945cb53465b58decfcbd4a221cb5326 marker=Completionist_V105_Raven_c945cb53465b58de killed=true source=OnStart ok=true error=nil progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_642d0d164af0a5d4076e77933c549a5d collected=false source=ui_bridge:OnRestoreCheckpoint progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_642d0d164af0a5d4076e77933c549a5d marker=Completionist_V103_Veithurgard_Raven_01 killed=false source=OnRestoreCheckpoint generation=1 mapRuntimePublished=true progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_e32f7bab42fd7298890f6aa56a734562 collected=true source=ui_bridge:OnRestoreCheckpoint progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_e32f7bab42fd7298890f6aa56a734562 marker=Completionist_V105_Raven_e32f7bab42fd7298 killed=true source=OnRestoreCheckpoint generation=2 mapRuntimePublished=true progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_c945cb53465b58decfcbd4a221cb5326 collected=true source=ui_bridge:OnRestoreCheckpoint progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_c945cb53465b58decfcbd4a221cb5326 marker=Completionist_V105_Raven_c945cb53465b58de killed=true source=OnRestoreCheckpoint generation=3 mapRuntimePublished=true progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_RECV registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable opened=false challengeComplete=false keysUsed=1 
+[09:36:54] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_642d0d164af0a5d4076e77933c549a5d collected=false source=ui_bridge:OnStart progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_642d0d164af0a5d4076e77933c549a5d marker=Completionist_V103_Veithurgard_Raven_01 killed=false source=OnStart generation=4 mapRuntimePublished=true progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_e32f7bab42fd7298890f6aa56a734562 collected=true source=ui_bridge:OnStart progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_e32f7bab42fd7298890f6aa56a734562 marker=Completionist_V105_Raven_e32f7bab42fd7298 killed=true source=OnStart generation=5 mapRuntimePublished=true progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_c945cb53465b58decfcbd4a221cb5326 collected=true source=ui_bridge:OnStart progressionWrites=false 
+[09:36:54] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_c945cb53465b58decfcbd4a221cb5326 marker=Completionist_V105_Raven_c945cb53465b58de killed=true source=OnStart generation=6 mapRuntimePublished=true progressionWrites=false 
+[09:36:54] [info] Loading lua script [Context: ambientwildlifespawner, Path: gameart/scripts/levels/gameplaymodules/ambientwildlife/ambientwildlifespawner.lua]
+[09:36:54] [info] Loading lua script [Context: interact_loot_artifact, Path: gameart/scripts/levels/gameplaymodules/progression/interact_loot_artifact.lua]
+[09:36:54] [info] Loading lua script [Context: artifacts_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/artifacts_redirect.lua]
+[09:36:54] [info] Loading lua script [Context: artifacts_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/artifacts_redirect.lua]
+[09:36:54] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[09:36:54] [info] Loading lua script [Context: contextaction_basemodule, Path: gameart/scripts/levels/gameplaymodules/contextactions/contextaction_basemodule.lua]
+[09:36:54] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:36:54] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:36:54] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:36:54] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:36:54] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:36:54] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:36:54] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:36:54] [info] Loading lua script [Context: checkpointzone, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/checkpointzone.lua]
+[09:36:54] [info] Loading lua script [Context: interact_chest_standard, Path: gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua]
+[09:36:54] [info] Loading lua script [Context: lootchest_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootchest_redirect.lua]
+[09:36:54] [info] Loading lua script [Context: lootchest_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootchest_redirect.lua]
+[09:36:54] [info] Loading lua script [Context: enemyspawner, Path: gameart/scripts/levels/gameplaymodules/combat/spawners/enemyspawner.lua]
+[09:36:54] [info] Loading lua script [Context: lootchest_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootchest_redirect.lua]
+[09:36:54] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[09:36:54] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[09:36:54] [info] Loading lua script [Context: combatcollisionmanager, Path: gameart/scripts/levels/gameplaymodules/hazards/combatcollisionmanager.lua]
+[09:36:54] [info] Loading lua script [Context: genericsoninteract, Path: gameart/scripts/levels/gameplaymodules/soninteracts/templatescripts/genericsoninteract.lua]
+[09:36:54] [info] Loading lua script [Context: shook_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/shook_breakable.lua]
+[09:36:54] [info] Loading lua script [Context: hanginghazard_cutrope, Path: gameart/scripts/levels/gameplaymodules/hazards/hanginghazard_cutrope.lua]
+[09:36:54] [info] Loading lua script [Context: hangingloot_c, Path: gameart/scripts/levels/gameplaymodules/progression/hangingloot_c.lua]
+[09:36:54] [info] Loading lua script [Context: hanginghazard_cutrope, Path: gameart/scripts/levels/gameplaymodules/hazards/hanginghazard_cutrope.lua]
+[09:36:54] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:36:54] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:36:54] [info] Loading lua script [Context: consumableobject_scoop, Path: gameart/scripts/loot/consumableobject_scoop.lua]
+[09:36:54] [info] Loading lua script [Context: lootobject_scoop, Path: gameart/scripts/loot/lootobject_scoop.lua]
+[09:36:54] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[09:36:54] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[09:36:54] [info] Loading lua script [Context: leadthewayspline, Path: gameart/scripts/levelobjects/interactables/leadthewayspline.lua]
+[09:36:54] [info] Loading lua script [Context: interact_loot_corpse, Path: gameart/scripts/levels/gameplaymodules/progression/interact_loot_corpse.lua]
+[09:36:54] [info] Loading lua script [Context: lootcorpse_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootcorpse_redirect.lua]
+[09:36:54] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:36:54] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:36:54] [info] Loading lua script [Context: langcheckruneread, Path: gameart/scripts/levels/gameplaymodules/soninteracts/langcheckruneread.lua]
+[09:36:54] [info] Loading lua script [Context: questloremarker, Path: gameart/scripts/levels/gameplaymodules/progression/interactables/questloremarker.lua]
+[09:36:54] [info] Loading lua script [Context: consumableobject_scoop, Path: gameart/scripts/loot/consumableobject_scoop.lua]
+[09:36:54] [info] Loading lua script [Context: skyfxmanager, Path: gameart/scripts/levels/global/skyfxmanager.lua]
+[09:36:54] [info] Loading lua script [Context: interactiveobject_twoway, Path: gameart/scripts/levels/gameplaymodules/interactive/templatescripts/interactiveobject_twoway.lua]
+[09:36:54] [info] Loading lua script [Context: interactstonepedestal, Path: gameart/scripts/levels/gameplaymodules/progression/interactstonepedestal.lua]
+[09:36:54] [info] Loading lua script [Context: basicswitch, Path: gameart/scripts/levels/gameplaymodules/interactive/basicswitch.lua]
+[09:36:54] [info] Loading lua script [Context: basicswitch, Path: gameart/scripts/levels/gameplaymodules/interactive/basicswitch.lua]
+[09:36:54] [info] Loading lua script [Context: crankscriptofficial, Path: gameart/scripts/levels/gameplaymodules/interactive/cranks/crankscriptofficial.lua]
+[09:36:54] [info] Loading lua script [Context: interact_triptych, Path: gameart/scripts/levels/gameplaymodules/interactive/triptychs/interact_triptych.lua]
+[09:36:54] [info] Loading lua script [Context: xpl250_funeralinterior, Path: gameart/scripts/levels/exploration/xpl250_funeralinterior/xpl250_funeralinterior.lua]
+[09:36:58] [info] [CompletionistMap v0.10.5-raven-events] CLEANUP_BOUNDED_END catalogueId=raven_e32f7bab42fd7298890f6aa56a734562 source=OnStart attempts=20 realSeen=false queryOK=true 
+[09:36:58] [info] [CompletionistMap v0.10.5-raven-events] CLEANUP_BOUNDED_END catalogueId=raven_c945cb53465b58decfcbd4a221cb5326 source=OnStart attempts=20 realSeen=false queryOK=true 
+[09:37:00] [info] [CompletionistMap v0.10.1] FILTER_MAPPING total=11 completionist=true 
+[09:37:00] [info] [CompletionistMap v0.10.1] MAP_CALIBRATION realm=Midgard worldX=-152.67367553711 worldY=6.4835152626038 worldZ=763.29626464844 mapX=3.1157283782959 mapY=-0.15968322753906 mapZ=1.220890879631 
+[09:37:00] [info] [CompletionistMap v0.10.4-raven-artwork] ART_PREFLIGHT candidate=Completionist_V103_Veithurgard_Raven_01 id=-2207208259907848386 state=0 collected=false region=-6808215654220372037 regionType=userdata regionSource=FindRegionFromMarker.region expectedMapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[09:37:00] [info] [CompletionistMap v0.10.1] ICON_CAPS family=raven_artwork_layer go={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false,SetMaterialSwap=true} ui={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false} path=G:/SteamLibrary/steamapps/common/GodOfWar/mods/completionist-map/icons/generated/32/raven_artwork_layer.png 
+[09:37:00] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[09:37:00] [info] [CompletionistMap shared-loader-twin] LOOKUP found=false 
+[09:37:00] [info] [CompletionistMap v0.10.5-all-ravens] UI_STATE_BOOTSTRAP source=map_create known=3 killed=2 alive=1 generation=6 progressionWrites=false 
+[09:37:00] [info] [CompletionistMap v0.10.5-all-ravens] PERSISTED_SCAN source=map_create roots=0 records=0 matched=0 killed=0 alive=0 ambiguous=0 liveOverrides=true progressionWrites=false 
+[09:37:00] [info] [CompletionistMap v0.10.1] NORNIR_REGISTRY source=ui_call_event 
+[09:37:00] [info] [CompletionistMap v0.10.1] BACKING_POOL count=22 first=2924516555722838670,3015224018432851104,-8580963607903916635,-8580963607903813648,-8580963607903819882,-8580963607903820923,-8580963607903817804,-8580963607903818837,-8580963607903824038,3665597207158594306,-7682859529157234129,2012662071676473320 
+[09:37:00] [info] [CompletionistMap v0.10.1] BACKING_ASSIGN slot=2 id=3015224018432851104 region=8898843836327563556 
+[09:37:00] [info] [CompletionistMap v0.10.1] ICON_CAPS family=nornir_chest go={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false,SetMaterialSwap=true} ui={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false} path=G:/SteamLibrary/steamapps/common/GodOfWar/mods/completionist-map/icons/generated/32/nornir_chest.png 
+[09:37:00] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_chest direct=false fallback=DockPointProxy 
+[09:37:00] [info] [CompletionistMap v0.10.1] NORNIR_CHEST_PIN ok=true source=ui_call_event registryKey=chest_locked_parent|-43.904609680176|748.57946777344 backingId=3015224018432851104 mapX=3.0568611621857 mapZ=0.7858145236969 
+[09:37:00] [info] [CompletionistMap v0.10.1] BACKING_ASSIGN slot=10 id=3665597207158594306 region=8898843836327563556 
+[09:37:00] [info] [CompletionistMap v0.10.1] ICON_CAPS family=nornir_seal go={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false,SetMaterialSwap=true} ui={SetTexture=false,SetTextureName=false,SetImage=false,SetImagePath=false,SetSprite=false} path=G:/SteamLibrary/steamapps/common/GodOfWar/mods/completionist-map/icons/generated/32/nornir_seal.png 
+[09:37:00] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[09:37:00] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=1 backingId=3665597207158594306 mapX=3.0364987850189 mapZ=0.77214097976685 
+[09:37:00] [info] [CompletionistMap v0.10.1] BACKING_ASSIGN slot=11 id=-7682859529157234129 region=112041209474229565 
+[09:37:00] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[09:37:00] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=3 backingId=-7682859529157234129 mapX=2.9489850997925 mapZ=0.67033964395523 
+[09:37:00] [info] [CompletionistMap v0.10.1] NORNIR_MAP count=2 source=ui_call_event 
+[09:37:00] [info] [CompletionistMap v0.10.1] SNAP_TUNING mode=native_scale_no_camera_snap customIconScale=1 
+[09:37:00] [info] [CompletionistMap v0.10.1] ALIAS_CHECK pair=raven_chest sameGO=false 
+[09:37:00] [info] [CompletionistMap v0.10.1] ALIAS_CHECK pair=puzzle_puzzle a=1 b=3 sameGO=false 
+[09:37:00] [info] [CompletionistMap v0.10.1] FILTER_CUSTOM_VISIBILITY filter=1 raven=true chest=true puzzleFilter=false puzzleAfterAttempt=true 
+[09:37:01] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=3 expectedX=2.9489850997925 expectedZ=0.67033964395523 actual=x=2.9489850997925,y=-0.15968322753906,z=0.67033964395523 
+[09:37:01] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=1 expectedX=3.0364987850189 expectedZ=0.77214097976685 actual=x=3.0364987850189,y=-0.15968322753906,z=0.77214097976685 
+[09:37:02] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 source=exact_collision_object 
+[09:37:02] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 
+[09:37:02] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 
+[09:37:02] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 
+[09:37:02] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 title=Odin's Raven 
+[09:37:02] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_DISARM reason=SELECT_CONSUME name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 
+[09:37:02] [info] [CompletionistMap v0.10.5-all-ravens] SHOW name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 replacedCustomCount=0 replacedStockCount=0 
+[09:37:14] [info] Pickled Lua state 'WAD_Xpl250_AI_Interior01', used 54 bytes.
+[09:37:14] [info] LUA (server started) ** Shutting down Lua VM. 627410/2097152 bytes were in use.
+[09:37:14] [info] Loading lua script [Context: draugr00_lineattack, Path: gameart/scripts/characters/draugr00/draugr00_lineattack.lua]
+[09:37:14] [info] Loading lua script [Context: draugr00_luahooks, Path: gameart/scripts/characters/draugr00/draugr00_luahooks.lua]
+[09:37:14] [info] Loading lua script [Context: draugr00_poistates, Path: gameart/scripts/characters/draugr00/draugr00_poistates.lua]
+[09:37:14] [info] Loading lua script [Context: draugr00_table, Path: gameart/scripts/characters/draugr00/draugr00_table.lua]
+[09:37:14] [info] Loading lua script [Context: main, Path: gameart/scripts/characters/draugr00/main.lua]
+[09:37:14] [info] Loading lua script [Context: bandit00_bandit_iceblast_exit_linkjoint, Path: gameart/scripts/characters/bandit00/bandit00_bandit_iceblast_exit_linkjoint.lua]
+[09:37:14] [info] Loading lua script [Context: brawler00_poistates, Path: gameart/scripts/characters/brawler00/brawler00_poistates.lua]
+[09:37:14] [info] Loading lua script [Context: brawler00_table, Path: gameart/scripts/characters/brawler00/brawler00_table.lua]
+[09:37:14] [info] Loading lua script [Context: main, Path: gameart/scripts/characters/brawler00/main.lua]
+[09:37:14] [info] Loading lua script [Context: lootobject_scoop, Path: gameart/scripts/loot/lootobject_scoop.lua]
+[09:37:28] [info] [CompletionistMap v0.10.1] FILTER_MAPPING total=11 completionist=true 
+[09:37:28] [info] [CompletionistMap v0.10.1] MAP_CALIBRATION realm=Midgard worldX=-72.970695495605 worldY=12.47553730011 worldZ=782.90142822266 mapX=3.194149017334 mapY=-0.13571166992188 mapZ=0.90207892656326 
+[09:37:28] [info] [CompletionistMap v0.10.4-raven-artwork] ART_PREFLIGHT candidate=Completionist_V103_Veithurgard_Raven_01 id=-2207208259907848386 state=0 collected=false region=-6808215654220372037 regionType=userdata regionSource=FindRegionFromMarker.region expectedMapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[09:37:28] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[09:37:28] [info] [CompletionistMap shared-loader-twin] LOOKUP found=false 
+[09:37:28] [info] [CompletionistMap v0.10.5-all-ravens] UI_STATE_BOOTSTRAP source=map_create known=3 killed=2 alive=1 generation=6 progressionWrites=false 
+[09:37:28] [info] [CompletionistMap v0.10.5-all-ravens] PERSISTED_SCAN source=map_create roots=0 records=0 matched=0 killed=0 alive=0 ambiguous=0 liveOverrides=true progressionWrites=false 
+[09:37:28] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_chest direct=false fallback=DockPointProxy 
+[09:37:28] [info] [CompletionistMap v0.10.1] NORNIR_CHEST_PIN ok=true source=ui_call_event registryKey=chest_locked_parent|-43.904609680176|748.57946777344 backingId=3015224018432851104 mapX=3.0568611621857 mapZ=0.7858145236969 
+[09:37:28] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[09:37:28] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=1 backingId=3665597207158594306 mapX=3.0364987850189 mapZ=0.77214097976685 
+[09:37:28] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[09:37:28] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=3 backingId=-7682859529157234129 mapX=2.9489850997925 mapZ=0.67033964395523 
+[09:37:28] [info] [CompletionistMap v0.10.1] NORNIR_MAP count=2 source=ui_call_event 
+[09:37:28] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 source=exact_collision_object 
+[09:37:28] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 
+[09:37:28] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 
+[09:37:28] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 
+[09:37:28] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 title=Odin's Raven 
+[09:37:28] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=3 expectedX=2.9489850997925 expectedZ=0.67033964395523 actual=x=2.9489850997925,y=-0.13571166992188,z=0.67033964395523 
+[09:37:28] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=1 expectedX=3.0364987850189 expectedZ=0.77214097976685 actual=x=3.0364987850189,y=-0.13571166992188,z=0.77214097976685 
+[09:37:29] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_DISARM reason=SELECT_CONSUME name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 
+[09:37:29] [info] [CompletionistMap v0.10.5-all-ravens] REMOVE name=Completionist_V103_Veithurgard_Raven_01 uid=-2207208259907848386 
+[09:37:39] [info] [CompletionistMap v0.10.1] FILTER_MAPPING total=11 completionist=true 
+[09:37:39] [info] [CompletionistMap v0.10.1] MAP_CALIBRATION realm=Midgard worldX=-84.03345489502 worldY=8.5009498596191 worldZ=727.68743896484 mapX=2.9732930660248 mapY=-0.151611328125 mapZ=0.94632995128632 
+[09:37:39] [info] [CompletionistMap v0.10.4-raven-artwork] ART_PREFLIGHT candidate=Completionist_V103_Veithurgard_Raven_01 id=-2207208259907848386 state=0 collected=false region=-6808215654220372037 regionType=userdata regionSource=FindRegionFromMarker.region expectedMapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[09:37:39] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[09:37:39] [info] [CompletionistMap shared-loader-twin] LOOKUP found=false 
+[09:37:39] [info] [CompletionistMap v0.10.5-all-ravens] UI_STATE_BOOTSTRAP source=map_create known=3 killed=2 alive=1 generation=6 progressionWrites=false 
+[09:37:39] [info] [CompletionistMap v0.10.5-all-ravens] PERSISTED_SCAN source=map_create roots=0 records=0 matched=0 killed=0 alive=0 ambiguous=0 liveOverrides=true progressionWrites=false 
+[09:37:39] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_chest direct=false fallback=DockPointProxy 
+[09:37:39] [info] [CompletionistMap v0.10.1] NORNIR_CHEST_PIN ok=true source=ui_call_event registryKey=chest_locked_parent|-43.904609680176|748.57946777344 backingId=3015224018432851104 mapX=3.0568611621857 mapZ=0.7858145236969 
+[09:37:39] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[09:37:39] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=1 backingId=3665597207158594306 mapX=3.0364987850189 mapZ=0.77214097976685 
+[09:37:39] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[09:37:39] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=3 backingId=-7682859529157234129 mapX=2.9489850997925 mapZ=0.67033964395523 
+[09:37:39] [info] [CompletionistMap v0.10.1] NORNIR_MAP count=2 source=ui_call_event 
+[09:37:40] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=3 expectedX=2.9489850997925 expectedZ=0.67033964395523 actual=x=2.9489850997925,y=-0.151611328125,z=0.67033964395523 
+[09:37:40] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=1 expectedX=3.0364987850189 expectedZ=0.77214097976685 actual=x=3.0364987850189,y=-0.151611328125,z=0.77214097976685 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 source=exact_collision_object 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 title=Odin's Raven 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_DISARM reason=prompt_owner_mismatch name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 source=exact_collision_object 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 title=Odin's Raven 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_DISARM reason=prompt_owner_mismatch name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 source=exact_collision_object 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 title=Odin's Raven 
+[09:37:44] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_DISARM reason=prompt_owner_mismatch name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:46] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 source=exact_collision_object 
+[09:37:46] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:46] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:46] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:46] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 title=Odin's Raven 
+[09:37:46] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_DISARM reason=prompt_owner_mismatch name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:46] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 source=exact_collision_object 
+[09:37:46] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:46] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:46] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:46] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 title=Odin's Raven 
+[09:37:50] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_DISARM reason=prompt_owner_mismatch name=Completionist_V105_Raven_11d083554dd320d5 uid=-5831075107970584968 
+[09:37:55] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 source=exact_collision_object 
+[09:37:55] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:55] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:55] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:55] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 title=Odin's Raven 
+[09:37:55] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_DISARM reason=prompt_owner_mismatch name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:56] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 source=exact_collision_object 
+[09:37:56] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:56] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:56] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:56] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 title=Odin's Raven 
+[09:37:56] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 source=exact_collision_object 
+[09:37:56] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:56] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:56] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:56] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 title=Odin's Raven 
+[09:37:57] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_DISARM reason=prompt_owner_mismatch name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:57] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 source=exact_collision_object 
+[09:37:57] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:57] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:57] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:57] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 title=Odin's Raven 
+[09:37:58] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_DISARM reason=SELECT_CONSUME name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:37:58] [info] [CompletionistMap v0.10.5-all-ravens] SHOW name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 replacedCustomCount=0 replacedStockCount=0 
+[09:38:06] [info] Pickled Lua state 'WAD_Xpl250_FuneralInterior', used 3123 bytes.
+[09:38:06] [info] Pickled Lua state 'WAD_Xpl250_FuneralInterior', used 121 bytes.
+[09:38:06] [info] LUA (server started) ** Shutting down Lua VM. 5260901/4194304 bytes were in use.
+[09:38:06] [info] Loading lua script [Context: main, Path: gameart/scripts/characters/brok00/main.lua]
+[09:38:06] [info] Loading lua script [Context: golem00_leashbrain, Path: gameart/scripts/characters/golem00/golem00_leashbrain.lua]
+[09:38:06] [info] Loading lua script [Context: golemgrenadethrowable, Path: gameart/scripts/characters/golem00/golemgrenadethrowable.lua]
+[09:38:06] [info] Loading lua script [Context: golemgrenadethrowablenew, Path: gameart/scripts/characters/golem00/golemgrenadethrowablenew.lua]
+[09:38:06] [info] Loading lua script [Context: main, Path: gameart/scripts/characters/golem00/main.lua]
+[09:38:06] [info] Loading lua script [Context: golem20_table, Path: gameart/scripts/characters/golem20/golem20_table.lua]
+[09:38:06] [info] Loading lua script [Context: navbranchlogic_largenonstrafe, Path: gameart/scripts/libraries/creature/navbranchlogic_largenonstrafe.lua]
+[09:38:06] [info] Loading lua script [Context: ambientwildlifespawner, Path: gameart/scripts/levels/gameplaymodules/ambientwildlife/ambientwildlifespawner.lua]
+[09:38:06] [info] Loading lua script [Context: ambientwildlifezonespawner, Path: gameart/scripts/levels/gameplaymodules/ambientwildlife/ambientwildlifezonespawner.lua]
+[09:38:06] [info] Loading lua script [Context: environmenteventemitter, Path: gameart/scripts/levels/gameplaymodules/environmentevent/environmenteventemitter.lua]
+[09:38:06] [info] Loading lua script [Context: environmentevent_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/environmentevent_functionforwarding.lua]
+[09:38:06] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[09:38:06] [info] Loading lua script [Context: environmentevent_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/environmentevent_functionforwarding.lua]
+[09:38:06] [info] Loading lua script [Context: vehiclespawner, Path: gameart/scripts/levels/gameplaymodules/vehicles/spawners/vehiclespawner.lua]
+[09:38:06] [info] Loading lua script [Context: boatdock, Path: gameart/scripts/levelobjects/interactables/boatdock.lua]
+[09:38:06] [info] Loading lua script [Context: boatspeedcontrolzone, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/boatspeedcontrolzone.lua]
+[09:38:06] [info] Loading lua script [Context: contextaction_basemodule, Path: gameart/scripts/levels/gameplaymodules/contextactions/contextaction_basemodule.lua]
+[09:38:06] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:06] [info] Loading lua script [Context: checkpointzone, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/checkpointzone.lua]
+[09:38:06] [info] Loading lua script [Context: interact_chest_standard, Path: gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua]
+[09:38:06] [info] Loading lua script [Context: enemyspawner, Path: gameart/scripts/levels/gameplaymodules/combat/spawners/enemyspawner.lua]
+[09:38:06] [info] Loading lua script [Context: lootchest_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootchest_redirect.lua]
+[09:38:06] [info] Loading lua script [Context: speedcontrolzone, Path: gameart/scripts/levels/gameplaymodules/narrative/_scenetools/speedcontrolzone.lua]
+[09:38:06] [info] Loading lua script [Context: runic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/runic_breakable.lua]
+[09:38:06] [info] Loading lua script [Context: genericsoninteract, Path: gameart/scripts/levels/gameplaymodules/soninteracts/templatescripts/genericsoninteract.lua]
+[09:38:06] [info] Loading lua script [Context: questcamera, Path: gameart/scripts/levels/gameplaymodules/camera/narrative/questcamera.lua]
+[09:38:06] [info] Loading lua script [Context: langcheckruneread, Path: gameart/scripts/levels/gameplaymodules/soninteracts/langcheckruneread.lua]
+[09:38:06] [info] Loading lua script [Context: questloremarker, Path: gameart/scripts/levels/gameplaymodules/progression/interactables/questloremarker.lua]
+[09:38:07] [info] Loading lua script [Context: skyfxmanager, Path: gameart/scripts/levels/global/skyfxmanager.lua]
+[09:38:07] [info] Loading lua script [Context: talkinteract, Path: gameart/scripts/levels/gameplaymodules/interactive/talkinteract.lua]
+[09:38:07] [info] Loading lua script [Context: vendor, Path: gameart/scripts/levels/gameplaymodules/progression/vendor.lua]
+[09:38:07] [info] Loading lua script [Context: smallshop, Path: gameart/scripts/levels/gameplaymodules/progression/smallshop.lua]
+[09:38:07] [info] Loading lua script [Context: xpl220_funerallh, Path: gameart/scripts/levels/exploration/xpl220_funerallh/xpl220_funerallh.lua]
+[09:38:30] [info] [CompletionistMap v0.10.1] FILTER_MAPPING total=11 completionist=true 
+[09:38:30] [info] [CompletionistMap v0.10.1] MAP_CALIBRATION realm=Midgard worldX=3.4009234905243 worldY=-4.0001649856567 worldZ=691.02410888672 mapX=2.8266396522522 mapY=-0.20161437988281 mapZ=0.5965923666954 
+[09:38:30] [info] [CompletionistMap v0.10.4-raven-artwork] ART_PREFLIGHT candidate=Completionist_V103_Veithurgard_Raven_01 id=-2207208259907848386 state=0 collected=false region=-6808215654220372037 regionType=userdata regionSource=FindRegionFromMarker.region expectedMapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[09:38:30] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[09:38:30] [info] [CompletionistMap shared-loader-twin] LOOKUP found=false 
+[09:38:30] [info] [CompletionistMap v0.10.5-all-ravens] UI_STATE_BOOTSTRAP source=map_create known=3 killed=2 alive=1 generation=6 progressionWrites=false 
+[09:38:30] [info] [CompletionistMap v0.10.5-all-ravens] PERSISTED_SCAN source=map_create roots=0 records=0 matched=0 killed=0 alive=0 ambiguous=0 liveOverrides=true progressionWrites=false 
+[09:38:30] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_chest direct=false fallback=DockPointProxy 
+[09:38:30] [info] [CompletionistMap v0.10.1] NORNIR_CHEST_PIN ok=true source=ui_call_event registryKey=chest_locked_parent|-43.904609680176|748.57946777344 backingId=3015224018432851104 mapX=3.0568611621857 mapZ=0.7858145236969 
+[09:38:30] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[09:38:30] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=1 backingId=3665597207158594306 mapX=3.0364987850189 mapZ=0.77214097976685 
+[09:38:30] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[09:38:30] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=3 backingId=-7682859529157234129 mapX=2.9489850997925 mapZ=0.67033964395523 
+[09:38:30] [info] [CompletionistMap v0.10.1] NORNIR_MAP count=2 source=ui_call_event 
+[09:38:30] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=3 expectedX=2.9489850997925 expectedZ=0.67033964395523 actual=x=2.9489850997925,y=-0.20161437988281,z=0.67033964395523 
+[09:38:30] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=1 expectedX=3.0364987850189 expectedZ=0.77214097976685 actual=x=3.0364987850189,y=-0.20161437988281,z=0.77214097976685 
+[09:38:39] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 source=exact_collision_object 
+[09:38:39] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_DISARM reason=prompt_owner_mismatch name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 
+[09:38:39] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V105_Raven_14a87a6340139081 uid=-2142507381467221617 title=Odin's Raven 
+[09:38:42] [info] Pickled Lua state 'WAD_Cal050_Sound', used 299 bytes.
+[09:38:42] [info] LUA (server started) ** Shutting down Lua VM. 359776/1048576 bytes were in use.
+[09:38:42] [info] Pickled Lua state 'WAD_Xpl205_Sound', used 54 bytes.
+[09:38:42] [info] LUA (server started) ** Shutting down Lua VM. 128830/1048576 bytes were in use.
+[09:38:42] [info] Loading lua script [Context: contextaction_basemodule, Path: gameart/scripts/levels/gameplaymodules/contextactions/contextaction_basemodule.lua]
+[09:38:42] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:42] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:42] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:42] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[09:38:42] [info] Loading lua script [Context: environmenteventemitter, Path: gameart/scripts/levels/gameplaymodules/environmentevent/environmenteventemitter.lua]
+[09:38:42] [info] Loading lua script [Context: fasttravel_rbr_controller, Path: gameart/scripts/levels/gameplaymodules/interactive/travel/fasttravel_rbr_controller.lua]
+[09:38:42] [info] Loading lua script [Context: interactzone, Path: gameart/scripts/levels/gameplaymodules/interactive/interactzone.lua]
+[09:38:42] [info] Loading lua script [Context: leadthewayspline, Path: gameart/scripts/levelobjects/interactables/leadthewayspline.lua]
+[09:38:42] [info] Loading lua script [Context: environmentevent_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/environmentevent_functionforwarding.lua]
+[09:38:42] [info] Loading lua script [Context: btr_roadlore, Path: gameart/scripts/levels/caldera/cal225_riverpasslh/objects/btr_roadlore.lua]
+[09:38:42] [info] Loading lua script [Context: gbl000_fasttravel, Path: gameart/scripts/levels/global/gbl000_fasttravel/gbl000_fasttravel.lua]
+[09:38:44] [info] LUA (server started) ** Shutting down Lua VM. 81743/524288 bytes were in use.
+[09:38:44] [info] Pickled Lua state 'WAD_BoatGlobal', used 54 bytes.
+[09:38:44] [info] LUA (server started) ** Shutting down Lua VM. 640644/2097152 bytes were in use.
+[09:38:44] [info] Pickled Lua state 'WAD_Xpl225_FuneralLH', used 1844 bytes.
+[09:38:44] [info] Pickled Lua state 'WAD_Xpl225_FuneralLH', used 151 bytes.
+[09:38:44] [info] LUA (server started) ** Shutting down Lua VM. 4683390/4194304 bytes were in use.
+[09:38:44] [info] Pickled Lua state 'WAD_Xpl200_Funeral', used 9804 bytes.
+[09:38:44] [info] Pickled Lua state 'WAD_Xpl200_Funeral', used 151 bytes.
+[09:38:44] [info] LUA (server started) ** Shutting down Lua VM. 10991574/9437184 bytes were in use.
+[09:38:44] [info] Pickled Lua state 'WAD_Xpl200_AI_Exterior01', used 54 bytes.
+[09:38:44] [info] LUA (server started) ** Shutting down Lua VM. 253686/5242880 bytes were in use.
+[09:38:44] [info] Pickled Lua state 'WAD_Xpl200_AI_Persist', used 54 bytes.
+[09:38:44] [info] LUA (server started) ** Shutting down Lua VM. 537647/5242880 bytes were in use.
+[09:38:44] [info] Pickled Lua state 'WAD_Gbl000_FastTravel', used 710 bytes.
+[09:38:44] [info] Pickled Lua state 'WAD_Cal075_Lighting', used 54 bytes.
+[09:38:44] [info] Loading lua script [Context: flyer00_poistates, Path: gameart/scripts/characters/flyer00/flyer00_poistates.lua]
+[09:38:44] [info] Loading lua script [Context: flyer00_table, Path: gameart/scripts/characters/flyer00/flyer00_table.lua]
+[09:38:44] [info] Loading lua script [Context: main, Path: gameart/scripts/characters/flyer00/main.lua]
+[09:38:44] [info] Loading lua script [Context: lootobject_scoop, Path: gameart/scripts/loot/lootobject_scoop.lua]
+[09:38:44] [info] Loading lua script [Context: golem00_leashbrain, Path: gameart/scripts/characters/golem00/golem00_leashbrain.lua]
+[09:38:44] [info] Loading lua script [Context: golemgrenadethrowable, Path: gameart/scripts/characters/golem00/golemgrenadethrowable.lua]
+[09:38:44] [info] Loading lua script [Context: golemgrenadethrowablenew, Path: gameart/scripts/characters/golem00/golemgrenadethrowablenew.lua]
+[09:38:44] [info] Loading lua script [Context: main, Path: gameart/scripts/characters/golem00/main.lua]
+[09:38:44] [info] Loading lua script [Context: golem10_table, Path: gameart/scripts/characters/golem10/golem10_table.lua]
+[09:38:44] [info] Loading lua script [Context: navbranchlogic_largenonstrafe, Path: gameart/scripts/libraries/creature/navbranchlogic_largenonstrafe.lua]
+[09:38:45] [info] Loading lua script [Context: ambientwildlifespawner, Path: gameart/scripts/levels/gameplaymodules/ambientwildlife/ambientwildlifespawner.lua]
+[09:38:45] [info] Loading lua script [Context: banterzone, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/banterzone.lua]
+[09:38:45] [info] Loading lua script [Context: belltarget_base, Path: gameart/scripts/levels/gameplaymodules/axetargets/belltargets/belltarget_base.lua]
+[09:38:45] [info] Loading lua script [Context: basicaxetarget, Path: gameart/scripts/levels/gameplaymodules/axetargets/templatescripts/basicaxetarget.lua]
+[09:38:45] [info] Loading lua script [Context: contextaction_basemodule, Path: gameart/scripts/levels/gameplaymodules/contextactions/contextaction_basemodule.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: turretdisablefromenemiesscript, Path: gameart/scripts/levels/gameplaymodules/contextactions/turretdisablefromenemiesscript.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: ca_syncexithelper, Path: gameart/scripts/levels/gameplaymodules/contextactions/ca_syncexithelper.lua]
+[09:38:45] [info] Loading lua script [Context: checkpointzone, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/checkpointzone.lua]
+[09:38:45] [info] Loading lua script [Context: interact_chest_standard, Path: gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua]
+[09:38:45] [info] Loading lua script [Context: lootchest_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootchest_redirect.lua]
+[09:38:45] [info] Loading lua script [Context: runeselector, Path: gameart/scripts/levels/gameplaymodules/axetargets/spinnerchesttarget/runeselector.lua]
+[09:38:45] [info] Loading lua script [Context: interact_chest_runic, Path: gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua]
+[09:38:45] [info] Loading lua script [Context: enemyspawner, Path: gameart/scripts/levels/gameplaymodules/combat/spawners/enemyspawner.lua]
+[09:38:45] [info] Loading lua script [Context: lootchest_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootchest_redirect.lua]
+[09:38:45] [info] Loading lua script [Context: speedcontrolzone, Path: gameart/scripts/levels/gameplaymodules/narrative/_scenetools/speedcontrolzone.lua]
+[09:38:45] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[09:38:45] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[09:38:45] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[09:38:45] [info] Loading lua script [Context: environmenteventemitter, Path: gameart/scripts/levels/gameplaymodules/environmentevent/environmenteventemitter.lua]
+[09:38:45] [info] Loading lua script [Context: combatcollisionmanager, Path: gameart/scripts/levels/gameplaymodules/hazards/combatcollisionmanager.lua]
+[09:38:45] [info] Loading lua script [Context: genericsoninteract, Path: gameart/scripts/levels/gameplaymodules/soninteracts/templatescripts/genericsoninteract.lua]
+[09:38:45] [info] Loading lua script [Context: shook_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/shook_breakable.lua]
+[09:38:45] [info] Loading lua script [Context: hanginghazard_cutrope, Path: gameart/scripts/levels/gameplaymodules/hazards/hanginghazard_cutrope.lua]
+[09:38:45] [info] Loading lua script [Context: hangingloot_c, Path: gameart/scripts/levels/gameplaymodules/progression/hangingloot_c.lua]
+[09:38:45] [info] Loading lua script [Context: hanginghazard_cutrope, Path: gameart/scripts/levels/gameplaymodules/hazards/hanginghazard_cutrope.lua]
+[09:38:45] [info] Loading lua script [Context: consumableobject_scoop, Path: gameart/scripts/loot/consumableobject_scoop.lua]
+[09:38:45] [info] Loading lua script [Context: lootcorpse_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootcorpse_redirect.lua]
+[09:38:45] [info] Loading lua script [Context: lootcorpse_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootcorpse_redirect.lua]
+[09:38:45] [info] Loading lua script [Context: lootcorpse_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootcorpse_redirect.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: lootobject_scoop, Path: gameart/scripts/loot/lootobject_scoop.lua]
+[09:38:45] [info] Loading lua script [Context: leadthewayspline, Path: gameart/scripts/levelobjects/interactables/leadthewayspline.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: interact_loot_corpse, Path: gameart/scripts/levels/gameplaymodules/progression/interact_loot_corpse.lua]
+[09:38:45] [info] Loading lua script [Context: lootcorpse_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootcorpse_redirect.lua]
+[09:38:45] [info] Loading lua script [Context: lootcorpse_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootcorpse_redirect.lua]
+[09:38:45] [info] Loading lua script [Context: interact_loot_dirtdig, Path: gameart/scripts/levels/gameplaymodules/progression/interact_loot_dirtdig.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:45] [info] Loading lua script [Context: precisionchallenge, Path: gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua]
+[09:38:45] [info] Loading lua script [Context: precisionchallenge, Path: gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua]
+[09:38:45] [info] Loading lua script [Context: questcamera, Path: gameart/scripts/levels/gameplaymodules/camera/narrative/questcamera.lua]
+[09:38:45] [info] Loading lua script [Context: squirrelscript, Path: gameart/scripts/levelobjects/prototype/squirrelscript.lua]
+[09:38:45] [info] Loading lua script [Context: environmentevent_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/environmentevent_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: environmentevent_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/environmentevent_functionforwarding.lua]
+[09:38:45] [info] Loading lua script [Context: weaponsubscriber, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/weaponsubscriber.lua]
+[09:38:45] [info] Loading lua script [Context: combatcollisionmanager, Path: gameart/scripts/levels/gameplaymodules/hazards/combatcollisionmanager.lua]
+[09:38:45] [info] Loading lua script [Context: poisoncloudbreakable, Path: gameart/scripts/levels/gameplaymodules/hazards/poisoncloudbreakable.lua]
+[09:38:45] [info] Loading lua script [Context: skyfxmanager, Path: gameart/scripts/levels/global/skyfxmanager.lua]
+[09:38:45] [info] Loading lua script [Context: sonwarpsafe, Path: gameart/scripts/levels/gameplaymodules/soninteracts/sonwarpsafe.lua]
+[09:38:45] [info] Loading lua script [Context: interactiveobject_twoway, Path: gameart/scripts/levels/gameplaymodules/interactive/templatescripts/interactiveobject_twoway.lua]
+[09:38:45] [info] Loading lua script [Context: interactstonepedestal, Path: gameart/scripts/levels/gameplaymodules/progression/interactstonepedestal.lua]
+[09:38:45] [info] Loading lua script [Context: sonlanguagepickup, Path: gameart/scripts/levels/gameplaymodules/soninteracts/sonlanguagepickup.lua]
+[09:38:45] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[09:38:45] [info] Loading lua script [Context: cbt_xpl850_script, Path: gameart/scripts/levels/exploration/xpl850_dungeonforest/objects/cbt_xpl850_script.lua]
+[09:38:45] [info] Loading lua script [Context: cine_sindriquest1_script, Path: gameart/scripts/levels/exploration/xpl850_dungeonforest/objects/cine_sindriquest1_script.lua]
+[09:38:45] [info] Loading lua script [Context: talkinteractghost, Path: gameart/scripts/levels/gameplaymodules/interactive/talkinteractghost.lua]
+[09:38:45] [info] Loading lua script [Context: xpl850_dungeonforest, Path: gameart/scripts/levels/exploration/xpl850_dungeonforest/xpl850_dungeonforest.lua]
+[09:38:46] [info] [CompletionistMap uid-lifecycle-v3.1] API installed=true cleanupOwner=precisionchallenge exactMarker=Completionist_V103_Veithurgard_Raven_01 compassClass=CompletionistRaven boundedRetry=20 mapmenuDependency=false progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-events] API installed=true catalogueCount=53 nativeField=ravenKilled exactQuestAndPosition=true transport=UI_CALL_EVENT exactGameplayCleanup=true boundedRetry=20 polling=false progressionWrites=false 
+[09:38:46] [info] [CompletionistMap uid-lifecycle-v3.1] API installed=true cleanupOwner=precisionchallenge exactMarker=Completionist_V103_Veithurgard_Raven_01 compassClass=CompletionistRaven boundedRetry=20 mapmenuDependency=false progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-events] API installed=true catalogueCount=53 nativeField=ravenKilled exactQuestAndPosition=true transport=UI_CALL_EVENT exactGameplayCleanup=true boundedRetry=20 polling=false progressionWrites=false 
+[09:38:46] [info] [CompletionistMap uid-lifecycle-v3.1] API installed=true cleanupOwner=precisionchallenge exactMarker=Completionist_V103_Veithurgard_Raven_01 compassClass=CompletionistRaven boundedRetry=20 mapmenuDependency=false progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-events] API installed=true catalogueCount=53 nativeField=ravenKilled exactQuestAndPosition=true transport=UI_CALL_EVENT exactGameplayCleanup=true boundedRetry=20 polling=false progressionWrites=false 
+[09:38:46] [info] PRECISIONCHALLENGE_RAVENHOVER 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_ad56521740c745076417e99ddf1dd7a4 marker=Completionist_V105_Raven_ad56521740c74507 killed=false source=OnRestoreCheckpoint ok=true error=nil progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_b5ec8398449f573b8a70b7a4fb1154af marker=Completionist_V105_Raven_b5ec8398449f573b killed=true source=OnRestoreCheckpoint ok=true error=nil progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_3f0baac6405889c7478896801b6a637c marker=Completionist_V105_Raven_3f0baac6405889c7 killed=true source=OnRestoreCheckpoint ok=true error=nil progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_ad56521740c745076417e99ddf1dd7a4 marker=Completionist_V105_Raven_ad56521740c74507 killed=false source=OnStart ok=true error=nil progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_b5ec8398449f573b8a70b7a4fb1154af marker=Completionist_V105_Raven_b5ec8398449f573b killed=true source=OnStart ok=true error=nil progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_3f0baac6405889c7478896801b6a637c marker=Completionist_V105_Raven_3f0baac6405889c7 killed=true source=OnStart ok=true error=nil progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_OPENED_SEND source=OnStart-opened ok=true error=nil registryKey=chest_locked_parent|87.19123840332|-558.66003417969 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_CHEST source=OnKeyBroken-after-disable activeIndex=nil name=chest_locked_parent keyType=Bell state=2 opened=false puzzleRevealed=true challengeComplete=true keysUsed=3 x=87.19123840332 y=1.461977481842 z=-558.66003417969 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Bell activeIndex=nil index=1 runeEnabledKnown=true runeEnabled=false broken=false ref=bellTarget_A name=belltarget_a x=92.264419555664 y=4.8231644630432 z=-559.01574707031 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Bell activeIndex=nil index=2 runeEnabledKnown=true runeEnabled=false broken=false ref=bellTarget_B name=belltarget_b x=90.7861328125 y=7.7032055854797 z=-566.04321289063 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Bell activeIndex=nil index=3 runeEnabledKnown=true runeEnabled=false broken=false ref=bellTarget_C name=belltarget_c x=66.704093933105 y=10.5153465271 z=-576.61657714844 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_SEND ok=true error=nil registryKey=chest_locked_parent|87.19123840332|-558.66003417969 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_CHEST source=OnKeyBroken-after-disable activeIndex=nil name=chest_locked_parent keyType=Bell state=2 opened=false puzzleRevealed=true challengeComplete=true keysUsed=3 x=87.19123840332 y=1.461977481842 z=-558.66003417969 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Bell activeIndex=nil index=1 runeEnabledKnown=true runeEnabled=false broken=false ref=bellTarget_A name=belltarget_a x=92.264419555664 y=4.8231644630432 z=-559.01574707031 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Bell activeIndex=nil index=2 runeEnabledKnown=true runeEnabled=false broken=false ref=bellTarget_B name=belltarget_b x=90.7861328125 y=7.7032055854797 z=-566.04321289063 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Bell activeIndex=nil index=3 runeEnabledKnown=true runeEnabled=false broken=false ref=bellTarget_C name=belltarget_c x=66.704093933105 y=10.5153465271 z=-576.61657714844 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_SEND ok=true error=nil registryKey=chest_locked_parent|87.19123840332|-558.66003417969 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_CHEST source=OnKeyBroken-after-disable activeIndex=nil name=chest_locked_parent keyType=Bell state=2 opened=false puzzleRevealed=true challengeComplete=true keysUsed=3 x=87.19123840332 y=1.461977481842 z=-558.66003417969 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Bell activeIndex=nil index=1 runeEnabledKnown=true runeEnabled=false broken=false ref=bellTarget_A name=belltarget_a x=92.264419555664 y=4.8231644630432 z=-559.01574707031 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Bell activeIndex=nil index=2 runeEnabledKnown=true runeEnabled=false broken=false ref=bellTarget_B name=belltarget_b x=90.7861328125 y=7.7032055854797 z=-566.04321289063 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Bell activeIndex=nil index=3 runeEnabledKnown=true runeEnabled=false broken=false ref=bellTarget_C name=belltarget_c x=66.704093933105 y=10.5153465271 z=-576.61657714844 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_SEND ok=true error=nil registryKey=chest_locked_parent|87.19123840332|-558.66003417969 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_CHEST source=OnStart activeIndex=nil name=chest_locked_parent keyType=Bell state=2 opened=false puzzleRevealed=true challengeComplete=true keysUsed=3 x=87.19123840332 y=1.461977481842 z=-558.66003417969 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Bell activeIndex=nil index=1 runeEnabledKnown=true runeEnabled=false broken=false ref=bellTarget_A name=belltarget_a x=92.264419555664 y=4.8231644630432 z=-559.01574707031 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Bell activeIndex=nil index=2 runeEnabledKnown=true runeEnabled=false broken=false ref=bellTarget_B name=belltarget_b x=90.7861328125 y=7.7032055854797 z=-566.04321289063 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_KEY chest=chest_locked_parent keyType=Bell activeIndex=nil index=3 runeEnabledKnown=true runeEnabled=false broken=false ref=bellTarget_C name=belltarget_c x=66.704093933105 y=10.5153465271 z=-576.61657714844 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_SEND ok=true error=nil registryKey=chest_locked_parent|87.19123840332|-558.66003417969 
+[09:38:46] [info] [CompletionistMap v0.10.5-all-ravens] REALM_CHANGE from=Midgard to=nil 
+[09:38:46] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_ad56521740c745076417e99ddf1dd7a4 collected=false source=ui_bridge:OnRestoreCheckpoint progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_ad56521740c745076417e99ddf1dd7a4 marker=Completionist_V105_Raven_ad56521740c74507 killed=false source=OnRestoreCheckpoint generation=7 mapRuntimePublished=true progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_b5ec8398449f573b8a70b7a4fb1154af collected=true source=ui_bridge:OnRestoreCheckpoint progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_b5ec8398449f573b8a70b7a4fb1154af marker=Completionist_V105_Raven_b5ec8398449f573b killed=true source=OnRestoreCheckpoint generation=8 mapRuntimePublished=true progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_3f0baac6405889c7478896801b6a637c collected=true source=ui_bridge:OnRestoreCheckpoint progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_3f0baac6405889c7478896801b6a637c marker=Completionist_V105_Raven_3f0baac6405889c7 killed=true source=OnRestoreCheckpoint generation=9 mapRuntimePublished=true progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_ad56521740c745076417e99ddf1dd7a4 collected=false source=ui_bridge:OnStart progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_ad56521740c745076417e99ddf1dd7a4 marker=Completionist_V105_Raven_ad56521740c74507 killed=false source=OnStart generation=10 mapRuntimePublished=true progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_b5ec8398449f573b8a70b7a4fb1154af collected=true source=ui_bridge:OnStart progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_b5ec8398449f573b8a70b7a4fb1154af marker=Completionist_V105_Raven_b5ec8398449f573b killed=true source=OnStart generation=11 mapRuntimePublished=true progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_3f0baac6405889c7478896801b6a637c collected=true source=ui_bridge:OnStart progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_3f0baac6405889c7478896801b6a637c marker=Completionist_V105_Raven_3f0baac6405889c7 killed=true source=OnStart generation=12 mapRuntimePublished=true progressionWrites=false 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_OPENED_RECV registryKey=chest_locked_parent|87.19123840332|-558.66003417969 source=OnStart-opened 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_RECV registryKey=chest_locked_parent|87.19123840332|-558.66003417969 keyType=Bell opened=false challengeComplete=true keysUsed=3 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_RECV registryKey=chest_locked_parent|87.19123840332|-558.66003417969 keyType=Bell opened=false challengeComplete=true keysUsed=3 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_RECV registryKey=chest_locked_parent|87.19123840332|-558.66003417969 keyType=Bell opened=false challengeComplete=true keysUsed=3 
+[09:38:46] [info] [CompletionistMap v0.10.1] NORNIR_UI_BRIDGE_RECV registryKey=chest_locked_parent|87.19123840332|-558.66003417969 keyType=Bell opened=false challengeComplete=true keysUsed=3 
+[09:38:46] [info] Loading lua script [Context: main, Path: gameart/scripts/characters/sindri00/main.lua]
+[09:38:46] [info] Loading lua script [Context: ambientwildlifespawner, Path: gameart/scripts/levels/gameplaymodules/ambientwildlife/ambientwildlifespawner.lua]
+[09:38:46] [info] Loading lua script [Context: ambientwildlifezonespawner, Path: gameart/scripts/levels/gameplaymodules/ambientwildlife/ambientwildlifezonespawner.lua]
+[09:38:46] [info] Loading lua script [Context: environmenteventemitter, Path: gameart/scripts/levels/gameplaymodules/environmentevent/environmenteventemitter.lua]
+[09:38:46] [info] Loading lua script [Context: environmentevent_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/environmentevent_functionforwarding.lua]
+[09:38:46] [info] Loading lua script [Context: banterzone, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/banterzone.lua]
+[09:38:46] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[09:38:46] [info] Loading lua script [Context: contextaction_basemodule, Path: gameart/scripts/levels/gameplaymodules/contextactions/contextaction_basemodule.lua]
+[09:38:46] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:46] [info] Loading lua script [Context: basicelevator, Path: gameart/scripts/levels/gameplaymodules/interactive/basicelevator.lua]
+[09:38:46] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[09:38:46] [info] Loading lua script [Context: environmentevent_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/environmentevent_functionforwarding.lua]
+[09:38:46] [info] Loading lua script [Context: vehiclespawner, Path: gameart/scripts/levels/gameplaymodules/vehicles/spawners/vehiclespawner.lua]
+[09:38:46] [info] Loading lua script [Context: boatdock, Path: gameart/scripts/levelobjects/interactables/boatdock.lua]
+[09:38:46] [info] Loading lua script [Context: bifrosttemporal_intact, Path: gameart/scripts/levels/gameplaymodules/interactive/bifrostcrystals/bifrosttemporal_intact.lua]
+[09:38:46] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:46] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:46] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:46] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:46] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:46] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:46] [info] Loading lua script [Context: ca_syncexithelper, Path: gameart/scripts/levels/gameplaymodules/contextactions/ca_syncexithelper.lua]
+[09:38:46] [info] Loading lua script [Context: interact_chest_standard, Path: gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua]
+[09:38:46] [info] Loading lua script [Context: lootchest_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootchest_redirect.lua]
+[09:38:46] [info] Loading lua script [Context: speedcontrolzone, Path: gameart/scripts/levels/gameplaymodules/narrative/_scenetools/speedcontrolzone.lua]
+[09:38:46] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[09:38:46] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[09:38:46] [info] Loading lua script [Context: enemyspawner, Path: gameart/scripts/levels/gameplaymodules/combat/spawners/enemyspawner.lua]
+[09:38:46] [info] Loading lua script [Context: fasttravelcontroller, Path: gameart/scripts/levels/gameplaymodules/interactive/travel/fasttravelcontroller.lua]
+[09:38:46] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[09:38:46] [info] Loading lua script [Context: shook_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/shook_breakable.lua]
+[09:38:46] [info] Loading lua script [Context: hangingloot_c, Path: gameart/scripts/levels/gameplaymodules/progression/hangingloot_c.lua]
+[09:38:46] [info] Loading lua script [Context: questcamera, Path: gameart/scripts/levels/gameplaymodules/camera/narrative/questcamera.lua]
+[09:38:46] [info] Loading lua script [Context: leadthewayspline, Path: gameart/scripts/levelobjects/interactables/leadthewayspline.lua]
+[09:38:46] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:46] [info] Loading lua script [Context: interact_loot_corpse, Path: gameart/scripts/levels/gameplaymodules/progression/interact_loot_corpse.lua]
+[09:38:46] [info] Loading lua script [Context: lootcorpse_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootcorpse_redirect.lua]
+[09:38:46] [info] Loading lua script [Context: lootcorpse_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootcorpse_redirect.lua]
+[09:38:46] [info] Loading lua script [Context: lootcorpse_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootcorpse_redirect.lua]
+[09:38:46] [info] Loading lua script [Context: lootcorpse_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/lootcorpse_redirect.lua]
+[09:38:46] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:46] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:46] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:46] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:46] [info] Loading lua script [Context: precisionchallenge, Path: gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua]
+[09:38:46] [info] Loading lua script [Context: precisionchallenge, Path: gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua]
+[09:38:46] [info] Loading lua script [Context: squirrelscript, Path: gameart/scripts/levelobjects/prototype/squirrelscript.lua]
+[09:38:46] [info] Loading lua script [Context: skyfxmanager, Path: gameart/scripts/levels/global/skyfxmanager.lua]
+[09:38:46] [info] Loading lua script [Context: talkinteract, Path: gameart/scripts/levels/gameplaymodules/interactive/talkinteract.lua]
+[09:38:46] [info] Loading lua script [Context: vendor, Path: gameart/scripts/levels/gameplaymodules/progression/vendor.lua]
+[09:38:46] [info] Loading lua script [Context: smallshop, Path: gameart/scripts/levels/gameplaymodules/progression/smallshop.lua]
+[09:38:46] [info] Loading lua script [Context: basicswitch, Path: gameart/scripts/levels/gameplaymodules/interactive/basicswitch.lua]
+[09:38:46] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[09:38:46] [info] Loading lua script [Context: temporalobject, Path: gameart/scripts/levels/gameplaymodules/interactive/bifrostcrystals/temporalobject.lua]
+[09:38:46] [info] Loading lua script [Context: xpl875_dungeonforestlh, Path: gameart/scripts/levels/exploration/xpl875_dungeonforestlh/xpl875_dungeonforestlh.lua]
+[09:38:47] [info] [CompletionistMap uid-lifecycle-v3.1] API installed=true cleanupOwner=precisionchallenge exactMarker=Completionist_V103_Veithurgard_Raven_01 compassClass=CompletionistRaven boundedRetry=20 mapmenuDependency=false progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-raven-events] API installed=true catalogueCount=53 nativeField=ravenKilled exactQuestAndPosition=true transport=UI_CALL_EVENT exactGameplayCleanup=true boundedRetry=20 polling=false progressionWrites=false 
+[09:38:47] [info] [CompletionistMap uid-lifecycle-v3.1] API installed=true cleanupOwner=precisionchallenge exactMarker=Completionist_V103_Veithurgard_Raven_01 compassClass=CompletionistRaven boundedRetry=20 mapmenuDependency=false progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-raven-events] API installed=true catalogueCount=53 nativeField=ravenKilled exactQuestAndPosition=true transport=UI_CALL_EVENT exactGameplayCleanup=true boundedRetry=20 polling=false progressionWrites=false 
+[09:38:47] [info] PRECISIONCHALLENGE_RAVENHOVER 
+[09:38:47] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_97b753a94e069b45a5e031b81a5b9f91 marker=Completionist_V105_Raven_97b753a94e069b45 killed=true source=OnRestoreCheckpoint ok=true error=nil progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_14a87a63401390815b4e4ab2b4e619d0 marker=Completionist_V105_Raven_14a87a6340139081 killed=true source=OnRestoreCheckpoint ok=true error=nil progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-raven-events] EXACT_HIDE catalogueId=raven_14a87a63401390815b4e4ab2b4e619d0 marker=Completionist_V105_Raven_14a87a6340139081 source=OnRestoreCheckpoint attempt=0 ok=true error=nil stockTouched=false progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_97b753a94e069b45a5e031b81a5b9f91 marker=Completionist_V105_Raven_97b753a94e069b45 killed=true source=OnStart ok=true error=nil progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_14a87a63401390815b4e4ab2b4e619d0 marker=Completionist_V105_Raven_14a87a6340139081 killed=true source=OnStart ok=true error=nil progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_97b753a94e069b45a5e031b81a5b9f91 collected=true source=ui_bridge:OnRestoreCheckpoint progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_97b753a94e069b45a5e031b81a5b9f91 marker=Completionist_V105_Raven_97b753a94e069b45 killed=true source=OnRestoreCheckpoint generation=13 mapRuntimePublished=true progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_14a87a63401390815b4e4ab2b4e619d0 collected=true source=ui_bridge:OnRestoreCheckpoint progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_14a87a63401390815b4e4ab2b4e619d0 marker=Completionist_V105_Raven_14a87a6340139081 killed=true source=OnRestoreCheckpoint generation=14 mapRuntimePublished=true progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_97b753a94e069b45a5e031b81a5b9f91 collected=true source=ui_bridge:OnStart progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_97b753a94e069b45a5e031b81a5b9f91 marker=Completionist_V105_Raven_97b753a94e069b45 killed=true source=OnStart generation=15 mapRuntimePublished=true progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_14a87a63401390815b4e4ab2b4e619d0 collected=true source=ui_bridge:OnStart progressionWrites=false 
+[09:38:47] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_14a87a63401390815b4e4ab2b4e619d0 marker=Completionist_V105_Raven_14a87a6340139081 killed=true source=OnStart generation=16 mapRuntimePublished=true progressionWrites=false 
+[09:38:47] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[09:38:47] [info] Loading lua script [Context: cal050_sound, Path: gameart/scripts/levels/caldera/cal050_sound/cal050_sound.lua]
+[09:38:48] [info] [CompletionistMap v0.10.5-raven-events] CLEANUP_BOUNDED_END catalogueId=raven_3f0baac6405889c7478896801b6a637c source=OnStart attempts=20 realSeen=false queryOK=true 
+[09:38:48] [info] [CompletionistMap v0.10.5-raven-events] CLEANUP_BOUNDED_END catalogueId=raven_b5ec8398449f573b8a70b7a4fb1154af source=OnStart attempts=20 realSeen=false queryOK=true 
+[09:38:48] [info] Pickled Lua state 'WAD_Xpl875_DungeonForestLH', used 2937 bytes.
+[09:38:48] [info] Pickled Lua state 'WAD_Xpl850_DungeonForest', used 6894 bytes.
+[09:38:48] [info] Pickled Lua state 'WAD_Xpl850_AI_Exterior01', used 54 bytes.
+[09:38:48] [info] Pickled Lua state 'WAD_Gbl000_FastTravel', used 710 bytes.
+[09:38:48] [info] Pickled Lua state 'WAD_Cal075_Lighting', used 54 bytes.
+[09:38:48] [info] Pickled Lua state 'WAD_Cal050_Sound', used 299 bytes.
+[09:38:49] [info] [CompletionistMap v0.10.5-raven-events] CLEANUP_BOUNDED_END catalogueId=raven_97b753a94e069b45a5e031b81a5b9f91 source=OnStart attempts=20 realSeen=false queryOK=true 
+[09:38:49] [info] [CompletionistMap v0.10.5-raven-events] CLEANUP_BOUNDED_END catalogueId=raven_14a87a63401390815b4e4ab2b4e619d0 source=OnStart attempts=20 realSeen=false queryOK=true 
+[09:38:52] [info] LuaHookGotWarp Message 
+[09:38:52] [info] Pickled Lua state 'WAD_Gbl000_FastTravel', used 693 bytes.
+[09:38:52] [info] LUA (server started) ** Shutting down Lua VM. 1312912/2097152 bytes were in use.
+[09:38:52] [info] Pickled Lua state 'WAD_Xpl875_DungeonForestLH', used 2971 bytes.
+[09:38:52] [info] Pickled Lua state 'WAD_Xpl850_DungeonForest', used 6865 bytes.
+[09:38:52] [info] Pickled Lua state 'WAD_Xpl850_AI_Exterior01', used 54 bytes.
+[09:38:52] [info] Pickled Lua state 'WAD_Cal075_Lighting', used 54 bytes.
+[09:38:52] [info] Pickled Lua state 'WAD_Cal050_Sound', used 299 bytes.
+[09:38:52] [info] Loading lua script [Context: ambientwildlifespawner, Path: gameart/scripts/levels/gameplaymodules/ambientwildlife/ambientwildlifespawner.lua]
+[09:38:52] [info] Loading lua script [Context: ambientwildlifezonespawner, Path: gameart/scripts/levels/gameplaymodules/ambientwildlife/ambientwildlifezonespawner.lua]
+[09:38:52] [info] Loading lua script [Context: environmenteventemitter, Path: gameart/scripts/levels/gameplaymodules/environmentevent/environmenteventemitter.lua]
+[09:38:52] [info] Loading lua script [Context: environmentevent_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/environmentevent_functionforwarding.lua]
+[09:38:52] [info] Loading lua script [Context: banterlookat, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/banterlookat.lua]
+[09:38:52] [info] Loading lua script [Context: banterzone, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/banterzone.lua]
+[09:38:52] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[09:38:52] [info] Loading lua script [Context: environmentevent_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/environmentevent_functionforwarding.lua]
+[09:38:52] [info] Loading lua script [Context: vehiclespawner, Path: gameart/scripts/levels/gameplaymodules/vehicles/spawners/vehiclespawner.lua]
+[09:38:52] [info] Loading lua script [Context: boatdock, Path: gameart/scripts/levelobjects/interactables/boatdock.lua]
+[09:38:52] [info] Loading lua script [Context: bifrostvibrate_fractured, Path: gameart/scripts/levels/gameplaymodules/interactive/bifrostcrystals/bifrostvibrate_fractured.lua]
+[09:38:52] [info] Loading lua script [Context: bifrostvibrate_intact, Path: gameart/scripts/levels/gameplaymodules/interactive/bifrostcrystals/bifrostvibrate_intact.lua]
+[09:38:52] [info] Loading lua script [Context: boatpickup, Path: gameart/scripts/levels/gameplaymodules/progression/boatpickup.lua]
+[09:38:52] [info] Loading lua script [Context: boatpluck, Path: gameart/scripts/levels/gameplaymodules/progression/boatpluck.lua]
+[09:38:52] [info] Loading lua script [Context: boatspeedcontrolzone, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/boatspeedcontrolzone.lua]
+[09:38:52] [info] Loading lua script [Context: bookmarkzone, Path: gameart/scripts/levels/gameplaymodules/bookmarks/bookmarkzone.lua]
+[09:38:52] [info] Loading lua script [Context: contextaction_basemodule, Path: gameart/scripts/levels/gameplaymodules/contextactions/contextaction_basemodule.lua]
+[09:38:52] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:52] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:52] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:52] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:52] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:52] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:38:52] [info] Loading lua script [Context: directionalentityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/directionalentityzoneevents.lua]
+[09:38:52] [info] Loading lua script [Context: enemyspawner, Path: gameart/scripts/levels/gameplaymodules/combat/spawners/enemyspawner.lua]
+[09:38:52] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:52] [info] Loading lua script [Context: breakablepots, Path: gameart/scripts/levels/gameplaymodules/progression/breakablepots.lua]
+[09:38:52] [info] Loading lua script [Context: cbt_cal200, Path: gameart/scripts/levels/caldera/cal200_shore/objects/cbt_cal200.lua]
+[09:38:52] [info] Loading lua script [Context: crankscriptofficial, Path: gameart/scripts/levels/gameplaymodules/interactive/cranks/crankscriptofficial.lua]
+[09:38:52] [info] Loading lua script [Context: cal200_waterwheelvelocityrtpc, Path: gameart/scripts/levels/caldera/cal050_sound/objects/cal200_waterwheelvelocityrtpc.lua]
+[09:38:52] [info] Loading lua script [Context: cal200_xpl900_waterwheel, Path: gameart/scripts/levels/caldera/cal200_shore/objects/cal200_xpl900_waterwheel.lua]
+[09:38:52] [info] Loading lua script [Context: flippablecomponent, Path: gameart/scripts/levels/gameplaymodules/flippables/flippablecomponent.lua]
+[09:38:52] [info] Loading lua script [Context: weaponsubscriber, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/weaponsubscriber.lua]
+[09:38:52] [info] Loading lua script [Context: basicswitch, Path: gameart/scripts/levels/gameplaymodules/interactive/basicswitch.lua]
+[09:38:52] [info] Loading lua script [Context: zipelinelifts, Path: gameart/scripts/levels/exploration/xpl910_islandshipwreck/objects/zipelinelifts.lua]
+[09:38:52] [info] Loading lua script [Context: ziplift_linemanager, Path: gameart/scripts/levels/exploration/xpl910_islandshipwreck/objects/ziplift_linemanager.lua]
+[09:38:52] [info] Loading lua script [Context: simulatedzipline, Path: gameart/scripts/levels/gameplaymodules/interactive/simulatedzipline.lua]
+[09:38:52] [info] Loading lua script [Context: cal200_xpl980_vfgate, Path: gameart/scripts/levels/caldera/cal200_shore/objects/cal200_xpl980_vfgate.lua]
+[09:38:52] [info] Loading lua script [Context: leadthewayspline, Path: gameart/scripts/levelobjects/interactables/leadthewayspline.lua]
+[09:38:52] [info] Loading lua script [Context: cal200_xpl980_waterwheel, Path: gameart/scripts/levels/caldera/cal200_shore/objects/cal200_xpl980_waterwheel.lua]
+[09:38:52] [info] Loading lua script [Context: calderaboatloot_barrel_manager, Path: gameart/scripts/levels/gameplaymodules/progression/calderaboatloot_barrel_manager.lua]
+[09:38:52] [info] Loading lua script [Context: calderaboatloot_corpse_manager, Path: gameart/scripts/levels/gameplaymodules/progression/calderaboatloot_corpse_manager.lua]
+[09:38:52] [info] Loading lua script [Context: calderaboatlootmanager, Path: gameart/scripts/levels/gameplaymodules/progression/calderaboatlootmanager.lua]
+[09:38:52] [info] Loading lua script [Context: fasttravelcontroller, Path: gameart/scripts/levels/gameplaymodules/interactive/travel/fasttravelcontroller.lua]
+[09:38:52] [info] Loading lua script [Context: calderalakescript, Path: gameart/scripts/levels/caldera/calderalakescript.lua]
+[09:38:52] [info] Loading lua script [Context: playgozonetrigger, Path: gameart/scripts/levels/gameplaymodules/playgocomponents/playgozonetrigger.lua]
+[09:38:52] [info] Loading lua script [Context: cal200_waterdropfx_manager, Path: gameart/scripts/levels/caldera/cal200_shore/objects/cal200_waterdropfx_manager.lua]
+[09:38:52] [info] Loading lua script [Context: skyfxmanager, Path: gameart/scripts/levels/global/skyfxmanager.lua]
+[09:38:52] [info] Loading lua script [Context: cal200_banter_script, Path: gameart/scripts/levels/caldera/cal200_shore/objects/cal200_banter_script.lua]
+[09:38:52] [info] Loading lua script [Context: snakeidlescript, Path: gameart/scripts/levels/caldera/cal210_snakehead/objects/snakeidlescript.lua]
+[09:38:52] [info] Loading lua script [Context: poi_snakesbellyenter_script, Path: gameart/scripts/levels/caldera/cal800_snakebelly/objects/poi_snakesbellyenter_script.lua]
+[09:38:52] [info] Loading lua script [Context: calthorstatue, Path: gameart/scripts/levels/gameplaymodules/progression/calthorstatue.lua]
+[09:38:53] [info] Loading lua script [Context: cal200_shore, Path: gameart/scripts/levels/caldera/cal200_shore/cal200_shore.lua]
+[09:41:56] [info] [CompletionistMap v0.10.1] FILTER_MAPPING total=11 completionist=true 
+[09:41:56] [info] [CompletionistMap v0.10.1] MAP_CALIBRATION realm=Midgard worldX=58.953758239746 worldY=-3.4570462703705 worldZ=-437.51968383789 mapX=-2.833820104599 mapY=-0.18341827392578 mapZ=0.2692137658596 
+[09:41:56] [info] [CompletionistMap v0.10.4-raven-artwork] ART_PREFLIGHT candidate=Completionist_V103_Veithurgard_Raven_01 id=-2207208259907848386 state=0 collected=false region=-6808215654220372037 regionType=userdata regionSource=FindRegionFromMarker.region expectedMapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[09:41:56] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[09:41:56] [info] [CompletionistMap shared-loader-twin] LOOKUP found=false 
+[09:41:56] [info] [CompletionistMap v0.10.5-all-ravens] UI_STATE_BOOTSTRAP source=map_create known=8 killed=6 alive=2 generation=16 progressionWrites=false 
+[09:41:56] [info] [CompletionistMap v0.10.5-all-ravens] PERSISTED_SCAN source=map_create roots=0 records=0 matched=0 killed=0 alive=0 ambiguous=0 liveOverrides=true progressionWrites=false 
+[09:41:56] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_chest direct=false fallback=DockPointProxy 
+[09:41:56] [info] [CompletionistMap v0.10.1] NORNIR_CHEST_PIN ok=true source=ui_call_event registryKey=chest_locked_parent|-43.904609680176|748.57946777344 backingId=3015224018432851104 mapX=3.0568611621857 mapZ=0.7858145236969 
+[09:41:56] [info] [CompletionistMap v0.10.1] BACKING_ASSIGN slot=3 id=-8580963607903916635 region=8898843836327563556 
+[09:41:56] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_chest direct=false fallback=DockPointProxy 
+[09:41:56] [info] [CompletionistMap v0.10.1] NORNIR_CHEST_PIN ok=true source=ui_call_event registryKey=chest_locked_parent|87.19123840332|-558.66003417969 backingId=-8580963607903916635 mapX=-2.1720972061157 mapZ=0.26143115758896 
+[09:41:56] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[09:41:56] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=1 backingId=3665597207158594306 mapX=3.0364987850189 mapZ=0.77214097976685 
+[09:41:56] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[09:41:56] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=3 backingId=-7682859529157234129 mapX=2.9489850997925 mapZ=0.67033964395523 
+[09:41:56] [info] [CompletionistMap v0.10.1] NORNIR_MAP count=2 source=ui_call_event 
+[09:41:57] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=3 expectedX=2.9489850997925 expectedZ=0.67033964395523 actual=x=2.9489850997925,y=-0.18341827392578,z=0.67033964395523 
+[09:41:57] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=1 expectedX=3.0364987850189 expectedZ=0.77214097976685 actual=x=3.0364987850189,y=-0.18341827392578,z=0.77214097976685 
+[09:42:00] [info] [CompletionistMap v0.10.1] NORNIR_CHEST_SELECTION active=true registryKey=chest_locked_parent|87.19123840332|-558.66003417969 priority=parent snapMode=native_cursor preservesZoom=true 
+[09:42:05] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V105_Raven_ad56521740c74507 uid=4491600175081792439 source=exact_collision_object 
+[09:42:05] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_ad56521740c74507 uid=4491600175081792439 
+[09:42:05] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_ad56521740c74507 uid=4491600175081792439 
+[09:42:05] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_ad56521740c74507 uid=4491600175081792439 
+[09:42:05] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V105_Raven_ad56521740c74507 uid=4491600175081792439 title=Odin's Raven 
+[09:42:05] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_DISARM reason=prompt_owner_mismatch name=Completionist_V105_Raven_ad56521740c74507 uid=4491600175081792439 
+[09:42:05] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_CANDIDATE name=Completionist_V105_Raven_ad56521740c74507 uid=4491600175081792439 source=exact_collision_object 
+[09:42:05] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_ad56521740c74507 uid=4491600175081792439 
+[09:42:05] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_ad56521740c74507 uid=4491600175081792439 
+[09:42:05] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_ARM name=Completionist_V105_Raven_ad56521740c74507 uid=4491600175081792439 
+[09:42:05] [info] [CompletionistMap v0.10.5-all-ravens] RETICLE_TEXT name=Completionist_V105_Raven_ad56521740c74507 uid=4491600175081792439 title=Odin's Raven 
+[09:42:06] [info] [CompletionistMap v0.10.5-all-ravens] SELECT_DISARM reason=SELECT_CONSUME name=Completionist_V105_Raven_ad56521740c74507 uid=4491600175081792439 
+[09:42:06] [info] [CompletionistMap v0.10.5-all-ravens] SHOW name=Completionist_V105_Raven_ad56521740c74507 uid=4491600175081792439 replacedCustomCount=0 replacedStockCount=0 
+[09:42:24] [info] Pickled Lua state 'WAD_Xpl875_DungeonForestLH', used 2970 bytes.
+[09:42:24] [info] Pickled Lua state 'WAD_Xpl850_DungeonForest', used 6734 bytes.
+[09:42:24] [info] Pickled Lua state 'WAD_Xpl850_AI_Exterior01', used 54 bytes.
+[09:42:24] [info] Pickled Lua state 'WAD_Cal075_Lighting', used 54 bytes.
+[09:42:24] [info] Pickled Lua state 'WAD_Cal050_Sound', used 299 bytes.
+[09:43:08] [info] LUA (server started) ** Shutting down Lua VM. 1031717/1677721 bytes were in use.
+[09:43:12] [info] LUA (server started) ** Shutting down Lua VM. 1031289/1677721 bytes were in use.
+[09:43:14] [info] LUA (server started) ** Shutting down Lua VM. 1032461/1677721 bytes were in use.
+[09:43:18] [info] [CompletionistMap v0.10.5-raven-events] STATE_SEND catalogueId=raven_ad56521740c745076417e99ddf1dd7a4 marker=Completionist_V105_Raven_ad56521740c74507 killed=true source=OnHitByWeapon ok=true error=nil progressionWrites=false 
+[09:43:18] [info] [CompletionistMap v0.10.5-raven-events] EXACT_HIDE catalogueId=raven_ad56521740c745076417e99ddf1dd7a4 marker=Completionist_V105_Raven_ad56521740c74507 source=OnHitByWeapon attempt=0 ok=true error=nil stockTouched=false progressionWrites=false 
+[09:43:18] [info] [CompletionistMap v0.10.5-all-ravens] REALM_CHANGE from=Midgard to=nil 
+[09:43:18] [info] [CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_ad56521740c745076417e99ddf1dd7a4 collected=true source=ui_bridge:OnHitByWeapon progressionWrites=false 
+[09:43:18] [info] [CompletionistMap v0.10.5-raven-ui-bridge] RECV catalogueId=raven_ad56521740c745076417e99ddf1dd7a4 marker=Completionist_V105_Raven_ad56521740c74507 killed=true source=OnHitByWeapon generation=17 mapRuntimePublished=true progressionWrites=false 
+[09:43:18] [info] [CompletionistMap v0.10.5-raven-events] CLEANUP_SETTLED catalogueId=raven_ad56521740c745076417e99ddf1dd7a4 source=OnHitByWeapon attempts=1 exactAbsent=true 
+[09:43:19] [info] Pickled Lua state 'WAD_Xpl850_DungeonForest', used 114 bytes.
+[09:43:22] [info] [CompletionistMap v0.10.1] FILTER_MAPPING total=11 completionist=true 
+[09:43:22] [info] [CompletionistMap v0.10.1] MAP_CALIBRATION realm=Midgard worldX=65.272163391113 worldY=-0.67928612232208 worldZ=-558.82635498047 mapX=-3.4455621242523 mapY=-0.16941070556641 mapZ=0.23735044896603 
+[09:43:22] [info] [CompletionistMap v0.10.4-raven-artwork] ART_PREFLIGHT candidate=Completionist_V103_Veithurgard_Raven_01 id=-2207208259907848386 state=0 collected=false region=-6808215654220372037 regionType=userdata regionSource=FindRegionFromMarker.region expectedMapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[09:43:22] [info] [CompletionistMap v0.10.4-raven-artwork] ART_RESULT active=true candidate=Completionist_V103_Veithurgard_Raven_01 resourceExpected=goMapIconCompletionistRaven goName=mapiconcompletionistraven dedicatedNameObserved=true collectedAtRender=false clickableOK=true clickableError=nil nativePlacement=true position=x=3.2125430107117,y=-0.13368546962738,z=0.86969614028931 texpackLoaded=true diagnosticShowEvenIfCollected=true dockProxyUsed=false progressionWritten=false 
+[09:43:22] [info] [CompletionistMap shared-loader-twin] LOOKUP found=false 
+[09:43:22] [info] [CompletionistMap v0.10.5-all-ravens] UI_STATE_BOOTSTRAP source=map_create known=8 killed=7 alive=1 generation=17 progressionWrites=false 
+[09:43:22] [info] [CompletionistMap v0.10.5-all-ravens] PERSISTED_SCAN source=map_create roots=0 records=0 matched=0 killed=0 alive=0 ambiguous=0 liveOverrides=true progressionWrites=false 
+[09:43:22] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_chest direct=false fallback=DockPointProxy 
+[09:43:22] [info] [CompletionistMap v0.10.1] NORNIR_CHEST_PIN ok=true source=ui_call_event registryKey=chest_locked_parent|-43.904609680176|748.57946777344 backingId=3015224018432851104 mapX=3.0568611621857 mapZ=0.7858145236969 
+[09:43:22] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_chest direct=false fallback=DockPointProxy 
+[09:43:22] [info] [CompletionistMap v0.10.1] NORNIR_CHEST_PIN ok=true source=ui_call_event registryKey=chest_locked_parent|87.19123840332|-558.66003417969 backingId=-8580963607903916635 mapX=-2.1720972061157 mapZ=0.26143115758896 
+[09:43:22] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[09:43:22] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=1 backingId=3665597207158594306 mapX=3.0364987850189 mapZ=0.77214097976685 
+[09:43:22] [info] [CompletionistMap v0.10.1] ICON_BIND_RESULT family=nornir_seal direct=false fallback=DockPointProxy 
+[09:43:22] [info] [CompletionistMap v0.10.1] NORNIR_PIN_CREATE ok=true registryKey=chest_locked_parent|-43.904609680176|748.57946777344 keyType=Breakable index=3 backingId=-7682859529157234129 mapX=2.9489850997925 mapZ=0.67033964395523 
+[09:43:22] [info] [CompletionistMap v0.10.1] NORNIR_MAP count=2 source=ui_call_event 
+[09:43:22] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=3 expectedX=2.9489850997925 expectedZ=0.67033964395523 actual=x=2.9489850997925,y=-0.16941070556641,z=0.67033964395523 
+[09:43:22] [info] [CompletionistMap v0.10.1] NORNIR_PIN_VERIFY index=1 expectedX=3.0364987850189 expectedZ=0.77214097976685 actual=x=3.0364987850189,y=-0.16941070556641,z=0.77214097976685 
+[09:43:29] [info] LUA (server started) ** Shutting down Lua VM. 2132751/4613734 bytes were in use.
+[09:43:29] [info] Pickled Lua state 'WAD_Cal050_Sound', used 299 bytes.
+[09:43:29] [info] LUA (server started) ** Shutting down Lua VM. 359632/1048576 bytes were in use.
+[09:43:29] [info] Pickled Lua state 'WAD_Cal075_Lighting', used 54 bytes.
+[09:43:29] [info] LUA (server started) ** Shutting down Lua VM. 241168/786432 bytes were in use.
+[09:43:29] [info] Pickled Lua state 'WAD_Xpl875_DungeonForestLH', used 2970 bytes.
+[09:43:29] [info] LUA (server started) ** Shutting down Lua VM. 6787950/5242880 bytes were in use.
+[09:43:29] [info] LUA (server started) ** Shutting down Lua VM. 399178/1048576 bytes were in use.
+[09:43:29] [info] Pickled Lua state 'WAD_Xpl850_DungeonForest', used 6734 bytes.
+[09:43:29] [info] Pickled Lua state 'WAD_Xpl850_DungeonForest', used 114 bytes.
+[09:43:29] [info] LUA (server started) ** Shutting down Lua VM. 9914522/6501171 bytes were in use.
+[09:43:29] [info] Pickled Lua state 'WAD_Xpl850_AI_Exterior01', used 54 bytes.
+[09:43:29] [info] LUA (server started) ** Shutting down Lua VM. 619404/5242880 bytes were in use.
+[09:43:30] [info] LUA (server started) ** Shutting down Lua VM. 91599486/17825792 bytes were in use.
+[09:43:30] [info] LUA (server started) ** Shutting down Lua VM. 1553305/2097152 bytes were in use.
+[09:43:30] [info] Loading lua script [Context: audio_luahooks, Path: gameart/scripts/characters/heroa00/audio_luahooks.lua]
+[09:43:30] [info] Loading lua script [Context: main, Path: gameart/scripts/characters/heroa00/main.lua]
+[09:43:30] [info] Loading lua script [Context: perks, Path: gameart/scripts/characters/heroa00/perks.lua]
+[09:43:30] [info] Loading lua script [Context: util, Path: gameart/scripts/libraries/ui/util.lua]
+[09:43:30] [info] [CompletionistMap v0.10.5-raven-ui-bridge] API installed=true catalogueCount=53 transport=UI_CALL_EVENT stateScope=uiGlobal progressionWrites=false 
+[09:43:30] [info] [CompletionistMap v0.10.1] MAP_SCRIPT_LOADED 
+[09:43:30] [info] [CompletionistMap v0.10.4-raven-registered-runtime] REGISTERED_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 mapResource=goMapIconCompletionistRaven compassType=DockPoint texpackLoaded=false dockProxyUsed=false callsOnLoad=false 
+[09:43:30] [info] [CompletionistMap v0.10.4-raven-artwork] ART_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 mapResource=goMapIconCompletionistRaven texpackLoaded=true diagnosticShowEvenIfCollected=true compassType=DockPoint dockProxyUsed=false progressionWritten=false 
+[09:43:30] [info] [CompletionistMap v0.10.3-native] NATIVE_RAVEN_API installed=true candidate=Completionist_V103_Veithurgard_Raven_01 markerType=CompletionistRaven calls_on_load=false legacy_r3l3_for_raven=false prompt_async_guard=true 
+[09:43:30] [info] [CompletionistMap v0.10.4-single-active-v3] API installed=true ravenClass=CompletionistRaven invariant=single_active_compass_target raven_actions=custom_class_manager prompt=live_manager 
+[09:43:30] [info] [CompletionistMap shared-loader-twin] API installed=true resource=goMapIconCompletionistRaven expectedPoolCapacity=2 independentTwinLifetime=true 
+[09:43:30] [info] [CompletionistMap v0.10.4-uid-lifecycle-v3.3] API installed=true identitySource=MapOn.MapCollisionChangeHandler_collision_table selectionStateMachine=none,candidate-custom,armed-custom armedSelectionExpiry=ui_lifecycle_only armSignal=GetShowOnCompassPrompt_exact_real_or_same_uid_exact_twin stockSignal=currMarkerID_differs_from_exact_custom_candidate markerIdentity=Map.GetMarkerInfo compassClass=CompletionistRaven singleActive=true gameplayCleanup=persistent_precisionchallenge progressionWrites=false twinLifecycleIndependent=true 
+[09:43:30] [info] [CompletionistMap v0.10.5-all-ravens] API installed=true catalogueCount=53 mapResource=goMapIconCompletionistRaven compassClass=CompletionistRaven exactCollisionRequired=true markerIdAloneInfersRaven=false polling=false progressionWrites=false catalogueDefaultVisible=true persistedKillBootstrap=automaticReadOnlyPickleScan persistedIdentity=wadPlusGameObject liveOverridesPersisted=true 
+[09:43:30] [info] Loading lua script [Context: main, Path: gameart/scripts/characters/son00/main.lua]
+[09:43:30] [info] Loading lua script [Context: lightning_forwardburst, Path: gameart/scripts/characters/son00/prototypes/lightning_forwardburst.lua]
+[09:43:30] [info] Loading lua script [Context: lightning_swipeleft, Path: gameart/scripts/characters/son00/prototypes/lightning_swipeleft.lua]
+[09:43:30] [info] Loading lua script [Context: lightning_swiperight, Path: gameart/scripts/characters/son00/prototypes/lightning_swiperight.lua]
+[09:43:30] [info] Loading lua script [Context: lightning_trailweapon, Path: gameart/scripts/characters/son00/prototypes/lightning_trailweapon.lua]
+[09:43:30] [info] Loading lua script [Context: lightningchain, Path: gameart/scripts/characters/son00/prototypes/lightningchain.lua]
+[09:43:30] [info] Loading lua script [Context: lightningrain, Path: gameart/scripts/characters/son00/prototypes/lightningrain.lua]
+[09:43:30] [info] Loading lua script [Context: lightningspirit, Path: gameart/scripts/characters/son00/prototypes/lightningspirit.lua]
+[09:43:30] [info] Loading lua script [Context: lightningtoshield, Path: gameart/scripts/characters/son00/prototypes/lightningtoshield.lua]
+[09:43:30] [info] Loading lua script [Context: sonarrow_trackobject, Path: gameart/scripts/characters/son00/prototypes/sonarrow_trackobject.lua]
+[09:43:30] [info] Loading lua script [Context: healthrunethrow, Path: gameart/scripts/characters/son00/prototypes/sonspecials/healthrunethrow.lua]
+[09:43:30] [info] Loading lua script [Context: summonfenrir, Path: gameart/scripts/characters/son00/prototypes/summonfenrir.lua]
+[09:43:30] [info] Loading lua script [Context: son_awarenessbrain, Path: gameart/scripts/characters/son00/son_awarenessbrain.lua]
+[09:43:30] [info] Loading lua script [Context: son_boat, Path: gameart/scripts/characters/son00/son_boat.lua]
+[09:43:30] [info] Loading lua script [Context: son_brain, Path: gameart/scripts/characters/son00/son_brain.lua]
+[09:43:30] [info] Loading lua script [Context: son_gamestate, Path: gameart/scripts/characters/son00/son_gamestate.lua]
+[09:43:30] [info] Loading lua script [Context: son_helper, Path: gameart/scripts/characters/son00/son_helper.lua]
+[09:43:30] [info] Loading lua script [Context: son_input, Path: gameart/scripts/characters/son00/son_input.lua]
+[09:43:30] [info] Loading lua script [Context: son_interaction, Path: gameart/scripts/characters/son00/son_interaction.lua]
+[09:43:30] [info] Loading lua script [Context: son_motionbrain, Path: gameart/scripts/characters/son00/son_motionbrain.lua]
+[09:43:30] [info] Loading lua script [Context: son_poiframework, Path: gameart/scripts/characters/son00/son_poiframework.lua]
+[09:43:30] [info] Loading lua script [Context: son_targetbrain, Path: gameart/scripts/characters/son00/son_targetbrain.lua]
+[09:43:31] [info] Loading lua script [Context: boatlevelhelper, Path: gameart/scripts/passives/boat00/boatlevelhelper.lua]
+[09:43:31] [info] Loading lua script [Context: main, Path: gameart/scripts/passives/boat00/main.lua]
+[09:43:31] [info] Loading lua script [Context: main, Path: gameart/scripts/characters/log00/main.lua]
+[09:43:31] [info] Loading lua script [Context: banterzone, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/banterzone.lua]
+[09:43:31] [info] Loading lua script [Context: contextaction_basemodule, Path: gameart/scripts/levels/gameplaymodules/contextactions/contextaction_basemodule.lua]
+[09:43:31] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:43:31] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[09:43:31] [info] Loading lua script [Context: skyfxmanager, Path: gameart/scripts/levels/global/skyfxmanager.lua]
+[09:43:31] [info] Loading lua script [Context: interactzone, Path: gameart/scripts/levels/gameplaymodules/interactive/interactzone.lua]
+[09:43:31] [info] Loading lua script [Context: playernavcurve, Path: gameart/scripts/levelobjects/interactables/playernavcurve.lua]
+[09:43:31] [info] Loading lua script [Context: logchopminigame, Path: gameart/scripts/levels/gameplaymodules/interactive/minigames/logchopminigame.lua]
+[09:43:31] [info] Loading lua script [Context: cine_logboatenter_script, Path: gameart/scripts/levels/forest/for100_river/objects/cine_logboatenter_script.lua]
+[09:43:31] [info] Loading lua script [Context: cine_opening_script, Path: gameart/scripts/levels/forest/for100_river/objects/cine_opening_script.lua]
+[09:43:31] [info] Loading lua script [Context: for100_river, Path: gameart/scripts/levels/forest/for100_river/for100_river.lua]
+[09:43:31] [info] [CompletionistMap v0.10.1] HUD_HOOK installed=true 
+[09:43:31] [info] 	Z:\int8\gameart\ui\scripts\inworldmenu\settingsmenu.lua:7861: in function 'setup'
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:354: in function '_callSetup'
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:360: in function '_callSetup'
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:360: in function '_callSetup'
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:398: in function '_activate'
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:216: in function <Z:\int8\gameart\scripts\libraries\ui\fsm.lua:213>
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:34: in function 'DoLateInitIfNeeded'
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:316: in function 'GetState'
+[09:43:31] [info] 	Z:\int8\gameart\ui\scripts\inworldmenu\resourcesmenu.lua:79: in function 'setup'
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:354: in function '_callSetup'
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:360: in function '_callSetup'
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:360: in function '_callSetup'
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:398: in function '_activate'
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:216: in function <Z:\int8\gameart\scripts\libraries\ui\fsm.lua:213>
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:34: in function 'DoLateInitIfNeeded'
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\ui\fsm.lua:946: in function 'HandleEvent'
+[09:43:31] [info] 	Z:\int8\gameart\scripts\ui\hooks\uihooks.lua:9: in function <Z:\int8\gameart\scripts\ui\hooks\uihooks.lua:8>
+[09:43:31] [info] 	Z:\int8\gameart\scripts\libraries\core\thunk.lua:13: in function <Z:\int8\gameart\scripts\libraries\core\thunk.lua:11> 
+[09:43:31] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[09:43:31] [info] Loading lua script [Context: skyfxmanager, Path: gameart/scripts/levels/global/skyfxmanager.lua]
+[09:43:31] [info] Loading lua script [Context: for075_lighting, Path: gameart/scripts/levels/forest/for075_lighting/for075_lighting.lua]
+[09:43:31] [info] Loading lua script [Context: checkpointzone, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/checkpointzone.lua]
+[09:43:31] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[09:43:31] [info] Loading lua script [Context: leadthewayspline, Path: gameart/scripts/levelobjects/interactables/leadthewayspline.lua]
+[09:43:31] [info] Loading lua script [Context: waitgate, Path: gameart/scripts/levels/gameplaymodules/narrative/_scenetools/waitgate.lua]
+[09:43:31] [info] Loading lua script [Context: youshallnotpass, Path: gameart/scripts/levels/gameplaymodules/narrative/_scenetools/youshallnotpass.lua]
+[09:43:31] [info] Loading lua script [Context: inputmask_intro, Path: gameart/scripts/levels/forest/for000_sky/objects/inputmask_intro.lua]
+[09:43:32] [info] Loading lua script [Context: for000_sky, Path: gameart/scripts/levels/forest/for000_sky/for000_sky.lua]
+[09:43:32] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[09:43:32] [info] Loading lua script [Context: for050_sound, Path: gameart/scripts/levels/forest/for050_sound/for050_sound.lua]
+[09:43:32] [info] Loading lua script [Context: ambientwildlifeglobal, Path: gameart/scripts/levels/gameplaymodules/ambientwildlife/ambientwildlifeglobal.lua]
+[09:43:33] [info] Loading lua script [Context: ambientwildlifespawner, Path: gameart/scripts/levels/gameplaymodules/ambientwildlife/ambientwildlifespawner.lua]
+[09:43:33] [info] Loading lua script [Context: environmenteventemitter, Path: gameart/scripts/levels/gameplaymodules/environmentevent/environmenteventemitter.lua]
+[09:43:33] [info] Loading lua script [Context: environmentevent_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/environmentevent_functionforwarding.lua]
+[09:43:33] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[09:43:33] [info] Loading lua script [Context: environmentevent_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/environmentevent_functionforwarding.lua]
+[09:43:33] [info] Loading lua script [Context: vehiclespawner, Path: gameart/scripts/levels/gameplaymodules/vehicles/spawners/vehiclespawner.lua]
+[09:43:33] [info] Loading lua script [Context: boatdock, Path: gameart/scripts/levelobjects/interactables/boatdock.lua]
+[09:43:33] [info] Loading lua script [Context: bookmarkzone, Path: gameart/scripts/levels/gameplaymodules/bookmarks/bookmarkzone.lua]
+[09:43:33] [info] Loading lua script [Context: contextaction_basemodule, Path: gameart/scripts/levels/gameplaymodules/contextactions/contextaction_basemodule.lua]
+[09:43:33] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:43:33] [info] Loading lua script [Context: skyfxmanager, Path: gameart/scripts/levels/global/skyfxmanager.lua]
+[09:43:33] [info] Loading lua script [Context: leadthewayspline, Path: gameart/scripts/levelobjects/interactables/leadthewayspline.lua]
+[09:43:33] [info] Loading lua script [Context: playernavcurve, Path: gameart/scripts/levelobjects/interactables/playernavcurve.lua]
+[09:43:33] [info] Loading lua script [Context: cine_logboatexit_script, Path: gameart/scripts/levels/forest/for101_rivertohouse/objects/cine_logboatexit_script.lua]
+[09:43:33] [info] Loading lua script [Context: for101_rivertohouse, Path: gameart/scripts/levels/forest/for101_rivertohouse/for101_rivertohouse.lua]
+[09:43:33] [info] Loading lua script [Context: main, Path: gameart/scripts/characters/athena00/main.lua]
+[09:43:33] [info] Loading lua script [Context: interact_loot_artifact, Path: gameart/scripts/levels/gameplaymodules/progression/interact_loot_artifact.lua]
+[09:43:34] [info] Loading lua script [Context: artifacts_redirect, Path: gameart/scripts/levels/gameplaymodules/progression/artifacts_redirect.lua]
+[09:43:34] [info] Loading lua script [Context: banterzone, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/banterzone.lua]
+[09:43:34] [info] Loading lua script [Context: entityzoneevents, Path: gameart/scripts/levels/gameplaymodules/scriptcomponents/entityzoneevents.lua]
+[09:43:34] [info] Loading lua script [Context: flammablebramble, Path: gameart/scripts/levels/gameplaymodules/interactive/flammable/flammablebramble.lua]
+[09:43:34] [info] Loading lua script [Context: bladeflammableblocker, Path: gameart/scripts/levels/gameplaymodules/interactive/bladetargets/bladeflammableblocker.lua]
+[09:43:34] [info] Loading lua script [Context: contextaction_basemodule, Path: gameart/scripts/levels/gameplaymodules/contextactions/contextaction_basemodule.lua]
+[09:43:34] [info] Loading lua script [Context: contextactions_functionforwarding, Path: gameart/scripts/levels/gameplaymodules/functionforwardingscripts/contextactions_functionforwarding.lua]
+[09:43:34] [info] Loading lua script [Context: ca_syncexithelper, Path: gameart/scripts/levels/gameplaymodules/contextactions/ca_syncexithelper.lua]
+[09:43:34] [info] Loading lua script [Context: camzonehider, Path: gameart/scripts/levels/gameplaymodules/camera/zonecontrollers/camzonehider.lua]
+[09:43:34] [info] Loading lua script [Context: speedcontrolzone, Path: gameart/scripts/levels/gameplaymodules/narrative/_scenetools/speedcontrolzone.lua]
+[09:43:34] [info] Loading lua script [Context: fasttravelcontroller, Path: gameart/scripts/levels/gameplaymodules/interactive/travel/fasttravelcontroller.lua]
+[09:43:34] [info] Loading lua script [Context: interactzone, Path: gameart/scripts/levels/gameplaymodules/interactive/interactzone.lua]
+[09:43:34] [info] Loading lua script [Context: shook_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/shook_breakable.lua]
+[09:43:34] [info] Loading lua script [Context: generic_breakable, Path: gameart/scripts/levels/gameplaymodules/breakables/generic_breakable.lua]
+[09:43:34] [info] Loading lua script [Context: skyfxmanager, Path: gameart/scripts/levels/global/skyfxmanager.lua]
+[09:43:34] [info] Loading lua script [Context: leadthewayspline, Path: gameart/scripts/levelobjects/interactables/leadthewayspline.lua]
+[09:43:34] [info] Loading lua script [Context: cine_ashesgathered_script, Path: gameart/scripts/levels/forest/for200_house/objects/cine_ashesgathered_script.lua]
+[09:43:34] [info] Loading lua script [Context: cine_baldurintro_script, Path: gameart/scripts/levels/forest/for200_house/objects/cine_baldurintro_script.lua]
+[09:43:34] [info] Loading lua script [Context: cine_epilogue_script, Path: gameart/scripts/levels/forest/for200_house/objects/cine_epilogue_script.lua]
+[09:43:34] [info] Loading lua script [Context: cine_for200door_interactions, Path: gameart/scripts/levels/forest/for200_house/objects/cine_for200door_interactions.lua]
+[09:43:34] [info] Loading lua script [Context: cine_mothersknife_script, Path: gameart/scripts/levels/forest/for200_house/objects/cine_mothersknife_script.lua]
+[09:43:34] [info] Loading lua script [Context: cine_retrieveblades_script, Path: gameart/scripts/levels/forest/for200_house/objects/cine_retrieveblades_script.lua]
+[09:43:34] [info] Loading lua script [Context: cine_timetogo_script, Path: gameart/scripts/levels/forest/for200_house/objects/cine_timetogo_script.lua]
+[09:43:34] [info] Loading lua script [Context: interactiveobject_twoway, Path: gameart/scripts/levels/gameplaymodules/interactive/templatescripts/interactiveobject_twoway.lua]
+[09:43:34] [info] Loading lua script [Context: for200_house, Path: gameart/scripts/levels/forest/for200_house/for200_house.lua]
