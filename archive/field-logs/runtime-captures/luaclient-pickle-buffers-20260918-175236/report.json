@@ -1,0 +1,151 @@
+{
+  "analysis": "live_luaclient_pickle_buffers",
+  "captured_utc": "2026-09-18T17:53:20.176072+00:00",
+  "clients": [
+    {
+      "address_hex": "0x202B2B179C0",
+      "field_0x70_hex": "0x8",
+      "field_0x78_hex": "0x202B2AD8900",
+      "index": 0,
+      "lua_state_hex": "0x7FF6415FEFD8",
+      "pickle_0x70": {
+        "label": "pickle70",
+        "pointer_hex": "0x8",
+        "present": false
+      },
+      "pickle_0x78": {
+        "label": "pickle78",
+        "length": 1935764579,
+        "pointer_hex": "0x202B2AD8900",
+        "present": false
+      },
+      "shallow_identity_strings": [
+        {
+          "field_offset_hex": "0x18",
+          "pointer_hex": "0x202B2ADEA40",
+          "strings": [
+            "class LuaClient",
+            "class LuaClientBase",
+            "class LuaTableClient"
+          ]
+        },
+        {
+          "field_offset_hex": "0x20",
+          "pointer_hex": "0x7FF6418D9640",
+          "strings": [
+            ".?AVLuaClient@@"
+          ]
+        },
+        {
+          "field_offset_hex": "0x50",
+          "pointer_hex": "0x7FF6418D9690",
+          "strings": [
+            ".?AVIAkLowLevelIOHook@StreamMgr@AK@@"
+          ]
+        }
+      ],
+      "vtable_rva_hex": "0xE04018"
+    },
+    {
+      "address_hex": "0x7FF3267F08D0",
+      "field_0x70_hex": "0x0",
+      "field_0x78_hex": "0x0",
+      "index": 1,
+      "lua_state_hex": "0x206D066BFF0",
+      "pickle_0x70": {
+        "label": "pickle70",
+        "pointer_hex": "0x0",
+        "present": false
+      },
+      "pickle_0x78": {
+        "label": "pickle78",
+        "pointer_hex": "0x0",
+        "present": false
+      },
+      "shallow_identity_strings": [],
+      "vtable_rva_hex": "0xE04018"
+    },
+    {
+      "address_hex": "0x7FF33E77BCD0",
+      "field_0x70_hex": "0x0",
+      "field_0x78_hex": "0x0",
+      "index": 2,
+      "lua_state_hex": "0x206CF9E2520",
+      "pickle_0x70": {
+        "label": "pickle70",
+        "pointer_hex": "0x0",
+        "present": false
+      },
+      "pickle_0x78": {
+        "label": "pickle78",
+        "pointer_hex": "0x0",
+        "present": false
+      },
+      "shallow_identity_strings": [],
+      "vtable_rva_hex": "0xE04018"
+    },
+    {
+      "address_hex": "0x7FF3462AB8A0",
+      "field_0x70_hex": "0x0",
+      "field_0x78_hex": "0x0",
+      "index": 3,
+      "lua_state_hex": "0x206CF9E0630",
+      "pickle_0x70": {
+        "label": "pickle70",
+        "pointer_hex": "0x0",
+        "present": false
+      },
+      "pickle_0x78": {
+        "label": "pickle78",
+        "pointer_hex": "0x0",
+        "present": false
+      },
+      "shallow_identity_strings": [],
+      "vtable_rva_hex": "0xE04018"
+    }
+  ],
+  "matched_raven_catalogue_ids": [],
+  "matched_raven_count": 0,
+  "matched_raven_locations": {},
+  "process": {
+    "exe_name": "GoW.exe",
+    "exe_path": "G:\\SteamLibrary\\steamapps\\common\\GodOfWar\\GoW.exe",
+    "exe_sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+    "module_base_hex": "0x7FF6406E0000",
+    "module_size": 85839872,
+    "pid": 49020
+  },
+  "raw_vtable_hit_count": 4,
+  "safety": {
+    "access": "PROCESS_QUERY_INFORMATION|PROCESS_VM_READ",
+    "debugger_attached": false,
+    "game_files_written": false,
+    "process_memory_written": false,
+    "save_or_progression_written": false,
+    "thread_suspend_resume": false
+  },
+  "scan_stats": {
+    "0xE04018": {
+      "bytes_scanned": 14774513664,
+      "regions_scanned": 7218
+    }
+  },
+  "schema": 1,
+  "static": {
+    "preferred_image_base_hex": "0x140000000",
+    "restore_rva_hex": "0x5B2280",
+    "runtime_vtables_hex": [
+      "0x7FF6414E4018"
+    ],
+    "save_rva_hex": "0x5B2130",
+    "vtable_candidates": [
+      {
+        "file_offset": 14690840,
+        "image_pointer_slots": 18,
+        "rva": 14696472,
+        "rva_hex": "0xE04018"
+      }
+    ]
+  },
+  "validated_luaclient_count": 4
+}
