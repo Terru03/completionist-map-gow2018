@@ -114,7 +114,7 @@ def disasm(pe,md,fn,X86_OP_IMM,X86_OP_MEM,X86_OP_REG,X86_REG_RIP):
                 src=reg_name(md,ops[1].reg)
                 if src in derived: derived[dst]=derived[src]
                 else: derived.pop(dst,None)
-            elif ins.mnemonic=="lea" and ops[1].type==X86_OP_MEM and op.mem.disp==0:
+            elif ins.mnemonic=="lea" and ops[1].type==X86_OP_MEM and ops[1].mem.disp==0:
                 base=reg_name(md,ops[1].mem.base)
                 if base in derived: derived[dst]=derived[base]
                 else: derived.pop(dst,None)
