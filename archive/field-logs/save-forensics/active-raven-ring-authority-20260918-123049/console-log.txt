@@ -1,0 +1,33 @@
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\probe-active-save-raven-ring-authority.py", line 525, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\probe-active-save-raven-ring-authority.py", line 425, in main
+    row = scan_slot(raw, idx, scanner, parser, object_map, registry_hash)
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\probe-active-save-raven-ring-authority.py", line 182, in scan_slot
+    matches, _, _ = scanner.scan_bytes(
+                    ~~~~~~~~~~~~~~~~~~^
+        slot, scanner_args(header_start, scan_end), parser
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\gow-custom-userdata-carrier-scan.py", line 144, in scan_bytes
+    solutions = metadata_ends(
+        raw,
+    ...<4 lines>...
+        args.max_tag_solutions,
+    )
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\gow-custom-userdata-carrier-scan.py", line 86, in metadata_ends
+    visit(start, 0, {})
+    ~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\gow-custom-userdata-carrier-scan.py", line 84, in visit
+    visit(end, token_index + 1, new_mapping)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\gow-custom-userdata-carrier-scan.py", line 84, in visit
+    visit(end, token_index + 1, new_mapping)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\gow-custom-userdata-carrier-scan.py", line 84, in visit
+    visit(end, token_index + 1, new_mapping)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [Previous line repeated 992 more times]
+RecursionError: maximum recursion depth exceeded
