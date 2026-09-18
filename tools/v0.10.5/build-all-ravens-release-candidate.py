@@ -86,8 +86,6 @@ def render_lua(catalogue: dict, template_path: Path, token: str, state_rows: boo
                 "    {CatalogueId=%s,Name=%s,X=%.15g,Y=%.15g,Z=%.15g},"
                 % (lua_quote(row["catalogue_id"]), lua_quote(row["marker"]["name"]), x, y, z)
             )
-        elif token == "-- @@RAVEN_CACHE_IDS@@":
-            lines.append("    [%s]=true," % lua_quote(row["catalogue_id"]))
         else:
             wad_key = runtime_identity_component(row["source"]["wad"], wad=True)
             object_key = runtime_identity_component(row["native"]["object_name"])
@@ -313,33 +311,21 @@ def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
     check("BEGIN COMPLETIONIST V0.10.5 ALL RAVEN UI STATE RECEIVER" not in hud_text,
           "MainHUD frozen source already contains v0.10.5 Raven receiver")
     source[HUD_LUA] = hud_source
-
     save_source = (source_root / SAVE_LUA).read_bytes()
-    save_text = save_source.decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n")
-    save_return_marker = "return {\n  AddSaveSystemCallback = AddSaveSystemCallback,"
-    check(save_text.count(save_return_marker) == 1, "core.save return structure changed")
+    save_text = save_source.decode("utf-8-sig")
     check("BEGIN COMPLETIONIST V0.10.5 RAVEN CHECKPOINT CACHE" not in save_text,
-          "core.save frozen source already contains v0.10.5 Raven checkpoint cache")
+          "core.save frozen source unexpectedly contains Raven persistence experiment")
     source[SAVE_LUA] = save_source
-
     mapmaster, master_proof = build_mapmaster(source_root / MASTER, catalogue)
     mapcoords, coords_proof = build_mapcoords(source_root / COORDS, catalogue)
     pool, pool_proof = build_pool(source[POOL])
     map_hook = render_lua(catalogue, HERE / "all-ravens-map-runtime.lua", "-- @@RAVEN_CATALOGUE_ROWS@@")
     hud_hook = render_lua(catalogue, HERE / "all-ravens-hud-state-receiver.lua", "-- @@RAVEN_RECEIVER_ROWS@@")
-    cache_hook = (
-        (HERE / "all-ravens-save-cache-hook.lua")
-        .read_text(encoding="utf-8")
-        .replace("\r\n", "\n")
-        .replace("\r", "\n")
-        .encode("utf-8")
-    )
     event_hook = render_lua(catalogue, HERE / "all-ravens-gameplay-events.lua", "-- @@RAVEN_STATE_ROWS@@", True)
     forbidden = ("SetMarkerState", "SetToken", "SetProgress", "IncrementQuestProgress", "StartQuest")
     for token in forbidden:
         check(token not in map_hook.decode("utf-8"), f"map hook progression write token: {token}")
         check(token not in hud_hook.decode("utf-8"), f"HUD hook progression write token: {token}")
-        check(token not in cache_hook.decode("utf-8"), f"cache hook progression write token: {token}")
         check(token not in event_hook.decode("utf-8"), f"event hook progression write token: {token}")
     outputs = {
         MASTER: mapmaster,
@@ -347,13 +333,7 @@ def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
         POOL: pool,
         MAP_LUA: source[MAP_LUA] + b"\n" + map_hook,
         HUD_LUA: source[HUD_LUA] + b"\n" + hud_hook,
-        SAVE_LUA: (
-            save_text.replace(
-                save_return_marker,
-                cache_hook.decode("utf-8") + "\n" + save_return_marker,
-                1,
-            ).encode("utf-8")
-        ),
+        SAVE_LUA: source[SAVE_LUA],
         EVENT_LUA: source[EVENT_LUA] + b"\n" + event_hook,
     }
     check(all((source_root / rel).read_bytes() == source[rel] for rel in source), "source changed during offline build")
@@ -391,23 +371,15 @@ def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
             "persisted_source": "UI-side received native ravenKilled states plus read-only map registry fallback",
             "live_state_transport": "engine.SendHook UI_CALL_EVENT -> MainHUD receiver -> UI global -> map runtime",
             "gameplay_exact_compass_cleanup": True,
-            "checkpoint_cache": {
-                "enabled": True,
-                "savepoint_key": "__CompletionistMapV105SavePoint",
-                "save_payload": "opaque save-point ID only",
-                "sidecar_owner": "MainHUD",
-                "sidecar_directory": "mods/completionist-map-cache",
-                "snapshot_scope": "all observed Raven states in persistent UI session",
-                "native_progression_written": False,
-                "native_raven_state_authoritative": True,
-            },
+            "persistence_experiment": "disabled_after_field_regression",
+            "core_save_candidate": "pristine pass-through for seven-file transaction compatibility",
             "loaded_runtime_events_override": True,
         },
         "ready_for_runtime_test": True,
         "blocking_issue": None,
         "known_limitation": (
-            "Old saves created before the Completionist save-point ID exists seed incrementally from loaded WADs; "
-            "after a normal save/checkpoint, the global Raven sidecar snapshot is keyed to that exact save point."
+            "Unloaded historical Ravens whose exact save identity has not yet been resolved remain visible; "
+            "loaded Raven native state is bridged authoritatively through MainHUD."
         ),
         "game_files_written": False,
         "game_launched": False,
