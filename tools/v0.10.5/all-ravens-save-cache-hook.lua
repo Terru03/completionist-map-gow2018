@@ -56,6 +56,10 @@ do
 
   local baseSave = Save
   Save = function()
+    if next(object_savestate) == nil then
+      return baseSave()
+    end
+
     local meta = object_savestate[SAVEPOINT_KEY]
     if type(meta) ~= "table" then
       meta = {}
@@ -78,8 +82,8 @@ do
     baseRestore(savestate)
 
     local meta = nil
-    if type(object_savestate) == "table" then
-      meta = object_savestate[SAVEPOINT_KEY]
+    if type(savestate) == "table" then
+      meta = savestate[SAVEPOINT_KEY]
     end
     local savePointId = type(meta) == "table" and sanitize(meta.id) or ""
 
