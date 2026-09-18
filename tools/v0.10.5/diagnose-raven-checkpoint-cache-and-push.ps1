@@ -54,8 +54,14 @@ $interesting | Set-Content -LiteralPath $cacheLog -Encoding UTF8
 
 $scan = Get-Content -LiteralPath $saveJson -Raw | ConvertFrom-Json
 $cacheApi = @($interesting | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-cache\] API ' })
-$cacheUpdates = @($interesting | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-cache\] UPDATE ' })
-$cacheReplays = @($interesting | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-cache\] RESTORE_REPLAY ' })
+$cacheUpdates = @($interesting | Where-Object {
+    $_ -match '\[CompletionistMap v0\.10\.5-raven-cache\] UPDATE ' -or
+    $_ -match '\[CompletionistMap v0\.10\.5-raven-events\] CACHE_UPDATE '
+})
+$cacheReplays = @($interesting | Where-Object {
+    $_ -match '\[CompletionistMap v0\.10\.5-raven-cache\] RESTORE_REPLAY ' -or
+    $_ -match '\[CompletionistMap v0\.10\.5-raven-events\] CACHE_REPLAY '
+})
 $stateSends = @($interesting | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-events\] STATE_SEND ' })
 $stateSendCacheTrue = @($stateSends | Where-Object { $_ -match 'checkpointCacheUpdated=true' })
 $stateSendCacheFalse = @($stateSends | Where-Object { $_ -match 'checkpointCacheUpdated=false' })
