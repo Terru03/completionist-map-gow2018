@@ -78,8 +78,14 @@ $bridgeReceives = @($completionist | Where-Object { $_ -match '\[CompletionistMa
 $bridgeRefused = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-ui-bridge\] RECV_REFUSED ' })
 $uiBootstrap = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-all-ravens\] UI_STATE_BOOTSTRAP ' })
 $cacheApi = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-cache\] API ' })
-$cacheUpdates = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-cache\] UPDATE ' })
-$cacheReplays = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-cache\] RESTORE_REPLAY ' })
+$cacheUpdates = @($completionist | Where-Object {
+    $_ -match '\[CompletionistMap v0\.10\.5-raven-cache\] UPDATE ' -or
+    $_ -match '\[CompletionistMap v0\.10\.5-raven-events\] CACHE_UPDATE '
+})
+$cacheReplays = @($completionist | Where-Object {
+    $_ -match '\[CompletionistMap v0\.10\.5-raven-cache\] RESTORE_REPLAY ' -or
+    $_ -match '\[CompletionistMap v0\.10\.5-raven-events\] CACHE_REPLAY '
+})
 $cacheReceives = @($completionist | Where-Object { $_ -match '\[CompletionistMap v0\.10\.5-raven-ui-bridge\] CACHE_RECV ' })
 $cacheRefused = @($completionist | Where-Object { $_ -match 'CACHE_(RECV_)?REFUSED ' })
 
