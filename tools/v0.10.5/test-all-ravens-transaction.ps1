@@ -60,7 +60,8 @@ foreach ($requiredArtifact in @(
     'active-transaction-before.json',
     'active-transaction-after.json',
     'candidate-proof-used.json',
-    'candidate-files.json'
+    'candidate-files.json',
+    'transaction-self-test.json'
 )) {
     Assert-True ($installerText.Contains($requiredArtifact)) "Installer run evidence contract misses $requiredArtifact"
 }
@@ -194,6 +195,7 @@ try {
             terminal_historical_manifest_upgrade = $true
             success_and_failure_run_archiving = $true
             powershell_parse_preflight = $true
+            fake_transaction_gate_before_real_install = $true
         }
         safety = [ordered]@{
             fake_game_root_only = $true
