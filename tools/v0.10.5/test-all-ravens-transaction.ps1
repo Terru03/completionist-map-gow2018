@@ -48,6 +48,17 @@ $allRavensInstaller = Join-Path $repo 'tools\v0.10.5\install-all-ravens-working-
 Assert-True (Test-Path -LiteralPath $allRavensInstaller -PathType Leaf) "Missing installer: $allRavensInstaller"
 $allRavensLauncher = Join-Path $repo 'tools\v0.10.5\run-all-ravens-working-mod.ps1'
 Assert-True (Test-Path -LiteralPath $allRavensLauncher -PathType Leaf) "Missing outer recovery launcher: $allRavensLauncher"
+
+$allRavensCapture = Join-Path $repo 'tools\v0.10.5\capture-all-ravens-runtime-state.ps1'
+Assert-True (Test-Path -LiteralPath $allRavensCapture -PathType Leaf) "Missing runtime capture: $allRavensCapture"
+$captureTokens = $null
+$captureParseErrors = $null
+[void][System.Management.Automation.Language.Parser]::ParseFile(
+    $allRavensCapture,
+    [ref]$captureTokens,
+    [ref]$captureParseErrors
+)
+Assert-True (@($captureParseErrors).Count -eq 0) ("Runtime capture has PowerShell parse errors: " + ((@($captureParseErrors | ForEach-Object { $_.Message })) -join ' | '))
 $launcherTokens = $null
 $launcherParseErrors = $null
 [void][System.Management.Automation.Language.Parser]::ParseFile(
@@ -219,6 +230,7 @@ try {
             terminal_historical_manifest_upgrade = $true
             success_and_failure_run_archiving = $true
             powershell_parse_preflight = $true
+            runtime_capture_parse_preflight = $true
             fake_transaction_gate_before_real_install = $true
             outer_failure_recovery_launcher = $true
             outer_launcher_plain_array_orphan_scan = $true
