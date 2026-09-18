@@ -93,6 +93,60 @@ do
         " emitted=" .. tostring(emitted))
   end
 
+  local function inspectGlobalBindings()
+    local names = {
+      "GetCounter", "GetCounterChild", "GetCounterChildrenCount",
+      "GetCounterName", "GetRefBool", "GetRefInt", "GetRefFloat",
+      "GetRefString", "LevelWads", "UIWads", "LoadCheck",
+      "FindLevel", "EvaluateLoadZones", "JumpToWad", "ResolveGameObject",
+      "GetCurrentSlot", "GetLatestSlot", "GetSlotCount",
+    }
+    local funcs = {}
+    for _, name in ipairs(names) do
+      funcs[name] = rawget(_G, name)
+      log("GLOBAL_TYPE name=" .. name .. " type=" .. type(funcs[name]))
+    end
+
+    local parent = "RegionSummary_VF_Raven_Parent"
+    local knownGuid = "642d0d16-4af0-a5d4-076e-77933c549a5d"
+    local probes = {
+      {"GetCounter(parent)", "GetCounter", {parent}},
+      {"GetCounterChildrenCount(parent)", "GetCounterChildrenCount", {parent}},
+      {"GetCounterChild(parent,0)", "GetCounterChild", {parent, 0}},
+      {"GetCounterChild(parent,1)", "GetCounterChild", {parent, 1}},
+      {"GetCounterName(parent)", "GetCounterName", {parent}},
+      {"GetRefBool(guid)", "GetRefBool", {knownGuid}},
+      {"LevelWads()", "LevelWads", {}},
+      {"UIWads()", "UIWads", {}},
+      {"LoadCheck()", "LoadCheck", {}},
+      {"FindLevel()", "FindLevel", {}},
+      {"ResolveGameObject(guid)", "ResolveGameObject", {knownGuid}},
+      {"GetCurrentSlot()", "GetCurrentSlot", {}},
+      {"GetLatestSlot()", "GetLatestSlot", {}},
+      {"GetSlotCount()", "GetSlotCount", {}},
+    }
+
+    for _, probe in ipairs(probes) do
+      local label, name, args = probe[1], probe[2], probe[3]
+      local fn = funcs[name]
+      if type(fn) == "function" then
+        safeCall("GLOBAL " .. label, function()
+          return fn(table.unpack(args))
+        end)
+      else
+        log("GLOBAL_CALL label=" .. label .. " skipped=true type=" .. type(fn))
+      end
+    end
+
+    local rawRandom = rawget(_G, "Random")
+    log("GLOBAL_CONTROL name=Random type=" .. type(rawRandom))
+    if type(rawRandom) == "function" then
+      safeCall("GLOBAL Random(1,1)", function() return rawRandom(1, 1) end)
+    end
+
+    log("GLOBAL_BINDINGS_DONE progressionWrites=false questWrites=false")
+  end
+
   local function inspectDirectGameBindings()
     if type(game) ~= "table" then
       log("DIRECT_BINDINGS game_unavailable=true")
@@ -248,6 +302,7 @@ do
       return
     end
 
+    inspectGlobalBindings()
     inspectDirectGameBindings()
     inspectRegistryOwners()
     inspectQuest(qm, "RegionSummary_VF_Raven_Parent")
