@@ -99,6 +99,10 @@ class AllRavensBuildTests(unittest.TestCase):
         self.assertIn('engine.SendHook(', suffix)
         self.assertIn('"UI_CALL_EVENT"', suffix)
         self.assertIn('"EVT_COMPLETIONIST_V105_RAVEN_STATE"', suffix)
+        self.assertIn('require, "core.save"', suffix)
+        self.assertIn("GetSaveState", suffix)
+        self.assertIn("__CompletionistMapV105Cache", suffix)
+        self.assertIn("checkpointCache=core.save.GetSaveState replayFromGameplay=true", suffix)
         self.assertIn('game.Compass.HideMarker(row.Name)', suffix)
 
     def test_checkpoint_cache_has_53_ids_and_wraps_core_restore(self):
