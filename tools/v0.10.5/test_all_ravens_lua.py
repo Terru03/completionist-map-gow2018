@@ -430,7 +430,7 @@ class AllRavensHudBridgeLuaTests(unittest.TestCase):
 CACHE_PRELUDE = r'''
 calls={sent={},logs={}}
 print=function(s) calls.logs[#calls.logs+1]=s end
-object_savestate={}
+object_savestate={existing={value=true}}
 engine={}
 function engine.GetUIWad() return "uiwad" end
 function engine.SendHook(kind,wad,event,payload)
