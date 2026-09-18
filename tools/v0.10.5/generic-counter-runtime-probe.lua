@@ -397,6 +397,34 @@ do
     log("GAME_NAMESPACE_DONE tables=" .. tostring(visited))
   end
 
+  local function inspectQuestManagerClosureAddresses(qm)
+    local names = {
+      "GetQuestProgressAndGoal",
+      "GetQuestState",
+      "GetChildrenQuestIds",
+      "GetTrackingInfo",
+      "GetCompletionIndex",
+    }
+    for _, name in ipairs(names) do
+      local fn = qm and qm[name] or nil
+      log("QM_CLOSURE name=" .. name .. " type=" .. type(fn) .. " tostring=" .. tostring(fn))
+      if type(fn) == "function" and type(debug) == "table" and type(debug.getinfo) == "function" then
+        local ok, info = pcall(debug.getinfo, fn, "Snu")
+        if ok and type(info) == "table" then
+          log("QM_CLOSURE_INFO name=" .. name ..
+              " what=" .. tostring(info.what) ..
+              " source=" .. tostring(info.source) ..
+              " short_src=" .. tostring(info.short_src) ..
+              " linedefined=" .. tostring(info.linedefined) ..
+              " lastlinedefined=" .. tostring(info.lastlinedefined) ..
+              " nups=" .. tostring(info.nups))
+        else
+          log("QM_CLOSURE_INFO name=" .. name .. " ok=false value=" .. tostring(info))
+        end
+      end
+    end
+  end
+
   local function inspectQuestManagerSurface(qm)
     if type(qm) ~= "table" then
       log("QM_SURFACE unavailable=true")
@@ -489,6 +517,7 @@ do
       return
     end
 
+    inspectQuestManagerClosureAddresses(qm)
     inspectGameNamespace()
     inspectQuestManagerSurface(qm)
     inspectMapStateBindings(self)
