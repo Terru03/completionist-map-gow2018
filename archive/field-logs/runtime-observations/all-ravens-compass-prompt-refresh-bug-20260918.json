@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "date": "2026-09-18",
+  "source": "user field test",
+  "observation": {
+    "zone_state_reconstruction_working": true,
+    "live_kill_removal_working": true,
+    "custom_raven_add_to_compass_updates_tracking_state": true,
+    "map_cursor_action_text_updates_immediately": false,
+    "footer_show_on_compass_text_updates_immediately": false
+  },
+  "diagnosis": "Custom Raven ShowOnCompass changed compass state but did not run the stock prompt refresh path after the action.",
+  "fix": {
+    "ported_from": "v0.10.4 UID-aware Raven routing v3.3",
+    "updates": [
+      "MapCursorInfo/CursorAction_Text",
+      "ShowOnCompass footer button",
+      "footer button text layout"
+    ],
+    "forced_post_action_text": {
+      "add": "RemoveFromCompass",
+      "remove": "AddToCompass"
+    },
+    "runtime_commit": "816ce95bfc46475c8ee8d6b4989a68510c0e00b9",
+    "lua_regression_test_commit": "70561c2e6e50394be821abc1371b476a53da43eb",
+    "build_guard_commit": "8406e79c3d3cdbb8aa2fa546cfa4dc4a1e004b38"
+  },
+  "save_or_progression_logic_changed": false
+}
