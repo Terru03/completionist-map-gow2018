@@ -93,6 +93,112 @@ do
         " emitted=" .. tostring(emitted))
   end
 
+  local function inspectDirectGameBindings()
+    if type(game) ~= "table" then
+      log("DIRECT_BINDINGS game_unavailable=true")
+      return
+    end
+
+    local names = {
+      "GetCounter", "GetCounterChild", "GetCounterChildrenCount",
+      "GetCounterName", "GetCounterThreshold", "GetCounterThresholdCount",
+      "GetCounterThresholdName", "GetRefBool", "GetRefInt",
+      "GetRefFloat", "GetRefString", "GetVariable",
+    }
+    local funcs = {}
+    for _, name in ipairs(names) do
+      funcs[name] = safeLookup("game." .. name, function() return game[name] end)
+    end
+
+    local parent = "RegionSummary_VF_Raven_Parent"
+    local knownGuid = "642d0d16-4af0-a5d4-076e-77933c549a5d"
+    local knownObject = "goprecisionchallenge_raven_perch"
+    local probes = {
+      {"GetCounter()", "GetCounter", {}},
+      {"GetCounter(parent)", "GetCounter", {parent}},
+      {"GetCounterChildrenCount(parent)", "GetCounterChildrenCount", {parent}},
+      {"GetCounterChild(parent,0)", "GetCounterChild", {parent, 0}},
+      {"GetCounterChild(parent,1)", "GetCounterChild", {parent, 1}},
+      {"GetCounterName(parent)", "GetCounterName", {parent}},
+      {"GetCounterThresholdCount(parent)", "GetCounterThresholdCount", {parent}},
+      {"GetRefBool(guid)", "GetRefBool", {knownGuid}},
+      {"GetRefBool(parent,guid)", "GetRefBool", {parent, knownGuid}},
+      {"GetRefBool(object)", "GetRefBool", {knownObject}},
+      {"GetVariable(guid)", "GetVariable", {knownGuid}},
+      {"GetVariable(parent,guid)", "GetVariable", {parent, knownGuid}},
+    }
+
+    for _, probe in ipairs(probes) do
+      local label, name, args = probe[1], probe[2], probe[3]
+      local fn = funcs[name]
+      safeCall(label, function()
+        return fn(table.unpack(args))
+      end)
+    end
+
+    log("DIRECT_BINDINGS_DONE parent=" .. parent .. " guid=" .. knownGuid ..
+        " writes=false")
+  end
+
+  local function inspectRegistryOwners()
+    if type(debug) ~= "table" or type(debug.getregistry) ~= "function" then
+      log("OWNER_SCAN unavailable=true")
+      return
+    end
+    local ok, registry = pcall(debug.getregistry)
+    if not ok or type(registry) ~= "table" then
+      log("OWNER_SCAN registryOk=false")
+      return
+    end
+
+    local wanted = {
+      GetCounter=true, GetCounterChild=true, GetCounterChildrenCount=true,
+      GetRefBool=true, GetRefInt=true, GetRefFloat=true, GetRefString=true,
+      GetVariable=true,
+    }
+    local queue = {{value=registry, path="debug.registry", depth=0}}
+    local seen = {}
+    local emitted = 0
+    local maxTables = 2000
+    local visited = 0
+    while #queue > 0 and visited < maxTables do
+      local item = table.remove(queue)
+      local value = item.value
+      if type(value) == "table" and not seen[value] then
+        seen[value] = true
+        visited = visited + 1
+        local hits = {}
+        for key, member in pairs(value) do
+          if type(key) == "string" and wanted[key] then
+            hits[#hits + 1] = key .. ":" .. type(member)
+          end
+        end
+        if #hits > 0 then
+          table.sort(hits)
+          emitted = emitted + 1
+          local identity = rawget(value, "__identity")
+          log("OWNER_TABLE path=" .. item.path ..
+              " identity=" .. tostring(identity) ..
+              " methods=" .. table.concat(hits, ","))
+        end
+        if item.depth < 4 then
+          local childCount = 0
+          for key, child in pairs(value) do
+            if type(child) == "table" and not seen[child] and childCount < 96 then
+              childCount = childCount + 1
+              queue[#queue + 1] = {
+                value=child,
+                path=item.path .. "[" .. tostring(key) .. "]",
+                depth=item.depth + 1,
+              }
+            end
+          end
+        end
+      end
+    end
+    log("OWNER_SCAN_DONE tables=" .. tostring(visited) .. " owners=" .. tostring(emitted))
+  end
+
   local function inspectQuest(qm, questId)
     local stateFn = safeLookup("game.QuestManager.GetQuestState", function() return qm.GetQuestState end)
     local progressFn = safeLookup("game.QuestManager.GetQuestProgressAndGoal", function() return qm.GetQuestProgressAndGoal end)
@@ -142,10 +248,12 @@ do
       return
     end
 
+    inspectDirectGameBindings()
+    inspectRegistryOwners()
     inspectQuest(qm, "RegionSummary_VF_Raven_Parent")
     inspectQuest(qm, "Quest_Labor_KillRavens")
 
-    log("DONE progressionWrites=false questWrites=false")
+    log("DONE progressionWrites=false questWrites=false directGetterProbe=true")
   end
 
   _G.CompletionistCounterProbe_Run = run
