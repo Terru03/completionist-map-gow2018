@@ -1,121 +1,68 @@
-# All-Ravens per-save-point cache
+# Raven persistence experiments — disabled
 
-## Goal
+## Current runtime contract
 
-Completionist Map must remember Raven visibility across game restarts without
-changing native Raven or quest progression.
+The active v0.10.5 Raven build does **not** persist Completionist state in GoW
+save data and does **not** use a sidecar cache.
 
-Native `ravenKilled` remains the authority. The mod only caches what it has
-observed so the map can be reconstructed before every Raven WAD is streamed.
+The field-proven behavior restored on 2026-09-18 is:
 
-## Field finding: core.save is WAD-scoped
+- all 53 catalogue Ravens are available to the map;
+- native `ravenKilled` state is authoritative;
+- a killed Raven disappears immediately from map/compass;
+- when a Raven WAD loads, its already-killed Ravens are reconstructed and hidden;
+- unloaded historical regions remain visible until their Raven WAD loads;
+- no Completionist code writes Raven/quest/progression state.
 
-Two in-save cache approaches were tested on 2026-09-18.
+The seventh transaction file, `core.save.lua`, is currently a pristine
+pass-through copy only. It remains in the transaction temporarily so the
+currently installed seven-file experimental build can be rolled back and
+replaced safely.
 
-1. A cache updater exposed through a patched `core.save` module.
-2. Direct calls from Raven scripts to
-   `require("core.save").GetSaveState("__CompletionistMapV105Cache")`.
+## Failed experiment 1: WAD-local core.save cache
 
-Both persisted data, but only for the resident Raven WAD.
+The first implementation stored Raven state under
+`__CompletionistMapV105Cache` using GoW's `core.save` state.
 
-The decisive diagnostic showed:
+Field diagnostics proved that serialization and restore worked:
 
-- `__CompletionistMapV105Cache` really existed inside `game.sav`;
-- the compressed payload was mirrored in both save banks;
-- restore replayed the cache successfully;
-- MainHUD received the restored entries;
-- only 3 Raven catalogue IDs were present.
+- the cache existed inside `game.sav`;
+- the payload appeared in both mirrored compressed save banks;
+- `core.save.Restore` replayed the cache;
+- MainHUD received the restored entries.
 
-Therefore the failure was not serialization or restore timing. The cache owner
-itself was WAD-scoped, so travelling to another WAD did not build one global
-53-Raven cache.
+But only three Raven IDs were present. The save-state owner was WAD-scoped, so
+travelling between regions did not aggregate one global 53-Raven snapshot.
 
-## Current design
+## Failed experiment 2: save-point ID + MainHUD sidecar
 
-GoW's save stores only an opaque mod-owned save-point ID:
+The second implementation stored only an opaque save-point ID in GoW's save and
+asked MainHUD to store the global Raven snapshot in
+`mods/completionist-map-cache`.
 
-```
-__CompletionistMapV105SavePoint
-```
+Field testing failed persistence again and introduced a regression: some
+previously-killed Ravens remained visible after a zone load.
 
-The full Completionist snapshot lives outside the native save in:
+The architectural cause was that WAD-local restore callbacks could invoke the
+UI restore path multiple times. The sidecar restore path cleared the global UI
+state, allowing a later WAD-local restore to erase authoritative Raven states
+that another WAD had just published.
 
-```
-mods/completionist-map-cache/<savePointId>.txt
-```
+This experiment is removed from active tooling.
 
-The sidecar contains only observed catalogue state:
+## Next persistence direction
 
-```
-schema=1
-savePointId=<id>
-raven_<catalogue id>=0|1
-```
+Do not add another mod-owned cache until the authoritative global old-save
+identity path is solved.
 
-MainHUD is the owner because its UI Lua state persists while travelling between
-WADs and already receives every authoritative Raven state through the proven
-`UI_CALL_EVENT` bridge.
+The remaining preferred route is read-only reconstruction from GoW's existing
+save/checkpoint data, reusing the already-solved outer save carrier and
+GameObject token codec plus the static 53-Raven catalogue identity work.
 
-## Save lifecycle
+That preserves the intended contract:
 
-On a normal GoW save/checkpoint:
-
-```
-core.save.Save
-  -> create opaque savePointId
-  -> persist that ID in the WAD save state GoW was already going to serialize
-  -> EVT_COMPLETIONIST_V105_SAVEPOINT_CAPTURE
-  -> MainHUD writes its global observed Raven snapshot to the matching sidecar
-```
-
-On restore:
-
-```
-core.save.Restore
-  -> read savePointId from the incoming checkpoint
-  -> EVT_COMPLETIONIST_V105_SAVEPOINT_RESTORE
-  -> MainHUD clears prior-session Raven cache
-  -> load matching sidecar snapshot
-  -> republish states into map runtime
-```
-
-If the save has no Completionist ID or the sidecar file is missing, the mod
-fails open: no Raven is hidden from cache, and native WAD state repopulates the
-cache as the player travels.
-
-## Authority and safety
-
-- A loaded Raven's native `ravenKilled` value always overwrites cached state.
-- Killing a Raven still removes its map and compass marker immediately.
-- The mod never sets `ravenKilled`.
-- The mod never writes quest progress, labor counts, progression tokens, or
-  native marker state.
-- The only data added to GoW's Lua checkpoint state is the opaque save-point ID.
-- Full Raven visibility state is stored in the mod sidecar directory.
-
-## Fresh and old saves
-
-- A fresh save with no sidecar starts with all 53 catalogue Ravens visible.
-- An old pre-mod save seeds incrementally as Raven WADs are visited.
-- Once that observed state is saved, future reloads of that exact save point can
-  restore the global snapshot immediately.
-- Loading an older save point uses its own embedded ID and therefore its own
-  older snapshot instead of inheriting later Raven kills.
-
-## Transaction scope
-
-The controlled game-file candidate remains seven files, including:
-
-```
-mods/lua/gameart/scripts/libraries/core/save.lua
-mods/lua/gameart/ui/scripts/hud/mainhud.lua
-```
-
-The installer additionally creates the user-data directory:
-
-```
-mods/completionist-map-cache
-```
-
-The directory is not a replacement game file and is not part of rollback
-baseline hashing; it contains only Completionist Map cache data.
+- no save/progression writes;
+- no external cache synchronization problem;
+- exact state comes from the save being loaded;
+- fresh saves naturally show all 53;
+- old saves can eventually show only surviving Ravens immediately.
