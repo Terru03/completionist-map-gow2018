@@ -18,6 +18,7 @@ $relativeRunDir = "archive/field-logs/runtime/all-ravens-working-install-$runId"
 $runDir = Join-Path $repo "archive\field-logs\runtime\all-ravens-working-install-$runId"
 $transcriptPath = Join-Path $runDir 'run.txt'
 $resultPath = Join-Path $runDir 'result.json'
+$activeManifest = Join-Path $repo 'build\v0.10.5-all-ravens-runtime-test\transaction\active.json'
 
 $sourceFiles = [ordered]@{
     'exec/dc/pc_le/mapmaster.dcb' = '1e1d5086815bc8553490bff915fea210a8be4f80ce6c88b418b62d7050690a31'
@@ -260,6 +261,37 @@ function Invoke-CandidateBuilder {
     }
 }
 
+function Rollback-ExistingAllRavensInstall {
+    param([string]$ResolvedGameRoot)
+
+    if (-not (Test-Path -LiteralPath $activeManifest -PathType Leaf)) {
+        return 'none'
+    }
+
+    $active = Get-Content -LiteralPath $activeManifest -Raw | ConvertFrom-Json
+    $status = [string]$active.status
+    if ($status -in @('rolled-back','rolled-back-after-install-failure')) {
+        return $status
+    }
+    if ($status -ne 'installed') {
+        throw "Existing all-Ravens transaction is '$status'. Automatic upgrade only accepts a clean installed or already rolled-back transaction."
+    }
+
+    Write-Host "  previous all-Ravens transaction: $($active.transaction_id) ($status)"
+    Write-Host '  upgrade: restoring its exact pre-install five-file baseline before rebuild'
+    & $runtimeTest -Mode Rollback -GameRoot $ResolvedGameRoot -PreserveCurrentBaseline
+    if ($LASTEXITCODE -ne 0) {
+        throw "Existing all-Ravens rollback failed with exit code $LASTEXITCODE."
+    }
+
+    $after = Get-Content -LiteralPath $activeManifest -Raw | ConvertFrom-Json
+    if ([string]$after.status -ne 'rolled-back') {
+        throw "Existing all-Ravens rollback returned unexpected status '$($after.status)'."
+    }
+    Write-Host '  upgrade rollback: exact previous baseline restored'
+    return 'rolled-back'
+}
+
 function Ensure-AllRavensCandidate {
     param([string]$SourceRoot)
 
@@ -429,7 +461,13 @@ try {
     Write-Host '  candidate source: frozen SHA-verified transaction backups'
     Write-Host '  pre-install game state: preserved as rollback baseline'
     Write-Host '  transaction: guarded five-file install with pre-write backups'
+    Write-Host '  upgrade policy: safely roll back any active prior all-Ravens install before rebuilding'
     Write-Host ''
+
+    $previousRuntimeAction = Rollback-ExistingAllRavensInstall -ResolvedGameRoot $resolvedGameRoot
+    if ($previousRuntimeAction -eq 'rolled-back') {
+        Assert-CleanTrackedState
+    }
 
     $frozenSourceAction = Ensure-FrozenSourceRoot -ResolvedGameRoot $resolvedGameRoot
     $candidateAction = Ensure-AllRavensCandidate -SourceRoot $frozenSourceRoot
