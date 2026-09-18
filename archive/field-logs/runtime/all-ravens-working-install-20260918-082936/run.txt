@@ -1,0 +1,181 @@
+**********************
+PowerShell transcript start
+Start time: 20260918112936
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\install-all-ravens-working-mod.ps1
+Process ID: 32484
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+
+
+  PowerShell syntax preflight: passed
+COMPLETIONIST_MAP_ALL_RAVENS_INSTALL
+  run id: 20260918-082936
+  branch: codex/all-collectibles-production-research
+  repo head at start: 2953da8b300e3b2a1734795b49925c2feaf50046
+  game root: G:\SteamLibrary\steamapps\common\GodOfWar
+  catalogue markers: 53
+  unknown Raven state: visible
+  live native ravenKilled events: enabled
+  old-save bootstrap: read-only persisted GameObject scan on map open
+  persisted identity: exact unique WAD + GameObject name
+  save/progression writes by installer: none
+  candidate source: frozen SHA-verified transaction backups
+  pre-install game state: preserved as rollback baseline
+  transaction: guarded seven-file install with pre-write backups
+  upgrade policy: safely roll back any active prior all-Ravens install before rebuilding
+
+  previous all-Ravens transaction: 20260918T080159Z-05bcd6d0 (installed)
+  upgrade: restoring its exact pre-install seven-file baseline before rebuild
+ALL_RAVENS_RUNTIME_TEST_ROLLED_BACK
+  transaction: 20260918T080159Z-05bcd6d0
+  exact seven-file pre-install state restored: true
+  source SHA verification: true
+  saves/progression touched by rollback: false
+  upgrade rollback: exact previous baseline restored
+
+
+  frozen source: verified base files + MainHUD + core.save baselines
+  candidate: rebuilding deterministically from frozen verified source
+ALL_RAVENS_OFFLINE_CANDIDATE_READY_FOR_RUNTIME_TEST
+{
+  "exec/dc/pc_le/mapcoords.dcb": {
+    "bytes": 83712,
+    "sha256": "d6786f9734473fa7bdb8eff39aadac4f3fb2ecd4a83d56bfc5d2832c17435514"
+  },
+  "exec/dc/pc_le/mapmaster.dcb": {
+    "bytes": 104064,
+    "sha256": "7d1d5e05315dce17326712a95901e1e753b6c14c4f1a71012ca337ae7ee9b223"
+  },
+  "exec/dc/pc_le/wad_r_ui.dcb": {
+    "bytes": 5712,
+    "sha256": "c5c38d0f89873b8617f38e049a916eb2fe632f9bf1f17bb5eef4867343ecf45b"
+  },
+  "mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua": {
+    "bytes": 28274,
+    "sha256": "cef409c9893c3312c5a8eaf959e637f98537457925f78d85907d1f4b0659e01f"
+  },
+  "mods/lua/gameart/scripts/libraries/core/save.lua": {
+    "bytes": 6254,
+    "sha256": "7bf9dba947a4d2a03de1553e959456ac6233c5869a06f7aea3f8867051f87d46"
+  },
+  "mods/lua/gameart/ui/scripts/hud/mainhud.lua": {
+    "bytes": 49481,
+    "sha256": "c3cc32728469c1811e5d603622d3aa6b72335f372204db96495df26095f8239d"
+  },
+  "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": {
+    "bytes": 219035,
+    "sha256": "57a32501f2abf874dc5277165b62c77ce35834ff22a06b80b4689308978efa0d"
+  }
+}
+ready_for_runtime_test=true
+ALL_RAVENS_RELEASE_CANDIDATE_REBUILD_VERIFIED
+  candidate: rebuilt and deterministic rebuild verified
+warning: in the working copy of 'archive/all-ravens/all-ravens-release-candidate-offline.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'archive/all-ravens/all-ravens-release-candidate-offline.json', LF will be replaced by CRLF the next time Git touches it
+[codex/all-collectibles-production-research 15ff50c] build(v0.10.5): refresh all-ravens candidate proof
+ 1 file changed, 12 insertions(+), 9 deletions(-)
+To https://github.com/Terru03/completionist-map-gow2018.git
+   2953da8..15ff50c  codex/all-collectibles-production-research -> codex/all-collectibles-production-research
+  candidate proof commit: 15ff50c1d776532edc895fe8d26539d43e35c516
+
+
+  behavior tests: all-Ravens offline build contract
+test_candidate_has_53_real_ravens_and_no_twin (__main__.AllRavensBuildTests.test_candidate_has_53_real_ravens_and_no_twin) ... ok
+test_candidate_has_only_seven_scoped_files (__main__.AllRavensBuildTests.test_candidate_has_only_seven_scoped_files) ... ok
+test_checkpoint_cache_wraps_core_save_with_opaque_savepoint_id_only (__main__.AllRavensBuildTests.test_checkpoint_cache_wraps_core_save_with_opaque_savepoint_id_only) ... ok
+test_deterministic_generate (__main__.AllRavensBuildTests.test_deterministic_generate) ... ok
+test_every_marker_uses_one_shared_raven_resource (__main__.AllRavensBuildTests.test_every_marker_uses_one_shared_raven_resource) ... ok
+test_gameplay_hook_has_53_exact_state_rows (__main__.AllRavensBuildTests.test_gameplay_hook_has_53_exact_state_rows) ... ok
+test_hooks_add_no_progression_write (__main__.AllRavensBuildTests.test_hooks_add_no_progression_write) ... ok
+test_hud_receiver_has_53_validated_rows_and_ui_state_bridge (__main__.AllRavensBuildTests.test_hud_receiver_has_53_validated_rows_and_ui_state_bridge) ... ok
+test_lf_and_crlf_templates_render_same (__main__.AllRavensBuildTests.test_lf_and_crlf_templates_render_same) ... ok
+test_lua_has_53_data_rows_and_exact_router_contract (__main__.AllRavensBuildTests.test_lua_has_53_data_rows_and_exact_router_contract) ... ok
+test_pool_capacity_covers_full_catalogue_for_realm_transition (__main__.AllRavensBuildTests.test_pool_capacity_covers_full_catalogue_for_realm_transition) ... ok
+test_release_gate_open_for_catalogue_first_runtime (__main__.AllRavensBuildTests.test_release_gate_open_for_catalogue_first_runtime) ... ok
+test_source_game_files_stay_unchanged (__main__.AllRavensBuildTests.test_source_game_files_stay_unchanged) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.097s
+
+OK
+  behavior tests: Raven Lua lifecycle/sidecar contract
+test_savepoint_id_is_embedded_and_replayed (__main__.AllRavensCheckpointCacheLuaTests.test_savepoint_id_is_embedded_and_replayed) ... ok
+test_exact_loaded_instance_publishes_native_bool_and_rearms (__main__.AllRavensEventLuaTests.test_exact_loaded_instance_publishes_native_bool_and_rearms) ... ok
+test_receiver_rejects_wrong_marker_identity (__main__.AllRavensHudBridgeLuaTests.test_receiver_rejects_wrong_marker_identity) ... ok
+test_savepoint_sidecar_round_trip_restores_global_state (__main__.AllRavensHudBridgeLuaTests.test_savepoint_sidecar_round_trip_restores_global_state) ... ok
+test_valid_payload_crosses_ui_receiver_and_republishes_to_open_map (__main__.AllRavensHudBridgeLuaTests.test_valid_payload_crosses_ui_receiver_and_republishes_to_open_map) ... ok
+test_a_b_same_click_stock_and_kill_lifecycle (__main__.AllRavensMapLuaTests.test_a_b_same_click_stock_and_kill_lifecycle) ... ok
+test_catalogue_visible_by_default_restore_and_teardown (__main__.AllRavensMapLuaTests.test_catalogue_visible_by_default_restore_and_teardown) ... ok
+test_exact_raven_collision_populates_stock_cursor_card (__main__.AllRavensMapLuaTests.test_exact_raven_collision_populates_stock_cursor_card) ... ok
+test_live_state_overrides_older_persisted_snapshot (__main__.AllRavensMapLuaTests.test_live_state_overrides_older_persisted_snapshot) ... ok
+test_map_open_reconstructs_persisted_kill_from_exact_gameobject_identity (__main__.AllRavensMapLuaTests.test_map_open_reconstructs_persisted_kill_from_exact_gameobject_identity) ... ok
+test_persisted_kill_bootstrap_hides_only_confirmed_raven (__main__.AllRavensMapLuaTests.test_persisted_kill_bootstrap_hides_only_confirmed_raven) ... ok
+test_realm_transition_recycles_old_realm_and_builds_midgard (__main__.AllRavensMapLuaTests.test_realm_transition_recycles_old_realm_and_builds_midgard) ... ok
+test_save_load_reset_clears_state_and_target_catalogue_defaults_visible (__main__.AllRavensMapLuaTests.test_save_load_reset_clears_state_and_target_catalogue_defaults_visible) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.015s
+
+OK
+  behavior tests: passed
+
+
+  transaction self-test: running against temporary fake game
+PS>TerminatingError(): "SELF_TEST_INJECTED_FAILURE_AFTER_1"
+PS>TerminatingError(): "Candidate 3 install failed and was automatically rolled back. Original error: SELF_TEST_INJECTED_FAILURE_AFTER_1"
+PS>TerminatingError(): "SELF_TEST_INJECTED_FAILURE_AFTER_2"
+PS>TerminatingError(): "Candidate 3 install failed and was automatically rolled back. Original error: SELF_TEST_INJECTED_FAILURE_AFTER_2"
+PS>TerminatingError(): "SELF_TEST_INJECTED_FAILURE_AFTER_3"
+PS>TerminatingError(): "Candidate 3 install failed and was automatically rolled back. Original error: SELF_TEST_INJECTED_FAILURE_AFTER_3"
+PS>TerminatingError(): "SELF_TEST_INJECTED_FAILURE_AFTER_4"
+PS>TerminatingError(): "Candidate 3 install failed and was automatically rolled back. Original error: SELF_TEST_INJECTED_FAILURE_AFTER_4"
+PS>TerminatingError(): "SELF_TEST_INJECTED_FAILURE_AFTER_5"
+PS>TerminatingError(): "Candidate 3 install failed and was automatically rolled back. Original error: SELF_TEST_INJECTED_FAILURE_AFTER_5"
+PS>TerminatingError(): "SELF_TEST_INJECTED_FAILURE_AFTER_6"
+PS>TerminatingError(): "Candidate 3 install failed and was automatically rolled back. Original error: SELF_TEST_INJECTED_FAILURE_AFTER_6"
+PS>TerminatingError(): "SELF_TEST_INJECTED_FAILURE_AFTER_7"
+PS>TerminatingError(): "Candidate 3 install failed and was automatically rolled back. Original error: SELF_TEST_INJECTED_FAILURE_AFTER_7"
+PS>TerminatingError(): "Installed file changed since Candidate 3 install: mapmaster. Use -ForceRollback only after reviewing it."
+ALL_RAVENS_TRANSACTION_SELF_TEST_PASSED
+  transaction self-test: passed
+
+
+
+
+  previous terminal transaction retained as history: 20260918T080159Z-05bcd6d0 (rolled-back)
+  historical candidate SHAs are intentionally not compared with the replacement candidate
+ALL_RAVENS_RUNTIME_TEST_INSTALLED
+  transaction: 20260918T082958Z-ab13c32b
+  files installed: 7
+  catalogue Ravens in candidate: 53
+  backups completed before first game write: true
+  candidate SHA verification: true
+  pre-install rollback baseline: current seven-file state
+  saves/progression written by installer: false
+  game launched by installer: false
+  manifest: C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\build\v0.10.5-all-ravens-runtime-test\transaction\transactions\20260918T082958Z-ab13c32b\manifest.json
+  sidecar cache directory: G:\SteamLibrary\steamapps\common\GodOfWar\mods\completionist-map-cache
+
+COMPLETIONIST_MAP_ALL_RAVENS_READY
+  The 53-Raven catalogue build is installed.
+  The exact seven game files present before this run are the rollback baseline.
+  A Raven killed during this runtime is hidden by its exact native ravenKilled event.
+  Existing kills are reconstructed from native state as zones load.
+  Save points carry only an opaque Completionist ID; global Raven snapshots live in mods\completionist-map-cache.
+  Fresh/uncached saves still show all 53 Ravens until native state is observed.
+**********************
+PowerShell transcript end
+End time: 20260918113001
+**********************

@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "result": "ALL_RAVENS_TRANSACTION_SELF_TEST_PASSED",
+  "candidate_file_count": 7,
+  "candidate_hashes": {
+    "mapmaster": "7d1d5e05315dce17326712a95901e1e753b6c14c4f1a71012ca337ae7ee9b223",
+    "mapcoords": "d6786f9734473fa7bdb8eff39aadac4f3fb2ecd4a83d56bfc5d2832c17435514",
+    "ui": "c5c38d0f89873b8617f38e049a916eb2fe632f9bf1f17bb5eef4867343ecf45b",
+    "mapmenu": "57a32501f2abf874dc5277165b62c77ce35834ff22a06b80b4689308978efa0d",
+    "mainhud": "c3cc32728469c1811e5d603622d3aa6b72335f372204db96495df26095f8239d",
+    "coresave": "7bf9dba947a4d2a03de1553e959456ac6233c5869a06f7aea3f8867051f87d46",
+    "events": "cef409c9893c3312c5a8eaf959e637f98537457925f78d85907d1f4b0659e01f"
+  },
+  "transaction_engine_sha256": "83f11f8e3a5b6e56ad5d06ba22baa779f91c986ace42ab3017de2b2231d7057a",
+  "proofs": {
+    "exact_install_and_rollback": true,
+    "all_seven_failure_boundaries_rollback": true,
+    "interruption_recovery": true,
+    "tamper_refusal": true,
+    "release_gate_open": true,
+    "terminal_historical_manifest_upgrade": true,
+    "success_and_failure_run_archiving": true,
+    "powershell_parse_preflight": true,
+    "fake_transaction_gate_before_real_install": true,
+    "outer_failure_recovery_launcher": true,
+    "outer_launcher_plain_array_orphan_scan": true,
+    "runtime_transaction_tail_single_copy": true,
+    "raven_ui_event_bridge": true,
+    "mainhud_transactional_receiver": true,
+    "checkpoint_cache_core_save_hook": true,
+    "per_save_point_raven_cache": true
+  },
+  "safety": {
+    "fake_game_root_only": true,
+    "installed_game_written": false,
+    "game_launched": false,
+    "save_or_progression_written": false
+  }
+}
