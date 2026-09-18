@@ -158,36 +158,91 @@ def discover_anchor_functions(pe,con,md,X86_OP_MEM,X86_REG_RIP):
                 break
     return out
 
-def discover_family(pe,con,md,anchors,X86_OP_MEM,X86_REG_RIP):
-    candidates={KNOWN_VTABLE:{"source":"known","refs":[]}}
+def discover_family(pe,con,md,anchors,X86_OP_MEM,X86_OP_REG,X86_REG_RIP):
+    candidates={KNOWN_VTABLE:{"source":"known","refs":[],"root_offsets":set()}}
     anchor_details=[]
     for a in anchors:
-        refs=[]
+        refs=[]; assignments=[]
         fn=a["function"]
+        objprov={"rcx":0}
+        vtreg={}
         for ins in disasm_fn(pe,md,fn):
             try:ops=list(ins.operands)
             except Exception:ops=[]
+
+            # Record a proven vtable store before updating register provenance.
+            if (ins.mnemonic=="mov" and len(ops)>=2 and
+                ops[0].type==X86_OP_MEM and ops[1].type==X86_OP_REG):
+                base=canon(md.reg_name(ops[0].mem.base)) if ops[0].mem.base else None
+                idx=canon(md.reg_name(ops[0].mem.index)) if ops[0].mem.index else None
+                src=canon(md.reg_name(ops[1].reg))
+                if base in objprov and not idx and src in vtreg:
+                    vt=vtreg[src]
+                    root_off=objprov[base]+int(ops[0].mem.disp)
+                    assignments.append({"site":ins.address-IMAGE_BASE,"rva":vt,
+                                        "root_offset":root_off,
+                                        "instruction":f"{ins.mnemonic} {ins.op_str}"})
+                    candidates.setdefault(vt,{"source":f"anchor_0x{fn['begin']:X}",
+                                              "refs":[],"root_offsets":set()})
+                    candidates[vt]["root_offsets"].add(root_off)
+
+            # Discover RIP-relative vtable candidates.
             for op in ops:
                 if op.type==X86_OP_MEM and op.mem.base==X86_REG_RIP:
                     target=ins.address+ins.size+int(op.mem.disp)-IMAGE_BASE
                     if 0<=target<pe.size_of_image and plausible_vtable(pe,con,target):
                         refs.append({"site":ins.address-IMAGE_BASE,"rva":target,
                                      "instruction":f"{ins.mnemonic} {ins.op_str}"})
-                        candidates.setdefault(target,{"source":f"anchor_0x{fn['begin']:X}","refs":[]})
-                        candidates[target]["refs"].append({"function":fn["begin"],"site":ins.address-IMAGE_BASE})
-        anchor_details.append({**a,"candidate_vtables":refs})
+                        candidates.setdefault(target,{"source":f"anchor_0x{fn['begin']:X}",
+                                                      "refs":[],"root_offsets":set()})
+                        candidates[target]["refs"].append(
+                            {"function":fn["begin"],"site":ins.address-IMAGE_BASE})
 
-    # Keep vtables near the known table or repeatedly referenced by the same anchor.
-    # Constructor/destructor functions can reference strings/data that accidentally
-    # begin with a code pointer, so constrain aggressively.
+            # Track object-pointer and vtable-address registers.
+            if len(ops)>=2 and ops[0].type==X86_OP_REG:
+                dst=canon(md.reg_name(ops[0].reg))
+                if ins.mnemonic=="mov" and ops[1].type==X86_OP_REG:
+                    src=canon(md.reg_name(ops[1].reg))
+                    if src in objprov:objprov[dst]=objprov[src]
+                    else:objprov.pop(dst,None)
+                    if src in vtreg:vtreg[dst]=vtreg[src]
+                    else:vtreg.pop(dst,None)
+                elif ins.mnemonic=="lea" and ops[1].type==X86_OP_MEM:
+                    if ops[1].mem.base==X86_REG_RIP:
+                        target=ins.address+ins.size+int(ops[1].mem.disp)-IMAGE_BASE
+                        if 0<=target<pe.size_of_image and plausible_vtable(pe,con,target):
+                            vtreg[dst]=target
+                        else:
+                            vtreg.pop(dst,None)
+                        objprov.pop(dst,None)
+                    else:
+                        base=canon(md.reg_name(ops[1].mem.base)) if ops[1].mem.base else None
+                        idx=canon(md.reg_name(ops[1].mem.index)) if ops[1].mem.index else None
+                        if base in objprov and not idx:
+                            objprov[dst]=objprov[base]+int(ops[1].mem.disp)
+                        else:
+                            objprov.pop(dst,None)
+                        vtreg.pop(dst,None)
+                elif ins.mnemonic not in ("cmp","test"):
+                    objprov.pop(dst,None);vtreg.pop(dst,None)
+            if ins.mnemonic=="call":
+                for rr in VOLATILE:
+                    objprov.pop(rr,None);vtreg.pop(rr,None)
+
+        anchor_details.append({**a,"candidate_vtables":refs,"vtable_assignments":assignments})
+
     filtered={}
     for rva,v in candidates.items():
         near=abs(rva-KNOWN_VTABLE)<=0x20000
-        repeated=len(v["refs"])>=1
-        if rva==KNOWN_VTABLE or (near and repeated):
+        referenced=(rva==KNOWN_VTABLE or len(v["refs"])>=1 or len(v["root_offsets"])>=1)
+        if near and referenced:
             slots=enum_vtable(pe,con,rva)
             if slots:
-                filtered[rva]={**v,"slots":slots}
+                offsets=sorted(v["root_offsets"])
+                if rva==KNOWN_VTABLE and not offsets:
+                    offsets=[0]
+                filtered[rva]={"source":v["source"],"refs":v["refs"],
+                               "root_offsets":offsets,"slots":slots}
     return filtered,anchor_details
 
 def rname(md,r):return canon(md.reg_name(r)) if r else None
@@ -295,19 +350,19 @@ def main():
     con=sqlite3.connect(a.db)
     try:
         anchors=discover_anchor_functions(pe,con,md,X86_OP_MEM,X86_REG_RIP)
-        family,anchor_details=discover_family(pe,con,md,anchors,X86_OP_MEM,X86_REG_RIP)
+        family,anchor_details=discover_family(pe,con,md,anchors,X86_OP_MEM,X86_OP_REG,X86_REG_RIP)
         if not family:raise RuntimeError("no LuaClient vtable family discovered")
 
         queue=deque();best={}
         for vt,info in family.items():
-            for slot in info["slots"]:
-                # Start with zero. Constructor-family discovery is primarily to expose
-                # all methods; field-address propagation will recover inner offsets.
-                key=(slot["function"],"rcx",0)
-                if key not in best:
-                    best[key]=0
-                    queue.append((slot["function"],"rcx",0,0,
-                        [f"vtable_0x{vt:X}[{slot['slot']}]=>0x{slot['function']:X}"]))
+            offsets=info.get("root_offsets") or ([0] if vt==KNOWN_VTABLE else [])
+            for root_off in offsets:
+                for slot in info["slots"]:
+                    key=(slot["function"],"rcx",root_off)
+                    if key not in best:
+                        best[key]=0
+                        queue.append((slot["function"],"rcx",root_off,0,
+                            [f"vtable_0x{vt:X}@root{root_off:+#x}[{slot['slot']}]=>0x{slot['function']:X}"]))
 
         states=[];hits=[]
         while queue and len(states)<MAX_STATES:
@@ -366,7 +421,7 @@ def main():
                 lines.append(f"    candidate_vtable=0x{vr['rva']:X} site=0x{vr['site']:X} {vr['instruction']}")
         lines+=["","VTABLE_FAMILY"]
         for vt,info in sorted(family.items()):
-            lines.append(f"  VTABLE 0x{vt:X} slots={len(info['slots'])} source={info['source']}")
+            lines.append(f"  VTABLE 0x{vt:X} slots={len(info['slots'])} root_offsets={info.get('root_offsets',[])} source={info['source']}")
             for s in info["slots"]:
                 lines.append(f"    slot={s['slot']:03d} fn=0x{s['function']:X} size=0x{s['size']:X}")
         lines+=["","FIELD_HITS"]
