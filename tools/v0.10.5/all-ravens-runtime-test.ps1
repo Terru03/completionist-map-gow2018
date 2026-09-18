@@ -27,6 +27,7 @@ $files = [ordered]@{
     ui         = 'exec/dc/pc_le/wad_r_ui.dcb'
     mapmenu    = 'mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua'
     mainhud    = 'mods/lua/gameart/ui/scripts/hud/mainhud.lua'
+    coresave   = 'mods/lua/gameart/scripts/libraries/core/save.lua'
     events     = 'mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua'
 }
 
@@ -51,10 +52,10 @@ function Assert-AllRavensProof {
     if (-not [bool]$proof.state.persisted_kill_bootstrap) { throw 'Persisted-kill bootstrap contract is missing.' }
 
     $properties = @($proof.files.PSObject.Properties)
-    if ($properties.Count -ne 6) { throw "All-Ravens proof must contain exactly six files; found $($properties.Count)." }
+    if ($properties.Count -ne 7) { throw "All-Ravens proof must contain exactly seven files; found $($properties.Count)." }
     $expectedPaths = @($files.Values | ForEach-Object { ([string]$_).Replace('\','/') } | Sort-Object)
     $actualPaths = @($properties.Name | ForEach-Object { ([string]$_).Replace('\','/') } | Sort-Object)
-    if (($expectedPaths -join "`n") -ne ($actualPaths -join "`n")) { throw 'All-Ravens proof file set differs from the approved six-file set.' }
+    if (($expectedPaths -join "`n") -ne ($actualPaths -join "`n")) { throw 'All-Ravens proof file set differs from the approved seven-file set.' }
     return $proof
 }
 
@@ -92,7 +93,10 @@ function Assert-ExpectedPreInstallGame([object]$Proof) {
         if ($null -eq $entry) { throw "Proof misses pre-install source SHA: $relative" }
         $expected = ([string]$entry.Value).ToLowerInvariant()
         $path = Resolve-SafeChildPath -Root $GameRoot -Relative $relative -Label 'installed game source'
-        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Installed game file missing: $relative" }
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+            if ($name -eq 'coresave') { continue }
+            throw "Installed game file missing: $relative"
+        }
         $actual = Get-Sha256 $path
         if ($actual -ne $expected) { throw "Installed game baseline differs for $relative. Expected $expected, got $actual." }
     }
@@ -102,7 +106,10 @@ function Assert-CurrentPreInstallGamePresent {
     foreach ($name in $files.Keys) {
         $relative = ([string]$files[$name]).Replace('\','/')
         $path = Resolve-SafeChildPath -Root $GameRoot -Relative $relative -Label 'installed game source'
-        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Installed game file missing: $relative" }
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+            if ($name -eq 'coresave') { continue }
+            throw "Installed game file missing: $relative"
+        }
         $sha = Get-Sha256 $path
         if ($sha -notmatch '^[0-9a-f]{64}$') { throw "Could not hash installed game file: $relative" }
     }
@@ -159,7 +166,7 @@ function Assert-TerminalAllRavensTransactionSummary([object]$Manifest) {
         throw "Terminal transaction belongs to a different game root: $($Manifest.game_root)"
     }
     $terminalEntryCount = @($Manifest.entries).Count
-    if ($terminalEntryCount -notin @(5, @($files.Keys).Count)) {
+    if ($terminalEntryCount -notin @(5, 6, @($files.Keys).Count)) {
         throw "Terminal transaction entry count differs: $terminalEntryCount"
     }
     return $Manifest
@@ -227,11 +234,11 @@ if ($Mode -eq 'Install') {
 
     Write-Host 'ALL_RAVENS_RUNTIME_TEST_INSTALLED'
     Write-Host "  transaction: $($manifest.transaction_id)"
-    Write-Host '  files installed: 6'
+    Write-Host '  files installed: 7'
     Write-Host '  catalogue Ravens in candidate: 53'
     Write-Host '  backups completed before first game write: true'
     Write-Host '  candidate SHA verification: true'
-    Write-Host "  pre-install rollback baseline: $(if ($PreserveCurrentBaseline) { 'current six-file state' } else { 'frozen v3.3 source state' })"
+    Write-Host "  pre-install rollback baseline: $(if ($PreserveCurrentBaseline) { 'current seven-file state' } else { 'frozen v3.3 source state' })"
     Write-Host '  saves/progression written by installer: false'
     Write-Host '  game launched by installer: false'
     Write-Host "  manifest: $(Join-Path ([string]$manifest.transaction_root) 'manifest.json')"
@@ -255,7 +262,7 @@ if ($Mode -eq 'Rollback') {
 
     Write-Host 'ALL_RAVENS_RUNTIME_TEST_ROLLED_BACK'
     Write-Host "  transaction: $($manifest.transaction_id)"
-    Write-Host '  exact six-file pre-install state restored: true'
+    Write-Host '  exact seven-file pre-install state restored: true'
     Write-Host '  source SHA verification: true'
     Write-Host '  saves/progression touched by rollback: false'
     exit 0
