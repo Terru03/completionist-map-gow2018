@@ -26,6 +26,11 @@ Assert-True ($engineHash -eq $expectedEngineSha) 'Transaction engine canonical S
 . $engine -LibraryOnly
 $allRavensProofPath = Join-Path $repo 'archive\all-ravens\all-ravens-release-candidate-offline.json'
 $allRavensCandidateRoot = Join-Path $repo 'build\v0.10.5-all-ravens-release-candidate\offline\candidate\game-root'
+$allRavensRuntimeTest = Join-Path $repo 'tools\v0.10.5\all-ravens-runtime-test.ps1'
+Assert-True (Test-Path -LiteralPath $allRavensRuntimeTest -PathType Leaf) "Missing runtime test: $allRavensRuntimeTest"
+$runtimeText = [IO.File]::ReadAllText($allRavensRuntimeTest)
+Assert-True ($runtimeText.Contains("Assert-TerminalAllRavensTransactionSummary")) 'Terminal transaction compatibility guard is missing.'
+Assert-True ($runtimeText.Contains("historical candidate SHAs are intentionally not compared with the replacement candidate")) 'Terminal upgrade must skip replacement SHA comparison.'
 
 $files = [ordered]@{
     mapmaster = 'exec/dc/pc_le/mapmaster.dcb'
@@ -152,6 +157,7 @@ try {
             interruption_recovery = $true
             tamper_refusal = $true
             release_gate_open = $true
+            terminal_historical_manifest_upgrade = $true
         }
         safety = [ordered]@{
             fake_game_root_only = $true
