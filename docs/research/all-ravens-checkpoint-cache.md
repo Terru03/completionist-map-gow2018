@@ -40,7 +40,7 @@ Because the cache is serialized by `core.save`, it follows the exact checkpoint/
 
 ```
 native precisionchallenge ravenKilled
-  -> CompletionistMapV105CacheRavenState
+  -> require("core.save").GetSaveState("__CompletionistMapV105Cache")
   -> __CompletionistMapV105Cache in core.save state
   -> normal GoW checkpoint serialization
   -> core.save Restore
@@ -67,3 +67,17 @@ mods/lua/gameart/scripts/libraries/core/save.lua
 ```
 
 to the prior six-file Raven candidate. It is backed up, SHA-checked, installed, and rolled back through the same transaction engine.
+
+## 2026-09-18 field correction
+
+The first checkpoint-cache build attempted to expose a cache updater through a
+`_G` function defined by the patched `core.save` module. Field testing proved
+that Raven subobject scripts do not share that module global environment, so
+cross-zone cache updates did not persist.
+
+The corrected implementation calls the public `core.save.GetSaveState` API
+directly from each Raven gameplay script. This executes against the actual
+module-owned `object_savestate` table regardless of subobject Lua environment.
+The gameplay script also replays the restored cache through the UI event bridge
+on `OnStart` / `OnRestoreCheckpoint` so an early restore cannot be lost before
+MainHUD is ready.
