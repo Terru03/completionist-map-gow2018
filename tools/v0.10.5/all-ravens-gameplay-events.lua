@@ -58,7 +58,7 @@ do
         " source=" .. tostring(source) ..
         " ok=" .. tostring(ok) ..
         " error=" .. tostring(err) ..
-        " sidecarOwner=MainHUD progressionWrites=false")
+        " progressionWrites=false")
     return ok
   end
 
@@ -178,7 +178,6 @@ do
   log("API", "installed=true catalogueCount=" .. tostring(#rows) ..
       " nativeField=ravenKilled exactQuestAndPosition=true" ..
       " transport=UI_CALL_EVENT exactGameplayCleanup=true boundedRetry=" .. tostring(retryLimit) ..
-      " checkpointCache=savePointIdPlusMainHUDSidecar" ..
       " polling=false progressionWrites=false")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVEN EVENTS
