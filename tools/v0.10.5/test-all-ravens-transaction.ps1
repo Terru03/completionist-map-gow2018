@@ -55,6 +55,9 @@ Assert-True (@($launcherParseErrors).Count -eq 0) ("Outer launcher has PowerShel
 $launcherText = [IO.File]::ReadAllText($allRavensLauncher)
 Assert-True ($launcherText.Contains('Get-UnpublishedRavenRunDirs')) 'Outer launcher must salvage unpublished Raven run directories.'
 Assert-True ($launcherText.Contains('Assert-Parses -Path $installer')) 'Outer launcher must parse-check the installer before child execution.'
+Assert-True (-not $launcherText.Contains('System.Collections.Generic.List[object]')) 'Outer launcher orphan scan must not use the PowerShell generic-list binder path.'
+Assert-True ($launcherText.Contains('[string[]]$salvageBeforePaths')) 'Outer launcher must materialize salvage paths as string arrays.'
+Assert-True ($launcherText.Contains('[string[]]$salvageAfterPaths')) 'Outer launcher must materialize post-run salvage paths as string arrays.'
 $installerTokens = $null
 $installerParseErrors = $null
 [void][System.Management.Automation.Language.Parser]::ParseFile(
@@ -210,6 +213,7 @@ try {
             powershell_parse_preflight = $true
             fake_transaction_gate_before_real_install = $true
             outer_failure_recovery_launcher = $true
+            outer_launcher_plain_array_orphan_scan = $true
         }
         safety = [ordered]@{
             fake_game_root_only = $true
