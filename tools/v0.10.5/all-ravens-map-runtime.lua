@@ -36,6 +36,17 @@ do
     byPersistedIdentityNoGo[noGoKey] = row
   end
 
+  local byWad = {}
+  local byParent = {}
+  local unsafeParent = {}
+  for _, row in ipairs(rows) do
+    byWad[row.WadKey] = byWad[row.WadKey] or {}
+    table.insert(byWad[row.WadKey], row)
+    byParent[row.ParentQuest] = byParent[row.ParentQuest] or {}
+    table.insert(byParent[row.ParentQuest], row)
+    if row.AggregateSafe ~= true then unsafeParent[row.ParentQuest] = true end
+  end
+
   local byMarkerId = {}
 
   local states = _G.CompletionistMapV105RavenState or {}
@@ -175,6 +186,26 @@ do
     local wadKey = compactWadIdentity(quotedIdentity(level))
     if wadKey == "" then return nil, "level_identity_empty" end
 
+    -- Native position is a stronger identity than the exposed Lua GameObject name:
+    -- multiple Raven instances can intentionally share the same name/prototype.
+    local positionOK, position = pcall(function() return object:GetWorldPosition() end)
+    if positionOK and position ~= nil and
+        tonumber(position.x) ~= nil and tonumber(position.y) ~= nil and tonumber(position.z) ~= nil then
+      local positionHit = nil
+      for _, row in ipairs(byWad[wadKey] or {}) do
+        local dx = tonumber(position.x) - row.X
+        local dy = tonumber(position.y) - row.Y
+        local dz = tonumber(position.z) - row.Z
+        if dx * dx + dy * dy + dz * dz <= 0.25 then
+          if positionHit ~= nil and positionHit.CatalogueId ~= row.CatalogueId then
+            return nil, "ambiguous_position"
+          end
+          positionHit = row
+        end
+      end
+      if positionHit ~= nil then return positionHit, nil end
+    end
+
     local candidates = {}
     local function addCandidate(value)
       if value == nil then return end
@@ -279,6 +310,66 @@ do
     return roots > 0, killedCount, aliveCount
   end
 
+  local aggregatePublished = {}
+
+  local function bootstrapAggregateRavenState(source)
+    -- Remove only state derived by the previous aggregate pass. Exact live/pickle
+    -- observations remain authoritative and are applied separately.
+    for catalogueId, _ in pairs(aggregatePublished) do
+      if not liveStatePublished[catalogueId] then states[catalogueId] = nil end
+      aggregatePublished[catalogueId] = nil
+    end
+
+    if type(game) ~= "table" or type(game.QuestManager) ~= "table" or
+        type(game.QuestManager.GetQuestProgressAndGoal) ~= "function" then
+      log("AGGREGATE_SCAN_REFUSED", "source=" .. tostring(source) .. " reason=quest_api_unavailable")
+      return false, 0, 0, 0
+    end
+
+    local parents, completeParents, hidden, refused = 0, 0, 0, 0
+    for parent, parentRows in pairs(byParent) do
+      parents = parents + 1
+      if unsafeParent[parent] then
+        refused = refused + 1
+        log("AGGREGATE_PARENT_SKIPPED", "parent=" .. tostring(parent) ..
+            " reason=bonus_untracked_raven catalogueCount=" .. tostring(#parentRows))
+      else
+        local callOK, queryOK, progress, goal = pcall(
+          game.QuestManager.GetQuestProgressAndGoal, parent
+        )
+        progress, goal = tonumber(progress), tonumber(goal)
+        if callOK and queryOK == true and progress ~= nil and goal ~= nil and
+            goal == #parentRows and progress >= goal then
+          completeParents = completeParents + 1
+          for _, row in ipairs(parentRows) do
+            if not liveStatePublished[row.CatalogueId] then
+              states[row.CatalogueId] = true
+              aggregatePublished[row.CatalogueId] = true
+              hidden = hidden + 1
+              hideExactTracked(row)
+            end
+          end
+        end
+        log("AGGREGATE_PARENT", "parent=" .. tostring(parent) ..
+            " callOK=" .. tostring(callOK) .. " queryOK=" .. tostring(queryOK) ..
+            " progress=" .. tostring(progress) .. " goal=" .. tostring(goal) ..
+            " catalogueCount=" .. tostring(#parentRows) ..
+            " completeApplied=" .. tostring(
+              callOK and queryOK == true and progress ~= nil and goal ~= nil and
+              goal == #parentRows and progress >= goal
+            ))
+      end
+    end
+
+    log("AGGREGATE_SCAN", "source=" .. tostring(source) ..
+        " parents=" .. tostring(parents) ..
+        " completeParents=" .. tostring(completeParents) ..
+        " hidden=" .. tostring(hidden) ..
+        " unsafeParents=" .. tostring(refused) ..
+        " partialUnknownVisible=true progressionWrites=false")
+    return true, completeParents, hidden, refused
+  end
+
   local function logUIStateBootstrap(source)
     local known, killed, alive = 0, 0, 0
     for catalogueId, value in pairs(states) do
@@ -299,6 +390,7 @@ do
   CompletionistMapV100_CreateMapPin = function(self, currState)
     local result = createPins(self, currState)
     logUIStateBootstrap("map_create")
+    bootstrapAggregateRavenState("map_create")
     bootstrapPersistedRavenState("map_create")
     syncIcons(self, "map_create")
     return result
@@ -607,6 +699,13 @@ do
     return true, accepted
   end
 
+  _G.CompletionistMapV105BootstrapAggregateRavenState = function(source)
+    local ok, completeParents, hidden, refused =
+      bootstrapAggregateRavenState(source or "api")
+    if lastMapOnSelf ~= nil then syncIcons(lastMapOnSelf, "aggregate_scan:" .. tostring(source)) end
+    return ok, completeParents, hidden, refused
+  end
+
   _G.CompletionistMapV105BootstrapPersistedRavenState = function(source)
     local ok, killed, alive = bootstrapPersistedRavenState(source or "api")
     if lastMapOnSelf ~= nil then syncIcons(lastMapOnSelf, "persisted_scan:" .. tostring(source)) end
@@ -634,6 +733,8 @@ do
       " exactCollisionRequired=true markerIdAloneInfersRaven=false" ..
       " polling=false progressionWrites=false catalogueDefaultVisible=true" ..
       " persistedKillBootstrap=automaticReadOnlyPickleScan" ..
-      " persistedIdentity=wadPlusGameObject liveOverridesPersisted=true")
+      " persistedIdentity=wadPlusPositionThenGameObject" ..
+      " aggregateCompletedRegionBootstrap=true aggregateSurplusParentsFailOpen=true" ..
+      " liveOverridesPersisted=true")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVENS

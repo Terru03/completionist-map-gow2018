@@ -89,12 +89,19 @@ def render_lua(catalogue: dict, template_path: Path, token: str, state_rows: boo
         else:
             wad_key = runtime_identity_component(row["source"]["wad"], wad=True)
             object_key = runtime_identity_component(row["native"]["object_name"])
+            x, y, z = row["source"]["native_world_position"]
+            aggregate_safe = (
+                "parent_contains_one_bonus_untracked_raven" not in row.get("special_handling", [])
+            )
             lines.append(
-                "    {CatalogueId=%s,Name=%s,UidHex=%s,Realm=%s,RegionId=%s,WadKey=%s,ObjectKey=%s},"
+                "    {CatalogueId=%s,Name=%s,UidHex=%s,Realm=%s,RegionId=%s,WadKey=%s,ObjectKey=%s,"
+                "ParentQuest=%s,X=%.15g,Y=%.15g,Z=%.15g,AggregateSafe=%s},"
                 % (
                     lua_quote(row["catalogue_id"]), lua_quote(row["marker"]["name"]),
                     lua_quote(row["marker"]["uid"]), lua_quote(row["realm"]), lua_quote(row["region_id"]),
                     lua_quote(wad_key), lua_quote(object_key),
+                    lua_quote(row["progression"]["parent_quest"]), x, y, z,
+                    "true" if aggregate_safe else "false",
                 )
             )
     text = template_path.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
