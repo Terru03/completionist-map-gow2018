@@ -29,6 +29,9 @@ MAP_PRELUDE = r'''
 calls={logs={},previousShow=0,recycled=0,labels={},reticleTitle=nil,reticleDesc=nil,reticleCalls=0}
 customIds={}
 stockIds={}
+persistedRegistry={}
+debug=debug or {}
+debug.getregistry=function() return persistedRegistry end
 local markerIds={}
 local markerNamesById={}
 local nextMarkerId=10000
@@ -127,6 +130,21 @@ function probe.reset() return CompletionistMapV105ResetRavenStates("save_load") 
 function probe.persistedOne(id)
   return CompletionistMapV105ApplyPersistedRavenKills({id},"test")
 end
+function probe.persistedRecord(wad,objectName,killed,soft)
+  local levelName=string.gsub(wad,"%.wad$","")
+  if string.sub(string.lower(levelName),1,4)~="wad_" then levelName="WAD_"..levelName end
+  local level=setmetatable({}, {__tostring=function() return "Level '"..levelName.."'" end})
+  local object=setmetatable({Level=level}, {__tostring=function() return "GameObject '"..objectName.."'" end})
+  function object:GetName() return string.gsub(objectName,"^go","") end
+  function object:GetDebugPath() return objectName end
+  local root=persistedRegistry[2] or {}
+  persistedRegistry[2]=root
+  local pickleName=soft and "__SoftPickleTable" or "__PickleTable"
+  local pickle=root[pickleName] or {__subobjs={}}
+  root[pickleName]=pickle
+  pickle.__subobjs[object]={ravenKilled=killed}
+end
+function probe.clearPersisted() persistedRegistry={} end
 '''
 
 
@@ -202,6 +220,24 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.iconCount(), 1)
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
         self.assertIsNotNone(self.probe.icon(self.b["marker"]["name"]))
+
+    def test_map_open_reconstructs_persisted_kill_from_exact_gameobject_identity(self):
+        self.probe.persistedRecord(
+            self.a["source"]["wad"], self.a["native"]["object_name"], True, False
+        )
+        self.probe.open()
+        self.assertEqual(self.probe.iconCount(), 1)
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+        self.assertIsNotNone(self.probe.icon(self.b["marker"]["name"]))
+
+    def test_live_state_overrides_older_persisted_snapshot(self):
+        self.probe.persistedRecord(
+            self.a["source"]["wad"], self.a["native"]["object_name"], True, False
+        )
+        self.probe.publish(self.a["catalogue_id"], False)
+        self.probe.open()
+        self.assertEqual(self.probe.iconCount(), 2)
+        self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
 
     def test_save_load_reset_clears_state_and_target_catalogue_defaults_visible(self):
         self.probe.publish(self.a["catalogue_id"], False)
