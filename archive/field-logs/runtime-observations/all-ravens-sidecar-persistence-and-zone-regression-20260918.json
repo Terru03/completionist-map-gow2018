@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "date": "2026-09-18",
+  "source": "user field test",
+  "observation": {
+    "sidecar_build_persisted_killed_ravens_after_game_restart": false,
+    "loaded_zone_left_some_previously_killed_raven_markers_visible": true,
+    "runtime_capture_script_failed_to_parse": true,
+    "capture_parser_error_line": 108,
+    "capture_parser_error": "Unexpected token around ToString('o') caused by earlier script corruption"
+  },
+  "diagnosis": {
+    "sidecar_experiment_failed": true,
+    "zone_regression_likely_from_wad_local_restore_calling_global_clearState": true,
+    "persistence_not_accepted_as_working": false,
+    "action": "restore field-proven live/zone behavior and disable sidecar persistence experiment"
+  },
+  "native_progression_modified_by_mod": false
+}
