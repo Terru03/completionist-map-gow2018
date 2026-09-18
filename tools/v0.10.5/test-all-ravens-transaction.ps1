@@ -28,11 +28,29 @@ $allRavensProofPath = Join-Path $repo 'archive\all-ravens\all-ravens-release-can
 $allRavensCandidateRoot = Join-Path $repo 'build\v0.10.5-all-ravens-release-candidate\offline\candidate\game-root'
 $allRavensRuntimeTest = Join-Path $repo 'tools\v0.10.5\all-ravens-runtime-test.ps1'
 Assert-True (Test-Path -LiteralPath $allRavensRuntimeTest -PathType Leaf) "Missing runtime test: $allRavensRuntimeTest"
+$runtimeTokens = $null
+$runtimeParseErrors = $null
+[void][System.Management.Automation.Language.Parser]::ParseFile(
+    $allRavensRuntimeTest,
+    [ref]$runtimeTokens,
+    [ref]$runtimeParseErrors
+)
+Assert-True (@($runtimeParseErrors).Count -eq 0) ("Runtime test has PowerShell parse errors: " + ((@($runtimeParseErrors | ForEach-Object { $_.Message })) -join ' | '))
+
 $runtimeText = [IO.File]::ReadAllText($allRavensRuntimeTest)
 Assert-True ($runtimeText.Contains("Assert-TerminalAllRavensTransactionSummary")) 'Terminal transaction compatibility guard is missing.'
 Assert-True ($runtimeText.Contains("historical candidate SHAs are intentionally not compared with the replacement candidate")) 'Terminal upgrade must skip replacement SHA comparison.'
 $allRavensInstaller = Join-Path $repo 'tools\v0.10.5\install-all-ravens-working-mod.ps1'
 Assert-True (Test-Path -LiteralPath $allRavensInstaller -PathType Leaf) "Missing installer: $allRavensInstaller"
+$installerTokens = $null
+$installerParseErrors = $null
+[void][System.Management.Automation.Language.Parser]::ParseFile(
+    $allRavensInstaller,
+    [ref]$installerTokens,
+    [ref]$installerParseErrors
+)
+Assert-True (@($installerParseErrors).Count -eq 0) ("Installer has PowerShell parse errors: " + ((@($installerParseErrors | ForEach-Object { $_.Message })) -join ' | '))
+
 $installerText = [IO.File]::ReadAllText($allRavensInstaller)
 foreach ($requiredArtifact in @(
     'run.txt',
@@ -175,6 +193,7 @@ try {
             release_gate_open = $true
             terminal_historical_manifest_upgrade = $true
             success_and_failure_run_archiving = $true
+            powershell_parse_preflight = $true
         }
         safety = [ordered]@{
             fake_game_root_only = $true
