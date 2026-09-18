@@ -98,6 +98,13 @@ function Map.CreateMarkerIcon(id,region,label)
 end
 function Map.RecycleIcon(go) calls.recycled=calls.recycled+1; go.recycled=true end
 game={Map={},Compass={}}
+questProgress={}
+game.QuestManager={}
+function game.QuestManager.GetQuestProgressAndGoal(parent)
+  local row=questProgress[parent]
+  if row==nil then return false,nil,nil end
+  return true,row.progress,row.goal
+end
 function game.Map.GetMarkerInfo(name) return {Id=markerId(name),X=1,Y=2,Z=3} end
 function game.Compass.FindMarkersByIconClass(classes)
   if classes[1]=="CompletionistRaven" then return customIds end
@@ -176,6 +183,10 @@ function probe.persistedRecord(wad,objectName,killed,soft)
   pickle.__subobjs[object]={ravenKilled=killed}
 end
 function probe.clearPersisted() persistedRegistry={} end
+function probe.quest(parent,progress,goal)
+  questProgress[parent]={progress=progress,goal=goal}
+end
+function probe.clearQuest() questProgress={} end
 '''
 
 
@@ -256,6 +267,47 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.iconCount(), 45)
         self.assertGreaterEqual(self.probe.recycled(), 2)
         self.assertEqual(self.probe.lastLabel(), "Odin's Raven")
+
+    def test_completed_safe_parent_hidden_by_aggregate_bootstrap(self):
+        rows = [
+            row for row in CATALOGUE["ravens"]
+            if row["realm"] == "Alfheim"
+        ]
+        self.assertEqual(len(rows), 2)
+        parent = rows[0]["progression"]["parent_quest"]
+        self.assertTrue(all(row["progression"]["parent_quest"] == parent for row in rows))
+        self.assertTrue(all(
+            "parent_contains_one_bonus_untracked_raven" not in row.get("special_handling", [])
+            for row in rows
+        ))
+        self.probe.quest(parent, len(rows), len(rows))
+        self.probe.open()
+        self.assertEqual(self.probe.iconCount(), 0)
+
+    def test_partial_safe_parent_remains_visible_by_default(self):
+        rows = [
+            row for row in CATALOGUE["ravens"]
+            if row["realm"] == "Alfheim"
+        ]
+        parent = rows[0]["progression"]["parent_quest"]
+        self.probe.quest(parent, 1, len(rows))
+        self.probe.open()
+        self.assertEqual(self.probe.iconCount(), len(rows))
+
+    def test_bonus_parent_aggregate_fails_open(self):
+        unsafe = [
+            row for row in CATALOGUE["ravens"]
+            if "parent_contains_one_bonus_untracked_raven" in row.get("special_handling", [])
+        ]
+        self.assertGreaterEqual(len(unsafe), 2)
+        parent = unsafe[0]["progression"]["parent_quest"]
+        rows = [row for row in unsafe if row["progression"]["parent_quest"] == parent]
+        self.assertGreaterEqual(len(rows), 2)
+        native_goal = len(rows) - 1
+        self.probe.quest(parent, native_goal, native_goal)
+        self.probe.realm(rows[0]["realm"])
+        for row in rows:
+            self.assertIsNotNone(self.probe.icon(row["marker"]["name"]))
 
     def test_persisted_kill_bootstrap_hides_only_confirmed_raven(self):
         self.probe.open()
