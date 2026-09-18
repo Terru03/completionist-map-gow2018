@@ -93,19 +93,19 @@ function Publish-Paths {
     $pathsToPublish = @($Paths | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique)
     if ($pathsToPublish.Count -eq 0) { return $null }
 
-    & git -C $repo add -- @pathsToPublish 2>&1 | Tee-Object -FilePath $launcherLog -Append | Out-Host
+    & git -C $repo add -- @pathsToPublish 2>&1 | Out-Host
     if ($LASTEXITCODE -ne 0) { throw 'Could not stage Raven launcher artifacts.' }
 
     & git -C $repo diff --cached --quiet --ignore-submodules -- @pathsToPublish
     if ($LASTEXITCODE -eq 0) { return $null }
 
-    & git -C $repo commit -m $Message -- @pathsToPublish 2>&1 | Tee-Object -FilePath $launcherLog -Append | Out-Host
+    & git -C $repo commit -m $Message -- @pathsToPublish 2>&1 | Out-Host
     if ($LASTEXITCODE -ne 0) { throw 'Could not commit Raven launcher artifacts.' }
 
     $commit = Get-Head
     $pushed = $false
     for ($attempt = 1; $attempt -le 3; $attempt++) {
-        & git -C $repo push origin $expectedBranch 2>&1 | Tee-Object -FilePath $launcherLog -Append | Out-Host
+        & git -C $repo push origin $expectedBranch 2>&1 | Out-Host
         if ($LASTEXITCODE -eq 0) {
             $pushed = $true
             break
