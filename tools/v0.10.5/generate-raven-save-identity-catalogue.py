@@ -5,8 +5,9 @@ The recipe is proven by the exact read-only VikingFuneral capture:
 
 1. Walk the authored transform chain root -> leaf.
 2. For each 16-byte transform record id, decrement byte index 12 by one.
-3. Resolve the leaf transform's prototype record through native.prototype_id.
-4. Append the 16-byte GameObject identity stored at prototype payload +0x6C.
+3. Resolve native.prototype_id to its authored prototype-loader record.
+4. Follow that record's Raven behaviour path to the real goProto Raven record,
+   and append that record's 16-byte header identity.
 5. Hash the concatenated 16-byte elements with GoW's serializer hash loop.
 6. Serialize as flag 0x01 + registry_hash + object_hash, both little-endian.
 
@@ -23,6 +24,7 @@ from __future__ import annotations
 import argparse
 from collections import defaultdict
 from datetime import datetime, timezone
+from difflib import SequenceMatcher
 import importlib.util
 import json
 from pathlib import Path
@@ -92,27 +94,169 @@ def one_record(records: list[dict], record_id: bytes, *, offset: int | None = No
     return hits[0]
 
 
+def ascii_strings(data: bytes, minimum: int = 4) -> list[str]:
+    strings: list[str] = []
+    start = None
+    for index, byte in enumerate(data + b"\\x00"):
+        printable = 0x20 <= byte <= 0x7E
+        if printable and start is None:
+            start = index
+        elif not printable and start is not None:
+            if index - start >= minimum:
+                strings.append(data[start:index].decode("ascii", "replace"))
+            start = None
+    return strings
+
+
+def normalise_name(text: str) -> str:
+    return "".join(ch for ch in text.lower() if ch.isalnum())
+
+
+def raven_core(text: str) -> str:
+    value = normalise_name(text)
+    for prefix in ("goproto", "go"):
+        if value.startswith(prefix):
+            value = value[len(prefix):]
+            break
+    return value
+
+
 def prototype_identity(records: list[dict], prototype_id: bytes) -> tuple[bytes, dict]:
+    """Resolve the loader prototype to the real Raven GameObject identity.
+
+    The catalogue's native.prototype_id is the id of a loader/asset record
+    (for the proven Raven this is goProtoNW711ED14F), not the GameObject
+    identity record itself. Its payload contains the Raven behaviour path.
+    We match that path against Raven records in the same WAD and require the
+    resulting identity to be corroborated by a real record header.
+    """
     hits = [r for r in records if r["id"] == prototype_id and r["kind"] == 1]
     if len(hits) != 1:
         found = [f"0x{r['offset']:X}:{r['name']}" for r in hits]
         raise RuntimeError(
-            f"prototype {prototype_id.hex()} expected one record, found {len(hits)} {found}"
+            f"prototype loader {prototype_id.hex()} expected one record, found {len(hits)} {found}"
         )
-    record = hits[0]
-    if len(record["data"]) < 0x7C:
+    loader = hits[0]
+    loader_strings = ascii_strings(loader["data"])
+    loader_norms = [normalise_name(value) for value in loader_strings if value]
+    joined = normalise_name(" ".join(loader_strings))
+
+    id_index: dict[bytes, list[dict]] = defaultdict(list)
+    for record in records:
+        id_index[record["id"]].append(record)
+
+    scored: dict[bytes, dict] = {}
+
+    def semantic_score(name: str) -> tuple[int, float, str | None]:
+        core = raven_core(name)
+        if not core or "raven" not in core:
+            return 0, 0.0, None
+        best_ratio = 0.0
+        best_string = None
+        exact = False
+        for raw_string, norm in zip(loader_strings, loader_norms):
+            if not norm:
+                continue
+            if core in norm or norm in core:
+                exact = True
+                ratio = 1.0
+            else:
+                ratio = SequenceMatcher(None, core, norm).ratio()
+            if ratio > best_ratio:
+                best_ratio = ratio
+                best_string = raw_string
+        if core in joined:
+            exact = True
+            best_ratio = 1.0
+        score = int(best_ratio * 300)
+        if exact:
+            score += 900
+        if normalise_name(name).startswith("goproto"):
+            score += 120
+        return score, best_ratio, best_string
+
+    def add(identity: bytes, score: int, evidence: dict) -> None:
+        if len(identity) != 16 or identity == bytes(16):
+            return
+        header_rows = id_index.get(identity, [])
+        raven_headers = [r for r in header_rows if "raven" in r["name"].lower()]
+        if not raven_headers:
+            return
+        slot = scored.setdefault(identity, {
+            "identity_hex": identity.hex(),
+            "score": 0,
+            "evidence": [],
+            "header_records": [
+                {
+                    "name": r["name"],
+                    "offset": f"0x{r['offset']:X}",
+                    "kind": r["kind"],
+                }
+                for r in raven_headers
+            ],
+        })
+        slot["score"] += score
+        slot["evidence"].append(evidence)
+
+    for record in records:
+        if "raven" not in record["name"].lower():
+            continue
+        score, ratio, matched_string = semantic_score(record["name"])
+        if score <= 0:
+            continue
+
+        if normalise_name(record["name"]).startswith("goproto"):
+            add(record["id"], score + 250, {
+                "kind": "raven_goProto_header",
+                "record_name": record["name"],
+                "record_offset": f"0x{record['offset']:X}",
+                "semantic_ratio": ratio,
+                "matched_loader_string": matched_string,
+            })
+
+        if len(record["data"]) >= 0x7C:
+            ref = record["data"][0x6C:0x7C]
+            if ref in id_index:
+                add(ref, score + 350, {
+                    "kind": "raven_record_payload_0x6C_reference",
+                    "record_name": record["name"],
+                    "record_offset": f"0x{record['offset']:X}",
+                    "semantic_ratio": ratio,
+                    "matched_loader_string": matched_string,
+                    "referenced_identity_hex": ref.hex(),
+                })
+
+    ranked = sorted(scored.values(), key=lambda item: (-item["score"], item["identity_hex"]))
+    if not ranked:
         raise RuntimeError(
-            f"prototype record {record['name']} too short for +0x6C identity: {len(record['data'])}"
+            f"prototype loader {prototype_id.hex()} ({loader['name']}) produced no Raven identity candidates; "
+            f"strings={loader_strings[:32]}"
         )
-    identity = record["data"][0x6C:0x7C]
-    if identity == bytes(16):
-        raise RuntimeError(f"prototype record {record['name']} has zero +0x6C identity")
+    winner = ranked[0]
+    runner_up = ranked[1] if len(ranked) > 1 else None
+    if winner["score"] < 500 or (runner_up and winner["score"] <= runner_up["score"]):
+        raise RuntimeError(
+            "ambiguous Raven gameplay prototype identity: "
+            + json.dumps({
+                "prototype_id": prototype_id.hex(),
+                "loader_name": loader["name"],
+                "loader_strings": loader_strings[:32],
+                "ranked_candidates": ranked[:12],
+            }, sort_keys=True)
+        )
+
+    identity = bytes.fromhex(winner["identity_hex"])
     return identity, {
-        "record_id": record["id"].hex(),
-        "record_name": record["name"],
-        "record_offset": f"0x{record['offset']:X}",
-        "payload_identity_offset": "0x6C",
+        "loader_record_id": loader["id"].hex(),
+        "loader_record_name": loader["name"],
+        "loader_record_offset": f"0x{loader['offset']:X}",
+        "loader_strings": loader_strings[:32],
+        "resolution": "Raven behaviour path -> corroborated goProto Raven header identity",
         "identity_hex": identity.hex(),
+        "winning_score": winner["score"],
+        "winning_evidence": winner["evidence"],
+        "identity_header_records": winner["header_records"],
+        "runner_up": runner_up,
     }
 
 
@@ -238,7 +382,7 @@ def main() -> int:
         "derivation": {
             "transform_order": "root_to_leaf",
             "transform_record_id_rule": "copy 16-byte record id and decrement byte index 12 by one",
-            "prototype_rule": "resolve native.prototype_id record and append payload[0x6C:0x7C]",
+            "prototype_rule": "resolve native.prototype_id loader record, match its Raven behaviour path, and append the corroborated goProto Raven header identity",
             "object_hash_rule": "for each byte: value=((value+byte)*0x401)&u64; value^=value>>6",
         },
         "frozen_binding_correction": {
