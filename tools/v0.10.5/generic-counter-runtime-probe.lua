@@ -336,6 +336,67 @@ do
     end
   end
 
+  local function inspectGameNamespace()
+    if type(game) ~= "table" then
+      log("GAME_NAMESPACE unavailable=true")
+      return
+    end
+    local interesting = {
+      "save","pickle","persist","checkpoint","restore","wad","subobject",
+      "level","world","object","quest","stream","load","resolve"
+    }
+    local function isInteresting(text)
+      text = string.lower(tostring(text or ""))
+      for _, needle in ipairs(interesting) do
+        if string.find(text, needle, 1, true) then return true end
+      end
+      return false
+    end
+    local seen = {}
+    local queue = {{value=game,path="game",depth=0}}
+    local visited = 0
+    while #queue > 0 and visited < 4000 do
+      local item = table.remove(queue, 1)
+      local value = item.value
+      if type(value) == "table" and not seen[value] then
+        seen[value] = true
+        visited = visited + 1
+        local ok, mt = pcall(getmetatable, value)
+        log("GAME_TABLE path=" .. item.path .. " depth=" .. tostring(item.depth) ..
+            " metatableType=" .. (ok and type(mt) or "error"))
+        local count = 0
+        for k, v in pairs(value) do
+          count = count + 1
+          if isInteresting(k) or isInteresting(item.path) then
+            log("GAME_MEMBER path=" .. item.path .. "." .. tostring(k) ..
+                " type=" .. type(v) .. " value=" .. tostring(v))
+          end
+          if item.depth < 3 and type(v) == "table" and not seen[v] then
+            queue[#queue + 1] = {
+              value=v,
+              path=item.path .. "." .. tostring(k),
+              depth=item.depth + 1,
+            }
+          end
+        end
+        if ok and type(mt) == "table" then
+          local idx = rawget(mt, "__index")
+          log("GAME_METATABLE path=" .. item.path ..
+              " indexType=" .. type(idx) .. " identity=" .. tostring(rawget(mt, "__identity")))
+          if item.depth < 3 and type(idx) == "table" and not seen[idx] then
+            queue[#queue + 1] = {
+              value=idx,
+              path=item.path .. ".__index",
+              depth=item.depth + 1,
+            }
+          end
+        end
+        log("GAME_TABLE_DONE path=" .. item.path .. " rawMembers=" .. tostring(count))
+      end
+    end
+    log("GAME_NAMESPACE_DONE tables=" .. tostring(visited))
+  end
+
   local function inspectQuestManagerSurface(qm)
     if type(qm) ~= "table" then
       log("QM_SURFACE unavailable=true")
@@ -428,6 +489,7 @@ do
       return
     end
 
+    inspectGameNamespace()
     inspectQuestManagerSurface(qm)
     inspectMapStateBindings(self)
     inspectGlobalBindings()
