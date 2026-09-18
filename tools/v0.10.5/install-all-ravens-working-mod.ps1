@@ -28,6 +28,7 @@ $transactionSelfTestPath = Join-Path $PSScriptRoot 'test-all-ravens-transaction.
 $transactionSelfTestReportPath = Join-Path $runDir 'transaction-self-test.json'
 $activeManifest = Join-Path $repo 'build\v0.10.5-all-ravens-runtime-test\transaction\active.json'
 $mainHudRelative = 'mods/lua/gameart/ui/scripts/hud/mainhud.lua'
+$coreSaveRelative = 'mods/lua/gameart/scripts/libraries/core/save.lua'
 
 $sourceFiles = [ordered]@{
     'exec/dc/pc_le/mapmaster.dcb' = '1e1d5086815bc8553490bff915fea210a8be4f80ce6c88b418b62d7050690a31'
@@ -281,13 +282,20 @@ function Ensure-FrozenSourceRoot {
     }
 
     $frozenMainHud = Join-Path $frozenSourceRoot $mainHudRelative
-    if ($complete -and (Test-Path -LiteralPath $frozenMainHud -PathType Leaf)) {
+    $frozenCoreSave = Join-Path $frozenSourceRoot $coreSaveRelative
+    if ($complete -and
+        (Test-Path -LiteralPath $frozenMainHud -PathType Leaf) -and
+        (Test-Path -LiteralPath $frozenCoreSave -PathType Leaf)) {
         $hudText = [IO.File]::ReadAllText($frozenMainHud)
+        $saveText = [IO.File]::ReadAllText($frozenCoreSave)
         if ($hudText.Contains('BEGIN COMPLETIONIST V0.10.5 ALL RAVEN UI STATE RECEIVER')) {
             throw 'Frozen MainHUD source unexpectedly already contains the v0.10.5 Raven receiver.'
         }
-        Write-Host '  frozen source: existing verified five-file source root + MainHUD baseline'
-        return 'verified-existing-with-mainhud'
+        if ($saveText.Contains('BEGIN COMPLETIONIST V0.10.5 RAVEN CHECKPOINT CACHE')) {
+            throw 'Frozen core.save source unexpectedly already contains the v0.10.5 Raven checkpoint cache.'
+        }
+        Write-Host '  frozen source: verified base files + MainHUD + core.save baselines'
+        return 'verified-existing-with-ui-and-save-cache-baselines'
     }
 
     if (-not $complete) {
@@ -334,7 +342,29 @@ function Ensure-FrozenSourceRoot {
     Copy-Item -LiteralPath $mainHudSource -Destination $mainHudDestination -Force
     Write-Host "  frozen source captured: $mainHudRelative SHA256=$(Get-Sha256 -Path $mainHudDestination)"
 
-    return 'assembled-from-verified-transaction-backups-with-mainhud'
+    $coreSaveCandidates = @(
+        (Join-Path $ResolvedGameRoot $coreSaveRelative),
+        (Join-Path $ResolvedGameRoot 'mods\lua_source\gameart\scripts\libraries\core\save.lua')
+    )
+    $coreSaveSource = $null
+    foreach ($candidate in $coreSaveCandidates) {
+        if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) { continue }
+        $text = [IO.File]::ReadAllText($candidate)
+        if (-not $text.Contains('local object_savestate')) { continue }
+        if (-not $text.Contains('local Restore = function(savestate)')) { continue }
+        if ($text.Contains('BEGIN COMPLETIONIST V0.10.5 RAVEN CHECKPOINT CACHE')) { continue }
+        $coreSaveSource = $candidate
+        break
+    }
+    if ($null -eq $coreSaveSource) {
+        throw 'Could not find an unmodified core.save baseline for the Raven checkpoint cache.'
+    }
+    $coreSaveDestination = Join-Path $frozenSourceRoot $coreSaveRelative
+    New-Item -ItemType Directory -Force -Path (Split-Path $coreSaveDestination -Parent) | Out-Null
+    Copy-Item -LiteralPath $coreSaveSource -Destination $coreSaveDestination -Force
+    Write-Host "  frozen source captured: $coreSaveRelative SHA256=$(Get-Sha256 -Path $coreSaveDestination)"
+
+    return 'assembled-from-verified-transaction-backups-with-mainhud-and-core-save'
 }
 
 function Invoke-CandidateBuilder {
@@ -380,10 +410,11 @@ function Save-LegacyTransactionManifest {
     [IO.File]::WriteAllText($transactionManifest, $json, $encoding)
 }
 
-function Restore-LegacyFiveFileTransaction {
+function Restore-LegacyAllRavensTransaction {
     param([object]$Manifest, [string]$ResolvedGameRoot)
 
-    if (@($Manifest.entries).Count -ne 5) { throw 'Legacy rollback requires exactly five entries.' }
+    $legacyCount = @($Manifest.entries).Count
+    if ($legacyCount -notin @(5,6)) { throw "Legacy rollback requires five or six entries; found $legacyCount." }
     if ([string]$Manifest.status -ne 'installed') { throw "Legacy transaction status is '$($Manifest.status)', not installed." }
     if (([IO.Path]::GetFullPath([string]$Manifest.game_root)) -ne ([IO.Path]::GetFullPath($ResolvedGameRoot))) {
         throw 'Legacy transaction belongs to a different game root.'
@@ -435,7 +466,7 @@ function Restore-LegacyFiveFileTransaction {
     $Manifest.status = 'rolled-back'
     $Manifest.rolled_back_utc = (Get-Date).ToUniversalTime().ToString('o')
     Save-LegacyTransactionManifest -Manifest $Manifest
-    Write-Host "  legacy five-file transaction rolled back exactly: $($Manifest.transaction_id)"
+    Write-Host "  legacy $legacyCount-file transaction rolled back exactly: $($Manifest.transaction_id)"
 }
 
 function Rollback-ExistingAllRavensInstall {
@@ -455,12 +486,12 @@ function Rollback-ExistingAllRavensInstall {
     }
 
     Write-Host "  previous all-Ravens transaction: $($active.transaction_id) ($status)"
-    if (@($active.entries).Count -eq 5) {
-        Write-Host '  upgrade: restoring legacy exact five-file baseline before six-file bridge build'
-        Restore-LegacyFiveFileTransaction -Manifest $active -ResolvedGameRoot $ResolvedGameRoot
+    if (@($active.entries).Count -in @(5,6)) {
+        Write-Host "  upgrade: restoring legacy exact $(@($active.entries).Count)-file baseline before seven-file checkpoint-cache build"
+        Restore-LegacyAllRavensTransaction -Manifest $active -ResolvedGameRoot $ResolvedGameRoot
     }
     else {
-        Write-Host '  upgrade: restoring its exact pre-install six-file baseline before rebuild'
+        Write-Host '  upgrade: restoring its exact pre-install seven-file baseline before rebuild'
         & $runtimeTest -Mode Rollback -GameRoot $ResolvedGameRoot -PreserveCurrentBaseline
         if ($LASTEXITCODE -ne 0) {
             throw "Existing all-Ravens rollback failed with exit code $LASTEXITCODE."
@@ -554,7 +585,7 @@ function Write-RunResult {
             candidate_files = $(if (Test-Path -LiteralPath $candidateManifestPath) { 'candidate-files.json' } else { $null })
             transaction_self_test = $(if (Test-Path -LiteralPath $transactionSelfTestReportPath) { 'transaction-self-test.json' } else { $null })
         }
-        install_baseline_policy = 'preserve current six-file game state for rollback'
+        install_baseline_policy = 'preserve current seven-file game state for rollback'
         catalogue_markers = 53
         unknown_raven_state_visible = $true
         live_native_ravenKilled_events = $true
@@ -660,7 +691,7 @@ try {
     Write-Host '  save/progression writes by installer: none'
     Write-Host '  candidate source: frozen SHA-verified transaction backups'
     Write-Host '  pre-install game state: preserved as rollback baseline'
-    Write-Host '  transaction: guarded six-file install with pre-write backups'
+    Write-Host '  transaction: guarded seven-file install with pre-write backups'
     Write-Host '  upgrade policy: safely roll back any active prior all-Ravens install before rebuilding'
     Write-Host ''
 
@@ -690,7 +721,7 @@ try {
     Write-Host ''
     Write-Host 'COMPLETIONIST_MAP_ALL_RAVENS_READY'
     Write-Host '  The 53-Raven catalogue build is installed.'
-    Write-Host '  The exact six game files present before this run are the rollback baseline.'
+    Write-Host '  The exact seven game files present before this run are the rollback baseline.'
     Write-Host '  A Raven killed during this runtime is hidden by its exact native ravenKilled event.'
     Write-Host '  Existing kills are reconstructed read-only from persisted Raven GameObjects when the map opens.'
     Write-Host '  Fresh saves still show all 53 Ravens; unmatched/ambiguous state remains visible by design.'
