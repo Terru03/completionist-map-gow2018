@@ -309,6 +309,76 @@ do
     log("OWNER_SCAN_DONE tables=" .. tostring(visited) .. " owners=" .. tostring(emitted))
   end
 
+  local function dumpTable(prefix, value, depth, seen)
+    depth = depth or 0
+    seen = seen or {}
+    if type(value) ~= "table" then
+      log(prefix .. " type=" .. type(value) .. " value=" .. tostring(value))
+      return
+    end
+    if seen[value] then
+      log(prefix .. " cycle=true")
+      return
+    end
+    seen[value] = true
+    local keys = {}
+    for k, _ in pairs(value) do keys[#keys + 1] = k end
+    table.sort(keys, function(a, b) return tostring(a) < tostring(b) end)
+    log(prefix .. " tableKeys=" .. tostring(#keys))
+    for _, k in ipairs(keys) do
+      local v = value[k]
+      local p = prefix .. "[" .. tostring(k) .. "]"
+      if type(v) == "table" and depth < 3 then
+        dumpTable(p, v, depth + 1, seen)
+      else
+        log(p .. " type=" .. type(v) .. " value=" .. tostring(v))
+      end
+    end
+  end
+
+  local function inspectQuestManagerSurface(qm)
+    if type(qm) ~= "table" then
+      log("QM_SURFACE unavailable=true")
+      return
+    end
+    local rows = {}
+    for k, v in pairs(qm) do
+      rows[#rows + 1] = {key=tostring(k), typ=type(v), value=tostring(v)}
+    end
+    table.sort(rows, function(a,b) return a.key < b.key end)
+    log("QM_SURFACE_BEGIN count=" .. tostring(#rows))
+    for _, row in ipairs(rows) do
+      log("QM_MEMBER key=" .. row.key .. " type=" .. row.typ .. " value=" .. row.value)
+    end
+    log("QM_SURFACE_END")
+
+    local partialParents = {
+      "RegionSummary_HSH_Raven_Parent",
+      "RegionSummary_PP_Raven_Parent",
+      "RegionSummary_RP_Raven_Parent",
+      "RegionSummary_VF_Raven_Parent",
+      "RegionSummary_FD_Raven_Parent",
+      "RegionSummary_CALS_Raven_Parent",
+    }
+    local getTracking = qm.GetTrackingInfo
+    local getCompletion = qm.GetCompletionIndex
+    for _, parent in ipairs(partialParents) do
+      if type(getTracking) == "function" then
+        local ok, value = pcall(getTracking, parent)
+        log("QM_TRACKING parent=" .. parent .. " ok=" .. tostring(ok) ..
+            " type=" .. type(value) .. " value=" .. tostring(value))
+        if ok and type(value) == "table" then
+          dumpTable("QM_TRACKING_TABLE[" .. parent .. "]", value, 0, {})
+        end
+      end
+      if type(getCompletion) == "function" then
+        local ok, value = pcall(getCompletion, parent)
+        log("QM_COMPLETION_INDEX parent=" .. parent .. " ok=" .. tostring(ok) ..
+            " type=" .. type(value) .. " value=" .. tostring(value))
+      end
+    end
+  end
+
   local function inspectQuest(qm, questId)
     local stateFn = safeLookup("game.QuestManager.GetQuestState", function() return qm.GetQuestState end)
     local progressFn = safeLookup("game.QuestManager.GetQuestProgressAndGoal", function() return qm.GetQuestProgressAndGoal end)
@@ -358,6 +428,7 @@ do
       return
     end
 
+    inspectQuestManagerSurface(qm)
     inspectMapStateBindings(self)
     inspectGlobalBindings()
     inspectDirectGameBindings()
