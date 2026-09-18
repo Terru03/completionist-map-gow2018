@@ -65,3 +65,22 @@ Run archiving and runtime bootstrap must not write God of War save data or
 progression state. Runtime candidate installation remains limited to the five
 approved game files and retains transaction backups before the first game-file
 write.
+
+
+## Outer recovery launcher
+
+Field runs should be started through:
+
+`tools/v0.10.5/run-all-ravens-working-mod.ps1`
+
+The launcher is intentionally separate from the installer. Before launching the
+installer it scans for unpublished `all-ravens-working-install-*` directories
+and commits/pushes them. It parses the installer before execution, runs the
+installer in a child PowerShell process, then rescans for orphaned run evidence
+after any child failure. Finally it writes and pushes its own independent
+`all-ravens-launcher-<UTC run id>` record.
+
+This outer layer exists specifically for failures where the installer itself
+cannot reach its internal artifact publisher. A field failure is therefore
+expected to leave either the normal installer run archive, the outer launcher
+archive, or both.
