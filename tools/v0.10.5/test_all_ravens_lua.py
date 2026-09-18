@@ -26,7 +26,8 @@ CATALOGUE = json.loads(build.CATALOGUE.read_text(encoding="utf-8"))
 
 
 MAP_PRELUDE = r'''
-calls={logs={},previousShow=0,recycled=0,labels={},reticleTitle=nil,reticleDesc=nil,reticleCalls=0}
+calls={logs={},previousShow=0,recycled=0,labels={},reticleTitle=nil,reticleDesc=nil,reticleCalls=0,
+  cursorAction=nil,footerAction=nil,footerVisible=nil,footerRefreshes=0}
 customIds={}
 stockIds={}
 persistedRegistry={}
@@ -46,7 +47,33 @@ end
 print=function(s) calls.logs[#calls.logs+1]=s end
 enabledShowOnCompassMarkerFlags={"stock"}
 lamsConsts={RemoveFromCompass="remove",ReplaceInCompass="replace",AddToCompass="add"}
-util={GetLAMSMsg=function(x) return x end}
+local cursorTop={shown=false}
+function cursorTop:Show() self.shown=true end
+function cursorTop:Hide() self.shown=false end
+local cursorRoot={}
+function cursorRoot:Show() end
+function cursorRoot:FindSingleGOByName(name)
+  if name=="CursorInfo_Top" then return cursorTop end
+  return nil
+end
+local menu={}
+function menu:UpdateFooterButton(name,show,text)
+  if name=="ShowOnCompass" then
+    calls.footerVisible=show
+    calls.footerAction=text
+  end
+end
+function menu:UpdateFooterButtonText() calls.footerRefreshes=calls.footerRefreshes+1 end
+util={
+  GetLAMSMsg=function(x) return x end,
+  GetUiObjByName=function(name) if name=="MapCursorInfo" then return cursorRoot end return nil end,
+  GetTextHandle=function(go,name) return name end
+}
+UI={}
+function UI.SetTextIsClickable(handle) end
+function UI.SetText(handle,text)
+  if handle=="CursorAction_Text" then calls.cursorAction=text end
+end
 Audio={PlaySound=function(x) calls.sound=x end}
 MapOn={}
 function MapOn.GetShowOnCompassPrompt(s,m) return s.currMarkerID~=nil,"base" end
@@ -93,7 +120,7 @@ function game.Compass.HideMarker(target)
 end
 self={currRealmName="Alfheim",currMarkerID=nil,currShownMarkerID=nil,
   completionistMapV100Selected=false,completionistMapV100NornirSelected=nil,
-  completionistMapV100NornirChestSelected=nil,mapIconCollision=nil}
+  completionistMapV100NornirChestSelected=nil,mapIconCollision=nil,menu=menu}
 probe={}
 function probe.publish(id,value) return CompletionistMapV105PublishRavenState(id,value,"test") end
 function probe.open() return CompletionistMapV100_CreateMapPin(self,{}) end
@@ -125,6 +152,10 @@ function probe.stockCount() return #stockIds end
 function probe.customAt(i) return customIds[i] end
 function probe.markerId(name) return markerId(name) end
 function probe.tracked() return CompletionistMapV105TrackedCatalogueId end
+function probe.cursorAction() return calls.cursorAction end
+function probe.footerAction() return calls.footerAction end
+function probe.footerVisible() return calls.footerVisible end
+function probe.footerRefreshes() return calls.footerRefreshes end
 function probe.teardown() MapOn.ClearIcons(self) end
 function probe.reset() return CompletionistMapV105ResetRavenStates("save_load") end
 function probe.persistedOne(id)
@@ -181,6 +212,21 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.customCount(), 0)
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
         self.assertIsNotNone(self.probe.icon(self.b["marker"]["name"]))
+
+    def test_custom_raven_toggle_refreshes_cursor_and_footer_immediately(self):
+        self.probe.open()
+        self.probe.click(self.a["marker"]["name"])
+        self.assertEqual(self.probe.cursorAction(), "[AdvanceButton] remove")
+        self.assertEqual(self.probe.footerAction(), "[AdvanceButton] remove")
+        self.assertTrue(self.probe.footerVisible())
+        first_refreshes = self.probe.footerRefreshes()
+        self.assertGreaterEqual(first_refreshes, 1)
+
+        self.probe.click(self.a["marker"]["name"])
+        self.assertEqual(self.probe.cursorAction(), "[AdvanceButton] add")
+        self.assertEqual(self.probe.footerAction(), "[AdvanceButton] add")
+        self.assertTrue(self.probe.footerVisible())
+        self.assertGreater(self.probe.footerRefreshes(), first_refreshes)
 
     def test_catalogue_visible_by_default_restore_and_teardown(self):
         self.probe.open()
