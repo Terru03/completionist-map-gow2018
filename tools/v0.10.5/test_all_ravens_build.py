@@ -64,6 +64,8 @@ class AllRavensBuildTests(unittest.TestCase):
         text = self.outputs[build.MAP_LUA].decode("utf-8")
         suffix = text[text.index("-- BEGIN COMPLETIONIST V0.10.5 ALL RAVENS"):]
         self.assertEqual(suffix.count("{CatalogueId="), 53)
+        self.assertEqual(suffix.count("WadKey="), 53)
+        self.assertEqual(suffix.count("ObjectKey="), 53)
         for token in (
             "exact_collision_object", "currMarkerID", "CompletionistRaven",
             "goMapIconCompletionistRaven", "markerIdAloneInfersRaven=false",
@@ -111,6 +113,11 @@ class AllRavensBuildTests(unittest.TestCase):
             "show catalogue marker unless confirmed killed",
         )
         self.assertTrue(self.proof["state"]["persisted_kill_bootstrap"])
+        self.assertEqual(
+            self.proof["state"]["persisted_identity_join"],
+            "unique normalized WAD level plus GameObject name",
+        )
+        self.assertIn("__PickleTable", self.proof["state"]["persisted_source"])
 
 
 if __name__ == "__main__":
