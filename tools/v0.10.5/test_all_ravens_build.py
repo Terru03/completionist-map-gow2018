@@ -28,7 +28,11 @@ def file_sha(path: Path) -> str:
 class AllRavensBuildTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.source_root = FROZEN if (FROZEN / build.HUD_LUA).is_file() else GAME
+        cls.source_root = (
+            FROZEN
+            if (FROZEN / build.HUD_LUA).is_file() and (FROZEN / build.SAVE_LUA).is_file()
+            else GAME
+        )
         cls.before = {relative: file_sha(cls.source_root / relative) for relative in build.SOURCE_HASHES}
         cls.outputs, cls.proof = build.generate(cls.source_root)
         cls.catalogue = json.loads(build.CATALOGUE.read_text(encoding="utf-8"))
@@ -38,10 +42,18 @@ class AllRavensBuildTests(unittest.TestCase):
         self.assertEqual(self.before, self.after)
         self.assertEqual(self.after, build.SOURCE_HASHES)
 
-    def test_candidate_has_only_six_scoped_files(self):
+    def test_candidate_has_only_seven_scoped_files(self):
         self.assertEqual(
             set(self.outputs),
-            {build.MASTER, build.COORDS, build.POOL, build.MAP_LUA, build.HUD_LUA, build.EVENT_LUA},
+            {
+                build.MASTER,
+                build.COORDS,
+                build.POOL,
+                build.MAP_LUA,
+                build.HUD_LUA,
+                build.SAVE_LUA,
+                build.EVENT_LUA,
+            },
         )
 
     def test_candidate_has_53_real_ravens_and_no_twin(self):
@@ -89,6 +101,17 @@ class AllRavensBuildTests(unittest.TestCase):
         self.assertIn('"EVT_COMPLETIONIST_V105_RAVEN_STATE"', suffix)
         self.assertIn('game.Compass.HideMarker(row.Name)', suffix)
 
+    def test_checkpoint_cache_has_53_ids_and_wraps_core_restore(self):
+        text = self.outputs[build.SAVE_LUA].decode("utf-8")
+        suffix = text[text.index("-- BEGIN COMPLETIONIST V0.10.5 RAVEN CHECKPOINT CACHE"):]
+        self.assertEqual(suffix.count('["raven_'), 53)
+        self.assertIn('__CompletionistMapV105Cache', suffix)
+        self.assertIn("CompletionistMapV105CacheRavenState", suffix)
+        self.assertIn("EVT_COMPLETIONIST_V105_RAVEN_CACHE_RESTORE", suffix)
+        self.assertIn("local baseRestore = Restore", suffix)
+        self.assertIn("Restore = function(savestate)", suffix)
+        self.assertIn("nativeProgressionTouched=false", suffix)
+
     def test_hud_receiver_has_53_validated_rows_and_ui_state_bridge(self):
         text = self.outputs[build.HUD_LUA].decode("utf-8")
         suffix = text[text.index("-- BEGIN COMPLETIONIST V0.10.5 ALL RAVEN UI STATE RECEIVER"):]
@@ -103,6 +126,7 @@ class AllRavensBuildTests(unittest.TestCase):
         for relative, marker in (
             (build.MAP_LUA, "-- BEGIN COMPLETIONIST V0.10.5 ALL RAVENS"),
             (build.HUD_LUA, "-- BEGIN COMPLETIONIST V0.10.5 ALL RAVEN UI STATE RECEIVER"),
+            (build.SAVE_LUA, "-- BEGIN COMPLETIONIST V0.10.5 RAVEN CHECKPOINT CACHE"),
             (build.EVENT_LUA, "-- BEGIN COMPLETIONIST V0.10.5 ALL RAVEN EVENTS"),
         ):
             suffix = self.outputs[relative].decode("utf-8").split(marker, 1)[1]
@@ -142,6 +166,14 @@ class AllRavensBuildTests(unittest.TestCase):
             "engine.SendHook UI_CALL_EVENT -> MainHUD receiver -> UI global -> map runtime",
         )
         self.assertTrue(self.proof["state"]["gameplay_exact_compass_cleanup"])
+        self.assertTrue(self.proof["state"]["checkpoint_cache"]["enabled"])
+        self.assertEqual(
+            self.proof["state"]["checkpoint_cache"]["key"],
+            "__CompletionistMapV105Cache",
+        )
+        self.assertFalse(
+            self.proof["state"]["checkpoint_cache"]["native_progression_written"]
+        )
 
 
 if __name__ == "__main__":
