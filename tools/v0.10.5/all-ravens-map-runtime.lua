@@ -46,6 +46,7 @@ do
   local previousCollision = MapOn.MapCollisionChangeHandler
   local lastMapOnSelf = nil
   local selectionGeneration = 0
+  local hideExactTracked
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
@@ -496,7 +497,7 @@ do
         " replacedStockCount=" .. tostring(stockCount))
   end
 
-  local function hideExactTracked(row)
+  hideExactTracked = function(row)
     if _G.CompletionistMapV105TrackedCatalogueId ~= row.CatalogueId then return end
     local info = markerInfo(row.Name)
     if info == nil then return end
