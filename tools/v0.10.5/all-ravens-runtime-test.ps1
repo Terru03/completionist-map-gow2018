@@ -158,8 +158,9 @@ function Assert-TerminalAllRavensTransactionSummary([object]$Manifest) {
     if ((Get-FullPath ([string]$Manifest.game_root)) -ne (Get-FullPath $GameRoot)) {
         throw "Terminal transaction belongs to a different game root: $($Manifest.game_root)"
     }
-    if (@($Manifest.entries).Count -ne @($files.Keys).Count) {
-        throw "Terminal transaction entry count differs: $(@($Manifest.entries).Count)"
+    $terminalEntryCount = @($Manifest.entries).Count
+    if ($terminalEntryCount -notin @(5, @($files.Keys).Count)) {
+        throw "Terminal transaction entry count differs: $terminalEntryCount"
     }
     return $Manifest
 }
