@@ -23,7 +23,7 @@ $resultJson = Join-Path $outDir 'result.json'
 
 function Invoke-Git {
     param([Parameter(Mandatory=$true)][string[]]$GitArgs)
-    & git -C $repo @GitArgs
+    & git -C $repo @GitArgs | Out-Host
     if ($LASTEXITCODE -ne 0) {
         throw "git $($GitArgs -join ' ') failed with exit code $LASTEXITCODE"
     }
@@ -113,7 +113,10 @@ if ($staticResult.result -eq 'STATIC_RAVEN_OBJECT_HASH_RECIPE_FOUND') {
 
 Write-Host '  static result: no authored identity recipe through 6 elements'
 Write-Host '  stage 2: passive native vector capture'
-$gow = @(Get-Process -Name 'GoW' -ErrorAction SilentlyContinue)
+$gow = @(
+    Get-Process -ErrorAction SilentlyContinue |
+    Where-Object { $_.ProcessName -in @('GoW','GodOfWar') }
+)
 if ($gow.Count -eq 0) {
     $result = [ordered]@{
         schema = 1
@@ -121,7 +124,7 @@ if ($gow.Count -eq 0) {
         result = 'STATIC_NOT_FOUND_GAME_NOT_RUNNING'
         static_result = $staticResult.result
         vector_capture_attempted = $false
-        instruction = 'Launch GoW, load the VikingFuneral/Veithurgard save state, rerun this script, then create a normal manual save when prompted.'
+        instruction = 'Launch God of War, load the VikingFuneral/Veithurgard save state, rerun this script, then create a normal manual save when prompted.'
         save_or_progression_written_by_probe = $false
     }
     [IO.File]::WriteAllText($resultJson,(($result | ConvertTo-Json -Depth 8) + [Environment]::NewLine),(New-Object Text.UTF8Encoding($false)))
