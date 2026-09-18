@@ -42,7 +42,7 @@ class AllRavensBuildTests(unittest.TestCase):
         self.assertEqual(self.before, self.after)
         self.assertEqual(self.after, build.SOURCE_HASHES)
 
-    def test_candidate_has_only_seven_scoped_files(self):
+    def test_candidate_has_seven_transaction_files_with_pristine_core_save(self):
         self.assertEqual(
             set(self.outputs),
             {
@@ -54,6 +54,14 @@ class AllRavensBuildTests(unittest.TestCase):
                 build.SAVE_LUA,
                 build.EVENT_LUA,
             },
+        )
+        self.assertEqual(
+            self.outputs[build.SAVE_LUA],
+            (self.source_root / build.SAVE_LUA).read_bytes(),
+        )
+        self.assertNotIn(
+            b"BEGIN COMPLETIONIST V0.10.5 RAVEN CHECKPOINT CACHE",
+            self.outputs[build.SAVE_LUA],
         )
 
     def test_candidate_has_53_real_ravens_and_no_twin(self):
@@ -99,20 +107,7 @@ class AllRavensBuildTests(unittest.TestCase):
         self.assertIn('engine.SendHook(', suffix)
         self.assertIn('"UI_CALL_EVENT"', suffix)
         self.assertIn('"EVT_COMPLETIONIST_V105_RAVEN_STATE"', suffix)
-        self.assertNotIn("GetSaveState", suffix)
-        self.assertIn("checkpointCache=savePointIdPlusMainHUDSidecar", suffix)
         self.assertIn('game.Compass.HideMarker(row.Name)', suffix)
-
-    def test_checkpoint_cache_wraps_core_save_with_opaque_savepoint_id_only(self):
-        text = self.outputs[build.SAVE_LUA].decode("utf-8")
-        suffix = text[text.index("-- BEGIN COMPLETIONIST V0.10.5 RAVEN CHECKPOINT CACHE"):]
-        self.assertNotIn("raven_", suffix)
-        self.assertIn("__CompletionistMapV105SavePoint", suffix)
-        self.assertIn("EVT_COMPLETIONIST_V105_SAVEPOINT_CAPTURE", suffix)
-        self.assertIn("EVT_COMPLETIONIST_V105_SAVEPOINT_RESTORE", suffix)
-        self.assertIn("local baseSave = Save", suffix)
-        self.assertIn("local baseRestore = Restore", suffix)
-        self.assertIn("nativeProgressionTouched=false", suffix)
 
     def test_hud_receiver_has_53_validated_rows_and_ui_state_bridge(self):
         text = self.outputs[build.HUD_LUA].decode("utf-8")
@@ -121,10 +116,6 @@ class AllRavensBuildTests(unittest.TestCase):
         self.assertIn("MainHUD:EVT_COMPLETIONIST_V105_RAVEN_STATE", suffix)
         self.assertIn("_G.CompletionistMapV105RavenState", suffix)
         self.assertIn("_G.CompletionistMapV105PublishRavenState", suffix)
-        self.assertIn("EVT_COMPLETIONIST_V105_SAVEPOINT_CAPTURE", suffix)
-        self.assertIn("EVT_COMPLETIONIST_V105_SAVEPOINT_RESTORE", suffix)
-        self.assertIn("mods/completionist-map-cache/", suffix)
-        self.assertIn("io.open", suffix)
         self.assertIn("position_mismatch", suffix)
 
     def test_hooks_add_no_progression_write(self):
@@ -132,7 +123,6 @@ class AllRavensBuildTests(unittest.TestCase):
         for relative, marker in (
             (build.MAP_LUA, "-- BEGIN COMPLETIONIST V0.10.5 ALL RAVENS"),
             (build.HUD_LUA, "-- BEGIN COMPLETIONIST V0.10.5 ALL RAVEN UI STATE RECEIVER"),
-            (build.SAVE_LUA, "-- BEGIN COMPLETIONIST V0.10.5 RAVEN CHECKPOINT CACHE"),
             (build.EVENT_LUA, "-- BEGIN COMPLETIONIST V0.10.5 ALL RAVEN EVENTS"),
         ):
             suffix = self.outputs[relative].decode("utf-8").split(marker, 1)[1]
@@ -172,17 +162,13 @@ class AllRavensBuildTests(unittest.TestCase):
             "engine.SendHook UI_CALL_EVENT -> MainHUD receiver -> UI global -> map runtime",
         )
         self.assertTrue(self.proof["state"]["gameplay_exact_compass_cleanup"])
-        self.assertTrue(self.proof["state"]["checkpoint_cache"]["enabled"])
         self.assertEqual(
-            self.proof["state"]["checkpoint_cache"]["savepoint_key"],
-            "__CompletionistMapV105SavePoint",
+            self.proof["state"]["persistence_experiment"],
+            "disabled_after_field_regression",
         )
         self.assertEqual(
-            self.proof["state"]["checkpoint_cache"]["sidecar_owner"],
-            "MainHUD",
-        )
-        self.assertFalse(
-            self.proof["state"]["checkpoint_cache"]["native_progression_written"]
+            self.proof["state"]["core_save_candidate"],
+            "pristine pass-through for seven-file transaction compatibility",
         )
 
 
