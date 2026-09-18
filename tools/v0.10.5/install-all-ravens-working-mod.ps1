@@ -76,7 +76,7 @@ function Assert-PowerShellScriptParses {
         $details = @($parseErrors | ForEach-Object {
             "line $($_.Extent.StartLineNumber): $($_.Message)"
         }) -join ' | '
-        throw "PowerShell syntax preflight failed for $Path: $details"
+        throw "PowerShell syntax preflight failed for ${Path}: $details"
     }
 }
 
