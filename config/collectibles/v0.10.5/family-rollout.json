@@ -1,7 +1,10 @@
 {
   "schema": 1,
   "version": "v0.10.5",
-  "purpose": "Fail-closed rollout contract for collectible families beyond Odin's Ravens.",
+  "catalogue_source": "config/collectibles/v0.10.5/all-collectibles.json",
+  "catalogue_rows": 240,
+  "catalogue_state_gate": "unloaded_per_instance_queries_unresolved",
+  "purpose": "Production rollout policy layered on the already-proved static native catalogue.",
   "global_invariants": {
     "unknown_state": "hide",
     "missing_catalogue_identity": "exclude",
@@ -15,159 +18,104 @@
   "families": {
     "odins_raven": {
       "implementation_order": 0,
-      "adapter": "killable_collectible",
-      "catalogue": {
-        "status": "ready",
-        "expected_fixed_count": 53
-      },
-      "state": {
-        "status": "persistence_finalisation",
-        "completion_bool_keys": ["killed"]
-      },
-      "runtime": {
-        "status": "active_reference_family"
-      },
-      "blockers": []
+      "static_catalogue_status": "separate_raven_catalogue_proved",
+      "runtime_enabled": true,
+      "state_gate": "persistence_finalisation",
+      "notes": [
+        "Reference family. Preserve current Raven runtime behaviour while other families are integrated."
+      ]
     },
     "artefact": {
       "implementation_order": 1,
-      "adapter": "pickup_collectible",
-      "catalogue": {
-        "status": "proved_subset",
-        "proved_subsets": {
-          "ship_heads": {
-            "fixed_count": 9,
-            "fake_tenth_row_forbidden": true,
-            "quest_declared_count": 10
-          }
-        }
-      },
-      "state": {
-        "status": "blocked_unloaded_per_instance",
-        "completion_bool_keys": ["collected"]
-      },
-      "runtime": {
-        "status": "blocked_until_state_gate"
-      },
-      "blockers": [
-        "BLOCKED_EXACT_REASON_UNKNOWN: quests.dcb declares Ship Head 10 while native data proves 9 carriers and 9 physical objects.",
-        "BLOCKED: exact unloaded per-instance completion state."
-      ]
-    },
-    "nornir_chest": {
-      "implementation_order": 2,
-      "adapter": "parent_puzzle_collectible",
-      "catalogue": {
-        "status": "blocked_exact_binding",
-        "tracked_candidate_count": 21,
-        "helheim_extra": "PASS_EXPLAINED: level_scripted_untracked_triple_chest_reward",
-        "niflheim_procedural_fixed_templates_forbidden": true
-      },
-      "state": {
-        "status": "partially_proven_loaded_object",
-        "completion_bool_keys": ["reward_opened", "opened"]
-      },
-      "runtime": {
-        "status": "historical_candidates_retired"
-      },
-      "blockers": [
-        "BLOCKED_EXACT_REASON_UNKNOWN: exact native binding edges for all 21 tracked candidates.",
-        "BLOCKED: exact unloaded per-instance state.",
-        "Niflheim procedural chest requires stable runtime identity and world point."
-      ]
-    },
-    "nornir_seal": {
-      "implementation_order": 3,
-      "adapter": "child_puzzle_element",
-      "catalogue": {
-        "status": "parent_scoped_only"
-      },
-      "state": {
-        "status": "blocked_unloaded_individual",
-        "completion_bool_keys": ["broken"]
-      },
-      "runtime": {
-        "status": "blocked_until_parent_and_state_gate"
-      },
-      "blockers": [
-        "BLOCKED: unloaded individual Breakable-seal state."
-      ]
-    },
-    "nornir_bell": {
-      "implementation_order": 4,
-      "adapter": "child_puzzle_element",
-      "catalogue": {
-        "status": "parent_scoped_only"
-      },
-      "state": {
-        "status": "parent_inherited_until_exact_child_state",
-        "completion_bool_keys": []
-      },
-      "runtime": {
-        "status": "blocked_until_parent_gate"
-      },
-      "blockers": [
-        "Bell children remain tied to exact known-unopened parent until an authoritative child completion state is proved."
-      ]
-    },
-    "nornir_mechanism": {
-      "implementation_order": 5,
-      "adapter": "child_puzzle_element",
-      "catalogue": {
-        "status": "parent_scoped_only"
-      },
-      "state": {
-        "status": "parent_inherited_until_exact_child_state",
-        "completion_bool_keys": []
-      },
-      "runtime": {
-        "status": "blocked_until_parent_gate"
-      },
-      "blockers": [
-        "Mechanism/MemoryChest children remain tied to exact known-unopened parent until an authoritative child completion state is proved."
-      ]
-    },
-    "legendary_chest": {
-      "implementation_order": 6,
-      "adapter": "opened_chest",
-      "catalogue": {
-        "status": "mostly_classified",
-        "raw_rows": 64,
-        "tracked_rows": 33,
-        "exact_trial_exclusions": 27,
-        "unresolved_rows": 4,
-        "unresolved_wads": ["stn200", "xpl300", "cal500", "cal740"],
-        "niflheim_procedural_fixed_templates_forbidden": true
-      },
-      "state": {
-        "status": "blocked_unloaded_per_instance",
-        "completion_bool_keys": ["opened"]
-      },
-      "runtime": {
-        "status": "blocked_until_catalogue_and_state_gate"
-      },
-      "blockers": [
-        "Four nontracked rows still need positive native reward, quest, callback, or story-wire classification.",
-        "BLOCKED: exact unloaded per-instance state.",
-        "Niflheim procedural chest requires stable runtime identity and world point."
+      "static_catalogue_status": "PASS",
+      "static_rows": 45,
+      "runtime_enabled": false,
+      "state_adapter": "interact_loot_artifact_checkpoint_state",
+      "state_gate": "BLOCKED_UNLOADED_PER_INSTANCE",
+      "production_rule": "all 45 exact physical artefact rows after authoritative unloaded state is proved",
+      "notes": [
+        "Ship Heads are a proved 9-object physical subset although native tracked bookkeeping says 10.",
+        "Do not invent a tenth Ship Head.",
+        "Lambs Cress remains excluded because its native row has no artefact type."
       ]
     },
     "lore_marker": {
-      "implementation_order": 7,
-      "adapter": "interact_read_collectible",
-      "catalogue": {
-        "status": "research_needed"
-      },
-      "state": {
-        "status": "research_needed",
-        "completion_bool_keys": ["read", "completed"]
-      },
-      "runtime": {
-        "status": "blocked"
-      },
-      "blockers": [
-        "Exact static catalogue identity and authoritative read/interact completion source are not yet proved."
+      "implementation_order": 2,
+      "static_catalogue_status": "PASS",
+      "static_rows": 43,
+      "runtime_enabled": false,
+      "state_adapters": [
+        "langcheckruneread_checkpoint_state",
+        "level_script_checkpoint_boolean"
+      ],
+      "state_gate": "BLOCKED_UNLOADED_PER_INSTANCE",
+      "production_rule": "all 43 exact static rows after authoritative unloaded state is proved"
+    },
+    "legendary_chest": {
+      "implementation_order": 3,
+      "static_catalogue_status": "PASS_RAW_SET",
+      "static_rows": 64,
+      "runtime_enabled": false,
+      "state_adapter": "interact_chest_standard_checkpoint_state",
+      "state_gate": "BLOCKED_UNLOADED_PER_INSTANCE",
+      "production_rule": "production_eligibility == tracked_collectible",
+      "tracked_collectible_rows": 33,
+      "excluded_trial_reward_rows": 27,
+      "unresolved_rows": 4,
+      "unresolved_wads": [
+        "stn200_lakeext.wad",
+        "xpl300_stronghold.wad",
+        "cal500_runevault.wad",
+        "cal740_leftwing.wad"
+      ],
+      "notes": [
+        "Trial rewards stay in the raw catalogue for evidence but must never render as Completionist collectibles.",
+        "Unresolved rows fail closed.",
+        "Niflheim procedural templates must never be emitted as fixed markers."
       ]
+    },
+    "nornir_chest": {
+      "implementation_order": 4,
+      "static_catalogue_status": "PASS_RAW_STATIC_SET",
+      "static_rows": 22,
+      "runtime_enabled": false,
+      "state_adapter": "interact_chest_standard_checkpoint_state",
+      "state_gate": "BLOCKED_UNLOADED_PER_INSTANCE_AND_EXACT_TRACKED_BINDING",
+      "tracked_native_target": 21,
+      "exact_binding_pass_rows": 0,
+      "blocked_exact_binding_rows": 22,
+      "notes": [
+        "The Helheim extra is positively explained as an untracked scripted triple-chest reward.",
+        "No WAD-name, region-name, coordinate, ordering, or count inference may substitute for an exact binding edge.",
+        "Seven Niflheim procedural templates remain excluded from fixed-marker generation."
+      ]
+    },
+    "nornir_seal": {
+      "implementation_order": 5,
+      "static_catalogue_status": "PASS",
+      "static_rows": 30,
+      "runtime_enabled": false,
+      "state_adapter": "loaded_breakable_exact_object_state",
+      "state_gate": "BLOCKED_UNLOADED_INDIVIDUAL_STATE",
+      "production_rule": "show only when parent is exactly known unopened and this seal is exactly known remaining"
+    },
+    "nornir_bell": {
+      "implementation_order": 6,
+      "static_catalogue_status": "PASS",
+      "static_rows": 24,
+      "runtime_enabled": false,
+      "state_adapter": "parent_reward_chest_checkpoint_state",
+      "state_gate": "BLOCKED_PARENT_RUNTIME_GATE",
+      "production_rule": "child has no durable individual completion; show only under exact known-unopened parent"
+    },
+    "nornir_mechanism": {
+      "implementation_order": 7,
+      "static_catalogue_status": "PASS",
+      "static_rows": 12,
+      "runtime_enabled": false,
+      "state_adapter": "parent_reward_chest_checkpoint_state",
+      "state_gate": "BLOCKED_PARENT_RUNTIME_GATE",
+      "production_rule": "child has no durable individual completion; show only under exact known-unopened parent"
     }
   }
 }
