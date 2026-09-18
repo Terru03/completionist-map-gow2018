@@ -1,5 +1,41 @@
 # Next Steps
 
+## 2026-09-18 multi-family runtime implementation started
+
+The static non-Raven catalogue is already complete enough to drive implementation:
+240 rows total (45 Artefacts, 43 Lore, 64 raw Legendary Chests, 22 Nornir
+Chests, 30 Seals, 24 Bells, 12 Mechanisms).
+
+Runtime work now reuses `tools/v0.10.5/collectible_runtime_model.py` rather than
+creating another visibility engine.
+
+Completed in this pass:
+
+- production eligibility gate: only `tracked_collectible` Legendary rows can
+  render; 27 exact trial rewards and 4 unresolved rows fail closed;
+- optional runtime family gate independent from the user's map filter;
+- exact state bridge keyed by `source WAD + progression.instance_key`;
+- 195 exact WAD/state identities are collision-free;
+- raw `instance_key` alone is forbidden because four Lore placements share one
+  key across different WADs;
+- rollout contract lives in
+  `config/collectibles/v0.10.5/family-rollout.json`;
+- every non-Raven family remains runtime-disabled until its authoritative
+  unloaded-state gate is satisfied.
+
+Immediate implementation order:
+
+1. Finish the read-only unloaded state oracle and return exact
+   `WAD + instance_key + complete` replies.
+2. Feed those replies through `CollectibleRuntimeModel.observe_instance()`.
+3. Enable Artefacts first (45), then Lore (43), then the 33 tracked Legendary
+   Chests. Unknown state stays hidden.
+4. Keep Nornir runtime-disabled until the parent binding/state gates are
+   resolved; then enable parent chests before child families.
+5. Never emit fixed Niflheim procedural templates and never create the fake
+   tenth Ship Head.
+
+
 Static native catalogue now has all 9 proved Ship Heads. Do not build or install
 runtime markers yet.
 
