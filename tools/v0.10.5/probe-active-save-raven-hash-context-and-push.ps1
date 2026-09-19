@@ -4,7 +4,7 @@ param([string]$SaveRoot="$HOME\Saved Games\God of War")
 $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
 
-$ExpectedBranch='codex/all-collectibles-production-research'
+$ExpectedBranch='codex/all-ravens-release-candidate'
 $RepoRoot=(Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $Probe=Join-Path $PSScriptRoot 'probe-active-save-raven-hash-context.py'
 $stamp=(Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss')
