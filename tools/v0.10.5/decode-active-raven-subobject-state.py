@@ -467,9 +467,11 @@ def main() -> int:
     slot_headers = []
     occupied = []
     stream_counts = {}
+    slot_bytes = {}
     for idx in range(lay["slot_count"]):
         start = prefix + idx * stride
         slot = blob[start:start + stride]
+        slot_bytes[idx] = slot
         slot_headers.append(slot[:HEADER_BYTES])
         count = len(scan_streams(slot))
         stream_counts[idx] = count
@@ -481,9 +483,49 @@ def main() -> int:
     if authoritative is None:
         raise RuntimeError("unable to determine authoritative/latest save-ring slot")
 
-    slot_start = prefix + authoritative * stride
-    slot = blob[slot_start:slot_start + stride]
-    decoded = decode_carriers(slot, registry_hash, object_map)
+    # Decode every occupied ring entry. The newest aligned slot is not necessarily
+    # self-contained for all SoftSave objects; the ring may act as a journal.
+    all_slot_decodes = {}
+    for idx in occupied:
+        all_slot_decodes[idx] = decode_carriers(slot_bytes[idx], registry_hash, object_map)
+
+    decoded = all_slot_decodes[authoritative]
+
+    # Pick the strongest timestamp field that covers the most occupied slots.
+    slot_timestamps = {}
+    if header_analysis.get("timestamp_fields"):
+        best_time = header_analysis["timestamp_fields"][0]
+        slot_timestamps = {
+            int(k): v for k, v in best_time.get("decoded_slots", {}).items()
+        }
+
+    # Build a semantic Raven journal. Absence never clears prior state; only an
+    # explicit decoded Raven entry can update the latest-known state.
+    journal = []
+    latest_by_raven = {}
+    for idx in occupied:
+        stamp = slot_timestamps.get(idx)
+        for entry in all_slot_decodes[idx]["raven_entries"]:
+            row = dict(entry)
+            row["slot_index"] = idx
+            row["timestamp_utc"] = stamp
+            journal.append(row)
+
+    def journal_order(row):
+        # ISO-8601 timestamps sort lexically; unknown timestamps remain oldest.
+        return (row.get("timestamp_utc") or "", row["slot_index"])
+
+    for row in sorted(journal, key=journal_order):
+        latest_by_raven[row["catalogue_id"]] = row
+
+    journal_killed = sorted(
+        rid for rid, row in latest_by_raven.items()
+        if row.get("ravenKilled") is True
+    )
+    journal_explicit_alive = sorted(
+        rid for rid, row in latest_by_raven.items()
+        if row.get("ravenKilled") is False
+    )
 
     after = sha256_file(save)
     if before != after:
@@ -500,6 +542,16 @@ def main() -> int:
         "slot_header_analysis": header_analysis,
         "authoritative_slot": authoritative,
         "regression_selftest": regression,
+        "all_slot_decodes": {str(k): v for k, v in all_slot_decodes.items()},
+        "raven_journal": {
+            "timestamp_field": header_analysis["timestamp_fields"][0] if header_analysis.get("timestamp_fields") else None,
+            "entry_count": len(journal),
+            "entries": sorted(journal, key=journal_order),
+            "latest_by_raven": latest_by_raven,
+            "latest_killed_raven_count": len(journal_killed),
+            "latest_killed_raven_catalogue_ids": journal_killed,
+            "latest_explicit_alive_raven_catalogue_ids": journal_explicit_alive,
+        },
         "native_semantics": {
             "tag_0": "boolean",
             "tag_1": "u32_scalar",
@@ -543,7 +595,17 @@ def main() -> int:
         f"carriers_with_subobjs={decoded['carriers_with_subobjs']}",
         f"raven_entries={decoded['raven_entry_count']}",
         f"killed_ravens={decoded['killed_raven_count']}",
+        "",
+        "RING JOURNAL DECODE",
+        f"journal_entries={len(journal)}",
+        f"latest_known_ravens={len(latest_by_raven)}",
+        f"latest_killed_ravens={len(journal_killed)}",
     ]
+    for rid in journal_killed:
+        lines.append("  JOURNAL_KILLED " + rid)
+    for rid in journal_explicit_alive:
+        lines.append("  JOURNAL_ALIVE_EXPLICIT " + rid)
+    lines.extend(["", "AUTHORITATIVE-SLOT RAVENS"])
     for rid in decoded["killed_raven_catalogue_ids"]:
         lines.append("  KILLED " + rid)
     for rid in decoded["explicit_false_raven_catalogue_ids"]:
@@ -568,7 +630,9 @@ def main() -> int:
         "ACTIVE_RAVEN_SUBOBJECT_DECODE_COMPLETE "
         f"slot={authoritative} carriers={decoded['decoded_carrier_count']} "
         f"subobjCarriers={decoded['carriers_with_subobjs']} "
-        f"ravenEntries={decoded['raven_entry_count']} killed={decoded['killed_raven_count']}"
+        f"ravenEntries={decoded['raven_entry_count']} killed={decoded['killed_raven_count']} "
+        f"journalEntries={len(journal)} journalKnown={len(latest_by_raven)} "
+        f"journalKilled={len(journal_killed)}"
     )
     print("frozen_alive_dead_selftest=true source_hash_unchanged=true save_written=false progression_written=false")
     return 0
