@@ -113,6 +113,10 @@ do
 
   _G.CompletionistCoreSaveRootProbe_Run = run
 
+  -- mapmenu.lua itself loads only when the UI context is available. Run once
+  -- immediately so this does not depend on a specific collision callback firing.
+  run("mapmenu_script_load")
+
   if type(MapOn) == "table" and type(MapOn.MapCollisionChangeHandler) == "function" then
     local previous = MapOn.MapCollisionChangeHandler
     MapOn.MapCollisionChangeHandler = function(self, ...)
