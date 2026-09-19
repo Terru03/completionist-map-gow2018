@@ -41,10 +41,21 @@ def unique_game_save(root: Path) -> Path:
 
 
 def locate_frozen(desktop: Path):
-    dirs=sorted(p for p in desktop.glob("GodOfWar-RavenAliveDead-*") if p.is_dir())
+    roots = [Path.home() / "Documents", desktop]
+    dirs = []
+    for base in roots:
+        if not base.is_dir():
+            continue
+        dirs.extend(p for p in base.glob("GodOfWar-RavenAliveDead-*") if p.is_dir())
+    dirs = sorted(set(p.resolve() for p in dirs), key=lambda p: p.name)
     if not dirs:
-        raise RuntimeError("frozen GodOfWar-RavenAliveDead-* backup not found on Desktop")
-    root=dirs[-1]
+        raise RuntimeError(
+            "frozen GodOfWar-RavenAliveDead-* backup not found under Documents or Desktop"
+        )
+    preferred = [
+        p for p in dirs if p.name == "GodOfWar-RavenAliveDead-20260915-220250"
+    ]
+    root = preferred[0] if preferred else dirs[-1]
     alive=unique_game_save(root/"alive")
     dead=unique_game_save(root/"dead")
     return root,alive,dead
