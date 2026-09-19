@@ -100,7 +100,7 @@ def extract_context(data: bytes, at: int, n: int) -> dict:
 def latest_quest_report() -> Path | None:
     roots = sorted(
         (REPO / "archive" / "field-logs" / "runtime-captures").glob(
-            "raven-authoritative-quest-records-*/report.json"
+            "raven-authoritative-quest-records-*/console-log.txt"
         ),
         key=lambda p: p.parent.name,
         reverse=True,
@@ -111,13 +111,26 @@ def latest_quest_report() -> Path | None:
 def quest_states(path: Path | None) -> dict[str, dict]:
     if path is None:
         return {}
-    doc = json.loads(path.read_text(encoding="utf-8"))
     out = {}
-    for parent, row in doc.get("records", {}).items():
-        progress = row.get("progress_at_0x48")
-        goal = row.get("goal_at_0x30")
-        if isinstance(progress, int) and isinstance(goal, int):
-            out[parent] = {"progress": progress, "goal": goal}
+    for line in path.read_text(encoding="utf-8-sig").splitlines():
+        if not line.startswith("RegionSummary_") or " found=True " not in line:
+            continue
+        parts = line.split()
+        if len(parts) < 4:
+            continue
+        parent = parts[0]
+        fields = {}
+        for token in parts[1:]:
+            if "=" not in token:
+                continue
+            key, value = token.split("=", 1)
+            fields[key] = value
+        try:
+            progress = int(fields["progress"])
+            goal = int(fields["goal"])
+        except (KeyError, ValueError):
+            continue
+        out[parent] = {"progress": progress, "goal": goal}
     return out
 
 
