@@ -27,7 +27,7 @@ from pathlib import Path
 import struct
 import sys
 
-HERE = Path(__file__).resolve().parent
+# Historical save slots can contain metadata token walks deeper than Python's\n# default recursion limit. The carrier grammar is already bounded by token count,\n# max_end, and max_solutions; this only prevents Python 3.14 from aborting the\n# proven read-only scanner before those bounds are reached.\nsys.setrecursionlimit(max(sys.getrecursionlimit(), 20000))\n\nHERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 IDENTITIES = REPO / "catalogue" / "odins-ravens-save-identities.json"
 AUTHORITY = HERE / "probe-active-save-raven-ring-authority.py"
