@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\probe-active-save-raven-hash-context.py", line 348, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\probe-active-save-raven-hash-context.py", line 242, in main
+    classes = classify_rows(catalogue, quest_states(qreport))
+                                       ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\probe-active-save-raven-hash-context.py", line 114, in quest_states
+    doc = json.loads(path.read_text(encoding="utf-8"))
+  File "C:\Python314\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Python314\Lib\json\decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\json\decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
