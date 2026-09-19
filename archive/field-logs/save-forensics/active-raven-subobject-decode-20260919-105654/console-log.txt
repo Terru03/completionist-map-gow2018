@@ -1,0 +1,47 @@
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\decode-active-raven-subobject-state.py", line 642, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\decode-active-raven-subobject-state.py", line 490, in main
+    all_slot_decodes[idx] = decode_carriers(slot_bytes[idx], registry_hash, object_map)
+                            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\decode-active-raven-subobject-state.py", line 363, in decode_carriers
+    parsed = validate_and_decode_candidate(slot, header_start, decoded, consumed, registry_hash, object_map)
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\decode-active-raven-subobject-state.py", line 200, in validate_and_decode_candidate
+    for metadata_end, tokens in parse_token_paths(slot, section0_end, token_count):
+                                ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\decode-active-raven-subobject-state.py", line 145, in parse_token_paths
+    visit(start, 0, [])
+    ~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\decode-active-raven-subobject-state.py", line 138, in visit
+    visit(end, index + 1, tokens + [{
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        "tag": tag,
+        ^^^^^^^^^^^
+    ...<2 lines>...
+        "raw_hex": raw.hex(),
+        ^^^^^^^^^^^^^^^^^^^^^
+    }])
+    ^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\decode-active-raven-subobject-state.py", line 138, in visit
+    visit(end, index + 1, tokens + [{
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        "tag": tag,
+        ^^^^^^^^^^^
+    ...<2 lines>...
+        "raw_hex": raw.hex(),
+        ^^^^^^^^^^^^^^^^^^^^^
+    }])
+    ^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\decode-active-raven-subobject-state.py", line 138, in visit
+    visit(end, index + 1, tokens + [{
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        "tag": tag,
+        ^^^^^^^^^^^
+    ...<2 lines>...
+        "raw_hex": raw.hex(),
+        ^^^^^^^^^^^^^^^^^^^^^
+    }])
+    ^^^
+  [Previous line repeated 992 more times]
+RecursionError: maximum recursion depth exceeded
