@@ -105,46 +105,48 @@ def scan_streams(slot: bytes):
     return out
 
 
-def parse_token_paths(data: bytes, start: int, token_count: int):
+def parse_token_paths(data: bytes, start: int, token_count: int, max_results: int = 64):
     """Return exact token parses using native-proven widths.
 
-    Tag 4 was not present in the frozen Raven oracle. Its native width remains
-    unresolved here, so all three structural widths are considered only when tag
-    4 is actually encountered; downstream graph/record validation disambiguates.
+    Iterative rather than recursive because historical checkpoint carriers can
+    contain thousands of serialized key/value tokens. Tag 4 was not present in
+    the frozen Raven oracle, so all three structural widths are considered only
+    when tag 4 is encountered; downstream graph/record validation disambiguates.
     """
     results = []
-
-    def visit(pos: int, index: int, tokens: list[dict]):
+    # Stack item: (byte_position, token_index, parsed_tokens)
+    stack = [(start, 0, [])]
+    while stack and len(results) < max_results:
+        pos, index, tokens = stack.pop()
         if index == token_count:
             results.append((pos, tokens))
-            return
+            continue
         if pos >= len(data):
-            return
+            continue
         tag = data[pos]
         if tag > 5:
-            return
+            continue
         if tag in KNOWN_WIDTHS:
             widths = (KNOWN_WIDTHS[tag],)
         elif tag == 4:
             widths = UNKNOWN_TAG4_WIDTHS
         else:
-            return
-        for width in widths:
+            continue
+        # Reverse push so the smallest width is explored first, matching the
+        # previous recursive traversal order.
+        for width in reversed(widths):
             end = pos + width
             if end > len(data):
                 continue
             raw = data[pos:end]
             payload = int.from_bytes(raw[1:], "little")
-            visit(end, index + 1, tokens + [{
+            stack.append((end, index + 1, tokens + [{
                 "tag": tag,
                 "payload": payload,
                 "width": width,
                 "raw_hex": raw.hex(),
-            }])
-
-    visit(start, 0, [])
+            }]))
     return results
-
 
 def parse_gameobject_payload(payload: bytes):
     if len(payload) != 17 or payload[0] != 1:
