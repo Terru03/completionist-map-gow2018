@@ -1342,3 +1342,32 @@ Instead, while the same game process/session remains loaded, scan only the backi
 3. all 53 solved `serialized_payload_hex` values from `catalogue/odins-ravens-save-identities.json`.
 
 This is a much stronger authority test because a hit directly identifies the persisted Raven GameObject record inside unloaded backing state. Keep the scan read-only and do not dump whole arenas to Git; record only hit offsets/addresses and small previews.
+
+---
+
+# Addendum 2026-09-20 22:xx - arena scan PID mismatch fixed
+
+Failed evidence commit: `fa1fa77768d148f2849014ba46cccb2f30b4f083`  
+Failed archive: `archive/field-logs/runtime-captures/lua-backing-arena-raven-signatures-readonly-20260920-195735/`
+
+The Raven backing-arena signature scan failed before touching arena data because the source LuaContext cache capture belonged to an earlier God of War process:
+
+```text
+source pid/base = 11576 / 0x7FF753500000
+current pid/base = 30764 / 0x7FF753500000
+```
+
+The module base happened to be unchanged, but all heap/cache node pointers from the old PID are invalid after a process restart. The scanner correctly rejected them.
+
+This was a runner-workflow issue, not a failure of the LuaContext/backing-cache model.
+
+Fix commit: `029da47a0e20c466321c1671097eda8a114e8548`.
+
+The arena-scan runner is now self-contained:
+
+1. capture fresh LuaContext/vtable/sentinel/cache-node pointers from the **current** running GoW process;
+2. write that fresh source capture inside the same evidence directory;
+3. immediately scan only those current non-empty backing arenas for Raven/checkpoint signatures;
+4. push the combined evidence.
+
+This removes the requirement that the user preserve the PID from a previous command. It remains read-only: `VirtualQueryEx` + `ReadProcessMemory`, no debugger, no process writes, no save/progression writes.
