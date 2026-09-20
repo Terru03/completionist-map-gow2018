@@ -1,0 +1,39 @@
+[CmdletBinding()]
+param([string]$GameRoot='G:\SteamLibrary\steamapps\common\GodOfWar')
+$ErrorActionPreference='Stop'
+Set-StrictMode -Version Latest
+$ExpectedBranch='codex/all-ravens-release-candidate'
+$RepoRoot=(& git rev-parse --show-toplevel 2>$null).Trim()
+if([string]::IsNullOrWhiteSpace($RepoRoot)){throw 'Not inside repository.'}
+Set-Location $RepoRoot
+$Probe=Join-Path $RepoRoot 'tools\v0.10.5\resolve-raven-prototype-identities-static.py'
+$Catalogue=Join-Path $RepoRoot 'catalogue\odins-ravens.json'
+$stamp=(Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss')
+$relativeDir="archive/field-logs/source-scans/raven-prototype-identities-static-$stamp"
+$outDir=Join-Path $RepoRoot ($relativeDir -replace '/',[IO.Path]::DirectorySeparatorChar)
+$json=Join-Path $outDir 'report.json';$text=Join-Path $outDir 'report.txt';$log=Join-Path $outDir 'console-log.txt'
+function Invoke-Git{param([string[]]$GitArgs);& git -C $RepoRoot @GitArgs|Out-Host;if($LASTEXITCODE-ne 0){throw "git $($GitArgs -join ' ') failed"}}
+$branch=(& git -C $RepoRoot branch --show-current).Trim()
+if($branch-ne $ExpectedBranch){throw "Wrong branch '$branch'; expected '$ExpectedBranch'."}
+$staged=@(& git -C $RepoRoot diff --cached --name-only)
+if($staged.Count-gt 0){throw "Refusing staged changes: $($staged -join ', ')"}
+foreach($p in @($Probe,$Catalogue,(Join-Path $GameRoot 'GoW.exe'))){if(-not(Test-Path -LiteralPath $p -PathType Leaf)){throw "Missing file: $p"}}
+if(@(Get-Process -ErrorAction SilentlyContinue|Where-Object{$_.ProcessName-in @('GoW','GodOfWar')}).Count-gt 0){
+    Write-Host 'God of War may remain open, but this probe does not access the process.' -ForegroundColor DarkGray
+}
+$python=Get-Command python -ErrorAction SilentlyContinue
+if(-not $python){throw 'python.exe not found in PATH.'}
+New-Item -ItemType Directory -Force -Path $outDir|Out-Null
+Write-Host 'RAVEN PROTOTYPE IDENTITY STATIC RESOLUTION - READ ONLY'
+$lines=& $python.Source $Probe --game-root $GameRoot --catalogue $Catalogue --output-json $json --output-text $text 2>&1|ForEach-Object{"$_";Write-Host "$_"}
+$code=$LASTEXITCODE
+$lines|Set-Content -LiteralPath $log -Encoding UTF8
+if($code-ne 0){Set-Content -LiteralPath (Join-Path $outDir 'error.txt') -Value "exit_code=$code" -Encoding UTF8}
+Invoke-Git @('add','-f','--',$relativeDir)
+$msg=if($code-eq 0){"research(v0.10.5): resolve Raven prototype identities static $stamp"}else{"research(v0.10.5): archive failed Raven prototype identity resolution $stamp"}
+Invoke-Git @('commit','-m',$msg,'--',$relativeDir)
+Invoke-Git @('push','origin',$ExpectedBranch)
+$head=(& git -C $RepoRoot rev-parse HEAD).Trim()
+if($code-ne 0){throw "Static Raven prototype identity resolution failed; evidence pushed in $head"}
+Write-Host '';Write-Host "RAVEN_PROTOTYPE_IDENTITIES_STATIC_PUSHED $head" -ForegroundColor Green
+Write-Host "Evidence: $relativeDir"
