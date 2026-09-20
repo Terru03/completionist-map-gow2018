@@ -1253,3 +1253,92 @@ A candidate LuaContext is valid only if all are true:
 6. no process writes/debugger/save access are used.
 
 Next: external read-only `ReadProcessMemory` capture that scans committed readable private memory for the exact LuaContext vtable pointer, validates the sentinel, and enumerates cached nodes `(+0x10,+0x18,+0x20,+0x28)`.
+
+---
+
+# Addendum 2026-09-20 22:32 - unloaded Lua backing cache enumerated; +0x18 identity interpretation corrected
+
+Evidence commit: `971320d84330afece7888998b8a8a87b21501af0`  
+Evidence: `archive/field-logs/runtime-captures/lua-context-backing-cache-readonly-20260920-193202/`
+
+The first external read-only LuaContext cache capture succeeded using only `VirtualQueryEx` and `ReadProcessMemory`.
+
+## Capture result
+
+```text
+result=LUA_CONTEXT_BACKING_CACHE_ENUMERATED
+raw_vtable_hits=208
+valid_luacontexts=205
+nonempty_luacontexts=6
+process_memory_written=false
+save_opened=false
+progression_written=false
+```
+
+The six non-empty contexts contained:
+
+```text
+context 24  nodes=2
+context 114 nodes=1
+context 143 nodes=7
+context 175 nodes=2
+context 181 nodes=13
+context 184 nodes=25
+```
+
+So the vtable/sentinel discovery and reciprocal list walk are proven in the running game.
+
+## Important correction: node+0x18 is NOT a unique WAD/resource identity
+
+The earlier static lookup showed `[node+0x18]` compared to `[[resource+0x30]+0x18]`, but runtime evidence proves this field is not unique per cached WAD/resource instance.
+
+Examples:
+
+- `0x9184111ADD9F4646` repeats across many distinct nodes, always with backing size `1677721 (0x199999)`;
+- `0x8022826DEA3EE5DD` repeats across many distinct nodes with backing size `1258291 (0x133333)`;
+- `0xBE4A1AFF9EA71812` repeats across 10 nodes with backing size `1468006 (0x166666)`;
+- `0xBA56DDC10047567C` repeats in multiple contexts/nodes with backing size `524288 (0x80000)`.
+
+Therefore `node+0x18` is better described as a **backing/profile/resource-class lookup key**, not a unique WAD identity. Do not use it to map cache nodes directly to Raven WAD filenames.
+
+## Backing allocator layout recovered from captured 0x40-byte previews
+
+Across all non-empty nodes, the object at `node+0x28` / storage pointer has a consistent layout:
+
+```text
+storage+0x10 = usable backing arena bytes
+storage+0x18 = owner pointer
+storage+0x28 = backing arena start pointer
+storage+0x30 = 0x200000
+storage+0x38 = 0xFFFFFFFFFFFFFFFF
+```
+
+And:
+
+```text
+storage+0x10 == node.backing_size - 0x410
+```
+
+Examples:
+
+```text
+0x80000  -> usable 0x7FBF0
+0x100000 -> usable 0xFFBF0
+0x133333 -> usable 0x132F23
+0x166666 -> usable 0x166256
+0x199999 -> usable 0x199589
+```
+
+Thus the capture already gives a validated contiguous memory arena for each cached backing node without needing to understand the profile key.
+
+## Next exact target
+
+Do not attempt WAD-name correlation through `node+0x18`.
+
+Instead, while the same game process/session remains loaded, scan only the backing arenas of the six proven non-empty LuaContexts for:
+
+1. ASCII `ravenKilled` and checkpoint-table markers;
+2. the common Raven custom-userdata prefix `01 b0 b2 27 34 25 30 c2 4e`;
+3. all 53 solved `serialized_payload_hex` values from `catalogue/odins-ravens-save-identities.json`.
+
+This is a much stronger authority test because a hit directly identifies the persisted Raven GameObject record inside unloaded backing state. Keep the scan read-only and do not dump whole arenas to Git; record only hit offsets/addresses and small previews.
