@@ -1,0 +1,997 @@
+Completionist Map - Lua backing allocator primitive trace
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+mode=static read-only
+
+TARGET 0xD21A90..0xD21D53 anchor=0xD21A90 synthetic=False
+  FIELD 0xD21ABF mov base=rcx index=None scale=1 +0x0 size=4 r9d, dword ptr [rcx]
+  FIELD 0xD21ADE lea base=r8 index=r8 scale=1 +0x0 size=4 r11d, [r8 + r8]
+  FIELD 0xD21AE6 mov base=rbx index=r11 scale=8 +0x10 size=8 r10, qword ptr [rbx + r11*8 + 0x10]
+  FIELD 0xD21AEB lea base=rbx index=r11 scale=8 +0x0 size=8 r11, [rbx + r11*8]
+  FIELD 0xD21AEF mov base=r10 index=None scale=1 +0x10 size=8 rax, qword ptr [r10 + 0x10]
+  FIELD 0xD21AF3 lea base=r10 index=None scale=1 +0x10 size=8 rdx, [r10 + 0x10]
+  FIELD 0xD21B00 mov base=rbx index=None scale=1 +0x0 size=4 dword ptr [rbx], r9d
+  FIELD 0xD21B05 cmp base=rbx index=None scale=1 +0x18 size=8 rax, qword ptr [rbx + 0x18]
+  FIELD 0xD21B0F cmp base=rax index=None scale=1 +0x18 size=8 qword ptr [rax + 0x18], r10
+  FIELD 0xD21B19 mov base=rax index=None scale=1 +0x18 size=8 qword ptr [rax + 0x18], r11
+  FIELD 0xD21B1D mov base=r11 index=None scale=1 +0x10 size=8 qword ptr [r11 + 0x10], rax
+  FIELD 0xD21B2F mov base=r10 index=None scale=1 +0x8 size=8 qword ptr [r10 + 8], rax
+  FIELD 0xD21B33 or base=rcx index=r10 scale=1 +0x8 size=8 qword ptr [rcx + r10 + 8], 1
+  FIELD 0xD21B3E cmp base=rbx index=None scale=1 +0x8 size=8 rdi, qword ptr [rbx + 8]
+  FIELD 0xD21B5F lea base=r10 index=r10 scale=1 +0x0 size=4 ecx, [r10 + r10]
+  FIELD 0xD21B67 lea base=rbx index=rcx scale=8 +0x0 size=8 r8, [rbx + rcx*8]
+  FIELD 0xD21B6B mov base=rbx index=rcx scale=8 +0x10 size=8 rcx, qword ptr [rbx + rcx*8 + 0x10]
+  FIELD 0xD21B70 mov base=rcx index=None scale=1 +0x10 size=8 rax, qword ptr [rcx + 0x10]
+  FIELD 0xD21B74 lea base=rcx index=None scale=1 +0x10 size=8 rdx, [rcx + 0x10]
+  FIELD 0xD21B81 mov base=rbx index=None scale=1 +0x0 size=4 dword ptr [rbx], r9d
+  FIELD 0xD21B86 cmp base=rbx index=None scale=1 +0x18 size=8 rax, qword ptr [rbx + 0x18]
+  FIELD 0xD21B90 cmp base=rax index=None scale=1 +0x18 size=8 qword ptr [rax + 0x18], rcx
+  FIELD 0xD21B9A mov base=rax index=None scale=1 +0x18 size=8 qword ptr [rax + 0x18], r8
+  FIELD 0xD21B9E mov base=r8 index=None scale=1 +0x10 size=8 qword ptr [r8 + 0x10], rax
+  FIELD 0xD21BC0 mov base=rcx index=None scale=1 +0x8 size=8 qword ptr [rcx + 8], rax
+  FIELD 0xD21BC4 or base=r9 index=rcx scale=1 +0x8 size=8 qword ptr [r9 + rcx + 8], 1
+  FIELD 0xD21BD9 mov base=rcx index=None scale=1 +0x8 size=8 qword ptr [rcx + 8], rax
+  FIELD 0xD21BE4 mov base=rdi index=None scale=1 +0x8 size=8 qword ptr [rdi + 8], rax
+  FIELD 0xD21BE8 mov base=rdi index=r8 scale=1 +0x0 size=8 qword ptr [rdi + r8], r8
+  FIELD 0xD21BEC mov base=rbx index=None scale=1 +0x8 size=8 r9, qword ptr [rbx + 8]
+  FIELD 0xD21BF5 mov base=rbx index=None scale=1 +0x0 size=4 ecx, dword ptr [rbx]
+  FIELD 0xD21BF7 mov base=rbx index=None scale=1 +0x20 size=8 r10, qword ptr [rbx + 0x20]
+  FIELD 0xD21C03 lea base=r9 index=r9 scale=1 +0x0 size=4 r11d, [r9 + r9]
+  FIELD 0xD21C0B lea base=rbx index=r11 scale=8 +0x0 size=8 r11, [rbx + r11*8]
+  FIELD 0xD21C18 mov base=rbx index=None scale=1 +0x0 size=4 dword ptr [rbx], ecx
+  FIELD 0xD21C1C mov base=r11 index=None scale=1 +0x10 size=8 rax, qword ptr [r11 + 0x10]
+  FIELD 0xD21C20 cmp base=rbx index=None scale=1 +0x18 size=8 rax, qword ptr [rbx + 0x18]
+  FIELD 0xD21C26 mov base=r11 index=None scale=1 +0x10 size=8 qword ptr [r11 + 0x10], r10
+  FIELD 0xD21C2A mov base=rax index=None scale=1 +0x18 size=8 qword ptr [rax + 0x18], r10
+  FIELD 0xD21C2E mov base=r10 index=None scale=1 +0x10 size=8 qword ptr [r10 + 0x10], rax
+  FIELD 0xD21C32 mov base=r10 index=None scale=1 +0x18 size=8 qword ptr [r10 + 0x18], r11
+  FIELD 0xD21C36 mov base=rbx index=None scale=1 +0x8 size=8 qword ptr [rbx + 8], r8
+  FIELD 0xD21C3A mov base=rbx index=None scale=1 +0x20 size=8 qword ptr [rbx + 0x20], rdi
+  FIELD 0xD21C8E mov base=rbx index=None scale=1 +0x8 size=8 rcx, qword ptr [rbx + 8]
+  FIELD 0xD21C97 mov base=rbx index=None scale=1 +0x20 size=8 r8, qword ptr [rbx + 0x20]
+  FIELD 0xD21CA7 lea base=r8 index=rdi scale=1 +0x0 size=8 rcx, [r8 + rdi]
+  FIELD 0xD21CAB mov base=rbx index=None scale=1 +0x8 size=8 qword ptr [rbx + 8], rdx
+  FIELD 0xD21CAF mov base=rbx index=None scale=1 +0x20 size=8 qword ptr [rbx + 0x20], rcx
+  FIELD 0xD21CBA mov base=rcx index=None scale=1 +0x8 size=8 qword ptr [rcx + 8], rax
+  FIELD 0xD21CC2 mov base=rcx index=rdx scale=1 +0x0 size=8 qword ptr [rcx + rdx], rdx
+  FIELD 0xD21CC6 lea base=r8 index=None scale=1 +0x10 size=8 rdx, [r8 + 0x10]
+  FIELD 0xD21CCA mov base=r8 index=None scale=1 +0x8 size=8 qword ptr [r8 + 8], rdi
+  FIELD 0xD21CD5 mov base=rbx index=None scale=1 +0x8 size=8 qword ptr [rbx + 8], rdx
+  FIELD 0xD21CDD mov base=rbx index=None scale=1 +0x20 size=8 qword ptr [rbx + 0x20], rdx
+  FIELD 0xD21CE1 lea base=r8 index=None scale=1 +0x10 size=8 rdx, [r8 + 0x10]
+  FIELD 0xD21CE5 mov base=r8 index=None scale=1 +0x8 size=8 qword ptr [r8 + 8], rax
+  FIELD 0xD21CE9 or base=rcx index=r8 scale=1 +0x8 size=8 qword ptr [rcx + r8 + 8], 1
+  FIELD 0xD21CF1 mov base=rbx index=None scale=1 +0x10 size=8 rdx, qword ptr [rbx + 0x10]
+  FIELD 0xD21CFA mov base=rbx index=None scale=1 +0x28 size=8 rcx, qword ptr [rbx + 0x28]
+  FIELD 0xD21D01 mov base=rbx index=None scale=1 +0x10 size=8 qword ptr [rbx + 0x10], rdx
+  FIELD 0xD21D09 lea base=rcx index=rdi scale=1 +0x0 size=8 rax, [rcx + rdi]
+  FIELD 0xD21D11 mov base=rbx index=None scale=1 +0x28 size=8 qword ptr [rbx + 0x28], rax
+  FIELD 0xD21D15 mov base=rax index=None scale=1 +0x8 size=8 qword ptr [rax + 8], rdx
+  FIELD 0xD21D19 lea base=rcx index=None scale=1 +0x10 size=8 rdx, [rcx + 0x10]
+  FIELD 0xD21D1D mov base=rcx index=None scale=1 +0x8 size=8 qword ptr [rcx + 8], rdi
+  CALL 0xD21C56 -> 0xD201F0 fn=0xD201F0
+  CALL 0xD21C7D -> 0xD20450 fn=0xD20450
+  0x00D21A90 48895c2408               mov      qword ptr [rsp + 8], rbx
+  0x00D21A95 57                       push     rdi
+  0x00D21A96 4883ec20                 sub      rsp, 0x20
+  0x00D21A9A 488bd9                   mov      rbx, rcx
+  0x00D21A9D 4881fae8000000           cmp      rdx, 0xe8
+  0x00D21AA4 0f87b3010000             ja       0x140d21c5d
+  0x00D21AAA 4883fa17                 cmp      rdx, 0x17
+  0x00D21AAE 7307                     jae      0x140d21ab7
+  0x00D21AB0 bf20000000               mov      edi, 0x20
+  0x00D21AB5 eb08                     jmp      0x140d21abf
+  0x00D21AB7 488d7a17                 lea      rdi, [rdx + 0x17]
+  0x00D21ABB 4883e7f0                 and      rdi, 0xfffffffffffffff0
+  0x00D21ABF 448b09                   mov      r9d, dword ptr [rcx]
+  0x00D21AC2 4c8bc7                   mov      r8, rdi
+  0x00D21AC5 49c1e803                 shr      r8, 3
+  0x00D21AC9 418bd1                   mov      edx, r9d
+  0x00D21ACC 418bc8                   mov      ecx, r8d
+  0x00D21ACF d3ea                     shr      edx, cl
+  0x00D21AD1 f6c203                   test     dl, 3
+  0x00D21AD4 7468                     je       0x140d21b3e
+  0x00D21AD6 f7d2                     not      edx
+  0x00D21AD8 83e201                   and      edx, 1
+  0x00D21ADB 4403c2                   add      r8d, edx
+  0x00D21ADE 478d1c00                 lea      r11d, [r8 + r8]
+  0x00D21AE2 4d8d5b09                 lea      r11, [r11 + 9]
+  0x00D21AE6 4e8b54db10               mov      r10, qword ptr [rbx + r11*8 + 0x10]
+  0x00D21AEB 4e8d1cdb                 lea      r11, [rbx + r11*8]
+  0x00D21AEF 498b4210                 mov      rax, qword ptr [r10 + 0x10]
+  0x00D21AF3 498d5210                 lea      rdx, [r10 + 0x10]
+  0x00D21AF7 4c3bd8                   cmp      r11, rax
+  0x00D21AFA 7509                     jne      0x140d21b05
+  0x00D21AFC 450fb3c1                 btr      r9d, r8d
+  0x00D21B00 44890b                   mov      dword ptr [rbx], r9d
+  0x00D21B03 eb1c                     jmp      0x140d21b21
+  0x00D21B05 483b4318                 cmp      rax, qword ptr [rbx + 0x18]
+  0x00D21B09 0f8234010000             jb       0x140d21c43
+  0x00D21B0F 4c395018                 cmp      qword ptr [rax + 0x18], r10
+  0x00D21B13 0f852a010000             jne      0x140d21c43
+  0x00D21B19 4c895818                 mov      qword ptr [rax + 0x18], r11
+  0x00D21B1D 49894310                 mov      qword ptr [r11 + 0x10], rax
+  0x00D21B21 428d04c500000000         lea      eax, [r8*8]
+  0x00D21B29 8bc8                     mov      ecx, eax
+  0x00D21B2B 4883c803                 or       rax, 3
+  0x00D21B2F 49894208                 mov      qword ptr [r10 + 8], rax
+  0x00D21B33 4a834c110801             or       qword ptr [rcx + r10 + 8], 1
+  0x00D21B39 e9e3010000               jmp      0x140d21d21
+  0x00D21B3E 483b7b08                 cmp      rdi, qword ptr [rbx + 8]
+  0x00D21B42 0f8646010000             jbe      0x140d21c8e
+  0x00D21B48 85d2                     test     edx, edx
+  0x00D21B4A 0f84fa000000             je       0x140d21c4a
+  0x00D21B50 83e2fe                   and      edx, 0xfffffffe
+  0x00D21B53 d3e2                     shl      edx, cl
+  0x00D21B55 8bc2                     mov      eax, edx
+  0x00D21B57 f7d8                     neg      eax
+  0x00D21B59 23c2                     and      eax, edx
+  0x00D21B5B 440fbcd0                 bsf      r10d, eax
+  0x00D21B5F 438d0c12                 lea      ecx, [r10 + r10]
+  0x00D21B63 488d4909                 lea      rcx, [rcx + 9]
+  0x00D21B67 4c8d04cb                 lea      r8, [rbx + rcx*8]
+  0x00D21B6B 488b4ccb10               mov      rcx, qword ptr [rbx + rcx*8 + 0x10]
+  0x00D21B70 488b4110                 mov      rax, qword ptr [rcx + 0x10]
+  0x00D21B74 488d5110                 lea      rdx, [rcx + 0x10]
+  0x00D21B78 4c3bc0                   cmp      r8, rax
+  0x00D21B7B 7509                     jne      0x140d21b86
+  0x00D21B7D 450fb3d1                 btr      r9d, r10d
+  0x00D21B81 44890b                   mov      dword ptr [rbx], r9d
+  0x00D21B84 eb1c                     jmp      0x140d21ba2
+  0x00D21B86 483b4318                 cmp      rax, qword ptr [rbx + 0x18]
+  0x00D21B8A 0f82b3000000             jb       0x140d21c43
+  0x00D21B90 48394818                 cmp      qword ptr [rax + 0x18], rcx
+  0x00D21B94 0f85a9000000             jne      0x140d21c43
+  0x00D21B9A 4c894018                 mov      qword ptr [rax + 0x18], r8
+  0x00D21B9E 49894010                 mov      qword ptr [r8 + 0x10], rax
+  0x00D21BA2 428d04d500000000         lea      eax, [r10*8]
+  0x00D21BAA 448bc0                   mov      r8d, eax
+  0x00D21BAD 4c2bc7                   sub      r8, rdi
+  0x00D21BB0 448bc8                   mov      r9d, eax
+  0x00D21BB3 4983f820                 cmp      r8, 0x20
+  0x00D21BB7 7316                     jae      0x140d21bcf
+  0x00D21BB9 418bc1                   mov      eax, r9d
+  0x00D21BBC 4883c803                 or       rax, 3
+  0x00D21BC0 48894108                 mov      qword ptr [rcx + 8], rax
+  0x00D21BC4 49834c090801             or       qword ptr [r9 + rcx + 8], 1
+  0x00D21BCA e952010000               jmp      0x140d21d21
+  0x00D21BCF 488bc7                   mov      rax, rdi
+  0x00D21BD2 4803f9                   add      rdi, rcx
+  0x00D21BD5 4883c803                 or       rax, 3
+  0x00D21BD9 48894108                 mov      qword ptr [rcx + 8], rax
+  0x00D21BDD 498bc0                   mov      rax, r8
+  0x00D21BE0 4883c801                 or       rax, 1
+  0x00D21BE4 48894708                 mov      qword ptr [rdi + 8], rax
+  0x00D21BE8 4e890407                 mov      qword ptr [rdi + r8], r8
+  0x00D21BEC 4c8b4b08                 mov      r9, qword ptr [rbx + 8]
+  0x00D21BF0 4d85c9                   test     r9, r9
+  0x00D21BF3 7441                     je       0x140d21c36
+  0x00D21BF5 8b0b                     mov      ecx, dword ptr [rbx]
+  0x00D21BF7 4c8b5320                 mov      r10, qword ptr [rbx + 0x20]
+  0x00D21BFB 49c1e903                 shr      r9, 3
+  0x00D21BFF 440fa3c9                 bt       ecx, r9d
+  0x00D21C03 478d1c09                 lea      r11d, [r9 + r9]
+  0x00D21C07 4d8d5b09                 lea      r11, [r11 + 9]
+  0x00D21C0B 4e8d1cdb                 lea      r11, [rbx + r11*8]
+  0x00D21C0F 498bc3                   mov      rax, r11
+  0x00D21C12 7208                     jb       0x140d21c1c
+  0x00D21C14 440fabc9                 bts      ecx, r9d
+  0x00D21C18 890b                     mov      dword ptr [rbx], ecx
+  0x00D21C1A eb0a                     jmp      0x140d21c26
+  0x00D21C1C 498b4310                 mov      rax, qword ptr [r11 + 0x10]
+  0x00D21C20 483b4318                 cmp      rax, qword ptr [rbx + 0x18]
+  0x00D21C24 721d                     jb       0x140d21c43
+  0x00D21C26 4d895310                 mov      qword ptr [r11 + 0x10], r10
+  0x00D21C2A 4c895018                 mov      qword ptr [rax + 0x18], r10
+  0x00D21C2E 49894210                 mov      qword ptr [r10 + 0x10], rax
+  0x00D21C32 4d895a18                 mov      qword ptr [r10 + 0x18], r11
+  0x00D21C36 4c894308                 mov      qword ptr [rbx + 8], r8
+  0x00D21C3A 48897b20                 mov      qword ptr [rbx + 0x20], rdi
+  0x00D21C3E e9de000000               jmp      0x140d21d21
+  0x00D21C43 ff15ff700200             call     qword ptr [rip + 0x270ff]
+  0x00D21C49 cc                       int3     
+  0x00D21C4A 837b0400                 cmp      dword ptr [rbx + 4], 0
+  0x00D21C4E 743e                     je       0x140d21c8e
+  0x00D21C50 488bd7                   mov      rdx, rdi
+  0x00D21C53 488bcb                   mov      rcx, rbx
+  0x00D21C56 e895e5ffff               call     0x140d201f0
+  0x00D21C5B eb25                     jmp      0x140d21c82
+  0x00D21C5D 4883fa80                 cmp      rdx, -0x80
+  0x00D21C61 7209                     jb       0x140d21c6c
+  0x00D21C63 48c7c7ffffffff           mov      rdi, 0xffffffffffffffff
+  0x00D21C6A eb22                     jmp      0x140d21c8e
+  0x00D21C6C 488d7a17                 lea      rdi, [rdx + 0x17]
+  0x00D21C70 4883e7f0                 and      rdi, 0xfffffffffffffff0
+  0x00D21C74 83790400                 cmp      dword ptr [rcx + 4], 0
+  0x00D21C78 7414                     je       0x140d21c8e
+  0x00D21C7A 488bd7                   mov      rdx, rdi
+  0x00D21C7D e8cee7ffff               call     0x140d20450
+  0x00D21C82 488bd0                   mov      rdx, rax
+  0x00D21C85 4885c0                   test     rax, rax
+  0x00D21C88 0f8598000000             jne      0x140d21d26
+  0x00D21C8E 488b4b08                 mov      rcx, qword ptr [rbx + 8]
+  0x00D21C92 483bf9                   cmp      rdi, rcx
+  0x00D21C95 775a                     ja       0x140d21cf1
+  0x00D21C97 4c8b4320                 mov      r8, qword ptr [rbx + 0x20]
+  0x00D21C9B 488bd1                   mov      rdx, rcx
+  0x00D21C9E 482bd7                   sub      rdx, rdi
+  0x00D21CA1 4883fa20                 cmp      rdx, 0x20
+  0x00D21CA5 7229                     jb       0x140d21cd0
+  0x00D21CA7 498d0c38                 lea      rcx, [r8 + rdi]
+  0x00D21CAB 48895308                 mov      qword ptr [rbx + 8], rdx
+  0x00D21CAF 48894b20                 mov      qword ptr [rbx + 0x20], rcx
+  0x00D21CB3 488bc2                   mov      rax, rdx
+  0x00D21CB6 4883c801                 or       rax, 1
+  0x00D21CBA 48894108                 mov      qword ptr [rcx + 8], rax
+  0x00D21CBE 4883cf03                 or       rdi, 3
+  0x00D21CC2 48891411                 mov      qword ptr [rcx + rdx], rdx
+  0x00D21CC6 498d5010                 lea      rdx, [r8 + 0x10]
+  0x00D21CCA 49897808                 mov      qword ptr [r8 + 8], rdi
+  0x00D21CCE eb51                     jmp      0x140d21d21
+  0x00D21CD0 33d2                     xor      edx, edx
+  0x00D21CD2 488bc1                   mov      rax, rcx
+  0x00D21CD5 48895308                 mov      qword ptr [rbx + 8], rdx
+  0x00D21CD9 4883c803                 or       rax, 3
+  0x00D21CDD 48895320                 mov      qword ptr [rbx + 0x20], rdx
+  0x00D21CE1 498d5010                 lea      rdx, [r8 + 0x10]
+  0x00D21CE5 49894008                 mov      qword ptr [r8 + 8], rax
+  0x00D21CE9 4a834c010801             or       qword ptr [rcx + r8 + 8], 1
+  0x00D21CEF eb30                     jmp      0x140d21d21
+  0x00D21CF1 488b5310                 mov      rdx, qword ptr [rbx + 0x10]
+  0x00D21CF5 483bfa                   cmp      rdi, rdx
+  0x00D21CF8 7349                     jae      0x140d21d43
+  0x00D21CFA 488b4b28                 mov      rcx, qword ptr [rbx + 0x28]
+  0x00D21CFE 482bd7                   sub      rdx, rdi
+  0x00D21D01 48895310                 mov      qword ptr [rbx + 0x10], rdx
+  0x00D21D05 4883ca01                 or       rdx, 1
+  0x00D21D09 488d0439                 lea      rax, [rcx + rdi]
+  0x00D21D0D 4883cf03                 or       rdi, 3
+  0x00D21D11 48894328                 mov      qword ptr [rbx + 0x28], rax
+  0x00D21D15 48895008                 mov      qword ptr [rax + 8], rdx
+  0x00D21D19 488d5110                 lea      rdx, [rcx + 0x10]
+  0x00D21D1D 48897908                 mov      qword ptr [rcx + 8], rdi
+  0x00D21D21 4885d2                   test     rdx, rdx
+  0x00D21D24 741f                     je       0x140d21d45
+  0x00D21D26 488b42f8                 mov      rax, qword ptr [rdx - 8]
+  0x00D21D2A 4883e0f8                 and      rax, 0xfffffffffffffff8
+  0x00D21D2E 480183a8030000           add      qword ptr [rbx + 0x3a8], rax
+  0x00D21D35 488bc2                   mov      rax, rdx
+  0x00D21D38 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+  0x00D21D3D 4883c420                 add      rsp, 0x20
+  0x00D21D41 5f                       pop      rdi
+  0x00D21D42 c3                       ret      
+  0x00D21D43 33d2                     xor      edx, edx
+  0x00D21D45 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+  0x00D21D4A 488bc2                   mov      rax, rdx
+  0x00D21D4D 4883c420                 add      rsp, 0x20
+  0x00D21D51 5f                       pop      rdi
+  0x00D21D52 c3                       ret      
+
+TARGET 0xD1F7F0..0xD1F926 anchor=0xD1F7F0 synthetic=False
+  FIELD 0xD1F81C lea base=rcx index=None scale=1 +0x10 size=8 rbx, [rcx + 0x10]
+  FIELD 0xD1F833 mov base=rdi index=rsi scale=1 +0x8 size=8 qword ptr [rdi + rsi + 8], 0x3c3
+  FIELD 0xD1F83F mov base=rbx index=None scale=1 +0x18 size=8 qword ptr [rbx + 0x18], rsi
+  FIELD 0xD1F866 mov base=rbx index=None scale=1 +0x40 size=8 qword ptr [rbx + 0x40], rax
+  FIELD 0xD1F86A mov base=rbx index=None scale=1 +0x38 size=8 qword ptr [rbx + 0x38], 0xffffffffffffffff
+  FIELD 0xD1F8DB mov base=rbx index=None scale=1 +0x28 size=8 qword ptr [rbx + 0x28], rdx
+  FIELD 0xD1F8E2 mov base=rbx index=None scale=1 +0x10 size=8 qword ptr [rbx + 0x10], r8
+  FIELD 0xD1F8ED mov base=rdx index=None scale=1 +0x8 size=8 qword ptr [rdx + 8], rcx
+  FIELD 0xD1F8F1 mov base=rdx index=r8 scale=1 +0x8 size=8 qword ptr [rdx + r8 + 8], 0x50
+  FIELD 0xD1F901 mov base=rbx index=None scale=1 +0x30 size=8 qword ptr [rbx + 0x30], rcx
+  CALL 0xD1F82E -> 0x3ED388
+  CALL 0xD1F89B -> 0xD21690
+  0x00D1F7F0 48895c2408               mov      qword ptr [rsp + 8], rbx
+  0x00D1F7F5 48896c2410               mov      qword ptr [rsp + 0x10], rbp
+  0x00D1F7FA 4889742418               mov      qword ptr [rsp + 0x18], rsi
+  0x00D1F7FF 57                       push     rdi
+  0x00D1F800 4883ec20                 sub      rsp, 0x20
+  0x00D1F804 488bf9                   mov      rdi, rcx
+  0x00D1F807 488bea                   mov      rbp, rdx
+  0x00D1F80A 488bf1                   mov      rsi, rcx
+  0x00D1F80D 83e70f                   and      edi, 0xf
+  0x00D1F810 7504                     jne      0x140d1f816
+  0x00D1F812 33ff                     xor      edi, edi
+  0x00D1F814 eb06                     jmp      0x140d1f81c
+  0x00D1F816 48f7df                   neg      rdi
+  0x00D1F819 83e70f                   and      edi, 0xf
+  0x00D1F81C 488d5910                 lea      rbx, [rcx + 0x10]
+  0x00D1F820 33d2                     xor      edx, edx
+  0x00D1F822 4803df                   add      rbx, rdi
+  0x00D1F825 41b8c0030000             mov      r8d, 0x3c0
+  0x00D1F82B 488bcb                   mov      rcx, rbx
+  0x00D1F82E e855db6cff               call     0x1403ed388
+  0x00D1F833 48c7443708c3030000       mov      qword ptr [rdi + rsi + 8], 0x3c3
+  0x00D1F83C 488bcb                   mov      rcx, rbx
+  0x00D1F83F 48897318                 mov      qword ptr [rbx + 0x18], rsi
+  0x00D1F843 4889b378030000           mov      qword ptr [rbx + 0x378], rsi
+  0x00D1F84A 4889ab60030000           mov      qword ptr [rbx + 0x360], rbp
+  0x00D1F851 4889ab58030000           mov      qword ptr [rbx + 0x358], rbp
+  0x00D1F858 4889ab80030000           mov      qword ptr [rbx + 0x380], rbp
+  0x00D1F85F 488b05e2c93404           mov      rax, qword ptr [rip + 0x434c9e2]
+  0x00D1F866 48894340                 mov      qword ptr [rbx + 0x40], rax
+  0x00D1F86A 48c74338ffffffff         mov      qword ptr [rbx + 0x38], 0xffffffffffffffff
+  0x00D1F872 8b05f8c93404             mov      eax, dword ptr [rip + 0x434c9f8]
+  0x00D1F878 898370030000             mov      dword ptr [rbx + 0x370], eax
+  0x00D1F87E 838b7003000004           or       dword ptr [rbx + 0x370], 4
+  0x00D1F885 48c7839803000000000000   mov      qword ptr [rbx + 0x398], 0
+  0x00D1F890 48c783a003000000000000   mov      qword ptr [rbx + 0x3a0], 0
+  0x00D1F89B e8f01d0000               call     0x140d21690
+  0x00D1F8A0 488b4bf8                 mov      rcx, qword ptr [rbx - 8]
+  0x00D1F8A4 488d53f0                 lea      rdx, [rbx - 0x10]
+  0x00D1F8A8 4883e1f8                 and      rcx, 0xfffffffffffffff8
+  0x00D1F8AC 4c8d45b0                 lea      r8, [rbp - 0x50]
+  0x00D1F8B0 4803d1                   add      rdx, rcx
+  0x00D1F8B3 482bf2                   sub      rsi, rdx
+  0x00D1F8B6 488bc2                   mov      rax, rdx
+  0x00D1F8B9 4c03c6                   add      r8, rsi
+  0x00D1F8BC 83e00f                   and      eax, 0xf
+  0x00D1F8BF 7504                     jne      0x140d1f8c5
+  0x00D1F8C1 33c0                     xor      eax, eax
+  0x00D1F8C3 eb06                     jmp      0x140d1f8cb
+  0x00D1F8C5 48f7d8                   neg      rax
+  0x00D1F8C8 83e00f                   and      eax, 0xf
+  0x00D1F8CB 488b6c2438               mov      rbp, qword ptr [rsp + 0x38]
+  0x00D1F8D0 4c2bc0                   sub      r8, rax
+  0x00D1F8D3 488b742440               mov      rsi, qword ptr [rsp + 0x40]
+  0x00D1F8D8 4803d0                   add      rdx, rax
+  0x00D1F8DB 48895328                 mov      qword ptr [rbx + 0x28], rdx
+  0x00D1F8DF 498bc8                   mov      rcx, r8
+  0x00D1F8E2 4c894310                 mov      qword ptr [rbx + 0x10], r8
+  0x00D1F8E6 4883c901                 or       rcx, 1
+  0x00D1F8EA 488bc3                   mov      rax, rbx
+  0x00D1F8ED 48894a08                 mov      qword ptr [rdx + 8], rcx
+  0x00D1F8F1 4ac744020850000000       mov      qword ptr [rdx + r8 + 8], 0x50
+  0x00D1F8FA 488b0d67c93404           mov      rcx, qword ptr [rip + 0x434c967]
+  0x00D1F901 48894b30                 mov      qword ptr [rbx + 0x30], rcx
+  0x00D1F905 48c783a8030000c0030000   mov      qword ptr [rbx + 0x3a8], 0x3c0
+  0x00D1F910 48c783b003000000000000   mov      qword ptr [rbx + 0x3b0], 0
+  0x00D1F91B 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+  0x00D1F920 4883c420                 add      rsp, 0x20
+  0x00D1F924 5f                       pop      rdi
+  0x00D1F925 c3                       ret      
+
+TARGET 0xD21DD0..0xD22100 anchor=0xD21DD0 synthetic=True
+  FIELD 0xD21DEF mov base=rcx index=None scale=1 +0x18 size=8 rsi, qword ptr [rcx + 0x18]
+  FIELD 0xD21E06 mov base=r8 index=None scale=1 +0x8 size=8 rcx, qword ptr [r8 + 8]
+  FIELD 0xD21E27 lea base=r9 index=r8 scale=1 +0x0 size=8 r10, [r9 + r8]
+  FIELD 0xD21E39 mov base=r8 index=None scale=1 +0x0 size=8 r11, qword ptr [r8]
+  FIELD 0xD21E4B cmp base=rbx index=None scale=1 +0x20 size=8 r8, qword ptr [rbx + 0x20]
+  FIELD 0xD21E63 mov base=r8 index=None scale=1 +0x10 size=8 rdi, qword ptr [r8 + 0x10]
+  FIELD 0xD21E67 lea base=r11 index=r11 scale=1 +0x0 size=4 eax, [r11 + r11]
+  FIELD 0xD21E6B mov base=r8 index=None scale=1 +0x18 size=8 rdx, qword ptr [r8 + 0x18]
+  FIELD 0xD21E73 lea base=rbx index=rax scale=8 +0x0 size=8 rax, [rbx + rax*8]
+  FIELD 0xD21E85 cmp base=rdi index=None scale=1 +0x18 size=8 qword ptr [rdi + 0x18], r8
+  FIELD 0xD21E94 mov base=rbx index=None scale=1 +0x0 size=4 eax, dword ptr [rbx]
+  FIELD 0xD21E9A mov base=rbx index=None scale=1 +0x0 size=4 dword ptr [rbx], eax
+  FIELD 0xD21EA5 mov base=r10 index=None scale=1 +0x8 size=8 rdx, qword ptr [r10 + 8]
+  FIELD 0xD21EBB cmp base=rbx index=None scale=1 +0x28 size=8 r10, qword ptr [rbx + 0x28]
+  FIELD 0xD21EC5 add base=rbx index=None scale=1 +0x10 size=8 qword ptr [rbx + 0x10], r9
+  FIELD 0xD21EC9 mov base=rbx index=None scale=1 +0x10 size=8 rcx, qword ptr [rbx + 0x10]
+  FIELD 0xD21ED0 mov base=rbx index=None scale=1 +0x28 size=8 qword ptr [rbx + 0x28], r8
+  FIELD 0xD21ED8 mov base=r8 index=None scale=1 +0x8 size=8 qword ptr [r8 + 8], rax
+  FIELD 0xD21EDC cmp base=rbx index=None scale=1 +0x20 size=8 r8, qword ptr [rbx + 0x20]
+  FIELD 0xD21EE2 mov base=rbx index=None scale=1 +0x20 size=8 qword ptr [rbx + 0x20], r14
+  FIELD 0xD21EE6 mov base=rbx index=None scale=1 +0x8 size=8 qword ptr [rbx + 8], r14
+  FIELD 0xD21EEA cmp base=rbx index=None scale=1 +0x30 size=8 rcx, qword ptr [rbx + 0x30]
+  FIELD 0xD21F11 cmp base=rdx index=None scale=1 +0x10 size=8 qword ptr [rdx + 0x10], r8
+  FIELD 0xD21F1B mov base=rdi index=None scale=1 +0x18 size=8 qword ptr [rdi + 0x18], rdx
+  FIELD 0xD21F1F mov base=rdx index=None scale=1 +0x10 size=8 qword ptr [rdx + 0x10], rdi
+  FIELD 0xD21F28 mov base=r8 index=None scale=1 +0x18 size=8 rcx, qword ptr [r8 + 0x18]
+  FIELD 0xD21F2C mov base=r8 index=None scale=1 +0x30 size=8 rdi, qword ptr [r8 + 0x30]
+  FIELD 0xD21F35 mov base=r8 index=None scale=1 +0x10 size=8 rax, qword ptr [r8 + 0x10]
+  FIELD 0xD21F42 cmp base=rax index=None scale=1 +0x18 size=8 qword ptr [rax + 0x18], r8
+  FIELD 0xD21F4C cmp base=rcx index=None scale=1 +0x10 size=8 qword ptr [rcx + 0x10], r8
+  FIELD 0xD21F56 mov base=rax index=None scale=1 +0x18 size=8 qword ptr [rax + 0x18], rcx
+  FIELD 0xD21F5A mov base=rcx index=None scale=1 +0x10 size=8 qword ptr [rcx + 0x10], rax
+  FIELD 0xD21F60 mov base=r8 index=None scale=1 +0x28 size=8 rcx, qword ptr [r8 + 0x28]
+  FIELD 0xD21F64 lea base=r8 index=None scale=1 +0x28 size=8 r11, [r8 + 0x28]
+  FIELD 0xD21F6D mov base=r8 index=None scale=1 +0x20 size=8 rcx, qword ptr [r8 + 0x20]
+  FIELD 0xD21F71 lea base=r8 index=None scale=1 +0x20 size=8 r11, [r8 + 0x20]
+  FIELD 0xD21F7A nop base=rax index=rax scale=1 +0x0 size=2 word ptr [rax + rax]
+  FIELD 0xD21F80 mov base=rcx index=None scale=1 +0x28 size=8 rdx, qword ptr [rcx + 0x28]
+  FIELD 0xD21F84 lea base=rcx index=None scale=1 +0x28 size=8 rax, [rcx + 0x28]
+  FIELD 0xD21F8D mov base=rcx index=None scale=1 +0x20 size=8 rdx, qword ptr [rcx + 0x20]
+  FIELD 0xD21F91 lea base=rcx index=None scale=1 +0x20 size=8 rax, [rcx + 0x20]
+  FIELD 0xD21FAB mov base=r11 index=None scale=1 +0x0 size=8 qword ptr [r11], r14
+  FIELD 0xD21FB7 mov base=r8 index=None scale=1 +0x38 size=4 eax, dword ptr [r8 + 0x38]
+  FIELD 0xD21FD5 mov base=r8 index=None scale=1 +0x38 size=4 eax, dword ptr [r8 + 0x38]
+  FIELD 0xD21FE4 cmp base=rbx index=None scale=1 +0x18 size=8 rdi, qword ptr [rbx + 0x18]
+  FIELD 0xD21FEE cmp base=rdi index=None scale=1 +0x20 size=8 qword ptr [rdi + 0x20], r8
+  FIELD 0xD21FF4 mov base=rdi index=None scale=1 +0x20 size=8 qword ptr [rdi + 0x20], rcx
+  FIELD 0xD21FFA mov base=rdi index=None scale=1 +0x28 size=8 qword ptr [rdi + 0x28], rcx
+  FIELD 0xD22007 cmp base=rbx index=None scale=1 +0x18 size=8 rcx, qword ptr [rbx + 0x18]
+  FIELD 0xD22011 mov base=rcx index=None scale=1 +0x30 size=8 qword ptr [rcx + 0x30], rdi
+  FIELD 0xD22015 mov base=r8 index=None scale=1 +0x20 size=8 rax, qword ptr [r8 + 0x20]
+  FIELD 0xD2201E cmp base=rbx index=None scale=1 +0x18 size=8 rax, qword ptr [rbx + 0x18]
+  FIELD 0xD22028 mov base=rcx index=None scale=1 +0x20 size=8 qword ptr [rcx + 0x20], rax
+  FIELD 0xD2202C mov base=rax index=None scale=1 +0x30 size=8 qword ptr [rax + 0x30], rcx
+  FIELD 0xD22030 mov base=r8 index=None scale=1 +0x28 size=8 rax, qword ptr [r8 + 0x28]
+  FIELD 0xD2203D cmp base=rbx index=None scale=1 +0x18 size=8 rax, qword ptr [rbx + 0x18]
+  FIELD 0xD22047 mov base=rcx index=None scale=1 +0x28 size=8 qword ptr [rcx + 0x28], rax
+  FIELD 0xD2204B mov base=rax index=None scale=1 +0x30 size=8 qword ptr [rax + 0x30], rcx
+  FIELD 0xD22054 movzx base=r10 index=None scale=1 +0x8 size=1 eax, byte ptr [r10 + 8]
+  FIELD 0xD22063 mov base=rbx index=None scale=1 +0x8 size=8 qword ptr [rbx + 8], r9
+  FIELD 0xD2206A and base=r10 index=None scale=1 +0x8 size=8 qword ptr [r10 + 8], 0xfffffffffffffffe
+  FIELD 0xD22073 mov base=r8 index=None scale=1 +0x8 size=8 qword ptr [r8 + 8], rax
+  FIELD 0xD22077 mov base=r8 index=r9 scale=1 +0x0 size=8 qword ptr [r8 + r9], r9
+  FIELD 0xD22080 cmp base=rbx index=None scale=1 +0x20 size=8 r10, qword ptr [rbx + 0x20]
+  FIELD 0xD22086 add base=rbx index=None scale=1 +0x8 size=8 qword ptr [rbx + 8], r9
+  FIELD 0xD2208A mov base=rbx index=None scale=1 +0x8 size=8 rcx, qword ptr [rbx + 8]
+  FIELD 0xD2208E mov base=rbx index=None scale=1 +0x20 size=8 qword ptr [rbx + 0x20], r8
+  FIELD 0xD22099 mov base=r8 index=None scale=1 +0x8 size=8 qword ptr [r8 + 8], rax
+  FIELD 0xD2209D mov base=rcx index=r8 scale=1 +0x0 size=8 qword ptr [rcx + r8], rcx
+  FIELD 0xD220B7 mov base=r10 index=None scale=1 +0x10 size=8 rdi, qword ptr [r10 + 0x10]
+  FIELD 0xD220BB lea base=rdx index=rdx scale=1 +0x0 size=4 eax, [rdx + rdx]
+  FIELD 0xD220BE mov base=r10 index=None scale=1 +0x18 size=8 r11, qword ptr [r10 + 0x18]
+  FIELD 0xD220C6 lea base=rbx index=rax scale=8 +0x0 size=8 rax, [rbx + rax*8]
+  FIELD 0xD220CF cmp base=rbx index=None scale=1 +0x18 size=8 rdi, qword ptr [rbx + 0x18]
+  FIELD 0xD220D9 cmp base=rdi index=None scale=1 +0x18 size=8 qword ptr [rdi + 0x18], r10
+  FIELD 0xD220E8 mov base=rbx index=None scale=1 +0x0 size=4 eax, dword ptr [rbx]
+  FIELD 0xD220ED mov base=rbx index=None scale=1 +0x0 size=4 dword ptr [rbx], eax
+  FIELD 0xD220F9 cmp base=rbx index=None scale=1 +0x18 size=8 r11, qword ptr [rbx + 0x18]
+  CALL 0xD21EF9 -> 0xD20EF0 fn=0xD20EF0
+  0x00D21DD0 4885d2                   test     rdx, rdx
+  0x00D21DD3 0f84f9050000             je       0x140d223d2
+  0x00D21DD9 53                       push     rbx
+  0x00D21DDA 4883ec20                 sub      rsp, 0x20
+  0x00D21DDE 48896c2430               mov      qword ptr [rsp + 0x30], rbp
+  0x00D21DE3 4c8d42f0                 lea      r8, [rdx - 0x10]
+  0x00D21DE7 4889742438               mov      qword ptr [rsp + 0x38], rsi
+  0x00D21DEC 488bd9                   mov      rbx, rcx
+  0x00D21DEF 488b7118                 mov      rsi, qword ptr [rcx + 0x18]
+  0x00D21DF3 48897c2440               mov      qword ptr [rsp + 0x40], rdi
+  0x00D21DF8 4c89742448               mov      qword ptr [rsp + 0x48], r14
+  0x00D21DFD 4c3bc6                   cmp      r8, rsi
+  0x00D21E00 0f82de050000             jb       0x140d223e4
+  0x00D21E06 498b4808                 mov      rcx, qword ptr [r8 + 8]
+  0x00D21E0A 488bc1                   mov      rax, rcx
+  0x00D21E0D 83e003                   and      eax, 3
+  0x00D21E10 4883f801                 cmp      rax, 1
+  0x00D21E14 0f84ca050000             je       0x140d223e4
+  0x00D21E1A 4c8bc9                   mov      r9, rcx
+  0x00D21E1D 4533f6                   xor      r14d, r14d
+  0x00D21E20 4983e1f8                 and      r9, 0xfffffffffffffff8
+  0x00D21E24 498be9                   mov      rbp, r9
+  0x00D21E27 4f8d1401                 lea      r10, [r9 + r8]
+  0x00D21E2B f6c101                   test     cl, 1
+  0x00D21E2E 756c                     jne      0x140d21e9c
+  0x00D21E30 4885c0                   test     rax, rax
+  0x00D21E33 0f8479050000             je       0x140d223b2
+  0x00D21E39 4d8b18                   mov      r11, qword ptr [r8]
+  0x00D21E3C 4d2bc3                   sub      r8, r11
+  0x00D21E3F 4d03cb                   add      r9, r11
+  0x00D21E42 4c3bc6                   cmp      r8, rsi
+  0x00D21E45 0f8299050000             jb       0x140d223e4
+  0x00D21E4B 4c3b4320                 cmp      r8, qword ptr [rbx + 0x20]
+  0x00D21E4F 0f84ff010000             je       0x140d22054
+  0x00D21E55 49c1eb03                 shr      r11, 3
+  0x00D21E59 4983fb20                 cmp      r11, 0x20
+  0x00D21E5D 0f83c5000000             jae      0x140d21f28
+  0x00D21E63 498b7810                 mov      rdi, qword ptr [r8 + 0x10]
+  0x00D21E67 438d041b                 lea      eax, [r11 + r11]
+  0x00D21E6B 498b5018                 mov      rdx, qword ptr [r8 + 0x18]
+  0x00D21E6F 488d4009                 lea      rax, [rax + 9]
+  0x00D21E73 488d04c3                 lea      rax, [rbx + rax*8]
+  0x00D21E77 483bf8                   cmp      rdi, rax
+  0x00D21E7A 7413                     je       0x140d21e8f
+  0x00D21E7C 483bfe                   cmp      rdi, rsi
+  0x00D21E7F 0f825f050000             jb       0x140d223e4
+  0x00D21E85 4c394718                 cmp      qword ptr [rdi + 0x18], r8
+  0x00D21E89 0f8555050000             jne      0x140d223e4
+  0x00D21E8F 483bd7                   cmp      rdx, rdi
+  0x00D21E92 756f                     jne      0x140d21f03
+  0x00D21E94 8b03                     mov      eax, dword ptr [rbx]
+  0x00D21E96 440fb3d8                 btr      eax, r11d
+  0x00D21E9A 8903                     mov      dword ptr [rbx], eax
+  0x00D21E9C 4d3bc2                   cmp      r8, r10
+  0x00D21E9F 0f833f050000             jae      0x140d223e4
+  0x00D21EA5 498b5208                 mov      rdx, qword ptr [r10 + 8]
+  0x00D21EA9 f6c201                   test     dl, 1
+  0x00D21EAC 0f8432050000             je       0x140d223e4
+  0x00D21EB2 f6c202                   test     dl, 2
+  0x00D21EB5 0f8598030000             jne      0x140d22253
+  0x00D21EBB 4c3b5328                 cmp      r10, qword ptr [rbx + 0x28]
+  0x00D21EBF 0f85bb010000             jne      0x140d22080
+  0x00D21EC5 4c014b10                 add      qword ptr [rbx + 0x10], r9
+  0x00D21EC9 488b4b10                 mov      rcx, qword ptr [rbx + 0x10]
+  0x00D21ECD 488bc1                   mov      rax, rcx
+  0x00D21ED0 4c894328                 mov      qword ptr [rbx + 0x28], r8
+  0x00D21ED4 4883c801                 or       rax, 1
+  0x00D21ED8 49894008                 mov      qword ptr [r8 + 8], rax
+  0x00D21EDC 4c3b4320                 cmp      r8, qword ptr [rbx + 0x20]
+  0x00D21EE0 7508                     jne      0x140d21eea
+  0x00D21EE2 4c897320                 mov      qword ptr [rbx + 0x20], r14
+  0x00D21EE6 4c897308                 mov      qword ptr [rbx + 8], r14
+  0x00D21EEA 483b4b30                 cmp      rcx, qword ptr [rbx + 0x30]
+  0x00D21EEE 0f86be040000             jbe      0x140d223b2
+  0x00D21EF4 33d2                     xor      edx, edx
+  0x00D21EF6 488bcb                   mov      rcx, rbx
+  0x00D21EF9 e8f2efffff               call     0x140d20ef0
+  0x00D21EFE e9af040000               jmp      0x140d223b2
+  0x00D21F03 483bd0                   cmp      rdx, rax
+  0x00D21F06 7413                     je       0x140d21f1b
+  0x00D21F08 483bd6                   cmp      rdx, rsi
+  0x00D21F0B 0f82d3040000             jb       0x140d223e4
+  0x00D21F11 4c394210                 cmp      qword ptr [rdx + 0x10], r8
+  0x00D21F15 0f85c9040000             jne      0x140d223e4
+  0x00D21F1B 48895718                 mov      qword ptr [rdi + 0x18], rdx
+  0x00D21F1F 48897a10                 mov      qword ptr [rdx + 0x10], rdi
+  0x00D21F23 e974ffffff               jmp      0x140d21e9c
+  0x00D21F28 498b4818                 mov      rcx, qword ptr [r8 + 0x18]
+  0x00D21F2C 498b7830                 mov      rdi, qword ptr [r8 + 0x30]
+  0x00D21F30 493bc8                   cmp      rcx, r8
+  0x00D21F33 742b                     je       0x140d21f60
+  0x00D21F35 498b4010                 mov      rax, qword ptr [r8 + 0x10]
+  0x00D21F39 483bc6                   cmp      rax, rsi
+  0x00D21F3C 0f82a2040000             jb       0x140d223e4
+  0x00D21F42 4c394018                 cmp      qword ptr [rax + 0x18], r8
+  0x00D21F46 0f8598040000             jne      0x140d223e4
+  0x00D21F4C 4c394110                 cmp      qword ptr [rcx + 0x10], r8
+  0x00D21F50 0f858e040000             jne      0x140d223e4
+  0x00D21F56 48894818                 mov      qword ptr [rax + 0x18], rcx
+  0x00D21F5A 48894110                 mov      qword ptr [rcx + 0x10], rax
+  0x00D21F5E eb4e                     jmp      0x140d21fae
+  0x00D21F60 498b4828                 mov      rcx, qword ptr [r8 + 0x28]
+  0x00D21F64 4d8d5828                 lea      r11, [r8 + 0x28]
+  0x00D21F68 4885c9                   test     rcx, rcx
+  0x00D21F6B 7513                     jne      0x140d21f80
+  0x00D21F6D 498b4820                 mov      rcx, qword ptr [r8 + 0x20]
+  0x00D21F71 4d8d5820                 lea      r11, [r8 + 0x20]
+  0x00D21F75 4885c9                   test     rcx, rcx
+  0x00D21F78 7434                     je       0x140d21fae
+  0x00D21F7A 660f1f440000             nop      word ptr [rax + rax]
+  0x00D21F80 488b5128                 mov      rdx, qword ptr [rcx + 0x28]
+  0x00D21F84 488d4128                 lea      rax, [rcx + 0x28]
+  0x00D21F88 4885d2                   test     rdx, rdx
+  0x00D21F8B 750d                     jne      0x140d21f9a
+  0x00D21F8D 488b5120                 mov      rdx, qword ptr [rcx + 0x20]
+  0x00D21F91 488d4120                 lea      rax, [rcx + 0x20]
+  0x00D21F95 4885d2                   test     rdx, rdx
+  0x00D21F98 7408                     je       0x140d21fa2
+  0x00D21F9A 4c8bd8                   mov      r11, rax
+  0x00D21F9D 488bca                   mov      rcx, rdx
+  0x00D21FA0 ebde                     jmp      0x140d21f80
+  0x00D21FA2 4c3bde                   cmp      r11, rsi
+  0x00D21FA5 0f8239040000             jb       0x140d223e4
+  0x00D21FAB 4d8933                   mov      qword ptr [r11], r14
+  0x00D21FAE 4885ff                   test     rdi, rdi
+  0x00D21FB1 0f84e5feffff             je       0x140d21e9c
+  0x00D21FB7 418b4038                 mov      eax, dword ptr [r8 + 0x38]
+  0x00D21FBB 4c3b84c358020000         cmp      r8, qword ptr [rbx + rax*8 + 0x258]
+  0x00D21FC3 751f                     jne      0x140d21fe4
+  0x00D21FC5 48898cc358020000         mov      qword ptr [rbx + rax*8 + 0x258], rcx
+  0x00D21FCD 4885c9                   test     rcx, rcx
+  0x00D21FD0 7535                     jne      0x140d22007
+  0x00D21FD2 8b4b04                   mov      ecx, dword ptr [rbx + 4]
+  0x00D21FD5 418b4038                 mov      eax, dword ptr [r8 + 0x38]
+  0x00D21FD9 0fb3c1                   btr      ecx, eax
+  0x00D21FDC 894b04                   mov      dword ptr [rbx + 4], ecx
+  0x00D21FDF e9b8feffff               jmp      0x140d21e9c
+  0x00D21FE4 483b7b18                 cmp      rdi, qword ptr [rbx + 0x18]
+  0x00D21FE8 0f82f6030000             jb       0x140d223e4
+  0x00D21FEE 4c394720                 cmp      qword ptr [rdi + 0x20], r8
+  0x00D21FF2 7506                     jne      0x140d21ffa
+  0x00D21FF4 48894f20                 mov      qword ptr [rdi + 0x20], rcx
+  0x00D21FF8 eb04                     jmp      0x140d21ffe
+  0x00D21FFA 48894f28                 mov      qword ptr [rdi + 0x28], rcx
+  0x00D21FFE 4885c9                   test     rcx, rcx
+  0x00D22001 0f8495feffff             je       0x140d21e9c
+  0x00D22007 483b4b18                 cmp      rcx, qword ptr [rbx + 0x18]
+  0x00D2200B 0f82d3030000             jb       0x140d223e4
+  0x00D22011 48897930                 mov      qword ptr [rcx + 0x30], rdi
+  0x00D22015 498b4020                 mov      rax, qword ptr [r8 + 0x20]
+  0x00D22019 4885c0                   test     rax, rax
+  0x00D2201C 7412                     je       0x140d22030
+  0x00D2201E 483b4318                 cmp      rax, qword ptr [rbx + 0x18]
+  0x00D22022 0f82bc030000             jb       0x140d223e4
+  0x00D22028 48894120                 mov      qword ptr [rcx + 0x20], rax
+  0x00D2202C 48894830                 mov      qword ptr [rax + 0x30], rcx
+  0x00D22030 498b4028                 mov      rax, qword ptr [r8 + 0x28]
+  0x00D22034 4885c0                   test     rax, rax
+  0x00D22037 0f845ffeffff             je       0x140d21e9c
+  0x00D2203D 483b4318                 cmp      rax, qword ptr [rbx + 0x18]
+  0x00D22041 0f829d030000             jb       0x140d223e4
+  0x00D22047 48894128                 mov      qword ptr [rcx + 0x28], rax
+  0x00D2204B 48894830                 mov      qword ptr [rax + 0x30], rcx
+  0x00D2204F e948feffff               jmp      0x140d21e9c
+  0x00D22054 410fb64208               movzx    eax, byte ptr [r10 + 8]
+  0x00D22059 2403                     and      al, 3
+  0x00D2205B 3c03                     cmp      al, 3
+  0x00D2205D 0f8539feffff             jne      0x140d21e9c
+  0x00D22063 4c894b08                 mov      qword ptr [rbx + 8], r9
+  0x00D22067 498bc1                   mov      rax, r9
+  0x00D2206A 49836208fe               and      qword ptr [r10 + 8], 0xfffffffffffffffe
+  0x00D2206F 4883c801                 or       rax, 1
+  0x00D22073 49894008                 mov      qword ptr [r8 + 8], rax
+  0x00D22077 4f890c08                 mov      qword ptr [r8 + r9], r9
+  0x00D2207B e932030000               jmp      0x140d223b2
+  0x00D22080 4c3b5320                 cmp      r10, qword ptr [rbx + 0x20]
+  0x00D22084 7520                     jne      0x140d220a6
+  0x00D22086 4c014b08                 add      qword ptr [rbx + 8], r9
+  0x00D2208A 488b4b08                 mov      rcx, qword ptr [rbx + 8]
+  0x00D2208E 4c894320                 mov      qword ptr [rbx + 0x20], r8
+  0x00D22092 488bc1                   mov      rax, rcx
+  0x00D22095 4883c801                 or       rax, 1
+  0x00D22099 49894008                 mov      qword ptr [r8 + 8], rax
+  0x00D2209D 4a890c01                 mov      qword ptr [rcx + r8], rcx
+  0x00D220A1 e90c030000               jmp      0x140d223b2
+  0x00D220A6 4883e2f8                 and      rdx, 0xfffffffffffffff8
+  0x00D220AA 4c03ca                   add      r9, rdx
+  0x00D220AD 48c1ea03                 shr      rdx, 3
+  0x00D220B1 4883fa20                 cmp      rdx, 0x20
+  0x00D220B5 7363                     jae      0x140d2211a
+  0x00D220B7 498b7a10                 mov      rdi, qword ptr [r10 + 0x10]
+  0x00D220BB 8d0412                   lea      eax, [rdx + rdx]
+  0x00D220BE 4d8b5a18                 mov      r11, qword ptr [r10 + 0x18]
+  0x00D220C2 488d4009                 lea      rax, [rax + 9]
+  0x00D220C6 488d04c3                 lea      rax, [rbx + rax*8]
+  0x00D220CA 483bf8                   cmp      rdi, rax
+  0x00D220CD 7414                     je       0x140d220e3
+  0x00D220CF 483b7b18                 cmp      rdi, qword ptr [rbx + 0x18]
+  0x00D220D3 0f820b030000             jb       0x140d223e4
+  0x00D220D9 4c395718                 cmp      qword ptr [rdi + 0x18], r10
+  0x00D220DD 0f8501030000             jne      0x140d223e4
+  0x00D220E3 4c3bdf                   cmp      r11, rdi
+  0x00D220E6 750c                     jne      0x140d220f4
+  0x00D220E8 8b03                     mov      eax, dword ptr [rbx]
+  0x00D220EA 0fb3d0                   btr      eax, edx
+  0x00D220ED 8903                     mov      dword ptr [rbx], eax
+  0x00D220EF e941010000               jmp      0x140d22235
+  0x00D220F4 4c3bd8                   cmp      r11, rax
+  0x00D220F7 7414                     je       0x140d2210d
+  0x00D220F9 4c3b5b18                 cmp      r11, qword ptr [rbx + 0x18]
+
+TARGET 0x5AB340..0x5AB3C2 anchor=0x5AB340 synthetic=False
+  FIELD 0x5AB398 mov base=rbx index=None scale=1 +0x0 size=8 qword ptr [rbx], rax
+  FIELD 0x5AB3B0 mov base=rbx index=None scale=1 +0x0 size=8 qword ptr [rbx], 0
+  CALL 0x5AB362 -> 0xD219C0 fn=0xD219C0
+  CALL 0x5AB389 -> 0xD1F7F0 fn=0xD1F7F0
+  0x005AB340 48895c2408               mov      qword ptr [rsp + 8], rbx
+  0x005AB345 4889742410               mov      qword ptr [rsp + 0x10], rsi
+  0x005AB34A 57                       push     rdi
+  0x005AB34B 4883ec20                 sub      rsp, 0x20
+  0x005AB34F 48833df10eac0400         cmp      qword ptr [rip + 0x4ac0ef1], 0
+  0x005AB357 488bf2                   mov      rsi, rdx
+  0x005AB35A 488bd9                   mov      rbx, rcx
+  0x005AB35D 418bf8                   mov      edi, r8d
+  0x005AB360 7505                     jne      0x1405ab367
+  0x005AB362 e859667700               call     0x140d219c0
+  0x005AB367 4881ff10040000           cmp      rdi, 0x410
+  0x005AB36E 763b                     jbe      0x1405ab3ab
+  0x005AB370 48c7c0f0fbffff           mov      rax, 0xfffffffffffffbf0
+  0x005AB377 482b05d20eac04           sub      rax, qword ptr [rip + 0x4ac0ed2]
+  0x005AB37E 483bf8                   cmp      rdi, rax
+  0x005AB381 7328                     jae      0x1405ab3ab
+  0x005AB383 488bd7                   mov      rdx, rdi
+  0x005AB386 488bce                   mov      rcx, rsi
+  0x005AB389 e862447700               call     0x140d1f7f0
+  0x005AB38E c7809003000008000000     mov      dword ptr [rax + 0x390], 8
+  0x005AB398 488903                   mov      qword ptr [rbx], rax
+  0x005AB39B 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+  0x005AB3A0 488b742438               mov      rsi, qword ptr [rsp + 0x38]
+  0x005AB3A5 4883c420                 add      rsp, 0x20
+  0x005AB3A9 5f                       pop      rdi
+  0x005AB3AA c3                       ret      
+  0x005AB3AB 488b742438               mov      rsi, qword ptr [rsp + 0x38]
+  0x005AB3B0 48c70300000000           mov      qword ptr [rbx], 0
+  0x005AB3B7 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+  0x005AB3BC 4883c420                 add      rsp, 0x20
+  0x005AB3C0 5f                       pop      rdi
+  0x005AB3C1 c3                       ret      
+
+SMALL DIRECT CALLEES
+CALLEE 0xD201F0..0xD2043F synthetic=False
+  FIELD 0xD20216 mov base=r8 index=None scale=1 +0x8 size=8 r10, qword ptr [r8 + 8]
+  FIELD 0xD20221 mov base=r8 index=None scale=1 +0x20 size=8 rax, qword ptr [r8 + 0x20]
+  FIELD 0xD2022F mov base=r8 index=None scale=1 +0x28 size=8 r8, qword ptr [r8 + 0x28]
+  FIELD 0xD20238 mov base=r8 index=None scale=1 +0x8 size=8 rcx, qword ptr [r8 + 8]
+  FIELD 0xD20263 cmp base=r11 index=None scale=1 +0x18 size=8 r9, qword ptr [r11 + 0x18]
+  FIELD 0xD2026D lea base=r9 index=rdx scale=1 +0x0 size=8 r14, [r9 + rdx]
+  FIELD 0xD2027A mov base=r9 index=None scale=1 +0x18 size=8 rcx, qword ptr [r9 + 0x18]
+  FIELD 0xD2027E mov base=r9 index=None scale=1 +0x30 size=8 rbx, qword ptr [r9 + 0x30]
+  FIELD 0xD20287 mov base=r9 index=None scale=1 +0x10 size=8 rax, qword ptr [r9 + 0x10]
+  FIELD 0xD2028B cmp base=r11 index=None scale=1 +0x18 size=8 rax, qword ptr [r11 + 0x18]
+  FIELD 0xD20295 cmp base=rax index=None scale=1 +0x18 size=8 qword ptr [rax + 0x18], r9
+  FIELD 0xD2029F cmp base=rcx index=None scale=1 +0x10 size=8 qword ptr [rcx + 0x10], r9
+  FIELD 0xD202A9 mov base=rax index=None scale=1 +0x18 size=8 qword ptr [rax + 0x18], rcx
+  FIELD 0xD202AD mov base=rcx index=None scale=1 +0x10 size=8 qword ptr [rcx + 0x10], rax
+  FIELD 0xD202B3 mov base=r9 index=None scale=1 +0x28 size=8 rcx, qword ptr [r9 + 0x28]
+  FIELD 0xD202B7 lea base=r9 index=None scale=1 +0x28 size=8 r8, [r9 + 0x28]
+  FIELD 0xD202C0 mov base=r9 index=None scale=1 +0x20 size=8 rcx, qword ptr [r9 + 0x20]
+  FIELD 0xD202C4 lea base=r9 index=None scale=1 +0x20 size=8 r8, [r9 + 0x20]
+  FIELD 0xD202CD nop base=rax index=None scale=1 +0x0 size=4 dword ptr [rax]
+  FIELD 0xD202D0 mov base=rcx index=None scale=1 +0x28 size=8 rdx, qword ptr [rcx + 0x28]
+  FIELD 0xD202D4 lea base=rcx index=None scale=1 +0x28 size=8 rax, [rcx + 0x28]
+  FIELD 0xD202DD mov base=rcx index=None scale=1 +0x20 size=8 rdx, qword ptr [rcx + 0x20]
+  FIELD 0xD202E1 lea base=rcx index=None scale=1 +0x20 size=8 rax, [rcx + 0x20]
+  FIELD 0xD202F2 cmp base=r11 index=None scale=1 +0x18 size=8 r8, qword ptr [r11 + 0x18]
+  FIELD 0xD202FC mov base=r8 index=None scale=1 +0x0 size=8 qword ptr [r8], 0
+  FIELD 0xD2030C mov base=r9 index=None scale=1 +0x38 size=4 eax, dword ptr [r9 + 0x38]
+  FIELD 0xD2032B mov base=r9 index=None scale=1 +0x38 size=4 eax, dword ptr [r9 + 0x38]
+  FIELD 0xD20338 cmp base=r11 index=None scale=1 +0x18 size=8 rbx, qword ptr [r11 + 0x18]
+  FIELD 0xD20342 cmp base=rbx index=None scale=1 +0x20 size=8 qword ptr [rbx + 0x20], r9
+  FIELD 0xD20348 mov base=rbx index=None scale=1 +0x20 size=8 qword ptr [rbx + 0x20], rcx
+  FIELD 0xD2034E mov base=rbx index=None scale=1 +0x28 size=8 qword ptr [rbx + 0x28], rcx
+  FIELD 0xD20357 cmp base=r11 index=None scale=1 +0x18 size=8 rcx, qword ptr [r11 + 0x18]
+  FIELD 0xD20361 mov base=rcx index=None scale=1 +0x30 size=8 qword ptr [rcx + 0x30], rbx
+  FIELD 0xD20365 mov base=r9 index=None scale=1 +0x20 size=8 rax, qword ptr [r9 + 0x20]
+  FIELD 0xD2036E cmp base=r11 index=None scale=1 +0x18 size=8 rax, qword ptr [r11 + 0x18]
+  FIELD 0xD20378 mov base=rcx index=None scale=1 +0x20 size=8 qword ptr [rcx + 0x20], rax
+  FIELD 0xD2037C mov base=rax index=None scale=1 +0x30 size=8 qword ptr [rax + 0x30], rcx
+  FIELD 0xD20380 mov base=r9 index=None scale=1 +0x28 size=8 rax, qword ptr [r9 + 0x28]
+  FIELD 0xD20389 cmp base=r11 index=None scale=1 +0x18 size=8 rax, qword ptr [r11 + 0x18]
+  FIELD 0xD20393 mov base=rcx index=None scale=1 +0x28 size=8 qword ptr [rcx + 0x28], rax
+  FIELD 0xD20397 mov base=rax index=None scale=1 +0x30 size=8 qword ptr [rax + 0x30], rcx
+  FIELD 0xD203A1 lea base=r10 index=rdi scale=1 +0x0 size=8 rax, [r10 + rdi]
+  FIELD 0xD203A9 mov base=r9 index=None scale=1 +0x8 size=8 qword ptr [r9 + 8], rax
+  FIELD 0xD203AD lea base=r10 index=r9 scale=1 +0x0 size=8 rax, [r10 + r9]
+  FIELD 0xD203B1 or base=rax index=rdi scale=1 +0x8 size=8 qword ptr [rax + rdi + 8], 1
+  FIELD 0xD203C0 mov base=r9 index=None scale=1 +0x8 size=8 qword ptr [r9 + 8], rdi
+  FIELD 0xD203C8 mov base=r14 index=None scale=1 +0x8 size=8 qword ptr [r14 + 8], rax
+  FIELD 0xD203CC mov base=r14 index=r10 scale=1 +0x0 size=8 qword ptr [r14 + r10], r10
+  FIELD 0xD203D0 mov base=r11 index=None scale=1 +0x8 size=8 r8, qword ptr [r11 + 8]
+  FIELD 0xD203D9 mov base=r11 index=None scale=1 +0x0 size=4 ebx, dword ptr [r11]
+  FIELD 0xD203DC mov base=r11 index=None scale=1 +0x20 size=8 rdx, qword ptr [r11 + 0x20]
+  FIELD 0xD203E8 lea base=r8 index=r8 scale=1 +0x0 size=4 ecx, [r8 + r8]
+  FIELD 0xD203F0 lea base=r11 index=rcx scale=8 +0x0 size=8 rcx, [r11 + rcx*8]
+  FIELD 0xD203FD mov base=r11 index=None scale=1 +0x0 size=4 dword ptr [r11], ebx
+  FIELD 0xD20402 mov base=rcx index=None scale=1 +0x10 size=8 rax, qword ptr [rcx + 0x10]
+  FIELD 0xD20406 cmp base=r11 index=None scale=1 +0x18 size=8 rax, qword ptr [r11 + 0x18]
+  FIELD 0xD2040C mov base=rcx index=None scale=1 +0x10 size=8 qword ptr [rcx + 0x10], rdx
+  FIELD 0xD20410 mov base=rax index=None scale=1 +0x18 size=8 qword ptr [rax + 0x18], rdx
+  FIELD 0xD20414 mov base=rdx index=None scale=1 +0x10 size=8 qword ptr [rdx + 0x10], rax
+  FIELD 0xD20418 mov base=rdx index=None scale=1 +0x18 size=8 qword ptr [rdx + 0x18], rcx
+  FIELD 0xD2041C mov base=r11 index=None scale=1 +0x8 size=8 qword ptr [r11 + 8], r10
+  FIELD 0xD20420 mov base=r11 index=None scale=1 +0x20 size=8 qword ptr [r11 + 0x20], r14
+  FIELD 0xD20429 lea base=r9 index=None scale=1 +0x10 size=8 rax, [r9 + 0x10]
+  0x00D201F0 4057                     push     rdi
+  0x00D201F2 4883ec20                 sub      rsp, 0x20
+  0x00D201F6 448b4104                 mov      r8d, dword ptr [rcx + 4]
+  0x00D201FA 488bfa                   mov      rdi, rdx
+  0x00D201FD 41f7d8                   neg      r8d
+  0x00D20200 4c8bd9                   mov      r11, rcx
+  0x00D20203 44234104                 and      r8d, dword ptr [rcx + 4]
+  0x00D20207 410fbcc0                 bsf      eax, r8d
+  0x00D2020B 4c8b84c158020000         mov      r8, qword ptr [rcx + rax*8 + 0x258]
+  0x00D20213 4d8bc8                   mov      r9, r8
+  0x00D20216 4d8b5008                 mov      r10, qword ptr [r8 + 8]
+  0x00D2021A 4983e2f8                 and      r10, 0xfffffffffffffff8
+  0x00D2021E 4c2bd2                   sub      r10, rdx
+  0x00D20221 498b4020                 mov      rax, qword ptr [r8 + 0x20]
+  0x00D20225 4885c0                   test     rax, rax
+  0x00D20228 7405                     je       0x140d2022f
+  0x00D2022A 4c8bc0                   mov      r8, rax
+  0x00D2022D eb04                     jmp      0x140d20233
+  0x00D2022F 4d8b4028                 mov      r8, qword ptr [r8 + 0x28]
+  0x00D20233 4d85c0                   test     r8, r8
+  0x00D20236 7421                     je       0x140d20259
+  0x00D20238 498b4808                 mov      rcx, qword ptr [r8 + 8]
+  0x00D2023C 498bc0                   mov      rax, r8
+  0x00D2023F 4883e1f8                 and      rcx, 0xfffffffffffffff8
+  0x00D20243 482bcf                   sub      rcx, rdi
+  0x00D20246 493bca                   cmp      rcx, r10
+  0x00D20249 490f43c1                 cmovae   rax, r9
+  0x00D2024D 490f43ca                 cmovae   rcx, r10
+  0x00D20251 4c8bc8                   mov      r9, rax
+  0x00D20254 4c8bd1                   mov      r10, rcx
+  0x00D20257 ebc8                     jmp      0x140d20221
+  0x00D20259 48895c2430               mov      qword ptr [rsp + 0x30], rbx
+  0x00D2025E 4c89742438               mov      qword ptr [rsp + 0x38], r14
+  0x00D20263 4d3b4b18                 cmp      r9, qword ptr [r11 + 0x18]
+  0x00D20267 0f82cb010000             jb       0x140d20438
+  0x00D2026D 4d8d3411                 lea      r14, [r9 + rdx]
+  0x00D20271 4d3bce                   cmp      r9, r14
+  0x00D20274 0f83be010000             jae      0x140d20438
+  0x00D2027A 498b4918                 mov      rcx, qword ptr [r9 + 0x18]
+  0x00D2027E 498b5930                 mov      rbx, qword ptr [r9 + 0x30]
+  0x00D20282 493bc9                   cmp      rcx, r9
+  0x00D20285 742c                     je       0x140d202b3
+  0x00D20287 498b4110                 mov      rax, qword ptr [r9 + 0x10]
+  0x00D2028B 493b4318                 cmp      rax, qword ptr [r11 + 0x18]
+  0x00D2028F 0f82a3010000             jb       0x140d20438
+  0x00D20295 4c394818                 cmp      qword ptr [rax + 0x18], r9
+  0x00D20299 0f8599010000             jne      0x140d20438
+  0x00D2029F 4c394910                 cmp      qword ptr [rcx + 0x10], r9
+  0x00D202A3 0f858f010000             jne      0x140d20438
+  0x00D202A9 48894818                 mov      qword ptr [rax + 0x18], rcx
+  0x00D202AD 48894110                 mov      qword ptr [rcx + 0x10], rax
+  0x00D202B1 eb50                     jmp      0x140d20303
+  0x00D202B3 498b4928                 mov      rcx, qword ptr [r9 + 0x28]
+  0x00D202B7 4d8d4128                 lea      r8, [r9 + 0x28]
+  0x00D202BB 4885c9                   test     rcx, rcx
+  0x00D202BE 7510                     jne      0x140d202d0
+  0x00D202C0 498b4920                 mov      rcx, qword ptr [r9 + 0x20]
+  0x00D202C4 4d8d4120                 lea      r8, [r9 + 0x20]
+  0x00D202C8 4885c9                   test     rcx, rcx
+  0x00D202CB 7436                     je       0x140d20303
+  0x00D202CD 0f1f00                   nop      dword ptr [rax]
+  0x00D202D0 488b5128                 mov      rdx, qword ptr [rcx + 0x28]
+  0x00D202D4 488d4128                 lea      rax, [rcx + 0x28]
+  0x00D202D8 4885d2                   test     rdx, rdx
+  0x00D202DB 750d                     jne      0x140d202ea
+  0x00D202DD 488b5120                 mov      rdx, qword ptr [rcx + 0x20]
+  0x00D202E1 488d4120                 lea      rax, [rcx + 0x20]
+  0x00D202E5 4885d2                   test     rdx, rdx
+  0x00D202E8 7408                     je       0x140d202f2
+  0x00D202EA 4c8bc0                   mov      r8, rax
+  0x00D202ED 488bca                   mov      rcx, rdx
+  0x00D202F0 ebde                     jmp      0x140d202d0
+  0x00D202F2 4d3b4318                 cmp      r8, qword ptr [r11 + 0x18]
+  0x00D202F6 0f823c010000             jb       0x140d20438
+  0x00D202FC 49c70000000000           mov      qword ptr [r8], 0
+  0x00D20303 4885db                   test     rbx, rbx
+  0x00D20306 0f848f000000             je       0x140d2039b
+  0x00D2030C 418b4138                 mov      eax, dword ptr [r9 + 0x38]
+  0x00D20310 4d3b8cc358020000         cmp      r9, qword ptr [r11 + rax*8 + 0x258]
+  0x00D20318 751e                     jne      0x140d20338
+  0x00D2031A 49898cc358020000         mov      qword ptr [r11 + rax*8 + 0x258], rcx
+  0x00D20322 4885c9                   test     rcx, rcx
+  0x00D20325 7530                     jne      0x140d20357
+  0x00D20327 418b4b04                 mov      ecx, dword ptr [r11 + 4]
+  0x00D2032B 418b4138                 mov      eax, dword ptr [r9 + 0x38]
+  0x00D2032F 0fb3c1                   btr      ecx, eax
+  0x00D20332 41894b04                 mov      dword ptr [r11 + 4], ecx
+  0x00D20336 eb63                     jmp      0x140d2039b
+  0x00D20338 493b5b18                 cmp      rbx, qword ptr [r11 + 0x18]
+  0x00D2033C 0f82f6000000             jb       0x140d20438
+  0x00D20342 4c394b20                 cmp      qword ptr [rbx + 0x20], r9
+  0x00D20346 7506                     jne      0x140d2034e
+  0x00D20348 48894b20                 mov      qword ptr [rbx + 0x20], rcx
+  0x00D2034C eb04                     jmp      0x140d20352
+  0x00D2034E 48894b28                 mov      qword ptr [rbx + 0x28], rcx
+  0x00D20352 4885c9                   test     rcx, rcx
+  0x00D20355 7444                     je       0x140d2039b
+  0x00D20357 493b4b18                 cmp      rcx, qword ptr [r11 + 0x18]
+  0x00D2035B 0f82d7000000             jb       0x140d20438
+  0x00D20361 48895930                 mov      qword ptr [rcx + 0x30], rbx
+  0x00D20365 498b4120                 mov      rax, qword ptr [r9 + 0x20]
+  0x00D20369 4885c0                   test     rax, rax
+  0x00D2036C 7412                     je       0x140d20380
+  0x00D2036E 493b4318                 cmp      rax, qword ptr [r11 + 0x18]
+  0x00D20372 0f82c0000000             jb       0x140d20438
+  0x00D20378 48894120                 mov      qword ptr [rcx + 0x20], rax
+  0x00D2037C 48894830                 mov      qword ptr [rax + 0x30], rcx
+  0x00D20380 498b4128                 mov      rax, qword ptr [r9 + 0x28]
+  0x00D20384 4885c0                   test     rax, rax
+  0x00D20387 7412                     je       0x140d2039b
+  0x00D20389 493b4318                 cmp      rax, qword ptr [r11 + 0x18]
+  0x00D2038D 0f82a5000000             jb       0x140d20438
+  0x00D20393 48894128                 mov      qword ptr [rcx + 0x28], rax
+  0x00D20397 48894830                 mov      qword ptr [rax + 0x30], rcx
+  0x00D2039B 4983fa20                 cmp      r10, 0x20
+  0x00D2039F 7318                     jae      0x140d203b9
+  0x00D203A1 498d043a                 lea      rax, [r10 + rdi]
+  0x00D203A5 4883c803                 or       rax, 3
+  0x00D203A9 49894108                 mov      qword ptr [r9 + 8], rax
+  0x00D203AD 4b8d040a                 lea      rax, [r10 + r9]
+  0x00D203B1 48834c380801             or       qword ptr [rax + rdi + 8], 1
+  0x00D203B7 eb6b                     jmp      0x140d20424
+  0x00D203B9 4883cf03                 or       rdi, 3
+  0x00D203BD 498bc2                   mov      rax, r10
+  0x00D203C0 49897908                 mov      qword ptr [r9 + 8], rdi
+  0x00D203C4 4883c801                 or       rax, 1
+  0x00D203C8 49894608                 mov      qword ptr [r14 + 8], rax
+  0x00D203CC 4f891416                 mov      qword ptr [r14 + r10], r10
+  0x00D203D0 4d8b4308                 mov      r8, qword ptr [r11 + 8]
+  0x00D203D4 4d85c0                   test     r8, r8
+  0x00D203D7 7443                     je       0x140d2041c
+  0x00D203D9 418b1b                   mov      ebx, dword ptr [r11]
+  0x00D203DC 498b5320                 mov      rdx, qword ptr [r11 + 0x20]
+  0x00D203E0 49c1e803                 shr      r8, 3
+  0x00D203E4 440fa3c3                 bt       ebx, r8d
+  0x00D203E8 438d0c00                 lea      ecx, [r8 + r8]
+  0x00D203EC 488d4909                 lea      rcx, [rcx + 9]
+  0x00D203F0 498d0ccb                 lea      rcx, [r11 + rcx*8]
+  0x00D203F4 488bc1                   mov      rax, rcx
+  0x00D203F7 7209                     jb       0x140d20402
+  0x00D203F9 440fabc3                 bts      ebx, r8d
+  0x00D203FD 41891b                   mov      dword ptr [r11], ebx
+  0x00D20400 eb0a                     jmp      0x140d2040c
+  0x00D20402 488b4110                 mov      rax, qword ptr [rcx + 0x10]
+  0x00D20406 493b4318                 cmp      rax, qword ptr [r11 + 0x18]
+  0x00D2040A 722c                     jb       0x140d20438
+  0x00D2040C 48895110                 mov      qword ptr [rcx + 0x10], rdx
+  0x00D20410 48895018                 mov      qword ptr [rax + 0x18], rdx
+  0x00D20414 48894210                 mov      qword ptr [rdx + 0x10], rax
+  0x00D20418 48894a18                 mov      qword ptr [rdx + 0x18], rcx
+  0x00D2041C 4d895308                 mov      qword ptr [r11 + 8], r10
+  0x00D20420 4d897320                 mov      qword ptr [r11 + 0x20], r14
+  0x00D20424 4c8b742438               mov      r14, qword ptr [rsp + 0x38]
+  0x00D20429 498d4110                 lea      rax, [r9 + 0x10]
+  0x00D2042D 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+  0x00D20432 4883c420                 add      rsp, 0x20
+  0x00D20436 5f                       pop      rdi
+  0x00D20437 c3                       ret      
+  0x00D20438 ff150a890200             call     qword ptr [rip + 0x2890a]
+  0x00D2043E cc                       int3     
+
+CALLEE 0xD20450..0xD204C5 synthetic=False
+  FIELD 0xD204A4 lea base=rax index=rdx scale=2 +0x0 size=4 esi, [rax + rdx*2]
+  0x00D20450 48895c2418               mov      qword ptr [rsp + 0x18], rbx
+  0x00D20455 56                       push     rsi
+  0x00D20456 57                       push     rdi
+  0x00D20457 4154                     push     r12
+  0x00D20459 4155                     push     r13
+  0x00D2045B 4157                     push     r15
+  0x00D2045D 4883ec20                 sub      rsp, 0x20
+  0x00D20461 4533ed                   xor      r13d, r13d
+  0x00D20464 4c8bc2                   mov      r8, rdx
+  0x00D20467 488bc2                   mov      rax, rdx
+  0x00D2046A 49f7d8                   neg      r8
+  0x00D2046D 48c1e808                 shr      rax, 8
+  0x00D20471 488bfa                   mov      rdi, rdx
+  0x00D20474 488bd9                   mov      rbx, rcx
+  0x00D20477 458bcd                   mov      r9d, r13d
+  0x00D2047A 458d7d1f                 lea      r15d, [r13 + 0x1f]
+  0x00D2047E 4885c0                   test     rax, rax
+  0x00D20481 7505                     jne      0x140d20488
+  0x00D20483 418bf5                   mov      esi, r13d
+  0x00D20486 eb1f                     jmp      0x140d204a7
+  0x00D20488 483dffff0000             cmp      rax, 0xffff
+  0x00D2048E 7605                     jbe      0x140d20495
+  0x00D20490 418bf7                   mov      esi, r15d
+  0x00D20493 eb12                     jmp      0x140d204a7
+  0x00D20495 0fbdd0                   bsr      edx, eax
+  0x00D20498 488bc7                   mov      rax, rdi
+  0x00D2049B 8d4a07                   lea      ecx, [rdx + 7]
+  0x00D2049E 48d3e8                   shr      rax, cl
+  0x00D204A1 83e001                   and      eax, 1
+  0x00D204A4 8d3450                   lea      esi, [rax + rdx*2]
+  0x00D204A7 8bc6                     mov      eax, esi
+  0x00D204A9 41bc3f000000             mov      r12d, 0x3f
+  0x00D204AF 48896c2450               mov      qword ptr [rsp + 0x50], rbp
+  0x00D204B4 488b94c358020000         mov      rdx, qword ptr [rbx + rax*8 + 0x258]
+  0x00D204BC 4885d2                   test     rdx, rdx
+  0x00D204BF 0f849b000000             je       0x140d20560
+
+CALLEE 0xD20EF0..0xD20F74 synthetic=False
+  FIELD 0xD20F15 mov base=rbx index=None scale=1 +0x28 size=8 r8, qword ptr [rbx + 0x28]
+  FIELD 0xD20F1E mov base=rbx index=None scale=1 +0x10 size=8 r9, qword ptr [rbx + 0x10]
+  FIELD 0xD20F22 lea base=rdi index=None scale=1 +0x50 size=8 rax, [rdi + 0x50]
+  FIELD 0xD20F32 mov base=rdx index=None scale=1 +0x0 size=8 rcx, qword ptr [rdx]
+  FIELD 0xD20F3A add base=rdx index=None scale=1 +0x8 size=8 rcx, qword ptr [rdx + 8]
+  FIELD 0xD20F43 mov base=rdx index=None scale=1 +0x10 size=8 rdx, qword ptr [rdx + 0x10]
+  FIELD 0xD20F4E cmp base=rbx index=None scale=1 +0x30 size=8 r9, qword ptr [rbx + 0x30]
+  FIELD 0xD20F54 mov base=rbx index=None scale=1 +0x30 size=8 qword ptr [rbx + 0x30], 0xffffffffffffffff
+  CALL 0xD20F0A -> 0xD219C0 fn=0xD219C0
+  0x00D20EF0 48895c2408               mov      qword ptr [rsp + 8], rbx
+  0x00D20EF5 57                       push     rdi
+  0x00D20EF6 4883ec20                 sub      rsp, 0x20
+  0x00D20EFA 48833d46b3340400         cmp      qword ptr [rip + 0x434b346], 0
+  0x00D20F02 488bfa                   mov      rdi, rdx
+  0x00D20F05 488bd9                   mov      rbx, rcx
+  0x00D20F08 7505                     jne      0x140d20f0f
+  0x00D20F0A e8b10a0000               call     0x140d219c0
+  0x00D20F0F 4883ff80                 cmp      rdi, -0x80
+  0x00D20F13 7352                     jae      0x140d20f67
+  0x00D20F15 4c8b4328                 mov      r8, qword ptr [rbx + 0x28]
+  0x00D20F19 4d85c0                   test     r8, r8
+  0x00D20F1C 7449                     je       0x140d20f67
+  0x00D20F1E 4c8b4b10                 mov      r9, qword ptr [rbx + 0x10]
+  0x00D20F22 488d4750                 lea      rax, [rdi + 0x50]
+  0x00D20F26 4c3bc8                   cmp      r9, rax
+  0x00D20F29 7621                     jbe      0x140d20f4c
+  0x00D20F2B 488d9378030000           lea      rdx, [rbx + 0x378]
+  0x00D20F32 488b0a                   mov      rcx, qword ptr [rdx]
+  0x00D20F35 4c3bc1                   cmp      r8, rcx
+  0x00D20F38 7209                     jb       0x140d20f43
+  0x00D20F3A 48034a08                 add      rcx, qword ptr [rdx + 8]
+  0x00D20F3E 4c3bc1                   cmp      r8, rcx
+  0x00D20F41 7209                     jb       0x140d20f4c
+  0x00D20F43 488b5210                 mov      rdx, qword ptr [rdx + 0x10]
+  0x00D20F47 4885d2                   test     rdx, rdx
+  0x00D20F4A 75e6                     jne      0x140d20f32
+  0x00D20F4C 33c0                     xor      eax, eax
+  0x00D20F4E 4c3b4b30                 cmp      r9, qword ptr [rbx + 0x30]
+  0x00D20F52 7615                     jbe      0x140d20f69
+  0x00D20F54 48c74330ffffffff         mov      qword ptr [rbx + 0x30], 0xffffffffffffffff
+  0x00D20F5C 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+  0x00D20F61 4883c420                 add      rsp, 0x20
+  0x00D20F65 5f                       pop      rdi
+  0x00D20F66 c3                       ret      
+  0x00D20F67 33c0                     xor      eax, eax
+  0x00D20F69 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+  0x00D20F6E 4883c420                 add      rsp, 0x20
+  0x00D20F72 5f                       pop      rdi
+  0x00D20F73 c3                       ret      
+
+SAFETY static_exe_read_only=true game_launched=false process_accessed=false save_opened=false save_written=false progression_written=false game_files_written=false
