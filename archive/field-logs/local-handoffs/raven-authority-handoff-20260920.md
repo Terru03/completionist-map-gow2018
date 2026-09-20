@@ -1819,3 +1819,55 @@ The tracer enumerates all RIP-referenced globals in the narrow staging band `0x2
 ## Exact next target
 
 Identify the neighbouring pointer/size globals or per-record descriptor used by the parallel SoftPickle/checkpoint stream. Then capture only that stream for `Xpl200_Funeral` and test for the exact Raven payload `01b0...a9652dba0717be98` plus its `ravenKilled` state. Do not return to broad memory scanning or save-ring authority inference.
+
+
+---
+
+# Addendum 2026-09-21 - second staged WAD payload descriptor proven
+
+Static evidence commit: `32fb41774e3c085a2e9be316c142494662bc2323`  
+Evidence: `archive/field-logs/source-scans/staged-wad-parallel-channels-20260920-212109/`
+
+The narrow staging-band trace resolves the previously missing parallel payload layout inside each `0xA8` WAD record.
+
+Two independent variable payload descriptors exist:
+
+- **channel A / SoftPickle candidate**: pointer fields `+0x30/+0x38`, byte size `+0x40`
+- **channel B / ordinary WAD checkpoint payload**: pointer fields `+0x48/+0x50`, byte size `+0x58`
+
+Both are backed by the same global payload pool at module `+0x22C6940` with running size at `+0x22C6938`.
+
+Native proof is in `0x82CF00`:
+
+- it reads the full `0xA8` staged record;
+- takes `dword [record+0x40]` as a variable payload length;
+- computes `pool_base + current_size`;
+- stores that pointer into `record+0x30` and `record+0x38`;
+- reads exactly that payload length into the shared pool and advances the pool size.
+
+The earlier observer only inspected `+0x48/+0x50/+0x58`, explaining why it saw ordinary checkpoint state and the two companion Funeral GameObjects but not the Raven record.
+
+Additional relevant structure:
+
+- `record+0x20` contains flags/state bits used by `0x82D760` and related code;
+- `record+0x24` is the stable per-WAD key/ID;
+- `record+0x84` is the WAD record name/string storage;
+- `0x82D660` restores/frees channel-B payload using `record+0x48/+0x58`;
+- `0x82D760` separately restores/frees channel-A payload via `record+0x30/+0x40`.
+
+New bounded runtime tooling:
+
+- `tools/v0.10.5/capture-staged-wad-dual-payload-raven-state-readonly.py` in commit `13496895ab7542078f41822195787b583efa6277`
+- `tools/v0.10.5/capture-staged-wad-dual-payload-raven-state-readonly-and-push.ps1` in commit `cfadb742607d2bbf4f4553d7a63b2a3a3ecaae6c`
+
+It reads both proven descriptors only, validates all pointers against the shared pool extent, exact-matches all 53 serialized Raven GameObject identities, and reuses the solved Raven custom-userdata decoder.
+
+## Exact next acceptance test
+
+Run the dual-channel observer on the almost-complete save. The decisive result is whether channel A contains:
+
+```text
+01b0b227342530c24ea9652dba0717be98
+```
+
+for the VikingFuneral Raven and ideally decodes its `ravenKilled` field. If channel A yields the Raven entries, this becomes the authoritative global map-open reconstruction source. If the identity appears but graph decode fails, inspect only that carrier framing/state table next; do not broaden the search.
