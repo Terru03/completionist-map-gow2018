@@ -1,0 +1,647 @@
+Completionist Map - UI current save slot native trace
+
+SetCurrentSlot: strings=1 refs=1
+  site=0x1FECB8 fn=0x1FC910 lea
+GetCurrentSlot: strings=1 refs=1
+  site=0x1FEC67 fn=0x1FC910 lea
+CurrentSlot: strings=0 refs=0
+LoadSaveGame: strings=1 refs=1
+  site=0x1FEB23 fn=0x1FC910 lea
+LoadedIntoSaveSlot: strings=1 refs=1
+  site=0x533EC8 fn=0x533E30 lea
+IsSlotValid: strings=1 refs=1
+  site=0x1FEEF8 fn=0x1FC910 lea
+GetFreeManualSlot: strings=1 refs=1
+  site=0x1FED63 fn=0x1FC910 lea
+MakeManualSaveGame: strings=1 refs=1
+  site=0x1FEDB4 fn=0x1FC910 lea
+
+FUNCTION DETAILS
+0x1FC910
+  range=0x1FC910-0x20146C size=19292
+  callers=2 callees=67 rip_refs=500 mem_refs=435
+  STR 0x1FC989 'SetUserAimingStrafeAssistStrength'
+  STR 0x1FC99E 'GetUserCombatStrafeAssistStrength'
+  STR 0x1FC9D0 'SetUserCombatStrafeAssistStrength'
+  STR 0x1FC9FB 'GetUserAimAssist'
+  STR 0x1FCA26 'SetUserAimAssist'
+  STR 0x1FCA51 'GetUserLockOn'
+  STR 0x1FCA7C 'SetUserLockOn'
+  STR 0x1FCAA7 'GetUserPauseOnFocusLoss'
+  STR 0x1FCAD2 'SetUserPauseOnFocusLoss'
+  STR 0x1FCAFD 'GetSoundInBackground'
+  STR 0x1FCB28 'SetSoundInBackground'
+  STR 0x1FCB53 'GetAllowDataCollection'
+  STR 0x1FCB7E 'SetAllowDataCollection'
+  STR 0x1FCBA9 'GetUserStrafeAssist'
+  STR 0x1FCBD4 'SetUserStrafeAssist'
+  STR 0x1FCBFF 'GetUserRumbleStrength'
+  STR 0x1FCC2A 'SetUserRumbleStrength'
+  STR 0x1FCC55 'GetUserRumbleStrengthMin'
+  STR 0x1FCC80 'GetUserRumbleStrengthMax'
+  STR 0x1FCCAB 'GetUserRumbleStrengthDelta'
+  STR 0x1FCCD6 'GetUserHUDDisplaySetting'
+  STR 0x1FCD01 'SetUserHUDDisplaySetting'
+  STR 0x1FCD2C 'GetUserCompassSetting'
+  STR 0x1FCD57 'SetUserCompassSetting'
+  STR 0x1FCD82 'GetUserEnemyHealthBarSetting'
+  STR 0x1FCDAD 'SetUserEnemyHealthBarSetting'
+  STR 0x1FCDD8 'GetUserOffscreenIndicatorSetting'
+  STR 0x1FCE03 'SetUserOffscreenIndicatorSetting'
+  STR 0x1FCE2E 'GetUserCombatHUDSetting'
+  STR 0x1FCE59 'SetUserCombatHUDSetting'
+  STR 0x1FCE84 'GetUserGameplayNotificationsSetting'
+  STR 0x1FCEAF 'SetUserGameplayNotificationsSetting'
+  STR 0x1FCEDA 'GetUserBossHealthBarSetting'
+  STR 0x1FCF05 'SetUserBossHealthBarSetting'
+  STR 0x1FCF30 'GetPhotoModeFromTouchpad'
+  STR 0x1FCF62 'SetPhotoModeFromTouchpad'
+  STR 0x1FCF86 'GetWideHUD'
+  STR 0x1FCFB1 'SetWideHUD'
+  STR 0x1FCFDC 'GetSubtitleBGAlpha'
+  STR 0x1FD007 'SetSubtitleBGAlpha'
+  STR 0x1FD032 'GetSubtitleSpeakerPolicy'
+  STR 0x1FD05D 'SetSubtitleSpeakerPolicy'
+  STR 0x1FD088 'GetUserSuppressDesignerMessages'
+  STR 0x1FD0B3 'SetUserSuppressDesignerMessages'
+  STR 0x1FD0DE 'SoftSavePlayerState'
+  STR 0x1FD109 'SendMapCursorArrivedAtTargetEvent_CHECKFEATURE'
+  STR 0x1FD134 'SetInVendor'
+  STR 0x1FD158 'SetLutIndex'
+  STR 0x1FD183 'SetLutWeight'
+  STR 0x1FD1AE 'GetAccessibilityScaling'
+  STR 0x1FD1D9 'SetAccessibilityScaling'
+  STR 0x1FD204 'GetSubtitleScale'
+  STR 0x1FD22F 'SetSubtitleScale'
+  STR 0x1FD25A 'GetMaxSubtitleScale'
+  STR 0x1FD285 'SetMaxSubtitleScale'
+  STR 0x1FD2B0 'ResetIntoNewGamePlus'
+  STR 0x1FD2DB 'UpdateNewGamePlusAvailable'
+  STR 0x1FD306 'GetNewGamePlusAvailable'
+  STR 0x1FD331 'SetCineSkipEnabled'
+  STR 0x1FD35C 'GetCineSkipEnabled'
+  STR 0x1FD387 'SetIsClickable'
+  STR 0x1FD3B2 'ClearIsClickable'
+  STR 0x1FD453 'FindGO'
+  STR 0x1FD4A4 'SetUpHandled'
+  STR 0x1FD4F5 'ClearUpHandled'
+  STR 0x1FD546 'IsUpHandled'
+  STR 0x1FD597 'SetUpHandlerShowing'
+  STR 0x1FD5E8 'ClearUpHandlerShowing'
+  STR 0x1FD639 'IsUpHandlerShowing'
+  STR 0x1FD693 'HandleMPIconEvent'
+  STR 0x1FD6E4 'PlayMPIconAnim'
+  STR 0x1FD735 'SetMPIconText'
+  STR 0x1FD786 'SetMPIconMaterialSwap'
+  STR 0x1FD7D7 'CineSkipLoadScreenOn'
+  STR 0x1FD828 'CineSkipLoadScreenOff'
+  STR 0x1FD879 'AlphaFade'
+  STR 0x1FD8D3 'Anim'
+  STR 0x1FD924 'AnimNoShow'
+  STR 0x1FD975 'AnimSync'
+  STR 0x1FD9C6 'AnimTime'
+  STR 0x1FDA17 'DebugPrint'
+  STR 0x1FDA68 'DebugPrintEnabled'
+  STR 0x1FDAB9 'Desaturation'
+  STR 0x1FDB13 'EnumerateScripterDefinedEventName'
+  STR 0x1FDB63 'MasterFadeOut'
+  STR 0x1FDBB4 'MasterFadeIn'
+  STR 0x1FDC05 'FadeOut'
+  STR 0x1FDC56 'FadeIn'
+  STR 0x1FDCA7 'ForceHighMips'
+  STR 0x1FDCF8 'GameOver'
+  STR 0x1FDD49 'GamePause'
+  STR 0x1FDDA3 'GameUnpause'
+  CALLER fn=0x1FC910 site=0x1FD406
+  CALLER fn=0x1FC910 site=0x201467
+  CALLEE site=0x1FC922 target=0x545270
+  CALLEE site=0x1FC955 target=0x5450D0
+  CALLEE site=0x1FC9BD target=0x1560A0
+  CALLEE site=0x1FC9E8 target=0x1560A0
+  CALLEE site=0x1FCA13 target=0x1560A0
+  CALLEE site=0x1FCA3E target=0x1560A0
+  CALLEE site=0x1FCA69 target=0x1560A0
+  CALLEE site=0x1FCA94 target=0x1560A0
+  CALLEE site=0x1FCABF target=0x1560A0
+  CALLEE site=0x1FCAEA target=0x1560A0
+  CALLEE site=0x1FCB15 target=0x1560A0
+  CALLEE site=0x1FCB40 target=0x1560A0
+  CALLEE site=0x1FCB6B target=0x1560A0
+  CALLEE site=0x1FCB96 target=0x1560A0
+  CALLEE site=0x1FCBC1 target=0x1560A0
+  CALLEE site=0x1FCBEC target=0x1560A0
+  CALLEE site=0x1FCC17 target=0x1560A0
+  CALLEE site=0x1FCC42 target=0x1560A0
+  CALLEE site=0x1FCC6D target=0x1560A0
+  CALLEE site=0x1FCC98 target=0x1560A0
+  CALLEE site=0x1FCCC3 target=0x1560A0
+  CALLEE site=0x1FCCEE target=0x1560A0
+  CALLEE site=0x1FCD19 target=0x1560A0
+  CALLEE site=0x1FCD44 target=0x1560A0
+  CALLEE site=0x1FCD6F target=0x1560A0
+  CALLEE site=0x1FCD9A target=0x1560A0
+  CALLEE site=0x1FCDC5 target=0x1560A0
+  CALLEE site=0x1FCDF0 target=0x1560A0
+  CALLEE site=0x1FCE1B target=0x1560A0
+  CALLEE site=0x1FCE46 target=0x1560A0
+  CALLEE site=0x1FCE71 target=0x1560A0
+  CALLEE site=0x1FCE9C target=0x1560A0
+  CALLEE site=0x1FCEC7 target=0x1560A0
+  CALLEE site=0x1FCEF2 target=0x1560A0
+  CALLEE site=0x1FCF1D target=0x1560A0
+  CALLEE site=0x1FCF48 target=0x1560A0
+  CALLEE site=0x1FCF73 target=0x1560A0
+  CALLEE site=0x1FCF9E target=0x1560A0
+  CALLEE site=0x1FCFC9 target=0x1560A0
+  CALLEE site=0x1FCFF4 target=0x1560A0
+  CALLEE site=0x1FD01F target=0x1560A0
+  CALLEE site=0x1FD04A target=0x1560A0
+  CALLEE site=0x1FD075 target=0x1560A0
+  CALLEE site=0x1FD0A0 target=0x1560A0
+  CALLEE site=0x1FD0CB target=0x1560A0
+  CALLEE site=0x1FD0F6 target=0x1560A0
+  CALLEE site=0x1FD121 target=0x1560A0
+  CALLEE site=0x1FD145 target=0x1560A0
+  CALLEE site=0x1FD170 target=0x1560A0
+  CALLEE site=0x1FD19B target=0x1560A0
+  CALLEE site=0x1FD1C6 target=0x1560A0
+  CALLEE site=0x1FD1F1 target=0x1560A0
+  CALLEE site=0x1FD21C target=0x1560A0
+  CALLEE site=0x1FD247 target=0x1560A0
+  CALLEE site=0x1FD272 target=0x1560A0
+  CALLEE site=0x1FD29D target=0x1560A0
+  CALLEE site=0x1FD2C8 target=0x1560A0
+  CALLEE site=0x1FD2F3 target=0x1560A0
+  CALLEE site=0x1FD31E target=0x1560A0
+  CALLEE site=0x1FD349 target=0x1560A0
+  MEM 0x1FC935 mov base=rcx idx=None scale=1 disp=0 access=1
+  MEM 0x1FC938 mov base=rdx idx=rax scale=1 disp=0 access=1
+  MEM 0x1FC969 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FC981 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD433 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD44B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD484 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD49C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD4D5 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD4ED movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD526 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD53E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD577 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD58F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD5C8 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD5E0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD619 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD631 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD667 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FD673 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD68B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD6C4 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD6DC movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD715 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD72D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD766 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD77E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD7B7 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD7CF movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD808 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD820 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD859 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD871 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD8A7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FD8B3 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD8CB movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD904 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD91C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD955 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD96D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD9A6 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FD9BE movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FD9F7 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDA0F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDA48 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDA60 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDA99 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDAB1 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDAE7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FDAF3 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDB0B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDB43 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDB5B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDB94 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDBAC movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDBE5 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDBFD movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDC36 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDC4E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDC87 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDC9F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDCD8 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDCF0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDD29 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDD41 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDD77 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FDD83 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDD9B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDDD4 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDDEC movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDE25 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDE3D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDE76 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDE8E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDEC7 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDEDF movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDF18 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDF30 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDF69 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDF81 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FDFB7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FDFC3 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FDFDB movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE014 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE02C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE065 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE07D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE0B6 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE0CE movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE107 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE11F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE158 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE170 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE1A9 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE1C1 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE1F7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FE203 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE21B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE254 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE26C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE2A5 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE2BD movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE2F6 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE30E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE347 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE35F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE398 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE3B0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE3E9 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE401 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE437 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FE443 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE45B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE494 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE4AC movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE4E5 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE4FD movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE536 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE54E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE587 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE59F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE5D8 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE5F0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE629 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE641 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE677 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FE683 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE69B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE6D4 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE6EC movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE725 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE73D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE776 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE78E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE7C7 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE7DF movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE818 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE830 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE869 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE881 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE8B7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FE8C3 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE8DB movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE914 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE92C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE965 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE97D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FE9B6 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FE9CE movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEA07 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEA1F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEA58 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEA70 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEAA9 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEAC1 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEAF7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FEB03 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEB1B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEB54 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEB6C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEBA5 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEBBD movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEBF6 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEC0E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEC47 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEC5F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEC98 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FECB0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FECE9 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FED01 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FED37 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FED43 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FED5B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FED94 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEDAC movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEDE5 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEDFD movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEE36 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEE4E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEE87 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEE9F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEED8 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEEF0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEF29 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEF41 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEF77 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FEF83 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEF9B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FEFD4 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FEFEC movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF025 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF03D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF076 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF08E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF0C7 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF0DF movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF118 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF130 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF169 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF181 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF1B7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FF1C3 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF1DB movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF214 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF22C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF265 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF27D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF2B6 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF2CE movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF307 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF31F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF358 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF370 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF3A9 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF3C1 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF3F7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FF403 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF41B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF454 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF46C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF4A5 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF4BD movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF4F6 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF50E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF547 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF55F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF598 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF5B0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF5E9 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF601 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF637 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FF643 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF65B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF694 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF6AC movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF6E5 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF6FD movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF736 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF74E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF787 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF79F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF7D8 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF7F0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF829 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF841 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF877 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FF883 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF89B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF8D4 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF8EC movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF925 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF93D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF976 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF98E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FF9C7 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FF9DF movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFA18 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFA30 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFA69 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFA81 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFAB7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FFAC3 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFADB movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFB14 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFB2C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFB65 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFB7D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFBB6 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFBCE movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFC07 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFC1F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFC58 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFC70 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFCA9 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFCC1 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFCF7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FFD03 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFD1B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFD54 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFD6C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFDA5 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFDBD movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFDF6 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFE0E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFE47 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFE5F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFE98 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFEB0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFEE9 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFF01 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFF37 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x1FFF43 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFF5B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFF94 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFFAC movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x1FFFE5 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x1FFFFD movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200036 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20004E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200087 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20009F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2000D8 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2000F0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200129 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200141 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200177 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x200183 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20019B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2001D4 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2001EC movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200225 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20023D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200276 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20028E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2002C7 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2002DF movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200318 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200330 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200369 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200381 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2003B7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x2003C3 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2003DB movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200414 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20042C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200465 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20047D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2004B6 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2004CE movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200507 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20051F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200558 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200570 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2005A9 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2005C1 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2005F7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x200603 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20061B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200654 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20066C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2006A5 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2006BD movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2006F6 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20070E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200747 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20075F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200798 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2007B0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2007E9 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200801 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200837 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x200843 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20085B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x20088A nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x200893 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2008AB movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2008DA nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x2008E3 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2008FB movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x20092A nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x200933 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20094B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200984 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20099C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2009D5 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2009ED movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200A26 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200A3E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200A77 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200A8F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200AC8 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200AE0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200B19 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200B31 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200B67 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x200B73 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200B8B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200BC4 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200BDC movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200C15 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200C2D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200C66 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200C7E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200CB7 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200CCF movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200D08 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200D20 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200D59 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200D71 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200DA7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x200DB3 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200DCB movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200E04 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200E1C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200E55 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200E6D movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200EA6 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200EBE movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200EF7 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200F0F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200F48 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200F60 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200F99 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x200FB1 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x200FE7 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x200FF3 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20100B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x201044 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20105C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x201095 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2010AD movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2010E6 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2010FE movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x201137 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20114F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x201188 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2011A0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2011D9 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2011F1 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x201227 nop base=rax idx=rax scale=1 disp=0 access=1
+  MEM 0x201233 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20124B movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x201284 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20129C movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2012D5 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2012ED movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x201326 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20133E movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x201377 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x20138F movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x2013C8 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x2013E0 movzx base=rdx idx=None scale=1 disp=-1 access=1
+  MEM 0x201419 lea base=rdx idx=None scale=1 disp=1 access=1
+  MEM 0x201431 movzx base=rdx idx=None scale=1 disp=-1 access=1
+0x533E30
+  range=0x533E30-0x5340BC size=652
+  callers=1 callees=11 rip_refs=34 mem_refs=34
+  STR 0x533E77 'RestartFromCheckpoint'
+  STR 0x533EC8 'LoadedIntoSaveSlot'
+  STR 0x533F7C 'son_pos_x'
+  STR 0x533FE5 'son_pos_y'
+  STR 0x53404B 'son_pos_z'
+  CALLER fn=0x7698BF site=0x76993E
+  CALLEE site=0x533E67 target=0x5372A0
+  CALLEE site=0x533E83 target=0x42AB70
+  CALLEE site=0x533EDC target=0x9D1A00
+  CALLEE site=0x533F13 target=0xF38B0
+  CALLEE site=0x533F29 target=0xF6830
+  CALLEE site=0x533F90 target=0x9D1EA0
+  CALLEE site=0x533FF9 target=0x9D1EA0
+  CALLEE site=0x53405F target=0x9D1EA0
+  CALLEE site=0x534069 target=0x42A8C0
+  CALLEE site=0x534096 target=0x9D2270
+  CALLEE site=0x5340A6 target=0x3EB970
+  MEM 0x533EF1 mov base=rcx idx=None scale=1 disp=544 access=1
+  MEM 0x533EFD cmp base=rax idx=None scale=1 disp=20 access=1
+  MEM 0x533F03 mov base=rcx idx=None scale=1 disp=320 access=1
+  MEM 0x53407D mov base=rax idx=None scale=1 disp=0 access=1
+  MEM 0x534080 mov base=rcx idx=rax scale=1 disp=0 access=2
+0x7698BF
+  range=0x7698BF-0x769976 size=183
+  callers=1 callees=7 rip_refs=0 mem_refs=10
+  CALLER fn=0x7698BF site=0x769932
+  CALLEE site=0x7698DB target=0x9E7FA0
+  CALLEE site=0x769900 target=0x9E7FA0
+  CALLEE site=0x769910 target=0x9E7FA0
+  CALLEE site=0x769920 target=0x9E7FA0
+  CALLEE site=0x769932 target=0x7698BF
+  CALLEE site=0x76993E target=0x533E30
+  CALLEE site=0x769953 target=0x769990
+  MEM 0x7698FA lea base=rdi idx=None scale=1 disp=4 access=1
