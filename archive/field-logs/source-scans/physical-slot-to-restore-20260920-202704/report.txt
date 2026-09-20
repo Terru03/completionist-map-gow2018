@@ -1,0 +1,119 @@
+Completionist Map - physical slot -> restore authority trace
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+mode=static read-only
+start=0x66CB30
+
+SHORTEST STATIC CALL PATHS
+restore_caller_a: NO_DIRECT_INDEXED_PATH target=0x5AEC9E
+restore_caller_b: NO_DIRECT_INDEXED_PATH target=0x5B2280
+restore_root: NO_DIRECT_INDEXED_PATH target=0x7E9550
+carrier_descriptor: NO_DIRECT_INDEXED_PATH target=0x7E7660
+record_dispatch: NO_DIRECT_INDEXED_PATH target=0x7E7B60
+userdata_serializer: NO_DIRECT_INDEXED_PATH target=0x7E9190
+
+FUNCTION 0x3EB970 range=0x3EB970-0x3EB991 size=33
+  RIP 0x3EB970 -> 0x105A208 .data
+  CALLEE 0x3EB98C -> 0x3EC6C8
+  DISASM
+    0x3EB970: cmp rcx, qword ptr [rip + 0xc6e891] ; rip=0x105A208 sec=.data
+    0x3EB977: bnd jne 0x1403eb98c
+    0x3EB97A: rol rcx, 0x10
+    0x3EB97E: test cx, 0xffff
+    0x3EB983: bnd jne 0x1403eb988
+    0x3EB986: bnd ret 
+    0x3EB988: ror rcx, 0x10
+    0x3EB98C: jmp 0x1403ec6c8 ; target=0x3EC6C8
+
+FUNCTION 0x662A90 range=0x662A90-0x662B53 size=195
+  RIP 0x662A97 -> 0x105A208 .data
+  RIP 0x662AB2 -> 0x280DE50 .data
+  RIP 0x662AB9 -> 0x280DDD0 .data
+  RIP 0x662AC5 -> 0x280DDE0 .data
+  RIP 0x662AD1 -> 0x280DDF0 .data
+  RIP 0x662ADD -> 0x280DE00 .data
+  RIP 0x662AE9 -> 0x280DE10 .data
+  RIP 0x662AF5 -> 0x280DE20 .data
+  RIP 0x662B01 -> 0x280DE30 .data
+  RIP 0x662B08 -> 0x280DE40 .data
+  RIP 0x662B0F -> 0x1078EBC .data
+  RIP 0x662B19 -> 0x1078F48 .data
+  RIP 0x662B23 -> 0x22C6134 .data
+  RIP 0x662B2D -> 0x22C6932 .data
+  RIP 0x662B34 -> 0x22C6931 .data
+  CALLEE 0x662B46 -> 0x3EB970
+  DISASM
+    0x662A90: sub rsp, 0xa8
+    0x662A97: mov rax, qword ptr [rip + 0x9f776a] ; rip=0x105A208 sec=.data
+    0x662A9E: xor rax, rsp
+    0x662AA1: mov qword ptr [rsp + 0x90], rax
+    0x662AA9: movaps xmm0, xmmword ptr [rsp]
+    0x662AAD: movaps xmm1, xmmword ptr [rsp + 0x10]
+    0x662AB2: and byte ptr [rip + 0x21ab397], 0xfc ; rip=0x280DE50 sec=.data
+    0x662AB9: movaps xmmword ptr [rip + 0x21ab310], xmm0 ; rip=0x280DDD0 sec=.data
+    0x662AC0: movaps xmm0, xmmword ptr [rsp + 0x20]
+    0x662AC5: movaps xmmword ptr [rip + 0x21ab314], xmm1 ; rip=0x280DDE0 sec=.data
+    0x662ACC: movaps xmm1, xmmword ptr [rsp + 0x30]
+    0x662AD1: movaps xmmword ptr [rip + 0x21ab318], xmm0 ; rip=0x280DDF0 sec=.data
+    0x662AD8: movaps xmm0, xmmword ptr [rsp + 0x40]
+    0x662ADD: movaps xmmword ptr [rip + 0x21ab31c], xmm1 ; rip=0x280DE00 sec=.data
+    0x662AE4: movaps xmm1, xmmword ptr [rsp + 0x50]
+    0x662AE9: movaps xmmword ptr [rip + 0x21ab320], xmm0 ; rip=0x280DE10 sec=.data
+    0x662AF0: movaps xmm0, xmmword ptr [rsp + 0x60]
+    0x662AF5: movaps xmmword ptr [rip + 0x21ab324], xmm1 ; rip=0x280DE20 sec=.data
+    0x662AFC: movaps xmm1, xmmword ptr [rsp + 0x70]
+    0x662B01: movaps xmmword ptr [rip + 0x21ab328], xmm0 ; rip=0x280DE30 sec=.data
+    0x662B08: movaps xmmword ptr [rip + 0x21ab331], xmm1 ; rip=0x280DE40 sec=.data
+    0x662B0F: mov dword ptr [rip + 0xa163a3], 0xffffffff ; rip=0x1078EBC sec=.data
+    0x662B19: mov dword ptr [rip + 0xa16425], 0xffffffff ; rip=0x1078F48 sec=.data
+    0x662B23: mov dword ptr [rip + 0x1c63607], 0 ; rip=0x22C6134 sec=.data
+    0x662B2D: mov byte ptr [rip + 0x1c63dfe], 0 ; rip=0x22C6932 sec=.data
+    0x662B34: mov byte ptr [rip + 0x1c63df6], 0 ; rip=0x22C6931 sec=.data
+    0x662B3B: mov rcx, qword ptr [rsp + 0x90]
+    0x662B43: xor rcx, rsp
+    0x662B46: call 0x1403eb970 ; target=0x3EB970
+    0x662B4B: add rsp, 0xa8
+    0x662B52: ret 
+
+FUNCTION 0x66CB30 range=0x66CB30-0x66CB68 size=56
+  RIP 0x66CB45 -> 0x2D3755E .data
+  RIP 0x66CB55 -> 0x2D375C6 .data
+  RIP 0x66CB5C -> 0x1078F4C .data
+  CALLEE 0x66CB3C -> 0x662A90
+  DISASM
+    0x66CB30: push rsi
+    0x66CB32: sub rsp, 0x20
+    0x66CB36: movzx esi, dl
+    0x66CB39: movsxd r8, ecx
+    0x66CB3C: call 0x140662a90 ; target=0x662A90
+    0x66CB41: cmp r8d, 0xa
+    0x66CB45: mov byte ptr [rip + 0x26caa12], 0 ; rip=0x2D3755E sec=.data
+    0x66CB4C: mov eax, 0xffffffff
+    0x66CB51: cmovb eax, r8d
+    0x66CB55: cmp byte ptr [rip + 0x26caa6a], 0 ; rip=0x2D375C6 sec=.data
+    0x66CB5C: mov dword ptr [rip + 0xa0c3ea], eax ; rip=0x1078F4C sec=.data
+    0x66CB62: je 0x14066cd09
+
+FUNCTION 0x7690E0 range=0x7690E0-0x7690FB size=27
+  RIP 0x7690EE -> 0x11BDB5C .data
+  CALLEE 0x7690E9 -> 0x9E7FA0
+  DISASM
+    0x7690E0: sub rsp, 0x28
+    0x7690E4: mov edx, 1
+    0x7690E9: call 0x1409e7fa0 ; target=0x9E7FA0
+    0x7690EE: mov dword ptr [rip + 0xa54a68], eax ; rip=0x11BDB5C sec=.data
+    0x7690F4: xor eax, eax
+    0x7690F6: add rsp, 0x28
+    0x7690FA: ret 
+
+FUNCTION 0x7691D0 range=0x7691D0-0x7691E8 size=24
+  RIP 0x7691D4 -> 0x11BDB5C .data
+  CALLEE 0x7691DC -> 0x66CB30
+  DISASM
+    0x7691D0: sub rsp, 0x28
+    0x7691D4: mov ecx, dword ptr [rip + 0xa54982] ; rip=0x11BDB5C sec=.data
+    0x7691DA: mov dl, 1
+    0x7691DC: call 0x14066cb30 ; target=0x66CB30
+    0x7691E1: xor eax, eax
+    0x7691E3: add rsp, 0x28
+    0x7691E7: ret 
+
