@@ -1,0 +1,71 @@
+Completionist Map - contiguous LuaContext virtual trace
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+
+SEED 0x464140 window=0x464100..0x4644C0 instructions=41
+0x00464140 4057                     push     rdi
+0x00464142 4883ec20                 sub      rsp, 0x20
+0x00464146 807a0203                 cmp      byte ptr [rdx + 2], 3
+0x0046414A 488bf9                   mov      rdi, rcx
+0x0046414D 7408                     je       0x140464157
+0x0046414F b001                     mov      al, 1
+0x00464151 4883c420                 add      rsp, 0x20
+0x00464155 5f                       pop      rdi
+0x00464156 c3                       ret      
+0x00464157 488b4a20                 mov      rcx, qword ptr [rdx + 0x20]
+0x0046415B 48895c2430               mov      qword ptr [rsp + 0x30], rbx
+0x00464160 488d5af8                 lea      rbx, [rdx - 8]
+0x00464164 4885c9                   test     rcx, rcx
+0x00464167 7408                     je       0x140464171
+0x00464169 488bd3                   mov      rdx, rbx
+0x0046416C e85fe10e00               call     0x1405522d0
+0x00464171 80bf9801000000           cmp      byte ptr [rdi + 0x198], 0 ; owner+0x198
+0x00464178 7439                     je       0x1404641b3
+0x0046417A f6435801                 test     byte ptr [rbx + 0x58], 1
+0x0046417E 7533                     jne      0x1404641b3
+0x00464180 33c0                     xor      eax, eax
+0x00464182 488d5308                 lea      rdx, [rbx + 8] ; node+0x8
+0x00464186 4032ff                   xor      dil, dil
+0x00464189 488d0d4074dd00           lea      rcx, [rip + 0xdd7440]
+0x00464190 4885db                   test     rbx, rbx
+0x00464193 480f44d0                 cmove    rdx, rax
+0x00464197 0fb602                   movzx    eax, byte ptr [rdx] ; node+0x0
+0x0046419A 488b0cc1                 mov      rcx, qword ptr [rcx + rax*8] ; node+0x0
+0x0046419E 488b01                   mov      rax, qword ptr [rcx] ; node+0x0
+0x004641A1 ff5050                   call     qword ptr [rax + 0x50]
+0x004641A4 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+0x004641A9 400fb6c7                 movzx    eax, dil
+0x004641AD 4883c420                 add      rsp, 0x20
+0x004641B1 5f                       pop      rdi
+0x004641B2 c3                       ret      
+0x004641B3 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+0x004641B8 40b701                   mov      dil, 1
+0x004641BB 400fb6c7                 movzx    eax, dil
+0x004641BF 4883c420                 add      rsp, 0x20
+0x004641C3 5f                       pop      rdi
+0x004641C4 c3                       ret      
+CALLS
+  0x46416C -> 0x5522D0 0x1405522d0
+  0x4641A1 -> indirect qword ptr [rax + 0x50]
+OUTSIDE 
+
+SEED 0x465370 window=0x465360..0x4654A0 instructions=16
+0x00465370 4056                     push     rsi
+0x00465372 4883ec20                 sub      rsp, 0x20
+0x00465376 0fb74202                 movzx    eax, word ptr [rdx + 2]
+0x0046537A 488bf1                   mov      rsi, rcx
+0x0046537D 440fb6c0                 movzx    r8d, al
+0x00465381 4183f805                 cmp      r8d, 5
+0x00465385 0f87eb000000             ja       0x140465476
+0x0046538B 48895c2430               mov      qword ptr [rsp + 0x30], rbx
+0x00465390 488d0d69acb9ff           lea      rcx, [rip - 0x465397]
+0x00465397 48897c2438               mov      qword ptr [rsp + 0x38], rdi
+0x0046539C 468b84817c544600         mov      r8d, dword ptr [rcx + r8*4 + 0x46547c]
+0x004653A4 4c03c1                   add      r8, rcx
+0x004653A7 41ffe0                   jmp      r8
+0x00465476 4883c420                 add      rsp, 0x20
+0x0046547A 5e                       pop      rsi
+0x0046547B c3                       ret      
+CALLS
+OUTSIDE 
+
+SAFETY static_exe_read_only=true game_launched=false process_accessed=false save_opened=false save_written=false progression_written=false game_files_written=false
