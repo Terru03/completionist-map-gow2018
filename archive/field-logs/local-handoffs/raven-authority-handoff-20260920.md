@@ -1715,3 +1715,60 @@ No arbitrary memory scan, debugger, process write, save access/write, or progres
 ## Next acceptance test
 
 Run the staged WAD observer against the loaded almost-complete save. Success means the staged record set exposes exact Raven identities and `ravenKilled` states for unloaded/nonresident WADs as well as the current WAD. If successful, this becomes the authority source for map-open reconstruction. If it only exposes resident WAD records, use its exact record names/layout to identify the higher-level retained checkpoint container rather than returning to broad memory scans.
+
+
+---
+
+# Addendum 2026-09-20 - global staged WAD table confirmed; exact save identities absent
+
+Runtime evidence commit: `47f6b1ebe96781b22db14cb3c16c84d39a4d7093`  
+Evidence: `archive/field-logs/runtime-captures/staged-wad-raven-state-readonly-20260920-205702/`
+
+The targeted observer successfully read the proven staged WAD checkpoint table from the loaded almost-complete save:
+
+```text
+record_count=425
+pool_size=1055621
+records_with_payload=422
+payload_bytes_read=9678
+records_with_ravenKilled_text=0
+records_with_exact_raven_identity=0
+records_with_decoded_raven_entries=0
+```
+
+This is not a wrong-table failure. The records are clearly global checkpoint/WAD state and include named records across the whole game, including Raven-relevant areas such as:
+
+- `Riv200_DangersMain`
+- `Xpl425_HuldraMinesLH`
+- `Xpl400_HuldraMines`
+- `Xpl220_FuneralLH`
+- `Xpl225_FuneralLH`
+- `Xpl200_Funeral`
+- `Xpl250_FuneralInterior`
+
+Many nontrivial records decode as valid custom-userdata carriers with valid `__subobjs` tables. Therefore the table is the higher-level global staged checkpoint container we were looking for.
+
+However, its `__subobjs` custom-userdata keys do **not** carry the 17/21-byte serialized save GameObject identity. Exact Raven save payload matches across all 53 identities were zero, and plaintext `ravenKilled` was also absent. The state is already in the checkpoint/runtime-token representation at this layer.
+
+Do not discard this route. The crucial new fact is that the global container is found and it includes unloaded WADs. The remaining join problem is now narrowly:
+
+`staged WAD __subobjs opaque GameObject token -> exact Raven catalogue identity`
+
+This is smaller than the previous save/restore authority problem.
+
+A known exact bridge fixture is available from prior Raven identity work:
+
+- VikingFuneral Raven catalogue ID: `raven_642d0d164af0a5d4076e77933c549a5d`
+- known runtime packed GameObject token: `0x1BB001DD`
+- serialized save identity: `01b0b227342530c24ea9652dba0717be98`
+
+New observer added:
+
+- `tools/v0.10.5/capture-staged-wad-subobject-keys-readonly.py` in commit `fc7b5945e5f7309ac8f3402c1af66ea7f1c34d10`
+- `tools/v0.10.5/capture-staged-wad-subobject-keys-readonly-and-push.ps1` in commit `d06e95fe7e2b1b5f8f0b41dd730b96c1a4cec730`
+
+The new capture remains bounded to the proven staged table/payload pool. For every valid `__subobjs` carrier it records the exact custom-record class key, opaque payload bytes, optional u32 interpretation, associated state row/fields, and explicitly checks for the known VikingFuneral token `0x1BB001DD`.
+
+## Exact next boundary
+
+If `0x1BB001DD` appears as a staged `__subobjs` key in one of the Funeral records, the global checkpoint representation is directly joinable to the existing runtime GameObject-token work and we can generalise token generation/matching to all 53 Ravens. If it does not appear, use the captured class-key/payload-length patterns to identify the alternate checkpoint token encoding before any broader search.
