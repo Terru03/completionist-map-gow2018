@@ -1,0 +1,78 @@
+Completionist Map - LuaContext slot13 jump-table trace
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+CASES
+case=0 table=0x46547C raw=4608938 target=0x4653AA
+case=1 table=0x465480 raw=4609109 target=0x465455
+case=2 table=0x465484 raw=4609020 target=0x4653FC
+case=3 table=0x465488 raw=4609109 target=0x465455
+case=4 table=0x46548C raw=4609109 target=0x465455
+case=5 table=0x465490 raw=4609109 target=0x465455
+
+REACHABLE CASE FLOW
+0x004653AA 488b42f8                 mov      rax, qword ptr [rdx - 8]
+0x004653AE 488d7af8                 lea      rdi, [rdx - 8]
+0x004653B2 488b5f68                 mov      rbx, qword ptr [rdi + 0x68]
+0x004653B6 33d2                     xor      edx, edx
+0x004653B8 488bcf                   mov      rcx, rdi
+0x004653BB ff10                     call     qword ptr [rax] ; node+0x0
+0x004653BD 488bcb                   mov      rcx, rbx
+0x004653C0 e89be8ffff               call     0x140463c60
+0x004653C5 488d8e78010000           lea      rcx, [rsi + 0x178] ; owner+0x178
+0x004653CC 488bd7                   mov      rdx, rdi
+0x004653CF 488b4108                 mov      rax, qword ptr [rcx + 8] ; node+0x8
+0x004653D3 48895908                 mov      qword ptr [rcx + 8], rbx ; node+0x8
+0x004653D7 48894308                 mov      qword ptr [rbx + 8], rax ; node+0x8
+0x004653DB 48890b                   mov      qword ptr [rbx], rcx ; node+0x0
+0x004653DE 488918                   mov      qword ptr [rax], rbx ; node+0x0
+0x004653E1 488b8e88010000           mov      rcx, qword ptr [rsi + 0x188] ; owner+0x188
+0x004653E8 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+0x004653ED 488b7c2438               mov      rdi, qword ptr [rsp + 0x38]
+0x004653F2 4883c420                 add      rsp, 0x20
+0x004653F6 5e                       pop      rsi
+0x004653F7 e9946dfaff               jmp      0x14040c190
+0x004653FC 488b5a60                 mov      rbx, qword ptr [rdx + 0x60]
+0x00465400 488d7af8                 lea      rdi, [rdx - 8]
+0x00465404 488bcf                   mov      rcx, rdi
+0x00465407 e814231400               call     0x1405a7720
+0x0046540C 488b07                   mov      rax, qword ptr [rdi] ; node+0x0
+0x0046540F 33d2                     xor      edx, edx
+0x00465411 488bcf                   mov      rcx, rdi
+0x00465414 ff10                     call     qword ptr [rax] ; node+0x0
+0x00465416 488bcb                   mov      rcx, rbx
+0x00465419 e842e8ffff               call     0x140463c60
+0x0046541E 488d8e78010000           lea      rcx, [rsi + 0x178] ; owner+0x178
+0x00465425 488bd7                   mov      rdx, rdi
+0x00465428 488b4108                 mov      rax, qword ptr [rcx + 8] ; node+0x8
+0x0046542C 48895908                 mov      qword ptr [rcx + 8], rbx ; node+0x8
+0x00465430 48894308                 mov      qword ptr [rbx + 8], rax ; node+0x8
+0x00465434 48890b                   mov      qword ptr [rbx], rcx ; node+0x0
+0x00465437 488918                   mov      qword ptr [rax], rbx ; node+0x0
+0x0046543A 488b8e90010000           mov      rcx, qword ptr [rsi + 0x190] ; owner+0x190
+0x00465441 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+0x00465446 488b7c2438               mov      rdi, qword ptr [rsp + 0x38]
+0x0046544B 4883c420                 add      rsp, 0x20
+0x0046544F 5e                       pop      rsi
+0x00465450 e93b6dfaff               jmp      0x14040c190
+0x00465455 488b42f8                 mov      rax, qword ptr [rdx - 8]
+0x00465459 488d5af8                 lea      rbx, [rdx - 8]
+0x0046545D 33d2                     xor      edx, edx
+0x0046545F 488bcb                   mov      rcx, rbx
+0x00465462 ff10                     call     qword ptr [rax] ; node+0x0
+0x00465464 488bcb                   mov      rcx, rbx
+0x00465467 e8c462faff               call     0x14040b730
+0x0046546C 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+0x00465471 488b7c2438               mov      rdi, qword ptr [rsp + 0x38]
+0x00465476 4883c420                 add      rsp, 0x20
+0x0046547A 5e                       pop      rsi
+0x0046547B c3                       ret      
+
+CALLS
+0x465407 -> 0x5A7720 0x1405a7720
+0x465462 -> indirect qword ptr [rax]
+0x4653BB -> indirect qword ptr [rax]
+0x465467 -> 0x40B730 0x14040b730
+0x4653C0 -> 0x463C60 0x140463c60
+0x465414 -> indirect qword ptr [rax]
+0x465419 -> 0x463C60 0x140463c60
+
+SAFETY static_exe_read_only=true game_launched=false process_accessed=false save_opened=false save_written=false progression_written=false game_files_written=false
