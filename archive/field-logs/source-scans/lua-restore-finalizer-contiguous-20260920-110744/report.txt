@@ -1,0 +1,174 @@
+Completionist Map - Lua restore finalizer contiguous trace
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+finalizer=0x5A4240..0x5A4370
+stager_preview=0x5A4370..0x5A4450
+runtime-function metadata intentionally ignored for finalizer region
+
+FINALIZER CONTIGUOUS DISASSEMBLY
+0x005A4240 4056                     push     rsi
+0x005A4242 4883ec20                 sub      rsp, 0x20
+0x005A4246 488b4170                 mov      rax, qword ptr [rcx + 0x70]  ; R[rcx+0x70]
+0x005A424A 488bf1                   mov      rsi, rcx
+0x005A424D 4885c0                   test     rax, rax
+0x005A4250 0f84fd000000             je       0x1405a4353  ; LOCAL->0x5A4353
+0x005A4256 488b4040                 mov      rax, qword ptr [rax + 0x40]  ; R[rax+0x40]
+0x005A425A 48895c2430               mov      qword ptr [rsp + 0x30], rbx
+0x005A425F 48897c2438               mov      qword ptr [rsp + 0x38], rdi
+0x005A4264 488bb8781c0000           mov      rdi, qword ptr [rax + 0x1c78]
+0x005A426B 4881c748020000           add      rdi, 0x248
+0x005A4272 48837f1000               cmp      qword ptr [rdi + 0x10], 0
+0x005A4277 7539                     jne      0x1405a42b2  ; LOCAL->0x5A42B2
+0x005A4279 488b0f                   mov      rcx, qword ptr [rdi]
+0x005A427C 41b808000000             mov      r8d, 8
+0x005A4282 8b5f20                   mov      ebx, dword ptr [rdi + 0x20]
+0x005A4285 4c8b4f08                 mov      r9, qword ptr [rdi + 8]
+0x005A4289 488b01                   mov      rax, qword ptr [rcx]
+0x005A428C 488d14dd18000000         lea      rdx, [rbx*8 + 0x18]
+0x005A4294 ff10                     call     qword ptr [rax]
+0x005A4296 488bd0                   mov      rdx, rax
+0x005A4299 895814                   mov      dword ptr [rax + 0x14], ebx
+0x005A429C 33c0                     xor      eax, eax
+0x005A429E 894210                   mov      dword ptr [rdx + 0x10], eax
+0x005A42A1 488902                   mov      qword ptr [rdx], rax
+0x005A42A4 48894208                 mov      qword ptr [rdx + 8], rax
+0x005A42A8 48895710                 mov      qword ptr [rdi + 0x10], rdx
+0x005A42AC 48895718                 mov      qword ptr [rdi + 0x18], rdx
+0x005A42B0 eb7c                     jmp      0x1405a432e  ; LOCAL->0x5A432E
+0x005A42B2 488b5718                 mov      rdx, qword ptr [rdi + 0x18]
+0x005A42B6 8b4210                   mov      eax, dword ptr [rdx + 0x10]
+0x005A42B9 3b4214                   cmp      eax, dword ptr [rdx + 0x14]
+0x005A42BC 7544                     jne      0x1405a4302  ; LOCAL->0x5A4302
+0x005A42BE 488b0f                   mov      rcx, qword ptr [rdi]
+0x005A42C1 41b808000000             mov      r8d, 8
+0x005A42C7 8b5f24                   mov      ebx, dword ptr [rdi + 0x24]
+0x005A42CA 4c8b4f08                 mov      r9, qword ptr [rdi + 8]
+0x005A42CE 488b01                   mov      rax, qword ptr [rcx]
+0x005A42D1 488d14dd18000000         lea      rdx, [rbx*8 + 0x18]
+0x005A42D9 ff10                     call     qword ptr [rax]
+0x005A42DB 488bd0                   mov      rdx, rax
+0x005A42DE 895814                   mov      dword ptr [rax + 0x14], ebx
+0x005A42E1 33c0                     xor      eax, eax
+0x005A42E3 48894208                 mov      qword ptr [rdx + 8], rax
+0x005A42E7 894210                   mov      dword ptr [rdx + 0x10], eax
+0x005A42EA 488902                   mov      qword ptr [rdx], rax
+0x005A42ED 488b4718                 mov      rax, qword ptr [rdi + 0x18]
+0x005A42F1 488910                   mov      qword ptr [rax], rdx
+0x005A42F4 488b4718                 mov      rax, qword ptr [rdi + 0x18]
+0x005A42F8 48894208                 mov      qword ptr [rdx + 8], rax
+0x005A42FC 48895718                 mov      qword ptr [rdi + 0x18], rdx
+0x005A4300 eb2c                     jmp      0x1405a432e  ; LOCAL->0x5A432E
+0x005A4302 4885d2                   test     rdx, rdx
+0x005A4305 7423                     je       0x1405a432a  ; LOCAL->0x5A432A
+0x005A4307 85c0                     test     eax, eax
+0x005A4309 7523                     jne      0x1405a432e  ; LOCAL->0x5A432E
+0x005A430B 0f1f440000               nop      dword ptr [rax + rax]
+0x005A4310 488b4208                 mov      rax, qword ptr [rdx + 8]
+0x005A4314 4885c0                   test     rax, rax
+0x005A4317 7415                     je       0x1405a432e  ; LOCAL->0x5A432E
+0x005A4319 8b4810                   mov      ecx, dword ptr [rax + 0x10]
+0x005A431C 3b4814                   cmp      ecx, dword ptr [rax + 0x14]
+0x005A431F 740d                     je       0x1405a432e  ; LOCAL->0x5A432E
+0x005A4321 488bd0                   mov      rdx, rax
+0x005A4324 85c9                     test     ecx, ecx
+0x005A4326 74e8                     je       0x1405a4310  ; LOCAL->0x5A4310
+0x005A4328 eb04                     jmp      0x1405a432e  ; LOCAL->0x5A432E
+0x005A432A 33c0                     xor      eax, eax
+0x005A432C 8bd0                     mov      edx, eax
+0x005A432E 8b4a10                   mov      ecx, dword ptr [rdx + 0x10]
+0x005A4331 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+0x005A4336 8d4101                   lea      eax, [rcx + 1]
+0x005A4339 894210                   mov      dword ptr [rdx + 0x10], eax
+0x005A433C ff4728                   inc      dword ptr [rdi + 0x28]  ; W[rdi+0x28]
+0x005A433F 488b7c2438               mov      rdi, qword ptr [rsp + 0x38]
+0x005A4344 488974ca18               mov      qword ptr [rdx + rcx*8 + 0x18], rsi
+0x005A4349 c6467c01                 mov      byte ptr [rsi + 0x7c], 1
+0x005A434D 4883c420                 add      rsp, 0x20
+0x005A4351 5e                       pop      rsi
+0x005A4352 c3                       ret      
+0x005A4353 c6417c01                 mov      byte ptr [rcx + 0x7c], 1
+0x005A4357 4883c420                 add      rsp, 0x20
+0x005A435B 5e                       pop      rsi
+0x005A435C c3                       ret      
+0x005A435D cc                       int3     
+0x005A435E cc                       int3     
+0x005A435F cc                       int3     
+0x005A4360 cc                       int3     
+0x005A4361 cc                       int3     
+0x005A4362 cc                       int3     
+0x005A4363 cc                       int3     
+0x005A4364 cc                       int3     
+0x005A4365 cc                       int3     
+0x005A4366 cc                       int3     
+0x005A4367 cc                       int3     
+0x005A4368 cc                       int3     
+0x005A4369 cc                       int3     
+0x005A436A cc                       int3     
+0x005A436B cc                       int3     
+0x005A436C cc                       int3     
+0x005A436D cc                       int3     
+0x005A436E cc                       int3     
+0x005A436F cc                       int3     
+
+STAGER PREVIEW
+0x005A4370 48895c2408               mov      qword ptr [rsp + 8], rbx
+0x005A4375 4889742410               mov      qword ptr [rsp + 0x10], rsi
+0x005A437A 57                       push     rdi
+0x005A437B 4883ec20                 sub      rsp, 0x20
+0x005A437F 488bda                   mov      rbx, rdx
+0x005A4382 488bf9                   mov      rdi, rcx
+0x005A4385 488b5130                 mov      rdx, qword ptr [rcx + 0x30]  ; R[rcx+0x30]
+0x005A4389 498bf1                   mov      rsi, r9
+0x005A438C 4883c20c                 add      rdx, 0xc
+0x005A4390 498bc9                   mov      rcx, r9
+0x005A4393 e8b806ecff               call     0x140464a50
+0x005A4398 4885c0                   test     rax, rax
+0x005A439B 740d                     je       0x1405a43aa
+0x005A439D 488b8058010000           mov      rax, qword ptr [rax + 0x158]
+0x005A43A4 48894768                 mov      qword ptr [rdi + 0x68], rax  ; W[rdi+0x68]
+0x005A43A8 eb04                     jmp      0x1405a43ae
+0x005A43AA 488b4768                 mov      rax, qword ptr [rdi + 0x68]  ; R[rdi+0x68]
+0x005A43AE 4885c0                   test     rax, rax
+0x005A43B1 750b                     jne      0x1405a43be
+0x005A43B3 488d059eee8500           lea      rax, [rip + 0x85ee9e]  ; STR='<none>'
+0x005A43BA 48894768                 mov      qword ptr [rdi + 0x68], rax  ; W[rdi+0x68]
+0x005A43BE 4c8d057bee8500           lea      r8, [rip + 0x85ee7b]  ; STR='_SUBOBJECT_CHUNKS'
+0x005A43C5 48897770                 mov      qword ptr [rdi + 0x70], rsi  ; W[rdi+0x70]
+0x005A43C9 ba18f8ffff               mov      edx, 0xfffff818
+0x005A43CE 488bcb                   mov      rcx, rbx
+0x005A43D1 e8ba3d4400               call     0x1409e8190
+0x005A43D6 4c8b4730                 mov      r8, qword ptr [rdi + 0x30]  ; R[rdi+0x30]
+0x005A43DA baffffffff               mov      edx, 0xffffffff
+0x005A43DF 4983c00c                 add      r8, 0xc
+0x005A43E3 488bcb                   mov      rcx, rbx
+0x005A43E6 e875064400               call     0x1409e4a60
+0x005A43EB 488b4310                 mov      rax, qword ptr [rbx + 0x10]
+0x005A43EF 488d15baa27f00           lea      rdx, [rip + 0x7fa2ba]
+0x005A43F6 488d48f0                 lea      rcx, [rax - 0x10]
+0x005A43FA 483bca                   cmp      rcx, rdx
+0x005A43FD 0f8492000000             je       0x1405a4495
+0x005A4403 f641080f                 test     byte ptr [rcx + 8], 0xf
+0x005A4407 0f8588000000             jne      0x1405a4495
+0x005A440D 4883c0e0                 add      rax, -0x20
+0x005A4411 488bce                   mov      rcx, rsi
+0x005A4414 48894310                 mov      qword ptr [rbx + 0x10], rax
+0x005A4418 488b5730                 mov      rdx, qword ptr [rdi + 0x30]  ; R[rdi+0x30]
+0x005A441C 4883c20c                 add      rdx, 0xc
+0x005A4420 e82b06ecff               call     0x140464a50
+0x005A4425 4885c0                   test     rax, rax
+0x005A4428 740f                     je       0x1405a4439
+0x005A442A 488bd3                   mov      rdx, rbx
+0x005A442D 488bc8                   mov      rcx, rax
+0x005A4430 e81b050000               call     0x1405a4950
+0x005A4435 84c0                     test     al, al
+0x005A4437 7501                     jne      0x1405a443a
+0x005A4439 cc                       int3     
+0x005A443A 4c8d05ffed8500           lea      r8, [rip + 0x85edff]  ; STR='_SUBOBJECT_CHUNKS'
+0x005A4441 ba18f8ffff               mov      edx, 0xfffff818
+0x005A4446 488bcb                   mov      rcx, rbx
+0x005A4449 e8423d4400               call     0x1409e8190
+
+SUMMARY
+branch_targets=0x5A42B2,0x5A4302,0x5A4310,0x5A432A,0x5A432E,0x5A4353
+external_calls=0
+interesting_writes=1
+SAFETY static_exe_read_only=true game_launched=false process_accessed=false save_opened=false save_written=false progression_written=false game_files_written=false
