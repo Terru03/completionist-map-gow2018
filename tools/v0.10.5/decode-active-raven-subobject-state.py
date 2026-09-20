@@ -149,9 +149,20 @@ def parse_token_paths(data: bytes, start: int, token_count: int, max_results: in
     return results
 
 def parse_gameobject_payload(payload: bytes):
-    if len(payload) != 17 or payload[0] != 1:
+    """Parse the native 0x5491A0 GameObject save-reference forms."""
+    if not payload:
+        return None
+    flags = payload[0]
+    present = bool(flags & 0x01)
+    has_upper = bool(flags & 0x04)
+    expected_length = 1 + (16 if present else 0) + (4 if present and has_upper else 0)
+    if len(payload) != expected_length or not present:
         return None
     return {
+        "flags": flags,
+        "aux": (flags >> 1) & 1,
+        "has_upper": has_upper,
+        "upper_u32": int.from_bytes(payload[17:21], "little") if has_upper else 0,
         "registry_hash": int.from_bytes(payload[1:9], "little"),
         "object_hash": int.from_bytes(payload[9:17], "little"),
     }
