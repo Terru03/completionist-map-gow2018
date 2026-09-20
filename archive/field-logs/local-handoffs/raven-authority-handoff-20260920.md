@@ -1496,3 +1496,22 @@ The remaining strongest route is the already-solved global custom-userdata resto
 - save-carrier Raven identities are already solved for all 53.
 
 Target the point **before** GameObject userdata is converted into opaque runtime tokens, where the restore machinery still has the serialized custom-userdata record. Determine whether the existing Lua hook/thunk infrastructure can observe this callback or whether a minimal native read-only/instrumentation bridge is required. Avoid returning to save-ring timestamp/slot inference.
+
+---
+
+# Addendum 2026-09-20 23:xx - SerializeHook not a restore interceptor; inspect core.thunk next
+
+Archived persistence-hook evidence was rechecked after closing the Lua backing-cache route.
+
+`engine.SerializeHook` is **not** an interception API for restore. The native handler at `0x4A5D50` directly intersects the proven GameObject token packer `0x60B9C0`; it participates in serialization/token packing rather than exposing the pre-token custom-userdata restore record.
+
+Therefore do not try to solve Raven authority by calling or wrapping `SerializeHook`.
+
+The extracted game Lua source does use `core.thunk` + `thunk.Install(name, fn)` as a real hook-dispatch mechanism (for example locomotion hooks), so the next smallest question is whether that registry has any persistence/restore/pickle-facing hook names that can observe the global custom-userdata restore path without native patching.
+
+New inspection tools:
+
+- `tools/v0.10.5/inspect-thunk-persistence-hooks.py`
+- `tools/v0.10.5/inspect-thunk-persistence-hooks-and-push.ps1`
+
+This scan is local-source-only and should be interpreted before considering a native detour/instrumentation bridge.
