@@ -52,38 +52,58 @@ def scan_decompress(data: bytes, include_raw_deflate: bool):
 
 def metadata_ends(data: bytes, start: int, token_count: int, fixed_tail: int,
                   max_end: int, max_solutions: int):
-    """Yield metadata end offsets consistent with one width per observed tag."""
-    results: list[tuple[int, dict[int, int]]] = []
+    """Yield metadata end offsets consistent with one width per observed tag.
 
-    def visit(pos: int, token_index: int, mapping: dict[int, int]):
-        if len(results) >= max_solutions:
-            return
+    Real checkpoint carriers can contain well over 500 metadata pairs, which means
+    more than 1,000 tagged tokens. The original recursive DFS therefore exceeded
+    Python's recursion limit even though the tag-width state space itself is tiny
+    (at most six observed tags with three possible widths each).
+
+    Use an explicit bounded stack instead. This preserves the exact grammar and
+    result ordering without depending on interpreter recursion depth.
+    """
+    results: list[tuple[int, dict[int, int]]] = []
+    stack: list[tuple[int, int, dict[int, int]]] = [(start, 0, {})]
+    seen: set[tuple[int, int, tuple[tuple[int, int], ...]]] = set()
+
+    while stack and len(results) < max_solutions:
+        pos, token_index, mapping = stack.pop()
+        state = (pos, token_index, tuple(sorted(mapping.items())))
+        if state in seen:
+            continue
+        seen.add(state)
+
         if token_index == token_count:
             if pos + fixed_tail <= len(data):
                 results.append((pos, dict(mapping)))
-            return
+            continue
+
         remaining_tokens = token_count - token_index
         if pos + 2 * remaining_tokens + fixed_tail > len(data):
-            return
+            continue
         if pos + 2 * remaining_tokens > max_end:
-            return
+            continue
         if pos >= len(data) or pos >= max_end:
-            return
+            continue
+
         tag = data[pos]
         if tag > 5:
-            return
+            continue
+
         choices = (mapping[tag],) if tag in mapping else WIDTHS
-        for width in choices:
+        # Reverse the push order so the effective DFS order remains 2,3,5 bytes,
+        # matching the previous recursive implementation.
+        for width in reversed(tuple(choices)):
             end = pos + width
             if end > max_end:
                 continue
-            new_mapping = mapping
-            if tag not in mapping:
+            if tag in mapping:
+                new_mapping = mapping
+            else:
                 new_mapping = dict(mapping)
                 new_mapping[tag] = width
-            visit(end, token_index + 1, new_mapping)
+            stack.append((end, token_index + 1, new_mapping))
 
-    visit(start, 0, {})
     return results
 
 
