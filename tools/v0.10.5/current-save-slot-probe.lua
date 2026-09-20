@@ -9,18 +9,19 @@ _G.CompletionistMapV105CurrentSlotProbeInstallCount =
 local prefix = "[CompletionistCurrentSlotProbe] "
 local install = _G.CompletionistMapV105CurrentSlotProbeInstallCount
 
-local uiType = type(UI)
-local getType = (uiType == "table" or uiType == "userdata") and type(UI.GetCurrentSlot) or "nil"
-local validType = (uiType == "table" or uiType == "userdata") and type(UI.IsSlotValid) or "nil"
+local ui = type(game) == "table" and game.UI or nil
+local uiType = type(ui)
+local getType = (uiType == "table" or uiType == "userdata") and type(ui.GetCurrentSlot) or "nil"
+local validType = (uiType == "table" or uiType == "userdata") and type(ui.IsSlotValid) or "nil"
 
 local okGet, slot = false, nil
 if getType == "function" then
-  okGet, slot = pcall(UI.GetCurrentSlot)
+  okGet, slot = pcall(ui.GetCurrentSlot)
 end
 
 local okValid, valid = false, nil
 if okGet and validType == "function" then
-  okValid, valid = pcall(UI.IsSlotValid, slot)
+  okValid, valid = pcall(ui.IsSlotValid, slot)
 end
 
 print(prefix ..
