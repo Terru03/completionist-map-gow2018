@@ -1,0 +1,388 @@
+Completionist Map - current slot native disassembly
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+mode=static read-only
+
+NAME GetCurrentSlot
+  xref site=0x1FEC67 owner=0x1FC910
+NAME SetCurrentSlot
+  xref site=0x1FECB8 owner=0x1FC910
+    candidate xref=0x1FECD4->0x7690E0 fn=0x7690E0-0x7690FB
+NAME LoadSaveGame
+  xref site=0x1FEB23 owner=0x1FC910
+    candidate xref=0x1FEB3F->0x7691D0 fn=0x7691D0-0x7691E8
+NAME LoadedIntoSaveSlot
+  xref site=0x533EC8 owner=0x533E30
+
+REGISTRATION GetCurrentSlot#1 site=0x1FEC67
+  0x1FEC07: shr rax, 6
+  0x1FEC0B: xor rcx, rax
+  0x1FEC0E: movzx eax, byte ptr [rdx - 1]
+  0x1FEC12: test al, al
+  0x1FEC14: jne 0x1401febf3
+  0x1FEC16: lea rax, [rip + 0xc133f3] ; str='EnableAutoSave'
+  0x1FEC1D: mov qword ptr [rip + 0x4e7abcc], rcx ; rip=0x50797F0 sec=.data
+  0x1FEC24: mov qword ptr [rip + 0x4e7abcd], rax ; rip=0x50797F8 sec=.data
+  0x1FEC2B: lea rdx, [rip + 0xc133ef] ; rip=0xE12021 sec=.rdata
+  0x1FEC32: lea rax, [rip + 0x56a507] ; rip=0x769140 sec=.text
+  0x1FEC39: xor ecx, ecx
+  0x1FEC3B: mov qword ptr [rip + 0x4e7abbe], rax ; rip=0x5079800 sec=.data
+  0x1FEC42: mov al, 0x47
+  0x1FEC44: movzx eax, al
+  0x1FEC47: lea rdx, [rdx + 1]
+  0x1FEC4B: add rax, rcx
+  0x1FEC4E: imul rcx, rax, 0x401
+  0x1FEC55: mov rax, rcx
+  0x1FEC58: shr rax, 6
+  0x1FEC5C: xor rcx, rax
+  0x1FEC5F: movzx eax, byte ptr [rdx - 1]
+  0x1FEC63: test al, al
+  0x1FEC65: jne 0x1401fec44
+  0x1FEC67: lea rax, [rip + 0xc133b2] ; str='GetCurrentSlot'
+  0x1FEC6E: mov qword ptr [rip + 0x4e7ab93], rcx ; rip=0x5079808 sec=.data
+  0x1FEC75: mov qword ptr [rip + 0x4e7ab94], rax ; rip=0x5079810 sec=.data
+  0x1FEC7C: lea rdx, [rip + 0xc13286] ; rip=0xE11F09 sec=.rdata
+  0x1FEC83: lea rax, [rip + 0x56a486] ; rip=0x769110 sec=.text
+  0x1FEC8A: xor ecx, ecx
+  0x1FEC8C: mov qword ptr [rip + 0x4e7ab85], rax ; rip=0x5079818 sec=.data
+  0x1FEC93: mov al, 0x53
+  0x1FEC95: movzx eax, al
+  0x1FEC98: lea rdx, [rdx + 1]
+  0x1FEC9C: add rax, rcx
+  0x1FEC9F: imul rcx, rax, 0x401
+  0x1FECA6: mov rax, rcx
+  0x1FECA9: shr rax, 6
+  0x1FECAD: xor rcx, rax
+  0x1FECB0: movzx eax, byte ptr [rdx - 1]
+  0x1FECB4: test al, al
+
+REGISTRATION SetCurrentSlot#1 site=0x1FECB8
+  0x1FEC58: shr rax, 6
+  0x1FEC5C: xor rcx, rax
+  0x1FEC5F: movzx eax, byte ptr [rdx - 1]
+  0x1FEC63: test al, al
+  0x1FEC65: jne 0x1401fec44
+  0x1FEC67: lea rax, [rip + 0xc133b2] ; str='GetCurrentSlot'
+  0x1FEC6E: mov qword ptr [rip + 0x4e7ab93], rcx ; rip=0x5079808 sec=.data
+  0x1FEC75: mov qword ptr [rip + 0x4e7ab94], rax ; rip=0x5079810 sec=.data
+  0x1FEC7C: lea rdx, [rip + 0xc13286] ; rip=0xE11F09 sec=.rdata
+  0x1FEC83: lea rax, [rip + 0x56a486] ; rip=0x769110 sec=.text
+  0x1FEC8A: xor ecx, ecx
+  0x1FEC8C: mov qword ptr [rip + 0x4e7ab85], rax ; rip=0x5079818 sec=.data
+  0x1FEC93: mov al, 0x53
+  0x1FEC95: movzx eax, al
+  0x1FEC98: lea rdx, [rdx + 1]
+  0x1FEC9C: add rax, rcx
+  0x1FEC9F: imul rcx, rax, 0x401
+  0x1FECA6: mov rax, rcx
+  0x1FECA9: shr rax, 6
+  0x1FECAD: xor rcx, rax
+  0x1FECB0: movzx eax, byte ptr [rdx - 1]
+  0x1FECB4: test al, al
+  0x1FECB6: jne 0x1401fec95
+  0x1FECB8: lea rax, [rip + 0xc13249] ; str='SetCurrentSlot'
+  0x1FECBF: mov qword ptr [rip + 0x4e7ab5a], rcx ; rip=0x5079820 sec=.data
+  0x1FECC6: mov qword ptr [rip + 0x4e7ab5b], rax ; rip=0x5079828 sec=.data
+  0x1FECCD: lea rdx, [rip + 0xc13245] ; rip=0xE11F19 sec=.rdata
+  0x1FECD4: lea rax, [rip + 0x56a405] ; rip=0x7690E0 sec=.text
+  0x1FECDB: xor ecx, ecx
+  0x1FECDD: mov qword ptr [rip + 0x4e7ab4c], rax ; rip=0x5079830 sec=.data
+  0x1FECE4: mov al, 0x53
+  0x1FECE6: movzx eax, al
+  0x1FECE9: lea rdx, [rdx + 1]
+  0x1FECED: add rax, rcx
+  0x1FECF0: imul rcx, rax, 0x401
+  0x1FECF7: mov rax, rcx
+  0x1FECFA: shr rax, 6
+  0x1FECFE: xor rcx, rax
+  0x1FED01: movzx eax, byte ptr [rdx - 1]
+  0x1FED05: test al, al
+
+REGISTRATION LoadSaveGame#1 site=0x1FEB23
+  0x1FEAC3: inc dword ptr [rax + r8*8 - 0x72b7228b]
+  0x1FEACB: add eax, 0xc134f8
+  0x1FEAD0: mov qword ptr [rip + 0x4e7acb9], rcx ; rip=0x5079790 sec=.data
+  0x1FEAD7: mov qword ptr [rip + 0x4e7acba], rax ; rip=0x5079798 sec=.data
+  0x1FEADE: lea rdx, [rip + 0xc134fc] ; rip=0xE11FE1 sec=.rdata
+  0x1FEAE5: lea rax, [rip + 0x570f24] ; rip=0x76FA10 sec=.text
+  0x1FEAEC: xor ecx, ecx
+  0x1FEAEE: mov qword ptr [rip + 0x4e7acab], rax ; rip=0x50797A0 sec=.data
+  0x1FEAF5: mov al, 0x4c
+  0x1FEAF7: nop word ptr [rax + rax]
+  0x1FEB00: movzx eax, al
+  0x1FEB03: lea rdx, [rdx + 1]
+  0x1FEB07: add rax, rcx
+  0x1FEB0A: imul rcx, rax, 0x401
+  0x1FEB11: mov rax, rcx
+  0x1FEB14: shr rax, 6
+  0x1FEB18: xor rcx, rax
+  0x1FEB1B: movzx eax, byte ptr [rdx - 1]
+  0x1FEB1F: test al, al
+  0x1FEB21: jne 0x1401feb00
+  0x1FEB23: lea rax, [rip + 0xc134b6] ; str='LoadSaveGame'
+  0x1FEB2A: mov qword ptr [rip + 0x4e7ac77], rcx ; rip=0x50797A8 sec=.data
+  0x1FEB31: mov qword ptr [rip + 0x4e7ac78], rax ; rip=0x50797B0 sec=.data
+  0x1FEB38: lea rdx, [rip + 0xc134b2] ; rip=0xE11FF1 sec=.rdata
+  0x1FEB3F: lea rax, [rip + 0x56a68a] ; rip=0x7691D0 sec=.text
+  0x1FEB46: xor ecx, ecx
+  0x1FEB48: mov qword ptr [rip + 0x4e7ac69], rax ; rip=0x50797B8 sec=.data
+  0x1FEB4F: mov al, 0x53
+  0x1FEB51: movzx eax, al
+  0x1FEB54: lea rdx, [rdx + 1]
+  0x1FEB58: add rax, rcx
+  0x1FEB5B: imul rcx, rax, 0x401
+  0x1FEB62: mov rax, rcx
+  0x1FEB65: shr rax, 6
+  0x1FEB69: xor rcx, rax
+  0x1FEB6C: movzx eax, byte ptr [rdx - 1]
+  0x1FEB70: test al, al
+
+REGISTRATION LoadedIntoSaveSlot#1 site=0x533EC8
+  0x533E68: xor al, 0x34
+  0x533E6A: add byte ptr [rax], al
+  0x533E6C: test al, al
+  0x533E6E: je 0x14053409b
+  0x533E74: xor r8d, r8d
+  0x533E77: lea rdx, [rip + 0x8cac8a] ; str='RestartFromCheckpoint'
+  0x533E7E: lea rcx, [rsp + 0x40]
+  0x533E83: call 0x14042ab70 ; target=0x42AB70
+  0x533E88: nop 
+  0x533E89: cmp byte ptr [rip + 0x27e7aa5], 0 ; rip=0x2D1B935 sec=.data
+  0x533E90: je 0x140533ee1
+  0x533E92: cmp byte ptr [rip + 0xc588db], 0 ; rip=0x118C774 sec=.data
+  0x533E99: je 0x140533ee1
+  0x533E9B: mov eax, dword ptr [rip + 0x27e7973] ; rip=0x2D1B814 sec=.data
+  0x533EA1: cmp dword ptr [rip + 0xc588d1], eax ; rip=0x118C778 sec=.data
+  0x533EA7: jg 0x140533ee1
+  0x533EA9: cmp dword ptr [rip + 0xc588cd], eax ; rip=0x118C77C sec=.data
+  0x533EAF: jle 0x140533ee1
+  0x533EB1: cmp byte ptr [rip + 0x1db3aa2], 0 ; rip=0x22E795A sec=.data
+  0x533EB8: jne 0x140533ec4
+  0x533EBA: cmp byte ptr [rsp + 0xa9], 0
+  0x533EC2: je 0x140533ee1
+  0x533EC4: movzx r9d, bl
+  0x533EC8: lea r8, [rip + 0x8cac51] ; str='LoadedIntoSaveSlot'
+  0x533ECF: lea rdx, [rsp + 0x48]
+  0x533ED4: lea rcx, [rsp + 0x90]
+  0x533EDC: call 0x1409d1a00 ; target=0x9D1A00
+  0x533EE1: mov rcx, qword ptr [rip + 0xc8a448] ; rip=0x11BE330 sec=.data
+  0x533EE8: test rcx, rcx
+  0x533EEB: je 0x140534064
+  0x533EF1: mov rax, qword ptr [rcx + 0x220]
+  0x533EF8: test rax, rax
+  0x533EFB: je 0x140533f03
+  0x533EFD: cmp dword ptr [rax + 0x14], 2
+  0x533F01: je 0x140533f18
+  0x533F03: mov rcx, qword ptr [rcx + 0x140]
+  0x533F0A: test rcx, rcx
+  0x533F0D: je 0x140534064
+  0x533F13: call 0x1400f38b0 ; target=0xF38B0
+
+FUNCTION 0x533E30 range=0x533E30-0x5340BC
+  0x533E30: push rbx
+  0x533E32: sub rsp, 0xd0
+  0x533E39: mov qword ptr [rsp + 0x28], 0xfffffffffffffffe
+  0x533E42: movaps xmmword ptr [rsp + 0xc0], xmm6
+  0x533E4A: mov rax, qword ptr [rip + 0xb263b7] ; rip=0x105A208 sec=.data
+  0x533E51: xor rax, rsp
+  0x533E54: mov qword ptr [rsp + 0xb0], rax
+  0x533E5C: movzx ebx, cl
+  0x533E5F: movss xmm0, dword ptr [rip + 0xc58add] ; rip=0x118C944 sec=.data
+  0x533E67: call 0x1405372a0 ; target=0x5372A0
+  0x533E6C: test al, al
+  0x533E6E: je 0x14053409b
+  0x533E74: xor r8d, r8d
+  0x533E77: lea rdx, [rip + 0x8cac8a] ; str='RestartFromCheckpoint'
+  0x533E7E: lea rcx, [rsp + 0x40]
+  0x533E83: call 0x14042ab70 ; target=0x42AB70
+  0x533E88: nop 
+  0x533E89: cmp byte ptr [rip + 0x27e7aa5], 0 ; rip=0x2D1B935 sec=.data
+  0x533E90: je 0x140533ee1
+  0x533E92: cmp byte ptr [rip + 0xc588db], 0 ; rip=0x118C774 sec=.data
+  0x533E99: je 0x140533ee1
+  0x533E9B: mov eax, dword ptr [rip + 0x27e7973] ; rip=0x2D1B814 sec=.data
+  0x533EA1: cmp dword ptr [rip + 0xc588d1], eax ; rip=0x118C778 sec=.data
+  0x533EA7: jg 0x140533ee1
+  0x533EA9: cmp dword ptr [rip + 0xc588cd], eax ; rip=0x118C77C sec=.data
+  0x533EAF: jle 0x140533ee1
+  0x533EB1: cmp byte ptr [rip + 0x1db3aa2], 0 ; rip=0x22E795A sec=.data
+  0x533EB8: jne 0x140533ec4
+  0x533EBA: cmp byte ptr [rsp + 0xa9], 0
+  0x533EC2: je 0x140533ee1
+  0x533EC4: movzx r9d, bl
+  0x533EC8: lea r8, [rip + 0x8cac51] ; str='LoadedIntoSaveSlot'
+  0x533ECF: lea rdx, [rsp + 0x48]
+  0x533ED4: lea rcx, [rsp + 0x90]
+  0x533EDC: call 0x1409d1a00 ; target=0x9D1A00
+  0x533EE1: mov rcx, qword ptr [rip + 0xc8a448] ; rip=0x11BE330 sec=.data
+  0x533EE8: test rcx, rcx
+  0x533EEB: je 0x140534064
+  0x533EF1: mov rax, qword ptr [rcx + 0x220]
+  0x533EF8: test rax, rax
+  0x533EFB: je 0x140533f03
+  0x533EFD: cmp dword ptr [rax + 0x14], 2
+  0x533F01: je 0x140533f18
+  0x533F03: mov rcx, qword ptr [rcx + 0x140]
+  0x533F0A: test rcx, rcx
+  0x533F0D: je 0x140534064
+  0x533F13: call 0x1400f38b0 ; target=0xF38B0
+  0x533F18: test rax, rax
+  0x533F1B: je 0x140534064
+  0x533F21: lea rdx, [rsp + 0x30]
+  0x533F26: mov rcx, rax
+  0x533F29: call 0x1400f6830 ; target=0xF6830
+  0x533F2E: movaps xmm6, xmmword ptr [rsp + 0x30]
+  0x533F33: movss dword ptr [rsp + 0x20], xmm6
+  0x533F39: movzx ecx, byte ptr [rip + 0x27e79f5] ; rip=0x2D1B935 sec=.data
+  0x533F40: mov eax, dword ptr [rip + 0x27e78ce] ; rip=0x2D1B814 sec=.data
+  0x533F46: test cl, cl
+  0x533F48: je 0x140533fa2
+  0x533F4A: cmp byte ptr [rip + 0xc58823], 0 ; rip=0x118C774 sec=.data
+  0x533F51: je 0x140533fa2
+  0x533F53: cmp dword ptr [rip + 0xc5881f], eax ; rip=0x118C778 sec=.data
+  0x533F59: jg 0x140533fa2
+  0x533F5B: cmp dword ptr [rip + 0xc5881b], eax ; rip=0x118C77C sec=.data
+  0x533F61: jle 0x140533fa2
+  0x533F63: cmp byte ptr [rip + 0x1db39f0], 0 ; rip=0x22E795A sec=.data
+  0x533F6A: jne 0x140533f76
+  0x533F6C: cmp byte ptr [rsp + 0xa9], 0
+  0x533F74: je 0x140533fa2
+  0x533F76: movss xmm3, dword ptr [rsp + 0x20]
+  0x533F7C: lea r8, [rip + 0x8ca96d] ; str='son_pos_x'
+  0x533F83: lea rdx, [rsp + 0x48]
+  0x533F88: lea rcx, [rsp + 0x90]
+  0x533F90: call 0x1409d1ea0 ; target=0x9D1EA0
+  0x533F95: movzx ecx, byte ptr [rip + 0x27e7999] ; rip=0x2D1B935 sec=.data
+  0x533F9C: mov eax, dword ptr [rip + 0x27e7872] ; rip=0x2D1B814 sec=.data
+  0x533FA2: movaps xmm0, xmm6
+  0x533FA5: shufps xmm0, xmm6, 0x55
+  0x533FA9: movss dword ptr [rsp + 0x20], xmm0
+  0x533FAF: test cl, cl
+  0x533FB1: je 0x14053400b
+  0x533FB3: cmp byte ptr [rip + 0xc587ba], 0 ; rip=0x118C774 sec=.data
+  0x533FBA: je 0x14053400b
+  0x533FBC: cmp dword ptr [rip + 0xc587b6], eax ; rip=0x118C778 sec=.data
+  0x533FC2: jg 0x14053400b
+  0x533FC4: cmp dword ptr [rip + 0xc587b2], eax ; rip=0x118C77C sec=.data
+  0x533FCA: jle 0x14053400b
+  0x533FCC: cmp byte ptr [rip + 0x1db3987], 0 ; rip=0x22E795A sec=.data
+  0x533FD3: jne 0x140533fdf
+  0x533FD5: cmp byte ptr [rsp + 0xa9], 0
+  0x533FDD: je 0x14053400b
+  0x533FDF: movss xmm3, dword ptr [rsp + 0x20]
+  0x533FE5: lea r8, [rip + 0x8ca914] ; str='son_pos_y'
+  0x533FEC: lea rdx, [rsp + 0x48]
+  0x533FF1: lea rcx, [rsp + 0x90]
+  0x533FF9: call 0x1409d1ea0 ; target=0x9D1EA0
+  0x533FFE: movzx ecx, byte ptr [rip + 0x27e7930] ; rip=0x2D1B935 sec=.data
+  0x534005: mov eax, dword ptr [rip + 0x27e7809] ; rip=0x2D1B814 sec=.data
+  0x53400B: shufps xmm6, xmm6, 0xaa
+  0x53400F: movss dword ptr [rsp + 0x20], xmm6
+  0x534015: test cl, cl
+  0x534017: je 0x140534064
+  0x534019: cmp byte ptr [rip + 0xc58754], 0 ; rip=0x118C774 sec=.data
+  0x534020: je 0x140534064
+  0x534022: cmp dword ptr [rip + 0xc58750], eax ; rip=0x118C778 sec=.data
+  0x534028: jg 0x140534064
+  0x53402A: cmp dword ptr [rip + 0xc5874c], eax ; rip=0x118C77C sec=.data
+  0x534030: jle 0x140534064
+  0x534032: cmp byte ptr [rip + 0x1db3921], 0 ; rip=0x22E795A sec=.data
+  0x534039: jne 0x140534045
+  0x53403B: cmp byte ptr [rsp + 0xa9], 0
+  0x534043: je 0x140534064
+  0x534045: movss xmm3, dword ptr [rsp + 0x20]
+  0x53404B: lea r8, [rip + 0x8ca8be] ; str='son_pos_z'
+  0x534052: lea rdx, [rsp + 0x48]
+  0x534057: lea rcx, [rsp + 0x90]
+  0x53405F: call 0x1409d1ea0 ; target=0x9D1EA0
+  0x534064: lea rcx, [rsp + 0x40]
+  0x534069: call 0x14042a8c0 ; target=0x42A8C0
+  0x53406E: nop 
+  0x53406F: mov rax, qword ptr gs:[0x58]
+  0x534078: mov ecx, 8
+  0x53407D: mov rax, qword ptr [rax]
+  0x534080: mov byte ptr [rcx + rax], 0
+  0x534084: lea rcx, [rip + 0x1f208e5] ; rip=0x2454970 sec=.data
+  0x53408B: call qword ptr [rip + 0x814017] ; rip=0xD480A8 sec=.rdata
+  0x534091: lea rcx, [rsp + 0x40]
+  0x534096: call 0x1409d2270 ; target=0x9D2270
+  0x53409B: mov rcx, qword ptr [rsp + 0xb0]
+  0x5340A3: xor rcx, rsp
+  0x5340A6: call 0x1403eb970 ; target=0x3EB970
+  0x5340AB: movaps xmm6, xmmword ptr [rsp + 0xc0]
+  0x5340B3: add rsp, 0xd0
+  0x5340BA: pop rbx
+  0x5340BB: ret 
+
+FUNCTION 0x7690E0 range=0x7690E0-0x7690FB
+  0x7690E0: sub rsp, 0x28
+  0x7690E4: mov edx, 1
+  0x7690E9: call 0x1409e7fa0 ; target=0x9E7FA0
+  0x7690EE: mov dword ptr [rip + 0xa54a68], eax ; rip=0x11BDB5C sec=.data
+  0x7690F4: xor eax, eax
+  0x7690F6: add rsp, 0x28
+  0x7690FA: ret 
+
+FUNCTION 0x7691D0 range=0x7691D0-0x7691E8
+  0x7691D0: sub rsp, 0x28
+  0x7691D4: mov ecx, dword ptr [rip + 0xa54982] ; rip=0x11BDB5C sec=.data
+  0x7691DA: mov dl, 1
+  0x7691DC: call 0x14066cb30 ; target=0x66CB30
+  0x7691E1: xor eax, eax
+  0x7691E3: add rsp, 0x28
+  0x7691E7: ret 
+
+FUNCTION 0x7698BF range=0x7698BF-0x769976
+  0x7698BF: mov qword ptr [rsp + 0x50], rbp
+  0x7698C4: mov edx, 2
+  0x7698C9: mov qword ptr [rsp + 0x58], r12
+  0x7698CE: mov rcx, rbx
+  0x7698D1: mov qword ptr [rsp + 0x60], r14
+  0x7698D6: mov qword ptr [rsp + 0x68], r15
+  0x7698DB: call 0x1409e7fa0 ; target=0x9E7FA0
+  0x7698E0: xor r14d, r14d
+  0x7698E3: mov ebp, eax
+  0x7698E5: mov r12d, r14d
+  0x7698E8: mov r15d, r14d
+  0x7698EB: sub edi, 3
+  0x7698EE: je 0x140769918
+  0x7698F0: sub edi, 1
+  0x7698F3: je 0x140769908
+  0x7698F5: cmp edi, 1
+  0x7698F8: jne 0x140769928
+  0x7698FA: lea edx, [rdi + 4]
+  0x7698FD: mov rcx, rbx
+  0x769900: call 0x1409e7fa0 ; target=0x9E7FA0
+  0x769905: movsxd r15, eax
+  0x769908: mov edx, 4
+  0x76990D: mov rcx, rbx
+  0x769910: call 0x1409e7fa0 ; target=0x9E7FA0
+  0x769915: movsxd r12, eax
+  0x769918: mov edx, 3
+  0x76991D: mov rcx, rbx
+  0x769920: call 0x1409e7fa0 ; target=0x9E7FA0
+  0x769925: movsxd r14, eax
+  0x769928: cmp ebp, 0x389
+  0x76992E: jne 0x140769934
+  0x769930: xor ecx, ecx
+  0x769932: jmp 0x14076993e ; target=0x76993E
+  0x769934: cmp ebp, 0x38b
+  0x76993A: jne 0x140769943
+  0x76993C: mov cl, 1
+  0x76993E: call 0x140533e30 ; target=0x533E30
+  0x769943: mov r9, r12
+  0x769946: mov qword ptr [rsp + 0x20], r15
+  0x76994B: mov r8, r14
+  0x76994E: mov edx, ebp
+  0x769950: mov rcx, rsi
+  0x769953: call 0x140769990 ; target=0x769990
+  0x769958: mov r15, qword ptr [rsp + 0x68]
+  0x76995D: xor eax, eax
+  0x76995F: mov r14, qword ptr [rsp + 0x60]
+  0x769964: mov r12, qword ptr [rsp + 0x58]
+  0x769969: mov rbp, qword ptr [rsp + 0x50]
+  0x76996E: add rsp, 0x30
+  0x769972: pop rdi
+  0x769973: pop rsi
+  0x769974: pop rbx
+  0x769975: ret 
+
