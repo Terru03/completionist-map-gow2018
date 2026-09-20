@@ -1657,3 +1657,61 @@ The tracer is intentionally bounded and static/read-only. It will:
 ## Exact next action
 
 Run the new static tracer and inspect its pushed report. If it resolves one coherent staged-record owner/layout, build a minimal ReadProcessMemory observer for only that structure and feed those exact staged bytes into the already-solved custom-userdata/Raven decoder. Do not return to raw arena scanning or save-ring timestamp inference.
+
+
+---
+
+# Addendum 2026-09-20 - staged WAD layout narrowed; targeted read-only Raven observer added
+
+Static evidence commit: `a3a98b8819cf43fc0f9dba2af5da4499dc7f1b00`  
+Evidence: `archive/field-logs/source-scans/raven-staged-restore-records-20260920-205034/`
+
+## Proven bridge
+
+The static trace reports `restore_bridge_status=PASS`.
+
+- `0x465143` and `0x4651E2` are exact `call [vtable+0x80]` restore dispatches.
+- Base LuaClient vtable candidate `0xE03630` has `+0x80 = 0x5A6C10`.
+- LuaClient vtable `0xE04018` has `+0x80 = 0x5B2280`; this vtable is referenced by the known LuaContext/client constructor `0x4654A0`.
+- `0x5AECAD -> 0x7E9550` and `0x5B22C3 -> 0x7E9550` are exact direct calls to the solved restore root.
+
+This converts the interrupted Astra bridge finding into archived static proof.
+
+## Staged WAD record layout
+
+The strongest staging owner is `0x668683..0x66878B`, which touches all five relevant fields in one ingest/copy path.
+
+Recovered runtime layout candidate, now narrow enough for direct observation:
+
+- payload pool size: module `+0x22C6938` (u32)
+- payload pool base: module `+0x22C6940` (pointer)
+- record count: module `+0x22C696C` (u32)
+- inline record base: module `+0x22C7170`
+- record stride: `0xA8`
+- per-record lookup key: `+0x24`
+- per-record payload pointer fields: `+0x48`, `+0x50`
+- per-record payload byte size: `+0x58`
+- per-record name/string storage begins at `+0x84` and fits the remaining `0x24` bytes of the record.
+
+At `0x66871D..0x668758`, the ingest path computes the current payload pointer from the global pool base + size, advances the global payload size, then writes the payload pointer into record `+0x48/+0x50` and the byte count into `+0x58`. This is the smallest current candidate for exact staged checkpoint bytes before WAD-specific Lua restore.
+
+## Targeted runtime observer
+
+Added:
+
+- `tools/v0.10.5/capture-staged-wad-raven-state-readonly.py` in commit `018c6fb333477824bed05f6688ed3efdc094d844`
+- `tools/v0.10.5/capture-staged-wad-raven-state-readonly-and-push.ps1` in commit `0fed2b4c7c55b3d7246afe27ba237af41b6dc518`
+
+The observer uses only `PROCESS_VM_READ|PROCESS_QUERY_INFORMATION`. It reads exactly the staged record table and payload extents referenced by it, validates payload pointers against the proven pool extent, and then reuses the solved carrier/GameObject decoder. It records:
+
+- staged record names/keys/sizes;
+- exact serialized Raven identity hits across the 53-entry catalogue;
+- decoded custom-userdata carriers;
+- exact `ravenKilled=true/false` states where present;
+- conflicts fail closed.
+
+No arbitrary memory scan, debugger, process write, save access/write, or progression write is used.
+
+## Next acceptance test
+
+Run the staged WAD observer against the loaded almost-complete save. Success means the staged record set exposes exact Raven identities and `ravenKilled` states for unloaded/nonresident WADs as well as the current WAD. If successful, this becomes the authority source for map-open reconstruction. If it only exposes resident WAD records, use its exact record names/layout to identify the higher-level retained checkpoint container rather than returning to broad memory scans.
