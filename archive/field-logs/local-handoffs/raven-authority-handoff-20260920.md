@@ -1515,3 +1515,69 @@ New inspection tools:
 - `tools/v0.10.5/inspect-thunk-persistence-hooks-and-push.ps1`
 
 This scan is local-source-only and should be interpreted before considering a native detour/instrumentation bridge.
+
+
+---
+
+# Addendum 2026-09-20 23:24 - core.thunk persistence route CLOSED; Astra High native pass prepared
+
+Evidence commit from the user-run scan: `238bce84e2ff2f09c3f91234a48886376eeb191a`  
+Evidence: `archive/field-logs/source-scans/thunk-persistence-hooks-20260920-202255/`
+
+The extracted Lua-source inspection completed successfully:
+
+```text
+lua_files_scanned=500
+thunk_install_count=75
+unique_names=55
+semantic_thunk_install_names=0
+```
+
+## Conclusion
+
+`core.thunk` is a genuine shipped hook multiplexer, but no installed thunk names provide a persistence / restore / pickle-facing interception surface. Together with the already-closed `engine.SerializeHook` route, this removes the remaining ordinary Lua-hook option for observing the authoritative pre-token Raven restore stream.
+
+Do **not** repeat searches for a conventional `thunk.Install("OnRestoreCheckpoint", ...)` solution unless later native evidence exposes a previously hidden hook name.
+
+## Current strongest boundary
+
+The unresolved bridge is now specifically the **indirect native dataflow** between the active checkpoint/save loader and the solved custom-userdata restore machinery:
+
+Checkpoint/load side:
+- `0x66CB30`
+- `0x66ABD0`
+- `0x6687F0`
+- `0x669300`
+- `0x669B00`
+- `0x66B650`
+- `0x66C080`
+
+Restore side:
+- `0x5AEC9E`
+- `0x5B2280`
+- `0x7E9550`
+- `0x7E7660`
+- `0x7E7B60`
+- `0x7E9190`
+
+Existing direct-call indexing finds no bridge, so the next pass must resolve indirect calls, vtable/interface ownership, callback registration, job/event dispatch, or equivalent data-driven control flow.
+
+The desired interception point is before serialized GameObject identity is converted into opaque runtime tokens, while each custom-userdata record still carries exact persistent identity plus the Raven checkpoint payload.
+
+## Astra High task
+
+Prepared task:
+
+`docs/research/ASTRA-v0105-raven-restore-interceptor-task.md`
+
+Task creation commit:
+
+`5bbf2877b8097252b1325120c20ca7b6284b7345`
+
+Use Astra High for this pass. It is deliberately scoped to recovering the indirect native restore bridge and, if static proof is insufficient, building the smallest self-logging **read-only** observer needed to prove whether all persisted Raven records pass through the restore stream irrespective of WAD residency.
+
+Validation remains the exact Veithurgard fixture:
+
+`false, true, true` and independent RegionSummary `2/3`.
+
+No save/progression writes, no force-load strategy, no nearest-coordinate or aggregate-only inference.
