@@ -559,3 +559,51 @@ Global **`0x1078F4C`** is now the strongest native physical-slot state anchor. I
 The public UI selected-slot global `0x11BDB5C` only has 3 refs and is the pre-load UI selection. `0x1078F4C` is the better candidate for the native loaded physical slot.
 
 Next step: inspect every `0x1078F4C` reference function, especially the large `0x67FE20-0x680EFC` owner around `0x680A0D`, and trace those functions toward the known save/restore/carrier stack. Do not redo UI getter/event/root probes.
+
+---
+
+# Addendum 2026-09-20 21:09 - physical slot lifetime and active-slot handoff
+
+Evidence commit: `a78d60079b04e0b88c8913f83f8417b50626e4d4`  
+Evidence: `archive/field-logs/source-scans/native-load-slot-global-20260920-210702/`
+
+All 9 native xrefs to physical-slot global **`0x1078F4C`** were traced.
+
+## Important lifecycle result
+
+The large state-transition owner `0x67FE20-0x680EFC` accesses `0x1078F4C` at `0x680A0D` and explicitly writes **`-1`** after the game has handled `OnStartGameFromThisLevel` and associated load-transition state.
+
+Relevant sequence around `0x680A06-0x680A17`:
+
+- reset related slot/checkpoint globals (`0x1078EBC`, `0x1078F48`, `0x1078F78`);
+- clear load-state byte `0x2D3755E`;
+- write **`0xFFFFFFFF` to `0x1078F4C`**;
+- mark the post-load state via adjacent flags.
+
+Conclusion: **`0x1078F4C` is authoritative only during the load transition and is intentionally discarded once gameplay takes over.** It cannot be the long-lived runtime authority source by itself.
+
+## Active slot-backed state before reset
+
+Before the slot is reset, the save subsystem copies/binds the selected slot's `0x148` metadata entry from per-slot base `0x4FE8210` into active globals and slot-backed regions, including:
+
+- `0x22C67D0`
+- `0x22C67B0`
+- `0x22C67B8`
+- `0x22C6148`
+- related `0x22C67xx` globals
+
+The initialization/selection owner `0x6626B0` uses `0x1078F4C` to copy the chosen `0x148` slot metadata into the live active block and then invokes `0x661C00`, `0x661CC0`, `0x661BC0`, and `0x66C080`.
+
+## Checkpoint file path owner
+
+`0x66ABD0-0x66B048` is confirmed inside the same subsystem and constructs/opens:
+
+```text
+checkpoint.SGA
+/data
+%s/%s%s
+```
+
+It calls file/stream helpers around `0x9C4CC0`, `0x9C4510`, `0x9C44B0`, and `0x9C5840`, then continues through save/checkpoint processing helpers.
+
+Next target: trace the active globals/buffers copied from the selected physical slot—especially `0x22C67D0`, `0x22C67B0`, and `0x22C67B8`—and the `checkpoint.SGA` read path toward the already-solved restore/carrier routines. The objective is to find a long-lived in-memory loaded-checkpoint buffer or decoded authority structure that survives after `0x1078F4C` is reset.
