@@ -462,3 +462,28 @@ The `EngineEvents` names are present in `_G.EngineEvents`, but these load/save e
 ### Remaining productive direction
 
 Use the existing reusable static index to identify the native save/load manager / current restored-save owner and trace the in-memory authority path. A native helper is only worth considering if the installed mod stack exposes a practical extension point; do not assume `package.loadlib` is viable because that route already failed.
+
+---
+
+# Addendum 2026-09-20 19:27 - current save slot semantics
+
+Evidence commit: `53bf3b1d36b1ea8f67767bee80ed38a10b7a0b7a`  
+Evidence: `archive/field-logs/runtime-captures/current-save-slot-20260920-192423/`
+
+The shipped save utility uses `local UI = game.UI` and performs:
+
+```lua
+local slotIndex = GetSaveSlotIndex(saveData)
+UI.SetCurrentSlot(slotIndex)
+UI.LoadSaveGame()
+```
+
+A read-only runtime probe confirmed `game.UI.GetCurrentSlot` and `game.UI.IsSlotValid` are callable. During a main-menu load of the almost-done save, the three observed UI-context initializations returned:
+
+- before load: `slot=-1`, `IsSlotValid(-1)=false`
+- after load: `slot=-1`, `IsSlotValid(-1)=true`
+- gameplay context: `slot=-1`, `IsSlotValid(-1)=true`
+
+Conclusion: after the load transition, `-1` is the special current/checkpoint slot. It is **not** the physical save-ring slot index needed to bind the authoritative Raven carrier. Do not use `GetCurrentSlot()==-1` as a ring selector.
+
+Next target: trace the real index between `SetCurrentSlot(realIndex)` and the native `LoadedIntoSaveSlot` path. Static anchors are `0x533E30` and its sole external caller `0x7698BF`, plus the native handlers registered for `GetCurrentSlot` / `SetCurrentSlot`.
