@@ -727,3 +727,51 @@ This is the first function/object family statically tied to both the loaded chec
 The checkpoint side also contains indirect dispatches at `0x66ABD0`, `0x669300`, and `0x669B00`, while `0x7E9550` has indirect calls at `0x7E984F` and `0x7E995E`. These may use the shared `.rdata` objects as type/vtable/descriptor tables.
 
 Next target: classify `0xD9E6B0` and `0xD9E4E8` (vtable/type/descriptor/dispatch structure), fully analyze `0x9ECF00` and its callers/callees, and resolve whether the checkpoint-side indirect dispatch reaches the same implementation family used by `0x7E9550`.
+
+---
+
+# Addendum 2026-09-20 21:44 - shared-rdata bridge lead CLOSED
+
+Evidence commit: `ccaf07dde92cd5d1f9887382879a1d960554338f`  
+Evidence: `archive/field-logs/source-scans/shared-rdata-restore-bridge-20260920-214151/`
+
+The two shared `.rdata` targets previously seen from both checkpoint-side and restore-side functions are **not save/restore bridge descriptors**. They are generic Lua-runtime constants and therefore the overlap is incidental.
+
+## `0xD9E6B0`
+
+The bytes beginning at `0xD9E6C0` are the canonical 256-entry ceiling-log2 lookup pattern:
+
+```text
+0,1,2,2,3,3,3,3,4...5...6...7...8...
+```
+
+This is a generic Lua runtime helper table used broadly throughout the VM. It has 1,619 exact xrefs, confirming it is not a save-specific object.
+
+## `0xD9E4E8`
+
+This region is adjacent to the embedded Lua 5.2.3 identification string beginning at `0xD9E510`:
+
+```text
+$LuaVersion: Lua 5.2.3 ...
+```
+
+It likewise belongs to Lua runtime static data, not checkpoint authority.
+
+## `0x9ECF00`
+
+`0x9ECF00` is therefore a Lua VM helper, not a checkpoint/save bridge. Its presence on both sides reflects the fact that both checkpoint loading and carrier restoration manipulate Lua values/tables.
+
+**Closed lead:** do not use `0xD9E6B0`, `0xD9E4E8`, or `0x9ECF00` as evidence of a save/checkpoint authority bridge.
+
+## Next direction
+
+Return to the proven checkpoint callback path rather than generic Lua internals. Static anchors already established:
+
+- per-subobject restore: `0x5AD4A0`
+- `__subobjs` lookup: `0x5AD51F`
+- packed GameObject token push: `0x5AD597`
+- `OnRestoreCheckpoint(level, subobject, savedInfo)`: `0x5AD5F3`
+- save-side symmetry around `0x174B78` / `0x174B98`
+- helper `0x5A3CE0` references `_SUBOBJECTS` and invokes Lua dispatch indirectly.
+
+Next target: resolve exactly how the active checkpoint/save buffers are transformed into the `__subobjs` table consumed by `0x5AD4A0`, and whether the table/root remains reachable after load. Focus on the direct callers/ancestors of `0x5AD4A0` and `0x5A3CE0`, plus their shared non-Lua-runtime globals. Do not revisit generic Lua `.rdata` tables.
