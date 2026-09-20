@@ -658,3 +658,72 @@ This strongly ties those smaller live buffers to checkpoint-file processing rath
 The 4 MiB buffer/descriptor is a generic active serialization workspace. It is allocated/freed centrally and used by bounded stream helpers, but direct indexed call paths from its xref owners to the known Raven restore/carrier stack were not found. This suggests the final handoff into restore is through an indirect/vtable/callback dispatch, not a simple direct call edge.
 
 Next target: bridge the `checkpoint.SGA` processing side to the known restore side from both directions. Analyze forward descendants of checkpoint readers/binders and reverse ancestors of `0x5AEC9E`, `0x5B2280`, and `0x7E9550`; intersect direct functions, shared data globals, and indirect-call tables. Also inspect central helpers `0x661CC0`, `0x661E30`, and the checkpoint processing functions reached from `0x66ABD0`.
+
+---
+
+# Addendum 2026-09-20 21:34 - first checkpoint/restore static intersection
+
+Evidence commit: `67c423eb7461cabef7defe53cdcaf4d7805579a0`  
+Evidence: `archive/field-logs/source-scans/checkpoint-restore-bridge-20260920-213242/`
+
+A two-sided graph/data analysis was run from the checkpoint/save subsystem toward the known Raven restore stack.
+
+## Direct-call graph
+
+Within depth 7:
+
+- checkpoint-side forward reachable functions: **571**
+- restore-side reverse reachable functions: **6**
+- common direct-call functions: **0**
+
+This confirms the missing handoff is not represented as an ordinary direct-call edge in the current index.
+
+## First concrete static intersection
+
+Two shared native `.rdata` targets are referenced from both sides:
+
+### `0xD9E6B0`
+
+Checkpoint-side references include:
+
+- `0x5A3CE0`
+- `0x782FE0`
+- `0x9E44B0`
+- `0x9E8190`
+- `0x9ECF00`
+- `0x9ED450`
+- `0x9ED520`
+
+Restore-side references include:
+
+- `0x5B2280`
+- `0x7E7660`
+- `0x7E9550`
+
+### `0xD9E4E8`
+
+Checkpoint-side references include:
+
+- `0x9EC6C0`
+- `0x9ECE90`
+- `0x9ECF00`
+- `0x9EDFC0`
+
+Restore-side references include:
+
+- `0x7E7660`
+- `0x7E9550`
+
+## Strongest bridge candidate
+
+**`0x9ECF00` is especially important:**
+
+- it is reachable from the checkpoint/save side;
+- it references **both** shared `.rdata` objects;
+- `0x7E9550` directly calls `0x9ECF00` at `0x7E99C9`.
+
+This is the first function/object family statically tied to both the loaded checkpoint path and the already-solved Raven carrier restore path.
+
+The checkpoint side also contains indirect dispatches at `0x66ABD0`, `0x669300`, and `0x669B00`, while `0x7E9550` has indirect calls at `0x7E984F` and `0x7E995E`. These may use the shared `.rdata` objects as type/vtable/descriptor tables.
+
+Next target: classify `0xD9E6B0` and `0xD9E4E8` (vtable/type/descriptor/dispatch structure), fully analyze `0x9ECF00` and its callers/callees, and resolve whether the checkpoint-side indirect dispatch reaches the same implementation family used by `0x7E9550`.
