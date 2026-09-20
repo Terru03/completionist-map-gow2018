@@ -516,3 +516,46 @@ Inside `0x66CB30`:
 - the current static function index incorrectly ends the routine at `0x66CB68`, but the real control flow branches forward to **`0x66CD09`**.
 
 Therefore the failed shortest-path search from `0x66CB30` to the known restore/carrier functions is not evidence of separation; the index boundary truncates the real load routine. Next step is raw contiguous disassembly through the forward branch plus xrefs to `0x1078F4C` and the public slot globals.
+
+---
+
+# Addendum 2026-09-20 20:52 - contiguous physical-slot loader resolved
+
+Evidence commit: `555e51a62d78eed86a88f4cc6bf0d63a8823f340`  
+Evidence: `archive/field-logs/source-scans/save-slot-contiguous-control-flow-20260920-205117/`
+
+The raw contiguous disassembly resolves the misleading function-boundary issue around `0x66CB30`.
+
+## Confirmed loader behavior
+
+`0x66CB30` really continues through the forward branches and returns at `0x66CD0E`. The indexed fragments between `0x66CB30` and `0x66CD09` are one contiguous logical load-slot routine.
+
+It performs:
+
+- normalize requested physical slot to `0..9` or `-1`;
+- store normalized slot in **`0x1078F4C`**;
+- clear/reset load-state byte **`0x2D3755E`**;
+- consult load-state flag **`0x2D375C6`**;
+- for valid slot entries, copy the selected per-slot metadata block from base **`0x4FE8210`** with stride **`0x148`** into active globals around `0x22C67xx`;
+- call `0x661A60` to bind/copy slot-backed regions;
+- optionally call `0x681CA0` before returning when the relevant load mode is active.
+
+Important correction to the prior handoff: **`0x66CD09` is only the epilogue/return path**, not a separate downstream decode routine.
+
+## Native physical-slot authority global
+
+Global **`0x1078F4C`** is now the strongest native physical-slot state anchor. It has 9 indexed RIP references:
+
+- `0x6628B7` in `0x6626B0-0x662A87`
+- `0x66AF4C` in `0x66ABD0-0x66B048`
+- `0x66B888` in `0x66B650-0x66BA04`
+- `0x66C09D` in `0x66C080-0x66C22C`
+- `0x66C256` in `0x66C240-0x66C38C`
+- `0x66C85F` in `0x66C840-0x66C86F`
+- `0x66CB5C` in `0x66CB30-0x66CB68`
+- `0x680A0D` in `0x67FE20-0x680EFC`
+- `0x768BED` in `0x768BB0-0x768BFD`
+
+The public UI selected-slot global `0x11BDB5C` only has 3 refs and is the pre-load UI selection. `0x1078F4C` is the better candidate for the native loaded physical slot.
+
+Next step: inspect every `0x1078F4C` reference function, especially the large `0x67FE20-0x680EFC` owner around `0x680A0D`, and trace those functions toward the known save/restore/carrier stack. Do not redo UI getter/event/root probes.
