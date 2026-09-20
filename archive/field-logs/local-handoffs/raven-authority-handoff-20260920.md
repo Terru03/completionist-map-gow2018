@@ -1772,3 +1772,50 @@ The new capture remains bounded to the proven staged table/payload pool. For eve
 ## Exact next boundary
 
 If `0x1BB001DD` appears as a staged `__subobjs` key in one of the Funeral records, the global checkpoint representation is directly joinable to the existing runtime GameObject-token work and we can generalise token generation/matching to all 53 Ravens. If it does not appear, use the captured class-key/payload-length patterns to identify the alternate checkpoint token encoding before any broader search.
+
+
+---
+
+# Addendum 2026-09-21 - staged SubObject capture proves exact GameObject identity survives globally
+
+Runtime evidence commit: `cdef58d2ef46889f1e8653209780969ef5607bc5`  
+Evidence: `archive/field-logs/runtime-captures/staged-wad-subobject-keys-readonly-20260920-210810/`
+
+The global staged WAD table does **not** use opaque 4-byte GameObject keys at this layer. Every captured `__subobjs` custom-record key uses a **17-byte GameObject save-reference payload**.
+
+Most important proof is `Xpl200_Funeral`:
+
+```text
+01b0b227342530c24ee561807520d55c16
+01b0b227342530c24ea0a803505c2eb7ad
+```
+
+These are exactly the two known non-Raven GameObject identities from the frozen VikingFuneral fixture. Their state rows contain `mapSummaryComplete=true`.
+
+The known Raven identity from the same frozen fixture:
+
+```text
+01b0b227342530c24ea9652dba0717be98
+```
+
+is absent from the first staged payload pool. The broader 53-Raven exact-identity scan also found zero Raven identities there.
+
+Therefore:
+
+1. the global staged WAD table preserves the solved persistent GameObject identity format exactly;
+2. identity decoding/joining is no longer the blocker;
+3. the first staged payload channel contains ordinary WAD checkpoint state, including the two companion Funeral GameObjects;
+4. Raven `ravenKilled` persistence must be carried in a **parallel checkpoint/SoftPickle channel** associated with the same global WAD/save machinery, rather than being transformed into an opaque runtime token at this point.
+
+The prior expectation that `0x1BB001DD` should appear directly in this staged carrier was therefore incorrect; zero hits are now explained by the fact that this layer still stores the 17-byte save-reference form.
+
+New static tooling added to locate the parallel stream without broad scanning:
+
+- `tools/v0.10.5/trace-staged-wad-parallel-channels.py` in commit `85b79785fb98ad83fd455f789ef85be113170c8b`
+- `tools/v0.10.5/trace-staged-wad-parallel-channels-and-push.ps1` in commit `1295ade78a9a18533a39184002ca808c78a4b79d`
+
+The tracer enumerates all RIP-referenced globals in the narrow staging band `0x22C6900..0x22C7200`, references into the `0xA8` WAD-record structure, and full disassembly for the checkpoint creation/consumption functions around `0x667xxx`, `0x668xxx`, `0x669xxx`, and `0x82Dxxx`.
+
+## Exact next target
+
+Identify the neighbouring pointer/size globals or per-record descriptor used by the parallel SoftPickle/checkpoint stream. Then capture only that stream for `Xpl200_Funeral` and test for the exact Raven payload `01b0...a9652dba0717be98` plus its `ravenKilled` state. Do not return to broad memory scanning or save-ring authority inference.
