@@ -1420,3 +1420,79 @@ Trace the allocator primitives used by the solved payload materialization path:
 - `0x5AB340` — large backing allocation during 0x30-byte node creation.
 
 Goal: recover the allocator control structure and live-allocation metadata well enough to enumerate the actual length-prefixed normal/soft blobs in read-only memory. Do not repeat raw arena signature scans unless live allocation extents become known.
+
+---
+
+# Addendum 2026-09-20 23:xx - LuaContext +0x178 backing-cache route CLOSED
+
+Allocator evidence commit: `12f100c3b0906158c4a791c9b8f96b70892ba5a6`  
+Allocator trace: `archive/field-logs/source-scans/lua-backing-allocator-primitives-20260920-201720/`
+
+The allocator trace changes the interpretation of the `LuaContext+0x178` list. These entries are **reusable backing allocator/cache blocks**, not durable per-WAD checkpoint state.
+
+## Exact allocator facts
+
+`0xD21A90` is the allocator used by `0x5A6430`. For a requested payload size it:
+
+- rounds the internal chunk size to at least `0x20` and otherwise 16-byte alignment;
+- stores the chunk size/flags in the 8 bytes immediately before the returned user pointer;
+- returns `chunk_base + 0x10`;
+- tracks allocated bytes at allocator `+0x3A8`;
+- uses allocator `+0x28` as the **moving wilderness/free-tail pointer** and allocator `+0x10` as remaining wilderness bytes.
+
+`0xD21DD0` is the matching free/coalesce path.
+
+`0xD1F7F0` initializes the allocator. The object layout observed in the runtime capture matches it exactly:
+
+```text
+cache_node +0x20 -> owner object (inline immediately after node)
+cache_node +0x28 -> allocator object = owner +0x10
+allocator +0x18 -> owner object
+allocator +0x10 -> full free wilderness size
+allocator +0x28 -> initial wilderness start
+allocator +0x30 -> threshold/limit field
+allocator +0x38 -> -1 initially
+allocator +0x3A8 -> allocated-byte counter
+```
+
+## Runtime proof that these cached allocators are empty
+
+For every sampled non-empty `LuaContext+0x178` entry from the read-only capture:
+
+```text
+allocator +0x00 = 0
+allocator +0x08 = 0
+allocator +0x10 = full usable size
+allocator +0x20 = 0
+allocator +0x28 = initial wilderness start
+```
+
+Example:
+
+```text
+node     = 0x...6C50
+owner    = 0x...6C80 = node+0x30
+allocator= 0x...6C90 = owner+0x10
+free size= 0x7FBF0
+wilderness start = allocator+0x3B0
+```
+
+No live allocations are present. This exactly explains why scanning ~69.6 MB from the wilderness regions found zero Raven/checkpoint signatures.
+
+## Corrected architectural conclusion
+
+The `LuaContext+0x178` list is a **cache/pool of reusable backing allocator blocks keyed by profile/size**, not a retained serialized-state authority. The repeated `node+0x18` values and size coupling are allocator-profile keys, not WAD identities.
+
+**Close this route.** Do not perform further arena scans, allocator allocation walks, WAD-key correlation, or treat these nodes as historical checkpoint state.
+
+## Return to strongest unresolved authority boundary
+
+The remaining strongest route is the already-solved global custom-userdata restore path:
+
+- restore root `0x7E9550`;
+- carrier descriptor `0x7E7660`;
+- record dispatch `0x7E7B60`;
+- custom-userdata restore callback at class slot `+0xC0`;
+- save-carrier Raven identities are already solved for all 53.
+
+Target the point **before** GameObject userdata is converted into opaque runtime tokens, where the restore machinery still has the serialized custom-userdata record. Determine whether the existing Lua hook/thunk infrastructure can observe this callback or whether a minimal native read-only/instrumentation bridge is required. Avoid returning to save-ring timestamp/slot inference.
