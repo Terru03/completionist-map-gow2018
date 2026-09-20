@@ -607,3 +607,54 @@ checkpoint.SGA
 It calls file/stream helpers around `0x9C4CC0`, `0x9C4510`, `0x9C44B0`, and `0x9C5840`, then continues through save/checkpoint processing helpers.
 
 Next target: trace the active globals/buffers copied from the selected physical slot—especially `0x22C67D0`, `0x22C67B0`, and `0x22C67B8`—and the `checkpoint.SGA` read path toward the already-solved restore/carrier routines. The objective is to find a long-lived in-memory loaded-checkpoint buffer or decoded authority structure that survives after `0x1078F4C` is reset.
+
+---
+
+# Addendum 2026-09-20 21:31 - active save/checkpoint buffer layout
+
+Evidence commit: `86e265587a2fab09a2d93bef2f57f79e88564468`  
+Evidence: `archive/field-logs/source-scans/active-save-buffers-20260920-212713/`
+
+The active save/checkpoint workspace is now mapped by native xrefs.
+
+## Live buffers and descriptors
+
+- **`0x22C67A8`**: 4 MiB allocation pointer.
+- **`0x22C6788`**: 16-byte descriptor wrapping the 4 MiB allocation; fields include base pointer and size `0x400000`.
+- **`0x22C6928`**: `0x20000` companion buffer.
+- **`0x22C67B8`**: `0x10000` companion buffer.
+- **`0x22C67B0`**: another `0x20000` companion buffer.
+- **`0x22C67D0`**: active `0x148` slot metadata block.
+- **`0x22C6148`** and related `0x22C67xx` globals are part of the active slot-backed region set.
+
+Allocation/free helpers:
+
+- `0x661F40` allocates the 4 MiB buffer and descriptor.
+- `0x661EB0` frees/clears them.
+- `0x661D18` consumes the descriptor as a bounded byte reader/writer using descriptor fields `base`, `size`, and cursor.
+
+## Slot binding
+
+`0x66239D` is a concrete active-slot binding routine. It:
+
+- selects/copies the `0x148` metadata entry;
+- invokes `0x661C00` for slot bookkeeping;
+- invokes `0x661CC0` repeatedly to bind slot-backed regions into:
+  - `0x22C6148`,
+  - `0x22C67B8`,
+  - `0x22C67B0`;
+- calls `0x661BC0` after binding.
+
+The offsets use the known per-slot stride `0x1998C8`.
+
+## Checkpoint path relationship
+
+`0x66ABD0`, which explicitly constructs/opens `checkpoint.SGA`, directly references the active `0x10000` and `0x20000` buffers (`0x22C67B8`, `0x22C67B0`) plus `0x22C6148`.
+
+This strongly ties those smaller live buffers to checkpoint-file processing rather than UI-only state.
+
+## 4 MiB workspace interpretation
+
+The 4 MiB buffer/descriptor is a generic active serialization workspace. It is allocated/freed centrally and used by bounded stream helpers, but direct indexed call paths from its xref owners to the known Raven restore/carrier stack were not found. This suggests the final handoff into restore is through an indirect/vtable/callback dispatch, not a simple direct call edge.
+
+Next target: bridge the `checkpoint.SGA` processing side to the known restore side from both directions. Analyze forward descendants of checkpoint readers/binders and reverse ancestors of `0x5AEC9E`, `0x5B2280`, and `0x7E9550`; intersect direct functions, shared data globals, and indirect-call tables. Also inspect central helpers `0x661CC0`, `0x661E30`, and the checkpoint processing functions reached from `0x66ABD0`.
