@@ -870,3 +870,21 @@ Next target: statically recover the backing-node structure and resource-key iden
 4. whether an existing Lua-visible/native callback path can expose these cached chunks read-only at runtime.
 
 Do not repeat broad Unpickle-root, `__prevunpickle`, save-event, registry-sweep, or generic Lua-runtime probes.
+
+---
+
+# Addendum 2026-09-20 21:58 - backing-cache capture output handling
+
+The durable backing-cache node trace completed successfully in commit `c1373d6d71be8bf140335daa7829101634216bd6`, but its raw output was too large for reliable GitHub connector retrieval:
+
+- `report.json` ~51 MB
+- `report.txt` ~2.2 MB
+
+A first compact pass still retained 1,113 neighbourhood functions and remained oversized. No new technical conclusion should be inferred from that output-size issue.
+
+To avoid rerunning the static analysis, the branch now contains an essentials-only postprocessor:
+
+- `tools/v0.10.5/extract-lua-backing-cache-essentials.py`
+- `tools/v0.10.5/extract-lua-backing-cache-essentials-and-push.ps1`
+
+It reads the existing capture only and emits the six decisive lifecycle functions, cache insert/lookup/creator/helper sequences, and node-field accesses. Use this compact artifact for the next interpretation step rather than repeating the 51 MB trace.
