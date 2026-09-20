@@ -54,45 +54,76 @@ def infer_metadata(data: bytes, pair_count: int, max_candidates: int = 128):
     """Infer used tag widths from exact metadata span length.
 
     Restore proves tag <= 5 and encoded widths in {2,3,5}. It consumes two
-    tagged scalars per metadata entry. We assign widths lazily per observed tag
-    and require exactly 2*pair_count tokens to consume the complete span.
+    tagged scalars per metadata entry. Real checkpoint carriers can exceed
+    Python's recursion depth, so solve the tiny tag-width state space with an
+    explicit stack and reconstruct token rows only for complete candidates.
     """
     token_count = 2 * pair_count
     results: list[dict] = []
+    stack: list[tuple[int, int, dict[int, int]]] = [(0, 0, {})]
+    seen: set[tuple[int, int, tuple[tuple[int, int], ...]]] = set()
 
-    def visit(pos: int, token_index: int, mapping: dict[int, int], tokens: list[MetadataToken]):
-        if len(results) >= max_candidates:
-            return
+    def build_tokens(mapping: dict[int, int]) -> list[dict]:
+        pos = 0
+        tokens: list[dict] = []
+        for token_index in range(token_count):
+            if pos >= len(data):
+                return []
+            tag = data[pos]
+            width = mapping.get(tag)
+            if width is None or width not in WIDTHS:
+                return []
+            end = pos + width
+            if end > len(data):
+                return []
+            tokens.append(asdict(MetadataToken(
+                token_index, tag, width, data[pos:end].hex()
+            )))
+            pos = end
+        return tokens if pos == len(data) else []
+
+    while stack and len(results) < max_candidates:
+        pos, token_index, mapping = stack.pop()
+        state = (pos, token_index, tuple(sorted(mapping.items())))
+        if state in seen:
+            continue
+        seen.add(state)
+
         if token_index == token_count:
             if pos == len(data):
-                results.append({
-                    "used_tag_widths": {str(k): v for k, v in sorted(mapping.items())},
-                    "tokens": [asdict(t) for t in tokens],
-                })
-            return
+                tokens = build_tokens(mapping)
+                if tokens or token_count == 0:
+                    results.append({
+                        "used_tag_widths": {
+                            str(k): v for k, v in sorted(mapping.items())
+                        },
+                        "tokens": tokens,
+                    })
+            continue
+
         remaining_tokens = token_count - token_index
         remaining_bytes = len(data) - pos
         if remaining_bytes < 2 * remaining_tokens or remaining_bytes > 5 * remaining_tokens:
-            return
+            continue
         if pos >= len(data):
-            return
+            continue
 
         tag = data[pos]
         if tag > 5:
-            return
+            continue
         choices = (mapping[tag],) if tag in mapping else WIDTHS
-        for width in choices:
+        # Reverse pushes so effective DFS order remains 2,3,5 bytes.
+        for width in reversed(tuple(choices)):
             end = pos + width
             if end > len(data):
                 continue
-            new_mapping = mapping
-            if tag not in mapping:
+            if tag in mapping:
+                new_mapping = mapping
+            else:
                 new_mapping = dict(mapping)
                 new_mapping[tag] = width
-            token = MetadataToken(token_index, tag, width, data[pos:end].hex())
-            visit(end, token_index + 1, new_mapping, tokens + [token])
+            stack.append((end, token_index + 1, new_mapping))
 
-    visit(0, 0, {}, [])
     return results
 
 
@@ -308,6 +339,16 @@ def command_selftest(_args):
         and c["used_tag_widths"].get("2") == 5
         for c in result["metadata_candidates"]
     )
+
+    # Regression: 600 pairs means 1,200 tokens, beyond Python's default
+    # recursion depth. Metadata inference must remain iterative.
+    deep_pairs = 600
+    deep_metadata = bytes((0, 0xA1)) * (2 * deep_pairs)
+    deep = infer_metadata(deep_metadata, deep_pairs, 8)
+    assert len(deep) == 1
+    assert deep[0]["used_tag_widths"] == {"0": 2}
+    assert len(deep[0]["tokens"]) == 2 * deep_pairs
+
     print("GOW_CUSTOM_USERDATA_CARRIER_SELFTEST_PASSED")
 
 
