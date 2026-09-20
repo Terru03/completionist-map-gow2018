@@ -1,0 +1,279 @@
+Completionist Map - contiguous __SoftPickleTable selector flow
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+window=0x5AEC60..0x5AF01C
+seeds=0x5AEC60,0x5AEFC0
+instructions=229 edges=15 calls=18 decode_errors=0
+
+REACHABLE INSTRUCTIONS
+0x005AEC60 4585c0                   test     r8d, r8d
+0x005AEC63 0f8e94020000             jle      0x1405aeefd
+0x005AEC69 4157                     push     r15
+0x005AEC6B 4883ec30                 sub      rsp, 0x30
+0x005AEC6F 4d8bf9                   mov      r15, r9
+0x005AEC72 440fb64c2468             movzx    r9d, byte ptr [rsp + 0x68] ; selector_flag_stack
+0x005AEC78 4584c9                   test     r9b, r9b
+0x005AEC7B 7507                     jne      0x1405aec84
+0x005AEC7D 80a128680100fe           and      byte ptr [rcx + 0x16828], 0xfe ; checkpoint_manager_flag
+0x005AEC84 488b4160                 mov      rax, qword ptr [rcx + 0x60]
+0x005AEC88 4885c0                   test     rax, rax
+0x005AEC8B 0f8496020000             je       0x1405aef27
+0x005AEC91 80b89801000000           cmp      byte ptr [rax + 0x198], 0 ; state_object_flag
+0x005AEC98 0f8489020000             je       0x1405aef27
+0x005AEC9E 48896c2448               mov      qword ptr [rsp + 0x48], rbp
+0x005AECA3 4c8bc2                   mov      r8, rdx
+0x005AECA6 488b6958                 mov      rbp, qword ptr [rcx + 0x58]
+0x005AECAA 488bcd                   mov      rcx, rbp
+0x005AECAD e89ea82300               call     0x1407e9550
+0x005AECB2 84c0                     test     al, al
+0x005AECB4 0f8438020000             je       0x1405aeef2
+0x005AECBA 488b4520                 mov      rax, qword ptr [rbp + 0x20]
+0x005AECBE 488b4d18                 mov      rcx, qword ptr [rbp + 0x18]
+0x005AECC2 48895c2440               mov      qword ptr [rsp + 0x40], rbx
+0x005AECC7 4889742458               mov      qword ptr [rsp + 0x58], rsi
+0x005AECCC 48897c2428               mov      qword ptr [rsp + 0x28], rdi
+0x005AECD1 4c89742420               mov      qword ptr [rsp + 0x20], r14
+0x005AECD6 4c8b7510                 mov      r14, qword ptr [rbp + 0x10] ; bit_or_scalar_0x10
+0x005AECDA 4c2b30                   sub      r14, qword ptr [rax]
+0x005AECDD 488b4118                 mov      rax, qword ptr [rcx + 0x18]
+0x005AECE1 49c1fe04                 sar      r14, 4
+0x005AECE5 4885c0                   test     rax, rax
+0x005AECE8 7e22                     jle      0x1405aed0c
+0x005AECEA 80795700                 cmp      byte ptr [rcx + 0x57], 0
+0x005AECEE 740a                     je       0x1405aecfa
+0x005AECF0 488bcd                   mov      rcx, rbp
+0x005AECF3 e888454400               call     0x1409f3280
+0x005AECF8 eb12                     jmp      0x1405aed0c
+0x005AECFA 4805800c0000             add      rax, 0xc80
+0x005AED00 48c7411880f3ffff         mov      qword ptr [rcx + 0x18], 0xfffffffffffff380
+0x005AED08 48014110                 add      qword ptr [rcx + 0x10], rax
+0x005AED0C 488bcd                   mov      rcx, rbp
+0x005AED0F e87ce14300               call     0x1409ece90
+0x005AED14 488b4d10                 mov      rcx, qword ptr [rbp + 0x10] ; bit_or_scalar_0x10
+0x005AED18 488d15c1508500           lea      rdx, [rip + 0x8550c1] ; ascii='package'@0xE03DE0
+0x005AED1F 488901                   mov      qword ptr [rcx], rax
+0x005AED22 c7410845000000           mov      dword ptr [rcx + 8], 0x45
+0x005AED29 488bcd                   mov      rcx, rbp
+0x005AED2C 4883451010               add      qword ptr [rbp + 0x10], 0x10
+0x005AED31 488b4520                 mov      rax, qword ptr [rbp + 0x20]
+0x005AED35 488b7510                 mov      rsi, qword ptr [rbp + 0x10] ; bit_or_scalar_0x10
+0x005AED39 482b30                   sub      rsi, qword ptr [rax]
+0x005AED3C 48c1fe04                 sar      rsi, 4
+0x005AED40 e8eb5b4300               call     0x1409e4930
+0x005AED45 488b5d10                 mov      rbx, qword ptr [rbp + 0x10] ; bit_or_scalar_0x10
+0x005AED49 488d1598508500           lea      rdx, [rip + 0x855098] ; ascii='loaded'@0xE03DE8
+0x005AED50 41b806000000             mov      r8d, 6
+0x005AED56 488bcd                   mov      rcx, rbp
+0x005AED59 e8925f4400               call     0x1409f4cf0
+0x005AED5E 488903                   mov      qword ptr [rbx], rax
+0x005AED61 488d53f0                 lea      rdx, [rbx - 0x10]
+0x005AED65 0fb64808                 movzx    ecx, byte ptr [rax + 8]
+0x005AED69 83c940                   or       ecx, 0x40
+0x005AED6C 894b08                   mov      dword ptr [rbx + 8], ecx
+0x005AED6F 488bcd                   mov      rcx, rbp
+0x005AED72 4c8b4d10                 mov      r9, qword ptr [rbp + 0x10] ; bit_or_scalar_0x10
+0x005AED76 4d8d4110                 lea      r8, [r9 + 0x10]
+0x005AED7A 4c894510                 mov      qword ptr [rbp + 0x10], r8 ; bit_or_scalar_0x10
+0x005AED7E 4983c0f0                 add      r8, -0x10
+0x005AED82 e8d9084400               call     0x1409ef660
+0x005AED87 488b5d10                 mov      rbx, qword ptr [rbp + 0x10] ; bit_or_scalar_0x10
+0x005AED8B 488d155e508500           lea      rdx, [rip + 0x85505e] ; ascii='core.pickle'@0xE03DF0
+0x005AED92 41b80b000000             mov      r8d, 0xb
+0x005AED98 488bcd                   mov      rcx, rbp
+0x005AED9B e8505f4400               call     0x1409f4cf0
+0x005AEDA0 488903                   mov      qword ptr [rbx], rax
+0x005AEDA3 488d53f0                 lea      rdx, [rbx - 0x10]
+0x005AEDA7 0fb64808                 movzx    ecx, byte ptr [rax + 8]
+0x005AEDAB 83c940                   or       ecx, 0x40
+0x005AEDAE 894b08                   mov      dword ptr [rbx + 8], ecx
+0x005AEDB1 488bcd                   mov      rcx, rbp
+0x005AEDB4 4c8b4d10                 mov      r9, qword ptr [rbp + 0x10] ; bit_or_scalar_0x10
+0x005AEDB8 4d8d4110                 lea      r8, [r9 + 0x10]
+0x005AEDBC 4c894510                 mov      qword ptr [rbp + 0x10], r8 ; bit_or_scalar_0x10
+0x005AEDC0 4983c0f0                 add      r8, -0x10
+0x005AEDC4 e897084400               call     0x1409ef660
+0x005AEDC9 488b5d10                 mov      rbx, qword ptr [rbp + 0x10] ; bit_or_scalar_0x10
+0x005AEDCD 488d1544508500           lea      rdx, [rip + 0x855044] ; ascii='Unpickle'@0xE03E18
+0x005AEDD4 41b808000000             mov      r8d, 8
+0x005AEDDA 488bcd                   mov      rcx, rbp
+0x005AEDDD e80e5f4400               call     0x1409f4cf0
+0x005AEDE2 488903                   mov      qword ptr [rbx], rax
+0x005AEDE5 488d53f0                 lea      rdx, [rbx - 0x10]
+0x005AEDE9 0fb64808                 movzx    ecx, byte ptr [rax + 8]
+0x005AEDED 83c940                   or       ecx, 0x40
+0x005AEDF0 894b08                   mov      dword ptr [rbx + 8], ecx
+0x005AEDF3 488bcd                   mov      rcx, rbp
+0x005AEDF6 4c8b4d10                 mov      r9, qword ptr [rbp + 0x10] ; bit_or_scalar_0x10
+0x005AEDFA 4d8d4110                 lea      r8, [r9 + 0x10]
+0x005AEDFE 4c894510                 mov      qword ptr [rbp + 0x10], r8 ; bit_or_scalar_0x10
+0x005AEE02 4983c0f0                 add      r8, -0x10
+0x005AEE06 e855084400               call     0x1409ef660
+0x005AEE0B 418d56ff                 lea      edx, [r14 - 1]
+0x005AEE0F 488bcd                   mov      rcx, rbp
+0x005AEE12 e809424300               call     0x1409e3020
+0x005AEE17 4c8b4510                 mov      r8, qword ptr [rbp + 0x10] ; bit_or_scalar_0x10
+0x005AEE1B 8d56ff                   lea      edx, [rsi - 1]
+0x005AEE1E 488b08                   mov      rcx, qword ptr [rax]
+0x005AEE21 498908                   mov      qword ptr [r8], rcx
+0x005AEE24 488bcd                   mov      rcx, rbp
+0x005AEE27 8b4008                   mov      eax, dword ptr [rax + 8]
+0x005AEE2A 41894008                 mov      dword ptr [r8 + 8], eax
+0x005AEE2E 4883451010               add      qword ptr [rbp + 0x10], 0x10
+0x005AEE33 4c8b5510                 mov      r10, qword ptr [rbp + 0x10] ; bit_or_scalar_0x10
+0x005AEE37 e8e4414300               call     0x1409e3020
+0x005AEE3C 488b08                   mov      rcx, qword ptr [rax]
+0x005AEE3F 49890a                   mov      qword ptr [r10], rcx
+0x005AEE42 8b4008                   mov      eax, dword ptr [rax + 8]
+0x005AEE45 41894208                 mov      dword ptr [r10 + 8], eax
+0x005AEE49 4883451010               add      qword ptr [rbp + 0x10], 0x10
+0x005AEE4E 488b4d10                 mov      rcx, qword ptr [rbp + 0x10] ; bit_or_scalar_0x10
+0x005AEE52 488b4520                 mov      rax, qword ptr [rbp + 0x20]
+0x005AEE56 4c8b742420               mov      r14, qword ptr [rsp + 0x20]
+0x005AEE5B 488d51d0                 lea      rdx, [rcx - 0x30]
+0x005AEE5F 488b7c2428               mov      rdi, qword ptr [rsp + 0x28]
+0x005AEE64 488bd9                   mov      rbx, rcx
+0x005AEE67 482b18                   sub      rbx, qword ptr [rax]
+0x005AEE6A b9c8000000               mov      ecx, 0xc8
+0x005AEE6F 0fb74546                 movzx    eax, word ptr [rbp + 0x46]
+0x005AEE73 4883eb10                 sub      rbx, 0x10
+0x005AEE77 488b742458               mov      rsi, qword ptr [rsp + 0x58]
+0x005AEE7C 66ffc0                   inc      ax
+0x005AEE7F 48c1fb04                 sar      rbx, 4
+0x005AEE83 66894546                 mov      word ptr [rbp + 0x46], ax
+0x005AEE87 663bc1                   cmp      ax, cx
+0x005AEE8A 7214                     jb       0x1405aeea0
+0x005AEE8C 0f84ae000000             je       0x1405aef40
+0x005AEE92 b9e1000000               mov      ecx, 0xe1
+0x005AEE97 663bc1                   cmp      ax, cx
+0x005AEE9A 0f8392000000             jae      0x1405aef32
+0x005AEEA0 66ff4544                 inc      word ptr [rbp + 0x44]
+0x005AEEA4 4533c0                   xor      r8d, r8d
+0x005AEEA7 488bcd                   mov      rcx, rbp
+0x005AEEAA e861bf4300               call     0x1409eae10
+0x005AEEAF 85c0                     test     eax, eax
+0x005AEEB1 7508                     jne      0x1405aeebb
+0x005AEEB3 488bcd                   mov      rcx, rbp
+0x005AEEB6 e805f14300               call     0x1409edfc0
+0x005AEEBB 488b5510                 mov      rdx, qword ptr [rbp + 0x10] ; bit_or_scalar_0x10
+0x005AEEBF b8ffff0000               mov      eax, 0xffff
+0x005AEEC4 66014544                 add      word ptr [rbp + 0x44], ax
+0x005AEEC8 488bca                   mov      rcx, rdx
+0x005AEECB 66014546                 add      word ptr [rbp + 0x46], ax
+0x005AEECF 488b4520                 mov      rax, qword ptr [rbp + 0x20]
+0x005AEED3 482b08                   sub      rcx, qword ptr [rax]
+0x005AEED6 4883e910                 sub      rcx, 0x10
+0x005AEEDA 48c1f904                 sar      rcx, 4
+0x005AEEDE 2bcb                     sub      ecx, ebx
+0x005AEEE0 83c103                   add      ecx, 3
+0x005AEEE3 7919                     jns      0x1405aeefe
+0x005AEEE5 488b5c2440               mov      rbx, qword ptr [rsp + 0x40]
+0x005AEEEA 488d42a0                 lea      rax, [rdx - 0x60]
+0x005AEEEE 48894510                 mov      qword ptr [rbp + 0x10], rax ; bit_or_scalar_0x10
+0x005AEEF2 488b6c2448               mov      rbp, qword ptr [rsp + 0x48]
+0x005AEEF7 4883c430                 add      rsp, 0x30
+0x005AEEFB 415f                     pop      r15
+0x005AEEFD c3                       ret      
+0x005AEEFE 488d42d0                 lea      rax, [rdx - 0x30]
+0x005AEF02 488bcd                   mov      rcx, rbp
+0x005AEF05 498bd7                   mov      rdx, r15
+0x005AEF08 48894510                 mov      qword ptr [rbp + 0x10], rax ; bit_or_scalar_0x10
+0x005AEF0C e81f4c4300               call     0x1409e3b30
+0x005AEF11 48834510f0               add      qword ptr [rbp + 0x10], -0x10
+0x005AEF16 488b6c2448               mov      rbp, qword ptr [rsp + 0x48]
+0x005AEF1B 488b5c2440               mov      rbx, qword ptr [rsp + 0x40]
+0x005AEF20 4883c430                 add      rsp, 0x30
+0x005AEF24 415f                     pop      r15
+0x005AEF26 c3                       ret      
+0x005AEF27 4883c430                 add      rsp, 0x30
+0x005AEF2B 415f                     pop      r15
+0x005AEF2D e92e62ffff               jmp      0x1405a5160
+0x005AEF32 ba06000000               mov      edx, 6
+0x005AEF37 488bcd                   mov      rcx, rbp
+0x005AEF3A e851c94300               call     0x1409eb890
+0x005AEF3F cc                       int3     
+0x005AEF40 488d15a96e8b00           lea      rdx, [rip + 0x8b6ea9] ; ascii='C stack overflow'@0xE65DF0
+0x005AEF47 488bcd                   mov      rcx, rbp
+0x005AEF4A e851a24300               call     0x1409e91a0
+0x005AEF4F cc                       int3     
+0x005AEF50 cc                       int3     
+0x005AEF51 cc                       int3     
+0x005AEF52 cc                       int3     
+0x005AEF53 cc                       int3     
+0x005AEF54 cc                       int3     
+0x005AEF55 cc                       int3     
+0x005AEF56 cc                       int3     
+0x005AEF57 cc                       int3     
+0x005AEF58 cc                       int3     
+0x005AEF59 cc                       int3     
+0x005AEF5A cc                       int3     
+0x005AEF5B cc                       int3     
+0x005AEF5C cc                       int3     
+0x005AEF5D cc                       int3     
+0x005AEF5E cc                       int3     
+0x005AEF5F cc                       int3     
+0x005AEF60 4883ec38                 sub      rsp, 0x38
+0x005AEF64 488d05dd4e8500           lea      rax, [rip + 0x854edd] ; __SoftPickleTable@0xE03E48
+0x005AEF6B c644242801               mov      byte ptr [rsp + 0x28], 1
+0x005AEF70 4889442420               mov      qword ptr [rsp + 0x20], rax
+0x005AEF75 e846000000               call     0x1405aefc0
+0x005AEF7A 4883c438                 add      rsp, 0x38
+0x005AEF7E c3                       ret      
+0x005AEFC0 4c894c2420               mov      qword ptr [rsp + 0x20], r9
+0x005AEFC5 4489442418               mov      dword ptr [rsp + 0x18], r8d
+0x005AEFCA 4889542410               mov      qword ptr [rsp + 0x10], rdx ; bit_or_scalar_0x10
+0x005AEFCF 4157                     push     r15
+0x005AEFD1 4881eca0000000           sub      rsp, 0xa0
+0x005AEFD8 f6812868010001           test     byte ptr [rcx + 0x16828], 1 ; checkpoint_manager_flag
+0x005AEFDF 4c8bf9                   mov      r15, rcx
+0x005AEFE2 7411                     je       0x1405aeff5
+0x005AEFE4 41c70100000000           mov      dword ptr [r9], 0
+0x005AEFEB 4881c4a0000000           add      rsp, 0xa0
+0x005AEFF2 415f                     pop      r15
+0x005AEFF4 c3                       ret      
+0x005AEFF5 48899c2498000000         mov      qword ptr [rsp + 0x98], rbx
+0x005AEFFD 488d1dacf67e00           lea      rbx, [rip + 0x7ef6ac] ; rip->0xD9E6B0
+0x005AF004 4889ac2490000000         mov      qword ptr [rsp + 0x90], rbp
+0x005AF00C 4889b42488000000         mov      qword ptr [rsp + 0x88], rsi
+0x005AF014 4889bc2480000000         mov      qword ptr [rsp + 0x80], rdi
+
+DIRECT CALLS
+0x5AECAD call -> 0x7E9550 0x1407e9550
+0x5AED0F call -> 0x9ECE90 0x1409ece90
+0x5AECF3 call -> 0x9F3280 0x1409f3280
+0x5AED40 call -> 0x9E4930 0x1409e4930
+0x5AED59 call -> 0x9F4CF0 0x1409f4cf0
+0x5AED82 call -> 0x9EF660 0x1409ef660
+0x5AED9B call -> 0x9F4CF0 0x1409f4cf0
+0x5AEDC4 call -> 0x9EF660 0x1409ef660
+0x5AEDDD call -> 0x9F4CF0 0x1409f4cf0
+0x5AEE06 call -> 0x9EF660 0x1409ef660
+0x5AEE12 call -> 0x9E3020 0x1409e3020
+0x5AEE37 call -> 0x9E3020 0x1409e3020
+0x5AEEAA call -> 0x9EAE10 0x1409eae10
+0x5AEF4A call -> 0x9E91A0 0x1409e91a0
+0x5AEF3A call -> 0x9EB890 0x1409eb890
+0x5AEEB6 call -> 0x9EDFC0 0x1409edfc0
+0x5AEF0C call -> 0x9E3B30 0x1409e3b30
+0x5AEF75 call -> 0x5AEFC0 0x1405aefc0
+
+CONTROL EDGES
+0x5AEC63 jle -> 0x5AEEFD
+0x5AEC7B jne -> 0x5AEC84
+0x5AEFE2 je -> 0x5AEFF5
+0x5AEC8B je -> 0x5AEF27
+0x5AEC98 je -> 0x5AEF27
+0x5AEF2D jmp -> 0x5A5160
+0x5AECB4 je -> 0x5AEEF2
+0x5AECE8 jle -> 0x5AED0C
+0x5AECEE je -> 0x5AECFA
+0x5AECF8 jmp -> 0x5AED0C
+0x5AEE8A jb -> 0x5AEEA0
+0x5AEE8C je -> 0x5AEF40
+0x5AEE9A jae -> 0x5AEF32
+0x5AEEB1 jne -> 0x5AEEBB
+0x5AEEE3 jns -> 0x5AEEFE
+
+OUT-OF-RANGE TARGETS
+0x5A5160
+0x5AF01C
+
+SAFETY static_exe_read_only=true game_launched=false process_accessed=false save_opened=false save_written=false progression_written=false game_files_written=false
