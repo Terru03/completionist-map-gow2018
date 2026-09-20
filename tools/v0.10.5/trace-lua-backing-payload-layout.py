@@ -16,6 +16,7 @@ from pathlib import Path
 EXPECTED_SHA256="caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452"
 IMAGE_BASE=0x140000000
 TARGETS=(0x464410,0x5A6430,0x5A5230)
+RAW_FALLBACK_RANGES={0x464410:(0x464410,0x464A50)}
 INTERESTING={0,8,0x10,0x18,0x20,0x28,0x30,0x38,0x40,0x48,0x50,0x58,0x60,0x68,0x70,0x78,0x80,0x88,0x90,0x98,0x100,0x158,0x170,0x178,0x188,0x190,0x198,0x2C8,0x390,0x410}
 
 def sha256_file(p):
@@ -48,6 +49,15 @@ def cstr_at(pe,rva,max_len=160):
     if not all((32<=b<127) or b in (9,10,13) for b in s):return None
     try:return s.decode("ascii")
     except Exception:return None
+
+def resolve_fn(pe,addr):
+    fn=pe.function_for(addr)
+    if fn:
+        return {"begin":fn["begin"],"end":fn["end"],"synthetic":False}
+    if addr in RAW_FALLBACK_RANGES:
+        b,e=RAW_FALLBACK_RANGES[addr]
+        return {"begin":b,"end":e,"synthetic":True}
+    return None
 
 def decode(pe,md,fn,OI,OM,RIP):
     off=pe.rva_to_file(fn["begin"])
@@ -91,7 +101,7 @@ def direct_calls(pe,rows):
     for r in rows:
         if r["mnemonic"]=="call" and r["imms"]:
             t=r["imms"][0]
-            tf=pe.function_for(t) if isinstance(t,int) else None
+            tf=resolve_fn(pe,t) if isinstance(t,int) else None
             out.append({"site":r["rva"],"target":t,
                         "function_begin":tf["begin"] if tf else None,
                         "function_end":tf["end"] if tf else None})
@@ -117,14 +127,15 @@ def main():
     small=set()
     seen=set()
     for addr in TARGETS:
-        fn=pe.function_for(addr)
-        if not fn:raise RuntimeError(f"No runtime function for 0x{addr:X}")
+        fn=resolve_fn(pe,addr)
+        if not fn:raise RuntimeError(f"No runtime function or raw fallback for 0x{addr:X}")
         b=fn["begin"]
         if b in seen:continue
         seen.add(b)
         rows=decode(pe,md,fn,OI,OM,RIP)
         calls=direct_calls(pe,rows)
         targets.append({"anchor":addr,"begin":b,"end":fn["end"],"size":fn["end"]-b,
+                        "synthetic_range":bool(fn.get("synthetic",False)),
                         "field_hits":field_hits(rows),"calls":calls,"instructions":rows})
         for c in calls:
             fb=c["function_begin"];fe=c["function_end"]
