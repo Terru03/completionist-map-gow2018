@@ -1,0 +1,33 @@
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\probe-active-save-raven-ring-authority.py", line 527, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\probe-active-save-raven-ring-authority.py", line 427, in main
+    row = scan_slot(raw, idx, scanner, parser, object_map, registry_hash)
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\probe-active-save-raven-ring-authority.py", line 182, in scan_slot
+    matches, _, _ = scanner.scan_bytes(
+                    ~~~~~~~~~~~~~~~~~~^
+        slot, scanner_args(header_start, scan_end), parser
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\gow-custom-userdata-carrier-scan.py", line 180, in scan_bytes
+    report = parser.inspect_carrier(candidate, args.max_tag_solutions)
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\gow-custom-userdata-carrier.py", line 188, in inspect_carrier
+    metadata_candidates = infer_metadata(
+        metadata, header.metadata_pair_count, max_metadata_candidates
+    )
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\gow-custom-userdata-carrier.py", line 95, in infer_metadata
+    visit(0, 0, {}, [])
+    ~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\gow-custom-userdata-carrier.py", line 93, in visit
+    visit(end, token_index + 1, new_mapping, tokens + [token])
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\gow-custom-userdata-carrier.py", line 93, in visit
+    visit(end, token_index + 1, new_mapping, tokens + [token])
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\gow-custom-userdata-carrier.py", line 93, in visit
+    visit(end, token_index + 1, new_mapping, tokens + [token])
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [Previous line repeated 991 more times]
+RecursionError: maximum recursion depth exceeded
