@@ -487,3 +487,32 @@ A read-only runtime probe confirmed `game.UI.GetCurrentSlot` and `game.UI.IsSlot
 Conclusion: after the load transition, `-1` is the special current/checkpoint slot. It is **not** the physical save-ring slot index needed to bind the authoritative Raven carrier. Do not use `GetCurrentSlot()==-1` as a ring selector.
 
 Next target: trace the real index between `SetCurrentSlot(realIndex)` and the native `LoadedIntoSaveSlot` path. Static anchors are `0x533E30` and its sole external caller `0x7698BF`, plus the native handlers registered for `GetCurrentSlot` / `SetCurrentSlot`.
+
+---
+
+# Addendum 2026-09-20 20:28 - physical slot native loader
+
+Evidence commit: `f449a16ef96c3496428b71374772f60194146881`  
+Evidence: `archive/field-logs/source-scans/physical-slot-to-restore-20260920-202704/`
+
+The native selected-slot path is now concrete:
+
+```text
+UI.SetCurrentSlot(realSlot)
+  -> handler 0x7690E0
+  -> stores Lua arg #1 at global 0x11BDB5C
+
+UI.LoadSaveGame()
+  -> handler 0x7691D0
+  -> loads 0x11BDB5C
+  -> calls 0x66CB30(realSlot, true)
+```
+
+Inside `0x66CB30`:
+
+- requested slot is normalized to `0..9` or `-1`;
+- normalized value is stored at global **`0x1078F4C`**;
+- load-state globals include `0x2D3755E` and `0x2D375C6`;
+- the current static function index incorrectly ends the routine at `0x66CB68`, but the real control flow branches forward to **`0x66CD09`**.
+
+Therefore the failed shortest-path search from `0x66CB30` to the known restore/carrier functions is not evidence of separation; the index boundary truncates the real load routine. Next step is raw contiguous disassembly through the forward branch plus xrefs to `0x1078F4C` and the public slot globals.
