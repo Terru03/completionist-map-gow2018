@@ -4,7 +4,7 @@
 Purpose:
 - decode the 20 aligned God of War save-ring snapshots;
 - recover killed Raven catalogue IDs from proven custom-userdata carriers using
-  catalogue/odins-ravens-save-identities.json;
+  catalogue/odins-ravens-gameobject-identities.json;
 - inspect only the fixed 208-byte slot headers for sequence/timestamp fields;
 - identify strong candidates for the authoritative/latest snapshot without
   assuming that the highest physical slot number is newest.
@@ -28,7 +28,7 @@ import zlib
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
-IDENTITIES = REPO / "catalogue" / "odins-ravens-save-identities.json"
+IDENTITIES = REPO / "catalogue" / "odins-ravens-gameobject-identities.json"
 HEADER_BYTES = 208
 MAX_DECOMPRESSED = 8 * 1024 * 1024
 INPUT_LIMIT = 2 * 1024 * 1024
@@ -394,12 +394,14 @@ def main() -> int:
         raise RuntimeError(f"save not found: {save}")
 
     identities = json.loads(args.identities.read_text(encoding="utf-8"))
-    if identities.get("identity_count") != 53:
-        raise RuntimeError("Raven save identity catalogue is incomplete")
+    if identities.get("count") != 53:
+        raise RuntimeError("Raven serialized GameObject identity catalogue is incomplete")
+    if identities.get("unique_object_hashes") != 53:
+        raise RuntimeError("Raven serialized GameObject hashes are not unique")
     registry_hash = int(identities["registry_hash_hex"], 16)
     object_map = {
         int(row["object_hash_hex"], 16): row["catalogue_id"]
-        for row in identities["identities"]
+        for row in identities["ravens"]
     }
     if len(object_map) != 53:
         raise RuntimeError("Raven object-hash map is not one-to-one")
