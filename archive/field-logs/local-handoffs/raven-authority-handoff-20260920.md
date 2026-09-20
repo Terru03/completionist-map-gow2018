@@ -1058,3 +1058,95 @@ So the logical function necessarily continues beyond the indexed end. This is th
 The current capture therefore does **not yet include the complete normal/soft placement algorithm**. Do not interpret the short `0x5A6430..0x5A6453` fragment as the full function.
 
 Next step: raw-decode a version-locked contiguous range around `0x5A6430` through at least the post-`0x5A649F` return path, then recover the exact mapping used for `client+0x70/+0x78` into the 0x30-byte durable backing node/storage object. No broad scan required.
+
+---
+
+# Addendum 2026-09-20 22:18 - normal/soft backing payload layout SOLVED
+
+Evidence commit: `e75ef2c1fa231fff49e612ce95a26154f4a96c9a`  
+Evidence: `archive/field-logs/source-scans/lua-backing-payload-layout-20260920-191808/`
+
+The raw-boundary override for `0x5A6430` worked and exposed the complete logical function through its return at `0x5A649F`.
+
+## `0x5A6430` exact behavior
+
+Inputs at the two known calls from `0x5A6270`:
+
+- RCX = destination client field address (`&client+0x70` or `&client+0x78`)
+- EDX = payload size
+- R8 = source payload pointer
+- R9 = durable backing node (`client+0x68`)
+
+Behavior:
+
+```text
+if src == NULL:
+    return
+
+size = EDX
+allocator_or_store = [backingNode+0x28]
+blob = 0xD21A90(allocator_or_store, size + 4)
+blob[0:4] = size
+memcpy(blob+4, src, size)
+*destination_client_field = blob
+return
+```
+
+Instruction evidence:
+
+```asm
+0x5A6458 lea rdx,[rsi+4]
+0x5A6465 mov rcx,[r9+0x28]
+0x5A6469 call 0xD21A90
+0x5A6475 mov [rbx],esi
+0x5A647D memcpy(blob+4,src,size)
+0x5A6491 mov [r14],rbx
+0x5A649F ret
+```
+
+Therefore **normal and soft transient blobs have exactly the same conventional representation as the solved +0x80 sibling blob:**
+
+```text
+[u32 payload_size][payload bytes]
+```
+
+and all three are allocated from the storage/allocator reachable via **`backingNode+0x28`**.
+
+## Relevant helper immediately after it
+
+`0x5A64B0..0x5A64FC` is a separate logical helper. It copies an existing length-prefixed blob into aligned scratch storage and clears the original pointer. This matches the inverse/materialisation flow already seen in `0x5A6270`.
+
+## Durable cache state now solved far enough for runtime enumeration
+
+Backing node:
+
+```text
++0x00 next
++0x08 prev
++0x10 backing size/count
++0x18 resource identity key
++0x20 allocator/owner
++0x28 storage/allocator used for all three length-prefixed blobs
+sizeof(node) = 0x30
+```
+
+Cache:
+
+```text
+LuaContext + 0x178 = sentinel-headed intrusive list of unloaded-resource backing nodes
+node+0x18 == [[resource+0x30]+0x18]
+```
+
+**Closed question:** do not trace `0x5A6430`, `0x5A5230`, or the normal/soft transient blob format again.
+
+## Next exact target
+
+Resolve the live **LuaContext pointer** at the native cache-lookup/insertion call sites, then build one external read-only `ReadProcessMemory` capture that:
+
+1. locates LuaContext;
+2. walks `LuaContext+0x178` safely as a sentinel list;
+3. records every cached node's resource key and `+0x10/+0x20/+0x28` fields;
+4. reads no save files and performs no process writes;
+5. does not yet mutate or force-load any WAD.
+
+Once cache enumeration is proven, correlate resource keys to Raven-bearing resources and decode the backing payload bytes using the already-solved normal/soft materialisation path.
