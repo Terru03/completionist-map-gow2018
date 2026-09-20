@@ -97,18 +97,6 @@ def direct_calls(pe,rows):
                         "function_end":tf["end"] if tf else None})
     return out
 
-def all_callers(pe,md,OI,OM,RIP,target_begin):
-    rows=[]
-    for fn in pe.runtime_functions:
-        insns=decode(pe,md,fn,OI,OM,RIP)
-        for r in insns:
-            if r["mnemonic"]=="call" and r["imms"]:
-                t=r["imms"][0]
-                tf=pe.function_for(t) if isinstance(t,int) else None
-                if tf and tf["begin"]==target_begin:
-                    rows.append({"caller":fn["begin"],"site":r["rva"],"raw_target":t})
-    return rows
-
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--exe",type=Path,default=Path("G:/SteamLibrary/steamapps/common/GodOfWar/GoW.exe"))
@@ -137,7 +125,6 @@ def main():
         rows=decode(pe,md,fn,OI,OM,RIP)
         calls=direct_calls(pe,rows)
         targets.append({"anchor":addr,"begin":b,"end":fn["end"],"size":fn["end"]-b,
-                        "callers":all_callers(pe,md,OI,OM,RIP,b),
                         "field_hits":field_hits(rows),"calls":calls,"instructions":rows})
         for c in calls:
             fb=c["function_begin"];fe=c["function_end"]
@@ -168,8 +155,6 @@ def main():
     L=["Completionist Map - durable Lua backing payload layout",f"exe_sha256={digest}","mode=static read-only",""]
     def emit(label,f):
         L.append(f"{label} 0x{f['begin']:X}..0x{f['end']:X} anchor="+(f"0x{f['anchor']:X}" if "anchor" in f else "-"))
-        if f.get("callers"):
-            L.append("  CALLERS "+",".join(f"0x{x['caller']:X}@0x{x['site']:X}" for x in f["callers"]))
         for h in f.get("field_hits",[]):
             L.append(f"  FIELD 0x{h['site']:X} {h['mnemonic']} base={h['base']} index={h['index']} scale={h['scale']} +0x{h['disp']:X} size={h['size']} {h['op']}")
         for c in f.get("calls",[]):
