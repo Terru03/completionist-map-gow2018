@@ -993,3 +993,68 @@ The tracer now uses a version-locked raw contiguous fallback **only** for this m
 ```
 
 The other targets (`0x5A6430`, `0x5A5230`) still require normal PE runtime-function metadata. Do not broaden the fallback unless a new capture proves another genuine boundary gap.
+
+---
+
+# Addendum 2026-09-20 22:13 - backing payload trace passed; second boundary gap found
+
+Evidence commit: `77198d594ef3f13a6dc9370cbae692814734d503`  
+Evidence: `archive/field-logs/source-scans/lua-backing-payload-layout-20260920-191310/`
+
+The targeted payload-layout trace passed after the `0x464410` raw-boundary fix.
+
+## Backing-node creation/cache population
+
+The raw `0x464410..0x464A50` region contains multiple small logical functions, including:
+
+- `0x464410`: find/remove cached backing node by explicit key `[node+0x18] == RDX`;
+- `0x464460`: same lookup using `[[resource+0x30]+0x18]`;
+- `0x464800`: allocate and initialize a new **0x30-byte durable backing node**.
+
+New-node initialization at `0x464800`:
+
+```text
+alloc 0x30 bytes
+node+0x00 = 0
+node+0x08 = 0
+node+0x10 = -1 initially, then assigned backing size/count
+node+0x18 = resource key
+node+0x20 = allocator/owner allocated from the resource allocator
+node+0x28 = optional large backing allocation via 0x5AB340
+insert node into LuaContext+0x178 list
+```
+
+This confirms the backing-node size is **0x30 bytes** and the previously inferred fields are part of one compact node object.
+
+## Sibling payload format (+0x80) solved
+
+`0x5A5230` rebuilds `LuaLevelClient+0x80` exactly as:
+
+```text
+size = R8D
+src  = RDX
+backing = [client+0x68]
+allocator = [backing+0x28]
+blob = allocator_alloc(allocator, size + 4)
+blob[0:4] = size
+blob[4:4+size] = payload
+client+0x80 = blob
+```
+
+Thus the transient client blob is a conventional **u32 length prefix + payload bytes**, allocated through the durable backing node's `+0x28` allocator/storage object.
+
+## Second unwind/function-boundary gap
+
+The index/runtime-function metadata reports `0x5A6430..0x5A6453`, but the body begins with:
+
+```asm
+0x5A6430 test r8,r8
+0x5A6433 je 0x5A649F
+...
+```
+
+So the logical function necessarily continues beyond the indexed end. This is the same kind of unwind-boundary truncation previously seen at `0x464410`.
+
+The current capture therefore does **not yet include the complete normal/soft placement algorithm**. Do not interpret the short `0x5A6430..0x5A6453` fragment as the full function.
+
+Next step: raw-decode a version-locked contiguous range around `0x5A6430` through at least the post-`0x5A649F` return path, then recover the exact mapping used for `client+0x70/+0x78` into the 0x30-byte durable backing node/storage object. No broad scan required.
