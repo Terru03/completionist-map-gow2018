@@ -1186,3 +1186,70 @@ A static locator has been added to identify the vtable/RTTI slot containing `0x4
 - `tools/v0.10.5/trace-lua-context-vtable-singleton-and-push.ps1`
 
 Once a stable live LuaContext address source is resolved, the next step is an external read-only `ReadProcessMemory` cache enumerator; do not fall back to heap guessing unless the singleton/vtable route fails.
+
+---
+
+# Addendum 2026-09-20 22:23 - LuaContext vtable resolved; singleton route exhausted
+
+Evidence commit: `0b8d0544106913cddc18638e8ce9139d00d44bc9`  
+Evidence: `archive/field-logs/source-scans/lua-context-vtable-singleton-20260920-192225/`
+
+The LuaContext class identity is now statically resolved.
+
+## LuaContext vtable
+
+The only non-executable qword pointer to `0x4654A0` is:
+
+```text
+0xDF2FB0 -> 0x4654A0
+```
+
+RTTI classification identifies the enclosing vtable as:
+
+```text
+vtable = 0xDF2F50
+RTTI    = .?AVLuaContext@@
+slot    = 12  (0xDF2FB0 - 0xDF2F50 = 0x60)
+```
+
+Thus a live LuaContext instance can be identified by:
+
+```text
+*(u64*)object == module_base + 0xDF2F50
+```
+
+## Constructor
+
+`0x4658D0..0x4659B6` is the LuaContext constructor. It installs the LuaContext vtable and explicitly initializes the unloaded-resource cache:
+
+```asm
+0x46597B lea rax,[LuaContext_vtable]
+0x465982 mov [rbx],rax
+0x465985 lea rax,[rbx+0x178]
+0x46598C mov [rax],rax
+0x46598F mov [rax+8],rax
+0x465993 mov word [rbx+0x198],0
+0x46599A mov qword [rbx+0x188],0
+0x4659A1 mov qword [rbx+0x190],0
+```
+
+This independently confirms `LuaContext+0x178` is the sentinel-headed cache list.
+
+## Stable singleton/global owner not found
+
+The static locator found vtable xrefs and constructors, but **no direct caller/global ownership chain** from the indexed call graph (`callers=0`). No reliable RIP-relative singleton pointer was established.
+
+Therefore the preferred singleton route is exhausted for this build. The next runtime locator may now use a strict vtable scan, but it must validate candidates structurally rather than guessing arbitrary heap objects.
+
+## Runtime locator acceptance criteria
+
+A candidate LuaContext is valid only if all are true:
+
+1. `[candidate] == module_base + 0xDF2F50`;
+2. `candidate+0x178` is a structurally valid intrusive-list sentinel;
+3. sentinel next/prev are readable and reciprocally linked;
+4. every walked cache node is readable as 0x30 bytes;
+5. each node has reciprocal `next/prev` links and the walk terminates back at the sentinel within a hard node cap;
+6. no process writes/debugger/save access are used.
+
+Next: external read-only `ReadProcessMemory` capture that scans committed readable private memory for the exact LuaContext vtable pointer, validates the sentinel, and enumerates cached nodes `(+0x10,+0x18,+0x20,+0x28)`.
