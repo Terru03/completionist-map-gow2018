@@ -1371,3 +1371,52 @@ The arena-scan runner is now self-contained:
 4. push the combined evidence.
 
 This removes the requirement that the user preserve the PID from a previous command. It remains read-only: `VirtualQueryEx` + `ReadProcessMemory`, no debugger, no process writes, no save/progression writes.
+
+---
+
+# Addendum 2026-09-20 23:xx - backing-arena raw signature scan negative
+
+Evidence commit: `ba863bb2920b28aeb5413cff20969e48b62234a8`  
+Evidence: `archive/field-logs/runtime-captures/lua-backing-arena-raven-signatures-readonly-20260920-200907/`
+
+The self-refreshing read-only arena scan completed successfully against the current GoW process.
+
+## Result
+
+```text
+contexts_scanned=6
+arena_bytes_scanned=69,573,428
+matched_raven_hits=0
+unique_matched_ravens=0
+ravenKilled_hits=0
+__subobjs_hits=0
+__PickleTable_hits=0
+__SoftPickleTable_hits=0
+_SUBOBJECT_CHUNKS_hits=0
+process_memory_written=false
+save_or_progression_written=false
+```
+
+This is a real negative result: the validated backing arenas do **not** expose the raw save-carrier Raven payloads or plaintext checkpoint-table names.
+
+## Interpretation
+
+Do not conclude that the Lua backing-cache route is false. The result is consistent with the already-proven checkpoint architecture:
+
+- save-carrier persistence uses the solved 17-byte serialized GameObject identity;
+- checkpoint/SoftPickle tables use opaque runtime GameObject tokens;
+- the cached Lua backing representation is therefore not expected to contain the same raw carrier identity bytes;
+- checkpoint string/table names may be interned/encoded rather than stored as plaintext in backing allocations.
+
+The stronger correction is that **scanning allocator capacity is not sufficient to locate the logical normal/soft blobs**. We must enumerate or reconstruct live allocations made by the allocator object at `backingNode+0x28`.
+
+## Next exact target
+
+Trace the allocator primitives used by the solved payload materialization path:
+
+- `0xD21A90` — allocation called by `0x5A6430` / sibling blob builders;
+- `0xD1F7F0` — backing-storage preparation path from `0x463C60`;
+- `0xD21DD0` and nearby allocator helpers where relevant;
+- `0x5AB340` — large backing allocation during 0x30-byte node creation.
+
+Goal: recover the allocator control structure and live-allocation metadata well enough to enumerate the actual length-prefixed normal/soft blobs in read-only memory. Do not repeat raw arena signature scans unless live allocation extents become known.
