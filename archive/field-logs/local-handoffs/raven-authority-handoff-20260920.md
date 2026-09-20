@@ -1581,3 +1581,38 @@ Validation remains the exact Veithurgard fixture:
 `false, true, true` and independent RegionSummary `2/3`.
 
 No save/progression writes, no force-load strategy, no nearest-coordinate or aggregate-only inference.
+
+
+---
+
+# Addendum 2026-09-20 23:xx - Astra High pass hit usage limit after finding native restore bridge
+
+The Astra High Codex pass started from `docs/research/ASTRA-v0105-raven-restore-interceptor-task.md` and pushed its execution plan as commit `52ddebab09ba15de3da18fcca9c8ead1a93cd1ea`.
+
+Codex then hit its account usage limit before it could commit/push the native-analysis evidence. The following findings are therefore recorded as **local Astra findings pending evidence archive/verification**, not yet as final Git-proven facts:
+
+1. The previously separated checkpoint-stage / Lua restore graphs are connected through an indirect virtual call: a checkpoint stage invokes a Lua client vtable slot at **`+0x80`**, and that route reaches the already-known restore root. This explains why earlier direct-call graph searches reported no path.
+2. Some earlier function labels around the checkpoint path were semantically wrong: Astra identified `0x669B00` and `0x66B650` as packing/save-side state rather than the restore owner previously implied by broad labels.
+3. WAD state appears to live in **separate checkpoint records**. The engine first copies/stages those records, then restores Lua state when the corresponding WAD/Lua context exists. This means the player/global Lua restore call alone does not prove all Raven records are available globally.
+4. The interrupted next step was tracing the **stored checkpoint-record bytes themselves** as a possible read-only authority source that may avoid debugger/code-patching entirely.
+
+The final commands Astra was executing before the limit were focused on:
+
+- exact GameObject CodeSideLuaClass descriptor/callback semantics;
+- class-key / restore `+0xC0` evidence from archived class-descriptor scans;
+- existing active Raven subobject decoder logic;
+- narrow disassembly around `0x66AC90:0x66ACBF` and `0x5A6DD0:0x5A6E00`.
+
+## Resume boundary
+
+Do **not** restart the broad native bridge search. Resume by archiving/proving the local Astra finding that checkpoint-stage virtual dispatch `+0x80` reaches the known restore root, then continue from the stored WAD checkpoint-record representation.
+
+Priority questions:
+
+1. What object owns the `+0x80` virtual method, and what exact arguments/state does the checkpoint stage pass into it?
+2. Where are the separate WAD checkpoint records stored after the initial copy/staging step?
+3. Does that stored representation preserve an exact persistent GameObject/custom-userdata identity before WAD residency is required?
+4. Can the already-solved Raven carrier/GameObject decoder read those staged records read-only and recover `ravenKilled` for all 53 catalogue identities?
+5. Only if the stored-record route fails should a live observer/debugger interception be reconsidered.
+
+The Veithurgard acceptance fixture remains exact `false,true,true` with RegionSummary `2/3` as an independent cross-check.
