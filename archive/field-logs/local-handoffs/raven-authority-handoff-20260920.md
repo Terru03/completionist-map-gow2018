@@ -1616,3 +1616,44 @@ Priority questions:
 5. Only if the stored-record route fails should a live observer/debugger interception be reconsidered.
 
 The Veithurgard acceptance fixture remains exact `false,true,true` with RegionSummary `2/3` as an independent cross-check.
+
+
+---
+
+# Addendum 2026-09-20 - interrupted Astra scratch archived; staged-record proof runner added
+
+Archived Astra scratch commit: `056d24471e33a4b0e69da9e397ea24619da4fb3a`
+
+The previously-local Astra files are now preserved under:
+
+`archive/field-logs/local-handoffs/astra-raven-restore-interrupted-20260920/`
+
+Important recovered static evidence from that scratch:
+
+- `0x464EF0` dispatches through the same LuaClient object at vtable slot `+0x80` at exact sites `0x465143` and `0x4651E2` after preparing a byte buffer and positive length.
+- Known Lua restore implementations `0x5AEC60` and `0x5B2280` both call the already-solved restore root `0x7E9550` at `0x5AECAD` and `0x5B22C3` respectively.
+- The checkpoint/WAD side uses separate staged records. The interrupted pass had started following candidate storage around the checkpoint record arrays and payload globals instead of treating the loaded player Lua context as global authority.
+- `0x669B00` contains substantial packing/copy construction and should not be treated as the restore owner solely from its earlier broad label.
+
+New static tracer:
+
+- `tools/v0.10.5/trace-raven-staged-restore-records.py` added in commit `17d0acb0e5f0c4958b93b482fd2bb7604fa6c111`.
+- `tools/v0.10.5/trace-raven-staged-restore-records-and-push.ps1` added in commit `c7ccff61ea01d14937ff2203e78658a45afff7a3`.
+
+The tracer is intentionally bounded and static/read-only. It will:
+
+1. assert the two `+0x80` dispatch instruction bytes;
+2. resolve data-pointer-backed vtable candidates whose `+0x80` slot is one of the known restore implementations;
+3. prove the direct calls from the level/Lua implementations to `0x7E9550`;
+4. enumerate all native references and instruction windows for the candidate staged checkpoint/WAD globals:
+   - `0x22C67D0`
+   - `0x22C7170`
+   - `0x22C7194`
+   - `0x22C696C`
+   - `0x22C6940`
+   - `0x22C6938`;
+5. rank functions that touch multiple staging globals so the next read-only runtime capture can target one exact structure instead of scanning memory.
+
+## Exact next action
+
+Run the new static tracer and inspect its pushed report. If it resolves one coherent staged-record owner/layout, build a minimal ReadProcessMemory observer for only that structure and feed those exact staged bytes into the already-solved custom-userdata/Raven decoder. Do not return to raw arena scanning or save-ring timestamp inference.
