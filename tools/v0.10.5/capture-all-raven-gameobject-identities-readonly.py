@@ -197,8 +197,14 @@ def validate_catalogue(game_root,catalogue):
             checks.append({"catalogue_id":cid,"wad":wad.name,"final_record_id_hex":tag.hex(),
                            "override_plus_ac_hex":at_override.hex(),"final_header_id_hex":at_final.hex(),
                            "override_matches":ok1,"final_header_matches":ok2})
-            if not ok1 or not ok2:
-                raise RuntimeError(f"{cid}: authored identity relationship changed")
+            # The proven VikingFuneral Raven happens to repeat its final-record ID
+            # at override+0xAC, but this is not a universal Raven layout invariant.
+            # The final WAD record header itself is the authoritative catalogue
+            # identity source, so only that relationship is required here.
+            if not ok2:
+                raise RuntimeError(
+                    f"{cid}: final WAD record header no longer matches catalogue final_record_id"
+                )
             tags[tag]=row
     finally:
         for fh in files.values():fh.close()
@@ -304,7 +310,9 @@ def main():
         "result":"ALL_53_RAVEN_GAMEOBJECT_IDENTITIES_RESOLVED" if complete else "PARTIAL_RAVEN_GAMEOBJECT_IDENTITY_SWEEP",
         "process":{"pid":pid,"exe_name":name,"module_base":f"0x{base:X}","module_size":size,"exe_sha256":exe_sha},
         "catalogue":{"entries":53,"unique_final_record_ids":len(tags),"authored_identity_checks":checks,
-                     "all_override_plus_ac_match_final_record_id":all(x["override_matches"] for x in checks)},
+                     "all_final_headers_match_final_record_id":all(x["final_header_matches"] for x in checks),
+                     "override_plus_ac_match_count":sum(1 for x in checks if x["override_matches"]),
+                     "override_plus_ac_is_diagnostic_only":True},
         "registry":{"id":REGISTRY_ID,"descriptor":f"0x{reg['descriptor']:X}",
                     "table_entry":f"0x{reg['table_entry']:X}","array_ptr":f"0x{reg['array_ptr']:X}",
                     "count":reg["count"],**stats},
