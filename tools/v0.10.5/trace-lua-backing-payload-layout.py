@@ -54,12 +54,13 @@ def cstr_at(pe,rva,max_len=160):
     except Exception:return None
 
 def resolve_fn(pe,addr):
-    fn=pe.function_for(addr)
-    if fn:
-        return {"begin":fn["begin"],"end":fn["end"],"synthetic":False}
+    # Known boundary-gap anchors must override truncated unwind/runtime metadata.
     if addr in RAW_FALLBACK_RANGES:
         b,e=RAW_FALLBACK_RANGES[addr]
         return {"begin":b,"end":e,"synthetic":True}
+    fn=pe.function_for(addr)
+    if fn:
+        return {"begin":fn["begin"],"end":fn["end"],"synthetic":False}
     return None
 
 def decode(pe,md,fn,OI,OM,RIP):
