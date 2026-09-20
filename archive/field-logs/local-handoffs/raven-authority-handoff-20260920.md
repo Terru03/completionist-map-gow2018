@@ -420,3 +420,45 @@ All work in this handoff was designed around:
 - preserve the user's real save.
 
 Any future implementation must maintain that invariant.
+
+---
+
+# Addendum 2026-09-20 17:21 - save/load event route CLOSED
+
+Two read-only runtime probes tested the remaining engine event hypothesis after the handoff was written.
+
+## Direct core.thunk event hooks - no delivery
+
+Evidence commit: `21d40cf1cbdcb28a49bd57f2c5f6fe83b9f3c9ea`  
+Evidence: `archive/field-logs/runtime-captures/save-load-event-arguments-20260920-171456/`
+
+The early probe successfully installed hooks for:
+- `EVT_LoadSaveData`
+- `EVT_LoadSaveFile_Done`
+- `EVT_AutoSave`
+- `EVT_ManualSaveComplete`
+
+During a main-menu load of the almost-done save, all four produced zero events through `core.thunk`.
+
+## ui/fsm.lua HandleEvent dispatcher - no delivery
+
+Evidence commit: `9271144711aca38bf29af2149e121e1cefc14492`  
+Evidence: `archive/field-logs/runtime-captures/save-load-event-arguments-20260920-171940/`
+
+The probe was injected directly into `ui/fsm.lua::HandleEvent(name, ...)` and loaded successfully. During another main-menu load of the almost-done save:
+
+- target_event_count=0
+- load_save_data_count=0
+- load_save_file_done_count=0
+- auto_save_count=0
+- manual_save_complete_count=0
+
+The temporary `mods/lua/.../fsm.lua` override was removed and verified absent afterward.
+
+### Conclusion
+
+The `EngineEvents` names are present in `_G.EngineEvents`, but these load/save events are not delivered through either tested Lua hook layer during the actual save load. **Close the Lua engine-event bridge route. Do not repeat variants of these probes unless new native evidence proves a different dispatch mechanism.**
+
+### Remaining productive direction
+
+Use the existing reusable static index to identify the native save/load manager / current restored-save owner and trace the in-memory authority path. A native helper is only worth considering if the installed mod stack exposes a practical extension point; do not assume `package.loadlib` is viable because that route already failed.
