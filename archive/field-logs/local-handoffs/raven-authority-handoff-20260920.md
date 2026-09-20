@@ -888,3 +888,83 @@ To avoid rerunning the static analysis, the branch now contains an essentials-on
 - `tools/v0.10.5/extract-lua-backing-cache-essentials-and-push.ps1`
 
 It reads the existing capture only and emits the six decisive lifecycle functions, cache insert/lookup/creator/helper sequences, and node-field accesses. Use this compact artifact for the next interpretation step rather than repeating the 51 MB trace.
+
+---
+
+# Addendum 2026-09-20 22:0x - durable backing-cache node fields confirmed
+
+Evidence:
+
+- commit `9628f581140750d84b5576773e320ba22a5626ba`
+- `archive/field-logs/source-scans/lua-backing-cache-essentials-20260920-190001/`
+- existing `lua-client-backing-transfer-20260920-103728` trace for `0x5A6270`
+
+## Cache structure confirmed at instruction level
+
+`LuaContext+0x178` is a sentinel-headed doubly-linked list.
+
+Detach path `0x46538B..0x4653FC`:
+
+```text
+rbx = [LuaLevelClient+0x68]   ; durable backing node
+0x463C60(rbx)                 ; prepare/finalize backing storage
+head = LuaContext+0x178
+insert rbx before head        ; [node]=next / [node+8]=prev style links
+```
+
+Lookup path `0x465814..`:
+
+```text
+resource_key = [[resource+0x30]+0x18]
+for node in LuaContext+0x178 list:
+    if [node+0x18] == resource_key:
+        unlink node
+        pass node as R9 to 0x5A6DD0
+```
+
+Thus the cache is definitely multi-entry and resource keyed.
+
+## Backing node fields now directly evidenced
+
+From `0x463C60`:
+
+- `+0x00/+0x08` = intrusive doubly-linked-list links
+- `+0x10` = 32-bit backing size/count used to decide storage mode
+- `+0x18` = resource identity key (confirmed by cache lookup)
+- `+0x20` = backing allocator/owner passed as RCX to `0xD1F7F0`
+- `+0x28` = optional allocated backing block pointer
+
+`0x463C60` behavior:
+
+- reads size/count from `node+0x10`;
+- if value is small (<= `0x410`), leaves `node+0x28 = 0`;
+- for larger values, allocates via the owner at `node+0x20` and stores the result at `node+0x28`.
+
+This strongly indicates a small/large backing-storage representation rather than a mere reference-count node.
+
+## Normal/soft payload relocation path
+
+`0x5A6270` handles three length-prefixed client blobs:
+
+- `LuaLevelClient+0x80`
+- `LuaLevelClient+0x70` (normal pickle)
+- `LuaLevelClient+0x78` (soft pickle)
+
+For each non-null pointer it reads `u32 size` from the first four bytes and copies the payload body into aligned scratch storage. It clears the original client pointer, calls `0x463C60(client+0x68)`, then rebuilds:
+
+- `+0x80` via `0x5A5230`
+- `+0x70` via `0x5A6430(..., backing=node)`
+- `+0x78` via `0x5A6430(..., backing=node)`
+
+Therefore `0x5A6430` is the critical missing function for locating the durable normal/soft bytes inside or through the backing node.
+
+## Next exact target
+
+Do **not** rerun broad cache or LuaClient scans. Disassemble only:
+
+- `0x464410` — backing-node creator/lookup used when no cached node matches
+- `0x5A6430` — normal/soft blob placement using the backing node
+- `0x5A5230` — sibling `+0x80` blob placement for comparison
+- immediate small callees only
+
+Goal: recover exact backing-node allocation size/layout and the formula mapping each normal/soft serialized payload into durable node storage. Once known, build a focused read-only runtime enumerator over `LuaContext+0x178` rather than any more WAD-by-WAD probes.
