@@ -16,7 +16,9 @@ $outDir = Join-Path $RepoRoot ($relativeDir -replace '/', [IO.Path]::DirectorySe
 $console = Join-Path $outDir 'console-log.txt'
 $extract = Join-Path $outDir 'probe-extract.txt'
 $target = Join-Path $GameRoot 'mods\lua\gameart\scripts\libraries\ui\fsm.lua'
+$sourceFallback = Join-Path $GameRoot 'mods\lua_source\gameart\scripts\libraries\ui\fsm.lua'
 $probe = Join-Path $RepoRoot 'tools\v0.10.5\save-load-event-argument-probe.lua'
+$targetExisted = Test-Path -LiteralPath $target -PathType Leaf
 $loaderLog = Join-Path $GameRoot 'mods\loader_log.txt'
 $exe = Join-Path $GameRoot 'GoW.exe'
 $backup = Join-Path $env:TEMP "completionist-save-load-events-$stamp.bak"
@@ -35,8 +37,15 @@ function Stop-LocalTranscript {
 
 function Restore-Target {
     if ($script:restored) { return }
-    if (Test-Path -LiteralPath $backup -PathType Leaf) {
-        [IO.File]::WriteAllBytes($target, [IO.File]::ReadAllBytes($backup))
+    if ($script:targetExisted) {
+        if (Test-Path -LiteralPath $backup -PathType Leaf) {
+            [IO.File]::WriteAllBytes($target, [IO.File]::ReadAllBytes($backup))
+            $script:restored = $true
+        }
+    } else {
+        if (Test-Path -LiteralPath $target -PathType Leaf) {
+            Remove-Item -LiteralPath $target -Force
+        }
         $script:restored = $true
     }
 }
@@ -79,16 +88,24 @@ try {
     if ($branch -ne $ExpectedBranch) { throw "Wrong branch '$branch'; expected '$ExpectedBranch'." }
     $staged = @(& git diff --cached --name-only)
     if ($staged.Count -gt 0) { throw "Refusing pre-existing staged changes: $($staged -join ', ')" }
-    foreach ($path in @($target, $probe, $exe)) {
+    foreach ($path in @($probe, $exe)) {
         if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Missing required file: $path" }
+    }
+    if (-not $targetExisted -and -not (Test-Path -LiteralPath $sourceFallback -PathType Leaf)) {
+        throw "Missing both runtime override and vanilla source for fsm.lua: $target ; $sourceFallback"
     }
     if (@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -in @('GoW','GodOfWar') }).Count -gt 0) {
         throw 'Close God of War before running this capture.'
     }
 
-    $original = [IO.File]::ReadAllBytes($target)
-    [IO.File]::WriteAllBytes($backup, $original)
-    $beforeHash = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant()
+    $sourcePath = if ($targetExisted) { $target } else { $sourceFallback }
+    $original = [IO.File]::ReadAllBytes($sourcePath)
+    if ($targetExisted) {
+        [IO.File]::WriteAllBytes($backup, $original)
+    } else {
+        New-Item -ItemType Directory -Force -Path (Split-Path -Parent $target) | Out-Null
+    }
+    $beforeHash = (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash.ToLowerInvariant()
     $probeBytes = [Text.Encoding]::UTF8.GetBytes([IO.File]::ReadAllText($probe, [Text.Encoding]::UTF8).Replace("`n", "`r`n") + "`r`n")
     $originalOffset = 0
     if ($original.Length -ge 3 -and $original[0] -eq 0xEF -and $original[1] -eq 0xBB -and $original[2] -eq 0xBF) { $originalOffset = 3 }
@@ -103,6 +120,9 @@ try {
         "fsm_probe_installed_sha256=$installedHash"
         "probe_sha256=$((Get-FileHash -LiteralPath $probe -Algorithm SHA256).Hash.ToLowerInvariant())"
         "target=$target"
+        "source_path=$sourcePath"
+        "target_existed_before=$($targetExisted.ToString().ToLowerInvariant())"
+        "temporary_override=$(((-not $targetExisted)).ToString().ToLowerInvariant())"
     ) | Set-Content -LiteralPath (Join-Path $outDir 'installed-file-hashes.txt') -Encoding UTF8
 
     $beforeLines = @()
@@ -149,13 +169,20 @@ try {
     }
 
     Restore-Target
-    $afterHash = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($targetExisted) {
+        $afterHash = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant()
+        $exactRestore = $afterHash -eq $beforeHash
+    } else {
+        $afterHash = '<absent>'
+        $exactRestore = -not (Test-Path -LiteralPath $target -PathType Leaf)
+    }
     @(
         "fsm_before_sha256=$beforeHash"
         "fsm_after_restore_sha256=$afterHash"
-        "exact_restore=$($afterHash -eq $beforeHash)"
+        "target_existed_before=$($targetExisted.ToString().ToLowerInvariant())"
+        "exact_restore=$($exactRestore.ToString().ToLowerInvariant())"
     ) | Set-Content -LiteralPath (Join-Path $outDir 'restore-verification.txt') -Encoding UTF8
-    if ($afterHash -ne $beforeHash) { throw 'fsm.lua restore hash mismatch.' }
+    if (-not $exactRestore) { throw 'fsm.lua restore/remove verification failed.' }
 
     $eventCount = @($probeLines | Select-String -SimpleMatch ' EVENT name=').Count
     $loadDoneCount = @($probeLines | Select-String -SimpleMatch ' EVENT name=EVT_LoadSaveFile_Done ').Count
