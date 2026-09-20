@@ -17,7 +17,7 @@ $console = Join-Path $outDir 'console-log.txt'
 $extract = Join-Path $outDir 'probe-extract.txt'
 $target = Join-Path $GameRoot 'mods\lua\gameart\scripts\libraries\ui\fsm.lua'
 $sourceFallback = Join-Path $GameRoot 'mods\lua_source\gameart\scripts\libraries\ui\fsm.lua'
-$probe = Join-Path $RepoRoot 'tools\v0.10.5\save-load-event-argument-probe.lua'
+$helper = Join-Path $RepoRoot 'tools\v0.10.5\ui-fsm-load-event-probe.lua'
 $targetExisted = Test-Path -LiteralPath $target -PathType Leaf
 $loaderLog = Join-Path $GameRoot 'mods\loader_log.txt'
 $exe = Join-Path $GameRoot 'GoW.exe'
@@ -69,7 +69,7 @@ function Publish-Capture([string]$result) {
     if ($LASTEXITCODE -ne 0) { throw 'git add failed.' }
     & git diff --cached --quiet -- $relativeDir
     if ($LASTEXITCODE -eq 1) {
-        & git commit -m "research(v0.10.5): capture save-load event arguments $stamp" -- $relativeDir | Out-Host
+        & git commit -m "research(v0.10.5): capture UI FSM load-event arguments $stamp" -- $relativeDir | Out-Host
         if ($LASTEXITCODE -ne 0) { throw 'git commit failed.' }
         & git push origin $ExpectedBranch | Out-Host
         if ($LASTEXITCODE -ne 0) { throw 'git push failed.' }
@@ -88,7 +88,7 @@ try {
     if ($branch -ne $ExpectedBranch) { throw "Wrong branch '$branch'; expected '$ExpectedBranch'." }
     $staged = @(& git diff --cached --name-only)
     if ($staged.Count -gt 0) { throw "Refusing pre-existing staged changes: $($staged -join ', ')" }
-    foreach ($path in @($probe, $exe)) {
+    foreach ($path in @($helper, $exe)) {
         if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Missing required file: $path" }
     }
     if (-not $targetExisted -and -not (Test-Path -LiteralPath $sourceFallback -PathType Leaf)) {
@@ -106,23 +106,26 @@ try {
         New-Item -ItemType Directory -Force -Path (Split-Path -Parent $target) | Out-Null
     }
     $beforeHash = (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash.ToLowerInvariant()
-    $probeBytes = [Text.Encoding]::UTF8.GetBytes([IO.File]::ReadAllText($probe, [Text.Encoding]::UTF8).Replace("`n", "`r`n") + "`r`n")
-    $originalOffset = 0
-    if ($original.Length -ge 3 -and $original[0] -eq 0xEF -and $original[1] -eq 0xBB -and $original[2] -eq 0xBF) { $originalOffset = 3 }
-    $combined = New-Object byte[] ($probeBytes.Length + $original.Length - $originalOffset)
-    [Array]::Copy($probeBytes, 0, $combined, 0, $probeBytes.Length)
-    [Array]::Copy($original, $originalOffset, $combined, $probeBytes.Length, $original.Length - $originalOffset)
-    [IO.File]::WriteAllBytes($target, $combined)
+    $sourceText = [IO.File]::ReadAllText($sourcePath, [Text.Encoding]::UTF8).Replace("`r`n", "`n").Replace("`r", "`n")
+    $helperText = [IO.File]::ReadAllText($helper, [Text.Encoding]::UTF8).Replace("`r`n", "`n").Replace("`r", "`n")
+    $needle = 'local HandleEvent = function(name, ...)'
+    $replacement = "local HandleEvent = function(name, ...)`n  if _G.CompletionistMapV105UIEventProbe then _G.CompletionistMapV105UIEventProbe(name, ...) end"
+    $count = ([regex]::Matches($sourceText, [regex]::Escape($needle))).Count
+    if ($count -ne 1) { throw "Expected exactly one HandleEvent dispatcher marker, found $count." }
+    $patchedSource = $sourceText.Replace($needle, $replacement)
+    $combinedText = $helperText + "`n" + $patchedSource
+    [IO.File]::WriteAllText($target, $combinedText, (New-Object Text.UTF8Encoding($false)))
 
     $installedHash = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant()
     @(
         "fsm_before_sha256=$beforeHash"
         "fsm_probe_installed_sha256=$installedHash"
-        "probe_sha256=$((Get-FileHash -LiteralPath $probe -Algorithm SHA256).Hash.ToLowerInvariant())"
+        "helper_sha256=$((Get-FileHash -LiteralPath $helper -Algorithm SHA256).Hash.ToLowerInvariant())"
         "target=$target"
         "source_path=$sourcePath"
         "target_existed_before=$($targetExisted.ToString().ToLowerInvariant())"
         "temporary_override=$(((-not $targetExisted)).ToString().ToLowerInvariant())"
+        "dispatcher_injections=1"
     ) | Set-Content -LiteralPath (Join-Path $outDir 'installed-file-hashes.txt') -Encoding UTF8
 
     $beforeLines = @()
@@ -130,7 +133,7 @@ try {
         $beforeLines = @(Get-Content -LiteralPath $loaderLog)
     }
 
-    Write-Host 'SAVE/LOAD EVENT ARGUMENT CAPTURE - READ ONLY' -ForegroundColor Cyan
+    Write-Host 'UI FSM LOAD-EVENT ARGUMENT CAPTURE - READ ONLY' -ForegroundColor Cyan
     Write-Host 'God of War will launch now.'
     Write-Host 'From the main menu, load your almost-done save normally.'
     Write-Host 'Once gameplay is fully loaded, wait a few seconds, then quit God of War fully.'
@@ -161,11 +164,11 @@ try {
         }
     }
 
-    $probeLines = @($fresh | Select-String -SimpleMatch '[CompletionistSaveLoadEventProbe]' | ForEach-Object { $_.Line })
+    $probeLines = @($fresh | Select-String -SimpleMatch '[CompletionistUIEventProbe]' | ForEach-Object { $_.Line })
     if ($probeLines.Count -gt 0) {
         $probeLines | Set-Content -LiteralPath $extract -Encoding UTF8
     } else {
-        'NO_COMPLETIONIST_SAVE_LOAD_EVENT_PROBE_LINES_FOUND' | Set-Content -LiteralPath $extract -Encoding UTF8
+        'NO_COMPLETIONIST_UI_EVENT_PROBE_LINES_FOUND' | Set-Content -LiteralPath $extract -Encoding UTF8
     }
 
     Restore-Target
@@ -184,19 +187,23 @@ try {
     ) | Set-Content -LiteralPath (Join-Path $outDir 'restore-verification.txt') -Encoding UTF8
     if (-not $exactRestore) { throw 'fsm.lua restore/remove verification failed.' }
 
-    $eventCount = @($probeLines | Select-String -SimpleMatch ' EVENT name=').Count
-    $loadDoneCount = @($probeLines | Select-String -SimpleMatch ' EVENT name=EVT_LoadSaveFile_Done ').Count
-    $loadDataCount = @($probeLines | Select-String -SimpleMatch ' EVENT name=EVT_LoadSaveData ').Count
+    $eventLines = @($probeLines | Select-String -SimpleMatch '[CompletionistUIEventProbe] EVENT ' | ForEach-Object { $_.Line })
+    $loadDoneCount = @($eventLines | Select-String -SimpleMatch 'resolvedName=EVT_LoadSaveFile_Done ').Count
+    $loadDataCount = @($eventLines | Select-String -SimpleMatch 'resolvedName=EVT_LoadSaveData ').Count
+    $autoSaveCount = @($eventLines | Select-String -SimpleMatch 'resolvedName=EVT_AutoSave ').Count
+    $manualSaveCount = @($eventLines | Select-String -SimpleMatch 'resolvedName=EVT_ManualSaveComplete ').Count
     @(
-        "event_count=$eventCount"
+        "target_event_count=$($eventLines.Count)"
         "load_save_data_count=$loadDataCount"
         "load_save_file_done_count=$loadDoneCount"
+        "auto_save_count=$autoSaveCount"
+        "manual_save_complete_count=$manualSaveCount"
     ) | Set-Content -LiteralPath (Join-Path $outDir 'event-summary.txt') -Encoding UTF8
 
-    $result = if ($loadDoneCount -gt 0 -or $loadDataCount -gt 0) { 'SAVE_LOAD_EVENT_ARGUMENTS_CAPTURED' } else { 'SAVE_LOAD_EVENTS_NOT_OBSERVED' }
+    $result = if ($loadDoneCount -gt 0 -or $loadDataCount -gt 0) { 'UI_FSM_LOAD_EVENT_ARGUMENTS_CAPTURED' } else { 'UI_FSM_LOAD_EVENTS_NOT_OBSERVED' }
     Publish-Capture $result
     $head = (& git rev-parse HEAD).Trim()
-    Write-Host "SAVE_LOAD_EVENT_ARGUMENT_CAPTURE_PUSHED $head" -ForegroundColor Green
+    Write-Host "UI_FSM_LOAD_EVENT_ARGUMENT_CAPTURE_PUSHED $head" -ForegroundColor Green
     Write-Host "Evidence: $relativeDir"
 }
 catch {
