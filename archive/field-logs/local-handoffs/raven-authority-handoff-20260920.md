@@ -968,3 +968,28 @@ Do **not** rerun broad cache or LuaClient scans. Disassemble only:
 - immediate small callees only
 
 Goal: recover exact backing-node allocation size/layout and the formula mapping each normal/soft serialized payload into durable node storage. Once known, build a focused read-only runtime enumerator over `LuaContext+0x178` rather than any more WAD-by-WAD probes.
+
+---
+
+# Addendum 2026-09-20 22:06 - backing-payload tracer boundary-gap fix
+
+Failed evidence commit: `f32134bba2ddcfdb3d16d7803f4139e174885ab2`  
+Failed archive: `archive/field-logs/source-scans/lua-backing-payload-layout-20260920-190632/`
+
+The targeted backing-payload trace failed before producing a report because the PE runtime-function/unwind table does **not** contain a function entry covering direct-call target `0x464410`:
+
+```text
+RuntimeError: No runtime function for 0x464410
+```
+
+This is a metadata/function-boundary gap, not evidence that the target is invalid. Existing code at `0x465602` directly calls `0x464410`, so it remains a valid backing-node creator/lookup anchor.
+
+Fix commit: `13b5a6cec4bd3b09a8a17bd6c8ce3a9255ec774c`.
+
+The tracer now uses a version-locked raw contiguous fallback **only** for this metadata gap:
+
+```text
+0x464410 .. 0x464A50
+```
+
+The other targets (`0x5A6430`, `0x5A5230`) still require normal PE runtime-function metadata. Do not broaden the fallback unless a new capture proves another genuine boundary gap.
