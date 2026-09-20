@@ -1150,3 +1150,39 @@ Resolve the live **LuaContext pointer** at the native cache-lookup/insertion cal
 5. does not yet mutate or force-load any WAD.
 
 Once cache enumeration is proven, correlate resource keys to Raven-bearing resources and decode the backing payload bytes using the already-solved normal/soft materialisation path.
+
+---
+
+# Addendum 2026-09-20 22:20 - LuaContext method calling convention confirmed
+
+Existing constructor/lifecycle evidence was re-read after solving the backing payload format.
+
+`0x4654A0` is confirmed to receive the **LuaContext object directly in RCX**:
+
+```asm
+0x4654A0 push rsi
+...
+0x4654C2 mov rsi,rcx
+```
+
+The cache lookup path later preserves and reuses that same object:
+
+```asm
+0x4655FF mov rcx,rsi
+0x465602 call 0x464410
+```
+
+and the direct resource-key walk in the same method uses:
+
+```asm
+0x46581C lea rdx,[rcx+0x178]
+```
+
+Therefore there is no intermediate wrapper between the method receiver and the cache head: **live LuaContext + 0x178 is the unloaded-resource backing-cache sentinel**.
+
+A static locator has been added to identify the vtable/RTTI slot containing `0x4654A0`, then trace vtable construction and direct callers to a stable singleton/global owner:
+
+- `tools/v0.10.5/trace-lua-context-vtable-singleton.py`
+- `tools/v0.10.5/trace-lua-context-vtable-singleton-and-push.ps1`
+
+Once a stable live LuaContext address source is resolved, the next step is an external read-only `ReadProcessMemory` cache enumerator; do not fall back to heap guessing unless the singleton/vtable route fails.
