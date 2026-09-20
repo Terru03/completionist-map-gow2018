@@ -775,3 +775,98 @@ Return to the proven checkpoint callback path rather than generic Lua internals.
 - helper `0x5A3CE0` references `_SUBOBJECTS` and invokes Lua dispatch indirectly.
 
 Next target: resolve exactly how the active checkpoint/save buffers are transformed into the `__subobjs` table consumed by `0x5AD4A0`, and whether the table/root remains reachable after load. Focus on the direct callers/ancestors of `0x5AD4A0` and `0x5A3CE0`, plus their shared non-Lua-runtime globals. Do not revisit generic Lua `.rdata` tables.
+
+---
+
+# Addendum 2026-09-20 21:5x - durable unloaded-resource Lua backing cache
+
+This addendum consolidates already-existing Raven-branch static evidence that became the strongest authority route after the generic Lua-rdata bridge was closed. No new gameplay probe is required for these conclusions.
+
+Primary existing evidence:
+
+- `archive/field-logs/source-scans/lua-client-backing-transfer-20260920-103728/`
+- `archive/field-logs/source-scans/lua-cached-backing-materialization-20260920-104039/`
+- `archive/field-logs/source-scans/luaclient-slot11-restore-materialisation-20260920-105211/`
+- `archive/field-logs/source-scans/lua-restore-pre-dispatch-helpers-20260920-110309/`
+- `archive/field-logs/source-scans/softpickle-state-owner-constructor-20260920-100713/`
+
+## Class identities
+
+RTTI proves:
+
+- vtable `0xE03F18` = **LuaLevelClient** (`.?AVLuaLevelClient@@`)
+- vtable `0xE04018` = **LuaClient** (`.?AVLuaClient@@`)
+
+## LuaLevelClient checkpoint/backing fields
+
+Existing analyzers establish:
+
+- **`LuaLevelClient+0x68` = durable per-resource backing-state node**
+- `LuaLevelClient+0x70` = transient normal-pickle blob
+- `LuaLevelClient+0x78` = transient soft-pickle blob
+- `0x5A6DD0` constructor receives the durable backing node in R9 and stores it at `+0x68`
+- `0x5A6C10` consumes `+0x70/+0x78` length-prefixed blobs (`u32 size` + payload), invokes virtual restore methods, frees the blobs through the backing allocator, and clears the transient pointers
+- `0x5A6270` performs the inverse transfer back into durable backing storage
+
+Thus the per-WAD Lua `__PickleTable/__SoftPickleTable` roots are transient materializations, while the native backing node is the durable layer above them.
+
+## _SUBOBJECT_CHUNKS staging
+
+`0x5A4370` references both **`_SUBOBJECT_CHUNKS`** and **`_SUBOBJECTS`** as real Lua globals during pre-restore staging. It installs the incoming transient chunk at client `+0x70` and materializes the Lua tables used later by the per-subobject restore callback path.
+
+This explains why runtime Unpickle probes only see the currently materialized WAD: they observe the transient table after one durable backing entry has been materialized.
+
+## Critical native cache: LuaContext+0x178
+
+On client/resource detach, `0x46538B..0x4653FC` does:
+
+```text
+rdi = client
+rbx = [client+0x68]          ; durable backing node
+... detach/destroy client ...
+rcx = LuaContext + 0x178     ; cache list head
+rax = [rcx+8]
+[rcx+8] = rbx
+[rbx+8] = rax
+[rbx] = rcx
+[rax] = rbx
+```
+
+Therefore **`LuaContext+0x178` is a doubly-linked-list head containing durable backing nodes for detached/unloaded resources**. It is not a single “last resource” pointer.
+
+This is the first native structure found that can plausibly retain state for many unloaded WADs simultaneously.
+
+## Cache lookup on resource/client creation
+
+`0x4654A0..0x4658BC` searches that list when a client is created:
+
+```text
+resource_key = [[r8+0x30]+0x18]
+head = LuaContext + 0x178
+for node in list:
+    if [node+0x18] == resource_key:
+        unlink node
+        pass node as R9 to 0x5A6DD0
+```
+
+Thus backing-node **`+0x18` is the resource key** used to associate durable state with a resource/WAD. A matched node is unlinked from the cache and reattached to the new LuaLevelClient.
+
+Known/likely node fields from existing code:
+
+- `+0x00/+0x08`: doubly-linked-list links
+- `+0x10`: used as a scalar/count during backing transfer (`0x5A7776`)
+- **`+0x18`: resource key**
+- `+0x28`: allocator/backing owner used to allocate/free transient blobs
+
+## Architectural conclusion
+
+The WAD-scoped Lua roots are not the global authority, but the engine retains their durable serialized state in a **multi-entry native LuaContext cache for unloaded resources**. This is now the strongest route to all-53 Raven historical state without reading `game.sav` from Lua or loading every WAD.
+
+Next target: statically recover the backing-node structure and resource-key identity well enough to enumerate Raven-bearing cached resources and locate their serialized normal/soft checkpoint payloads. Specifically resolve:
+
+1. the type/value behind `[[r8+0x30]+0x18]` used as the cache key;
+2. all backing-node field accesses around `+0x10/+0x18/+0x20/+0x28` and beyond;
+3. which fields own the durable normal/soft serialized chunks;
+4. whether an existing Lua-visible/native callback path can expose these cached chunks read-only at runtime.
+
+Do not repeat broad Unpickle-root, `__prevunpickle`, save-event, registry-sweep, or generic Lua-runtime probes.
