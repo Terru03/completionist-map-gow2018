@@ -280,6 +280,7 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
         explicit_false = set()
         raven_entries = []
         raven_state_entries_all = []
+        raven_state_parent_keys = []
         subobj_tables = set()
 
         for row_index in range(row_count):
@@ -291,12 +292,6 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
 
         for sub_index in sorted(subobj_tables):
             for key, value in row_pairs(sub_index):
-                if key["tag"] != 5:
-                    continue
-                record = records[key["payload"]]
-                parsed = parse_gameobject_payload(record["payload"])
-                if parsed is None or parsed["registry_hash"] != registry_hash:
-                    continue
                 state_index = table_index(value)
                 state = None
                 if state_index is not None:
@@ -304,6 +299,46 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
                         if string_value(skey) == RAVEN_FIELD and sval["tag"] == 0:
                             state = bool(sval["payload"])
                             break
+
+                # Preserve the exact parent key for every explicit ravenKilled
+                # row before applying any GameObject/registry assumptions.
+                if state is not None:
+                    parent = {
+                        "subobj_table_row": sub_index,
+                        "state_row": state_index,
+                        "ravenKilled": state,
+                        "key_tag": key["tag"],
+                        "key_payload": key["payload"],
+                        "key_width": key["width"],
+                        "key_raw_hex": key["raw_hex"],
+                    }
+                    if key["tag"] == 5 and key["payload"] < len(records):
+                        raw_record = records[key["payload"]]
+                        parent.update({
+                            "record_index": key["payload"],
+                            "record_class_key_hex": f"0x{raw_record['class_key']:016X}",
+                            "record_payload_hex": raw_record["payload"].hex(),
+                        })
+                        any_go = parse_gameobject_payload(raw_record["payload"])
+                        if any_go is not None:
+                            parent["parsed_gameobject"] = {
+                                "flags": any_go["flags"],
+                                "aux": any_go["aux"],
+                                "has_upper": any_go["has_upper"],
+                                "upper_u32": any_go["upper_u32"],
+                                "registry_hash_hex": f"0x{any_go['registry_hash']:016X}",
+                                "object_hash_hex": f"0x{any_go['object_hash']:016X}",
+                                "catalogue_id": object_map.get(any_go["object_hash"])
+                                    if any_go["registry_hash"] == registry_hash else None,
+                            }
+                    raven_state_parent_keys.append(parent)
+
+                if key["tag"] != 5:
+                    continue
+                record = records[key["payload"]]
+                parsed = parse_gameobject_payload(record["payload"])
+                if parsed is None or parsed["registry_hash"] != registry_hash:
+                    continue
                 catalogue_id = object_map.get(parsed["object_hash"])
                 if state is not None:
                     raven_state_entries_all.append({
@@ -356,6 +391,7 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
             "subobj_table_rows": sorted(subobj_tables),
             "raven_entries": raven_entries,
             "raven_state_entries_all": raven_state_entries_all,
+            "raven_state_parent_keys": raven_state_parent_keys,
             "unmatched_raven_state_entries": [x for x in raven_state_entries_all if x["catalogue_id"] is None],
             "killed_ravens": sorted(killed),
             "explicit_false_ravens": sorted(explicit_false),
@@ -369,6 +405,7 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
             tuple(item["explicit_false_ravens"]),
             tuple((x["catalogue_id"], x["state_row"], x["ravenKilled"]) for x in item["raven_entries"]),
             tuple((x["object_hash_hex"], x["state_row"], x["ravenKilled"]) for x in item["raven_state_entries_all"]),
+            tuple((x["key_tag"], x["key_payload"], x["state_row"], x["ravenKilled"]) for x in item["raven_state_parent_keys"]),
         )
         unique[key] = item
     return list(unique.values())
