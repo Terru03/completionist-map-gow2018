@@ -47,6 +47,9 @@ $published = $false
 $beforeLines = @()
 $loaderBeforeLines = @()
 $gameProcess = $null
+$baselineGamePids = @()
+$startupGamePids = @()
+$bootstrapExitCode = $null
 
 function Get-LowerHash([string]$Path) {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -170,26 +173,50 @@ try {
     ) | Set-Content -LiteralPath (Join-Path $outDir 'installed-file-hashes.txt') -Encoding UTF8
 
     Write-Host 'RAVEN NATIVE BRIDGE LOAD PROOF V2'
+    $baselineGamePids = @(Get-Process -ErrorAction SilentlyContinue |
+        Where-Object { $_.ProcessName -in @('GoW', 'GodOfWar') } |
+        Select-Object -ExpandProperty Id)
     $gameProcess = Start-Process -FilePath $exe -WorkingDirectory $GameRoot -PassThru
     $launched = $true
     $startupDeadline = [DateTime]::UtcNow.AddSeconds($StartupTimeoutSeconds)
     $startupReady = $false
     while ([DateTime]::UtcNow -lt $startupDeadline) {
         Start-Sleep -Milliseconds 250
-        $gameProcess.Refresh()
+
+        if ($null -ne $gameProcess -and $null -eq $bootstrapExitCode) {
+            try {
+                $gameProcess.Refresh()
+                if ($gameProcess.HasExited) {
+                    $bootstrapExitCode = $gameProcess.ExitCode
+                }
+            } catch {}
+        }
+
+        $liveGameProcesses = @(Get-Process -ErrorAction SilentlyContinue |
+            Where-Object {
+                $_.ProcessName -in @('GoW', 'GodOfWar') -and
+                $baselineGamePids -notcontains $_.Id
+            })
         $capture = Save-FreshBridgeLog
-        $observation = Test-RavenBridgeStartupObservation -ProcessRunning (-not $gameProcess.HasExited) -FreshLines @($capture.Lines)
+        $observation = Test-RavenBridgeStartupObservation -ProcessRunning (@($liveGameProcesses).Count -gt 0) -FreshLines @($capture.Lines)
         if ($observation.Ready) {
+            $startupGamePids = @($liveGameProcesses | Select-Object -ExpandProperty Id)
             $startupReady = $true
             break
         }
-        if ($gameProcess.HasExited) {
-            throw "Game exited before bridge startup proof. exit_code=$($gameProcess.ExitCode)"
-        }
     }
     if (-not $startupReady) {
-        throw "Expected fresh bridge startup log did not appear within $StartupTimeoutSeconds seconds."
+        $bootstrapExitText = if ($null -eq $bootstrapExitCode) { 'unknown_or_running' } else { [string]$bootstrapExitCode }
+        throw "Expected fresh bridge startup log plus a live GoW process did not appear within $StartupTimeoutSeconds seconds. bootstrap_exit_code=$bootstrapExitText"
     }
+
+    @(
+        "bootstrap_pid=$($gameProcess.Id)"
+        "bootstrap_exited=$((($null -ne $bootstrapExitCode)).ToString().ToLowerInvariant())"
+        "bootstrap_exit_code=$(if ($null -eq $bootstrapExitCode) { 'n/a' } else { $bootstrapExitCode })"
+        "startup_game_pids=$($startupGamePids -join ',')"
+        'steam_handoff_tolerated=true'
+    ) | Set-Content -LiteralPath (Join-Path $outDir 'startup-processes.txt') -Encoding UTF8
 
     Write-Host 'Proxy startup proven. Load advanced Raven save. Open map. Wait 15 seconds. Then quit game fully.'
     while ($true) {
