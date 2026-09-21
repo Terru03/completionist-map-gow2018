@@ -2184,3 +2184,32 @@ The 53-Raven catalogue spans 39 unique WADs. The captured staged WAD table conta
 Therefore the next blocker is not missing Lua state. It is the save-side GameObject identity join for Raven subobjects outside `Xpl200_Funeral`.
 
 Next step: instrument the canonical carrier decoder to report **all registry-matching GameObject subobject keys whose state row contains `ravenKilled`**, including unmatched object hashes/payloads. Compare those live save identities against the 53 catalogue identities and recover the remaining transform/join rule. Do not fall back to coordinates, RegionSummary-only inference, or absence=alive.
+
+
+---
+
+# Addendum 2026-09-21 - identity-join diagnostic for non-Veithurgard Raven WADs
+
+Commits:
+
+- `e932ab091f01e5cc0d2ec91c67430f1201428014` - canonical carrier decoder now preserves all registry-matching GameObject subobject identities whose state row contains an explicit `ravenKilled` boolean, even when the object hash does not match the current 53-entry catalogue map.
+- `b9ea909a7b165a872f7a115b40999a98f35b60e8` - offline replay text report prints unmatched Raven-state identities with exact record payload hex, object hash, state row, and boolean state.
+- `a9d23d6f2ba6808376fa60308cc4f5db9a90cda7` - regression coverage proves unmatched Raven-state identities are retained rather than discarded.
+
+The diagnostic fields added to decoded carriers are:
+
+- `raven_state_entries_all`
+- `unmatched_raven_state_entries`
+
+Each unmatched entry preserves:
+
+- complete native GameObject record payload hex;
+- flags / aux / upper form;
+- registry hash;
+- object hash;
+- exact state row;
+- explicit `ravenKilled=true|false`.
+
+This is specifically intended to solve the remaining identity join for the other Raven-bearing WADs. The decoded Lua carriers for many of those WADs already contain `ravenKilled`, so the next offline replay should expose their actual save-side GameObject identities directly.
+
+No new runtime capture is required. Re-run the archived `20260921-060345-c2c9bcc1` capture through the current decoder and compare unmatched payloads against the 53 catalogue identity transform chains.
