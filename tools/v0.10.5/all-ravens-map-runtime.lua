@@ -24,6 +24,7 @@ do
   local previousCollision = MapOn.MapCollisionChangeHandler
   local lastMapOnSelf = nil
   local selectionGeneration = 0
+  local promptIntent = nil
   local nativePort = 43753
   local nativeRequest = "GET RAVEN_SNAPSHOT_V1\n"
   local nativeMaxResponseBytes = 4096
@@ -302,6 +303,7 @@ do
       icons[name] = nil
     end
     self.completionistMapV105RavenIcons = icons
+    promptIntent = nil
     clearSelection(self, reason)
   end
 
@@ -470,6 +472,27 @@ do
   end
 
   local function promptText(selected)
+    if promptIntent ~= nil and promptIntent.IdString == selected.IdString then
+      if promptIntent.State == "tracked" then
+        return actionText(lamsConsts.RemoveFromCompass)
+      elseif promptIntent.State == "untracked" then
+        local ids, customOK = customIds()
+        local hasOtherCustom = false
+        if customOK then
+          for _, id in ipairs(ids) do
+            if tostring(id) ~= selected.IdString then
+              hasOtherCustom = true
+              break
+            end
+          end
+        end
+        local stock, stockOK = stockIds()
+        if hasOtherCustom or (stockOK and #stock > 0) then
+          return actionText(lamsConsts.ReplaceInCompass)
+        end
+        return actionText(lamsConsts.AddToCompass)
+      end
+    end
     local ids, ok = customIds()
     if ok and contains(ids, selected.IdString) then
       return actionText(lamsConsts.RemoveFromCompass)
@@ -481,11 +504,51 @@ do
     return actionText(lamsConsts.AddToCompass)
   end
 
+  local function refreshPrompt(self, selected)
+    if self == nil or self.menu == nil or selected == nil then return end
+    local text = promptText(selected)
+    local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
+    if goMapCursorText ~= nil then
+      goMapCursorText:Show()
+      local top = goMapCursorText:FindSingleGOByName("CursorInfo_Top")
+      if top ~= nil then
+        local handle = util.GetTextHandle(top, "CursorAction_Text")
+        if handle ~= nil then
+          UI.SetTextIsClickable(handle)
+          UI.SetText(handle, text)
+        end
+        top:Show()
+      end
+    end
+    self.menu:UpdateFooterButton("ShowOnCompass", true, text)
+    self.menu:UpdateFooterButtonText()
+    log("PROMPT_REFRESH", "name=" .. selected.Name ..
+        " state=" .. tostring(promptIntent and promptIntent.State or "observed") ..
+        " text=" .. tostring(text))
+  end
+
+  local function showRavenReticle(self, currState, selected)
+    if self == nil or currState == nil or selected == nil then return end
+    local ok, err = pcall(function()
+      self:SetReticleInfo(currState, "Odin's Raven", "Completionist Map")
+    end)
+    if ok then
+      log("RETICLE", "name=" .. selected.Name ..
+          " title=Odin's Raven subtitle=Completionist Map")
+    else
+      log("RETICLE_FAILED", "name=" .. selected.Name .. " error=" .. tostring(err))
+    end
+  end
+
   function MapOn:MapCollisionChangeHandler(currState, collisionTable, realmName)
     lastMapOnSelf = self
     local selected = collisionSelection(self, collisionTable)
     if selected ~= nil then captureSelection(self, selected) end
-    return previousCollision(self, currState, collisionTable, realmName)
+    local result = previousCollision(self, currState, collisionTable, realmName)
+    if selected ~= nil and currentSelection(self) ~= nil then
+      showRavenReticle(self, currState, selected)
+    end
+    return result
   end
 
   function MapOn:GetShowOnCompassPrompt(currMenu)
@@ -506,6 +569,7 @@ do
     lastMapOnSelf = self
     local selected = currentSelection(self)
     if selected == nil then
+      promptIntent = nil
       local customOK = hideCustom(nil, "other_target_replace")
       if not customOK then return end
       _G.CompletionistMapV105TrackedCatalogueId = nil
@@ -526,7 +590,9 @@ do
           _G.CompletionistMapV105TrackedCatalogueId = nil
         end
         self.currShownMarkerID = nil
+        promptIntent = {IdString=selected.IdString, State="untracked"}
         Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
+        refreshPrompt(self, selected)
         log("REMOVE", "name=" .. selected.Name .. " uid=" .. selected.IdString)
       end
       return
@@ -543,7 +609,9 @@ do
     end
     _G.CompletionistMapV105TrackedCatalogueId = selected.CatalogueId
     self.currShownMarkerID = selected.Id
+    promptIntent = {IdString=selected.IdString, State="tracked"}
     Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
+    refreshPrompt(self, selected)
     log("SHOW", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
         " replacedCustomCount=" .. tostring(customCount) ..
         " replacedStockCount=" .. tostring(stockCount))
@@ -601,6 +669,7 @@ do
       clearIcons(lastMapOnSelf, "state_reset:" .. tostring(source))
     end
     _G.CompletionistMapV105TrackedCatalogueId = nil
+    promptIntent = nil
     log("STATE_RESET", "source=" .. tostring(source) ..
         " staleStateRetained=false catalogueDefaultVisible=true progressionWrites=false")
     return true
