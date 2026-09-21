@@ -3740,3 +3740,30 @@ The runner also:
 Next action is the live load proof. No additional static research or implementation should be done before this result.
 
 After the proof is pushed, inspect the new runtime-capture evidence first. If it passes, the only remaining architecture boundary is delivery of the accepted native snapshot into the existing Lua map/compass implementation.
+
+
+## Live load-proof attempt blocked by PowerShell execution policy
+
+The first live-test command did **not** enter the runner.
+
+Observed local error:
+
+```text
+PSSecurityException
+running scripts is disabled on this system
+FullyQualifiedErrorId : UnauthorizedAccess
+```
+
+The failure occurred at direct invocation of:
+
+`tools/v0.10.5/run-raven-authority-bridge-load-proof-and-push.ps1`
+
+Therefore:
+
+- the proof runner itself did not start;
+- no bridge build/install step from that runner executed;
+- GoW was not launched by the runner;
+- no `dxgi.dll` install/rollback action from the runner occurred;
+- no save/progression/game-file mutation from this attempt occurred.
+
+Next action: run the same proof through a child PowerShell process with `-NoProfile -ExecutionPolicy Bypass -File`. This changes execution policy only for that one PowerShell process and does not modify the machine-wide policy.
