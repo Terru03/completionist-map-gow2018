@@ -820,6 +820,7 @@ do
       clearIcons(lastMapOnSelf, "state_reset:" .. tostring(source))
     end
     _G.CompletionistMapV105TrackedCatalogueId = nil
+    customCompassOwnsTarget = false
     promptIntent = nil
     promptSettleFrames = 0
     promptSettleBucket = -1
