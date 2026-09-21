@@ -4356,3 +4356,140 @@ No process writes, memory modification, save/progression writes, proxy install, 
 If PSAPI succeeds, the result should finally settle whether the live process uses System32 `XINPUT1_4.dll`, a game-root copy, or no XInput module at all.
 
 Do not spend remaining Codex/Sol usage on this capture plumbing. Preserve it for the next substantive bridge/delivery implementation step once the load-point evidence is known.
+
+
+## Full module enumeration abandoned after ERROR_PARTIAL_COPY
+
+Fifth failed module-list capture:
+
+- `11c7b68175f0a390c7af5d5deaa622e829411546`
+- capture: `archive/field-logs/runtime-captures/gow-loaded-module-paths-20260921-114210/`
+
+The observer found the live GoW process and waited the full 40-second settle window:
+
+```text
+Live GoW process found: PID=41928
+Waiting 40 seconds for modules to settle...
+```
+
+PSAPI then failed with:
+
+```text
+EnumProcessModulesEx failed (error 299)
+```
+
+Win32 error 299 is `ERROR_PARTIAL_COPY`.
+
+At this point the following broad module enumeration routes have all been exhausted on this machine:
+
+- PowerShell/.NET `Process.Modules` direct enumeration;
+- indexed `ProcessModuleCollection`;
+- explicit `IEnumerable` enumerator;
+- Toolhelp `CreateToolhelp32Snapshot(TH32CS_SNAPMODULE*)`;
+- PSAPI `EnumProcessModulesEx`.
+
+Do not spend more time trying to enumerate GoW's entire module list.
+
+The actual research question is much smaller: which mapped image owns GoW's already-resolved `XINPUT1_4.dll` import slots?
+
+## Targeted XInput IAT owner probe CI-proven and ready
+
+New native probe:
+
+- `2bd18553e575d4acb3fa157fad632fc0ec168d27`
+- `native/raven-authority-bridge/tools/live_import_probe.cpp`
+
+CMake target:
+
+- `d551431cdc512f2ae5265e717b1240a33460cda9`
+- `raven_bridge_import_probe`
+
+Warning-gate cleanup:
+
+- `d85da4bb6d95b5b5fa20e0ee90518753d088fb67`
+
+New fail-soft live runner:
+
+- `fb7610a7ff5c8bdde7231215cb05042b25774f73`
+- `tools/v0.10.5/capture-gow-xinput-iat-owner-readonly-and-push.ps1`
+
+The native probe intentionally does **not** enumerate the process module list.
+
+It:
+
+1. parses the normal PE import directory in the on-disk supported `GoW.exe`;
+2. finds the `XINPUT1_4.dll` import descriptor and exact IAT slots;
+3. opens the live process read-only with `PROCESS_QUERY_INFORMATION | PROCESS_VM_READ`;
+4. obtains the remote PEB with `NtQueryInformationProcess(ProcessBasicInformation)`;
+5. reads the remote image base and only the exact XInput IAT slot pointers via `ReadProcessMemory`;
+6. identifies the mapped image containing each resolved target by walking the PEB loader list read-only;
+7. falls back to `GetMappedFileNameW` for the individual target address if needed;
+8. prints the exact owner path/method for each imported XInput slot.
+
+This is targeted and reuses the `ReadProcessMemory` capability already proven reliable throughout Raven research.
+
+### Remote Windows compile/self-test gate
+
+A temporary branch-only GitHub Actions workflow was added solely to compile and self-test the native probe on a clean Windows x64 runner.
+
+Initial CI failure was infrastructure-only:
+
+- GitHub `windows-latest` had moved to a Visual Studio 2026 image;
+- the first temporary workflow requested the absent `Visual Studio 17 2022` generator.
+
+The workflow was corrected to `Visual Studio 18 2026`.
+
+The probe then:
+
+- configured successfully;
+- compiled successfully under MSVC with `/W4 /WX /permissive- /EHsc`;
+- ran its live PEB-reader self-test successfully:
+
+```text
+RAVEN_IMPORT_PROBE_SELFTEST_PASSED owner=C:\Windows\System32\KERNEL32.DLL
+```
+
+The newest warning-clean commit CI run also completed with:
+
+```text
+status=completed
+conclusion=success
+```
+
+CI run:
+
+- `35596557736`
+
+The temporary workflow was removed after validation:
+
+- `d4e1e91e21e45a36b11082764080d989a0cff860`
+
+Therefore the user is **not** being used as the compile test for this probe.
+
+### Fail-soft live runner behavior
+
+`capture-gow-xinput-iat-owner-readonly-and-push.ps1`:
+
+- requires GoW closed initially;
+- refuses any installed game-root `XINPUT1_4.dll` or Raven native bridge manifest;
+- performs a clean native build and runs all existing native tests;
+- runs the CI-proven probe `--self-test` before launching GoW;
+- launches GoW and tolerates the Steam bootstrap/handoff;
+- finds the long-lived GoW process by PID;
+- waits 40 seconds, matching the user's observed ~35-second main-menu startup time;
+- **does not require loading a save**;
+- runs the targeted XInput IAT-owner probe;
+- also records fail-soft secondary evidence from:
+  - KnownDLL registry state;
+  - `tasklist /m XINPUT1_4.dll`;
+- archives and pushes the evidence automatically;
+- does not require the user to press Enter;
+- deliberately leaves GoW running after capture;
+- does not install any native proxy;
+- performs no process writes;
+- performs no save/progression writes;
+- performs no game-file writes.
+
+If the targeted live probe itself cannot fully resolve the owner, the runner records `CAPTURE_INCOMPLETE` and still pushes all evidence rather than dying on a secondary observation method.
+
+Next action: run this targeted capture once with GoW closed. Leave the game at the main menu. No save load is needed.
