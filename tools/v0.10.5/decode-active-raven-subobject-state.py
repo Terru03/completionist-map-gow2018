@@ -181,7 +181,7 @@ def extract_string(prefix: bytes, offset: int):
 
 
 def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes, consumed: int,
-                                  registry_hash: int, object_map: dict[int, str]):
+                                  registry_hash: int | None, object_map: dict):
     if header_start < 0 or header_start + 16 > len(slot):
         return []
     try:
@@ -276,6 +276,13 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
             row = rows[index]
             return pairs[row["first_pair"]:row["first_pair"] + row["pair_count"]]
 
+        def catalogue_for(parsed):
+            if registry_hash is None:
+                return object_map.get((parsed["registry_hash"], parsed["object_hash"]))
+            if parsed["registry_hash"] != registry_hash:
+                return None
+            return object_map.get(parsed["object_hash"])
+
         killed = set()
         explicit_false = set()
         raven_entries = []
@@ -328,8 +335,7 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
                                 "upper_u32": any_go["upper_u32"],
                                 "registry_hash_hex": f"0x{any_go['registry_hash']:016X}",
                                 "object_hash_hex": f"0x{any_go['object_hash']:016X}",
-                                "catalogue_id": object_map.get(any_go["object_hash"])
-                                    if any_go["registry_hash"] == registry_hash else None,
+                                "catalogue_id": catalogue_for(any_go),
                             }
                     raven_state_parent_keys.append(parent)
 
@@ -337,9 +343,9 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
                     continue
                 record = records[key["payload"]]
                 parsed = parse_gameobject_payload(record["payload"])
-                if parsed is None or parsed["registry_hash"] != registry_hash:
+                if parsed is None:
                     continue
-                catalogue_id = object_map.get(parsed["object_hash"])
+                catalogue_id = catalogue_for(parsed)
                 if state is not None:
                     raven_state_entries_all.append({
                         "catalogue_id": catalogue_id,
@@ -411,7 +417,7 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
     return list(unique.values())
 
 
-def decode_carriers(slot: bytes, registry_hash: int, object_map: dict[int, str]):
+def decode_carriers(slot: bytes, registry_hash: int | None, object_map: dict):
     carriers = []
     seen = set()
     stream_count = 0
@@ -452,7 +458,7 @@ def decode_carriers(slot: bytes, registry_hash: int, object_map: dict[int, str])
     }
 
 
-def decode_one_carrier(raw: bytes, registry_hash: int, object_map: dict[int, str]):
+def decode_one_carrier(raw: bytes, registry_hash: int | None, object_map: dict):
     if len(raw) < 18:
         raise RuntimeError("frozen carrier too short")
     header = struct.unpack_from("<8H", raw, 0)
