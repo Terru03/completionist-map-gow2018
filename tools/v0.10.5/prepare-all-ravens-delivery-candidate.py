@@ -70,7 +70,8 @@ def prepare(check_only: bool) -> None:
         )
     if map_path.read_bytes() != refreshed:
         raise ValueError("generated map candidate verification failed")
-    print("ALL_RAVENS_NATIVE_DELIVERY_CANDIDATE_PREPARED files=5 map_sha256=" + sha(refreshed))\n    print("ALL_RAVENS_NATIVE_DELIVERY_CANDIDATE_ROOT=" + str(build.OUTPUT.resolve()))
+    print("ALL_RAVENS_NATIVE_DELIVERY_CANDIDATE_PREPARED files=5 map_sha256=" + sha(refreshed))
+    print("ALL_RAVENS_NATIVE_DELIVERY_CANDIDATE_ROOT=" + str(build.OUTPUT.resolve()))
 
 
 def main() -> None:
