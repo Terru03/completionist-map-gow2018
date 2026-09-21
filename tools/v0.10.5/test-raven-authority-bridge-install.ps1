@@ -35,8 +35,12 @@ try {
     $versionBefore = (Get-FileHash -LiteralPath (Join-Path $testRoot 'version.dll') -Algorithm SHA256).Hash
     $target = Join-Path $testRoot 'dxgi.dll'
     $manifest = Join-Path $testRoot 'mods\completionist-map\native\raven-native-bridge-manifest.json'
+    $operationJournal = Join-Path $testRoot 'mods\completionist-map\native\raven-native-bridge-operation.json'
 
     & $installer -GameRoot $testRoot -BridgeDll $bridge -BuildManifest $buildManifest
+    if (Test-Path -LiteralPath $operationJournal -PathType Leaf) {
+        throw 'Clean DXGI install left operation journal.'
+    }
     if (-not (Test-Path -LiteralPath $target -PathType Leaf) -or
         -not (Test-Path -LiteralPath $manifest -PathType Leaf)) {
         throw 'Clean DXGI install did not write owned pair.'
@@ -50,6 +54,9 @@ try {
     }
 
     & $installer -GameRoot $testRoot -BridgeDll $bridge -BuildManifest $buildManifest
+    if (Test-Path -LiteralPath $operationJournal -PathType Leaf) {
+        throw 'DXGI upgrade left operation journal.'
+    }
     $second = Get-Content -Raw -LiteralPath $manifest | ConvertFrom-Json
     if ([string]::IsNullOrWhiteSpace([string]$second.backup_relative) -or
         [string]::IsNullOrWhiteSpace([string]$second.backup_manifest_relative)) {
@@ -57,12 +64,18 @@ try {
     }
 
     & $rollback -GameRoot $testRoot
+    if (Test-Path -LiteralPath $operationJournal -PathType Leaf) {
+        throw 'DXGI upgrade rollback left operation journal.'
+    }
     if (-not (Test-Path -LiteralPath $target -PathType Leaf) -or
         -not (Test-Path -LiteralPath $manifest -PathType Leaf)) {
         throw 'DXGI upgrade rollback did not restore prior owned pair.'
     }
 
     & $rollback -GameRoot $testRoot
+    if (Test-Path -LiteralPath $operationJournal -PathType Leaf) {
+        throw 'Clean DXGI rollback left operation journal.'
+    }
     if ((Test-Path -LiteralPath $target) -or (Test-Path -LiteralPath $manifest)) {
         throw 'Clean DXGI rollback left active owned pair.'
     }
@@ -99,6 +112,9 @@ try {
 
     & $installer -GameRoot $testRoot -BridgeDll $bridge -BuildManifest $buildManifest
     & $recovery -GameRoot $testRoot
+    if (Test-Path -LiteralPath $operationJournal -PathType Leaf) {
+        throw 'Startup recovery left operation journal.'
+    }
     if ((Test-Path -LiteralPath $target) -or (Test-Path -LiteralPath $manifest)) {
         throw 'Recovery left active owned DXGI pair.'
     }
@@ -106,7 +122,7 @@ try {
     $versionAfter = (Get-FileHash -LiteralPath (Join-Path $testRoot 'version.dll') -Algorithm SHA256).Hash
     if ($versionAfter -ne $versionBefore) { throw 'version.dll test fixture changed.' }
 
-    Write-Host 'RAVEN_NATIVE_BRIDGE_INSTALL_TESTS_PASSED target=dxgi.dll schema=3 clean=true upgrade=true rollback_chain=true unknown_refused=true tamper_refused=true recovery=true version_untouched=true'
+    Write-Host 'RAVEN_NATIVE_BRIDGE_INSTALL_TESTS_PASSED target=dxgi.dll schema=3 clean=true upgrade=true rollback_chain=true unknown_refused=true tamper_refused=true recovery=true journal_clean=true version_untouched=true'
 }
 finally {
     $resolved = [IO.Path]::GetFullPath($testRoot)
