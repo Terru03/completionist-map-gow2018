@@ -5023,3 +5023,37 @@ Requirements if native Lua registration is used:
 If legitimate registration is not safely available, fall back to a native map-sync integration using known marker data/functions, still without progression writes or forced WAD loading.
 
 Do not redo Raven authority or native load research.
+
+
+## Native Raven snapshot delivery Sol task prepared
+
+Focused implementation task:
+
+- commit: `377ef33120299b298d3e8418fedc6d0e820d521c`
+- file: `docs/research/CODEX-SOL-v0105-raven-snapshot-delivery-task.md`
+
+This task starts after the passed V3 DXGI proof and explicitly forbids reopening solved authority/load research.
+
+Key implementation boundary:
+
+- keep the proven native `CompletionistMapGetRavenSnapshotV1`;
+- expose the newest atomic snapshot safely to Lua or use a non-invasive native map-sync fallback;
+- do not mutate/overwrite the game's existing 309-entry static native descriptor table;
+- use legitimate runtime registration if safely recoverable from archived evidence;
+- existing Lua `CompletionistMapV105ApplyPersistedRavenKills` is the intended state-application point;
+- map-open must refresh native authority before `syncIcons`;
+- retain the existing loaded-Raven `ravenKilled` event path for immediate kill removal.
+
+Important V3 timing is carried into the task:
+
+- a transient all-53-alive generation may exist before an advanced save finishes restoring;
+- therefore readiness must be tied to map/save lifecycle timing, not snapshot shape;
+- a true fresh save legitimately has the same all-53-alive shape.
+
+Target stop state:
+
+```text
+RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_READY
+```
+
+No local user action is needed until that task has produced green offline/CI gates and one reversible live acceptance runner.
