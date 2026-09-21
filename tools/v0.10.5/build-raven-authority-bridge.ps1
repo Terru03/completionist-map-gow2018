@@ -15,7 +15,7 @@ if (-not (Test-Path -LiteralPath $vswhere -PathType Leaf)) { throw 'Visual Studi
 $vs = (& $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath).Trim()
 $vsVersion = (& $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationVersion).Trim()
 if ([string]::IsNullOrWhiteSpace($vs) -or [string]::IsNullOrWhiteSpace($vsVersion)) { throw 'MSVC x64 build tools not found.' }
-$vsMajor = [int](($vsVersion -split '.')[0])
+$vsMajor = [int](($vsVersion -split '\.')[0])
 $cmakeGenerator = switch ($vsMajor) {
     17 { 'Visual Studio 17 2022' }
     18 { 'Visual Studio 18 2026' }
