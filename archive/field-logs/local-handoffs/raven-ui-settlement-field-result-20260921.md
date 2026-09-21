@@ -140,3 +140,32 @@ Next boundary:
    - kill Raven -> map close/reopen keeps it absent;
    - reload the checkpoint created after kill -> reopen map -> same Raven remains absent;
    - stock target behavior remains normal after checkpoint/save reset.
+
+
+## Refreshed delivery proof after checkpoint/re-add fixes
+
+Local refresh completed and self-pushed successfully:
+
+- commit: `5115d3bd7e9931e5e2dea9cab999904f3322f07e`
+- result: `RAVEN_DELIVERY_PROOF_REFRESH_PASSED`
+- mapmenu.lua:
+  - sha256 `1b80c6adf5327358820fce6e25afea03543783df46cd57575977f3a36980db68`
+  - bytes `225628`
+- precisionchallenge.lua:
+  - sha256 `1b0b9777b0c465087da1e45b5ad439b3acb2180b3c4dc2399e207d55982b34b0`
+  - bytes `26274`
+- source_game_rebuild=false
+- non_generated_binary_pins_unchanged=true
+
+The proof diff changed only the two generated Lua entries. Binary candidate pins remained:
+- mapmaster.dcb `7d1d5e05315dce17326712a95901e1e753b6c14c4f1a71012ca337ae7ee9b223`
+- mapcoords.dcb `d6786f9734473fa7bdb8eff39aadac4f3fb2ecd4a83d56bfc5d2832c17435514`
+- wad_r_ui.dcb `2cebb4bfc0a4cf76c0d4145b7408be10ad7c6ad2350d571263c5050c7ab6480a`
+
+Next action is the full live proof. Acceptance must include:
+1. advanced save correct surviving set, title/subtitle, immediate compass prompt;
+2. Add A -> Remove A -> Add A within one map-open session, with no boat/stock HUD fallback;
+3. kill Raven -> immediate disappearance -> close/reopen still absent;
+4. reload the checkpoint created after the kill -> reopen map -> same Raven still absent;
+5. fresh save shows all 53;
+6. exact rollback and no save/progression/process-memory writes.
