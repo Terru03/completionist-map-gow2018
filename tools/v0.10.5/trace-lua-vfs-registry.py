@@ -169,7 +169,7 @@ def main():
     # Search mapped non-executable image data for useful ASCII labels.
     for sec in pe.sections:
         if sec.get("exec"):continue
-        start=sec["raw_ptr"]; end=start+sec["raw_size"]
+        start=sec["raw"]; end=min(len(pe.data), start+sec["rawsize"])
         blob=pe.data[start:end]
         i=0
         while i<len(blob):
