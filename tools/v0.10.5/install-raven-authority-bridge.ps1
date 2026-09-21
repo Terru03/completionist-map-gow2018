@@ -9,7 +9,7 @@ Set-StrictMode -Version Latest
 
 $ExpectedExeHash = 'caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452'
 $Owner = 'completionist-map-raven-authority-bridge'
-$TargetRelative = 'dxgi.dll'
+$TargetRelative = 'XINPUT1_4.dll'
 $ManifestRelative = 'mods\completionist-map\native\raven-native-bridge-manifest.json'
 
 function Get-LowerHash([string]$Path) {
@@ -31,7 +31,7 @@ if (@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName 
 $repo = (& git rev-parse --show-toplevel 2>$null).Trim()
 if ([string]::IsNullOrWhiteSpace($repo)) { throw 'Not inside repository.' }
 if ([string]::IsNullOrWhiteSpace($BridgeDll)) {
-    $BridgeDll = Join-Path $repo 'build\raven-authority-bridge\Release\dxgi.dll'
+    $BridgeDll = Join-Path $repo 'build\raven-authority-bridge\Release\XINPUT1_4.dll'
 }
 if ([string]::IsNullOrWhiteSpace($BuildManifest)) {
     $BuildManifest = Join-Path $repo 'build\raven-authority-bridge\bridge-build-manifest.json'
@@ -49,7 +49,9 @@ $exeHash = Get-LowerHash $exe
 if ($exeHash -ne $ExpectedExeHash) { throw "GoW.exe hash not supported: $exeHash" }
 $versionBefore = Get-LowerHash $version
 $build = Get-Content -Raw -LiteralPath $BuildManifest | ConvertFrom-Json
-if ($build.schema -ne 1 -or $build.owner -ne $Owner -or $build.supported_exe_sha256 -ne $ExpectedExeHash) {
+if ($build.schema -ne 2 -or $build.owner -ne $Owner -or
+    $build.target_relative -ne $TargetRelative -or
+    $build.supported_exe_sha256 -ne $ExpectedExeHash) {
     throw 'Build manifest not known.'
 }
 $bridgeHash = Get-LowerHash $BridgeDll
@@ -58,29 +60,29 @@ if ($bridgeHash -ne $build.dll_sha256) { throw 'Built DLL hash does not match bu
 $targetExists = Test-Path -LiteralPath $target -PathType Leaf
 $manifestExists = Test-Path -LiteralPath $manifestPath -PathType Leaf
 if ($targetExists -ne $manifestExists) {
-    throw 'Existing dxgi.dll or bridge manifest has no matching pair. Refuse overwrite.'
+    throw 'Existing XINPUT1_4.dll or bridge manifest has no matching pair. Refuse overwrite.'
 }
 $oldManifest = $null
 $backupRelative = $null
 $backupManifestRelative = $null
 if ($targetExists) {
     $oldManifest = Get-Content -Raw -LiteralPath $manifestPath | ConvertFrom-Json
-    if ($oldManifest.schema -ne 1 -or $oldManifest.owner -ne $Owner -or
+    if ($oldManifest.schema -ne 2 -or $oldManifest.owner -ne $Owner -or
         $oldManifest.target_relative -ne $TargetRelative) {
-        throw 'Existing dxgi.dll not known Completionist Map bridge. Refuse overwrite.'
+        throw 'Existing XINPUT1_4.dll not known Completionist Map bridge. Refuse overwrite.'
     }
     $oldHash = Get-LowerHash $target
     if ($oldHash -ne $oldManifest.installed_sha256) {
         throw 'Existing bridge hash changed. Refuse overwrite.'
     }
     $stamp = (Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmssfff')
-    $backupRelative = "mods\completionist-map\native\backups\dxgi-$stamp-$($oldHash.Substring(0,12)).dll"
+    $backupRelative = "mods\completionist-map\native\backups\xinput1_4-$stamp-$($oldHash.Substring(0,12)).dll"
     $backupManifestRelative = "mods\completionist-map\native\backups\manifest-$stamp-$($oldHash.Substring(0,12)).json"
 }
 
 $nativeDir = Assert-ChildPath $game (Split-Path -Parent $manifestPath)
 New-Item -ItemType Directory -Force -Path $nativeDir | Out-Null
-$tempTarget = Assert-ChildPath $game (Join-Path $game "dxgi.dll.completionist-$PID.tmp")
+$tempTarget = Assert-ChildPath $game (Join-Path $game "XINPUT1_4.dll.completionist-$PID.tmp")
 $installed = $false
 try {
     Copy-Item -LiteralPath $BridgeDll -Destination $tempTarget -Force
@@ -96,7 +98,7 @@ try {
     if ($targetExists) { Remove-Item -LiteralPath $target -Force }
     Move-Item -LiteralPath $tempTarget -Destination $target
     $installManifest = [ordered]@{
-        schema = 1
+        schema = 2
         owner = $Owner
         installed_utc = (Get-Date).ToUniversalTime().ToString('o')
         target_relative = $TargetRelative
@@ -140,4 +142,4 @@ catch {
     throw
 }
 
-Write-Host "RAVEN_NATIVE_BRIDGE_INSTALLED dxgi_sha256=$bridgeHash version_untouched=true manifest=$manifestPath"
+Write-Host "RAVEN_NATIVE_BRIDGE_INSTALLED target=XINPUT1_4.dll proxy_sha256=$bridgeHash version_untouched=true manifest=$manifestPath"

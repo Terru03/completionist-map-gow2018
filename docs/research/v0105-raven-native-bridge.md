@@ -80,9 +80,9 @@ Generated binaries stay under ignored `build/` and are not committed.
 
 ## Install and rollback
 
-The installer requires the exact supported `GoW.exe`, a present `version.dll`, the generated build manifest, and a closed game. It refuses any existing `dxgi.dll` unless an owned manifest names the same target and exact current hash. Upgrade copies both the old DLL and old manifest into the mod-owned backup directory.
+The installer requires the exact supported `GoW.exe`, a present `version.dll`, the schema-2 generated build manifest, and a closed game. It refuses any existing `XINPUT1_4.dll` unless an owned manifest names the same target and exact current hash. Upgrade copies both the old DLL and old manifest into the mod-owned backup directory. It never installs the closed single-export `dxgi.dll` design.
 
-Rollback requires the installed DLL hash to match the owned manifest. It restores a prior owned DLL/manifest pair when one exists; otherwise it removes only the known installed DLL and manifest. Both paths hash `version.dll` before and after and never write it.
+Rollback requires the installed DLL hash to match the owned manifest. It restores a prior owned XInput DLL/manifest pair when one exists; otherwise it removes only the known installed pair. Recovery can unwind an owned XInput chain and can remove only the exact known-bad legacy DXGI hash; it refuses unknown proxies. All paths hash `version.dll` before and after and never write it.
 
 ```powershell
 & .\tools\v0.10.5\install-raven-authority-bridge.ps1
@@ -92,7 +92,7 @@ Rollback requires the installed DLL hash to match the owned manifest. It restore
 Temp-root regression covers clean install, upgrade backup, chained rollback, unknown-DLL refusal, tampered-DLL refusal, and `version.dll` preservation:
 
 ```text
-RAVEN_NATIVE_BRIDGE_INSTALL_TESTS_PASSED clean=true upgrade=true unknown_refused=true tamper_refused=true version_untouched=true
+RAVEN_NATIVE_BRIDGE_INSTALL_TESTS_PASSED target=XINPUT1_4.dll clean=true upgrade=true unknown_refused=true tamper_refused=true recovery=true version_untouched=true
 ```
 
 ## One runtime proof command

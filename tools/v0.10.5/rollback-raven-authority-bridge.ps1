@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 $Owner = 'completionist-map-raven-authority-bridge'
-$TargetRelative = 'dxgi.dll'
+$TargetRelative = 'XINPUT1_4.dll'
 $ManifestRelative = 'mods\completionist-map\native\raven-native-bridge-manifest.json'
 
 function Get-LowerHash([string]$Path) {
@@ -33,12 +33,12 @@ foreach ($path in @($target, $manifestPath)) {
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Need installed bridge file: $path" }
 }
 $manifest = Get-Content -Raw -LiteralPath $manifestPath | ConvertFrom-Json
-if ($manifest.schema -ne 1 -or $manifest.owner -ne $Owner -or $manifest.target_relative -ne $TargetRelative) {
+if ($manifest.schema -ne 2 -or $manifest.owner -ne $Owner -or $manifest.target_relative -ne $TargetRelative) {
     throw 'Bridge manifest not known. Refuse rollback.'
 }
 $installedHash = Get-LowerHash $target
 if ($installedHash -ne $manifest.installed_sha256) {
-    throw 'Installed dxgi.dll hash changed. Refuse delete.'
+    throw 'Installed XINPUT1_4.dll hash changed. Refuse delete.'
 }
 $versionBefore = if (Test-Path -LiteralPath $version -PathType Leaf) { Get-LowerHash $version } else { $null }
 $restoredPrevious = $false
@@ -49,7 +49,7 @@ if ($null -ne $manifest.backup_relative -and -not [string]::IsNullOrWhiteSpace([
         if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Need rollback backup: $path" }
     }
     $previous = Get-Content -Raw -LiteralPath $backupManifest | ConvertFrom-Json
-    if ($previous.schema -ne 1 -or $previous.owner -ne $Owner -or
+    if ($previous.schema -ne 2 -or $previous.owner -ne $Owner -or
         (Get-LowerHash $backup) -ne $previous.installed_sha256) {
         throw 'Rollback backup not known or hash changed.'
     }
@@ -67,14 +67,15 @@ if ($versionAfter -ne $versionBefore) { throw 'version.dll changed during rollba
 $nativeDir = Assert-ChildPath $game (Join-Path $game 'mods\completionist-map\native')
 $receipt = Assert-ChildPath $game (Join-Path $nativeDir ("rollback-" + (Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmssfff') + '.json'))
 [ordered]@{
-    schema = 1
+    schema = 2
     owner = $Owner
     rolled_back_utc = (Get-Date).ToUniversalTime().ToString('o')
     removed_sha256 = $installedHash
+    target_relative = $TargetRelative
     restored_previous = $restoredPrevious
     version_dll_untouched = $true
     save_writes = $false
     progression_writes = $false
 } | ConvertTo-Json | Set-Content -LiteralPath $receipt -Encoding UTF8
 
-Write-Host "RAVEN_NATIVE_BRIDGE_ROLLED_BACK removed_sha256=$installedHash restored_previous=$($restoredPrevious.ToString().ToLowerInvariant()) version_untouched=true"
+Write-Host "RAVEN_NATIVE_BRIDGE_ROLLED_BACK target=XINPUT1_4.dll removed_sha256=$installedHash restored_previous=$($restoredPrevious.ToString().ToLowerInvariant()) version_untouched=true"
