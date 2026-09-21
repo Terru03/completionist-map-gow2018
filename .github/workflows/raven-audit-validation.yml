@@ -28,6 +28,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Template tests failed' }
           .\tools\v0.10.5\test-raven-authority-bridge-runner.ps1
           if ($LASTEXITCODE -ne 0) { throw 'Runner tests failed' }
+          .\tools\v0.10.5\test-raven-transaction-resume-synthetic.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'Synthetic rollback-resume test failed' }
       - name: Native bridge CTest
         shell: pwsh
         run: |
