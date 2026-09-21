@@ -19,6 +19,7 @@ class RavenRuntimeModel:
         self.last_native_generation: int | None = None
         self.authority_boundary_pending = False
         self.authority_boundary_generation: int | None = None
+        self.authority_boundary_baseline_known = False
         self.event_killed: set[str] = set()
 
     def set_realm(self, realm: str):
@@ -73,6 +74,10 @@ class RavenRuntimeModel:
     def apply_native_snapshot(self, generation: int, catalogue_ids) -> str:
         if generation < 1:
             return "invalid"
+        if self.authority_boundary_pending and not self.authority_boundary_baseline_known:
+            self.authority_boundary_generation = generation
+            self.authority_boundary_baseline_known = True
+            return "boundary_baseline"
         if (
             self.authority_boundary_pending
             and self.authority_boundary_generation is not None
@@ -88,6 +93,7 @@ class RavenRuntimeModel:
         self.last_native_generation = generation
         self.authority_boundary_pending = False
         self.authority_boundary_generation = None
+        self.authority_boundary_baseline_known = False
         return "applied"
 
     def observe_event(self, catalogue_id: str, collected: bool) -> str:
@@ -98,10 +104,15 @@ class RavenRuntimeModel:
         self.observe(catalogue_id, True)
         return "applied"
 
-    def notify_load_boundary(self):
-        """Keep last-good state until a strictly post-boundary snapshot arrives."""
+    def notify_load_boundary(self, baseline_available: bool = True):
+        """Keep last-good state until a provably post-boundary snapshot arrives."""
         self.authority_boundary_pending = True
-        self.authority_boundary_generation = self.last_native_generation
+        if baseline_available:
+            self.authority_boundary_generation = self.last_native_generation
+            self.authority_boundary_baseline_known = True
+        else:
+            self.authority_boundary_generation = None
+            self.authority_boundary_baseline_known = False
         self.selection = None
         self.active_target = None
 
