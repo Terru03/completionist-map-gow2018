@@ -26,7 +26,7 @@ CATALOGUE = json.loads(build.CATALOGUE.read_text(encoding="utf-8"))
 
 
 MAP_PRELUDE = r'''
-calls={logs={},previousShow=0,recycled=0,nativeConnects=0,nativeRequests={},footerUpdates=0}
+calls={logs={},previousShow=0,previousUpdate=0,recycled=0,nativeConnects=0,nativeRequests={},footerUpdates=0,baseOverwriteOnce=false}
 customIds={}
 stockIds={}
 nativeResponse=nil
@@ -107,6 +107,15 @@ Audio={PlaySound=function(x) calls.sound=x end}
 MapOn={}
 function MapOn.GetShowOnCompassPrompt(s,m) return s.currMarkerID~=nil,"base" end
 function MapOn.ShowOnCompass(s,state) calls.previousShow=calls.previousShow+1; stockIds={"stock"} end
+function MapOn.Update(s,...)
+  calls.previousUpdate=calls.previousUpdate+1
+  if calls.baseOverwriteOnce then
+    calls.baseOverwriteOnce=false
+    calls.cursorPrompt="base-stale"
+    calls.footerPrompt="base-stale"
+  end
+  return "base-update"
+end
 function MapOn.MapCollisionChangeHandler(s,state,collisions,realm)
   if collisions and collisions[1] then s.currMarkerID=collisions[1].id else s.currMarkerID=nil end
 end
@@ -126,17 +135,28 @@ function game.Compass.FindMarkersByIconClass(classes)
   if classes[1]=="CompletionistRaven" then return customIds end
   return stockIds
 end
-function game.Compass.ShowMarker(name,class) customIds={markerId(name)}; calls.shown=name; calls.class=class end
+CompletionistMapV100Target={type="Raven",active=true}
+function game.Compass.ShowMarker(name,class)
+  customIds={markerId(name)}
+  calls.shown=name
+  calls.class=class
+  calls.baseOverwriteOnce=true
+end
 function game.Compass.HideMarker(target)
   if type(target)=="number" and markerNamesById[target]~=nil then
     error("raw custom numeric ID rejected")
   end
+  local beforeCustom=#customIds
   local next={}
   for _,id in ipairs(customIds) do
     local customName=markerNamesById[id]
     if tostring(id)~=tostring(target) and customName~=target then next[#next+1]=id end
   end
   customIds=next
+  if #customIds < beforeCustom then
+    CompletionistMapV100Target.active=true
+    calls.baseOverwriteOnce=true
+  end
   local nextStock={}
   for _,id in ipairs(stockIds) do if tostring(id)~=tostring(target) then nextStock[#nextStock+1]=id end end
   stockIds=nextStock
@@ -187,6 +207,8 @@ function probe.reticleDescription() return calls.reticleDescription end
 function probe.cursorPrompt() return calls.cursorPrompt end
 function probe.footerPrompt() return calls.footerPrompt end
 function probe.footerUpdates() return calls.footerUpdates end
+function probe.update() return MapOn.Update(self,0) end
+function probe.legacyRavenHudActive() return CompletionistMapV100Target.active end
 function probe.teardown() MapOn.ClearIcons(self) end
 function probe.reset() return CompletionistMapV105ResetRavenStates("save_load") end
 function probe.setNativeResponse(value) nativeResponse=value end
@@ -258,6 +280,14 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.reticleDescription(), "Completionist Map")
         self.assertEqual(self.probe.cursorPrompt(), "[AdvanceButton] remove")
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+        self.assertFalse(self.probe.legacyRavenHudActive())
+
+        # The stock/base update may overwrite the footer/cursor one frame after
+        # the action. The v0.10.5 settlement watchdog must win after that update.
+        self.probe.update()
+        self.assertEqual(self.probe.cursorPrompt(), "[AdvanceButton] remove")
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+        self.assertFalse(self.probe.legacyRavenHudActive())
 
         show, text = self.probe.click(self.b["marker"]["name"])
         self.assertTrue(show)
@@ -272,7 +302,16 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(text, "[AdvanceButton] remove")
         self.assertEqual(self.probe.cursorPrompt(), "[AdvanceButton] add")
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] add")
-        self.assertGreaterEqual(self.probe.footerUpdates(), 3)
+        self.assertFalse(self.probe.legacyRavenHudActive())
+
+        # Removing the same Raven deliberately simulates the legacy Raven HUD
+        # trying to reactivate plus one stale base-UI update. Neither may survive.
+        self.probe.update()
+        self.assertEqual(self.probe.customCount(), 0)
+        self.assertEqual(self.probe.cursorPrompt(), "[AdvanceButton] add")
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] add")
+        self.assertFalse(self.probe.legacyRavenHudActive())
+        self.assertGreaterEqual(self.probe.footerUpdates(), 5)
 
     def test_unknown_hidden_restore_and_teardown(self):
         self.probe.open()
