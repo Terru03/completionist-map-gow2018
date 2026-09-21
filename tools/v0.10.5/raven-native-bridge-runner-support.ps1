@@ -35,8 +35,8 @@ function Test-RavenBridgeProofLines {
     $safeLines = @($Lines)
     $safeLoaderLines = @($LoaderLines)
     return [pscustomobject]@{
-        ProxyLoaded = @($safeLines | Select-String -SimpleMatch 'RAVEN_NATIVE_BRIDGE_PROXY_LOADED').Count -gt 0
-        Forwarded = @($safeLines | Select-String -Pattern 'RAVEN_NATIVE_BRIDGE_XINPUT_FORWARDED .*exports=15 success=true').Count -gt 0
+        ProxyLoaded = @($safeLines | Select-String -Pattern 'RAVEN_NATIVE_BRIDGE_PROXY_LOADED target=dxgi\.dll real=system32').Count -gt 0
+        Forwarded = @($safeLines | Select-String -Pattern 'RAVEN_NATIVE_BRIDGE_DXGI_FORWARDED .*exports=20 success=true').Count -gt 0
         ExeAccepted = @($safeLines | Select-String -SimpleMatch 'RAVEN_NATIVE_BRIDGE_EXE_ACCEPTED').Count -gt 0
         SnapshotAccepted = @($safeLines | Select-String -Pattern 'RAVEN_NATIVE_BRIDGE_SNAPSHOT_ACCEPTED .*count=53 unknown=0').Count -gt 0
         DeliveryPending = @($safeLines | Select-String -SimpleMatch 'RAVEN_NATIVE_BRIDGE_DELIVERY_PENDING').Count -gt 0
