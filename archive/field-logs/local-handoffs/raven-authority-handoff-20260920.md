@@ -2240,3 +2240,56 @@ For each explicit `ravenKilled` state row it records:
 Reason for this diagnostic: the latest replay found zero `unmatched_raven_state_entries` under the solved Raven registry outside `Xpl200_Funeral`, even though many Raven-bearing WAD carriers contain the `ravenKilled` string. Therefore the other Raven state rows are likely attached to a different key representation/registry rather than merely a different object hash under `0x4EC230253427B2B0`.
 
 Next step is an offline replay of the existing `20260921-060345-c2c9bcc1` capture and direct comparison of `RAVEN_STATE_PARENT` rows across Raven-bearing WADs. No game run is required.
+
+
+---
+
+# Addendum 2026-09-21 - WAD-specific registry hash solved; nested-container static solver added
+
+Commits:
+
+- `b5c5278dc48e3b68025f776039bd009924054bc8` - serialized Raven identity builder no longer hard-codes `0x4EC230253427B2B0`; registry hash is now `name_hash(lowercase WAD stem)`.
+- `81d1252d496fc6d6f2e6e3f5c1a77fa7f5cf730f` - adds a static nested-container identity solver.
+- `3b4d4ae4006eb9d8df8d7a543c577e09e3d2bb77` - adds the push runner for that solver.
+
+## Registry-hash proof
+
+The first 64-bit field of the 17-byte GameObject save reference is WAD-specific and exactly equals the existing native case-folded `0x401` name hash of the WAD stem without `.wad`.
+
+Examples proven against packed Channel-A Raven-state parent keys:
+
+- `xpl200_funeral` -> `0x4EC230253427B2B0`
+- `riv200_dangersmain` -> `0x30069EB304D9166F`
+- `xpl940_beachcave` -> `0xAA77EDBE6D4D1BA8`
+- `foot500_top` -> `0x0BCCD9FC102E3064`
+- `alf355_chiseldungeon` -> `0x90911C68B1E5C2C8`
+- `peak140_caverndark` -> `0x36ACCE93A6D929FF`
+- `xpl850_dungeonforest` -> `0xBAF9C8514445A1D3`
+- `xpl300_stronghold` -> `0x72F3920BE9DF209F`
+- `hel300_mainbridge` -> `0x86D134ABFB78D5BC`
+
+This disproves the previous assumption that the VikingFuneral registry hash was shared by all Raven save references.
+
+## Object-hash split
+
+For ordinary Raven transform chains, the existing static object-hash algorithm already matches the live packed checkpoint object hashes exactly. Verified examples include Riv200, Foot500, Alf355, Peak140, Hel300, and Xpl200.
+
+Object-hash mismatches are concentrated in Raven objects nested under special intermediate Raven containers such as:
+
+- `goProtoRaven_03` / `goraven_03` in Xpl940;
+- `goProtoRavens` / `goravens` in Xpl850;
+- `goProtoSpecial_Ravens_03` / `gospecial_ravens_03` in Xpl300.
+
+The final object's `parent_prototype_id` is only the already-known byte-12-decremented group record ID and is therefore not itself the missing extra element.
+
+## Static nested-container solver
+
+`resolve-raven-nested-container-identities-static.py` reads only shipped WAD files, the canonical Raven catalogue, and the archived packed replay. For any catalogue Raven whose current static object hash does not match a live object hash in that WAD, it:
+
+1. locates the final Raven object's parent prototype record;
+2. scans that record for references to 16-byte WAD record IDs;
+3. tests both raw and byte-12-decremented candidate identity elements;
+4. inserts each candidate at every possible position in the existing identity vector;
+5. accepts a solution only when the rebuilt native `0x401` identity hash exactly equals an observed live checkpoint object hash from that same WAD.
+
+No process access or save writes are used. The next step is to run this static solver locally against the shipped WADs and inspect whether the nested cases resolve uniquely.
