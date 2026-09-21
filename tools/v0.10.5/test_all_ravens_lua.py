@@ -26,7 +26,7 @@ CATALOGUE = json.loads(build.CATALOGUE.read_text(encoding="utf-8"))
 
 
 MAP_PRELUDE = r'''
-calls={logs={},previousShow=0,previousUpdate=0,recycled=0,nativeConnects=0,nativeRequests={},footerUpdates=0,baseOverwriteOnce=false}
+calls={logs={},previousShow=0,previousUpdate=0,recycled=0,nativeConnects=0,nativeRequests={},footerUpdates=0,baseOverwriteOnce=false,loadHooks={}}
 customIds={}
 stockIds={}
 nativeResponse=nil
@@ -56,8 +56,14 @@ function nativeSocket.tcp()
   function client:close() calls.nativeCloses=(calls.nativeCloses or 0)+1; return 1 end
   return client
 end
+local coreThunk={}
+function coreThunk.Install(name,fn)
+  calls.loadHooks[name]=fn
+  return true
+end
 require=function(name)
   if name=="socket.core" then return nativeSocket end
+  if name=="core.thunk" then return coreThunk end
   error("unexpected require:" .. tostring(name))
 end
 local markerIds={}
@@ -141,7 +147,7 @@ function game.Compass.ShowMarker(name,class)
   calls.shown=name
   calls.class=class
   if calls.removedCustomOnce then
-    stockIds={"boat"}
+    stockIds={markerId(name),"boat"}
     CompletionistMapV100Target.active=true
     calls.removedCustomOnce=false
   end
@@ -205,6 +211,13 @@ function probe.iconCount()
 end
 function probe.customCount() return #customIds end
 function probe.stockCount() return #stockIds end
+function probe.stockOtherCount(exceptId)
+  local n=0
+  for _,id in ipairs(stockIds) do
+    if tostring(id)~=tostring(exceptId) then n=n+1 end
+  end
+  return n
+end
 function probe.injectStock(value) stockIds={value} end
 function probe.customAt(i) return customIds[i] end
 function probe.markerId(name) return markerId(name) end
@@ -218,6 +231,13 @@ function probe.update() return MapOn.Update(self,0) end
 function probe.legacyRavenHudActive() return CompletionistMapV100Target.active end
 function probe.teardown() MapOn.ClearIcons(self) end
 function probe.reset() return CompletionistMapV105ResetRavenStates("save_load") end
+function probe.boundary() return CompletionistMapV105NotifyAuthorityBoundary("test_load") end
+function probe.fireLoad(name)
+  local fn=calls.loadHooks[name]
+  if fn==nil then return false end
+  fn()
+  return true
+end
 function probe.setNativeResponse(value) nativeResponse=value end
 function probe.nativeConnects() return calls.nativeConnects end
 function probe.lastNativeGeneration() return CompletionistMapV105LastNativeRavenGeneration end
@@ -351,11 +371,15 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertTrue(show)
         self.assertEqual(text, "[AdvanceButton] add")
         self.assertEqual(self.probe.customCount(), 1)
-        self.assertEqual(self.probe.stockCount(), 0)
+        self.assertEqual(
+            self.probe.stockOtherCount(self.probe.markerId(self.a["marker"]["name"])), 0
+        )
         self.assertFalse(self.probe.legacyRavenHudActive())
         self.probe.update()
         self.assertEqual(self.probe.customCount(), 1)
-        self.assertEqual(self.probe.stockCount(), 0)
+        self.assertEqual(
+            self.probe.stockOtherCount(self.probe.markerId(self.a["marker"]["name"])), 0
+        )
         self.assertFalse(self.probe.legacyRavenHudActive())
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
 
@@ -371,16 +395,40 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.probe.teardown()
         self.assertEqual(self.probe.iconCount(), 0)
 
-    def test_save_load_reset_clears_state_and_target_fail_closed(self):
-        self.probe.publish(self.a["catalogue_id"], False)
+    def test_load_boundary_preserves_last_good_state_until_fresh_snapshot(self):
+        self.probe.setNativeResponse(self.response(4, [self.a]))
         self.probe.open()
-        self.probe.click(self.a["marker"]["name"])
-        self.assertEqual(self.probe.tracked(), self.a["catalogue_id"])
-        self.probe.reset()
-        self.assertEqual(self.probe.iconCount(), 0)
-        self.assertIsNone(self.probe.tracked())
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+        # Boundary captures generation 4 as its baseline. A same-generation
+        # response is pre-boundary and must not revive the Raven.
+        self.probe.boundary()
+        self.probe.setNativeResponse(self.response(4))
         self.probe.open()
-        self.assertEqual(self.probe.iconCount(), 2)
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+        # The first strictly newer capture is the atomic authority for the
+        # restored checkpoint and may legitimately make the Raven alive.
+        self.probe.setNativeResponse(self.response(5))
+        self.probe.update()
+        self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
+        self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
+
+    def test_global_load_event_arms_authority_boundary(self):
+        self.probe.setNativeResponse(self.response(8, [self.a]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertTrue(self.probe.fireLoad("EVT_LoadSaveFile_Done"))
+
+        self.probe.setNativeResponse(self.response(8))
+        self.probe.update()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+        self.probe.setNativeResponse(self.response(9))
+        self.probe.update()
+        self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
 
     def test_advanced_native_snapshot_applies_27_killed_before_icon_sync(self):
         killed = CATALOGUE["ravens"][:27]
@@ -427,28 +475,16 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.probe.update()
         self.assertEqual(self.probe.stockCount(), 1)
 
-    def test_reset_reapplies_same_generation_authority_once(self):
-        self.probe.setNativeResponse(self.response(5, [self.a]))
-        self.probe.open()
-        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
-        self.assertEqual(self.probe.lastNativeGeneration(), 5)
-
-        self.probe.reset()
-        self.probe.setNativeResponse(self.response(5, [self.a]))
-        self.probe.open()
-        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
-        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
-        self.assertEqual(self.probe.lastNativeGeneration(), 5)
-
     def test_post_reset_bounded_recheck_accepts_new_generation(self):
         self.probe.setNativeResponse(self.response(7, [self.a]))
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
 
         self.probe.reset()
-        self.probe.setNativeResponse(self.response(7, [self.a]))
+        self.probe.setNativeResponse(self.response(7, [self.b]))
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNot(self.probe.state(self.b["catalogue_id"]), True)
 
         self.probe.setNativeResponse(self.response(8, [self.b]))
         self.probe.update()
@@ -514,7 +550,7 @@ class AllRavensMapLuaTests(unittest.TestCase):
 
 
 EVENT_PRELUDE = r'''
-calls={published={},timers=0,timerCallbacks={}}
+calls={published={},timers=0,timerCallbacks={},boundaries={}}
 print=function(s) end
 ravenKilled=false
 regionSummaryQuest=QUEST
@@ -533,6 +569,10 @@ CompletionistMapV105PublishRavenState=function(id,value,source)
   calls.published[#calls.published+1]={id=id,value=value,source=source}
   return true
 end
+CompletionistMapV105NotifyAuthorityBoundary=function(source)
+  calls.boundaries[#calls.boundaries+1]=source
+  return true
+end
 probe={}
 function probe.start() OnStart() end
 function probe.hit() OnHitByWeapon() end
@@ -548,6 +588,8 @@ function probe.count() return #calls.published end
 function probe.id(i) return calls.published[i].id end
 function probe.value(i) return calls.published[i].value end
 function probe.timerCount() return calls.timers end
+function probe.boundaryCount() return #calls.boundaries end
+function probe.boundary(i) return calls.boundaries[i] end
 '''
 
 
@@ -565,25 +607,28 @@ class AllRavensEventLuaTests(unittest.TestCase):
         lua.execute(hook.decode("utf-8"))
         probe = lua.globals().probe
         probe.start()
-        self.assertEqual(probe.id(1), row["catalogue_id"])
-        self.assertFalse(probe.value(1))
+        self.assertEqual(probe.count(), 0)
+
         probe.hit()
-        self.assertTrue(probe.value(2))
+        self.assertEqual(probe.id(1), row["catalogue_id"])
+        self.assertTrue(probe.value(1))
         self.assertEqual(probe.timerCount(), 1)
+
+        # Restore-time false is not authoritative. It must arm an atomic
+        # authority boundary without publishing an "alive" state.
         probe.restore(False)
-        self.assertFalse(probe.value(3))
+        self.assertEqual(probe.count(), 1)
+        self.assertEqual(probe.boundaryCount(), 1)
+        self.assertEqual(probe.boundary(1), "OnRestoreCheckpoint")
         self.assertGreaterEqual(probe.timerCount(), 2)
 
-        # OnRestoreCheckpoint can fire before ravenKilled has settled. The
-        # bounded restore retry must re-read the field instead of pinning the
-        # early false value.
+        # If ravenKilled settles true after restore, the bounded positive-only
+        # retry may publish the kill. It may never publish false.
         probe.setKilled(True)
-        # The earlier hit retry is still queued but must self-cancel because
-        # OnRestoreCheckpoint advanced the event generation. Drain it first,
-        # then execute the checkpoint retry that re-reads ravenKilled.
         self.assertTrue(probe.runNextTimer())
         self.assertTrue(probe.runNextTimer())
-        self.assertTrue(probe.value(4))
+        self.assertEqual(probe.count(), 2)
+        self.assertTrue(probe.value(2))
 
 
 if __name__ == "__main__":
