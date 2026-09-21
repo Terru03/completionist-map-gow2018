@@ -3416,3 +3416,71 @@ Acceptance decision:
 - `SaveGame` remains evidence of pipeline integration only and must not be invoked by Completionist Map.
 
 Static/read-only only; GoW must be closed.
+
+
+## Read-side staged Lua result - short direct built-in Lua bridge CLOSED
+
+Evidence commit:
+
+- `6da461ded95a1957331bc05abd8c65f112407842`
+- evidence: `archive/field-logs/source-scans/lua-read-staged-intersections-20260921-092909/`
+
+The classifier completed safely:
+
+```text
+LUA_READ_STAGED_INTERSECTION_TRACE_COMPLETE nodes=17
+save_opened=false
+save_written=false
+progression_written=false
+game_launched=false
+```
+
+### GetLevelId `0x847F10`
+
+This handler:
+
+1. derives one WAD/name string from its Lua/UI call context;
+2. scans the staged `0xA8` records by comparing against record name storage at `record+0x84`;
+3. on a match returns only `record+0x24`, the fixed WAD/level ID;
+4. otherwise returns `-1`.
+
+It cannot select/read Channel A, Channel B, custom-userdata bytes, or `ravenKilled`.
+
+### GetAppMasterVersion `0x783880`
+
+This handler:
+
+1. unboxes/resolves one object/WAD from the Lua call argument;
+2. locates that WAD in the global WAD array using stride `0xEE28`;
+3. resolves the WAD's staged-record index;
+4. reads the corresponding `0xA8` staged record;
+5. returns only the two fixed 16-bit metadata fields at `record+0xA4` and `record+0xA6` (or zero/default values based on record flags).
+
+It likewise does not expose Channel A, Channel B, arbitrary record bytes, or custom-userdata state.
+
+### Save pipeline context
+
+The static path remains proven:
+
+```text
+SaveGame 0x84F1C0
+  -> 0x66B650
+  -> 0x6687F0
+  -> 0x82C820 / staged serialization
+```
+
+This is write-side integration evidence only and must not be invoked by Completionist Map.
+
+### Conclusion
+
+Close the short direct built-in Lua bridge route:
+
+- VFS route: closed;
+- `package.loadlib`: closed;
+- `ResolveGameObject / GetRef* / LoadCheck`: closed;
+- reverse registered-Lua path: only fixed metadata readers plus write-side `SaveGame`;
+- no existing registered Lua handler found that exposes arbitrary staged Raven custom-userdata authority.
+
+Do not continue guessing built-in Lua API names.
+
+The 53-state authority model remains solved. The remaining problem is **delivery architecture**: expose the proven read-only staged authority to the existing Lua map mod without modifying saves/progression and without redistributing the unlicensed Script Loader fork.
