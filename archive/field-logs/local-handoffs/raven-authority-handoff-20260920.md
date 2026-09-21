@@ -3878,3 +3878,26 @@ Next implementation pass must:
 3. add offline/load-contract tests that would have caught the missing `CreateDXGIFactory2` export before installation;
 4. compare a compatibility-complete DXGI proxy against the `XINPUT1_4.dll` fallback and choose the smaller/safer complete proxy surface;
 5. only then prepare another reversible live proof.
+
+
+## Codex Sol proxy compatibility hardening task prepared
+
+New focused task:
+
+- `c548f949812966950d67da1ebcd502cbeb03e868`
+- `docs/research/CODEX-SOL-v0105-native-bridge-proxy-compatibility-task.md`
+
+This task starts from the recovered healthy game state and explicitly forbids reinstalling the single-export DXGI proxy.
+
+It requires Sol to:
+
+- compare compatibility-complete DXGI vs compatibility-complete `XINPUT1_4.dll`;
+- choose the lower-risk complete proxy surface;
+- preserve the accepted 53-Raven native authority reader;
+- add an export-contract test that would have rejected the missing `CreateDXGIFactory2` proxy;
+- fix the runtime proof runner's scalar/`.Count` bug;
+- add startup-failure/rollback regression tests;
+- update install/rollback/recovery if the proxy DLL name changes;
+- push only when `RAVEN_NATIVE_BRIDGE_LOAD_PROOF_V2_READY`.
+
+No further live bridge install should occur before those offline gates pass.
