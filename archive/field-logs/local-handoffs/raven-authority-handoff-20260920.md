@@ -2516,3 +2516,25 @@ New tooling:
 The tracer enumerates all indexed memory references to `+/-0xEE18` and neighbouring WAD fields, classifies direct writes to `+0xEE18`, captures full enclosing functions, caller/callee relationships, and overlap with the staged-record globals `0x22C696C / 0x22C7170 / 0x22C7194 / 0x22C6938 / 0x22C6940`.
 
 No process or save access is used.
+
+
+---
+
+# Addendum 2026-09-21 - first WAD binding probe exposed index gap; raw executable scan substituted
+
+The first `WAD+0xEE18` lifecycle run committed as `3e4d80bef5eb1607785bf6ad2e506e6990a07d66` completed successfully but returned zero structure-displacement hits:
+
+```text
+related_refs=0 exact_binding_refs=0 writes=0 reads=0
+```
+
+This is a tracer/index limitation, not evidence that the field is unused. Earlier full disassembly already proves multiple reads of `WAD+0xEE18` at sites such as `0x23FED2`, `0x673BAF`, `0x6787CA`, `0x82B3A1`, `0x82C871`, and `0x82CC19`.
+
+Cause: the existing SQLite research index does not reliably retain these large structure displacements in `mem_refs`.
+
+Fix:
+
+- `885e3f380aa3465c76f192245c547452186c7d5e` - tracer now scans the executable `.text` bytes for the signed little-endian disp32 encodings of `+/-0xEE18` and neighbouring WAD fields, maps each occurrence to the enclosing indexed function, then validates the actual Capstone memory operands before classifying reads/writes.
+- `99d692b628b02cb41cf72b7f1c6fcbd24fd45ba6` - cleanup commit.
+
+This removes the `mem_refs` dependency while keeping the analysis fully static/read-only.
