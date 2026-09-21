@@ -4795,3 +4795,68 @@ RAVEN_DXGI_COMPLETE_PROXY_LOAD_PROOF_READY
 ```
 
 and provide the single V3 live proof command.
+
+
+## Local DXGI offline gate reported successful
+
+The user ran the prepared offline-only gate after:
+
+- stashing the superseded local Sol edits;
+- fetching origin;
+- hard-resetting the local branch to the current remote release-candidate branch;
+- keeping GoW closed.
+
+Command executed:
+
+`tools/v0.10.5/test-raven-authority-bridge-offline-gates.ps1`
+
+User reported:
+
+```text
+done
+```
+
+with no error indication.
+
+This gate is intentionally local-only and does not auto-push a runtime capture, so the exact console transcript is not archived in GitHub. Based on the user's explicit success report and no reported error, treat the gate as passed.
+
+The gate covers:
+
+1. runner regressions;
+2. clean native build and all five CTest targets;
+3. schema-3 DXGI install/upgrade/rollback/recovery in a temporary directory populated from the real supported `GoW.exe` and `version.dll`;
+4. no proxy installation into the real game directory.
+
+The remote CI gate was already green for:
+
+```text
+RAVEN_DXGI_POWERSHELL_PARSE_PASSED files=9
+100% tests passed out of 5
+RAVEN_NATIVE_BRIDGE_RUNNER_TESTS_PASSED target=dxgi.dll ...
+RAVEN_DXGI_SECURITY_DIFF_SCAN_PASSED files=21 findings=0
+```
+
+Therefore the current state advances to:
+
+```text
+RAVEN_DXGI_COMPLETE_PROXY_LOAD_PROOF_READY
+```
+
+Next action is the single reversible V3 live proof runner:
+
+`tools/v0.10.5/run-raven-authority-bridge-load-proof-and-push.ps1`
+
+V3 expectations:
+
+- GoW must be fully closed before start;
+- runner rebuilds and reruns offline gates;
+- installs only the owned schema-3 `dxgi.dll`;
+- waits through Steam handoff and the normal ~35-second startup;
+- requires fresh complete-DXGI forwarding and supported-exe evidence before user action;
+- user then loads the advanced Raven save, opens the map, waits at least 15 seconds, quits GoW fully, and presses Enter;
+- runner requires `count=53 unknown=0` plus Script Loader evidence;
+- runner rolls back exact pre-run DXGI/manifest state;
+- `version.dll` must remain byte-identical;
+- both success and failure evidence are archived and pushed automatically.
+
+If the V3 proof passes, the next engineering boundary is native snapshot delivery into the existing map/compass runtime. Do not redo native load architecture or Raven authority research.
