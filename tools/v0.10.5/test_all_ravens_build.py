@@ -48,6 +48,19 @@ class AllRavensTemplateTests(unittest.TestCase):
             True,
         ).decode("utf-8")
 
+    def test_authority_metadata_helpers_match_final_contract(self):
+        router = build.router_contract()
+        state = build.state_contract()
+        self.assertTrue(router["native_generation_is_capture_freshness"])
+        self.assertEqual(
+            state["event_false_policy"],
+            "defer alive state to atomic 53-Raven authority",
+        )
+        self.assertEqual(
+            state["load_boundary_sources"],
+            ["EVT_LoadSaveData", "EVT_LoadSaveFile_Done", "OnRestoreCheckpoint"],
+        )
+
     def test_rendered_lua_has_53_rows_and_native_delivery_contract(self):
         self.assertEqual(self.map_hook.count("{CatalogueId="), 53)
         for token in (
