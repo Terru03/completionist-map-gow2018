@@ -488,7 +488,8 @@ do
     local hidden = 0
     for _, id in ipairs(ids) do
       if exceptIdString == nil or tostring(id) ~= exceptIdString then
-        local hideOK = pcall(function() game.Compass.HideMarker(id) end)
+        local target = knownNameForId(id) or id
+        local hideOK = pcall(function() game.Compass.HideMarker(target) end)
         if not hideOK then return false, hidden, "hide_failed:" .. tostring(id) end
         hidden = hidden + 1
       end
