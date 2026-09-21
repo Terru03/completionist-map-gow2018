@@ -3,12 +3,14 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -96,26 +98,6 @@ std::string Win32ErrorText(DWORD error) {
     LocalFree(buffer);
   }
   return result;
-}
-
-std::wstring Utf8ToWide(const std::string& input) {
-  if (input.empty()) {
-    return {};
-  }
-  const int needed = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
-                                         input.data(),
-                                         static_cast<int>(input.size()),
-                                         nullptr, 0);
-  if (needed <= 0) {
-    throw std::runtime_error("invalid UTF-8 argument");
-  }
-  std::wstring output(static_cast<std::size_t>(needed), L'\0');
-  if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, input.data(),
-                          static_cast<int>(input.size()), output.data(),
-                          needed) != needed) {
-    throw std::runtime_error("UTF-8 conversion failed");
-  }
-  return output;
 }
 
 std::string WideToUtf8(const std::wstring& input) {
