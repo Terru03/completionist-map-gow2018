@@ -198,7 +198,6 @@ def main()->int:
             if not related_ins:
                 continue
             global_hits=[]
-            global_hits=[]
             for x in instructions:
                 names=[
                     name for name,target in STAGING_GLOBALS.items()
