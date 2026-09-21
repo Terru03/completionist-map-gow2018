@@ -17,6 +17,13 @@ REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 import staged_wad_bitstream as bits
 
+def normal_wad_name(value: str | None) -> str | None:
+    if not value:
+        return None
+    return Path(value).stem.lower() + ".wad"
+
+
+
 
 def load_observer():
     spec = importlib.util.spec_from_file_location("staged_rpm", HERE / "capture-staged-wad-raven-state-readonly.py")
@@ -131,7 +138,11 @@ def main():
     states = {row["catalogue_id"]: set() for row in rows}
     blocked_ids = set()
     report_records = []
+    staged_wads = set()
     for record, payload in records:
+        wad_name = normal_wad_name(record.get("name"))
+        if wad_name:
+            staged_wads.add(wad_name)
         if not payload:
             record["status"] = "no_staged_payload_unknown"
             report_records.append(record)
@@ -153,28 +164,53 @@ def main():
                 for entry in candidate.get("raven_entries", []):
                     blocked_ids.add(entry["catalogue_id"])
         report_records.append(record)
-    result_states = [{"catalogue_id": row["catalogue_id"],
-                      "candidate_ravenKilled": next(iter(states[row["catalogue_id"]]))
-                      if len(states[row["catalogue_id"]]) == 1 and row["catalogue_id"] not in blocked_ids else None,
-                      "conflict": len(states[row["catalogue_id"]]) > 1,
-                      "ambiguous": row["catalogue_id"] in blocked_ids,
-                      "authority": "unproven", "region": row.get("region"), "wad": row.get("wad")}
-                     for row in rows]
+    result_states = []
+    for row in rows:
+        rid = row["catalogue_id"]
+        values = states[rid]
+        conflict = len(values) > 1
+        ambiguous = rid in blocked_ids
+        row_wad = normal_wad_name(row.get("wad"))
+        if len(values) == 1 and not ambiguous:
+            value = next(iter(values))
+            authority = "explicit_ravenKilled_from_staged_channel_a"
+        elif not conflict and not ambiguous and row_wad not in staged_wads:
+            value = False
+            authority = "native_absent_wad_default_false"
+        else:
+            value = None
+            authority = "unknown_fail_closed"
+        result_states.append({
+            "catalogue_id": rid,
+            "candidate_ravenKilled": value,
+            "conflict": conflict,
+            "ambiguous": ambiguous,
+            "authority": authority,
+            "region": row.get("region"),
+            "wad": row.get("wad"),
+        })
     report = {"schema": 1, "analysis": "staged_wad_bitstream_raven_candidates",
               "captured_utc": datetime.now(timezone.utc).isoformat(),
               "process": {"pid": pid, "module_base": f"0x{base:X}", "exe_sha256": exe_sha},
               "snapshot": {"equal_reads": 2, "atomic": False, "pool_size": layout[0],
                            "record_count": layout[2], "table_sha256": digest(table), "pool_sha256": digest(pool)},
-              "records": report_records, "raven_states": result_states, "production_ready": False,
-              "remaining_gate": "Prove nested field position, active checkpoint freshness, and unloaded fixture states.",
+              "records": report_records, "raven_states": result_states,
+              "staged_wad_count": len(staged_wads),
+              "absence_default_false_count": sum(
+                  row["authority"] == "native_absent_wad_default_false" for row in result_states
+              ),
+              "production_ready": False,
+              "remaining_gate": "Integrate complete 53-Raven authority into runtime map path and validate acceptance fixtures.",
               "safety": {"open_process_access": "PROCESS_VM_READ|PROCESS_QUERY_INFORMATION",
                          "game_launched": False, "process_memory_written": False, "save_opened": False,
                          "save_written": False, "progression_written": False, "debugger_attached": False}}
     (out / "report.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     known = [row for row in result_states if row["candidate_ravenKilled"] is not None]
     lines = ["Staged Channel A bitstream Raven candidates", f"record_count={layout[2]} pool_size={layout[0]}",
-             f"candidate_state_count={len(known)} unknown_count={53 - len(known)} production_ready=false",
-             "Equal reads passed; snapshot is not atomic. Candidates are not production authority."]
+             f"candidate_state_count={len(known)} unknown_count={53 - len(known)} "
+             f"absence_default_false_count={sum(row['authority']=='native_absent_wad_default_false' for row in result_states)} "
+             "production_ready=false",
+             "Equal reads passed. Absent-WAD false uses proven native staged-record retention semantics; runtime integration remains pending."]
     for record in report_records:
         if "decode" in record:
             decoded = record["decode"]
@@ -183,7 +219,10 @@ def main():
                          f"candidates={len(decoded['candidates'])} "
                          f"ambiguity={decoded.get('ambiguity_reasons', [])}")
     for row in known:
-        lines.append(f"CANDIDATE {row['catalogue_id']} ravenKilled={row['candidate_ravenKilled']} region={row['region']}")
+        lines.append(
+            f"CANDIDATE {row['catalogue_id']} ravenKilled={row['candidate_ravenKilled']} "
+            f"region={row['region']} wad={row.get('wad')} authority={row['authority']}"
+        )
     lines.append("process_memory_written=false save_opened=false save_written=false progression_written=false")
     (out / "report.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"STAGED_BITSTREAM_CAPTURE_COMPLETE records={layout[2]} candidate_states={len(known)} production_ready=false")
