@@ -2213,3 +2213,30 @@ Each unmatched entry preserves:
 This is specifically intended to solve the remaining identity join for the other Raven-bearing WADs. The decoded Lua carriers for many of those WADs already contain `ravenKilled`, so the next offline replay should expose their actual save-side GameObject identities directly.
 
 No new runtime capture is required. Re-run the archived `20260921-060345-c2c9bcc1` capture through the current decoder and compare unmatched payloads against the 53 catalogue identity transform chains.
+
+
+---
+
+# Addendum 2026-09-21 - Raven state parent-key diagnostic
+
+Commits:
+
+- `4e4c25ba1f0ae45b7661b5bb79143bdb9eeae0e3` - canonical carrier decoder now records the exact `__subobjs` parent key for every target state row containing an explicit `ravenKilled` boolean, before applying any GameObject or registry assumptions.
+- `4f4bf3ba86537d19c10dd4fa9ee5ae906ef85c4e` - offline replay text output prints those Raven state parent keys.
+- `e23207219f2a66bb9116119f540e7f47b6435a20` - regression coverage for parent-key preservation.
+
+New diagnostic field:
+
+- `raven_state_parent_keys`
+
+For each explicit `ravenKilled` state row it records:
+
+- subobject table row and target state row;
+- boolean state;
+- key token tag, payload, width, and raw token bytes;
+- if key tag 5 references a userdata record: record index, class key, and complete record payload;
+- if that payload parses as a native GameObject reference: flags, aux, upper form, registry hash, object hash, and current catalogue match if any.
+
+Reason for this diagnostic: the latest replay found zero `unmatched_raven_state_entries` under the solved Raven registry outside `Xpl200_Funeral`, even though many Raven-bearing WAD carriers contain the `ravenKilled` string. Therefore the other Raven state rows are likely attached to a different key representation/registry rather than merely a different object hash under `0x4EC230253427B2B0`.
+
+Next step is an offline replay of the existing `20260921-060345-c2c9bcc1` capture and direct comparison of `RAVEN_STATE_PARENT` rows across Raven-bearing WADs. No game run is required.
