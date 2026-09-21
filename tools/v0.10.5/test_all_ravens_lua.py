@@ -302,6 +302,66 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
         self.assertIsNotNone(self.probe.icon(self.b["marker"]["name"]))
 
+    def test_rapid_readd_wins_delayed_native_remove(self):
+        self.probe.open()
+        name = self.a["marker"]["name"]
+        self.probe.click(name)
+        self.lua.execute("savedHide=game.Compass.HideMarker; game.Compass.HideMarker=function() end")
+        self.probe.click(name)
+        self.probe.click(name)
+        self.assertEqual(self.probe.tracked(), self.a["catalogue_id"])
+        self.lua.execute("game.Compass.HideMarker=savedHide; customIds={}")
+        self.probe.update()
+        self.assertEqual(self.probe.customAt(1), self.probe.markerId(name))
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+
+    def test_late_base_update_cannot_revert_settled_prompt(self):
+        self.probe.open()
+        self.probe.click(self.a["marker"]["name"])
+        self.probe.update()
+        self.lua.execute("calls.baseOverwriteOnce=true")
+        self.probe.update()
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+
+    def test_pending_action_does_not_overwrite_other_raven_prompt(self):
+        self.probe.open()
+        self.probe.click(self.a["marker"]["name"])
+        self.lua.globals().hoverName = self.b["marker"]["name"]
+        self.lua.execute("MapOn.MapCollisionChangeHandler(self,{}, {probe.icon(hoverName)},self.currRealmName)")
+        self.probe.update()
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] replace")
+
+    def test_settled_remove_keeps_prompt_without_owning_new_stock(self):
+        self.probe.open()
+        self.probe.click(self.a["marker"]["name"])
+        self.probe.click(self.a["marker"]["name"])
+        for _ in range(4):
+            self.probe.update()
+        self.lua.execute("calls.baseOverwriteOnce=true")
+        self.probe.update()
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] add")
+        self.probe.injectStock("stock-after-settled-remove")
+        self.probe.update()
+        self.assertEqual(self.probe.stockCount(), 1)
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] replace")
+
+    def test_kill_releases_owner_and_stale_prompt(self):
+        self.probe.open()
+        self.probe.click(self.a["marker"]["name"])
+        self.probe.publish(self.a["catalogue_id"], True)
+        self.probe.injectStock("legitimate-stock-after-kill")
+        self.probe.update()
+        self.assertEqual(self.probe.stockCount(), 1)
+        self.assertEqual(self.probe.customCount(), 0)
+
+    def test_boundary_disarms_pending_selection(self):
+        self.probe.open()
+        self.lua.globals().hoverName = self.a["marker"]["name"]
+        self.lua.execute("MapOn.MapCollisionChangeHandler(self,{}, {probe.icon(hoverName)},self.currRealmName); MapOn.GetShowOnCompassPrompt(self,nil)")
+        self.probe.boundary()
+        self.lua.execute("self.currMarkerID='stock'; MapOn.ShowOnCompass(self,{})")
+        self.assertEqual(self.probe.stockCount(), 1)
+
     def test_raven_reticle_and_compass_prompt_refresh_immediately(self):
         self.probe.publish(self.a["catalogue_id"], False)
         self.probe.publish(self.b["catalogue_id"], False)

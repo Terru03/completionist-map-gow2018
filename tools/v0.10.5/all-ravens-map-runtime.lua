@@ -559,6 +559,8 @@ do
 
   local function refreshPrompt(self, selected)
     if self == nil or self.menu == nil or selected == nil then return end
+    selected = currentSelection(self) or selected
+    if not promptOwned(self, true, selected) then return end
     local text = promptText(selected)
     local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
     if goMapCursorText ~= nil then
@@ -637,7 +639,11 @@ do
     if not shouldShow(selected.CatalogueId) then return end
     local ids, queryOK = customIds()
     if not queryOK then return end
-    if contains(ids, selected.IdString) then
+    local wantsRemove = contains(ids, selected.IdString)
+    if promptIntent ~= nil and promptIntent.IdString == selected.IdString then
+      wantsRemove = promptIntent.State == "tracked"
+    end
+    if wantsRemove then
       customCompassOwnsTarget = true
       local ok = pcall(function() game.Compass.HideMarker(selected.Name) end)
       if ok then
@@ -753,22 +759,32 @@ do
     suppressLegacyRavenHud()
 
     if intent.State == "tracked" then
+      if customOK and not contains(custom, intent.IdString) and shouldShow(row.CatalogueId) then
+        pcall(function() game.Compass.ShowMarker(row.Name, ravenClass) end)
+        suppressLegacyRavenHud()
+        custom, customOK = customIds()
+        stock, stockOK = stockIds()
+      end
       if stockOK and hasOther(stock, intent.IdString) then
         hideStockExcept(intent.IdString, "raven_replace_async_retry")
         stock = stockIds()
       end
       if customOK and contains(custom, intent.IdString) and
           not hasOther(stock, intent.IdString) then
-        promptIntent = nil
         promptSettleFrames = 0
         promptSettleBucket = -1
         refreshPrompt(self, selected)
-        log("PROMPT_SETTLED", "state=tracked name=" .. row.Name)
+        if not intent.Settled then log("PROMPT_SETTLED", "state=tracked name=" .. row.Name) end
+        intent.Settled = true
       else
         promptSettleFrames = promptSettleFrames + 1
         refreshPrompt(self, selected)
       end
     elseif intent.State == "untracked" then
+      if intent.Settled then
+        refreshPrompt(self, selected)
+        return result
+      end
       promptSettleFrames = promptSettleFrames + 1
       local bucket = math.floor(promptSettleFrames / 30)
       if customOK and contains(custom, intent.IdString) and
@@ -784,7 +800,7 @@ do
       if promptSettleFrames >= 3 and customAfterOK and stockAfterOK and
           not contains(customAfter, intent.IdString) and
           not hasOther(stockAfter, intent.IdString) then
-        promptIntent = nil
+        intent.Settled = true
         promptSettleFrames = 0
         promptSettleBucket = -1
         customCompassOwnsTarget = false
@@ -815,6 +831,11 @@ do
       hideStock("tracked_raven_collected")
     end
     _G.CompletionistMapV105TrackedCatalogueId = nil
+    customCompassOwnsTarget = false
+    promptIntent = nil
+    promptSettleFrames = 0
+    promptSettleBucket = -1
+    if lastMapOnSelf ~= nil then lastMapOnSelf.currShownMarkerID = nil end
   end
 
   _G.CompletionistMapV105PublishRavenState = function(catalogueId, collected, source)
@@ -903,6 +924,10 @@ do
     promptSettleBucket = -1
     _G.CompletionistMapV105TrackedCatalogueId = nil
     hideCustom(nil, "authority_boundary")
+    if lastMapOnSelf ~= nil then
+      clearSelection(lastMapOnSelf, "authority_boundary")
+      lastMapOnSelf.currShownMarkerID = nil
+    end
     log("AUTHORITY_BOUNDARY", "source=" .. tostring(source) ..
         " baselineGeneration=" .. tostring(nativeBoundaryGeneration) ..
         " staleStateRetained=true atomicAuthorityRequired=true" ..

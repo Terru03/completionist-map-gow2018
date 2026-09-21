@@ -1,0 +1,81 @@
+test_exact_loaded_instance_publishes_native_bool_and_rearms (__main__.AllRavensEventLuaTests.test_exact_loaded_instance_publishes_native_bool_and_rearms) ... ok
+test_a_b_same_click_stock_and_kill_lifecycle (__main__.AllRavensMapLuaTests.test_a_b_same_click_stock_and_kill_lifecycle) ... ok
+test_advanced_native_snapshot_applies_27_killed_before_icon_sync (__main__.AllRavensMapLuaTests.test_advanced_native_snapshot_applies_27_killed_before_icon_sync) ... ok
+test_boundary_disarms_pending_selection (__main__.AllRavensMapLuaTests.test_boundary_disarms_pending_selection) ... FAIL
+test_colliding_native_accessor_with_incomplete_table_fails_closed (__main__.AllRavensMapLuaTests.test_colliding_native_accessor_with_incomplete_table_fails_closed) ... ok
+test_false_event_cannot_revive_and_postboundary_snapshot_can (__main__.AllRavensMapLuaTests.test_false_event_cannot_revive_and_postboundary_snapshot_can) ... ok
+test_fresh_native_snapshot_applies_zero_killed_after_load_boundary (__main__.AllRavensMapLuaTests.test_fresh_native_snapshot_applies_zero_killed_after_load_boundary) ... ok
+test_global_load_event_arms_authority_boundary (__main__.AllRavensMapLuaTests.test_global_load_event_arms_authority_boundary) ... ok
+test_immediate_event_kill_survives_newer_preboundary_snapshot (__main__.AllRavensMapLuaTests.test_immediate_event_kill_survives_newer_preboundary_snapshot) ... ok
+test_kill_releases_owner_and_stale_prompt (__main__.AllRavensMapLuaTests.test_kill_releases_owner_and_stale_prompt) ... FAIL
+test_late_base_update_cannot_revert_settled_prompt (__main__.AllRavensMapLuaTests.test_late_base_update_cannot_revert_settled_prompt) ... FAIL
+test_load_boundary_preserves_last_good_state_until_fresh_snapshot (__main__.AllRavensMapLuaTests.test_load_boundary_preserves_last_good_state_until_fresh_snapshot) ... ok
+test_malformed_native_snapshot_falls_back_without_state_clear (__main__.AllRavensMapLuaTests.test_malformed_native_snapshot_falls_back_without_state_clear) ... ok
+test_native_unavailable_preserves_immediate_event_state (__main__.AllRavensMapLuaTests.test_native_unavailable_preserves_immediate_event_state) ... ok
+test_new_native_generation_is_only_alive_clear_path (__main__.AllRavensMapLuaTests.test_new_native_generation_is_only_alive_clear_path) ... ok
+test_oversized_native_response_fails_closed (__main__.AllRavensMapLuaTests.test_oversized_native_response_fails_closed) ... ok
+test_pending_action_does_not_overwrite_other_raven_prompt (__main__.AllRavensMapLuaTests.test_pending_action_does_not_overwrite_other_raven_prompt) ... FAIL
+test_post_reset_bounded_recheck_accepts_new_generation (__main__.AllRavensMapLuaTests.test_post_reset_bounded_recheck_accepts_new_generation) ... ok
+test_rapid_readd_wins_delayed_native_remove (__main__.AllRavensMapLuaTests.test_rapid_readd_wins_delayed_native_remove) ... FAIL
+test_raven_reticle_and_compass_prompt_refresh_immediately (__main__.AllRavensMapLuaTests.test_raven_reticle_and_compass_prompt_refresh_immediately) ... ok
+test_reset_releases_raven_compass_ownership (__main__.AllRavensMapLuaTests.test_reset_releases_raven_compass_ownership) ... ok
+test_same_and_older_native_generations_do_not_churn (__main__.AllRavensMapLuaTests.test_same_and_older_native_generations_do_not_churn) ... ok
+test_same_raven_add_remove_keeps_compass_empty_and_prompt_settled (__main__.AllRavensMapLuaTests.test_same_raven_add_remove_keeps_compass_empty_and_prompt_settled) ... ok
+
+======================================================================
+FAIL: test_boundary_disarms_pending_selection (__main__.AllRavensMapLuaTests.test_boundary_disarms_pending_selection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-raven-release-adversarial-audit\tools\v0.10.5\test_all_ravens_lua.py", line 349, in test_boundary_disarms_pending_selection
+    self.assertEqual(self.probe.stockCount(), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_kill_releases_owner_and_stale_prompt (__main__.AllRavensMapLuaTests.test_kill_releases_owner_and_stale_prompt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-raven-release-adversarial-audit\tools\v0.10.5\test_all_ravens_lua.py", line 340, in test_kill_releases_owner_and_stale_prompt
+    self.assertEqual(self.probe.stockCount(), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_late_base_update_cannot_revert_settled_prompt (__main__.AllRavensMapLuaTests.test_late_base_update_cannot_revert_settled_prompt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-raven-release-adversarial-audit\tools\v0.10.5\test_all_ravens_lua.py", line 324, in test_late_base_update_cannot_revert_settled_prompt
+    self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'base-stale' != '[AdvanceButton] remove'
+- base-stale
++ [AdvanceButton] remove
+
+
+======================================================================
+FAIL: test_pending_action_does_not_overwrite_other_raven_prompt (__main__.AllRavensMapLuaTests.test_pending_action_does_not_overwrite_other_raven_prompt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-raven-release-adversarial-audit\tools\v0.10.5\test_all_ravens_lua.py", line 332, in test_pending_action_does_not_overwrite_other_raven_prompt
+    self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] replace")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '[AdvanceButton] remove' != '[AdvanceButton] replace'
+- [AdvanceButton] remove
+?                   ^^^
++ [AdvanceButton] replace
+?                   ^^^^
+
+
+======================================================================
+FAIL: test_rapid_readd_wins_delayed_native_remove (__main__.AllRavensMapLuaTests.test_rapid_readd_wins_delayed_native_remove)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-raven-release-adversarial-audit\tools\v0.10.5\test_all_ravens_lua.py", line 312, in test_rapid_readd_wins_delayed_native_remove
+    self.assertEqual(self.probe.tracked(), self.a["catalogue_id"])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 'raven_95b9c6444d479ac68207b1829d02909b'
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.040s
+
+FAILED (failures=5)
