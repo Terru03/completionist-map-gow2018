@@ -143,6 +143,15 @@ def main() -> int:
                         f"object_hash={entry['object_hash_hex']} payload={entry['record_payload_hex']} "
                         f"ravenKilled={entry['ravenKilled']} state_row={entry['state_row']}"
                     )
+                for parent in cand.get("carrier", {}).get("raven_state_parent_keys", []):
+                    go = parent.get("parsed_gameobject")
+                    lines.append(
+                        f"  RAVEN_STATE_PARENT bit_offset={cand['bit_offset']} "
+                        f"key_tag={parent['key_tag']} key_payload={parent['key_payload']} "
+                        f"key_raw={parent['key_raw_hex']} ravenKilled={parent['ravenKilled']} "
+                        f"state_row={parent['state_row']} record_class={parent.get('record_class_key_hex')} "
+                        f"record_payload={parent.get('record_payload_hex')} parsed_gameobject={go}"
+                    )
     for row in known:
         lines.append(
             f"CANDIDATE {row['catalogue_id']} ravenKilled={row['candidate_ravenKilled']} "
