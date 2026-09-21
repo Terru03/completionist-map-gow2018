@@ -383,15 +383,23 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertFalse(self.probe.legacyRavenHudActive())
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
 
-    def test_unknown_hidden_restore_and_teardown(self):
+    def test_false_event_cannot_revive_and_atomic_snapshot_can(self):
         self.probe.open()
-        self.assertEqual(self.probe.iconCount(), 2)
-        self.probe.publish(self.a["catalogue_id"], False)
         self.assertEqual(self.probe.iconCount(), 2)
         self.probe.publish(self.a["catalogue_id"], True)
         self.assertEqual(self.probe.iconCount(), 1)
+
+        # Event-side false is explicitly non-authoritative.
         self.probe.publish(self.a["catalogue_id"], False)
+        self.assertEqual(self.probe.iconCount(), 1)
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+        # A newer complete snapshot is the only path allowed to revive it.
+        self.probe.setNativeResponse(self.response(1))
+        self.probe.open()
         self.assertEqual(self.probe.iconCount(), 2)
+        self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
+
         self.probe.teardown()
         self.assertEqual(self.probe.iconCount(), 0)
 
@@ -509,16 +517,21 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
 
-    def test_new_native_generation_reasserts_map_state_on_reopen(self):
+    def test_new_native_generation_is_only_alive_clear_path(self):
         self.probe.setNativeResponse(self.response(1, [self.a]))
-        self.probe.open()
-        self.probe.publish(self.a["catalogue_id"], False)
-        self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
-        self.probe.teardown()
-        self.probe.setNativeResponse(self.response(2, [self.a]))
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+        self.probe.publish(self.a["catalogue_id"], False)
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+        self.probe.teardown()
+        self.probe.setNativeResponse(self.response(2))
+        self.probe.open()
+        self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
+        self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
 
     def test_malformed_native_snapshot_falls_back_without_state_clear(self):
         self.probe.publish(self.a["catalogue_id"], True)
