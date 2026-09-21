@@ -2078,3 +2078,56 @@ Recovered static notes additionally establish:
 - the per-record Channel-A pool slice is retained for nonresident WADs, so an offline/read-only decoder can in principle recover unloaded Raven state without force-loading WADs.
 
 The next runtime capture should therefore archive every Channel-A slice and apply the engine Lua-length cross-check. Any decoded Raven states remain candidates until exact native prefix traversal is reproduced.
+
+
+---
+
+# Addendum 2026-09-21 - packed Channel-A live capture and exact native-length framing
+
+Runtime capture commit: `f907d2dfd555253b054274dfe2f565876b2f9c64`  
+Evidence: `archive/field-logs/runtime-captures/staged-wad-bitstream-raven-20260921-060345-c2c9bcc1/`
+
+Capture result before decoder refinement:
+
+```text
+record_count=425
+pool_size=1055640
+candidate_state_count=0
+unknown_count=53
+production_ready=false
+```
+
+This zero-state result was caused by the conservative broad zlib marker cap on large WADs, not by failure of the native-length framing. Most non-empty records already produced exactly one Lua carrier candidate when checked against record `+0x60` cached Lua length. Large WADs such as `Xpl200_Funeral` hit `stream_marker_cap` before candidate evaluation.
+
+Decoder refinement commit: `89bb607e44c213556aee2cfb18cafd0ec3454f45`
+
+When `expected_lua_length` is known, `staged_wad_bitstream.extract_channel_a` now follows the proven native restore framing directly:
+
+1. search each of the eight MSB bit phases for the exact 16-bit big-endian Lua byte count from staged record `+0x60`;
+2. take exactly that many following 8-bit bytes as the Lua buffer;
+3. require the solved custom-userdata carrier to begin at that exact buffer start;
+4. require valid zlib at carrier offset `+0x10` and exact header/decompressed-length consistency;
+5. reuse the canonical Raven carrier graph decoder.
+
+This removes the unrelated whole-WAD `0x78` marker cap from the native-length path without weakening fail-closed validation.
+
+Offline replay tooling:
+
+- `9a40190f928b71c2e398c49bd27cb3e5d376ebde` adds `tools/v0.10.5/replay-staged-wad-bitstream-capture.py`.
+- `3ff3ef4dc50b0089f4124667dc70d55332cc9bcd` adds regression coverage proving native-length framing bypasses unrelated marker-cap noise.
+
+## Concrete Xpl200_Funeral boundary from archived raw bytes
+
+The live capture contains:
+
+- record index: `220`
+- WAD: `Xpl200_Funeral`
+- Channel-A bytes: `22518` total including outer u16 envelope
+- cached Lua length from record `+0x60`: `9841`
+
+Across all eight MSB phases, the value `9841` appears at only two candidate length positions:
+
+- alignment 0, byte 11907 -> candidate buffer start 11909 -> bit offset `95272`; rejected because carrier offset `+0x10` is not a valid zlib stream;
+- alignment 3, byte 11407 -> candidate buffer start 11409 -> bit offset `91275`; **valid zlib stream at carrier offset +0x10** and therefore the only surviving native carrier position before canonical graph decoding.
+
+This is the strongest current concrete proof that the staged Channel-A bitstream contains the per-WAD Lua restore carrier at a deterministic bit position. Next step is offline replay of the already captured 425 Channel-A slices with the refined decoder. No new game capture is required for that step.
