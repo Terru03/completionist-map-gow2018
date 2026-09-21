@@ -18,6 +18,7 @@ MAX_TOKEN_COUNT = 4096
 MAX_PARSE_STEPS = 16384
 MAX_PARSE_PATHS = 64
 MAX_CANDIDATES = 128
+MAX_LENGTH_POSITIONS = 64
 
 
 class DecodeLimit(ValueError):
@@ -131,7 +132,8 @@ def extract_channel_a(envelope: bytes, registry_hash: int,
                    "nested_carrier_limit_basis": "layout-derived policy; not explicit native guard",
                    "stream_markers": MAX_STREAM_MARKERS,
                    "token_count": MAX_TOKEN_COUNT, "parse_steps": MAX_PARSE_STEPS,
-                   "parse_paths": MAX_PARSE_PATHS, "candidates": MAX_CANDIDATES},
+                   "parse_paths": MAX_PARSE_PATHS, "candidates": MAX_CANDIDATES,
+                   "lua_length_positions": MAX_LENGTH_POSITIONS},
     }
     if len(envelope) < 2:
         report["rejected"].append({"reason": "outer_length_missing"})
@@ -146,22 +148,40 @@ def extract_channel_a(envelope: bytes, registry_hash: int,
     try:
         for alignment in range(8):
             aligned = _aligned_bytes(payload, alignment)
-            marker_count += aligned.count(b"\x78")
-            if marker_count > MAX_STREAM_MARKERS:
-                raise DecodeLimit("stream_marker_cap")
-            for at, consumed, decoded in module.scan_streams(aligned):
-                start = at - 16
-                if start < 2:
+
+            # Native 0x23FE25 reads the Lua byte count as 16 MSB-first bits,
+            # then 0x23FE63 reads exactly that many 8-bit bytes. When the
+            # staged record's +0x60 cached Lua length is known, use that
+            # framing directly instead of scanning unrelated zlib markers
+            # across the whole WAD bitstream.
+            if expected_lua_length is not None:
+                if expected_lua_length == 0:
                     continue
+                needle = expected_lua_length.to_bytes(2, "big")
+                positions = []
+                cursor = 0
+                while True:
+                    pos = aligned.find(needle, cursor)
+                    if pos < 0:
+                        break
+                    positions.append(pos)
+                    if len(positions) > MAX_LENGTH_POSITIONS:
+                        raise DecodeLimit("lua_length_position_cap")
+                    cursor = pos + 1
+                starts = [(pos + 2, expected_lua_length) for pos in positions]
+            else:
+                marker_count += aligned.count(b"\x78")
+                if marker_count > MAX_STREAM_MARKERS:
+                    raise DecodeLimit("stream_marker_cap")
+                starts = []
+                for at, consumed, decoded in module.scan_streams(aligned):
+                    start = at - 16
+                    if start >= 2:
+                        starts.append((start, int.from_bytes(aligned[start - 2:start], "big")))
+
+            for start, nested_length in starts:
                 bit_offset = alignment + start * 8
                 rejection = {"bit_offset": bit_offset}
-                header = struct.unpack_from("<8H", aligned, start)
-                if header[7] != consumed or header[1] + header[5] != len(decoded):
-                    continue
-                nested_length = int.from_bytes(aligned[start - 2:start], "big")
-                if expected_lua_length is not None and nested_length != expected_lua_length:
-                    report["rejected"].append(dict(rejection, reason="cached_lua_length_mismatch"))
-                    continue
                 if nested_length < 18 or nested_length > MAX_CARRIER_BYTES:
                     report["rejected"].append(dict(rejection, reason="nested_length_out_of_bounds"))
                     continue
@@ -169,6 +189,17 @@ def extract_channel_a(envelope: bytes, registry_hash: int,
                     report["rejected"].append(dict(rejection, reason="nested_buffer_truncated"))
                     continue
                 raw = aligned[start:start + nested_length]
+                if len(raw) < 18:
+                    continue
+                got = module.decompress_stream(raw, 16)
+                if got is None:
+                    report["rejected"].append(dict(rejection, reason="no_zlib_at_native_carrier_offset"))
+                    continue
+                decoded, consumed = got
+                header = struct.unpack_from("<8H", raw)
+                if header[7] != consumed or header[1] + header[5] != len(decoded):
+                    report["rejected"].append(dict(rejection, reason="carrier_header_mismatch"))
+                    continue
                 parses = _decode_paths(module, raw, decoded, consumed, registry_hash, object_map)
                 if not parses:
                     report["rejected"].append(dict(rejection, reason="no_exact_carrier_graph"))
