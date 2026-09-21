@@ -268,9 +268,17 @@ void RunAuthorityWorker() {
     snapshot.explicit_count = decoded.explicit_count;
     snapshot.absence_default_false_count =
         decoded.absence_default_false_count;
-    if (!have_last_snapshot || !SameState(snapshot, last_snapshot)) {
-      g_snapshot_store.Publish(snapshot);
-      g_snapshot_store.Read(&snapshot);
+    const bool state_changed =
+        !have_last_snapshot || !SameState(snapshot, last_snapshot);
+
+    // Publish every accepted capture, even when the 53-Raven state is
+    // unchanged. Generation is therefore a freshness token as well as a
+    // state-change token. This lets Lua distinguish a post-load/checkpoint
+    // capture from a pre-boundary snapshot without any save/progression write.
+    g_snapshot_store.Publish(snapshot);
+    g_snapshot_store.Read(&snapshot);
+
+    if (state_changed) {
       AppendBridgeLog(
           "RAVEN_NATIVE_BRIDGE_SNAPSHOT_ACCEPTED generation=" +
           std::to_string(snapshot.generation) + " count=53 unknown=0 alive=" +
@@ -281,10 +289,10 @@ void RunAuthorityWorker() {
       AppendBridgeLog(
           "RAVEN_NATIVE_BRIDGE_DELIVERY_PENDING mechanism=native_snapshot_api "
           "save_writes=false progression_writes=false");
-      last_snapshot = snapshot;
-      have_last_snapshot = true;
-      last_reason.clear();
     }
+    last_snapshot = snapshot;
+    have_last_snapshot = true;
+    last_reason.clear();
     Sleep(1000);
   }
 }
