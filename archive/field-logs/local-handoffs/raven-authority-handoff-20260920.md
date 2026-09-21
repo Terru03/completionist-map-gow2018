@@ -5390,3 +5390,78 @@ RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_READY
 ```
 
 Retry the same reversible live proof runner after pulling the latest branch.
+
+
+## Second snapshot-delivery live attempt failed before install: literal PowerShell newline
+
+User retried after pulling through `739fcb14ef22db80d9915bb8c11e401b850c68b6`.
+
+The runner failed immediately at line 33:
+
+```text
+The variable '$candidateRoot' cannot be retrieved because it has not been set.
+```
+
+Inspection of the actual branch file showed the exact bug:
+
+```text
+$worktreeCandidateRoot = Join-Path $repo 'build\v0.10.5-all-ravens-release-candidate\offline\candidate\game-root'\n$candidateRoot = $worktreeCandidateRoot
+```
+
+The PowerShell source contained the two literal characters `\n` rather than a real newline.
+
+This failure happened before:
+
+- candidate verification;
+- offline gates;
+- transactional game-file install;
+- DXGI bridge install;
+- GoW launch.
+
+Therefore the second failed attempt also made no live game/install changes and required no rollback.
+
+### Fix
+
+Commit:
+
+- `ff3d8027fa4b14be8fa6a3bf75aeeee1c40e1538`
+- message: `fix(v0.10.5): split candidate root assignments correctly`
+
+The runner now has two real standalone statements:
+
+```powershell
+$worktreeCandidateRoot = Join-Path $repo 'build\v0.10.5-all-ravens-release-candidate\offline\candidate\game-root'
+$candidateRoot = $worktreeCandidateRoot
+```
+
+### Stronger assignment CI gate
+
+The previous path-fix CI only proved that PowerShell syntax parsed, which did not catch the semantic assignment issue.
+
+A stronger temporary Windows CI gate was added to inspect the actual PowerShell AST and require two separate `AssignmentStatementAst` nodes:
+
+- `$worktreeCandidateRoot`
+- `$candidateRoot`
+
+Run:
+
+- `35622305143`
+- conclusion: `success`
+
+Verified:
+
+```text
+RAVEN_DELIVERY_ASSIGNMENT_AST_PASSED
+RAVEN_DELIVERY_PREPARER_COMPILE_PASSED
+RAVEN_NATIVE_BRIDGE_RUNNER_TESTS_PASSED ...
+```
+
+Temporary workflow removed after green.
+
+Current boundary remains:
+
+```text
+RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_READY
+```
+
+Retry the same reversible live proof runner after pulling latest branch.
