@@ -3833,3 +3833,26 @@ Next implementation options to evaluate with Codex/Sol:
 - switch to the `XINPUT1_4.dll` fallback and forward the complete XInput surface/ordinals, if that yields a substantially smaller and safer proxy contract.
 
 Do not modify `version.dll`, saves, or progression.
+
+
+## Fail-closed startup recovery prepared
+
+Recovery tool:
+
+- `14582de94a8da894969fcfaf457160ccc3680c3e`
+- `tools/v0.10.5/recover-raven-authority-bridge-startup.ps1`
+
+It is intentionally narrow:
+
+- requires GoW closed;
+- recognizes the failed bridge by exact SHA-256
+  `2e93c9c711a5c0f622a4b977b4c8f3e4bc81f0e5b1a8640eb2946830d3d2bd2a`
+  or by the owned Completionist Map manifest;
+- refuses to delete an unknown game-root `dxgi.dll`;
+- removes only the owned/stale Raven native bridge manifest;
+- removes only matching Completionist Map temporary DXGI copies;
+- verifies `version.dll` stays byte-identical during recovery;
+- refuses launch if any game-root `dxgi.dll` or Raven bridge manifest still remains;
+- optionally launches GoW after successful cleanup.
+
+Use this before any further native-bridge development or runtime test.
