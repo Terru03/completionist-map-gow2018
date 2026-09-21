@@ -126,7 +126,8 @@ try {
     Copy-Item -LiteralPath $dllSource -Destination $dllTarget -Force
 
     $probeText = [IO.File]::ReadAllText($probe, [Text.Encoding]::UTF8)
-    $appendText = [Environment]::NewLine + $probeText.Replace([char]10, [Environment]::NewLine)
+    $probeText = $probeText.Replace("`r`n", "`n").Replace("`r", "`n")
+    $appendText = [Environment]::NewLine + $probeText.Replace("`n", [Environment]::NewLine)
     $append = [Text.Encoding]::UTF8.GetBytes($appendText)
     $combined = New-Object byte[] ($mapBefore.Length + $append.Length)
     [Array]::Copy($mapBefore, 0, $combined, 0, $mapBefore.Length)
