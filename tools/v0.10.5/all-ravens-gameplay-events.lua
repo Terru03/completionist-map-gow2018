@@ -4,6 +4,7 @@ do
   local prefix = "[CompletionistMap v0.10.5-raven-events] "
   local ravenClass = "CompletionistRaven"
   local retryLimit = 20
+  local restoreRetryLimit = 20
   local generation = 0
   local rows = {
 -- @@RAVEN_STATE_ROWS@@
@@ -77,6 +78,22 @@ do
     if not ok then log("SCHEDULE_FAILED", "source=" .. tostring(source) .. " error=" .. tostring(err)) end
   end
 
+  local function scheduleRestore(source, attempt, ticket)
+    local ok, err = pcall(function()
+      timers.StartLevelTimer(0.1, function()
+        if ticket ~= generation then return end
+        publish(source .. ":retry:" .. tostring(attempt))
+        if attempt < restoreRetryLimit then
+          scheduleRestore(source, attempt + 1, ticket)
+        end
+      end)
+    end)
+    if not ok then
+      log("RESTORE_SCHEDULE_FAILED",
+          "source=" .. tostring(source) .. " error=" .. tostring(err))
+    end
+  end
+
   local hit = OnHitByWeapon
   function OnHitByWeapon(...)
     local result = hit(...)
@@ -91,7 +108,9 @@ do
   function OnRestoreCheckpoint(...)
     local result = restore(...)
     generation = generation + 1
+    local ticket = generation
     publish("OnRestoreCheckpoint")
+    scheduleRestore("OnRestoreCheckpoint", 1, ticket)
     return result
   end
 
@@ -105,6 +124,7 @@ do
 
   log("API", "installed=true catalogueCount=" .. tostring(#rows) ..
       " nativeField=ravenKilled exactQuestAndPosition=true boundedRetry=" .. tostring(retryLimit) ..
-      " polling=false progressionWrites=false")
+      " restoreBoundedRetry=" .. tostring(restoreRetryLimit) ..
+      " permanentPolling=false progressionWrites=false")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVEN EVENTS
