@@ -21,10 +21,13 @@ do
   _G.CompletionistMapV105RavenState = states
   local previousPrompt = MapOn.GetShowOnCompassPrompt
   local previousShow = MapOn.ShowOnCompass
+  local previousUpdate = MapOn.Update
   local previousCollision = MapOn.MapCollisionChangeHandler
   local lastMapOnSelf = nil
   local selectionGeneration = 0
   local promptIntent = nil
+  local promptSettleFrames = 0
+  local promptSettleBucket = -1
   local nativePort = 43753
   local nativeRequest = "GET RAVEN_SNAPSHOT_V1\n"
   local nativeMaxResponseBytes = 4096
@@ -304,6 +307,8 @@ do
     end
     self.completionistMapV105RavenIcons = icons
     promptIntent = nil
+    promptSettleFrames = 0
+    promptSettleBucket = -1
     clearSelection(self, reason)
   end
 
@@ -471,6 +476,14 @@ do
     return "[AdvanceButton] " .. util.GetLAMSMsg(lamsId)
   end
 
+  local function suppressLegacyRavenHud()
+    local target = _G.CompletionistMapV100Target
+    if target ~= nil and target.type == "Raven" and target.active == true then
+      target.active = false
+      log("LEGACY_RAVEN_HUD_DISABLED", "reason=custom_raven_compass_owner")
+    end
+  end
+
   local function promptText(selected)
     if promptIntent ~= nil and promptIntent.IdString == selected.IdString then
       if promptIntent.State == "tracked" then
@@ -590,7 +603,13 @@ do
           _G.CompletionistMapV105TrackedCatalogueId = nil
         end
         self.currShownMarkerID = nil
-        promptIntent = {IdString=selected.IdString, State="untracked"}
+        promptIntent = {
+          IdString=selected.IdString, State="untracked",
+          Name=selected.Name, CatalogueId=selected.CatalogueId,
+        }
+        promptSettleFrames = 0
+        promptSettleBucket = -1
+        suppressLegacyRavenHud()
         Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
         refreshPrompt(self, selected)
         log("REMOVE", "name=" .. selected.Name .. " uid=" .. selected.IdString)
@@ -600,6 +619,7 @@ do
     local customOK, customCount = hideCustom(selected.IdString, "raven_replace")
     local stockOK, stockCount = hideStock("raven_replace")
     if not customOK or not stockOK then return end
+    suppressLegacyRavenHud()
     local showOK, showErr = pcall(function()
       game.Compass.ShowMarker(selected.Name, ravenClass)
     end)
@@ -609,12 +629,91 @@ do
     end
     _G.CompletionistMapV105TrackedCatalogueId = selected.CatalogueId
     self.currShownMarkerID = selected.Id
-    promptIntent = {IdString=selected.IdString, State="tracked"}
+    promptIntent = {
+      IdString=selected.IdString, State="tracked",
+      Name=selected.Name, CatalogueId=selected.CatalogueId,
+    }
+    promptSettleFrames = 0
+    promptSettleBucket = -1
     Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
     refreshPrompt(self, selected)
     log("SHOW", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
         " replacedCustomCount=" .. tostring(customCount) ..
         " replacedStockCount=" .. tostring(stockCount))
+  end
+
+  function MapOn:Update(...)
+    local result = previousUpdate(self, ...)
+    if promptIntent == nil then return result end
+
+    local intent = promptIntent
+    local row = intent.Name and byName[intent.Name] or nil
+    if row == nil or tostring(row.CatalogueId) ~= tostring(intent.CatalogueId) then
+      promptIntent = nil
+      promptSettleFrames = 0
+      promptSettleBucket = -1
+      log("PROMPT_SETTLE_ABORT", "reason=identity_missing id=" .. tostring(intent.IdString))
+      return result
+    end
+
+    local info = markerInfo(row.Name)
+    if info == nil or tostring(info.Id) ~= intent.IdString then
+      promptIntent = nil
+      promptSettleFrames = 0
+      promptSettleBucket = -1
+      log("PROMPT_SETTLE_ABORT", "reason=uid_changed name=" .. tostring(row.Name))
+      return result
+    end
+
+    local selected = {
+      Name=row.Name, CatalogueId=row.CatalogueId,
+      Id=info.Id, IdString=tostring(info.Id),
+    }
+    local custom, customOK = customIds()
+    local stock, stockOK = stockIds()
+    suppressLegacyRavenHud()
+
+    if intent.State == "tracked" then
+      if customOK and stockOK and contains(custom, intent.IdString) and #stock == 0 then
+        promptIntent = nil
+        promptSettleFrames = 0
+        promptSettleBucket = -1
+        refreshPrompt(self, selected)
+        log("PROMPT_SETTLED", "state=tracked name=" .. row.Name)
+      else
+        promptSettleFrames = promptSettleFrames + 1
+        local bucket = math.floor(promptSettleFrames / 30)
+        if stockOK and #stock > 0 and
+            (promptSettleFrames == 1 or bucket ~= promptSettleBucket) then
+          promptSettleBucket = bucket
+          hideStock("raven_replace_async_retry")
+        end
+        refreshPrompt(self, selected)
+      end
+    elseif intent.State == "untracked" then
+      if customOK and not contains(custom, intent.IdString) then
+        promptIntent = nil
+        promptSettleFrames = 0
+        promptSettleBucket = -1
+        refreshPrompt(self, selected)
+        log("PROMPT_SETTLED", "state=untracked name=" .. row.Name)
+      else
+        promptSettleFrames = promptSettleFrames + 1
+        local bucket = math.floor(promptSettleFrames / 30)
+        if customOK and contains(custom, intent.IdString) and
+            (promptSettleFrames == 1 or bucket ~= promptSettleBucket) then
+          promptSettleBucket = bucket
+          pcall(function() game.Compass.HideMarker(row.Name) end)
+        end
+        refreshPrompt(self, selected)
+      end
+    else
+      promptIntent = nil
+      promptSettleFrames = 0
+      promptSettleBucket = -1
+      log("PROMPT_SETTLE_ABORT", "reason=invalid_state state=" .. tostring(intent.State))
+    end
+    return result
   end
 
   local function hideExactTracked(row)
@@ -670,6 +769,8 @@ do
     end
     _G.CompletionistMapV105TrackedCatalogueId = nil
     promptIntent = nil
+    promptSettleFrames = 0
+    promptSettleBucket = -1
     log("STATE_RESET", "source=" .. tostring(source) ..
         " staleStateRetained=false catalogueDefaultVisible=true progressionWrites=false")
     return true
