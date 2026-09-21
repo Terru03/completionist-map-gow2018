@@ -46,8 +46,27 @@ def adjusted_record_id(hex_id:str)->bytes:
     raw[12]=(raw[12]-1)&0xFF
     return bytes(raw)
 
-def scene_elements(row:dict)->list[bytes]:
-    return [adjusted_record_id(x["record_id"]) for x in reversed(row["source"]["transform_chain"])]
+def scene_elements(row:dict)->tuple[list[bytes],list[dict]]:
+    chain=row["source"]["transform_chain"]
+    parent_proto=row["native"]["parent_prototype_id"]
+    kept=[]
+    skipped=[]
+    for original_index,item in reversed(list(enumerate(chain))):
+        element=adjusted_record_id(item["record_id"])
+        # Proven against all 11 live-mismatching nested Ravens: when the
+        # immediate parent's adjusted transform ID equals the child's
+        # parent_prototype_id, that parent is a self-prototype container and
+        # contributes no native GameObject identity element.
+        if original_index==1 and element.hex()==parent_proto:
+            skipped.append({
+                "source_record_name":item["name"],
+                "source_record_id":item["record_id"],
+                "adjusted_identity_hex":element.hex(),
+                "reason":"immediate_parent_adjusted_id_equals_parent_prototype_id",
+            })
+            continue
+        kept.append(element)
+    return kept,skipped
 
 def prototype_element(row:dict)->bytes:
     pid=row["native"]["prototype_id"]
@@ -79,7 +98,7 @@ def payload(registry_hash:int,object_hash:int)->bytes:
     return bytes([1])+registry_hash.to_bytes(8,"little")+object_hash.to_bytes(8,"little")
 
 def build_row(row:dict)->dict:
-    scene=scene_elements(row)
+    scene,skipped=scene_elements(row)
     proto=prototype_element(row)
     elements=scene+[proto]
     obj_hash=identity_hash(elements)
@@ -92,6 +111,7 @@ def build_row(row:dict)->dict:
         "prototype_id":row["native"]["prototype_id"],
         "identity_family":"perch_hop" if proto==PERCH_HOP_ELEMENT else "hover",
         "scene_identity_elements_hex":[x.hex() for x in scene],
+        "skipped_self_prototype_parents":skipped,
         "prototype_identity_element_hex":proto.hex(),
         "identity_elements_hex":[x.hex() for x in elements],
         "registry_hash_hex":f"0x{registry_hash:016X}",
@@ -127,6 +147,7 @@ def main():
         "schema":1,
         "kind":"completionist_map_raven_serialized_gameobject_identity_catalogue",
         "registry_hash_mode":"native_name_hash_of_lowercase_wad_stem",
+        "self_prototype_parent_rule":"omit immediate parent when adjusted transform record id equals native.parent_prototype_id",
         "count":len(rows),
         "unique_object_hashes":len(set(hashes)),
         "prototype_families":{
