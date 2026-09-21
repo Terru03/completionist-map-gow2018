@@ -21,7 +21,7 @@ def sha(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
-def prepare(check_only: bool) -> None:
+def prepare(check_only: bool, refresh_proof: bool = False) -> None:
     proof = json.loads(build.REPORT.read_text(encoding="utf-8"))
     expected_files = set(proof["files"])
     actual_files = {
@@ -57,11 +57,39 @@ def prepare(check_only: bool) -> None:
     )
     refreshed = base + b"\n" + hook
     expected = proof["files"][build.MAP_LUA]
+    expected_matches_current = (
+        sha(current) == expected["sha256"] and len(current) == expected["bytes"]
+    )
+
+    if refresh_proof:
+        if not expected_matches_current and current != refreshed:
+            raise ValueError(
+                "existing map candidate matches neither pinned proof nor current rendered runtime"
+            )
+        if current != refreshed:
+            build.stage.write_bytes_atomic(
+                build.OUTPUT,
+                map_path,
+                refreshed,
+                "native snapshot delivery map candidate",
+            )
+        proof["files"][build.MAP_LUA] = {
+            "sha256": sha(refreshed),
+            "bytes": len(refreshed),
+        }
+        build.stage.write_bytes_atomic(
+            build.REPORT.parent,
+            build.REPORT,
+            build.canonical_json(proof).encode("utf-8"),
+            "refreshed native snapshot delivery proof",
+        )
+        expected = proof["files"][build.MAP_LUA]
+
     if sha(refreshed) != expected["sha256"] or len(refreshed) != expected["bytes"]:
         raise ValueError("rendered delivery candidate differs from pinned proof")
     if check_only and current != refreshed:
         raise ValueError("generated map candidate needs refresh")
-    if not check_only and current != refreshed:
+    if not check_only and not refresh_proof and current != refreshed:
         build.stage.write_bytes_atomic(
             build.OUTPUT,
             map_path,
@@ -70,15 +98,20 @@ def prepare(check_only: bool) -> None:
         )
     if map_path.read_bytes() != refreshed:
         raise ValueError("generated map candidate verification failed")
-    print("ALL_RAVENS_NATIVE_DELIVERY_CANDIDATE_PREPARED files=5 map_sha256=" + sha(refreshed))
+    print(
+        "ALL_RAVENS_NATIVE_DELIVERY_CANDIDATE_PREPARED files=5 map_sha256="
+        + sha(refreshed)
+    )
     print("ALL_RAVENS_NATIVE_DELIVERY_CANDIDATE_ROOT=" + str(build.OUTPUT.resolve()))
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--check", action="store_true")
+    mode.add_argument("--refresh-proof", action="store_true")
     args = parser.parse_args()
-    prepare(args.check)
+    prepare(args.check, args.refresh_proof)
 
 
 if __name__ == "__main__":
