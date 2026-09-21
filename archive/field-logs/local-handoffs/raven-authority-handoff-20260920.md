@@ -3767,3 +3767,69 @@ Therefore:
 - no save/progression/game-file mutation from this attempt occurred.
 
 Next action: run the same proof through a child PowerShell process with `-NoProfile -ExecutionPolicy Bypass -File`. This changes execution policy only for that one PowerShell process and does not modify the machine-wide policy.
+
+
+## Runtime load proof: minimal DXGI proxy design FAILED
+
+Runtime evidence commit:
+
+- `1fd7d61b8bdf71189b6e60a1fbd8e59e8c71ae95`
+- capture: `archive/field-logs/runtime-captures/raven-native-bridge-load-proof-20260921-102726/`
+
+Observed startup failure:
+
+```text
+GoW.exe - Entry Point Not Found
+
+The procedure entry point CreateDXGIFactory2 could not be located
+in the dynamic link library C:\WINDOWS\SYSTEM32\d3d11.dll.
+```
+
+The proxy source at the failing commit exports only:
+
+```text
+CreateDXGIFactory1
+CompletionistMapGetRavenSnapshotV1
+```
+
+Root cause:
+
+- static inspection of `GoW.exe` showed only one direct DXGI import, `CreateDXGIFactory1`;
+- that was insufficient as a proxy compatibility model;
+- once local `dxgi.dll` is loaded for the process, dependent system modules such as `d3d11.dll` also resolve their DXGI imports against that local module;
+- `d3d11.dll` requires `CreateDXGIFactory2` on this Windows build;
+- the minimal Completionist Map proxy does not export it, so loader resolution fails before normal game startup/bridge authority proof.
+
+Therefore the **single-export DXGI proxy design is closed**. Do not retry this binary.
+
+The failed proof runner itself later recorded:
+
+```text
+rollback_exact=true
+version_dll_untouched=true
+bridge_save_writes=false
+bridge_progression_writes=false
+```
+
+and:
+
+```text
+RAVEN_NATIVE_BRIDGE_ROLLED_BACK
+restored_previous=false
+version_untouched=true
+```
+
+The unrelated runner-side `Count` PowerShell exception occurred after the failed game-launch attempt and is a second bug to fix before the next proof.
+
+Immediate priority:
+
+1. verify/remove only any recognized Completionist Map `dxgi.dll` residue from the live game root;
+2. get vanilla+existing Script Loader GoW launching again;
+3. do not install another DXGI bridge until a compatibility-complete forwarding surface is implemented and tested.
+
+Next implementation options to evaluate with Codex/Sol:
+
+- robust DXGI proxy with compatibility-complete forwarding for the real System32 DXGI export surface used by GoW + system graphics modules/overlays, while intercepting only the needed initialization point; or
+- switch to the `XINPUT1_4.dll` fallback and forward the complete XInput surface/ordinals, if that yields a substantially smaller and safer proxy contract.
+
+Do not modify `version.dll`, saves, or progression.
