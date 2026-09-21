@@ -2419,3 +2419,71 @@ This is a structural rule, not a WAD-name special case.
 After regenerating `catalogue/odins-ravens-gameobject-identities.json` with the corrected self-prototype skip rule and WAD-derived registry hashes, an offline replay of the existing `20260921-060345-c2c9bcc1` Channel-A capture should resolve all **42 Raven state rows whose Raven-bearing WADs are present in that staged table**, not just the three Xpl200_Funeral Ravens.
 
 No new game capture is required for this acceptance test.
+
+
+---
+
+# Addendum 2026-09-21 - 42/42 staged Raven states resolved exactly
+
+Identity regeneration commit: `c9eca47e98f46e7fe2737498f82bd68f7f479025`
+
+Offline replay acceptance commit: `aa340337eed96e4c135640ce722a9721f7d9bf68`
+
+The corrected 53-entry serialized GameObject identity catalogue plus per-WAD `(registry_hash, object_hash)` matching successfully resolves every Raven state row present in the archived staged Channel-A snapshot.
+
+Acceptance result:
+
+```text
+candidate_state_count=42
+unknown_count=11
+production_ready=false
+```
+
+Detailed consistency checks:
+
+- 42 exact Raven catalogue IDs resolved;
+- 27 explicit `ravenKilled=true`;
+- 15 explicit `ravenKilled=false`;
+- 30 Raven-bearing Lua carriers;
+- 42 `RAVEN_STATE_PARENT` rows;
+- zero ambiguous records;
+- zero conflicting Raven states;
+- zero unmatched Raven-state GameObject keys.
+
+Previously broken self-prototype-container cases now resolve exactly, including Xpl940_BeachCave, Xpl970_BeachTower, Xpl425_HuldraMinesLH, Xpl850_DungeonForest, Xpl875_DungeonForestLH, and Xpl300_Stronghold.
+
+The Veithurgard acceptance fixture remains exact:
+
+- `raven_642d0d164af0a5d4076e77933c549a5d` -> false
+- `raven_c945cb53465b58decfcbd4a221cb5326` -> true
+- `raven_e32f7bab42fd7298890f6aa56a734562` -> true
+
+## Remaining 11 are coverage absence, not identity failure
+
+The unresolved catalogue rows are exactly those whose Raven-bearing WAD is absent from this 425-record staged snapshot:
+
+- `foot250_chiselarena.wad` - 1 Raven
+- `for260_chiseldungeon.wad` - 1 Raven
+- `xpl100_httk.wad` - 3 Ravens
+- `xpl150_httktemple.wad` - 1 Raven
+- `xpl170_httkcaver.wad` - 1 Raven
+- `xpl450_huldramines.wad` - 1 Raven
+- `xpl475_huldramineslh.wad` - 1 Raven
+- `peak205_chiselarena.wad` - 1 Raven
+- `stn110_chiselarena.wad` - 1 Raven
+
+Total: 9 absent WADs / 11 Ravens.
+
+Because absence is not authoritative evidence of `ravenKilled=false`, these 11 remain unknown. Do not default them alive for an existing save.
+
+The identity problem itself is solved: the generated catalogue has 53 unique serialized payloads and the live-covered 42 all match exactly.
+
+## Next authority problem
+
+Find the authoritative persisted checkpoint/save state for WADs that are not represented in the current staged WAD table. The next research must distinguish:
+
+1. WAD never materialised in this save/checkpoint, where native semantics may prove default state;
+2. WAD persisted elsewhere because it is currently unstaged/unloaded;
+3. stale physical-save-ring state, which must not be treated as current authority without a freshness proof.
+
+Preferred next route: trace the staged-table population/lookup path from the known `0x82C820 / 0x82CC0C / 0x82B250` checkpoint machinery to identify the backing authoritative store or miss path used when a WAD key is absent from the 425-record table. Preserve the no-write/read-only requirement.
