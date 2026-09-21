@@ -140,6 +140,11 @@ function game.Compass.ShowMarker(name,class)
   customIds={markerId(name)}
   calls.shown=name
   calls.class=class
+  if calls.removedCustomOnce then
+    stockIds={"boat"}
+    CompletionistMapV100Target.active=true
+    calls.removedCustomOnce=false
+  end
   calls.baseOverwriteOnce=true
 end
 function game.Compass.HideMarker(target)
@@ -155,6 +160,7 @@ function game.Compass.HideMarker(target)
   customIds=next
   if #customIds < beforeCustom then
     CompletionistMapV100Target.active=true
+    calls.removedCustomOnce=true
     calls.baseOverwriteOnce=true
   end
   local nextStock={}
@@ -338,6 +344,20 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.cursorPrompt(), "[AdvanceButton] add")
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] add")
 
+        # Re-adding the exact same Raven in the same map-open session used to
+        # resurrect a legacy/stock boat HUD target. Simulate that race.
+        show, text = self.probe.click(self.a["marker"]["name"])
+        self.assertTrue(show)
+        self.assertEqual(text, "[AdvanceButton] add")
+        self.assertEqual(self.probe.customCount(), 1)
+        self.assertEqual(self.probe.stockCount(), 0)
+        self.assertFalse(self.probe.legacyRavenHudActive())
+        self.probe.update()
+        self.assertEqual(self.probe.customCount(), 1)
+        self.assertEqual(self.probe.stockCount(), 0)
+        self.assertFalse(self.probe.legacyRavenHudActive())
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+
     def test_unknown_hidden_restore_and_teardown(self):
         self.probe.open()
         self.assertEqual(self.probe.iconCount(), 2)
@@ -393,6 +413,35 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.probe.setNativeResponse(self.response(2))
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+    def test_reset_reapplies_same_generation_authority_once(self):
+        self.probe.setNativeResponse(self.response(5, [self.a]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertEqual(self.probe.lastNativeGeneration(), 5)
+
+        self.probe.reset()
+        self.probe.setNativeResponse(self.response(5, [self.a]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+        self.assertEqual(self.probe.lastNativeGeneration(), 5)
+
+    def test_post_reset_bounded_recheck_accepts_new_generation(self):
+        self.probe.setNativeResponse(self.response(7, [self.a]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+        self.probe.reset()
+        self.probe.setNativeResponse(self.response(7, [self.a]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+        self.probe.setNativeResponse(self.response(8, [self.b]))
+        self.probe.update()
+        self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
+        self.assertTrue(self.probe.state(self.b["catalogue_id"]))
+        self.assertEqual(self.probe.lastNativeGeneration(), 8)
 
     def test_native_unavailable_preserves_immediate_event_state(self):
         self.probe.publish(self.a["catalogue_id"], True)
@@ -452,12 +501,15 @@ class AllRavensMapLuaTests(unittest.TestCase):
 
 
 EVENT_PRELUDE = r'''
-calls={published={},timers=0}
+calls={published={},timers=0,timerCallbacks={}}
 print=function(s) end
 ravenKilled=false
 regionSummaryQuest=QUEST
 thisObj={GetWorldPosition=function(self) return {x=PX,y=PY,z=PZ} end}
-timers={StartLevelTimer=function(delay,fn) calls.timers=calls.timers+1 end}
+timers={StartLevelTimer=function(delay,fn)
+  calls.timers=calls.timers+1
+  calls.timerCallbacks[#calls.timerCallbacks+1]=fn
+end}
 OnHitByWeapon=function(...) ravenKilled=true end
 OnRestoreCheckpoint=function(...) end
 OnStart=function(...) end
@@ -472,6 +524,13 @@ probe={}
 function probe.start() OnStart() end
 function probe.hit() OnHitByWeapon() end
 function probe.restore(value) ravenKilled=value; OnRestoreCheckpoint() end
+function probe.setKilled(value) ravenKilled=value end
+function probe.runNextTimer()
+  if #calls.timerCallbacks==0 then return false end
+  local fn=table.remove(calls.timerCallbacks,1)
+  fn()
+  return true
+end
 function probe.count() return #calls.published end
 function probe.id(i) return calls.published[i].id end
 function probe.value(i) return calls.published[i].value end
@@ -500,6 +559,14 @@ class AllRavensEventLuaTests(unittest.TestCase):
         self.assertEqual(probe.timerCount(), 1)
         probe.restore(False)
         self.assertFalse(probe.value(3))
+        self.assertGreaterEqual(probe.timerCount(), 2)
+
+        # OnRestoreCheckpoint can fire before ravenKilled has settled. The
+        # bounded restore retry must re-read the field instead of pinning the
+        # early false value.
+        probe.setKilled(True)
+        self.assertTrue(probe.runNextTimer())
+        self.assertTrue(probe.value(4))
 
 
 if __name__ == "__main__":
