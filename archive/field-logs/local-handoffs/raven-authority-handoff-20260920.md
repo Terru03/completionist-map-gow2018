@@ -2055,3 +2055,26 @@ A live capture runner already exists:
 `tools/v0.10.5/capture-staged-wad-bitstream-raven-state-readonly-and-push.ps1`
 
 It requires God of War running on the advanced save and paused, archives all raw Channel-A bytes plus candidate decode results, commits the runtime evidence, and pushes it. Use only after remaining local scratch/research artifacts from the interrupted Astra pass have been preserved so no evidence is lost.
+
+
+---
+
+# Addendum 2026-09-21 - Channel-A candidate capture tightened with native Lua-length cross-check
+
+Commit: `f0c6544505600baf1db6b81b713270f21607242d`
+
+Recovered Astra static notes prove that staged record `+0x60` is the cached Channel-A Lua byte count copied from the native WAD slot's `+0x5E10` field. The live candidate observer now reads this field and passes it into `staged_wad_bitstream.extract_channel_a(..., expected_lua_length=...)`.
+
+This means a bit-aligned nested carrier candidate is accepted only when its decoded nested length also equals the engine's own cached Lua length for that WAD record. The observer remains explicitly candidate-only and production authority is still gated on exact enclosing-field traversal, freshness, unloaded-WAD validation, and the Veithurgard fixture.
+
+Recovered static notes additionally establish:
+
+- Channel A is not compressed;
+- the Lua payload is written as a 16-bit length followed by 8-bit bytes into an MSB-first bitstream;
+- `0x23FAA0` restores the larger WAD bitstream;
+- `0x23FE25` reads the Lua length with a 16-bit MSB-first read;
+- `0x23FE63` reads each Lua byte with an 8-bit MSB-first read;
+- `0x240047` calls `LuaClient+0x80` using `RDX=slot+0x5E14`, `R8D=slot+0x5E10`;
+- the per-record Channel-A pool slice is retained for nonresident WADs, so an offline/read-only decoder can in principle recover unloaded Raven state without force-loading WADs.
+
+The next runtime capture should therefore archive every Channel-A slice and apply the engine Lua-length cross-check. Any decoded Raven states remain candidates until exact native prefix traversal is reproduced.
