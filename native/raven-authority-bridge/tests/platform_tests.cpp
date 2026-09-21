@@ -17,29 +17,34 @@ int Fail(const char* message) {
 }  // namespace
 
 int wmain() {
-  std::wstring dxgi_path;
+  std::wstring xinput_path;
   DWORD error = ERROR_SUCCESS;
-  if (!completionist::BuildSystemDxgiPath(&dxgi_path, &error)) {
-    return Fail("BuildSystemDxgiPath failed");
+  if (!completionist::BuildSystemXInputPath(&xinput_path, &error)) {
+    return Fail("BuildSystemXInputPath failed");
   }
-  std::wstring system_directory = dxgi_path.substr(
-      0, dxgi_path.find_last_of(L"\\/"));
-  if (!completionist::IsPathInsideDirectory(dxgi_path, system_directory)) {
-    return Fail("DXGI path escaped System32");
+  std::wstring system_directory = xinput_path.substr(
+      0, xinput_path.find_last_of(L"\\/"));
+  if (!completionist::IsPathInsideDirectory(xinput_path, system_directory)) {
+    return Fail("XInput path escaped System32");
   }
-  const wchar_t* basename = std::wcsrchr(dxgi_path.c_str(), L'\\');
-  if (basename == nullptr || _wcsicmp(basename + 1, L"dxgi.dll") != 0) {
-    return Fail("DXGI basename wrong");
+  const wchar_t* basename = std::wcsrchr(xinput_path.c_str(), L'\\');
+  if (basename == nullptr || _wcsicmp(basename + 1, L"XINPUT1_4.dll") != 0) {
+    return Fail("XInput basename wrong");
   }
-  HMODULE real_dxgi = LoadLibraryExW(dxgi_path.c_str(), nullptr,
-                                     LOAD_LIBRARY_SEARCH_SYSTEM32);
-  if (real_dxgi == nullptr) {
-    return Fail("real System32 DXGI did not load");
+  HMODULE real_xinput = LoadLibraryExW(xinput_path.c_str(), nullptr,
+                                       LOAD_LIBRARY_SEARCH_SYSTEM32);
+  if (real_xinput == nullptr) {
+    return Fail("real System32 XInput did not load");
   }
-  FARPROC export_address = GetProcAddress(real_dxgi, "CreateDXGIFactory1");
-  FreeLibrary(real_dxgi);
+  FARPROC export_address = GetProcAddress(real_xinput, "XInputGetState");
+  FreeLibrary(real_xinput);
   if (export_address == nullptr) {
-    return Fail("real DXGI export missing");
+    return Fail("real XInput export missing");
+  }
+  std::wstring invalid_path;
+  if (completionist::BuildSystemDllPath(L"..\\evil.dll", &invalid_path,
+                                        &error)) {
+    return Fail("system DLL path accepted separator");
   }
   if (completionist::IsPathInsideDirectory(L"C:\\Windows\\System32evil\\dxgi.dll",
                                             L"C:\\Windows\\System32")) {

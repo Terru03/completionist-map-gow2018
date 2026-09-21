@@ -31,7 +31,7 @@ class SnapshotStore {
 };
 
 void RunAuthorityWorker();
-void SetDxgiForwardResult(HRESULT result);
+void SetProxyForwardReady(bool ready);
 
 }  // namespace completionist
 

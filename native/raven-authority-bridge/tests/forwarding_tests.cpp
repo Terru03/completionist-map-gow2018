@@ -1,11 +1,11 @@
 #include <windows.h>
-#include <dxgi.h>
+#include <Xinput.h>
 
 #include <iostream>
 
 namespace {
 
-using CreateDxgiFactory1Fn = HRESULT(WINAPI*)(REFIID, void**);
+using XInputGetStateFn = DWORD(WINAPI*)(DWORD, XINPUT_STATE*);
 
 int Fail(const char* message) {
   std::cerr << "FAIL: " << message << '\n';
@@ -22,20 +22,19 @@ int wmain(int argc, wchar_t** argv) {
   if (proxy == nullptr) {
     return Fail("proxy DLL did not load");
   }
-  auto create_factory = reinterpret_cast<CreateDxgiFactory1Fn>(
-      GetProcAddress(proxy, "CreateDXGIFactory1"));
-  if (create_factory == nullptr) {
+  auto get_state = reinterpret_cast<XInputGetStateFn>(
+      GetProcAddress(proxy, "XInputGetState"));
+  FARPROC ordinal_state = GetProcAddress(proxy, MAKEINTRESOURCEA(2));
+  if (get_state == nullptr || reinterpret_cast<FARPROC>(get_state) != ordinal_state) {
     return Fail("proxy export missing");
   }
-  IDXGIFactory1* factory = nullptr;
-  const HRESULT result = create_factory(__uuidof(IDXGIFactory1),
-                                        reinterpret_cast<void**>(&factory));
-  if (FAILED(result) || factory == nullptr) {
-    return Fail("forwarded CreateDXGIFactory1 failed");
+  XINPUT_STATE state{};
+  const DWORD result = get_state(0, &state);
+  if (result != ERROR_SUCCESS && result != ERROR_DEVICE_NOT_CONNECTED) {
+    return Fail("forwarded XInputGetState returned unexpected error");
   }
-  factory->Release();
   // Test host fails exe gate. Let worker log rejection before process teardown.
   Sleep(1000);
-  std::cout << "RAVEN_BRIDGE_FORWARDING_TEST_PASSED\n";
+  std::cout << "RAVEN_BRIDGE_FORWARDING_TEST_PASSED target=XINPUT1_4.dll\n";
   return 0;
 }

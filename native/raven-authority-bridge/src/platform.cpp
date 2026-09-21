@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cwchar>
 #include <cwctype>
 #include <cstdio>
 #include <string_view>
@@ -64,8 +65,11 @@ void EnsureLogDirectories(const std::wstring& root) {
 
 }  // namespace
 
-bool BuildSystemDxgiPath(std::wstring* path, DWORD* error) {
-  if (path == nullptr) {
+bool BuildSystemDllPath(const wchar_t* dll_name, std::wstring* path,
+                        DWORD* error) {
+  if (dll_name == nullptr || dll_name[0] == L'\0' || path == nullptr ||
+      std::wcschr(dll_name, L'\\') != nullptr ||
+      std::wcschr(dll_name, L'/') != nullptr) {
     if (error != nullptr) {
       *error = ERROR_INVALID_PARAMETER;
     }
@@ -81,7 +85,7 @@ bool BuildSystemDxgiPath(std::wstring* path, DWORD* error) {
     return false;
   }
   path->assign(buffer.data(), length);
-  if (!AddPathPart(path, L"dxgi.dll")) {
+  if (!AddPathPart(path, dll_name)) {
     if (error != nullptr) {
       *error = ERROR_INVALID_NAME;
     }
@@ -91,6 +95,10 @@ bool BuildSystemDxgiPath(std::wstring* path, DWORD* error) {
     *error = ERROR_SUCCESS;
   }
   return true;
+}
+
+bool BuildSystemXInputPath(std::wstring* path, DWORD* error) {
+  return BuildSystemDllPath(L"XINPUT1_4.dll", path, error);
 }
 
 bool BuildModulePath(std::wstring* path, DWORD* error) {

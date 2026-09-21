@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(completionist_raven_authority_bridge LANGUAGES CXX)
+project(completionist_raven_authority_bridge LANGUAGES CXX ASM_MASM)
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
@@ -24,6 +24,10 @@ set(CAPTURE_ROOT "${REPO_ROOT}/archive/field-logs/runtime-captures/staged-wad-bi
 set(GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set(GENERATED_CATALOGUE "${GENERATED_DIR}/raven_catalogue.generated.h")
 set(GENERATED_FIXTURE "${GENERATED_DIR}/raven_fixture.generated.h")
+set(XINPUT_CONTRACT "${CMAKE_CURRENT_SOURCE_DIR}/xinput1_4-export-contract.json")
+set(GENERATED_XINPUT_DEF "${GENERATED_DIR}/xinput_proxy.def")
+set(GENERATED_XINPUT_ASM "${GENERATED_DIR}/xinput_thunks.asm")
+set(GENERATED_XINPUT_HEADER "${GENERATED_DIR}/xinput_contract.generated.h")
 add_custom_command(
   OUTPUT "${GENERATED_CATALOGUE}" "${GENERATED_FIXTURE}"
   COMMAND ${CMAKE_COMMAND} -E make_directory "${GENERATED_DIR}"
@@ -42,17 +46,32 @@ add_custom_command(
 add_custom_target(raven_bridge_generated_data
   DEPENDS "${GENERATED_CATALOGUE}" "${GENERATED_FIXTURE}"
 )
+add_custom_command(
+  OUTPUT "${GENERATED_XINPUT_DEF}" "${GENERATED_XINPUT_ASM}" "${GENERATED_XINPUT_HEADER}"
+  COMMAND ${Python3_EXECUTABLE}
+          "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_xinput_proxy.py"
+          --contract "${XINPUT_CONTRACT}"
+          --def-output "${GENERATED_XINPUT_DEF}"
+          --asm-output "${GENERATED_XINPUT_ASM}"
+          --header-output "${GENERATED_XINPUT_HEADER}"
+  DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_xinput_proxy.py" "${XINPUT_CONTRACT}"
+  VERBATIM
+)
+add_custom_target(raven_bridge_generated_proxy
+  DEPENDS "${GENERATED_XINPUT_DEF}" "${GENERATED_XINPUT_ASM}" "${GENERATED_XINPUT_HEADER}"
+)
 
 add_library(raven_authority_bridge SHARED
   src/authority_decoder.cpp
   src/authority_runtime.cpp
   src/hash.cpp
   src/snapshot_store.cpp
-  src/dxgi_proxy.cpp
+  src/xinput_proxy.cpp
   src/platform.cpp
-  src/dxgi_proxy.def
+  "${GENERATED_XINPUT_DEF}"
+  "${GENERATED_XINPUT_ASM}"
 )
-add_dependencies(raven_authority_bridge raven_bridge_generated_data)
+add_dependencies(raven_authority_bridge raven_bridge_generated_data raven_bridge_generated_proxy)
 target_compile_features(raven_authority_bridge PRIVATE cxx_std_20)
 target_include_directories(raven_authority_bridge PRIVATE
   src
@@ -68,11 +87,13 @@ target_compile_definitions(raven_authority_bridge PRIVATE
   _UNICODE
 )
 if(MSVC)
-  target_compile_options(raven_authority_bridge PRIVATE /W4 /WX /permissive- /EHsc /guard:cf)
+  target_compile_options(raven_authority_bridge PRIVATE
+    $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /permissive- /EHsc /guard:cf>
+  )
   target_link_options(raven_authority_bridge PRIVATE /DYNAMICBASE /NXCOMPAT /GUARD:CF)
 endif()
 set_target_properties(raven_authority_bridge PROPERTIES
-  OUTPUT_NAME dxgi
+  OUTPUT_NAME XINPUT1_4
   PREFIX ""
 )
 
@@ -114,6 +135,27 @@ if(BUILD_TESTING)
   add_dependencies(raven_bridge_forwarding_tests raven_authority_bridge)
   add_test(NAME raven_bridge_forwarding_tests
     COMMAND raven_bridge_forwarding_tests $<TARGET_FILE:raven_authority_bridge>
+  )
+
+  add_executable(raven_bridge_export_contract_tests
+    tests/export_contract_tests.cpp
+    src/platform.cpp
+  )
+  add_dependencies(raven_bridge_export_contract_tests raven_authority_bridge raven_bridge_generated_proxy)
+  target_compile_features(raven_bridge_export_contract_tests PRIVATE cxx_std_20)
+  target_include_directories(raven_bridge_export_contract_tests PRIVATE src "${GENERATED_DIR}")
+  target_link_libraries(raven_bridge_export_contract_tests PRIVATE dbghelp)
+  target_compile_definitions(raven_bridge_export_contract_tests PRIVATE
+    WIN32_LEAN_AND_MEAN
+    NOMINMAX
+    UNICODE
+    _UNICODE
+  )
+  if(MSVC)
+    target_compile_options(raven_bridge_export_contract_tests PRIVATE /W4 /WX /permissive- /EHsc)
+  endif()
+  add_test(NAME raven_bridge_export_contract_tests
+    COMMAND raven_bridge_export_contract_tests $<TARGET_FILE:raven_authority_bridge>
   )
 
   add_executable(raven_bridge_authority_tests

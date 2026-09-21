@@ -2,17 +2,30 @@
 
 ## Status
 
-The selected release architecture is a clean-room Windows x64 `dxgi.dll` proxy. It coexists with the user's upstream `version.dll` Script Loader and never modifies that loader.
+The selected release architecture is now a clean-room Windows x64 `XINPUT1_4.dll` proxy. It coexists with the user's upstream `version.dll` Script Loader and never modifies that loader.
 
-`RAVEN_NATIVE_BRIDGE_LOAD_PROOF_READY`
+The old single-export `dxgi.dll` design is closed after its live loader failure. It must not be installed again. The V2 XInput proxy passes its offline export-contract, safe forwarding, platform, and Raven-authority tests. Installer and runner migration remain before the next live proof.
 
-DXGI forwarding, native staged-authority read, atomic snapshot publication, install, rollback, and one self-logging runtime proof runner are ready. Live load evidence still needs David's one command. Delivery into the existing Lua map remains the one open architecture boundary.
+Native staged-authority read and atomic snapshot publication remain unchanged. Delivery into the existing Lua map remains outside this compatibility-hardening stage.
 
 ## Load architecture
 
-The supported `GoW.exe` imports one DXGI symbol: `CreateDXGIFactory1`. The proxy resolves `%SystemRoot%\\System32\\dxgi.dll` by absolute path, resolves that export once, forwards the original arguments and return value, then starts Completionist Map initialization from the forwarded call path outside `DllMain` loader-lock work.
+The supported `GoW.exe` imports XInput ordinals 2 and 3. The proxy resolves `%SystemRoot%\\System32\\XINPUT1_4.dll` by absolute path, resolves the complete pinned contract once, and uses generated x64 tail thunks to preserve arguments and return semantics. Completionist Map work starts on a separate worker only after a thunk is invoked, outside `DllMain` loader-lock work.
 
-`DllMain` only disables thread attach/detach notifications. Failure to load the system DLL or its export returns a failing `HRESULT` and clears the output pointer.
+`DllMain` only disables thread attach/detach notifications. Resolution checks each named export by both name and ordinal. Failure routes calls to a non-throwing XInput error stub.
+
+## Proxy architecture comparison
+
+The real System32 contracts on the target machine were inspected, not inferred from `GoW.exe` alone:
+
+| Candidate | Complete system surface | Process-wide risk | Common tooling conflict | Result |
+| --- | ---: | --- | --- | --- |
+| `dxgi.dll` | 20 named exports | High: `d3d11.dll` and graphics modules bind through it | High: overlays, capture tools, and ReShade commonly use it | Rejected |
+| `XINPUT1_4.dll` | 15 exports: 8 named, 7 ordinal-only | Lower: controller API scope | Lower than DXGI; exact ordinal forwarding still required | Selected |
+
+The XInput contract is stored in `native/raven-authority-bridge/xinput1_4-export-contract.json`. A generator emits the `.def`, MASM thunks, and C++ contract header from that one file. The proxy preserves ordinals `1,2,3,4,5,7,8,10,100,101,102,103,104,108,109`; the Raven snapshot API uses ordinal 110.
+
+The mandatory contract test enumerates the real System32 PE export directory and rejects any count, name, ordinal, alias, or missing-proxy mismatch. The load test resolves ordinal 2 and the `XInputGetState` name to the same thunk, calls it, and accepts only `ERROR_SUCCESS` or `ERROR_DEVICE_NOT_CONNECTED`. This gate would reject the old two-export DXGI binary as an XInput proxy.
 
 ## Safety model
 
@@ -51,9 +64,9 @@ The test also proves the Veithurgard `false,true,true` fixture and stresses atom
 
 The bridge currently exposes a read-only native snapshot API. The existing Lua map cannot call it yet because `package.loadlib` and all direct built-in authority bindings are closed. No engine bytes are patched. Until a legitimate Lua registration/call boundary or native marker synchronization is proven, this is a load-proof architecture, not runtime-ready map delivery.
 
-## Compatibility caveat
+## Compatibility gate
 
-The development proof forwards the only DXGI export directly imported by the supported `GoW.exe`. A public release may need a broader forwarding surface for overlays, ReShade, or other mod stacks that dynamically resolve extra DXGI exports. Such compatibility work must remain separate from Raven authority and must not replace unknown user files.
+The V2 proxy has no direct dependency on XInput and cannot recurse through its import table. It loads only the absolute System32 target. Its generated forwarding surface contains every export observed on the target Windows build, including all ordinal-only entries. The custom Raven API is the sole extra export.
 
 ## Build
 

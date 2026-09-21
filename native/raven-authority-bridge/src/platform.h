@@ -6,7 +6,9 @@
 
 namespace completionist {
 
-bool BuildSystemDxgiPath(std::wstring* path, DWORD* error);
+bool BuildSystemDllPath(const wchar_t* dll_name, std::wstring* path,
+                        DWORD* error);
+bool BuildSystemXInputPath(std::wstring* path, DWORD* error);
 bool BuildModulePath(std::wstring* path, DWORD* error);
 bool BuildModuleDirectory(std::wstring* path, DWORD* error);
 bool IsPathInsideDirectory(const std::wstring& path, const std::wstring& directory);
