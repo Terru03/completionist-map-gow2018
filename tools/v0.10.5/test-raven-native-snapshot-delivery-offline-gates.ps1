@@ -52,8 +52,22 @@ Write-Host '5/8 prepare pinned five-file delivery candidate'
 Invoke-PythonTest (Join-Path $repo 'tools\v0.10.5\prepare-all-ravens-delivery-candidate.py') $false
 
 Write-Host '6/8 five-file transaction rollback tests'
-& (Join-Path $repo 'tools\v0.10.5\test-all-ravens-transaction.ps1')
-if ($LASTEXITCODE -ne 0) { throw 'All-Ravens transaction gate failed.' }
+$transactionReport = Join-Path ([IO.Path]::GetTempPath()) (
+    'completionist-all-ravens-transaction-' + [Guid]::NewGuid().ToString('N') + '.json')
+try {
+    & (Join-Path $repo 'tools\v0.10.5\test-all-ravens-transaction.ps1') -ReportPath $transactionReport
+    if ($LASTEXITCODE -ne 0) { throw 'All-Ravens transaction gate failed.' }
+    if (-not (Test-Path -LiteralPath $transactionReport -PathType Leaf)) {
+        throw 'All-Ravens transaction gate did not produce its temporary report.'
+    }
+    $transactionProof = Get-Content -LiteralPath $transactionReport -Raw | ConvertFrom-Json
+    if ($transactionProof.result -ne 'ALL_RAVENS_TRANSACTION_SELF_TEST_PASSED') {
+        throw 'All-Ravens transaction temporary report did not pass.'
+    }
+}
+finally {
+    Remove-Item -LiteralPath $transactionReport -Force -ErrorAction SilentlyContinue
+}
 
 Write-Host '7/8 PowerShell syntax gate'
 $parseFiles = @(
