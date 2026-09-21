@@ -313,6 +313,31 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertFalse(self.probe.legacyRavenHudActive())
         self.assertGreaterEqual(self.probe.footerUpdates(), 5)
 
+    def test_same_raven_add_remove_keeps_compass_empty_and_prompt_settled(self):
+        self.probe.publish(self.a["catalogue_id"], False)
+        self.probe.open()
+
+        show, text = self.probe.click(self.a["marker"]["name"])
+        self.assertTrue(show)
+        self.assertEqual(text, "[AdvanceButton] add")
+        self.assertEqual(self.probe.customCount(), 1)
+        self.assertFalse(self.probe.legacyRavenHudActive())
+        self.probe.update()
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+
+        show, text = self.probe.click(self.a["marker"]["name"])
+        self.assertTrue(show)
+        self.assertEqual(text, "[AdvanceButton] remove")
+        self.assertEqual(self.probe.customCount(), 0)
+        self.assertFalse(self.probe.legacyRavenHudActive())
+        self.probe.update()
+
+        self.assertEqual(self.probe.customCount(), 0)
+        self.assertEqual(self.probe.stockCount(), 0)
+        self.assertFalse(self.probe.legacyRavenHudActive())
+        self.assertEqual(self.probe.cursorPrompt(), "[AdvanceButton] add")
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] add")
+
     def test_unknown_hidden_restore_and_teardown(self):
         self.probe.open()
         self.assertEqual(self.probe.iconCount(), 2)
