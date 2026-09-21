@@ -1,0 +1,371 @@
+{
+  "analysis": "lua_getref_exact_handlers",
+  "any_staged_touch": false,
+  "entry_results": {
+    "GetRefBool": {
+      "entry": 8673024,
+      "visited": [
+        {
+          "begin": 8673024,
+          "depth": 0,
+          "size": 32,
+          "source": "exact_entry"
+        }
+      ]
+    },
+    "GetRefFloat": {
+      "entry": 8672992,
+      "visited": [
+        {
+          "begin": 8672992,
+          "depth": 0,
+          "size": 32,
+          "source": "exact_entry"
+        }
+      ]
+    },
+    "GetRefInt": {
+      "entry": 8672960,
+      "visited": [
+        {
+          "begin": 8672960,
+          "depth": 0,
+          "size": 32,
+          "source": "exact_entry"
+        }
+      ]
+    },
+    "GetRefString": {
+      "entry": 8672928,
+      "visited": [
+        {
+          "begin": 8672928,
+          "depth": 0,
+          "size": 32,
+          "source": "exact_entry"
+        }
+      ]
+    }
+  },
+  "entrypoints": {
+    "GetRefBool": 8673024,
+    "GetRefFloat": 8672992,
+    "GetRefInt": 8672960,
+    "GetRefString": 8672928
+  },
+  "exe_sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+  "nodes": [
+    {
+      "begin": 8672928,
+      "instructions": [
+        {
+          "bytes": "4883792800",
+          "imms": [
+            0
+          ],
+          "mem": [
+            {
+              "base": "rcx",
+              "disp": 40,
+              "index": null,
+              "size": 8,
+              "write": false
+            }
+          ],
+          "mnemonic": "cmp",
+          "op_str": "qword ptr [rcx + 0x28], 0",
+          "rva": 8672928
+        },
+        {
+          "bytes": "b803000000",
+          "imms": [
+            3
+          ],
+          "mem": [],
+          "mnemonic": "mov",
+          "op_str": "eax, 3",
+          "rva": 8672933
+        },
+        {
+          "bytes": "7407",
+          "imms": [
+            8672947
+          ],
+          "mem": [],
+          "mnemonic": "je",
+          "op_str": "0x1408456b3",
+          "rva": 8672938
+        },
+        {
+          "bytes": "48c70200000000",
+          "imms": [
+            0
+          ],
+          "mem": [
+            {
+              "base": "rdx",
+              "disp": 0,
+              "index": null,
+              "size": 8,
+              "write": true
+            }
+          ],
+          "mnemonic": "mov",
+          "op_str": "qword ptr [rdx], 0",
+          "rva": 8672940
+        },
+        {
+          "bytes": "c3",
+          "imms": [],
+          "mem": [],
+          "mnemonic": "ret",
+          "op_str": "",
+          "rva": 8672947
+        }
+      ],
+      "known_staged_calls": [],
+      "runtime_function": null,
+      "size": 32,
+      "staged_global_hits": [],
+      "strings": [],
+      "targets": [],
+      "touches_staged": false,
+      "wad_binding_hits": []
+    },
+    {
+      "begin": 8672960,
+      "instructions": [
+        {
+          "bytes": "4883792800",
+          "imms": [
+            0
+          ],
+          "mem": [
+            {
+              "base": "rcx",
+              "disp": 40,
+              "index": null,
+              "size": 8,
+              "write": false
+            }
+          ],
+          "mnemonic": "cmp",
+          "op_str": "qword ptr [rcx + 0x28], 0",
+          "rva": 8672960
+        },
+        {
+          "bytes": "b801000000",
+          "imms": [
+            1
+          ],
+          "mem": [],
+          "mnemonic": "mov",
+          "op_str": "eax, 1",
+          "rva": 8672965
+        },
+        {
+          "bytes": "7407",
+          "imms": [
+            8672979
+          ],
+          "mem": [],
+          "mnemonic": "je",
+          "op_str": "0x1408456d3",
+          "rva": 8672970
+        },
+        {
+          "bytes": "48c70200000000",
+          "imms": [
+            0
+          ],
+          "mem": [
+            {
+              "base": "rdx",
+              "disp": 0,
+              "index": null,
+              "size": 8,
+              "write": true
+            }
+          ],
+          "mnemonic": "mov",
+          "op_str": "qword ptr [rdx], 0",
+          "rva": 8672972
+        },
+        {
+          "bytes": "c3",
+          "imms": [],
+          "mem": [],
+          "mnemonic": "ret",
+          "op_str": "",
+          "rva": 8672979
+        }
+      ],
+      "known_staged_calls": [],
+      "runtime_function": null,
+      "size": 32,
+      "staged_global_hits": [],
+      "strings": [],
+      "targets": [],
+      "touches_staged": false,
+      "wad_binding_hits": []
+    },
+    {
+      "begin": 8672992,
+      "instructions": [
+        {
+          "bytes": "33c0",
+          "imms": [],
+          "mem": [],
+          "mnemonic": "xor",
+          "op_str": "eax, eax",
+          "rva": 8672992
+        },
+        {
+          "bytes": "48394128",
+          "imms": [],
+          "mem": [
+            {
+              "base": "rcx",
+              "disp": 40,
+              "index": null,
+              "size": 8,
+              "write": false
+            }
+          ],
+          "mnemonic": "cmp",
+          "op_str": "qword ptr [rcx + 0x28], rax",
+          "rva": 8672994
+        },
+        {
+          "bytes": "7403",
+          "imms": [
+            8673003
+          ],
+          "mem": [],
+          "mnemonic": "je",
+          "op_str": "0x1408456eb",
+          "rva": 8672998
+        },
+        {
+          "bytes": "488902",
+          "imms": [],
+          "mem": [
+            {
+              "base": "rdx",
+              "disp": 0,
+              "index": null,
+              "size": 8,
+              "write": true
+            }
+          ],
+          "mnemonic": "mov",
+          "op_str": "qword ptr [rdx], rax",
+          "rva": 8673000
+        },
+        {
+          "bytes": "c3",
+          "imms": [],
+          "mem": [],
+          "mnemonic": "ret",
+          "op_str": "",
+          "rva": 8673003
+        }
+      ],
+      "known_staged_calls": [],
+      "runtime_function": null,
+      "size": 32,
+      "staged_global_hits": [],
+      "strings": [],
+      "targets": [],
+      "touches_staged": false,
+      "wad_binding_hits": []
+    },
+    {
+      "begin": 8673024,
+      "instructions": [
+        {
+          "bytes": "4883792800",
+          "imms": [
+            0
+          ],
+          "mem": [
+            {
+              "base": "rcx",
+              "disp": 40,
+              "index": null,
+              "size": 8,
+              "write": false
+            }
+          ],
+          "mnemonic": "cmp",
+          "op_str": "qword ptr [rcx + 0x28], 0",
+          "rva": 8673024
+        },
+        {
+          "bytes": "b802000000",
+          "imms": [
+            2
+          ],
+          "mem": [],
+          "mnemonic": "mov",
+          "op_str": "eax, 2",
+          "rva": 8673029
+        },
+        {
+          "bytes": "7407",
+          "imms": [
+            8673043
+          ],
+          "mem": [],
+          "mnemonic": "je",
+          "op_str": "0x140845713",
+          "rva": 8673034
+        },
+        {
+          "bytes": "48c70200000000",
+          "imms": [
+            0
+          ],
+          "mem": [
+            {
+              "base": "rdx",
+              "disp": 0,
+              "index": null,
+              "size": 8,
+              "write": true
+            }
+          ],
+          "mnemonic": "mov",
+          "op_str": "qword ptr [rdx], 0",
+          "rva": 8673036
+        },
+        {
+          "bytes": "c3",
+          "imms": [],
+          "mem": [],
+          "mnemonic": "ret",
+          "op_str": "",
+          "rva": 8673043
+        }
+      ],
+      "known_staged_calls": [],
+      "runtime_function": null,
+      "size": 32,
+      "staged_global_hits": [],
+      "strings": [],
+      "targets": [],
+      "touches_staged": false,
+      "wad_binding_hits": []
+    }
+  ],
+  "safety": {
+    "game_files_written": false,
+    "game_launched": false,
+    "process_accessed": false,
+    "progression_written": false,
+    "save_opened": false,
+    "save_written": false,
+    "static_exe_read_only": true
+  },
+  "schema": 1
+}

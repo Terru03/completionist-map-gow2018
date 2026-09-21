@@ -1,0 +1,49 @@
+Completionist Map - exact GetRef* Lua handler trace
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+any_staged_touch=false
+
+ENTRY GetRefString=0x8456A0
+  VISIT depth=0 begin=0x8456A0 size=0x20 source=exact_entry
+
+ENTRY GetRefInt=0x8456C0
+  VISIT depth=0 begin=0x8456C0 size=0x20 source=exact_entry
+
+ENTRY GetRefFloat=0x8456E0
+  VISIT depth=0 begin=0x8456E0 size=0x20 source=exact_entry
+
+ENTRY GetRefBool=0x845700
+  VISIT depth=0 begin=0x845700 size=0x20 source=exact_entry
+
+NODE 0x8456A0 size=0x20 touches_staged=false
+  DISASM
+    0x008456A0 4883792800             cmp      qword ptr [rcx + 0x28], 0
+    0x008456A5 b803000000             mov      eax, 3
+    0x008456AA 7407                   je       0x1408456b3
+    0x008456AC 48c70200000000         mov      qword ptr [rdx], 0
+    0x008456B3 c3                     ret      
+
+NODE 0x8456C0 size=0x20 touches_staged=false
+  DISASM
+    0x008456C0 4883792800             cmp      qword ptr [rcx + 0x28], 0
+    0x008456C5 b801000000             mov      eax, 1
+    0x008456CA 7407                   je       0x1408456d3
+    0x008456CC 48c70200000000         mov      qword ptr [rdx], 0
+    0x008456D3 c3                     ret      
+
+NODE 0x8456E0 size=0x20 touches_staged=false
+  DISASM
+    0x008456E0 33c0                   xor      eax, eax
+    0x008456E2 48394128               cmp      qword ptr [rcx + 0x28], rax
+    0x008456E6 7403                   je       0x1408456eb
+    0x008456E8 488902                 mov      qword ptr [rdx], rax
+    0x008456EB c3                     ret      
+
+NODE 0x845700 size=0x20 touches_staged=false
+  DISASM
+    0x00845700 4883792800             cmp      qword ptr [rcx + 0x28], 0
+    0x00845705 b802000000             mov      eax, 2
+    0x0084570A 7407                   je       0x140845713
+    0x0084570C 48c70200000000         mov      qword ptr [rdx], 0
+    0x00845713 c3                     ret      
+
+SAFETY static_exe_read_only=true game_launched=false process_accessed=false save_opened=false save_written=false progression_written=false game_files_written=false
