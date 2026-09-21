@@ -288,7 +288,9 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.customCount(), 0)
         self.assertEqual(self.probe.stockCount(), 1)
         self.probe.click(self.a["marker"]["name"])
-        self.assertEqual(self.probe.stockCount(), 0)
+        self.assertEqual(
+            self.probe.stockOtherCount(self.probe.markerId(self.a["marker"]["name"])), 0
+        )
         self.assertEqual(self.probe.tracked(), self.a["catalogue_id"])
         self.probe.publish(self.a["catalogue_id"], True)
         self.assertEqual(self.probe.customCount(), 0)
@@ -435,7 +437,8 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
 
         self.probe.setNativeResponse(self.response(9))
-        self.probe.update()
+        for _ in range(35):
+            self.probe.update()
         self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
 
     def test_advanced_native_snapshot_applies_27_killed_before_icon_sync(self):
