@@ -1197,7 +1197,6 @@ The LuaContext class identity is now statically resolved.
 
 ## LuaContext vtable
 The only non-executable qword pointer to `0x4654A0` is:
-
 ```text
 0xDF2FB0 -> 0x4654A0
 ```
@@ -1997,7 +1996,6 @@ Files now preserved on the Raven branch:
 - `tools/v0.10.5/test_staged_wad_bitstream_capture.py`
 - `tools/v0.10.5/trace-staged-wad-bitstream-boundary.py`
 - static evidence under `archive/field-logs/source-scans/staged-wad-bitstream-boundary-20260921/`
-
 ## Static path now pinned by Astra tooling
 
 The new static tracer explicitly archives these native windows:
@@ -3198,7 +3196,6 @@ The tracer:
 3. follows only direct `call/jmp` targets to depth 2;
 4. checks all visited code for the proven staged globals, `WAD+0xEE18`, and known staged owner/restore functions;
 5. records exact disassembly and direct targets for final semantic classification.
-
 Acceptance decision:
 
 - if any `GetRef*` path intersects the staged authority surface, preserve it as the concrete built-in Lua bridge candidate;
@@ -4397,7 +4394,6 @@ CMake target:
 - `raven_bridge_import_probe`
 
 Warning-gate cleanup:
-
 - `d85da4bb6d95b5b5fa20e0ee90518753d088fb67`
 
 New fail-soft live runner:
@@ -4798,7 +4794,6 @@ The user ran the prepared offline-only gate after:
 - keeping GoW closed.
 
 Command executed:
-
 `tools/v0.10.5/test-raven-authority-bridge-offline-gates.ps1`
 
 User reported:
@@ -5197,7 +5192,6 @@ oversize response fails closed
 The normal 53-Raven wire payload is well below the 4 KiB cap.
 
 ### Offline/live proof tooling
-
 Commit:
 
 - `3725ea7232ec468f9270b35ef46140c6566a1963`
@@ -5598,7 +5592,6 @@ Remove -> Add/Replace as applicable
 ```
 
 The intent is cleared on map teardown/reset and does not affect a different selected Raven.
-
 Persistence/native authority code was not changed.
 
 ### Regression tests
@@ -5763,3 +5756,47 @@ The final live acceptance must verify:
 8. rollback is exact.
 
 Do not reopen save codec, GameObject identity, DXGI transport, or earlier Raven authority research unless this final live proof exposes a new concrete failure.
+
+## Addendum 2026-09-21 22:09 - final live proof hardened
+
+The final reversible live runner was strengthened after the full authority CI pass so checkpoint persistence cannot pass on manual confirmation alone.
+
+### Machine-verifiable checkpoint requirement
+
+`Test-RavenSnapshotDeliveryProofLines` now requires the ordered sequence:
+
+1. advanced snapshot applied;
+2. immediate `OnHitByWeapon` kill event;
+3. map reopen observed;
+4. explicit authority boundary observed from one of:
+   - `OnRestoreCheckpoint`
+   - `EVT_LoadSaveData`
+   - `EVT_LoadSaveFile_Done`;
+5. a later `NATIVE_AUTHORITY_APPLIED ... postBoundary=true`;
+6. only then the fresh-save 0-killed / 53-alive apply.
+
+The live runner writes these additional proof fields:
+
+```text
+checkpoint_authority_boundary_observed=true
+checkpoint_postboundary_snapshot_applied=true
+```
+
+The `IMMEDIATE_OK` stage now fails unless both fields are proven by logs.
+
+### Final runner CI
+
+Temporary Windows workflow:
+
+- run: `35642810342`
+- tested head: `916b41bc4ee4a105b5f17fc3880529ee09d4fc86`
+- PowerShell final runner parse: success
+- checkpoint proof parser regression: success
+- conclusion: success
+
+The temporary workflow was removed in:
+
+- `a1076f0c540ecab6a5a870ab26036e9f9aca8abe`
+- message: `ci(v0.10.5): remove final Raven live proof gate`
+
+Current next action remains one local proof refresh followed by the reversible live runner. No further offline research is required before field acceptance.
