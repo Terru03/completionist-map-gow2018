@@ -177,6 +177,7 @@ $mapRolledBack = $false
 $launched = $false
 $published = $false
 $checkpointReloadAccepted = $false
+$sameMapReaddAccepted = $false
 $mapManifest = $null
 $gameProcess = $null
 
@@ -247,6 +248,7 @@ function Publish-Proof([string]$Result, [string]$Reason, [object]$Delivery) {
         "immediate_raven_kill_event=$($Delivery.ImmediateEvent.ToString().ToLowerInvariant())"
         "map_reopen_observed=$($Delivery.MapReopenObserved.ToString().ToLowerInvariant())"
         "checkpoint_reload_after_kill_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
+        "same_map_readd_no_stock_manual=$($script:sameMapReaddAccepted.ToString().ToLowerInvariant())"
         "fresh_0_killed_applied=$($Delivery.FreshApplied.ToString().ToLowerInvariant())"
         "ordered_acceptance=$($Delivery.Ordered.ToString().ToLowerInvariant())"
         "map_candidate_rollback_exact=$($mapExact.ToString().ToLowerInvariant())"
@@ -302,9 +304,10 @@ try {
         throw 'GoW exited during main-menu settle.'
     }
 
-    $answer = Read-Host 'Load advanced Raven save. Open map. Verify exact 26 live markers, 27 absent, captions, realm filter, compass add/remove/replace, immediate bottom-row text, and same-Raven add/remove leaving no HUD target. Type ADVANCED_OK, or REGRESSION if anything is wrong'
-    if ($answer -ceq 'REGRESSION') { throw 'Advanced-save manual regression reported.' }
-    if ($answer -cne 'ADVANCED_OK') { throw 'Advanced-save manual acceptance not confirmed.' }
+    $answer = Read-Host 'Load advanced Raven save. Open map. Verify exact surviving Raven set, captions, realm filter, and immediate bottom-row text. Then on the SAME Raven without closing the map do Add -> Remove -> Add; verify the Raven is tracked again and NO boat/stock HUD marker appears. Type ADVANCED_OK, or REGRESSION if anything is wrong'
+    if ($answer -ceq 'REGRESSION') { throw 'Advanced-save or same-map Raven re-add manual regression reported.' }
+    if ($answer -cne 'ADVANCED_OK') { throw 'Advanced-save/same-map re-add manual acceptance not confirmed.' }
+    $sameMapReaddAccepted = $true
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
     if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied) { throw 'Advanced 27-killed Lua apply evidence missing.' }
