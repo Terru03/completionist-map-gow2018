@@ -33,20 +33,38 @@ do
     return hit, nil
   end
 
+  local function notifyAuthorityBoundary(source)
+    local fn = _G.CompletionistMapV105NotifyAuthorityBoundary
+    if type(fn) == "function" then
+      local ok, result = pcall(fn, source)
+      log("AUTHORITY_BOUNDARY_NOTIFY", "source=" .. tostring(source) ..
+          " delivered=" .. tostring(ok and result == true))
+      return
+    end
+    _G.CompletionistMapV105PendingAuthorityBoundary = source
+    log("AUTHORITY_BOUNDARY_NOTIFY", "source=" .. tostring(source) ..
+        " delivered=false pending=true")
+  end
+
   local function publish(source)
     local row, err = identify()
     if row == nil then
       log("STATE_REFUSED", "source=" .. tostring(source) .. " reason=" .. tostring(err))
       return nil
     end
-    local collected = ravenKilled == true
+    if ravenKilled ~= true then
+      log("STATE_DEFERRED", "source=" .. tostring(source) ..
+          " catalogueId=" .. row.CatalogueId ..
+          " reason=alive_requires_atomic_authority")
+      return row
+    end
     local fn = _G.CompletionistMapV105PublishRavenState
     if type(fn) == "function" then
-      fn(row.CatalogueId, collected, source)
+      fn(row.CatalogueId, true, source)
       return row
     end
     _G.CompletionistMapV105PendingRavenState = _G.CompletionistMapV105PendingRavenState or {}
-    _G.CompletionistMapV105PendingRavenState[row.CatalogueId] = collected
+    _G.CompletionistMapV105PendingRavenState[row.CatalogueId] = true
     return row
   end
 
@@ -109,6 +127,7 @@ do
     local result = restore(...)
     generation = generation + 1
     local ticket = generation
+    notifyAuthorityBoundary("OnRestoreCheckpoint")
     publish("OnRestoreCheckpoint")
     scheduleRestore("OnRestoreCheckpoint", 1, ticket)
     return result
@@ -125,6 +144,7 @@ do
   log("API", "installed=true catalogueCount=" .. tostring(#rows) ..
       " nativeField=ravenKilled exactQuestAndPosition=true boundedRetry=" .. tostring(retryLimit) ..
       " restoreBoundedRetry=" .. tostring(restoreRetryLimit) ..
+      " positiveEvidenceOnly=true restoreAuthorityBoundary=true" ..
       " permanentPolling=false progressionWrites=false")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVEN EVENTS
