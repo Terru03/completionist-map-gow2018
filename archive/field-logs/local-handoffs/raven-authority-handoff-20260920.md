@@ -4597,3 +4597,201 @@ Target stop state:
 `RAVEN_DXGI_COMPLETE_PROXY_LOAD_PROOF_READY`
 
 Do not enter Lua/map delivery before a later live DXGI load proof actually passes.
+
+
+## Complete DXGI proxy implementation advanced after Codex usage cutoff
+
+The focused Sol pass reached the usage limit after pushing its native stage.
+
+### Sol-pushed native stage
+
+Commit:
+
+- `e3afcad02f359f5c0f41c66ab6937ec525478708`
+- message: `feat(v0.10.5): implement complete DXGI bridge proxy`
+
+Sol reported and the remote commit confirms:
+
+- target switched back to `dxgi.dll`;
+- complete target System32 DXGI contract pinned:
+  - 20 named exports;
+  - ordinals 1-20;
+  - `CreateDXGIFactory2` ordinal 12;
+  - target System32 SHA-256:
+    `b12aebf0f077d6c1394b50e2eecdd5e16072c9a0c871f30887b5d170cbf2eaae`;
+- generated `.def`, MASM thunks, and contract header;
+- full name/ordinal parity test;
+- explicit incomplete-DXGI fixture rejection;
+- temp-directory load/resolve test;
+- safe calls through:
+  - `CreateDXGIFactory`;
+  - `CreateDXGIFactory1`;
+  - `CreateDXGIFactory2`;
+- explicit System32 real-DXGI load/no-recursion proof;
+- accepted Raven authority code preserved.
+
+Sol locally reported five native tests green before push.
+
+After `e3afcad`, Sol began editing installer/rollback/recovery locally but hit the usage limit before committing those changes. Those uncommitted local edits are **not** source of truth and have now been superseded by the remote implementation below.
+
+### Schema-3 DXGI ownership completed remotely
+
+Production ownership was migrated from the closed XInput route to DXGI:
+
+- `51c6a3203ece432b4fcaf8636f1eda15e4791aeb` - installer schema-3 DXGI ownership;
+- `844833e4be19bd0ba6464be95355e9a53d86184d` - staged DXGI rollback;
+- `d9d707ba4ca590e4eb0c3be57157c51a5e33ef32` - DXGI-only recovery;
+- `ed9a732f50c05fbaa2b367914cba89b6e8f3a9d1` - temp-root install/upgrade/rollback/recovery tests.
+
+Production target:
+
+```text
+dxgi.dll
+schema=3
+proxy_contract=system32-dxgi-v1
+```
+
+Installer behavior:
+
+- exact supported `GoW.exe` hash required;
+- schema-3 build manifest required;
+- unknown game-root `dxgi.dll` is never overwritten;
+- existing target/manifest mismatch is refused;
+- only exact owned schema-3 DXGI may be upgraded;
+- previous owned DLL + manifest are backed up;
+- install uses a staged temp DLL;
+- `version.dll` hash must remain unchanged.
+
+Rollback behavior:
+
+- exact installed hash required;
+- tampered DLL is refused;
+- prior owned schema-3 pair is restored through a staged DLL copy;
+- otherwise only the exact owned pair is removed;
+- rollback receipt is schema 3;
+- `version.dll` must remain unchanged.
+
+Recovery behavior:
+
+- unwinds only recognized schema-3 DXGI ownership chains;
+- still recognizes/removes only the exact historical single-export known-bad DXGI hash:
+  `2e93c9c711a5c0f622a4b977b4c8f3e4bc81f0e5b1a8640eb2946830d3d2bd2a`;
+- refuses unknown/unowned game-root `dxgi.dll`;
+- closed XInput production path is no longer used.
+
+### V3 proof plumbing completed
+
+Runner/parser changes:
+
+- `924a9060534774d5ba8bb5976984132a615ee9a7` - DXGI proof-line parser;
+- `31185935e708f70bf6a1631385356742ea0cfd5a` - DXGI runner regressions;
+- `574a31ba6e0226b30852238992a8d128a111cfc3` - reversible V3 live proof runner.
+
+V3 runtime behavior:
+
+- target `dxgi.dll`;
+- startup timeout 90 seconds;
+- Steam bootstrap/successor process handling retained;
+- additional 40-second main-menu settle interval, matching the user's observed ~35-second startup;
+- before user action it requires fresh:
+  - `RAVEN_NATIVE_BRIDGE_PROXY_LOADED target=dxgi.dll`;
+  - `RAVEN_NATIVE_BRIDGE_DXGI_FORWARDED exports=20 success=true`;
+  - `RAVEN_NATIVE_BRIDGE_EXE_ACCEPTED`;
+- advanced-save/map-open pass then requires:
+  - `RAVEN_NATIVE_BRIDGE_SNAPSHOT_ACCEPTED ... count=53 unknown=0`;
+  - `RAVEN_NATIVE_BRIDGE_DELIVERY_PENDING`;
+  - normal Completionist Map Script Loader evidence;
+- success/failure both archive and push evidence;
+- failure stops GoW before rollback;
+- rollback must restore exact pre-run DXGI/manifest state;
+- `version.dll` must remain byte-identical.
+
+### Build portability and offline gate
+
+Build-generator support:
+
+- `a517e998aa2e3accec29ad22650cf507058259b2`
+- `5f74b6c956611624f36c3f046a2a1b9270940d24`
+
+The build script now supports both VS2022 and VS2026 CMake generators. A PowerShell regex bug in the first detector (`-split '.'`) was caught by CI and corrected to literal-dot splitting.
+
+Dedicated offline-only local gate:
+
+- `bdfd76e11fc0afcedea45299a8c2a8359b7cebbd`
+- `tools/v0.10.5/test-raven-authority-bridge-offline-gates.ps1`
+
+It performs:
+
+1. runner regressions;
+2. clean native build + all five CTest targets;
+3. schema-3 DXGI install/upgrade/rollback/recovery testing in a temporary directory using copies of the real `GoW.exe` and `version.dll`.
+
+It **does not install dxgi.dll into the real game directory**.
+
+Expected success marker:
+
+```text
+RAVEN_DXGI_OFFLINE_GATES_PASSED
+```
+
+### Windows CI green
+
+Temporary workflow was added, corrected, and then removed.
+
+Final green workflow run:
+
+- run ID: `35600350597`
+- job ID: `106334715563`
+
+Exact verified outputs:
+
+```text
+RAVEN_DXGI_POWERSHELL_PARSE_PASSED files=9
+100% tests passed out of 5
+RAVEN_NATIVE_BRIDGE_RUNNER_TESTS_PASSED target=dxgi.dll ...
+RAVEN_DXGI_SECURITY_DIFF_SCAN_PASSED files=21 findings=0
+```
+
+Native CI build output:
+
+```text
+RAVEN_NATIVE_BRIDGE_BUILD_OK
+dll=...\Release\dxgi.dll
+sha256=2a15a23ae5f46f2973a0c2e4ea9b1db5a84f3940411a8531fb6c256aecaf9aa4
+```
+
+Temporary workflow removal:
+
+- `38f474a3d330149b9b5000834e4cf27b67bcfd6b`
+
+Documentation update:
+
+- `5d53d3e9f1f128d1d48c7cdbeb5037488f70e1c3`
+- `docs/research/v0105-raven-native-bridge.md`
+
+### Current boundary
+
+Current state:
+
+```text
+RAVEN_DXGI_LOCAL_OFFLINE_GATE_READY
+```
+
+Do **not** run the V3 live install/proof yet.
+
+Next required action is one local offline-only gate with GoW closed.
+
+Important local-worktree note:
+
+- the user's local checkout may still contain Sol's uncommitted installer/rollback/recovery edits from after `e3afcad`;
+- those edits were never pushed and are superseded by the remote schema-3 implementation;
+- preserve them in a Git stash before hard-resetting the local branch to current origin;
+- then run the offline gate.
+
+If the offline gate passes, update this handoff with its exact output and only then advance to:
+
+```text
+RAVEN_DXGI_COMPLETE_PROXY_LOAD_PROOF_READY
+```
+
+and provide the single V3 live proof command.
