@@ -50,3 +50,70 @@ Validation:
 Live runner prompts now explicitly accept `REGRESSION` so a failed manual observation goes through the normal catch/archive/push path instead of requiring Ctrl+C. Commit: `664e46d`.
 
 Before the next live test, refresh the generated mapmenu proof because `all-ravens-map-runtime.lua` changed in `02b944b`.
+
+
+## Second live regression set — same map-open re-add + checkpoint reload
+
+Field observations:
+
+1. Same map-open compass sequence:
+   - add Raven A;
+   - remove Raven A;
+   - add Raven A again without closing the map;
+   - a stock/boat-looking HUD compass marker appears on the third action.
+
+2. Persistence/reload sequence:
+   - kill a live Raven;
+   - reload the checkpoint/save point corresponding to after that kill;
+   - reopen map;
+   - that Raven was forced visible instead of remaining absent.
+
+The latest manual run did not create a new pushed proof commit, so these observations are recorded here from the field report.
+
+### Root cause: same-map re-add
+
+The previous settlement fix considered Raven removal complete once the custom CompletionistRaven target disappeared. It did not retain explicit custom-Raven ownership over the compass target for the remainder of the Raven interaction. A legacy/stock target could therefore reactivate between Remove and the next Add.
+
+Fix `67fc1f0`:
+- adds persistent `customCompassOwnsTarget` for Raven-origin compass actions;
+- while owned, `MapOn.Update` suppresses the legacy Raven HUD route and removes stock targets;
+- Remove adds an immediate stock-target guard;
+- re-Add adds another immediate post-show stock-target guard;
+- stock/delegated actions explicitly release custom ownership.
+
+Regression in `6b1a8fb` deliberately injects a fake `boat` stock target on the exact third-click Add and requires it to be removed immediately and after the following base update.
+
+### Root cause: checkpoint authority
+
+The native bridge increments snapshot generation only when the complete 53-Raven state changes. Reloading the same post-kill checkpoint may therefore legitimately return the same generation.
+
+Before the fix:
+- `CompletionistMapV105ResetRavenStates` cleared Lua state;
+- `refreshNativeAuthority` rejected `generation <= lastNativeGeneration`;
+- the equal-generation authoritative checkpoint snapshot was therefore discarded;
+- unknown/catalogue-default-visible fallback could make the Raven visible again.
+
+Fix `67fc1f0`:
+- after explicit save/checkpoint reset, permit the equal native generation exactly once;
+- normal map close/reopen still rejects equal generations, preserving immediate-event state;
+- after reset, perform a bounded 180-frame native refresh window to accept a newer snapshot if a different save/checkpoint is still settling.
+
+Fix `116c3aa`:
+- `OnRestoreCheckpoint` republishes the exact loaded Raven's read-only `ravenKilled` field immediately and for a bounded 20 x 0.1 s settle window;
+- no progression/save/process-memory writes are introduced.
+
+Regression coverage:
+- same-generation authoritative reapply after reset;
+- newer generation during bounded reset window;
+- loaded Raven field settling after `OnRestoreCheckpoint`;
+- Add A -> Remove A -> Add A in one map-open session with injected boat/stock fallback.
+
+Live proof `82862a4` now explicitly requires:
+- immediate kill disappearance;
+- close/reopen remains absent;
+- reload the checkpoint created after the kill;
+- reopen map;
+- exact Raven remains absent;
+- result records `checkpoint_reload_after_kill_manual=true`.
+
+The generated-candidate refresher now safely refreshes both generated Lua files (mapmenu + precisionchallenge) while freezing the three binary candidate pins.
