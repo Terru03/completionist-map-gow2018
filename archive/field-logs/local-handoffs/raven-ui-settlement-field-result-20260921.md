@@ -28,3 +28,25 @@ Fix chain started from this field result:
 - temporary CI workflow added afterwards to validate Lua/model tests and safety tokens.
 
 Scope remains UI/compass only. Do not change persistence/native Raven authority, save data, progression, or process memory.
+
+
+## Validation and next boundary
+
+The exact direct same-Raven sequence is now covered:
+
+- Add Raven A;
+- allow one stock/base update that overwrites the UI;
+- settlement restores the footer/cursor prompt to Remove;
+- Remove Raven A;
+- simulate legacy Raven HUD reactivation plus one stale base update;
+- settlement leaves custom targets = 0, stock targets = 0, legacy Raven HUD inactive;
+- cursor/footer prompt returns to Add.
+
+Validation:
+- temporary GitHub Actions run `35627933908`: success;
+- exact direct Add A -> Remove A run `35628065149`: success;
+- temporary CI workflow removed in `aac6ad2`.
+
+Live runner prompts now explicitly accept `REGRESSION` so a failed manual observation goes through the normal catch/archive/push path instead of requiring Ctrl+C. Commit: `664e46d`.
+
+Before the next live test, refresh the generated mapmenu proof because `all-ravens-map-runtime.lua` changed in `02b944b`.
