@@ -3126,3 +3126,54 @@ Acceptance decision:
 - if all six are disjoint from the staged authority surface, close this built-in binding set and continue from the native staged owner itself rather than probing unrelated Lua APIs.
 
 The trace is fully static/read-only and requires GoW closed.
+
+
+## Persisted Lua binding trace result - LoadCheck/ResolveGameObject closed, GetRef exact handlers still unresolved
+
+Evidence commit:
+
+- `01ab42379a738c6cdd02aede7fa65a7b2933390a`
+- evidence: `archive/field-logs/source-scans/lua-persisted-reference-bindings-20260921-084254/`
+
+The bounded static trace completed safely:
+
+```text
+LUA_PERSISTED_REFERENCE_BINDINGS_TRACE_COMPLETE
+selected_functions=4
+any_staged_touch=false
+save_opened=false
+save_written=false
+progression_written=false
+game_launched=false
+```
+
+Resolved functions:
+
+```text
+0x84E880..0x84E8F5  LoadCheck
+0x84F750..0x84F7C9  ResolveGameObject
+0x6BFBF0..0x6BFCC3  LoadCheck callee
+0x67C190..0x67C1B3  LoadCheck callee
+```
+
+None of those four functions:
+
+- references the proven staged globals `0x22C696C / 0x22C7170 / 0x22C7194 / 0x22C6938 / 0x22C6940`;
+- accesses `WAD+0xEE18`;
+- calls the known staged owner/restore functions;
+- contains a direct staged-authority bridge.
+
+Therefore `LoadCheck` and `ResolveGameObject` are closed as direct Raven staged-authority delivery routes.
+
+Important limitation: the registration catalogue's exact `GetRef*` addresses:
+
+```text
+GetRefString 0x8456A0
+GetRefInt    0x8456C0
+GetRefFloat  0x8456E0
+GetRefBool   0x845700
+```
+
+did not map to separate runtime-function records in the PE exception-function table, so the first tracer did **not** actually disassemble or prove their implementations. Do not close `GetRef*` yet.
+
+Next step: disassemble fixed byte windows at those exact four RVAs independent of runtime-function boundaries, follow their direct targets narrowly, and test those targets against the proven staged globals/functions. This is the final unresolved part of this built-in binding set.
