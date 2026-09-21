@@ -47,31 +47,22 @@ if (-not ('CompletionistModuleSnapshot' -as [type])) {
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 
 public static class CompletionistModuleSnapshot
 {
-    private const uint TH32CS_SNAPMODULE = 0x00000008;
-    private const uint TH32CS_SNAPMODULE32 = 0x00000010;
-    private static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
+    private const uint PROCESS_VM_READ = 0x0010;
+    private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+    private const uint LIST_MODULES_ALL = 0x03;
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    private struct MODULEENTRY32
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MODULEINFO
     {
-        public uint dwSize;
-        public uint th32ModuleID;
-        public uint th32ProcessID;
-        public uint GlblcntUsage;
-        public uint ProccntUsage;
-        public IntPtr modBaseAddr;
-        public uint modBaseSize;
-        public IntPtr hModule;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string szModule;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-        public string szExePath;
+        public IntPtr lpBaseOfDll;
+        public uint SizeOfImage;
+        public IntPtr EntryPoint;
     }
 
     public sealed class ModuleRow
@@ -83,61 +74,110 @@ public static class CompletionistModuleSnapshot
     }
 
     [DllImport("kernel32.dll", SetLastError = true)]
-    private static extern IntPtr CreateToolhelp32Snapshot(uint dwFlags, uint th32ProcessID);
-
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    private static extern bool Module32FirstW(IntPtr hSnapshot, ref MODULEENTRY32 lpme);
-
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    private static extern bool Module32NextW(IntPtr hSnapshot, ref MODULEENTRY32 lpme);
+    private static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, uint dwProcessId);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern bool CloseHandle(IntPtr hObject);
 
+    [DllImport("psapi.dll", SetLastError = true)]
+    private static extern bool EnumProcessModulesEx(
+        IntPtr hProcess,
+        [Out] IntPtr[] lphModule,
+        uint cb,
+        out uint lpcbNeeded,
+        uint dwFilterFlag);
+
+    [DllImport("psapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern uint GetModuleFileNameExW(
+        IntPtr hProcess,
+        IntPtr hModule,
+        [Out] StringBuilder lpFilename,
+        uint nSize);
+
+    [DllImport("psapi.dll", SetLastError = true)]
+    private static extern bool GetModuleInformation(
+        IntPtr hProcess,
+        IntPtr hModule,
+        out MODULEINFO lpmodinfo,
+        uint cb);
+
     public static ModuleRow[] Enumerate(int processId)
     {
-        IntPtr snapshot = CreateToolhelp32Snapshot(
-            TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32,
+        IntPtr process = OpenProcess(
+            PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
+            false,
             unchecked((uint)processId));
 
-        if (snapshot == INVALID_HANDLE_VALUE)
-            throw new Win32Exception(Marshal.GetLastWin32Error(), "CreateToolhelp32Snapshot failed.");
+        if (process == IntPtr.Zero)
+        {
+            int error = Marshal.GetLastWin32Error();
+            throw new Win32Exception(error, "OpenProcess failed (error " + error + ").");
+        }
 
         try
         {
-            var rows = new List<ModuleRow>();
-            var entry = new MODULEENTRY32();
-            entry.dwSize = (uint)Marshal.SizeOf(typeof(MODULEENTRY32));
+            IntPtr[] modules = new IntPtr[256];
+            uint needed;
 
-            if (!Module32FirstW(snapshot, ref entry))
+            while (true)
             {
-                int error = Marshal.GetLastWin32Error();
-                if (error == 18) return rows.ToArray(); // ERROR_NO_MORE_FILES
-                throw new Win32Exception(error, "Module32FirstW failed.");
+                uint bytes = checked((uint)(modules.Length * IntPtr.Size));
+                if (!EnumProcessModulesEx(process, modules, bytes, out needed, LIST_MODULES_ALL))
+                {
+                    int error = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(error, "EnumProcessModulesEx failed (error " + error + ").");
+                }
+
+                int requiredCount = checked((int)((needed + (uint)IntPtr.Size - 1) / (uint)IntPtr.Size));
+                if (requiredCount <= modules.Length)
+                    break;
+
+                modules = new IntPtr[Math.Max(requiredCount, modules.Length * 2)];
             }
 
-            do
+            int count = checked((int)(needed / (uint)IntPtr.Size));
+            var rows = new List<ModuleRow>(count);
+
+            for (int index = 0; index < count; index++)
             {
+                IntPtr module = modules[index];
+                if (module == IntPtr.Zero)
+                    continue;
+
+                var pathBuilder = new StringBuilder(32768);
+                uint chars = GetModuleFileNameExW(process, module, pathBuilder, (uint)pathBuilder.Capacity);
+                if (chars == 0)
+                {
+                    int error = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(error, "GetModuleFileNameExW failed (error " + error + ").");
+                }
+
+                MODULEINFO info;
+                if (!GetModuleInformation(
+                    process,
+                    module,
+                    out info,
+                    (uint)Marshal.SizeOf(typeof(MODULEINFO))))
+                {
+                    int error = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(error, "GetModuleInformation failed (error " + error + ").");
+                }
+
+                string fullPath = pathBuilder.ToString();
                 rows.Add(new ModuleRow
                 {
-                    Name = entry.szModule ?? string.Empty,
-                    Path = entry.szExePath ?? string.Empty,
-                    BaseAddress = entry.modBaseAddr.ToInt64(),
-                    Size = entry.modBaseSize
+                    Name = Path.GetFileName(fullPath) ?? string.Empty,
+                    Path = fullPath,
+                    BaseAddress = info.lpBaseOfDll.ToInt64(),
+                    Size = info.SizeOfImage
                 });
-                entry.dwSize = (uint)Marshal.SizeOf(typeof(MODULEENTRY32));
             }
-            while (Module32NextW(snapshot, ref entry));
-
-            int last = Marshal.GetLastWin32Error();
-            if (last != 0 && last != 18)
-                throw new Win32Exception(last, "Module32NextW failed.");
 
             return rows.ToArray();
         }
         finally
         {
-            CloseHandle(snapshot);
+            CloseHandle(process);
         }
     }
 }
