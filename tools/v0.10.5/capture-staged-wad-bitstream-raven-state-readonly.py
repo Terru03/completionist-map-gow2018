@@ -69,10 +69,14 @@ def channel_a_records(layout, table, pool, obs):
         cursor = obs.u64(raw, 0x38)
         length = obs.u32(raw, 0x40)
         slot = struct.unpack_from("<h", raw, 0x28)[0]
+        lua_length = obs.u32(raw, 0x60)
         if slot < -1 or slot >= 64:
             raise RuntimeError(f"record {index}: invalid native slot {slot}")
+        if lua_length > bits.MAX_CARRIER_BYTES:
+            raise RuntimeError(f"record {index}: cached Channel A Lua length exceeds bounded inline capacity")
         record = {"index": index, "key_hex": f"0x{obs.u32(raw, 0x24):X}",
                   "flags_hex": f"0x{obs.u32(raw, 0x20):X}", "native_slot_index": slot,
+                  "cached_channel_a_lua_length": lua_length,
                   "name": obs.printable_name(raw[0x84:0xA8]), "size": length,
                   "pointer": f"0x{pa:X}", "cursor": f"0x{cursor:X}",
                   "staged_record_hex": raw.hex()}
@@ -134,7 +138,10 @@ def main():
         (out / relative).write_bytes(payload)
         record["payload_file"] = relative
         record["sha256"] = digest(payload)
-        decoded = bits.extract_channel_a(payload, registry, object_map)
+        decoded = bits.extract_channel_a(
+            payload, registry, object_map,
+            expected_lua_length=record["cached_channel_a_lua_length"],
+        )
         record["decode"] = decoded
         for rid, state in decoded["raven_states"].items():
             if state is not None:
@@ -170,7 +177,8 @@ def main():
         if "decode" in record:
             decoded = record["decode"]
             lines.append(f"record={record['index']} name={record['name']!r} slot={record['native_slot_index']} "
-                         f"bytes={record['size']} candidates={len(decoded['candidates'])} "
+                         f"bytes={record['size']} luaBytes={record['cached_channel_a_lua_length']} "
+                         f"candidates={len(decoded['candidates'])} "
                          f"ambiguity={decoded.get('ambiguity_reasons', [])}")
     for row in known:
         lines.append(f"CANDIDATE {row['catalogue_id']} ravenKilled={row['candidate_ravenKilled']} region={row['region']}")
