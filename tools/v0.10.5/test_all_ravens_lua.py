@@ -565,6 +565,10 @@ class AllRavensEventLuaTests(unittest.TestCase):
         # bounded restore retry must re-read the field instead of pinning the
         # early false value.
         probe.setKilled(True)
+        # The earlier hit retry is still queued but must self-cancel because
+        # OnRestoreCheckpoint advanced the event generation. Drain it first,
+        # then execute the checkpoint retry that re-reads ravenKilled.
+        self.assertTrue(probe.runNextTimer())
         self.assertTrue(probe.runNextTimer())
         self.assertTrue(probe.value(4))
 
