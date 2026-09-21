@@ -3211,3 +3211,68 @@ Acceptance decision:
 - if all four remain disjoint through the narrow direct-target trace, close the entire `ResolveGameObject / GetRef* / LoadCheck` built-in binding set and move to the native staged owner itself.
 
 Static/read-only only; GoW must be closed.
+
+
+## Exact GetRef result - built-in persisted binding set CLOSED
+
+Evidence commit:
+
+- `badd4fa0bab4087239ab5b8974f303e81a3364dd`
+- evidence: `archive/field-logs/source-scans/lua-getref-exact-20260921-091651/`
+
+The exact fixed-window trace completed safely:
+
+```text
+LUA_GETREF_EXACT_TRACE_COMPLETE
+nodes=4
+any_staged_touch=false
+save_opened=false
+save_written=false
+progression_written=false
+game_launched=false
+```
+
+Exact handlers:
+
+```text
+GetRefString 0x8456A0
+  cmp [rcx+0x28],0
+  eax=3
+  if non-null: zero qword [rdx]
+  ret
+
+GetRefInt 0x8456C0
+  cmp [rcx+0x28],0
+  eax=1
+  if non-null: zero qword [rdx]
+  ret
+
+GetRefFloat 0x8456E0
+  eax=0
+  cmp [rcx+0x28],rax
+  if non-null: zero qword [rdx]
+  ret
+
+GetRefBool 0x845700
+  cmp [rcx+0x28],0
+  eax=2
+  if non-null: zero qword [rdx]
+  ret
+```
+
+They have:
+
+- no direct calls or jumps outside their tiny wrappers;
+- no staged-global accesses;
+- no `WAD+0xEE18` accesses;
+- no known staged-owner/restore calls.
+
+These functions are type/default/ref-value helpers, not checkpoint/save/staged authority readers.
+
+Conclusion:
+
+- close `GetRefString / GetRefInt / GetRefFloat / GetRefBool` as Raven authority bridges;
+- together with the previous proof, close the full `ResolveGameObject / GetRef* / LoadCheck` built-in persisted-binding candidate set;
+- do not probe these APIs again.
+
+Next route: start from the **proven staged owner itself** and trace reverse native callers toward the exhaustive Lua registration handler set. This is preferable to guessing more API names. The exact question is whether any already-registered Lua handler reaches the staged record owner through a short direct native call chain. If yes, follow only that concrete handler. If no, record that there is no short direct built-in Lua bridge and move to a release architecture decision.
