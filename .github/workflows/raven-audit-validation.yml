@@ -30,6 +30,27 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Runner tests failed' }
           .\tools\v0.10.5\test-raven-transaction-resume-synthetic.ps1
           if ($LASTEXITCODE -ne 0) { throw 'Synthetic rollback-resume test failed' }
+          .\tools\v0.10.5\test-raven-authority-bridge-operation-synthetic.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'Synthetic bridge-operation recovery test failed' }
+
+          $parseFiles=@(
+            '.\tools\v0.10.5\raven-authority-bridge-operation.ps1',
+            '.\tools\v0.10.5\install-raven-authority-bridge.ps1',
+            '.\tools\v0.10.5\rollback-raven-authority-bridge.ps1',
+            '.\tools\v0.10.5\recover-raven-authority-bridge-startup.ps1',
+            '.\tools\v0.10.5\test-raven-authority-bridge-operation-synthetic.ps1'
+          )
+          foreach($parseFile in $parseFiles) {
+            $tokens=$null
+            $errors=$null
+            [void][System.Management.Automation.Language.Parser]::ParseFile(
+              (Resolve-Path $parseFile), [ref]$tokens, [ref]$errors)
+            if(@($errors).Count -ne 0) {
+              $errors | ForEach-Object { Write-Host "$parseFile :: $($_.Message)" }
+              throw "PowerShell parse failed: $parseFile"
+            }
+          }
+          Write-Host "RAVEN_AUDIT_POWERSHELL_PARSE_PASSED files=$($parseFiles.Count)"
       - name: Native bridge CTest
         shell: pwsh
         run: |
