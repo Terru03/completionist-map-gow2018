@@ -30,7 +30,7 @@ $rollbackBridge = Join-Path $repo 'tools\v0.10.5\rollback-raven-authority-bridge
 $support = Join-Path $repo 'tools\v0.10.5\raven-native-bridge-runner-support.ps1'
 $engine = Join-Path $repo 'tools\v0.10.4\nornir-runtime-candidate3.ps1'
 $proofPath = Join-Path $repo 'archive\all-ravens\all-ravens-release-candidate-offline.json'
-$candidateRoot = Join-Path $repo 'build\v0.10.5-all-ravens-release-candidate\offline\candidate\game-root'
+$worktreeCandidateRoot = Join-Path $repo 'build\v0.10.5-all-ravens-release-candidate\offline\candidate\game-root'\n$candidateRoot = $worktreeCandidateRoot
 $prepareCandidate = Join-Path $repo 'tools\v0.10.5\prepare-all-ravens-delivery-candidate.py'
 
 foreach ($required in @($exe,$version,$offlineGate,$installBridge,$rollbackBridge,$support,$engine,$proofPath,$prepareCandidate)) {
@@ -47,14 +47,21 @@ if ($engineHash -ne '83f11f8e3a5b6e56ad5d06ba22baa779f91c986ace42ab3017de2b2231d
 }
 . $engine -LibraryOnly
 
+$pythonExe = 'python.exe'
+$pythonPrefix = @()
 & py.exe -3.14 -c 'import sys' 2>$null
 if ($LASTEXITCODE -eq 0) {
-    & py.exe -3.14 $prepareCandidate
+    $pythonExe = 'py.exe'
+    $pythonPrefix = @('-3.14')
 }
-else {
-    & python.exe $prepareCandidate
-}
-if ($LASTEXITCODE -ne 0) { throw 'Could not prepare pinned All-Ravens delivery candidate.' }
+$prepareLines = @(& $pythonExe @pythonPrefix $prepareCandidate 2>&1)
+$prepareExit = $LASTEXITCODE
+$prepareLines | ForEach-Object { Write-Host $_ }
+if ($prepareExit -ne 0) { throw 'Could not prepare pinned All-Ravens delivery candidate.' }
+$rootPrefix = 'ALL_RAVENS_NATIVE_DELIVERY_CANDIDATE_ROOT='
+$rootLines = @($prepareLines | Where-Object { ([string]$_).StartsWith($rootPrefix, [StringComparison]::Ordinal) })
+if ($rootLines.Count -ne 1) { throw 'Candidate preparer did not report exactly one canonical output root.' }
+$preparedCandidateRoot = [IO.Path]::GetFullPath(([string]$rootLines[0]).Substring($rootPrefix.Length))
 
 $files = [ordered]@{
     mapmaster = 'exec/dc/pc_le/mapmaster.dcb'
@@ -69,16 +76,53 @@ if ($candidateProof.ready_for_runtime_test -ne $true -or
     throw 'All-Ravens native delivery proof gate differs.'
 }
 $candidateShas = [ordered]@{}
+$repoBuildRoot = [IO.Path]::GetFullPath((Join-Path $repo 'build'))
+$preparedInsideWorktreeBuild = Test-PathWithin -Parent $repoBuildRoot -Child $preparedCandidateRoot
+
+if ($preparedInsideWorktreeBuild) {
+    $candidateRoot = $preparedCandidateRoot
+}
+else {
+    $candidateRoot = [IO.Path]::GetFullPath($worktreeCandidateRoot)
+    if (-not (Test-PathWithin -Parent $repoBuildRoot -Child $candidateRoot)) {
+        throw 'Normalized candidate root escaped this worktree build tree.'
+    }
+    if (Test-Path -LiteralPath $candidateRoot) {
+        Remove-Item -LiteralPath $candidateRoot -Recurse -Force
+    }
+    New-Item -ItemType Directory -Force -Path $candidateRoot | Out-Null
+    Write-Host "Candidate preparer resolved outside this worktree build tree; mirroring five verified files."
+    Write-Host "Prepared root: $preparedCandidateRoot"
+    Write-Host "Worktree root: $candidateRoot"
+}
+
 foreach ($name in $files.Keys) {
     $relative = [string]$files[$name]
     $entry = $candidateProof.files.PSObject.Properties[$relative]
     if ($null -eq $entry) { throw "Candidate proof misses: $relative" }
-    $path = Join-Path $candidateRoot $relative
-    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Candidate misses: $relative" }
+
+    $preparedPath = Resolve-SafeChildPath -Root $preparedCandidateRoot -Relative $relative -Label 'prepared candidate source'
+    if (-not (Test-Path -LiteralPath $preparedPath -PathType Leaf)) {
+        throw "Prepared candidate misses: $relative root=$preparedCandidateRoot"
+    }
+    $preparedHash = (Get-FileHash -LiteralPath $preparedPath -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($preparedHash -ne [string]$entry.Value.sha256) {
+        throw "Prepared candidate SHA differs: $relative"
+    }
+
+    $path = Resolve-SafeChildPath -Root $candidateRoot -Relative $relative -Label 'worktree candidate'
+    if (-not $preparedInsideWorktreeBuild) {
+        New-Item -ItemType Directory -Force -Path (Split-Path $path -Parent) | Out-Null
+        Copy-Item -LiteralPath $preparedPath -Destination $path -Force
+    }
+    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+        throw "Candidate normalization failed: $relative root=$candidateRoot"
+    }
     $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
     if ($hash -ne [string]$entry.Value.sha256) { throw "Candidate SHA differs: $relative" }
     $candidateShas[$name] = $hash
 }
+Write-Host "RAVEN_DELIVERY_CANDIDATE_PATH_READY root=$candidateRoot files=$($candidateShas.Count)"
 
 $stamp = (Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss')
 $relativeDir = "archive/field-logs/runtime-captures/raven-native-snapshot-delivery-live-proof-$stamp"
