@@ -168,6 +168,11 @@ def extract_channel_a(envelope: bytes, registry_hash: int,
                     if len(positions) > MAX_LENGTH_POSITIONS:
                         raise DecodeLimit("lua_length_position_cap")
                     cursor = pos + 1
+                if not positions:
+                    report["rejected"].append({
+                        "reason": "cached_lua_length_mismatch",
+                        "expected_lua_length": expected_lua_length,
+                    })
                 starts = [(pos + 2, expected_lua_length) for pos in positions]
             else:
                 marker_count += aligned.count(b"\x78")
