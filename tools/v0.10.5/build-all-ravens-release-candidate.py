@@ -292,6 +292,7 @@ def state_contract() -> dict:
         "event_false_policy": "defer alive state to atomic 53-Raven authority",
         "event_kill_overlay": "persists across normal newer snapshots until explicit load boundary",
         "event_overlay_clear_policy": "first strictly newer post-boundary atomic snapshot",
+        "unknown_boundary_baseline_policy": "first later readable snapshot establishes baseline only; next newer snapshot may apply",
         "load_boundary_sources": ["EVT_LoadSaveData", "EVT_LoadSaveFile_Done", "OnRestoreCheckpoint"],
     }
 
