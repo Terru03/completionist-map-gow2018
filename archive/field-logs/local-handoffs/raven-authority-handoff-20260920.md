@@ -3484,3 +3484,56 @@ Close the short direct built-in Lua bridge route:
 Do not continue guessing built-in Lua API names.
 
 The 53-state authority model remains solved. The remaining problem is **delivery architecture**: expose the proven read-only staged authority to the existing Lua map mod without modifying saves/progression and without redistributing the unlicensed Script Loader fork.
+
+
+## Clean-room native bridge load-path proof queued
+
+The handoff was re-read after closing the short direct built-in Lua bridge route.
+
+Architecture constraints now proven:
+
+- the full 53-Raven authority model is solved;
+- no existing registered Lua API exposes arbitrary staged Raven custom-userdata;
+- `SaveGame` reaches the staged owner but is write-side and must not be used;
+- `package.loadlib` is disabled;
+- the upstream Script Loader exposes no plugin ABI and has no redistribution license;
+- do not fork/redistribute that loader for public release.
+
+Therefore the next release architecture to test is a **separate clean-room native bridge loaded under another DLL name that GoW itself already imports**, while leaving the existing unmodified `version.dll` Script Loader in place.
+
+New tooling:
+
+- `c464b6f049c94fae720c09aae3403a699d6545ed` - `tools/v0.10.5/inspect-gow-native-bridge-load-options.py`
+- `c5269a7d25125f4217ed607ae8777b6634e5ba49` - `tools/v0.10.5/inspect-gow-native-bridge-load-options-and-push.ps1`
+
+The inspector is static/read-only. It parses normal and delay-load imports from the exact supported `GoW.exe`, then checks/ranks common secondary proxy candidates:
+
+```text
+dxgi.dll
+dinput8.dll
+winmm.dll
+xinput1_4.dll
+xinput9_1_0.dll
+dbghelp.dll
+dsound.dll
+winhttp.dll
+wininet.dll
+cryptsp.dll
+```
+
+`version.dll` is explicitly marked unavailable because Script Loader already occupies that proxy name.
+
+The report includes:
+
+- whether each candidate is actually imported;
+- normal vs delay-load use;
+- exact imported symbol names/ordinals;
+- number of exports a forwarding proxy would need;
+- the lowest-complexity imported candidate.
+
+Acceptance decision:
+
+- if a viable secondary proxy DLL exists, use it for a clean-room Completionist Map native bridge and keep the upstream Script Loader untouched;
+- if no viable secondary proxy is imported, fall back to a separate launcher/injector architecture rather than modifying the upstream loader.
+
+This step performs no process access, game launch, save access, progression write, or game-file write.
