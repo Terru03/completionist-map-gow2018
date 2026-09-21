@@ -19,6 +19,7 @@ class RavenRuntimeModel:
         self.last_native_generation: int | None = None
         self.authority_boundary_pending = False
         self.authority_boundary_generation: int | None = None
+        self.event_killed: set[str] = set()
 
     def set_realm(self, realm: str):
         self.realm = realm
@@ -44,8 +45,10 @@ class RavenRuntimeModel:
             self.selection = None
         self._sync_icons()
 
-    def apply_persisted_kills(self, catalogue_ids) -> int:
-        """Replace cached state with an authoritative persisted killed-Raven set."""
+    def apply_persisted_kills(self, catalogue_ids, clear_event_evidence: bool = False) -> int:
+        """Apply atomic persisted kills while preserving in-session positive kill evidence."""
+        if clear_event_evidence:
+            self.event_killed.clear()
         self.state = {key: "unknown" for key in self.rows}
         accepted = 0
         for catalogue_id in catalogue_ids:
@@ -53,6 +56,9 @@ class RavenRuntimeModel:
                 continue
             self.state[catalogue_id] = "collected"
             accepted += 1
+        for catalogue_id in self.event_killed:
+            if catalogue_id in self.rows:
+                self.state[catalogue_id] = "collected"
         if (
             self.active_target is not None
             and self.active_target[0] == "raven"
@@ -75,7 +81,10 @@ class RavenRuntimeModel:
             return "boundary_wait"
         if self.last_native_generation is not None and generation <= self.last_native_generation:
             return "stale"
-        self.apply_persisted_kills(catalogue_ids)
+        self.apply_persisted_kills(
+            catalogue_ids,
+            clear_event_evidence=self.authority_boundary_pending,
+        )
         self.last_native_generation = generation
         self.authority_boundary_pending = False
         self.authority_boundary_generation = None
@@ -85,6 +94,7 @@ class RavenRuntimeModel:
         """Gameplay evidence may only add a kill; alive requires atomic authority."""
         if not collected:
             return "deferred"
+        self.event_killed.add(catalogue_id)
         self.observe(catalogue_id, True)
         return "applied"
 
