@@ -180,6 +180,19 @@ class ChannelATests(unittest.TestCase):
         self.assertIsNone(result["raven_states"][TARGET])
         self.assertEqual(result["ambiguity_reasons"][0]["reason"], "stream_marker_cap")
 
+
+    def test_native_length_framing_bypasses_unrelated_marker_cap(self):
+        garbage = b"\x78" * (subject.MAX_STREAM_MARKERS + 32)
+        body = garbage + len(self.dead).to_bytes(2, "big") + self.dead
+        envelope = len(body).to_bytes(2, "little") + body
+        result = subject.extract_channel_a(
+            envelope, self.registry, self.objects, expected_lua_length=len(self.dead)
+        )
+        self.assertEqual(result["candidate_count"], 1)
+        self.assertTrue(result["unambiguous"])
+        self.assertIs(result["raven_states"][TARGET], True)
+        self.assertNotIn("stream_marker_cap", [r["reason"] for r in result["ambiguity_reasons"]])
+
     def test_raw_identity_need_not_exist_in_envelope(self):
         packed = pack([self.dead], 3)
         target_hash = next(key for key, value in self.objects.items() if value == TARGET)
