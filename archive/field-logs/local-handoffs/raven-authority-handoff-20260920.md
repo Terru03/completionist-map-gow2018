@@ -3030,3 +3030,45 @@ The compactor consumes the already-generated `report.json` from the latest compl
 It explicitly does not rescan `GoW.exe`, launch GoW, attach to a process, open a save, or write progression/game files.
 
 Next action: run only `compact-lua-vfs-registry-report-and-push.ps1`. After its compact summary is pushed, decide whether VFS has a concrete authority-bearing command. If not, close VFS and return to the proven staged-record/native-owner path.
+
+
+## VFS registry compact result - VFS delivery route CLOSED
+
+Compact evidence commit:
+
+- `801c85d543e7686d2799b82397cc99f812d448c1`
+- summary: `archive/field-logs/source-scans/lua-vfs-registry-20260921-083114/summary.txt`
+
+The existing broad capture was compacted without rescanning `GoW.exe`:
+
+```text
+selected_functions=10
+vfs_registry_entries_refs=8
+vfs_registry_entries_writes=0
+vfs_registry_count_refs=12
+vfs_registry_count_writes=7
+vfs_shared_helper_callers=3
+gow_exe_rescanned=false
+save_opened=false
+save_written=false
+progression_written=false
+game_launched=false
+```
+
+The three direct callers of shared helper `0x84FCC0` are only:
+
+- `0x84AB20` - sibling Lua VFS wrapper;
+- `0x84AB40` - `VFSExec`;
+- `0x84FCC0` itself through its internal loop/back-edge classification.
+
+The ten narrowly selected functions that touch the registry entry/count globals contain no relevant save/checkpoint/WAD/Lua-restore/slot/state/pickle/Raven strings. The registry/count mutators are generic hash-registry lifecycle functions; no concrete VFS command/value that exposes staged checkpoint authority was identified.
+
+Conclusion:
+
+- close VFS as an authority-delivery route;
+- do not run more broad VFS registry scans;
+- do not build Completionist Map around `VFSExec`;
+- `package.loadlib` is already closed separately;
+- do not plan to redistribute a modified unlicensed Script Loader.
+
+Return to the proven staged-record/native-owner path and look for an **already exposed native Lua binding** that can query or resolve the staged GameObject/persisted state directly, rather than inventing a new native loading mechanism. The complete 53-Raven authority model itself remains solved and accepted; only runtime delivery remains open.
