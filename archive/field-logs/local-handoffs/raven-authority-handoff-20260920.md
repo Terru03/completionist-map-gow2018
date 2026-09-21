@@ -3856,3 +3856,25 @@ It is intentionally narrow:
 - optionally launches GoW after successful cleanup.
 
 Use this before any further native-bridge development or runtime test.
+
+
+## Startup recovery confirmed successful
+
+User ran the fail-closed recovery tool and reported a successful normal GoW launch afterward.
+
+This confirms:
+
+- the failed Completionist Map DXGI bridge was the startup blocker;
+- removing that bridge restored normal startup;
+- the existing upstream `version.dll` Script Loader installation remains usable;
+- no further live native-bridge test should occur until the proxy compatibility contract is fixed.
+
+Do not reinstall the single-export DXGI bridge.
+
+Next implementation pass must:
+
+1. fix proxy compatibility before live install;
+2. fix the runner's PowerShell scalar/`.Count` bug;
+3. add offline/load-contract tests that would have caught the missing `CreateDXGIFactory2` export before installation;
+4. compare a compatibility-complete DXGI proxy against the `XINPUT1_4.dll` fallback and choose the smaller/safer complete proxy surface;
+5. only then prepare another reversible live proof.
