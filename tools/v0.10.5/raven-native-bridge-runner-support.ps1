@@ -75,6 +75,8 @@ function Test-RavenSnapshotDeliveryProofLines {
     $advancedIndex = -1
     $eventIndex = -1
     $reopenIndex = -1
+    $boundaryIndex = -1
+    $postBoundaryIndex = -1
     $freshIndex = -1
     for ($index = 0; $index -lt $safeLoader.Count; $index++) {
         $line = [string]$safeLoader[$index]
@@ -93,7 +95,17 @@ function Test-RavenSnapshotDeliveryProofLines {
             $reopenIndex = $index
             continue
         }
-        if ($reopenIndex -ge 0 -and $freshIndex -lt 0 -and
+        if ($reopenIndex -ge 0 -and $boundaryIndex -lt 0 -and
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] AUTHORITY_BOUNDARY source=(?:OnRestoreCheckpoint|EVT_LoadSaveData|EVT_LoadSaveFile_Done) ') {
+            $boundaryIndex = $index
+            continue
+        }
+        if ($boundaryIndex -ge 0 -and $postBoundaryIndex -lt 0 -and
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*postBoundary=true') {
+            $postBoundaryIndex = $index
+            continue
+        }
+        if ($postBoundaryIndex -ge 0 -and $freshIndex -lt 0 -and
             $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*killed=0 alive=53') {
             $freshIndex = $index
         }
@@ -103,9 +115,12 @@ function Test-RavenSnapshotDeliveryProofLines {
         AdvancedApplied = $advancedIndex -ge 0
         ImmediateEvent = $eventIndex -ge 0
         MapReopenObserved = $reopenIndex -ge 0
+        CheckpointBoundaryObserved = $boundaryIndex -ge 0
+        PostBoundaryApplied = $postBoundaryIndex -ge 0
         FreshApplied = $freshIndex -ge 0
         Ordered = $advancedIndex -ge 0 -and $eventIndex -gt $advancedIndex -and
-            $reopenIndex -gt $eventIndex -and $freshIndex -gt $reopenIndex
+            $reopenIndex -gt $eventIndex -and $boundaryIndex -gt $reopenIndex -and
+            $postBoundaryIndex -gt $boundaryIndex -and $freshIndex -gt $postBoundaryIndex
     }
 }
 
