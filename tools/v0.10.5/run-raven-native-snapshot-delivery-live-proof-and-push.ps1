@@ -176,6 +176,7 @@ $bridgeRolledBack = $false
 $mapRolledBack = $false
 $launched = $false
 $published = $false
+$checkpointReloadAccepted = $false
 $mapManifest = $null
 $gameProcess = $null
 
@@ -245,6 +246,7 @@ function Publish-Proof([string]$Result, [string]$Reason, [object]$Delivery) {
         "advanced_27_killed_applied=$($Delivery.AdvancedApplied.ToString().ToLowerInvariant())"
         "immediate_raven_kill_event=$($Delivery.ImmediateEvent.ToString().ToLowerInvariant())"
         "map_reopen_observed=$($Delivery.MapReopenObserved.ToString().ToLowerInvariant())"
+        "checkpoint_reload_after_kill_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
         "fresh_0_killed_applied=$($Delivery.FreshApplied.ToString().ToLowerInvariant())"
         "ordered_acceptance=$($Delivery.Ordered.ToString().ToLowerInvariant())"
         "map_candidate_rollback_exact=$($mapExact.ToString().ToLowerInvariant())"
@@ -307,9 +309,10 @@ try {
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
     if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied) { throw 'Advanced 27-killed Lua apply evidence missing.' }
 
-    $answer = Read-Host 'Kill one loaded live Raven. Verify exact marker vanishes at once. Close and reopen map; verify it stays absent. Type IMMEDIATE_OK, or REGRESSION if anything is wrong'
-    if ($answer -ceq 'REGRESSION') { throw 'Immediate-kill manual regression reported.' }
-    if ($answer -cne 'IMMEDIATE_OK') { throw 'Immediate-kill manual acceptance not confirmed.' }
+    $answer = Read-Host 'Kill one loaded live Raven. Verify exact marker vanishes at once. Close/reopen map and verify it stays absent. Then reload the checkpoint created after that kill, reopen the map, and verify the same Raven is still absent. Type IMMEDIATE_OK, or REGRESSION if anything is wrong'
+    if ($answer -ceq 'REGRESSION') { throw 'Immediate-kill or checkpoint-reload manual regression reported.' }
+    if ($answer -cne 'IMMEDIATE_OK') { throw 'Immediate-kill/checkpoint-reload manual acceptance not confirmed.' }
+    $checkpointReloadAccepted = $true
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
     if (-not $delivery.ImmediateEvent -or -not $delivery.MapReopenObserved) { throw 'Immediate event or map-reopen evidence missing.' }
@@ -335,7 +338,7 @@ try {
     Restore-MapCandidate
     if (-not (Test-BridgeRollbackState) -or -not (Test-GameFileSnapshot $mapBefore)) { throw 'Combined rollback was not exact.' }
 
-    Publish-Proof 'RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_PASSED' 'advanced_immediate_reopen_fresh_delivery_proven' $delivery
+    Publish-Proof 'RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_PASSED' 'advanced_immediate_reopen_checkpoint_reload_fresh_delivery_proven' $delivery
     Write-Host 'RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_PASSED'
     Write-Host "Evidence: $relativeDir"
 }
