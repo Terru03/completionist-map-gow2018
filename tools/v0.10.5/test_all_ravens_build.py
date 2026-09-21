@@ -72,8 +72,12 @@ class AllRavensTemplateTests(unittest.TestCase):
             for token in forbidden:
                 self.assertNotIn(token, text)
         self.assertIn("permanentPolling=false", self.map_hook)
-        self.assertIn("postResetBoundedRefresh=true", self.map_hook)
+        self.assertIn("postLoadBoundedRefresh=true", self.map_hook)
+        self.assertIn("positiveEventEvidenceOnly=true", self.map_hook)
+        self.assertIn("atomicAuthorityClearsState=true", self.map_hook)
         self.assertIn("restoreBoundedRetry=", self.event_hook)
+        self.assertIn("positiveEvidenceOnly=true", self.event_hook)
+        self.assertIn("restoreAuthorityBoundary=true", self.event_hook)
 
 
 @unittest.skipUnless(exact_source_fixture_available(), "exact runtime-proven v3.3 source fixture not installed")
