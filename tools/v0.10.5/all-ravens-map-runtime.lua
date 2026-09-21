@@ -814,10 +814,16 @@ do
   _G.CompletionistMapV105PublishRavenState = function(catalogueId, collected, source)
     local row = byCatalogueId[catalogueId]
     if row == nil or type(collected) ~= "boolean" then return false end
-    states[catalogueId] = collected
-    if collected then hideExactTracked(row) end
+    if collected ~= true then
+      log("STATE_DEFERRED", "catalogueId=" .. catalogueId ..
+          " source=" .. tostring(source) ..
+          " reason=alive_requires_atomic_authority progressionWrites=false")
+      return true
+    end
+    states[catalogueId] = true
+    hideExactTracked(row)
     if lastMapOnSelf ~= nil then syncIcons(lastMapOnSelf, "state:" .. tostring(source)) end
-    log("STATE", "catalogueId=" .. catalogueId .. " collected=" .. tostring(collected) ..
+    log("STATE", "catalogueId=" .. catalogueId .. " collected=true" ..
         " source=" .. tostring(source) .. " progressionWrites=false")
     return true
   end
