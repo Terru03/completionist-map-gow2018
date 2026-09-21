@@ -3007,3 +3007,26 @@ Next target: extract only:
 6. checkpoint/save/WAD/restore/state/pickle/Raven strings only when they occur in those narrowly relevant functions.
 
 Do not regenerate the broad VFS registry report.
+
+
+## VFS registry compact-review tooling added
+
+The handoff was re-read after the successful raw VFS-registry capture. The next step remains evidence compaction only; do not rerun the broad executable scan.
+
+New tooling:
+
+- `886d6e03e35bb7f08b01cea1ad16d23da4693dd4` - `tools/v0.10.5/compact-lua-vfs-registry-report.py`
+- `a7bb0d2375288207e5dcc387c26870c206a1532d` - `tools/v0.10.5/compact-lua-vfs-registry-report-and-push.ps1`
+
+The compactor consumes the already-generated `report.json` from the latest completed `lua-vfs-registry-*` evidence directory and emits only:
+
+- all direct `vfs_registry_entries` references, split into reads/writes;
+- all direct `vfs_registry_count` references, split into reads/writes;
+- direct callers of the shared VFS helper `0x84FCC0`;
+- the enclosing narrow functions;
+- their direct calls/callers;
+- only checkpoint/save/WAD/Lua/restore/slot/state/pickle/Raven strings in those functions.
+
+It explicitly does not rescan `GoW.exe`, launch GoW, attach to a process, open a save, or write progression/game files.
+
+Next action: run only `compact-lua-vfs-registry-report-and-push.ps1`. After its compact summary is pushed, decide whether VFS has a concrete authority-bearing command. If not, close VFS and return to the proven staged-record/native-owner path.
