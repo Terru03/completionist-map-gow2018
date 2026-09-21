@@ -331,7 +331,10 @@ do
   local createPins = CompletionistMapV100_CreateMapPin
   CompletionistMapV100_CreateMapPin = function(self, currState)
     lastMapOnSelf = nil
-    refreshNativeAuthority("map_create")
+    local refreshed, refreshReason = refreshNativeAuthority("map_create")
+    log("NATIVE_AUTHORITY_REFRESH", "source=map_create result=" ..
+        (refreshed and "applied" or tostring(refreshReason)) ..
+        " lastGeneration=" .. tostring(lastNativeGeneration))
     local result = createPins(self, currState)
     syncIcons(self, "map_create")
     return result

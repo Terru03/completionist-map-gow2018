@@ -62,6 +62,53 @@ function Test-RavenBridgeStartupObservation {
     return [pscustomobject]@{ Ready = $false; Reason = 'expected_fresh_bridge_log_missing' }
 }
 
+function Test-RavenSnapshotDeliveryProofLines {
+    param(
+        [AllowEmptyCollection()][string[]]$BridgeLines = @(),
+        [AllowEmptyCollection()][string[]]$LoaderLines = @()
+    )
+    $safeBridge = @($BridgeLines)
+    $safeLoader = @($LoaderLines)
+    $deliveryReady = @($safeBridge | Select-String -Pattern (
+        'RAVEN_NATIVE_BRIDGE_DELIVERY_READY mechanism=loopback_socket ' +
+        'address=127\.0\.0\.1 port=43753 static_descriptor_writes=false'))
+    $advancedIndex = -1
+    $eventIndex = -1
+    $reopenIndex = -1
+    $freshIndex = -1
+    for ($index = 0; $index -lt $safeLoader.Count; $index++) {
+        $line = [string]$safeLoader[$index]
+        if ($advancedIndex -lt 0 -and
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*killed=27 alive=26') {
+            $advancedIndex = $index
+            continue
+        }
+        if ($advancedIndex -ge 0 -and $eventIndex -lt 0 -and
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] STATE .*collected=true source=OnHitByWeapon(?:\s|$)') {
+            $eventIndex = $index
+            continue
+        }
+        if ($eventIndex -ge 0 -and $reopenIndex -lt 0 -and
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_REFRESH source=map_create ') {
+            $reopenIndex = $index
+            continue
+        }
+        if ($reopenIndex -ge 0 -and $freshIndex -lt 0 -and
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*killed=0 alive=53') {
+            $freshIndex = $index
+        }
+    }
+    return [pscustomobject]@{
+        DeliveryReady = @($deliveryReady).Count -gt 0
+        AdvancedApplied = $advancedIndex -ge 0
+        ImmediateEvent = $eventIndex -ge 0
+        MapReopenObserved = $reopenIndex -ge 0
+        FreshApplied = $freshIndex -ge 0
+        Ordered = $advancedIndex -ge 0 -and $eventIndex -gt $advancedIndex -and
+            $reopenIndex -gt $eventIndex -and $freshIndex -gt $reopenIndex
+    }
+}
+
 function Invoke-RavenBridgeFailureRollback {
     param(
         [bool]$Installed,

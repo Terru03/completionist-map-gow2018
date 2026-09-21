@@ -158,9 +158,14 @@ class AllRavensBuildTests(unittest.TestCase):
             b = build.render_lua(self.catalogue, crlf, "-- @@RAVEN_CATALOGUE_ROWS@@")
             self.assertEqual(a, b)
 
-    def test_release_gate_closed_for_unloaded_state(self):
-        self.assertFalse(self.proof["ready_for_runtime_test"])
-        self.assertEqual(self.proof["state"]["unloaded_instance_query"], "unresolved")
+    def test_release_gate_open_for_native_snapshot_delivery(self):
+        self.assertTrue(self.proof["ready_for_runtime_test"])
+        self.assertEqual(
+            self.proof["state"]["unloaded_instance_query"],
+            "atomic 53-state native Raven snapshot",
+        )
+        self.assertTrue(self.proof["router"]["native_refresh_before_icon_sync"])
+        self.assertFalse(self.proof["router"]["native_static_descriptor_writes"])
 
 
 if __name__ == "__main__":

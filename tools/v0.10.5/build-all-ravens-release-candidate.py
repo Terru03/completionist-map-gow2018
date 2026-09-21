@@ -284,9 +284,9 @@ def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
     check(all((source_root / rel).read_bytes() == source[rel] for rel in source), "source changed during offline build")
     proof = {
         "schema": 1,
-        "result": "ALL_RAVENS_OFFLINE_CANDIDATE_BUILT_STATE_GATE_BLOCKED",
+        "result": "ALL_RAVENS_OFFLINE_CANDIDATE_BUILT_NATIVE_DELIVERY_GATE_READY",
         "branch": "codex/all-ravens-release-candidate",
-        "base_head": "fcee0241f4258b0195c2b54eae6f18a2b4d2b367",
+        "base_head": "6023dd419959bcb0645d08a4a4259dfe56a7b07a",
         "catalogue_sha256": sha(CATALOGUE.read_bytes()),
         "catalogue_entries": len(catalogue["ravens"]),
         "realms": ["Alfheim", "Helheim", "Midgard"],
@@ -304,16 +304,26 @@ def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
             "compass_class": "CompletionistRaven",
             "synthetic_twin_removed": True,
             "permanent_polling": False,
+            "native_snapshot_transport": "loopback-only bounded request/response on map open",
+            "native_snapshot_port": 43753,
+            "native_snapshot_schema": 1,
+            "native_generation_monotonic": True,
+            "native_refresh_before_icon_sync": True,
+            "native_static_descriptor_writes": False,
         },
         "state": {
             "native_field": "ravenKilled",
             "loaded_instance_match": "exact parent quest plus unique native world position",
             "writes_progression": False,
-            "unloaded_instance_query": "unresolved",
-            "unknown_state_policy": "hide marker fail-closed",
+            "unloaded_instance_query": "atomic 53-state native Raven snapshot",
+            "lua_application_point": "CompletionistMapV105ApplyPersistedRavenKills",
+            "map_open_refresh": "latest newer native generation before syncIcons",
+            "native_unavailable_policy": "preserve valid event-derived state",
+            "unknown_state_policy": "catalogue default visible",
+            "immediate_kill_path": "loaded Raven ravenKilled event",
         },
-        "ready_for_runtime_test": False,
-        "blocking_issue": "No proven read-only API can query ravenKilled for an unloaded Raven WAD instance.",
+        "ready_for_runtime_test": True,
+        "blocking_issue": None,
         "game_files_written": False,
         "game_launched": False,
         "save_or_progression_touched": False,
@@ -336,7 +346,7 @@ def write_or_check(source_root: Path, check_only: bool) -> None:
     stage.write_bytes_atomic(REPORT.parent, REPORT, canonical_json(proof).encode("utf-8"), "all-Raven offline proof")
     print(proof["result"])
     print(json.dumps(proof["files"], indent=2, sort_keys=True))
-    print("ready_for_runtime_test=false")
+    print("ready_for_runtime_test=true")
 
 
 def main() -> None:

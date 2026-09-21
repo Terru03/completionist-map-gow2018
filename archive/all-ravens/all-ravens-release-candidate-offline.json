@@ -1,6 +1,6 @@
 {
-  "base_head": "fcee0241f4258b0195c2b54eae6f18a2b4d2b367",
-  "blocking_issue": "No proven read-only API can query ravenKilled for an unloaded Raven WAD instance.",
+  "base_head": "6023dd419959bcb0645d08a4a4259dfe56a7b07a",
+  "blocking_issue": null,
   "branch": "codex/all-ravens-release-candidate",
   "catalogue_entries": 53,
   "catalogue_sha256": "3ba2805ada92fc72a51ee36a6f5ca2a177b04404328e8b607f37294d2b86f45c",
@@ -22,8 +22,8 @@
       "sha256": "06426ebb8a0b69366298abf06c34c7fd37f5bbe53864f619d80acf442f88791f"
     },
     "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": {
-      "bytes": 205759,
-      "sha256": "3ce27e4fd9bcc76b5529cd26395b0a328ee8ad6213ab23d69602eb9ced10c976"
+      "bytes": 216517,
+      "sha256": "672c77c97c3e44d8724c68ce65be0e198eb8e8e97d4da70ec6be079546ed88d1"
     }
   },
   "game_files_written": false,
@@ -54,18 +54,24 @@
       "source_rows": 258
     }
   },
-  "ready_for_runtime_test": false,
+  "ready_for_runtime_test": true,
   "realms": [
     "Alfheim",
     "Helheim",
     "Midgard"
   ],
-  "result": "ALL_RAVENS_OFFLINE_CANDIDATE_BUILT_STATE_GATE_BLOCKED",
+  "result": "ALL_RAVENS_OFFLINE_CANDIDATE_BUILT_NATIVE_DELIVERY_GATE_READY",
   "router": {
     "compass_class": "CompletionistRaven",
     "currMarkerID_alone_infers_raven": false,
     "data_driven_entries": 53,
     "exact_collision_object_required_before_uid": true,
+    "native_generation_monotonic": true,
+    "native_refresh_before_icon_sync": true,
+    "native_snapshot_port": 43753,
+    "native_snapshot_schema": 1,
+    "native_snapshot_transport": "loopback-only bounded request/response on map open",
+    "native_static_descriptor_writes": false,
     "permanent_polling": false,
     "same_raven_second_click_removes": true,
     "shared_map_resource": "goMapIconCompletionistRaven",
@@ -83,10 +89,14 @@
     "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": "16e13b342f3bbe98ac9b87eb34bf0115e6b04340d6e41270f38a557f2ed51493"
   },
   "state": {
+    "immediate_kill_path": "loaded Raven ravenKilled event",
     "loaded_instance_match": "exact parent quest plus unique native world position",
+    "lua_application_point": "CompletionistMapV105ApplyPersistedRavenKills",
+    "map_open_refresh": "latest newer native generation before syncIcons",
     "native_field": "ravenKilled",
-    "unknown_state_policy": "hide marker fail-closed",
-    "unloaded_instance_query": "unresolved",
+    "native_unavailable_policy": "preserve valid event-derived state",
+    "unknown_state_policy": "catalogue default visible",
+    "unloaded_instance_query": "atomic 53-state native Raven snapshot",
     "writes_progression": false
   }
 }
