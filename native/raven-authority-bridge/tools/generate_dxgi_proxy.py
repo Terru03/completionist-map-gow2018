@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate exact XINPUT1_4 export definition, x64 thunks, and C++ contract."""
+"""Generate exact DXGI export definition, x64 thunks, and C++ contract."""
 
 from __future__ import annotations
 
@@ -10,8 +10,8 @@ from pathlib import Path
 
 def load_contract(path: Path) -> dict:
     contract = json.loads(path.read_text(encoding="utf-8"))
-    if contract.get("schema") != 1 or contract.get("dll", "").lower() != "xinput1_4.dll":
-        raise ValueError("unsupported XInput contract")
+    if contract.get("schema") != 1 or contract.get("dll", "").lower() != "dxgi.dll":
+        raise ValueError("unsupported DXGI contract")
     exports = contract.get("exports")
     if not isinstance(exports, list) or not exports:
         raise ValueError("contract has no exports")
@@ -20,14 +20,19 @@ def load_contract(path: Path) -> dict:
         raise ValueError("invalid export ordinal")
     if len(set(ordinals)) != len(ordinals):
         raise ValueError("duplicate export ordinal")
-    names = [item.get("name") for item in exports if item.get("name") is not None]
+    names = [item.get("name") for item in exports]
     if any(not isinstance(value, str) or not value for value in names):
-        raise ValueError("invalid export name")
+        raise ValueError("invalid DXGI export name")
     if len(set(names)) != len(names):
         raise ValueError("duplicate export name")
+    forwarders = [item.get("forwarder") for item in exports]
+    if any(value is not None and (not isinstance(value, str) or not value) for value in forwarders):
+        raise ValueError("invalid forwarder")
     custom = contract.get("custom_export_ordinal")
     if not isinstance(custom, int) or custom in ordinals:
         raise ValueError("invalid custom export ordinal")
+    if "CreateDXGIFactory2" not in names:
+        raise ValueError("contract misses CreateDXGIFactory2")
     return contract
 
 
@@ -39,14 +44,10 @@ def write_if_changed(path: Path, content: str) -> None:
 
 
 def generate_def(contract: dict) -> str:
-    lines = ["LIBRARY XINPUT1_4", "EXPORTS"]
+    lines = ["LIBRARY dxgi", "EXPORTS"]
     for item in contract["exports"]:
         ordinal = item["ordinal"]
-        target = f"CompletionistXInputThunk{ordinal}"
-        if item["name"] is None:
-            lines.append(f"    {target} @{ordinal} NONAME")
-        else:
-            lines.append(f"    {item['name']}={target} @{ordinal}")
+        lines.append(f"    {item['name']}=CompletionistDxgiThunk{ordinal} @{ordinal}")
     lines.append(
         "    CompletionistMapGetRavenSnapshotV1 "
         f"@{contract['custom_export_ordinal']}"
@@ -58,13 +59,13 @@ def generate_asm(contract: dict) -> str:
     lines = [
         "option casemap:none",
         "",
-        "EXTERN CompletionistResolveXInputExport:PROC",
+        "EXTERN CompletionistResolveDxgiExport:PROC",
         "",
         ".code",
         "",
-        "; Preserve all Win64 argument registers while resolver runs, then tail-jump.",
-        "XINPUT_THUNK MACRO ordinal:req",
-        "CompletionistXInputThunk&ordinal PROC FRAME",
+        "; Keep Win64 integer and SIMD argument registers intact across resolver call.",
+        "DXGI_THUNK MACRO ordinal:req",
+        "CompletionistDxgiThunk&ordinal PROC FRAME",
         "    sub rsp, 088h",
         "    .allocstack 088h",
         "    .endprolog",
@@ -77,7 +78,7 @@ def generate_asm(contract: dict) -> str:
         "    movdqu xmmword ptr [rsp+060h], xmm2",
         "    movdqu xmmword ptr [rsp+070h], xmm3",
         "    mov ecx, ordinal",
-        "    call CompletionistResolveXInputExport",
+        "    call CompletionistResolveDxgiExport",
         "    mov qword ptr [rsp+080h], rax",
         "    mov rcx, qword ptr [rsp+020h]",
         "    mov rdx, qword ptr [rsp+028h]",
@@ -90,13 +91,17 @@ def generate_asm(contract: dict) -> str:
         "    mov rax, qword ptr [rsp+080h]",
         "    add rsp, 088h",
         "    jmp rax",
-        "CompletionistXInputThunk&ordinal ENDP",
+        "CompletionistDxgiThunk&ordinal ENDP",
         "ENDM",
         "",
     ]
-    lines.extend(f"XINPUT_THUNK {item['ordinal']}" for item in contract["exports"])
+    lines.extend(f"DXGI_THUNK {item['ordinal']}" for item in contract["exports"])
     lines.extend(["", "END", ""])
     return "\n".join(lines)
+
+
+def escape_cpp(value: str) -> str:
+    return value.replace("\\", "\\\\").replace('"', '\\"')
 
 
 def generate_header(contract: dict) -> str:
@@ -109,16 +114,20 @@ def generate_header(contract: dict) -> str:
         "",
         "namespace completionist {",
         "",
-        "struct XInputExportSpec {",
+        "struct DxgiExportSpec {",
         "  std::uint16_t ordinal;",
         "  std::string_view name;",
+        "  std::string_view forwarder;",
         "};",
         "",
-        f"inline constexpr std::array<XInputExportSpec, {len(contract['exports'])}> kXInputExports{{{{",
+        f"inline constexpr std::array<DxgiExportSpec, {len(contract['exports'])}> kDxgiExports{{{{",
     ]
     for item in contract["exports"]:
-        name = "" if item["name"] is None else item["name"]
-        lines.append(f'    XInputExportSpec{{{item["ordinal"]}, "{name}"}},')
+        forwarder = "" if item["forwarder"] is None else item["forwarder"]
+        lines.append(
+            f'    DxgiExportSpec{{{item["ordinal"]}, "{escape_cpp(item["name"])}", '
+            f'"{escape_cpp(forwarder)}"}},'
+        )
     lines.extend(
         [
             "}};",
@@ -142,7 +151,7 @@ def main() -> int:
     write_if_changed(args.def_output, generate_def(contract))
     write_if_changed(args.asm_output, generate_asm(contract))
     write_if_changed(args.header_output, generate_header(contract))
-    print(f"RAVEN_XINPUT_PROXY_GENERATED exports={len(contract['exports'])}")
+    print(f"RAVEN_DXGI_PROXY_GENERATED exports={len(contract['exports'])}")
     return 0
 
 

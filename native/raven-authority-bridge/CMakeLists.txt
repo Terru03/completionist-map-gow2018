@@ -24,10 +24,10 @@ set(CAPTURE_ROOT "${REPO_ROOT}/archive/field-logs/runtime-captures/staged-wad-bi
 set(GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set(GENERATED_CATALOGUE "${GENERATED_DIR}/raven_catalogue.generated.h")
 set(GENERATED_FIXTURE "${GENERATED_DIR}/raven_fixture.generated.h")
-set(XINPUT_CONTRACT "${CMAKE_CURRENT_SOURCE_DIR}/xinput1_4-export-contract.json")
-set(GENERATED_XINPUT_DEF "${GENERATED_DIR}/xinput_proxy.def")
-set(GENERATED_XINPUT_ASM "${GENERATED_DIR}/xinput_thunks.asm")
-set(GENERATED_XINPUT_HEADER "${GENERATED_DIR}/xinput_contract.generated.h")
+set(DXGI_CONTRACT "${CMAKE_CURRENT_SOURCE_DIR}/dxgi-export-contract.json")
+set(GENERATED_DXGI_DEF "${GENERATED_DIR}/dxgi_proxy.def")
+set(GENERATED_DXGI_ASM "${GENERATED_DIR}/dxgi_thunks.asm")
+set(GENERATED_DXGI_HEADER "${GENERATED_DIR}/dxgi_contract.generated.h")
 add_custom_command(
   OUTPUT "${GENERATED_CATALOGUE}" "${GENERATED_FIXTURE}"
   COMMAND ${CMAKE_COMMAND} -E make_directory "${GENERATED_DIR}"
@@ -47,18 +47,18 @@ add_custom_target(raven_bridge_generated_data
   DEPENDS "${GENERATED_CATALOGUE}" "${GENERATED_FIXTURE}"
 )
 add_custom_command(
-  OUTPUT "${GENERATED_XINPUT_DEF}" "${GENERATED_XINPUT_ASM}" "${GENERATED_XINPUT_HEADER}"
+  OUTPUT "${GENERATED_DXGI_DEF}" "${GENERATED_DXGI_ASM}" "${GENERATED_DXGI_HEADER}"
   COMMAND ${Python3_EXECUTABLE}
-          "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_xinput_proxy.py"
-          --contract "${XINPUT_CONTRACT}"
-          --def-output "${GENERATED_XINPUT_DEF}"
-          --asm-output "${GENERATED_XINPUT_ASM}"
-          --header-output "${GENERATED_XINPUT_HEADER}"
-  DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_xinput_proxy.py" "${XINPUT_CONTRACT}"
+          "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_dxgi_proxy.py"
+          --contract "${DXGI_CONTRACT}"
+          --def-output "${GENERATED_DXGI_DEF}"
+          --asm-output "${GENERATED_DXGI_ASM}"
+          --header-output "${GENERATED_DXGI_HEADER}"
+  DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_dxgi_proxy.py" "${DXGI_CONTRACT}"
   VERBATIM
 )
 add_custom_target(raven_bridge_generated_proxy
-  DEPENDS "${GENERATED_XINPUT_DEF}" "${GENERATED_XINPUT_ASM}" "${GENERATED_XINPUT_HEADER}"
+  DEPENDS "${GENERATED_DXGI_DEF}" "${GENERATED_DXGI_ASM}" "${GENERATED_DXGI_HEADER}"
 )
 
 add_library(raven_authority_bridge SHARED
@@ -66,10 +66,10 @@ add_library(raven_authority_bridge SHARED
   src/authority_runtime.cpp
   src/hash.cpp
   src/snapshot_store.cpp
-  src/xinput_proxy.cpp
+  src/dxgi_proxy.cpp
   src/platform.cpp
-  "${GENERATED_XINPUT_DEF}"
-  "${GENERATED_XINPUT_ASM}"
+  "${GENERATED_DXGI_DEF}"
+  "${GENERATED_DXGI_ASM}"
 )
 add_dependencies(raven_authority_bridge raven_bridge_generated_data raven_bridge_generated_proxy)
 target_compile_features(raven_authority_bridge PRIVATE cxx_std_20)
@@ -93,7 +93,7 @@ if(MSVC)
   target_link_options(raven_authority_bridge PRIVATE /DYNAMICBASE /NXCOMPAT /GUARD:CF)
 endif()
 set_target_properties(raven_authority_bridge PROPERTIES
-  OUTPUT_NAME XINPUT1_4
+  OUTPUT_NAME dxgi
   PREFIX ""
 )
 
@@ -123,6 +123,8 @@ if(BUILD_TESTING)
     tests/forwarding_tests.cpp
   )
   target_compile_features(raven_bridge_forwarding_tests PRIVATE cxx_std_20)
+  target_include_directories(raven_bridge_forwarding_tests PRIVATE "${GENERATED_DIR}")
+  target_link_libraries(raven_bridge_forwarding_tests PRIVATE psapi)
   target_compile_definitions(raven_bridge_forwarding_tests PRIVATE
     WIN32_LEAN_AND_MEAN
     NOMINMAX
@@ -132,7 +134,7 @@ if(BUILD_TESTING)
   if(MSVC)
     target_compile_options(raven_bridge_forwarding_tests PRIVATE /W4 /WX /permissive- /EHsc)
   endif()
-  add_dependencies(raven_bridge_forwarding_tests raven_authority_bridge)
+  add_dependencies(raven_bridge_forwarding_tests raven_authority_bridge raven_bridge_generated_proxy)
   add_test(NAME raven_bridge_forwarding_tests
     COMMAND raven_bridge_forwarding_tests $<TARGET_FILE:raven_authority_bridge>
   )
@@ -156,6 +158,24 @@ if(BUILD_TESTING)
   endif()
   add_test(NAME raven_bridge_export_contract_tests
     COMMAND raven_bridge_export_contract_tests $<TARGET_FILE:raven_authority_bridge>
+  )
+
+  add_library(raven_bridge_incomplete_dxgi_fixture SHARED
+    tests/incomplete_dxgi_proxy.cpp
+    tests/incomplete_dxgi_proxy.def
+  )
+  target_compile_features(raven_bridge_incomplete_dxgi_fixture PRIVATE cxx_std_20)
+  if(MSVC)
+    target_compile_options(raven_bridge_incomplete_dxgi_fixture PRIVATE /W4 /WX /permissive- /EHsc)
+  endif()
+  set_target_properties(raven_bridge_incomplete_dxgi_fixture PROPERTIES
+    OUTPUT_NAME incomplete_dxgi
+    PREFIX ""
+  )
+  add_test(NAME raven_bridge_incomplete_dxgi_rejected
+    COMMAND raven_bridge_export_contract_tests
+            $<TARGET_FILE:raven_bridge_incomplete_dxgi_fixture>
+            --expect-rejected
   )
 
   add_executable(raven_bridge_import_probe

@@ -97,8 +97,8 @@ bool BuildSystemDllPath(const wchar_t* dll_name, std::wstring* path,
   return true;
 }
 
-bool BuildSystemXInputPath(std::wstring* path, DWORD* error) {
-  return BuildSystemDllPath(L"XINPUT1_4.dll", path, error);
+bool BuildSystemDxgiPath(std::wstring* path, DWORD* error) {
+  return BuildSystemDllPath(L"dxgi.dll", path, error);
 }
 
 bool BuildModulePath(std::wstring* path, DWORD* error) {

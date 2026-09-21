@@ -203,10 +203,10 @@ bool SameState(const NativeRavenSnapshot& left,
 
 void RunAuthorityWorker() {
   AppendBridgeLog(
-      "RAVEN_NATIVE_BRIDGE_PROXY_LOADED target=XINPUT1_4.dll real=system32 "
+      "RAVEN_NATIVE_BRIDGE_PROXY_LOADED target=dxgi.dll real=system32 "
       "save_writes=false progression_writes=false");
   AppendBridgeLog(
-      std::string("RAVEN_NATIVE_BRIDGE_XINPUT_FORWARDED exports=15 success=") +
+      std::string("RAVEN_NATIVE_BRIDGE_DXGI_FORWARDED exports=20 success=") +
       (g_proxy_forward_ready.load() ? "true" : "false"));
   std::wstring executable;
   DWORD path_error = ERROR_SUCCESS;
