@@ -39,13 +39,20 @@ function nativeSocket.tcp()
     calls.nativeHost=host
     calls.nativePort=port
     if nativeResponse==nil then return nil,"connection refused" end
+    self.receiveIndex=1
     return 1
   end
   function client:send(request)
     calls.nativeRequests[#calls.nativeRequests+1]=request
     return string.len(request)
   end
-  function client:receive(mode) return nativeResponse end
+  function client:receive(size)
+    if size~=1 then error("unexpected receive size:" .. tostring(size)) end
+    local value=string.sub(nativeResponse,self.receiveIndex,self.receiveIndex)
+    if value=="" then return nil,"closed" end
+    self.receiveIndex=self.receiveIndex+1
+    return value
+  end
   function client:close() calls.nativeCloses=(calls.nativeCloses or 0)+1; return 1 end
   return client
 end
@@ -167,7 +174,7 @@ class AllRavensMapLuaTests(unittest.TestCase):
             "RAVEN_SNAPSHOT_V1 schema=1 "
             f"generation={generation} capturedTickMs={1000 + generation} "
             f"count=53 unknown=0 alive={53 - killed} killed={killed} "
-            f"explicit={53 - killed} absentWadFalse={killed} killedIds={encoded}"
+            f"explicit={53 - killed} absentWadFalse={killed} killedIds={encoded}\n"
         )
 
     def test_a_b_same_click_stock_and_kill_lifecycle(self):
@@ -294,6 +301,13 @@ class AllRavensMapLuaTests(unittest.TestCase):
             "CompletionistMapNative.GetRavenSnapshot=function() "
             "return {schema=1,generation=9,count=53,states={}} end"
         )
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.lastNativeGeneration())
+
+    def test_oversized_native_response_fails_closed(self):
+        self.probe.publish(self.a["catalogue_id"], True)
+        self.probe.setNativeResponse("RAVEN_SNAPSHOT_V1 " + ("x" * 5000) + "\n")
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
         self.assertIsNone(self.probe.lastNativeGeneration())

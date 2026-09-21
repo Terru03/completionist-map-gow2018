@@ -26,6 +26,7 @@ do
   local selectionGeneration = 0
   local nativePort = 43753
   local nativeRequest = "GET RAVEN_SNAPSHOT_V1\n"
+  local nativeMaxResponseBytes = 4096
   local lastNativeGeneration = tonumber(_G.CompletionistMapV105LastNativeRavenGeneration)
   local lastNativeNotice = nil
 
@@ -49,6 +50,20 @@ do
 
   local function closeSocket(client)
     if client ~= nil then pcall(function() client:close() end) end
+  end
+
+  local function receiveNativeLine(client)
+    local bytes = {}
+    for index = 1, nativeMaxResponseBytes do
+      local ok, value, err = pcall(function() return client:receive(1) end)
+      if not ok or type(value) ~= "string" or string.len(value) ~= 1 then
+        return nil, "receive:" .. tostring(ok and err or value)
+      end
+      if value == "\n" then return table.concat(bytes), nil end
+      if value == "\r" then return nil, "response_cr" end
+      bytes[index] = value
+    end
+    return nil, "response_too_large"
   end
 
   local function parseNativeSnapshot(line)
@@ -120,6 +135,7 @@ do
     local createOK, client = pcall(socket.tcp)
     if not createOK or client == nil then return nil, "socket_create" end
     pcall(function() client:settimeout(0.25) end)
+    pcall(function() client:settimeout(0.25, "t") end)
     local connectOK, connected, connectError = pcall(function()
       return client:connect("127.0.0.1", nativePort)
     end)
@@ -134,13 +150,9 @@ do
       closeSocket(client)
       return nil, "send:" .. tostring(sendOK and sendError or sent)
     end
-    local receiveOK, line, receiveError = pcall(function()
-      return client:receive("*l")
-    end)
+    local line, receiveError = receiveNativeLine(client)
     closeSocket(client)
-    if not receiveOK or line == nil then
-      return nil, "receive:" .. tostring(receiveOK and receiveError or line)
-    end
+    if line == nil then return nil, receiveError end
     return parseNativeSnapshot(line)
   end
 

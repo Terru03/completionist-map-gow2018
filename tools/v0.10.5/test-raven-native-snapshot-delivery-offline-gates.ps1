@@ -96,4 +96,4 @@ if ($diff -notmatch '127\.0\.0\.1' -or $diff -notmatch 'SO_EXCLUSIVEADDRUSE' -or
     throw 'Loopback/exclusive/static-descriptor safety contract missing from diff.'
 }
 Write-Host 'RAVEN_SNAPSHOT_DELIVERY_SECURITY_GATE_PASSED process_writes=false save_writes=false progression_writes=false static_descriptor_writes=false loopback_only=true'
-Write-Host 'RAVEN_NATIVE_SNAPSHOT_DELIVERY_OFFLINE_GATES_PASSED native_tests=5 lua_tests=12 model_tests=21 transaction=true powershell=true security=true'
+Write-Host 'RAVEN_NATIVE_SNAPSHOT_DELIVERY_OFFLINE_GATES_PASSED native_tests=5 lua_tests=13 model_tests=21 transaction=true powershell=true security=true'
