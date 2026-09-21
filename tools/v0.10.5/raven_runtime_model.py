@@ -17,6 +17,8 @@ class RavenRuntimeModel:
         self.map_open = False
         self.permanent_polling = False
         self.last_native_generation: int | None = None
+        self.authority_boundary_pending = False
+        self.authority_boundary_generation: int | None = None
 
     def set_realm(self, realm: str):
         self.realm = realm
@@ -65,20 +67,42 @@ class RavenRuntimeModel:
     def apply_native_snapshot(self, generation: int, catalogue_ids) -> str:
         if generation < 1:
             return "invalid"
+        if (
+            self.authority_boundary_pending
+            and self.authority_boundary_generation is not None
+            and generation <= self.authority_boundary_generation
+        ):
+            return "boundary_wait"
         if self.last_native_generation is not None and generation <= self.last_native_generation:
             return "stale"
         self.apply_persisted_kills(catalogue_ids)
         self.last_native_generation = generation
+        self.authority_boundary_pending = False
+        self.authority_boundary_generation = None
         return "applied"
 
-    def restore(self, catalogue_id: str, collected: bool):
-        self.observe(catalogue_id, collected)
+    def observe_event(self, catalogue_id: str, collected: bool) -> str:
+        """Gameplay evidence may only add a kill; alive requires atomic authority."""
+        if not collected:
+            return "deferred"
+        self.observe(catalogue_id, True)
+        return "applied"
 
-    def load_save(self):
-        self.state = {key: "unknown" for key in self.rows}
-        self.map_icons.clear()
+    def notify_load_boundary(self):
+        """Keep last-good state until a strictly post-boundary snapshot arrives."""
+        self.authority_boundary_pending = True
+        self.authority_boundary_generation = self.last_native_generation
         self.selection = None
         self.active_target = None
+
+    def restore(self, catalogue_id: str, collected: bool):
+        self.notify_load_boundary()
+        return self.observe_event(catalogue_id, collected)
+
+    def load_save(self):
+        self.notify_load_boundary()
+        self.map_open = False
+        self.map_icons.clear()
 
     def _sync_icons(self):
         if not self.map_open:
