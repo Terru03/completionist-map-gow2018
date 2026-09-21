@@ -256,6 +256,44 @@ def build_pool(source: bytes) -> tuple[bytes, dict]:
     }
 
 
+def router_contract() -> dict:
+    return {
+        "data_driven_entries": 53,
+        "exact_collision_object_required_before_uid": True,
+        "currMarkerID_alone_infers_raven": False,
+        "single_active_target": True,
+        "same_raven_second_click_removes": True,
+        "stock_and_nornir_delegate_preserved": True,
+        "shared_map_resource": RAVEN_ICON,
+        "compass_class": "CompletionistRaven",
+        "synthetic_twin_removed": True,
+        "permanent_polling": False,
+        "native_snapshot_transport": "loopback-only bounded request/response with periodic accepted-capture freshness",
+        "native_snapshot_port": 43753,
+        "native_snapshot_schema": 1,
+        "native_generation_monotonic": True,
+        "native_generation_is_capture_freshness": True,
+        "native_refresh_before_icon_sync": True,
+        "native_static_descriptor_writes": False,
+    }
+
+
+def state_contract() -> dict:
+    return {
+        "native_field": "ravenKilled",
+        "loaded_instance_match": "exact parent quest plus unique native world position",
+        "writes_progression": False,
+        "unloaded_instance_query": "atomic 53-state native Raven snapshot",
+        "lua_application_point": "CompletionistMapV105ApplyPersistedRavenKills",
+        "map_open_refresh": "strictly newer generation; load boundary waits for post-boundary accepted capture",
+        "native_unavailable_policy": "preserve last-good state and positive event-derived kills",
+        "unknown_state_policy": "catalogue default visible only before any authoritative kill evidence",
+        "immediate_kill_path": "loaded Raven ravenKilled=true event",
+        "event_false_policy": "defer alive state to atomic 53-Raven authority",
+        "load_boundary_sources": ["EVT_LoadSaveData", "EVT_LoadSaveFile_Done", "OnRestoreCheckpoint"],
+    }
+
+
 def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
     source_root = source_root.resolve()
     catalogue = json.loads(CATALOGUE.read_text(encoding="utf-8"))
@@ -293,38 +331,8 @@ def generate(source_root: Path) -> tuple[dict[str, bytes], dict]:
         "source_sha256": SOURCE_HASHES,
         "files": {rel: {"sha256": sha(raw), "bytes": len(raw)} for rel, raw in outputs.items()},
         "proofs": {MASTER: master_proof, COORDS: coords_proof, POOL: pool_proof},
-        "router": {
-            "data_driven_entries": 53,
-            "exact_collision_object_required_before_uid": True,
-            "currMarkerID_alone_infers_raven": False,
-            "single_active_target": True,
-            "same_raven_second_click_removes": True,
-            "stock_and_nornir_delegate_preserved": True,
-            "shared_map_resource": RAVEN_ICON,
-            "compass_class": "CompletionistRaven",
-            "synthetic_twin_removed": True,
-            "permanent_polling": False,
-            "native_snapshot_transport": "loopback-only bounded request/response with periodic accepted-capture freshness",
-            "native_snapshot_port": 43753,
-            "native_snapshot_schema": 1,
-            "native_generation_monotonic": True,
-            "native_generation_is_capture_freshness": True,
-            "native_refresh_before_icon_sync": True,
-            "native_static_descriptor_writes": False,
-        },
-        "state": {
-            "native_field": "ravenKilled",
-            "loaded_instance_match": "exact parent quest plus unique native world position",
-            "writes_progression": False,
-            "unloaded_instance_query": "atomic 53-state native Raven snapshot",
-            "lua_application_point": "CompletionistMapV105ApplyPersistedRavenKills",
-            "map_open_refresh": "strictly newer generation; load boundary waits for post-boundary accepted capture",
-            "native_unavailable_policy": "preserve last-good state and positive event-derived kills",
-            "unknown_state_policy": "catalogue default visible only before any authoritative kill evidence",
-            "immediate_kill_path": "loaded Raven ravenKilled=true event",
-            "event_false_policy": "defer alive state to atomic 53-Raven authority",
-            "load_boundary_sources": ["EVT_LoadSaveData", "EVT_LoadSaveFile_Done", "OnRestoreCheckpoint"],
-        },
+        "router": router_contract(),
+        "state": state_contract(),
         "ready_for_runtime_test": True,
         "blocking_issue": None,
         "game_files_written": False,
