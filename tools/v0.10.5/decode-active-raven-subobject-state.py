@@ -279,6 +279,7 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
         killed = set()
         explicit_false = set()
         raven_entries = []
+        raven_state_entries_all = []
         subobj_tables = set()
 
         for row_index in range(row_count):
@@ -296,9 +297,6 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
                 parsed = parse_gameobject_payload(record["payload"])
                 if parsed is None or parsed["registry_hash"] != registry_hash:
                     continue
-                catalogue_id = object_map.get(parsed["object_hash"])
-                if catalogue_id is None:
-                    continue
                 state_index = table_index(value)
                 state = None
                 if state_index is not None:
@@ -306,6 +304,23 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
                         if string_value(skey) == RAVEN_FIELD and sval["tag"] == 0:
                             state = bool(sval["payload"])
                             break
+                catalogue_id = object_map.get(parsed["object_hash"])
+                if state is not None:
+                    raven_state_entries_all.append({
+                        "catalogue_id": catalogue_id,
+                        "record_index": key["payload"],
+                        "record_payload_hex": record["payload"].hex(),
+                        "flags": parsed["flags"],
+                        "aux": parsed["aux"],
+                        "has_upper": parsed["has_upper"],
+                        "upper_u32": parsed["upper_u32"],
+                        "registry_hash_hex": f"0x{parsed['registry_hash']:016X}",
+                        "object_hash_hex": f"0x{parsed['object_hash']:016X}",
+                        "state_row": state_index,
+                        "ravenKilled": state,
+                    })
+                if catalogue_id is None:
+                    continue
                 if state is True:
                     killed.add(catalogue_id)
                 elif state is False:
@@ -340,6 +355,8 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
             "rows": rows,
             "subobj_table_rows": sorted(subobj_tables),
             "raven_entries": raven_entries,
+            "raven_state_entries_all": raven_state_entries_all,
+            "unmatched_raven_state_entries": [x for x in raven_state_entries_all if x["catalogue_id"] is None],
             "killed_ravens": sorted(killed),
             "explicit_false_ravens": sorted(explicit_false),
         })
@@ -351,6 +368,7 @@ def validate_and_decode_candidate(slot: bytes, header_start: int, decoded: bytes
             tuple(item["killed_ravens"]),
             tuple(item["explicit_false_ravens"]),
             tuple((x["catalogue_id"], x["state_row"], x["ravenKilled"]) for x in item["raven_entries"]),
+            tuple((x["object_hash_hex"], x["state_row"], x["ravenKilled"]) for x in item["raven_state_entries_all"]),
         )
         unique[key] = item
     return list(unique.values())
