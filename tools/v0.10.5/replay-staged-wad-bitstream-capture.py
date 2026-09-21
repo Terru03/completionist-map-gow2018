@@ -136,6 +136,13 @@ def main() -> int:
                     lines.append(
                         f"  bit_offset={cand['bit_offset']} length={cand['length']} ravens={cand['raven_entries']}"
                     )
+                unmatched = cand.get("carrier", {}).get("unmatched_raven_state_entries", [])
+                for entry in unmatched:
+                    lines.append(
+                        f"  UNMATCHED_RAVEN_STATE bit_offset={cand['bit_offset']} "
+                        f"object_hash={entry['object_hash_hex']} payload={entry['record_payload_hex']} "
+                        f"ravenKilled={entry['ravenKilled']} state_row={entry['state_row']}"
+                    )
     for row in known:
         lines.append(
             f"CANDIDATE {row['catalogue_id']} ravenKilled={row['candidate_ravenKilled']} "
