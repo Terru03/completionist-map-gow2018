@@ -158,6 +158,21 @@ if(BUILD_TESTING)
     COMMAND raven_bridge_export_contract_tests $<TARGET_FILE:raven_authority_bridge>
   )
 
+  add_executable(raven_bridge_import_probe
+    tools/live_import_probe.cpp
+  )
+  target_compile_features(raven_bridge_import_probe PRIVATE cxx_std_20)
+  target_link_libraries(raven_bridge_import_probe PRIVATE psapi)
+  target_compile_definitions(raven_bridge_import_probe PRIVATE
+    WIN32_LEAN_AND_MEAN
+    NOMINMAX
+    UNICODE
+    _UNICODE
+  )
+  if(MSVC)
+    target_compile_options(raven_bridge_import_probe PRIVATE /W4 /WX /permissive- /EHsc)
+  endif()
+
   add_executable(raven_bridge_authority_tests
     tests/authority_tests.cpp
     src/authority_decoder.cpp
