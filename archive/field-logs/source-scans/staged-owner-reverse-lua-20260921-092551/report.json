@@ -1,0 +1,2341 @@
+{
+  "analysis": "staged_owner_reverse_lua_reachability",
+  "exe_sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+  "frontier_counts": {
+    "0": 80,
+    "1": 142,
+    "2": 77,
+    "3": 81,
+    "4": 76
+  },
+  "lua_path_count": 10,
+  "lua_paths": [
+    {
+      "depth": 0,
+      "handler_function": 7878784,
+      "lua_names": [
+        "GetAppMasterVersion"
+      ],
+      "path": [
+        7878784
+      ],
+      "root": 7878784,
+      "root_reasons": [
+        "global:record_base"
+      ]
+    },
+    {
+      "depth": 0,
+      "handler_function": 8683280,
+      "lua_names": [
+        "GetLevelId"
+      ],
+      "path": [
+        8683280
+      ],
+      "root": 8683280,
+      "root_reasons": [
+        "global:record_base",
+        "global:record_count"
+      ]
+    },
+    {
+      "depth": 2,
+      "handler_function": 8712640,
+      "lua_names": [
+        "SaveGame"
+      ],
+      "path": [
+        6714480,
+        6731344,
+        8712640
+      ],
+      "root": 6714480,
+      "root_reasons": [
+        "global:staged_aux_0"
+      ]
+    },
+    {
+      "depth": 2,
+      "handler_function": 8712640,
+      "lua_names": [
+        "SaveGame"
+      ],
+      "path": [
+        6719472,
+        6731344,
+        8712640
+      ],
+      "root": 6719472,
+      "root_reasons": [
+        "global:record_count",
+        "known:staged_wad_writer"
+      ]
+    },
+    {
+      "depth": 2,
+      "handler_function": 8712640,
+      "lua_names": [
+        "SaveGame"
+      ],
+      "path": [
+        6732304,
+        6731344,
+        8712640
+      ],
+      "root": 6732304,
+      "root_reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "depth": 2,
+      "handler_function": 8712640,
+      "lua_names": [
+        "SaveGame"
+      ],
+      "path": [
+        8574816,
+        6731344,
+        8712640
+      ],
+      "root": 8574816,
+      "root_reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "depth": 3,
+      "handler_function": 8712640,
+      "lua_names": [
+        "SaveGame"
+      ],
+      "path": [
+        6713904,
+        8574816,
+        6731344,
+        8712640
+      ],
+      "root": 6713904,
+      "root_reasons": [
+        "global:record_count",
+        "global:staged_aux_0",
+        "global:staged_aux_1"
+      ]
+    },
+    {
+      "depth": 3,
+      "handler_function": 8712640,
+      "lua_names": [
+        "SaveGame"
+      ],
+      "path": [
+        8570912,
+        6719472,
+        6731344,
+        8712640
+      ],
+      "root": 8570912,
+      "root_reasons": [
+        "global:record_base",
+        "known:staged_lookup_or_writer",
+        "known:staged_related"
+      ]
+    },
+    {
+      "depth": 4,
+      "handler_function": 8712640,
+      "lua_names": [
+        "SaveGame"
+      ],
+      "path": [
+        8564848,
+        8570912,
+        6719472,
+        6731344,
+        8712640
+      ],
+      "root": 8564848,
+      "root_reasons": [
+        "global:staged_aux_0",
+        "global:staged_aux_1"
+      ]
+    },
+    {
+      "depth": 4,
+      "handler_function": 8712640,
+      "lua_names": [
+        "SaveGame"
+      ],
+      "path": [
+        8565328,
+        8570912,
+        6719472,
+        6731344,
+        8712640
+      ],
+      "root": 8565328,
+      "root_reasons": [
+        "global:record_base",
+        "global:staged_aux_0",
+        "global:staged_aux_1",
+        "known:staged_related_2"
+      ]
+    }
+  ],
+  "max_depth": 4,
+  "registration_catalogue": "C:\\Users\\david\\Documents\\GitHub\\completionist-map-gow2018-all-ravens-release-candidate\\archive\\field-logs\\source-scans\\lua-registration-exhaustive-20260914-143235\\registration-exhaustive.txt",
+  "registration_exact_handler_count": 600,
+  "registration_handlers_without_runtime_record": {
+    "1636352": [
+      "GetWorldPosition"
+    ],
+    "1638128": [
+      "GetWorldJointPosition"
+    ],
+    "1638608": [
+      "GetWorldJointForward"
+    ],
+    "1639088": [
+      "GetWorldJointLeft"
+    ],
+    "1639552": [
+      "GetWorldJointUp"
+    ],
+    "1640016": [
+      "GetWorldForward"
+    ],
+    "1640480": [
+      "GetWorldLeft"
+    ],
+    "1640944": [
+      "GetWorldUp"
+    ],
+    "1640992": [
+      "GetRandomPointInZone"
+    ],
+    "1641040": [
+      "GetClosestPointInZone"
+    ],
+    "2142640": [
+      "GetUnitTime"
+    ],
+    "2237728": [
+      "GetVelocity"
+    ],
+    "2239536": [
+      "GetCameraTargetPosition"
+    ],
+    "2369648": [
+      "GetAimToggle"
+    ],
+    "2369904": [
+      "GetBlockHold"
+    ],
+    "2370160": [
+      "GetBlockHoldDelay"
+    ],
+    "2370352": [
+      "GetAutoTraverse"
+    ],
+    "2370608": [
+      "GetTripleBuffering"
+    ],
+    "2370880": [
+      "GetDevice"
+    ],
+    "2371472": [
+      "GetAvailableRAM"
+    ],
+    "2371648": [
+      "GetIsLowPagefile"
+    ],
+    "2371824": [
+      "GetPagefile"
+    ],
+    "2371968": [
+      "GetRenderWidth"
+    ],
+    "2372112": [
+      "GetRenderHeight"
+    ],
+    "2372256": [
+      "GetOutputWidth"
+    ],
+    "2372400": [
+      "GetOutputHeight"
+    ],
+    "2373088": [
+      "GetDLSSMode"
+    ],
+    "2373536": [
+      "GetDLSSSharpness"
+    ],
+    "2373840": [
+      "GetMinimizeInBackground"
+    ],
+    "2374096": [
+      "GetPrecisionMouseMode"
+    ],
+    "2374928": [
+      "GetFSRMode"
+    ],
+    "2375264": [
+      "GetFSRSharpness"
+    ],
+    "2375472": [
+      "GetScale"
+    ],
+    "2375680": [
+      "GetLatencyMarkers"
+    ],
+    "2376016": [
+      "GetLatencyMode"
+    ],
+    "2376256": [
+      "GetLatencyFlash"
+    ],
+    "2376512": [
+      "GetLatencyStats"
+    ],
+    "3921888": [
+      "GetSwitchListLength"
+    ],
+    "3951824": [
+      "FindAlternativeGroupEntry"
+    ],
+    "3968704": [
+      "FindOutcomeBranchesEntry"
+    ],
+    "8015840": [
+      "HasTarget"
+    ],
+    "8020592": [
+      "GetFarClip"
+    ],
+    "8020640": [
+      "GetNearClip"
+    ],
+    "8020768": [
+      "GetOutputFoV"
+    ],
+    "8020816": [
+      "GetOutputFocusDistance"
+    ],
+    "8020864": [
+      "GetDoFCoCMult"
+    ],
+    "8020912": [
+      "GetDoFFar"
+    ],
+    "8020960": [
+      "GetDoFNear"
+    ],
+    "8021008": [
+      "GetDoFHyperFocal"
+    ],
+    "8021312": [
+      "GetControlInvertX"
+    ],
+    "8021440": [
+      "GetControlInvertY"
+    ],
+    "8021584": [
+      "GetCursorScaleValue"
+    ],
+    "8021632": [
+      "GetAspectRatio"
+    ],
+    "8021680": [
+      "GetOutputPanRight"
+    ],
+    "8021744": [
+      "GetOutputPanLeft"
+    ],
+    "8021808": [
+      "GetOutputTiltDown"
+    ],
+    "8021872": [
+      "GetOutputTiltUp"
+    ],
+    "8021936": [
+      "GetOrbitControlWeight"
+    ],
+    "8022000": [
+      "GetOrbitRotationRelative"
+    ],
+    "8022144": [
+      "GetPlayerRotation"
+    ],
+    "8023312": [
+      "GetOrbitDistance"
+    ],
+    "8023360": [
+      "GetOrbitRotation"
+    ],
+    "8023408": [
+      "GetOrbitElevation"
+    ],
+    "8152064": [
+      "GetMusicIntensity"
+    ],
+    "8159072": [
+      "GetTimeSinceBanterPlayed"
+    ],
+    "8206064": [
+      "ForceLookAtToObject"
+    ],
+    "8206096": [
+      "AddLookAtTarget"
+    ],
+    "8244560": [
+      "IsPlayerEnteringBoatFromCheckpoint"
+    ],
+    "8247232": [
+      "FindFriendlies"
+    ],
+    "8247264": [
+      "FindEnemies"
+    ],
+    "8337952": [
+      "GetFightPosition"
+    ],
+    "8338992": [
+      "DebugGetColor"
+    ],
+    "8469776": [
+      "Retain"
+    ],
+    "8549792": [
+      "GetReticleState"
+    ],
+    "8617264": [
+      "GetNewGamePlus"
+    ],
+    "8617488": [
+      "GetCreateGarbageRate"
+    ],
+    "8617536": [
+      "GetCreateGarbage"
+    ],
+    "8617584": [
+      "GetLeakMemoryRate"
+    ],
+    "8617632": [
+      "GetLeakMemory"
+    ],
+    "8619488": [
+      "GetUsedVRAM"
+    ],
+    "8619920": [
+      "GetAspectRatioIndex"
+    ],
+    "8620320": [
+      "GetResolutionIndex"
+    ],
+    "8620784": [
+      "GetFpsLimit"
+    ],
+    "8620960": [
+      "GetVSync"
+    ],
+    "8621152": [
+      "GetDisplayMode"
+    ],
+    "8621376": [
+      "GetNumMonitors"
+    ],
+    "8621536": [
+      "GetOcclusionQuality"
+    ],
+    "8621968": [
+      "GetReflectionQuality"
+    ],
+    "8622144": [
+      "GetShadowQuality"
+    ],
+    "8622336": [
+      "GetFilterQuality"
+    ],
+    "8622512": [
+      "GetModelQuality"
+    ],
+    "8622720": [
+      "GetTextureQuality"
+    ],
+    "8622880": [
+      "GetVideoPreset"
+    ],
+    "8622944": [
+      "GetScreenScaleUserOffsetMax"
+    ],
+    "8622992": [
+      "GetScreenScaleUserOffsetMin"
+    ],
+    "8623040": [
+      "GetScreenScaleUserOffset"
+    ],
+    "8623824": [
+      "GetHDRShoulder"
+    ],
+    "8623920": [
+      "GetHDRSlope"
+    ],
+    "8624080": [
+      "GetBrightness"
+    ],
+    "8624240": [
+      "GetEnableHDR"
+    ],
+    "8624528": [
+      "GetReticleAlwaysOn"
+    ],
+    "8624672": [
+      "GetMiniGameplaySkipped"
+    ],
+    "8624768": [
+      "GetRepeatedButtonPressChoice"
+    ],
+    "8624816": [
+      "GetAutoSprintDelay"
+    ],
+    "8624912": [
+      "GetAutoSprint"
+    ],
+    "8625040": [
+      "GetSprintOptionNumber"
+    ],
+    "8625136": [
+      "GetEnterRageModeOptionNumber"
+    ],
+    "8625232": [
+      "GetRageGrabOptionNumber"
+    ],
+    "8625328": [
+      "GetQuickTurnOptionNumber"
+    ],
+    "8631232": [
+      "GetGameTime"
+    ],
+    "8631632": [
+      "EvaluateLoadZones"
+    ],
+    "8632224": [
+      "AddGlobalLookAtTarget"
+    ],
+    "8657520": [
+      "GetCounterThresholdName"
+    ],
+    "8657536": [
+      "GetCounterName"
+    ],
+    "8672640": [
+      "GetNewGamePlusAvailable"
+    ],
+    "8672928": [
+      "GetRefString"
+    ],
+    "8672960": [
+      "GetRefInt"
+    ],
+    "8672992": [
+      "GetRefFloat"
+    ],
+    "8673024": [
+      "GetRefBool"
+    ],
+    "8678752": [
+      "GetGameOption"
+    ],
+    "8681344": [
+      "GetDeathMoveHash"
+    ],
+    "8683200": [
+      "GetNewGamePlus"
+    ],
+    "8683456": [
+      "GetCareerCounterScore"
+    ],
+    "8683504": [
+      "GetCareerPickupScore"
+    ],
+    "8683968": [
+      "SaveAvatarLoadOut"
+    ],
+    "8689696": [
+      "GetAvatarMoney"
+    ],
+    "8692608": [
+      "GetPlayerCharacterClass"
+    ],
+    "8694624": [
+      "VFSGetEnumIndex"
+    ],
+    "8694640": [
+      "VFSGetEnumName"
+    ],
+    "8694672": [
+      "VFSGetFloat"
+    ],
+    "8694704": [
+      "VFSGetInt"
+    ],
+    "8711776": [
+      "GetSlotCount"
+    ],
+    "8712528": [
+      "GetCurrentSlot"
+    ],
+    "8712560": [
+      "EnableAutoSave"
+    ],
+    "8712608": [
+      "SavePrefs"
+    ],
+    "8904688": [
+      "GetAllDisabled"
+    ],
+    "9636928": [
+      "GetChiselSpeed"
+    ],
+    "9700672": [
+      "GetFaceChangeEnabled"
+    ],
+    "9703504": [
+      "GetCharacterMode"
+    ],
+    "9703552": [
+      "GetEnemyVisibility"
+    ],
+    "9703600": [
+      "GetSonVisibility"
+    ],
+    "9703648": [
+      "GetHeroVisibility"
+    ],
+    "9703696": [
+      "GetAreDynamicFXVisible"
+    ],
+    "9703744": [
+      "GetCaptureMode"
+    ],
+    "9704512": [
+      "GetTetherLengthDelta"
+    ],
+    "9704576": [
+      "GetTetherLengthMax"
+    ],
+    "9704624": [
+      "GetTetherLengthMin"
+    ],
+    "9704672": [
+      "GetTetherLength"
+    ],
+    "9704752": [
+      "GetInvertX"
+    ],
+    "9704816": [
+      "GetInvertY"
+    ],
+    "9704880": [
+      "GetExposureDelta"
+    ],
+    "9704928": [
+      "GetExposureMax"
+    ],
+    "9704976": [
+      "GetExposureMin"
+    ],
+    "9705024": [
+      "GetExposure"
+    ],
+    "9705104": [
+      "GetVignetteScaleDelta"
+    ],
+    "9705168": [
+      "GetVignetteScaleMax"
+    ],
+    "9705216": [
+      "GetVignetteScaleMin"
+    ],
+    "9705264": [
+      "GetVignetteScale"
+    ],
+    "9705328": [
+      "GetVignetteFalloffDelta"
+    ],
+    "9705376": [
+      "GetVignetteFalloffMax"
+    ],
+    "9705424": [
+      "GetVignetteFalloffMin"
+    ],
+    "9705472": [
+      "GetVignetteFalloff"
+    ],
+    "9705536": [
+      "GetVignetteBrightnessDelta"
+    ],
+    "9705584": [
+      "GetVignetteBrightnessMax"
+    ],
+    "9705632": [
+      "GetVignetteBrightnessMin"
+    ],
+    "9705680": [
+      "GetVignetteBrightness"
+    ],
+    "9705744": [
+      "GetVignette"
+    ],
+    "9705792": [
+      "GetFilmGrainAmountDelta"
+    ],
+    "9705840": [
+      "GetFilmGrainAmountMax"
+    ],
+    "9705888": [
+      "GetFilmGrainAmountMin"
+    ],
+    "9705936": [
+      "GetFilmGrainAmount"
+    ],
+    "9706016": [
+      "GetFilmGrain"
+    ],
+    "9706064": [
+      "GetDOFFStopDelta"
+    ],
+    "9706112": [
+      "GetDOFFStopMax"
+    ],
+    "9706160": [
+      "GetDOFFStopMin"
+    ],
+    "9706208": [
+      "GetDOFFStop"
+    ],
+    "9706288": [
+      "GetDOFFocusDistanceDelta"
+    ],
+    "9706352": [
+      "GetDOFFocusDistanceMax"
+    ],
+    "9706400": [
+      "GetDOFFocusDistanceMin"
+    ],
+    "9706512": [
+      "GetDOFFocusDistance"
+    ],
+    "9706592": [
+      "GetDOF"
+    ],
+    "9708144": [
+      "GetFocalLengthDelta"
+    ],
+    "9708208": [
+      "GetFocalLengthMax"
+    ],
+    "9708272": [
+      "GetFocalLengthMin"
+    ],
+    "9708560": [
+      "GetFOVDelta"
+    ],
+    "9708624": [
+      "GetFOVMax"
+    ],
+    "9708672": [
+      "GetFOVMin"
+    ],
+    "10494080": [
+      "find"
+    ],
+    "10513680": [
+      "getupvalue"
+    ],
+    "10518256": [
+      "getuservalue"
+    ],
+    "10518688": [
+      "getregistry"
+    ]
+  },
+  "registration_runtime_function_count": 409,
+  "reverse_nodes_visited": 247,
+  "root_count": 80,
+  "roots": [
+    {
+      "function": 2357920,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "rcx, [rip + 0x2087282]",
+          "site": 2359015
+        }
+      ],
+      "reasons": [
+        "global:record_base"
+      ]
+    },
+    {
+      "function": 2381160,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x208138a], 0",
+          "site": 2381275
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 2382298,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x2080f0e], 0",
+          "site": 2382423
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 2382672,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x2080da4], r14d",
+          "site": 2382785
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 2478032,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "r9, [rip + 0x206a158]",
+          "site": 2478097
+        },
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x2069949], edi",
+          "site": 2478109
+        },
+        {
+          "name": "record_base",
+          "op": "r9, [rip + 0x2069fbb]",
+          "site": 2478510
+        },
+        {
+          "name": "record_base",
+          "op": "r9, [rip + 0x2069f94]",
+          "site": 2478549
+        },
+        {
+          "name": "record_count",
+          "op": "edx, dword ptr [rip + 0x2069761]",
+          "site": 2478597
+        },
+        {
+          "name": "record_base",
+          "op": "r9, [rip + 0x2069f35]",
+          "site": 2478644
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 5217888,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1dccae9], 0",
+          "site": 5217916
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 5542978,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "edx, dword ptr [rip + 0x1d7d4ed]",
+          "site": 5543033
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 5543041,
+      "global_hits": [
+        {
+          "name": "record_end_or_cursor",
+          "op": "rcx, [rip + 0x1d7dcf6]",
+          "site": 5543063
+        },
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1d7dbfd]",
+          "site": 5543276
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_end_or_cursor"
+      ]
+    },
+    {
+      "function": 6713824,
+      "global_hits": [
+        {
+          "name": "staged_aux_0",
+          "op": "r8d, dword ptr [rip + 0x1c5f73d]",
+          "site": 6713844
+        },
+        {
+          "name": "staged_aux_1",
+          "op": "r8, qword ptr [rip + 0x1c5f73e]",
+          "site": 6713851
+        }
+      ],
+      "reasons": [
+        "global:staged_aux_0",
+        "global:staged_aux_1"
+      ]
+    },
+    {
+      "function": 6713904,
+      "global_hits": [
+        {
+          "name": "staged_aux_1",
+          "op": "eax, dword ptr [rip + 0x1c5f700]",
+          "site": 6713914
+        },
+        {
+          "name": "staged_aux_0",
+          "op": "edi, dword ptr [rip + 0x1c5f6ec]",
+          "site": 6713926
+        },
+        {
+          "name": "record_count",
+          "op": "ecx, dword ptr [rip + 0x1c5f706]",
+          "site": 6713952
+        },
+        {
+          "name": "staged_aux_0",
+          "op": "dword ptr [rip + 0x1c5f67e], edi",
+          "site": 6714036
+        }
+      ],
+      "reasons": [
+        "global:record_count",
+        "global:staged_aux_0",
+        "global:staged_aux_1"
+      ]
+    },
+    {
+      "function": 6714096,
+      "global_hits": [
+        {
+          "name": "staged_aux_0",
+          "op": "ebx, dword ptr [rip + 0x1c5f61a]",
+          "site": 6714136
+        },
+        {
+          "name": "staged_aux_1",
+          "op": "rcx, qword ptr [rip + 0x1c5f613]",
+          "site": 6714150
+        },
+        {
+          "name": "staged_aux_0",
+          "op": "dword ptr [rip + 0x1c5f5ea], ebx",
+          "site": 6714184
+        }
+      ],
+      "reasons": [
+        "global:staged_aux_0",
+        "global:staged_aux_1"
+      ]
+    },
+    {
+      "function": 6714480,
+      "global_hits": [
+        {
+          "name": "staged_aux_0",
+          "op": "ebp, dword ptr [rip + 0x1c5f49c]",
+          "site": 6714518
+        },
+        {
+          "name": "staged_aux_0",
+          "op": "dword ptr [rip + 0x1c5f479], ebp",
+          "site": 6714553
+        }
+      ],
+      "reasons": [
+        "global:staged_aux_0"
+      ]
+    },
+    {
+      "function": 6719107,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "r14, [rip + 0x1c5eacf]",
+          "site": 6719130
+        },
+        {
+          "name": "record_end_or_cursor",
+          "op": "r15, [rip + 0x1c5eae4]",
+          "site": 6719145
+        },
+        {
+          "name": "record_count",
+          "op": "r8d, dword ptr [rip + 0x1c5e272]",
+          "site": 6719219
+        },
+        {
+          "name": "staged_aux_0",
+          "op": "r8d, dword ptr [rip + 0x1c5e214]",
+          "site": 6719261
+        },
+        {
+          "name": "staged_aux_1",
+          "op": "rcx, qword ptr [rip + 0x1c5e20e]",
+          "site": 6719275
+        },
+        {
+          "name": "staged_aux_0",
+          "op": "dword ptr [rip + 0x1c5e1f7], r8d",
+          "site": 6719290
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count",
+        "global:record_end_or_cursor",
+        "global:staged_aux_0",
+        "global:staged_aux_1"
+      ]
+    },
+    {
+      "function": 6719472,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "eax, dword ptr [rip + 0x1c5dfb2]",
+          "site": 6719924
+        },
+        {
+          "name": "record_count",
+          "op": "eax, dword ptr [rip + 0x1c5df38]",
+          "site": 6720046
+        }
+      ],
+      "reasons": [
+        "global:record_count",
+        "known:staged_wad_writer"
+      ]
+    },
+    {
+      "function": 6732304,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "eax, dword ptr [rip + 0x1c5ae99]",
+          "site": 6732493
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6737312,
+      "global_hits": [
+        {
+          "name": "staged_aux_1",
+          "op": "rbx, qword ptr [rip + 0x1c59b53]",
+          "site": 6737382
+        }
+      ],
+      "reasons": [
+        "global:staged_aux_1"
+      ]
+    },
+    {
+      "function": 6737760,
+      "global_hits": [
+        {
+          "name": "staged_aux_1",
+          "op": "qword ptr [rip + 0x1c5982b], rax",
+          "site": 6738190
+        }
+      ],
+      "reasons": [
+        "global:staged_aux_1"
+      ]
+    },
+    {
+      "function": 6757072,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "edx, dword ptr [rip + 0x1c54e71]",
+          "site": 6757109
+        },
+        {
+          "name": "record_count",
+          "op": "edx, dword ptr [rip + 0x1c54e30]",
+          "site": 6757174
+        },
+        {
+          "name": "staged_aux_0",
+          "op": "dword ptr [rip + 0x1c54df4], ebp",
+          "site": 6757182
+        },
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c54d27], edx",
+          "site": 6757439
+        }
+      ],
+      "reasons": [
+        "global:record_count",
+        "global:staged_aux_0",
+        "known:record_reset"
+      ]
+    },
+    {
+      "function": 6761568,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1c544de]",
+          "site": 6761611
+        }
+      ],
+      "reasons": [
+        "global:record_base"
+      ]
+    },
+    {
+      "function": 6762688,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "r8d, dword ptr [rip + 0x1c5388d]",
+          "site": 6762712
+        },
+        {
+          "name": "record_base",
+          "op": "r14, [rip + 0x1c5408a]",
+          "site": 6762719
+        },
+        {
+          "name": "record_count",
+          "op": "r8d, dword ptr [rip + 0x1c53844]",
+          "site": 6762785
+        },
+        {
+          "name": "record_count",
+          "op": "r8d, dword ptr [rip + 0x1c53823]",
+          "site": 6762818
+        },
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c53800], r8d",
+          "site": 6762853
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6763024,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c5373d], ebx",
+          "site": 6763049
+        },
+        {
+          "name": "record_base",
+          "op": "rbp, [rip + 0x1c53f38]",
+          "site": 6763057
+        },
+        {
+          "name": "record_count",
+          "op": "ebx, dword ptr [rip + 0x1c53703]",
+          "site": 6763107
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6764944,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c52fd1], 0",
+          "site": 6764948
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6765104,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1c535a5]",
+          "site": 6765508
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "known:wad_bind"
+      ]
+    },
+    {
+      "function": 6765824,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "eax, dword ptr [rip + 0x1c526f4]",
+          "site": 6767218
+        }
+      ],
+      "reasons": [
+        "global:record_count",
+        "known:wad_restore_load"
+      ]
+    },
+    {
+      "function": 6776448,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "r14, [rip + 0x1c50a7b]",
+          "site": 6776558
+        },
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c5025b], ebx",
+          "site": 6776587
+        },
+        {
+          "name": "record_count",
+          "op": "ebx, dword ptr [rip + 0x1c50230]",
+          "site": 6776630
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6778048,
+      "global_hits": [],
+      "reasons": [
+        "known:wad_unbind"
+      ]
+    },
+    {
+      "function": 6778800,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c4f98e], ebx",
+          "site": 6778840
+        },
+        {
+          "name": "record_base",
+          "op": "rbp, [rip + 0x1c50185]",
+          "site": 6778852
+        },
+        {
+          "name": "record_count",
+          "op": "r12d, dword ptr [rip + 0x1c4f8a4]",
+          "site": 6779073
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6781744,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "r10, [rip + 0x1c4f5bd]",
+          "site": 6781868
+        },
+        {
+          "name": "record_base",
+          "op": "r15, [rip + 0x1c4f46f]",
+          "site": 6782202
+        },
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1c4f21a]",
+          "site": 6782799
+        }
+      ],
+      "reasons": [
+        "global:record_base"
+      ]
+    },
+    {
+      "function": 6783152,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "rcx, [rip + 0x1c4f096]",
+          "site": 6783187
+        },
+        {
+          "name": "record_base",
+          "op": "rcx, [rip + 0x1c4efd4]",
+          "site": 6783381
+        }
+      ],
+      "reasons": [
+        "global:record_base"
+      ]
+    },
+    {
+      "function": 6783488,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c4e748], esi",
+          "site": 6783518
+        },
+        {
+          "name": "record_count",
+          "op": "edi, dword ptr [rip + 0x1c4e6eb]",
+          "site": 6783611
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6783856,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c4e5e6], edi",
+          "site": 6783872
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6783884,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "edi, dword ptr [rip + 0x1c4e53f]",
+          "site": 6784039
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6784700,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "rdi, [rip + 0x1c4e9b9]",
+          "site": 6784944
+        },
+        {
+          "name": "record_base",
+          "op": "rdi, [rip + 0x1c4e838]",
+          "site": 6785329
+        },
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c4e006], r12d",
+          "site": 6785375
+        },
+        {
+          "name": "record_count",
+          "op": "r12d, dword ptr [rip + 0x1c4df6f]",
+          "site": 6785526
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6793536,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1c4c7fa]",
+          "site": 6793583
+        }
+      ],
+      "reasons": [
+        "global:record_base"
+      ]
+    },
+    {
+      "function": 6794080,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1c4c540]",
+          "site": 6794281
+        }
+      ],
+      "reasons": [
+        "global:record_base"
+      ]
+    },
+    {
+      "function": 6797360,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c4b097], edi",
+          "site": 6797519
+        },
+        {
+          "name": "record_count",
+          "op": "edx, dword ptr [rip + 0x1c4afce]",
+          "site": 6797720
+        },
+        {
+          "name": "record_base",
+          "op": "rcx, [rip + 0x1c4b769]",
+          "site": 6797824
+        },
+        {
+          "name": "record_count",
+          "op": "eax, dword ptr [rip + 0x1c4af57]",
+          "site": 6797839
+        },
+        {
+          "name": "record_base",
+          "op": "rcx, [rip + 0x1c4b72c]",
+          "site": 6797885
+        },
+        {
+          "name": "record_count",
+          "op": "eax, dword ptr [rip + 0x1c4af20]",
+          "site": 6797894
+        },
+        {
+          "name": "record_base",
+          "op": "rcx, [rip + 0x1c4b712]",
+          "site": 6797911
+        },
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c4aefe], eax",
+          "site": 6797928
+        },
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c4add6], edi",
+          "site": 6798224
+        },
+        {
+          "name": "record_count",
+          "op": "esi, dword ptr [rip + 0x1c4ac29]",
+          "site": 6798653
+        },
+        {
+          "name": "record_base",
+          "op": "r15, [rip + 0x1c4b400]",
+          "site": 6798697
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count",
+        "known:record_append_by_name"
+      ]
+    },
+    {
+      "function": 6799216,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "r8d, dword ptr [rip + 0x1c4a9dc]",
+          "site": 6799241
+        },
+        {
+          "name": "record_end_or_cursor",
+          "op": "rcx, [rip + 0x1c4b1f0]",
+          "site": 6799261
+        },
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1c4b16d]",
+          "site": 6799356
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count",
+        "global:record_end_or_cursor"
+      ]
+    },
+    {
+      "function": 6799424,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "r8d, dword ptr [rip + 0x1c4a90c]",
+          "site": 6799449
+        },
+        {
+          "name": "record_end_or_cursor",
+          "op": "rdx, [rip + 0x1c4b122]",
+          "site": 6799467
+        },
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1c4b09f]",
+          "site": 6799562
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count",
+        "global:record_end_or_cursor"
+      ]
+    },
+    {
+      "function": 6799584,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "eax, dword ptr [rip + 0x1c4a873]",
+          "site": 6799603
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6799795,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c4a79f], ebp",
+          "site": 6799815
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6799830,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "ebp, dword ptr [rip + 0x1c4a722]",
+          "site": 6799940
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6802432,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c49d54], eax",
+          "site": 6802450
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6804000,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "eax, dword ptr [rip + 0x1c4972a]",
+          "site": 6804028
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6804928,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "edi, dword ptr [rip + 0x1c49397]",
+          "site": 6804943
+        },
+        {
+          "name": "record_base",
+          "op": "rcx, [rip + 0x1c49b09]",
+          "site": 6805088
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6808816,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "edx, dword ptr [rip + 0x1c483b0]",
+          "site": 6809014
+        },
+        {
+          "name": "record_end_or_cursor",
+          "op": "rcx, [rip + 0x1c48bcd]",
+          "site": 6809024
+        },
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1c48b32]",
+          "site": 6809143
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count",
+        "global:record_end_or_cursor"
+      ]
+    },
+    {
+      "function": 6812759,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c47313], ebx",
+          "site": 6813267
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6815264,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1c46cbc]",
+          "site": 6816941
+        },
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c464ae], r12d",
+          "site": 6816951
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6823968,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c44919], ebp",
+          "site": 6824013
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 6984128,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1c1d73b], r12d",
+          "site": 6984234
+        },
+        {
+          "name": "record_base",
+          "op": "r13, [rip + 0x1c1df38]",
+          "site": 6984241
+        },
+        {
+          "name": "record_count",
+          "op": "edx, dword ptr [rip + 0x1c1d564]",
+          "site": 6984706
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 7280400,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1bd520b], edi",
+          "site": 7280475
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 7728384,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1b67bcf], 0",
+          "site": 7728534
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 7742080,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1b646e1], ebx",
+          "site": 7742085
+        },
+        {
+          "name": "record_base",
+          "op": "rsi, [rip + 0x1b64ede]",
+          "site": 7742091
+        },
+        {
+          "name": "record_count",
+          "op": "edx, dword ptr [rip + 0x1b6465c]",
+          "site": 7742218
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 7772560,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1b5cf68], 0",
+          "site": 7772669
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 7876320,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "edx, dword ptr [rip + 0x1b43a6a]",
+          "site": 7876348
+        },
+        {
+          "name": "record_end_or_cursor",
+          "op": "rcx, [rip + 0x1b4427e]",
+          "site": 7876367
+        },
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1b441a4]",
+          "site": 7876549
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count",
+        "global:record_end_or_cursor"
+      ]
+    },
+    {
+      "function": 7878784,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1b437e2]",
+          "site": 7879047
+        }
+      ],
+      "reasons": [
+        "global:record_base"
+      ]
+    },
+    {
+      "function": 8079804,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1b11ee8], r9d",
+          "site": 8079997
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 8080560,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1b11cac], 0",
+          "site": 8080569
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 8097488,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1b0da27], 0",
+          "site": 8097598
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 8112063,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1b09ffd], r15d",
+          "site": 8112488
+        },
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1b0982c], 0",
+          "site": 8114489
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 8114859,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1b095fd], 0",
+          "site": 8115048
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 8552352,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "eax, dword ptr [rip + 0x1a9e9b2]",
+          "site": 8552372
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 8564848,
+      "global_hits": [
+        {
+          "name": "staged_aux_0",
+          "op": "ecx, dword ptr [rip + 0x1a9b886]",
+          "site": 8564908
+        },
+        {
+          "name": "staged_aux_1",
+          "op": "rcx, qword ptr [rip + 0x1a9b885]",
+          "site": 8564916
+        }
+      ],
+      "reasons": [
+        "global:staged_aux_0",
+        "global:staged_aux_1"
+      ]
+    },
+    {
+      "function": 8565328,
+      "global_hits": [
+        {
+          "name": "staged_aux_0",
+          "op": "ecx, dword ptr [rip + 0x1a9b6a7]",
+          "site": 8565387
+        },
+        {
+          "name": "staged_aux_1",
+          "op": "rcx, qword ptr [rip + 0x1a9b6a3]",
+          "site": 8565398
+        },
+        {
+          "name": "record_base",
+          "op": "r9, [rip + 0x1a9bdc0]",
+          "site": 8565673
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:staged_aux_0",
+        "global:staged_aux_1",
+        "known:staged_related_2"
+      ]
+    },
+    {
+      "function": 8570912,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1a9a8d4]",
+          "site": 8571029
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "known:staged_lookup_or_writer",
+        "known:staged_related"
+      ]
+    },
+    {
+      "function": 8572334,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "rbp, [rip + 0x1a9a3ab]",
+          "site": 8572350
+        },
+        {
+          "name": "record_end_or_cursor",
+          "op": "r14, [rip + 0x1a9a3ae]",
+          "site": 8572383
+        },
+        {
+          "name": "record_count",
+          "op": "r8d, dword ptr [rip + 0x1a99b32]",
+          "site": 8572467
+        },
+        {
+          "name": "staged_aux_0",
+          "op": "r8d, dword ptr [rip + 0x1a99ad5]",
+          "site": 8572508
+        },
+        {
+          "name": "staged_aux_1",
+          "op": "rcx, qword ptr [rip + 0x1a99acf]",
+          "site": 8572522
+        },
+        {
+          "name": "staged_aux_0",
+          "op": "dword ptr [rip + 0x1a99ab8], r8d",
+          "site": 8572537
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count",
+        "global:record_end_or_cursor",
+        "global:staged_aux_0",
+        "global:staged_aux_1"
+      ]
+    },
+    {
+      "function": 8572672,
+      "global_hits": [
+        {
+          "name": "staged_aux_1",
+          "op": "rbp, qword ptr [rip + 0x1a999f5]",
+          "site": 8572740
+        },
+        {
+          "name": "staged_aux_0",
+          "op": "edi, dword ptr [rip + 0x1a999e0]",
+          "site": 8572754
+        },
+        {
+          "name": "staged_aux_0",
+          "op": "dword ptr [rip + 0x1a99991], edi",
+          "site": 8572833
+        },
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1a999b9], r14d",
+          "site": 8572844
+        },
+        {
+          "name": "record_count",
+          "op": "ebx, dword ptr [rip + 0x1a99849]",
+          "site": 8573213
+        },
+        {
+          "name": "record_base",
+          "op": "r9, [rip + 0x1a9a03a]",
+          "site": 8573231
+        },
+        {
+          "name": "record_count",
+          "op": "ebx, dword ptr [rip + 0x1a997d5]",
+          "site": 8573329
+        },
+        {
+          "name": "record_base",
+          "op": "r9, [rip + 0x1a99fd2]",
+          "site": 8573335
+        },
+        {
+          "name": "record_count",
+          "op": "ebx, dword ptr [rip + 0x1a99740]",
+          "site": 8573478
+        },
+        {
+          "name": "record_base",
+          "op": "r9, [rip + 0x1a99f33]",
+          "site": 8573494
+        },
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1a99715], ebx",
+          "site": 8573521
+        },
+        {
+          "name": "record_base",
+          "op": "r9, [rip + 0x1a99e3e]",
+          "site": 8573739
+        },
+        {
+          "name": "record_count",
+          "op": "ebx, dword ptr [rip + 0x1a995c1]",
+          "site": 8573861
+        },
+        {
+          "name": "record_base",
+          "op": "r9, [rip + 0x1a99dbe]",
+          "site": 8573867
+        },
+        {
+          "name": "record_count",
+          "op": "ebx, dword ptr [rip + 0x1a99471]",
+          "site": 8574197
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count",
+        "global:staged_aux_0",
+        "global:staged_aux_1",
+        "known:staged_restore_rebuild"
+      ]
+    },
+    {
+      "function": 8574560,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "eax, dword ptr [rip + 0x1a992f7]",
+          "site": 8574575
+        },
+        {
+          "name": "record_count",
+          "op": "eax, dword ptr [rip + 0x1a99277]",
+          "site": 8574703
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 8574816,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "r13d, dword ptr [rip + 0x1a991d8]",
+          "site": 8574861
+        },
+        {
+          "name": "record_count",
+          "op": "eax, dword ptr [rip + 0x1a990e3]",
+          "site": 8575107
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 8662320,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1a83c03], 0",
+          "site": 8662370
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 8683280,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1a7ea2b], ebx",
+          "site": 8683323
+        },
+        {
+          "name": "record_base",
+          "op": "rbp, [rip + 0x1a7f221]",
+          "site": 8683336
+        },
+        {
+          "name": "record_count",
+          "op": "ebx, dword ptr [rip + 0x1a7e9f3]",
+          "site": 8683379
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 8696064,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "edx, dword ptr [rip + 0x1a7b780]",
+          "site": 8696294
+        },
+        {
+          "name": "record_end_or_cursor",
+          "op": "rcx, [rip + 0x1a7bf9d]",
+          "site": 8696304
+        },
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1a7befd]",
+          "site": 8696428
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count",
+        "global:record_end_or_cursor"
+      ]
+    },
+    {
+      "function": 8710400,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "r8d, dword ptr [rip + 0x1a77f75]",
+          "site": 8710640
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 8710649,
+      "global_hits": [
+        {
+          "name": "record_end_or_cursor",
+          "op": "rcx, [rip + 0x1a7877f]",
+          "site": 8710670
+        }
+      ],
+      "reasons": [
+        "global:record_end_or_cursor"
+      ]
+    },
+    {
+      "function": 8710816,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1a786c0]",
+          "site": 8710825
+        }
+      ],
+      "reasons": [
+        "global:record_base"
+      ]
+    },
+    {
+      "function": 8749856,
+      "global_hits": [
+        {
+          "name": "record_base",
+          "op": "rax, [rip + 0x1a6ebbd]",
+          "site": 8750508
+        }
+      ],
+      "reasons": [
+        "global:record_base"
+      ]
+    },
+    {
+      "function": 8760359,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1a6ba4c], 0",
+          "site": 8761113
+        },
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1a6b9f9], 0",
+          "site": 8761196
+        },
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x1a6b977], 0",
+          "site": 8761326
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 9104460,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "r11d, dword ptr [rip + 0x1a17cf4]",
+          "site": 9104497
+        },
+        {
+          "name": "record_base",
+          "op": "r15, [rip + 0x1a184f1]",
+          "site": 9104504
+        }
+      ],
+      "reasons": [
+        "global:record_base",
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 9104536,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "r11d, dword ptr [rip + 0x1a17bac]",
+          "site": 9104825
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 9341936,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x19ddc66], 0",
+          "site": 9342207
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    },
+    {
+      "function": 9346448,
+      "global_hits": [
+        {
+          "name": "record_count",
+          "op": "dword ptr [rip + 0x19dcb7a], 0",
+          "site": 9346539
+        }
+      ],
+      "reasons": [
+        "global:record_count"
+      ]
+    }
+  ],
+  "runtime_functions_decoded": 51867,
+  "safety": {
+    "game_files_written": false,
+    "game_launched": false,
+    "process_accessed": false,
+    "progression_written": false,
+    "save_opened": false,
+    "save_written": false,
+    "static_exe_read_only": true
+  },
+  "schema": 1
+}

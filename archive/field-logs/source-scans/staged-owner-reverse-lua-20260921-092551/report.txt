@@ -1,0 +1,296 @@
+Completionist Map - staged owner reverse Lua reachability
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+max_depth=4
+runtime_functions_decoded=51867
+registration_exact_handler_count=600
+registration_runtime_function_count=409
+root_count=80
+reverse_nodes_visited=247
+lua_path_count=10
+
+ROOTS
+  0x23FAA0 reasons=global:record_base
+    GLOBAL record_base site=0x23FEE7 rcx, [rip + 0x2087282]
+  0x245568 reasons=global:record_count
+    GLOBAL record_count site=0x2455DB dword ptr [rip + 0x208138a], 0
+  0x2459DA reasons=global:record_count
+    GLOBAL record_count site=0x245A57 dword ptr [rip + 0x2080f0e], 0
+  0x245B50 reasons=global:record_count
+    GLOBAL record_count site=0x245BC1 dword ptr [rip + 0x2080da4], r14d
+  0x25CFD0 reasons=global:record_base,global:record_count
+    GLOBAL record_base site=0x25D011 r9, [rip + 0x206a158]
+    GLOBAL record_count site=0x25D01D dword ptr [rip + 0x2069949], edi
+    GLOBAL record_base site=0x25D1AE r9, [rip + 0x2069fbb]
+    GLOBAL record_base site=0x25D1D5 r9, [rip + 0x2069f94]
+    GLOBAL record_count site=0x25D205 edx, dword ptr [rip + 0x2069761]
+    GLOBAL record_base site=0x25D234 r9, [rip + 0x2069f35]
+  0x4F9E60 reasons=global:record_count
+    GLOBAL record_count site=0x4F9E7C dword ptr [rip + 0x1dccae9], 0
+  0x549442 reasons=global:record_count
+    GLOBAL record_count site=0x549479 edx, dword ptr [rip + 0x1d7d4ed]
+  0x549481 reasons=global:record_base,global:record_end_or_cursor
+    GLOBAL record_end_or_cursor site=0x549497 rcx, [rip + 0x1d7dcf6]
+    GLOBAL record_base site=0x54956C rax, [rip + 0x1d7dbfd]
+  0x6671E0 reasons=global:staged_aux_0,global:staged_aux_1
+    GLOBAL staged_aux_0 site=0x6671F4 r8d, dword ptr [rip + 0x1c5f73d]
+    GLOBAL staged_aux_1 site=0x6671FB r8, qword ptr [rip + 0x1c5f73e]
+  0x667230 reasons=global:record_count,global:staged_aux_0,global:staged_aux_1
+    GLOBAL staged_aux_1 site=0x66723A eax, dword ptr [rip + 0x1c5f700]
+    GLOBAL staged_aux_0 site=0x667246 edi, dword ptr [rip + 0x1c5f6ec]
+    GLOBAL record_count site=0x667260 ecx, dword ptr [rip + 0x1c5f706]
+    GLOBAL staged_aux_0 site=0x6672B4 dword ptr [rip + 0x1c5f67e], edi
+  0x6672F0 reasons=global:staged_aux_0,global:staged_aux_1
+    GLOBAL staged_aux_0 site=0x667318 ebx, dword ptr [rip + 0x1c5f61a]
+    GLOBAL staged_aux_1 site=0x667326 rcx, qword ptr [rip + 0x1c5f613]
+    GLOBAL staged_aux_0 site=0x667348 dword ptr [rip + 0x1c5f5ea], ebx
+  0x667470 reasons=global:staged_aux_0
+    GLOBAL staged_aux_0 site=0x667496 ebp, dword ptr [rip + 0x1c5f49c]
+    GLOBAL staged_aux_0 site=0x6674B9 dword ptr [rip + 0x1c5f479], ebp
+  0x668683 reasons=global:record_base,global:record_count,global:record_end_or_cursor,global:staged_aux_0,global:staged_aux_1
+    GLOBAL record_base site=0x66869A r14, [rip + 0x1c5eacf]
+    GLOBAL record_end_or_cursor site=0x6686A9 r15, [rip + 0x1c5eae4]
+    GLOBAL record_count site=0x6686F3 r8d, dword ptr [rip + 0x1c5e272]
+    GLOBAL staged_aux_0 site=0x66871D r8d, dword ptr [rip + 0x1c5e214]
+    GLOBAL staged_aux_1 site=0x66872B rcx, qword ptr [rip + 0x1c5e20e]
+    GLOBAL staged_aux_0 site=0x66873A dword ptr [rip + 0x1c5e1f7], r8d
+  0x6687F0 reasons=global:record_count,known:staged_wad_writer
+    GLOBAL record_count site=0x6689B4 eax, dword ptr [rip + 0x1c5dfb2]
+    GLOBAL record_count site=0x668A2E eax, dword ptr [rip + 0x1c5df38]
+  0x66BA10 reasons=global:record_count
+    GLOBAL record_count site=0x66BACD eax, dword ptr [rip + 0x1c5ae99]
+  0x66CDA0 reasons=global:staged_aux_1
+    GLOBAL staged_aux_1 site=0x66CDE6 rbx, qword ptr [rip + 0x1c59b53]
+  0x66CF60 reasons=global:staged_aux_1
+    GLOBAL staged_aux_1 site=0x66D10E qword ptr [rip + 0x1c5982b], rax
+  0x671AD0 reasons=global:record_count,global:staged_aux_0,known:record_reset
+    GLOBAL record_count site=0x671AF5 edx, dword ptr [rip + 0x1c54e71]
+    GLOBAL record_count site=0x671B36 edx, dword ptr [rip + 0x1c54e30]
+    GLOBAL staged_aux_0 site=0x671B3E dword ptr [rip + 0x1c54df4], ebp
+    GLOBAL record_count site=0x671C3F dword ptr [rip + 0x1c54d27], edx
+  0x672C60 reasons=global:record_base
+    GLOBAL record_base site=0x672C8B rax, [rip + 0x1c544de]
+  0x6730C0 reasons=global:record_base,global:record_count
+    GLOBAL record_count site=0x6730D8 r8d, dword ptr [rip + 0x1c5388d]
+    GLOBAL record_base site=0x6730DF r14, [rip + 0x1c5408a]
+    GLOBAL record_count site=0x673121 r8d, dword ptr [rip + 0x1c53844]
+    GLOBAL record_count site=0x673142 r8d, dword ptr [rip + 0x1c53823]
+    GLOBAL record_count site=0x673165 dword ptr [rip + 0x1c53800], r8d
+  0x673210 reasons=global:record_base,global:record_count
+    GLOBAL record_count site=0x673229 dword ptr [rip + 0x1c5373d], ebx
+    GLOBAL record_base site=0x673231 rbp, [rip + 0x1c53f38]
+    GLOBAL record_count site=0x673263 ebx, dword ptr [rip + 0x1c53703]
+  0x673990 reasons=global:record_count
+    GLOBAL record_count site=0x673994 dword ptr [rip + 0x1c52fd1], 0
+  0x673A30 reasons=global:record_base,known:wad_bind
+    GLOBAL record_base site=0x673BC4 rax, [rip + 0x1c535a5]
+  0x673D00 reasons=global:record_count,known:wad_restore_load
+    GLOBAL record_count site=0x674272 eax, dword ptr [rip + 0x1c526f4]
+  0x676680 reasons=global:record_base,global:record_count
+    GLOBAL record_base site=0x6766EE r14, [rip + 0x1c50a7b]
+    GLOBAL record_count site=0x67670B dword ptr [rip + 0x1c5025b], ebx
+    GLOBAL record_count site=0x676736 ebx, dword ptr [rip + 0x1c50230]
+  0x676CC0 reasons=known:wad_unbind
+  0x676FB0 reasons=global:record_base,global:record_count
+    GLOBAL record_count site=0x676FD8 dword ptr [rip + 0x1c4f98e], ebx
+    GLOBAL record_base site=0x676FE4 rbp, [rip + 0x1c50185]
+    GLOBAL record_count site=0x6770C1 r12d, dword ptr [rip + 0x1c4f8a4]
+  0x677B30 reasons=global:record_base
+    GLOBAL record_base site=0x677BAC r10, [rip + 0x1c4f5bd]
+    GLOBAL record_base site=0x677CFA r15, [rip + 0x1c4f46f]
+    GLOBAL record_base site=0x677F4F rax, [rip + 0x1c4f21a]
+  0x6780B0 reasons=global:record_base
+    GLOBAL record_base site=0x6780D3 rcx, [rip + 0x1c4f096]
+    GLOBAL record_base site=0x678195 rcx, [rip + 0x1c4efd4]
+  0x678200 reasons=global:record_count
+    GLOBAL record_count site=0x67821E dword ptr [rip + 0x1c4e748], esi
+    GLOBAL record_count site=0x67827B edi, dword ptr [rip + 0x1c4e6eb]
+  0x678370 reasons=global:record_count
+    GLOBAL record_count site=0x678380 dword ptr [rip + 0x1c4e5e6], edi
+  0x67838C reasons=global:record_count
+    GLOBAL record_count site=0x678427 edi, dword ptr [rip + 0x1c4e53f]
+  0x6786BC reasons=global:record_base,global:record_count
+    GLOBAL record_base site=0x6787B0 rdi, [rip + 0x1c4e9b9]
+    GLOBAL record_base site=0x678931 rdi, [rip + 0x1c4e838]
+    GLOBAL record_count site=0x67895F dword ptr [rip + 0x1c4e006], r12d
+    GLOBAL record_count site=0x6789F6 r12d, dword ptr [rip + 0x1c4df6f]
+  0x67A940 reasons=global:record_base
+    GLOBAL record_base site=0x67A96F rax, [rip + 0x1c4c7fa]
+  0x67AB60 reasons=global:record_base
+    GLOBAL record_base site=0x67AC29 rax, [rip + 0x1c4c540]
+  0x67B830 reasons=global:record_base,global:record_count,known:record_append_by_name
+    GLOBAL record_count site=0x67B8CF dword ptr [rip + 0x1c4b097], edi
+    GLOBAL record_count site=0x67B998 edx, dword ptr [rip + 0x1c4afce]
+    GLOBAL record_base site=0x67BA00 rcx, [rip + 0x1c4b769]
+    GLOBAL record_count site=0x67BA0F eax, dword ptr [rip + 0x1c4af57]
+    GLOBAL record_base site=0x67BA3D rcx, [rip + 0x1c4b72c]
+    GLOBAL record_count site=0x67BA46 eax, dword ptr [rip + 0x1c4af20]
+    GLOBAL record_base site=0x67BA57 rcx, [rip + 0x1c4b712]
+    GLOBAL record_count site=0x67BA68 dword ptr [rip + 0x1c4aefe], eax
+    GLOBAL record_count site=0x67BB90 dword ptr [rip + 0x1c4add6], edi
+    GLOBAL record_count site=0x67BD3D esi, dword ptr [rip + 0x1c4ac29]
+    GLOBAL record_base site=0x67BD69 r15, [rip + 0x1c4b400]
+  0x67BF70 reasons=global:record_base,global:record_count,global:record_end_or_cursor
+    GLOBAL record_count site=0x67BF89 r8d, dword ptr [rip + 0x1c4a9dc]
+    GLOBAL record_end_or_cursor site=0x67BF9D rcx, [rip + 0x1c4b1f0]
+    GLOBAL record_base site=0x67BFFC rax, [rip + 0x1c4b16d]
+  0x67C040 reasons=global:record_base,global:record_count,global:record_end_or_cursor
+    GLOBAL record_count site=0x67C059 r8d, dword ptr [rip + 0x1c4a90c]
+    GLOBAL record_end_or_cursor site=0x67C06B rdx, [rip + 0x1c4b122]
+    GLOBAL record_base site=0x67C0CA rax, [rip + 0x1c4b09f]
+  0x67C0E0 reasons=global:record_count
+    GLOBAL record_count site=0x67C0F3 eax, dword ptr [rip + 0x1c4a873]
+  0x67C1B3 reasons=global:record_count
+    GLOBAL record_count site=0x67C1C7 dword ptr [rip + 0x1c4a79f], ebp
+  0x67C1D6 reasons=global:record_count
+    GLOBAL record_count site=0x67C244 ebp, dword ptr [rip + 0x1c4a722]
+  0x67CC00 reasons=global:record_count
+    GLOBAL record_count site=0x67CC12 dword ptr [rip + 0x1c49d54], eax
+  0x67D220 reasons=global:record_count
+    GLOBAL record_count site=0x67D23C eax, dword ptr [rip + 0x1c4972a]
+  0x67D5C0 reasons=global:record_base,global:record_count
+    GLOBAL record_count site=0x67D5CF edi, dword ptr [rip + 0x1c49397]
+    GLOBAL record_base site=0x67D660 rcx, [rip + 0x1c49b09]
+  0x67E4F0 reasons=global:record_base,global:record_count,global:record_end_or_cursor
+    GLOBAL record_count site=0x67E5B6 edx, dword ptr [rip + 0x1c483b0]
+    GLOBAL record_end_or_cursor site=0x67E5C0 rcx, [rip + 0x1c48bcd]
+    GLOBAL record_base site=0x67E637 rax, [rip + 0x1c48b32]
+  0x67F457 reasons=global:record_count
+    GLOBAL record_count site=0x67F653 dword ptr [rip + 0x1c47313], ebx
+  0x67FE20 reasons=global:record_base,global:record_count
+    GLOBAL record_base site=0x6804AD rax, [rip + 0x1c46cbc]
+    GLOBAL record_count site=0x6804B7 dword ptr [rip + 0x1c464ae], r12d
+  0x682020 reasons=global:record_count
+    GLOBAL record_count site=0x68204D dword ptr [rip + 0x1c44919], ebp
+  0x6A91C0 reasons=global:record_base,global:record_count
+    GLOBAL record_count site=0x6A922A dword ptr [rip + 0x1c1d73b], r12d
+    GLOBAL record_base site=0x6A9231 r13, [rip + 0x1c1df38]
+    GLOBAL record_count site=0x6A9402 edx, dword ptr [rip + 0x1c1d564]
+  0x6F1710 reasons=global:record_count
+    GLOBAL record_count site=0x6F175B dword ptr [rip + 0x1bd520b], edi
+  0x75ED00 reasons=global:record_count
+    GLOBAL record_count site=0x75ED96 dword ptr [rip + 0x1b67bcf], 0
+  0x762280 reasons=global:record_base,global:record_count
+    GLOBAL record_count site=0x762285 dword ptr [rip + 0x1b646e1], ebx
+    GLOBAL record_base site=0x76228B rsi, [rip + 0x1b64ede]
+    GLOBAL record_count site=0x76230A edx, dword ptr [rip + 0x1b6465c]
+  0x769990 reasons=global:record_count
+    GLOBAL record_count site=0x7699FD dword ptr [rip + 0x1b5cf68], 0
+  0x782EE0 reasons=global:record_base,global:record_count,global:record_end_or_cursor
+    GLOBAL record_count site=0x782EFC edx, dword ptr [rip + 0x1b43a6a]
+    GLOBAL record_end_or_cursor site=0x782F0F rcx, [rip + 0x1b4427e]
+    GLOBAL record_base site=0x782FC5 rax, [rip + 0x1b441a4]
+  0x783880 reasons=global:record_base
+    GLOBAL record_base site=0x783987 rax, [rip + 0x1b437e2]
+  0x7B49BC reasons=global:record_count
+    GLOBAL record_count site=0x7B4A7D dword ptr [rip + 0x1b11ee8], r9d
+  0x7B4CB0 reasons=global:record_count
+    GLOBAL record_count site=0x7B4CB9 dword ptr [rip + 0x1b11cac], 0
+  0x7B8ED0 reasons=global:record_count
+    GLOBAL record_count site=0x7B8F3E dword ptr [rip + 0x1b0da27], 0
+  0x7BC7BF reasons=global:record_count
+    GLOBAL record_count site=0x7BC968 dword ptr [rip + 0x1b09ffd], r15d
+    GLOBAL record_count site=0x7BD139 dword ptr [rip + 0x1b0982c], 0
+  0x7BD2AB reasons=global:record_count
+    GLOBAL record_count site=0x7BD368 dword ptr [rip + 0x1b095fd], 0
+  0x827FA0 reasons=global:record_count
+    GLOBAL record_count site=0x827FB4 eax, dword ptr [rip + 0x1a9e9b2]
+  0x82B070 reasons=global:staged_aux_0,global:staged_aux_1
+    GLOBAL staged_aux_0 site=0x82B0AC ecx, dword ptr [rip + 0x1a9b886]
+    GLOBAL staged_aux_1 site=0x82B0B4 rcx, qword ptr [rip + 0x1a9b885]
+  0x82B250 reasons=global:record_base,global:staged_aux_0,global:staged_aux_1,known:staged_related_2
+    GLOBAL staged_aux_0 site=0x82B28B ecx, dword ptr [rip + 0x1a9b6a7]
+    GLOBAL staged_aux_1 site=0x82B296 rcx, qword ptr [rip + 0x1a9b6a3]
+    GLOBAL record_base site=0x82B3A9 r9, [rip + 0x1a9bdc0]
+  0x82C820 reasons=global:record_base,known:staged_lookup_or_writer,known:staged_related
+    GLOBAL record_base site=0x82C895 rax, [rip + 0x1a9a8d4]
+  0x82CDAE reasons=global:record_base,global:record_count,global:record_end_or_cursor,global:staged_aux_0,global:staged_aux_1
+    GLOBAL record_base site=0x82CDBE rbp, [rip + 0x1a9a3ab]
+    GLOBAL record_end_or_cursor site=0x82CDDF r14, [rip + 0x1a9a3ae]
+    GLOBAL record_count site=0x82CE33 r8d, dword ptr [rip + 0x1a99b32]
+    GLOBAL staged_aux_0 site=0x82CE5C r8d, dword ptr [rip + 0x1a99ad5]
+    GLOBAL staged_aux_1 site=0x82CE6A rcx, qword ptr [rip + 0x1a99acf]
+    GLOBAL staged_aux_0 site=0x82CE79 dword ptr [rip + 0x1a99ab8], r8d
+  0x82CF00 reasons=global:record_base,global:record_count,global:staged_aux_0,global:staged_aux_1,known:staged_restore_rebuild
+    GLOBAL staged_aux_1 site=0x82CF44 rbp, qword ptr [rip + 0x1a999f5]
+    GLOBAL staged_aux_0 site=0x82CF52 edi, dword ptr [rip + 0x1a999e0]
+    GLOBAL staged_aux_0 site=0x82CFA1 dword ptr [rip + 0x1a99991], edi
+    GLOBAL record_count site=0x82CFAC dword ptr [rip + 0x1a999b9], r14d
+    GLOBAL record_count site=0x82D11D ebx, dword ptr [rip + 0x1a99849]
+    GLOBAL record_base site=0x82D12F r9, [rip + 0x1a9a03a]
+    GLOBAL record_count site=0x82D191 ebx, dword ptr [rip + 0x1a997d5]
+    GLOBAL record_base site=0x82D197 r9, [rip + 0x1a99fd2]
+    GLOBAL record_count site=0x82D226 ebx, dword ptr [rip + 0x1a99740]
+    GLOBAL record_base site=0x82D236 r9, [rip + 0x1a99f33]
+    GLOBAL record_count site=0x82D251 dword ptr [rip + 0x1a99715], ebx
+    GLOBAL record_base site=0x82D32B r9, [rip + 0x1a99e3e]
+    GLOBAL record_count site=0x82D3A5 ebx, dword ptr [rip + 0x1a995c1]
+    GLOBAL record_base site=0x82D3AB r9, [rip + 0x1a99dbe]
+    GLOBAL record_count site=0x82D4F5 ebx, dword ptr [rip + 0x1a99471]
+  0x82D660 reasons=global:record_count
+    GLOBAL record_count site=0x82D66F eax, dword ptr [rip + 0x1a992f7]
+    GLOBAL record_count site=0x82D6EF eax, dword ptr [rip + 0x1a99277]
+  0x82D760 reasons=global:record_count
+    GLOBAL record_count site=0x82D78D r13d, dword ptr [rip + 0x1a991d8]
+    GLOBAL record_count site=0x82D883 eax, dword ptr [rip + 0x1a990e3]
+  0x842D30 reasons=global:record_count
+    GLOBAL record_count site=0x842D62 dword ptr [rip + 0x1a83c03], 0
+  0x847F10 reasons=global:record_base,global:record_count
+    GLOBAL record_count site=0x847F3B dword ptr [rip + 0x1a7ea2b], ebx
+    GLOBAL record_base site=0x847F48 rbp, [rip + 0x1a7f221]
+    GLOBAL record_count site=0x847F73 ebx, dword ptr [rip + 0x1a7e9f3]
+  0x84B100 reasons=global:record_base,global:record_count,global:record_end_or_cursor
+    GLOBAL record_count site=0x84B1E6 edx, dword ptr [rip + 0x1a7b780]
+    GLOBAL record_end_or_cursor site=0x84B1F0 rcx, [rip + 0x1a7bf9d]
+    GLOBAL record_base site=0x84B26C rax, [rip + 0x1a7befd]
+  0x84E900 reasons=global:record_count
+    GLOBAL record_count site=0x84E9F0 r8d, dword ptr [rip + 0x1a77f75]
+  0x84E9F9 reasons=global:record_end_or_cursor
+    GLOBAL record_end_or_cursor site=0x84EA0E rcx, [rip + 0x1a7877f]
+  0x84EAA0 reasons=global:record_base
+    GLOBAL record_base site=0x84EAA9 rax, [rip + 0x1a786c0]
+  0x858320 reasons=global:record_base
+    GLOBAL record_base site=0x8585AC rax, [rip + 0x1a6ebbd]
+  0x85AC27 reasons=global:record_count
+    GLOBAL record_count site=0x85AF19 dword ptr [rip + 0x1a6ba4c], 0
+    GLOBAL record_count site=0x85AF6C dword ptr [rip + 0x1a6b9f9], 0
+    GLOBAL record_count site=0x85AFEE dword ptr [rip + 0x1a6b977], 0
+  0x8AEC4C reasons=global:record_base,global:record_count
+    GLOBAL record_count site=0x8AEC71 r11d, dword ptr [rip + 0x1a17cf4]
+    GLOBAL record_base site=0x8AEC78 r15, [rip + 0x1a184f1]
+  0x8AEC98 reasons=global:record_count
+    GLOBAL record_count site=0x8AEDB9 r11d, dword ptr [rip + 0x1a17bac]
+  0x8E8BF0 reasons=global:record_count
+    GLOBAL record_count site=0x8E8CFF dword ptr [rip + 0x19ddc66], 0
+  0x8E9D90 reasons=global:record_count
+    GLOBAL record_count site=0x8E9DEB dword ptr [rip + 0x19dcb7a], 0
+
+REGISTERED_LUA_PATHS
+  depth=0 handler=0x783880 names=GetAppMasterVersion root=0x783880 root_reasons=global:record_base
+    path(staged->caller): 0x783880
+  depth=0 handler=0x847F10 names=GetLevelId root=0x847F10 root_reasons=global:record_base,global:record_count
+    path(staged->caller): 0x847F10
+  depth=2 handler=0x84F1C0 names=SaveGame root=0x667470 root_reasons=global:staged_aux_0
+    path(staged->caller): 0x667470 -> 0x66B650 -> 0x84F1C0
+  depth=2 handler=0x84F1C0 names=SaveGame root=0x6687F0 root_reasons=global:record_count,known:staged_wad_writer
+    path(staged->caller): 0x6687F0 -> 0x66B650 -> 0x84F1C0
+  depth=2 handler=0x84F1C0 names=SaveGame root=0x66BA10 root_reasons=global:record_count
+    path(staged->caller): 0x66BA10 -> 0x66B650 -> 0x84F1C0
+  depth=2 handler=0x84F1C0 names=SaveGame root=0x82D760 root_reasons=global:record_count
+    path(staged->caller): 0x82D760 -> 0x66B650 -> 0x84F1C0
+  depth=3 handler=0x84F1C0 names=SaveGame root=0x667230 root_reasons=global:record_count,global:staged_aux_0,global:staged_aux_1
+    path(staged->caller): 0x667230 -> 0x82D760 -> 0x66B650 -> 0x84F1C0
+  depth=3 handler=0x84F1C0 names=SaveGame root=0x82C820 root_reasons=global:record_base,known:staged_lookup_or_writer,known:staged_related
+    path(staged->caller): 0x82C820 -> 0x6687F0 -> 0x66B650 -> 0x84F1C0
+  depth=4 handler=0x84F1C0 names=SaveGame root=0x82B070 root_reasons=global:staged_aux_0,global:staged_aux_1
+    path(staged->caller): 0x82B070 -> 0x82C820 -> 0x6687F0 -> 0x66B650 -> 0x84F1C0
+  depth=4 handler=0x84F1C0 names=SaveGame root=0x82B250 root_reasons=global:record_base,global:staged_aux_0,global:staged_aux_1,known:staged_related_2
+    path(staged->caller): 0x82B250 -> 0x82C820 -> 0x6687F0 -> 0x66B650 -> 0x84F1C0
+
+FRONTIER_COUNTS
+  depth=0 node_visits=80
+  depth=1 node_visits=142
+  depth=2 node_visits=77
+  depth=3 node_visits=81
+  depth=4 node_visits=76
+
+SAFETY static_exe_read_only=true game_launched=false process_accessed=false save_opened=false save_written=false progression_written=false game_files_written=false
