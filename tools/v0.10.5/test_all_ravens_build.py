@@ -171,6 +171,12 @@ class AllRavensBuildTests(unittest.TestCase):
             "atomic 53-state native Raven snapshot",
         )
         self.assertTrue(self.proof["router"]["native_refresh_before_icon_sync"])
+        self.assertTrue(self.proof["router"]["native_generation_is_capture_freshness"])
+        self.assertEqual(
+            self.proof["state"]["event_false_policy"],
+            "defer alive state to atomic 53-Raven authority",
+        )
+        self.assertIn("OnRestoreCheckpoint", self.proof["state"]["load_boundary_sources"])
         self.assertFalse(self.proof["router"]["native_static_descriptor_writes"])
 
 
