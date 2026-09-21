@@ -4011,3 +4011,51 @@ It now:
 Installer and rollback are schema-2/XInput-specific and refuse unknown existing `XINPUT1_4.dll` ownership.
 
 Next action is the V2 live load proof. Do not implement Lua/map delivery until the pushed V2 proof is inspected and passes.
+
+
+## V2 live proof failed at Steam bootstrap handoff
+
+Runtime evidence commit:
+
+- `93834dd91dcab4799f66a017e8d23c856ab502af`
+- capture: `archive/field-logs/runtime-captures/raven-native-bridge-load-proof-v2-20260921-110832/`
+
+Runner result:
+
+```text
+RAVEN_NATIVE_BRIDGE_LOAD_PROOF_V2_FAILED
+reason=Game exited before bridge startup proof. exit_code=53
+rollback_exact=true
+version_dll_untouched=true
+bridge_save_writes=false
+bridge_progression_writes=false
+```
+
+No fresh bridge or Script Loader log was captured:
+
+```text
+NO_FRESH_BRIDGE_LOG_LINES
+NO_FRESH_LOADER_LOG_LINES
+```
+
+However the user separately observed that GoW **did launch successfully** after the runner started it.
+
+Interpretation:
+
+- the process returned by `Start-Process GoW.exe -PassThru` is not necessarily the final long-lived game process;
+- on this Steam installation it can exit during Steam restart/handoff while Steam launches a successor GoW process;
+- the V2 runner incorrectly treats that bootstrap exit as definitive startup failure and rolls the XInput proxy back too early;
+- therefore this proof says nothing negative yet about the XInput proxy runtime itself.
+
+The XInput proxy and ownership gates remain valid. The open blocker is runner process tracking.
+
+Next runner must:
+
+1. allow the initially launched process to exit during a Steam handoff;
+2. keep the owned `XINPUT1_4.dll` installed while waiting for a successor `GoW/GodOfWar` process;
+3. require fresh bridge startup evidence and a live successor process before prompting;
+4. only declare failure if no live successor process plus fresh proxy log appears within the startup timeout;
+5. on failure terminate any GoW successor processes created during the proof before rollback;
+6. preserve exact rollback and `version.dll` checks.
+
+Do not change Raven authority or proxy forwarding while fixing this runner behavior.
