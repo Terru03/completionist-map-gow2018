@@ -1,0 +1,39 @@
+**********************
+PowerShell transcript start
+Start time: 20260921145740
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\capture-gow-xinput-iat-owner-readonly-and-push.ps1
+Process ID: 24036
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+GOW XINPUT IAT OWNER CAPTURE - READ ONLY
+No proxy is installed. No save load is required.
+Building and self-testing the native targeted probe...
+
+
+
+RAVEN_NATIVE_BRIDGE_BUILD_OK dll=C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\build\raven-authority-bridge\Release\XINPUT1_4.dll sha256=cccb928804d60511f7fa7bbf87025ee29a915ad847172f322d28702f34c65702
+RAVEN_IMPORT_PROBE_SELFTEST_PASSED owner=C:\WINDOWS\System32\KERNEL32.DLL
+PS>TerminatingError(Get-Item): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Cannot find path 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\KnownDLLs32' because it does not exist."
+Launching GoW. Leave it at the main menu; the capture is automatic.
+Live GoW PID=4364. Waiting 40 seconds (main-menu settle window)...
+Reading only GoW XINPUT1_4 import slots and their owning mapped image...
+RAVEN_IMPORT_PROBE_PROCESS pid=4364 dll=XINPUT1_4.dll slots=2 image_base=0x7FF6189C0000
+RAVEN_IMPORT_SLOT iat_rva=0xD48A48 ordinal=3 target=0x7FF87C0E9FA0 owner_method=peb owner=C:\WINDOWS\SYSTEM32\XINPUT1_4.dll
+RAVEN_IMPORT_SLOT iat_rva=0xD48A50 ordinal=2 target=0x7FF87C0E9A60 owner_method=peb owner=C:\WINDOWS\SYSTEM32\XINPUT1_4.dll
+RAVEN_IMPORT_PROBE_COMPLETE dll=XINPUT1_4.dll slots=2 owner_consistent=true
+**********************
+PowerShell transcript end
+End time: 20260921145846
+**********************
