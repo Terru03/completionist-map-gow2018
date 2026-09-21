@@ -2963,3 +2963,47 @@ end=min(len(pe.data), start+sec["rawsize"])
 ```
 
 The research question is unchanged. Next action remains the same bounded static VFS registry trace with GoW closed.
+
+
+## VFS registry trace succeeded - raw report requires compaction
+
+Evidence commit:
+
+- `d697742b8860d3ace32b2aca981f69f7a8faf58a`
+- evidence: `archive/field-logs/source-scans/lua-vfs-registry-20260921-083114/`
+
+The corrected static trace completed successfully:
+
+```text
+LUA_VFS_REGISTRY_TRACE_COMPLETE
+vfs_dispatcher_ptr_refs=766
+vfs_registry_entries_refs=8
+vfs_registry_count_refs=12
+save_opened=false
+save_written=false
+progression_written=false
+game_launched=false
+```
+
+Raw evidence sizes are unusually large:
+
+- `report.txt` ~17.8 MB
+- `report.json` ~81.6 MB
+
+This happened because the broad one-hop selection pulled in hundreds of functions via the dispatcher global. The raw evidence is preserved, but it should not be repeated or used as the normal review surface.
+
+The meaningful result so far is:
+
+- the VFS registry is real and has a small number of direct entry/count references;
+- the dispatcher pointer is shared very broadly and is not useful as an unconstrained selection root;
+- the next step is to compact the already-captured report, not rerun the executable scan.
+
+Next target: extract only:
+1. the 8 `vfs_registry_entries` references;
+2. the 12 `vfs_registry_count` references;
+3. their enclosing functions and direct calls/strings;
+4. all writers to entries/count;
+5. direct callers of `0x84FCC0`;
+6. checkpoint/save/WAD/restore/state/pickle/Raven strings only when they occur in those narrowly relevant functions.
+
+Do not regenerate the broad VFS registry report.
