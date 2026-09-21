@@ -390,7 +390,7 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertFalse(self.probe.legacyRavenHudActive())
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
 
-    def test_false_event_cannot_revive_and_atomic_snapshot_can(self):
+    def test_false_event_cannot_revive_and_postboundary_snapshot_can(self):
         self.probe.open()
         self.assertEqual(self.probe.iconCount(), 2)
         self.probe.publish(self.a["catalogue_id"], True)
@@ -401,9 +401,17 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.iconCount(), 1)
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
 
-        # A newer complete snapshot is the only path allowed to revive it.
+        # A normal newer snapshot must preserve positive in-session kill
+        # evidence; only a post-load/checkpoint atomic snapshot may clear it.
         self.probe.setNativeResponse(self.response(1))
         self.probe.open()
+        self.assertEqual(self.probe.iconCount(), 1)
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+        self.probe.boundary()
+        self.probe.setNativeResponse(self.response(2))
+        for _ in range(35):
+            self.probe.update()
         self.assertEqual(self.probe.iconCount(), 2)
         self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
 
@@ -459,13 +467,21 @@ class AllRavensMapLuaTests(unittest.TestCase):
         )
         self.assertEqual(self.probe.iconCount(), expected_visible)
 
-    def test_fresh_native_snapshot_applies_zero_killed_and_53_visible_state(self):
+    def test_fresh_native_snapshot_applies_zero_killed_after_load_boundary(self):
         self.probe.publish(self.a["catalogue_id"], True)
+
+        # A true fresh-save/load transition explicitly authorizes replacement
+        # of prior session event evidence.
         self.probe.setNativeResponse(self.response(1))
+        self.probe.boundary()
+        self.probe.setNativeResponse(self.response(2))
         self.probe.open()
+        for _ in range(35):
+            self.probe.update()
+
         self.assertEqual(self.probe.collectedCount(), 0)
         self.assertEqual(self.probe.iconCount(), 2)
-        self.assertEqual(self.probe.lastNativeGeneration(), 1)
+        self.assertEqual(self.probe.lastNativeGeneration(), 2)
 
     def test_same_and_older_native_generations_do_not_churn(self):
         self.probe.setNativeResponse(self.response(3, [self.a]))
