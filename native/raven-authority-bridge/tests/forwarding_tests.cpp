@@ -34,6 +34,8 @@ int wmain(int argc, wchar_t** argv) {
     return Fail("forwarded CreateDXGIFactory1 failed");
   }
   factory->Release();
+  // Test host fails exe gate. Let worker log rejection before process teardown.
+  Sleep(1000);
   std::cout << "RAVEN_BRIDGE_FORWARDING_TEST_PASSED\n";
   return 0;
 }

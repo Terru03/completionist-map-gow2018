@@ -3595,6 +3595,42 @@ Next step should be implementation-focused, not another broad research pass: bui
 Use a long Codex/Sol pass for this implementation so the new usage window is spent on one coherent build/testable deliverable rather than multiple short speculative probes.
 
 
+## Clean-room DXGI bridge implementation - proxy and native authority reader complete
+
+Implementation stage commits begin at:
+
+- `667b8fd` - clean-room x64 `dxgi.dll` proxy, System32-only `CreateDXGIFactory1` forwarding, safe post-forward worker start, offline forwarding tests, and reproducible MSVC/CMake build.
+
+The next stage ports the already-accepted authority model into the DLL. It does not reopen Raven research. The bridge now uses:
+
+- exact supported `GoW.exe` SHA-256 gate;
+- the proven staged table/pool RVAs and `0xA8` record layout;
+- two equal bounded in-process reads;
+- cached Channel-A Lua length framing;
+- bounded carrier/graph decode;
+- the exact 53-entry `(registry_hash, object_hash)` catalogue;
+- absent-WAD default-false only when the WAD is absent from the complete staged snapshot;
+- an atomic native `CompletionistMapGetRavenSnapshotV1` API.
+
+Fresh offline verification against the accepted 425-record capture reports:
+
+```text
+RAVEN_BRIDGE_AUTHORITY_TESTS_PASSED states=53 explicit=42 absentWadFalse=11 killed=27 alive=26
+```
+
+It also verifies Veithurgard `false,true,true` and concurrent all-or-nothing snapshot publication.
+
+Current exact boundary:
+
+- proxy/load path: implemented and offline-forwarding proven;
+- native 53-state authority reader: implemented and accepted-capture proven;
+- save/progression writes: none;
+- upstream `version.dll`: untouched;
+- remaining boundary: deliver the native snapshot to existing map/compass Lua without raw engine patching, or prove a native marker synchronization route.
+
+Do not redo authority, identity, save codec, absence, VFS, `package.loadlib`, or built-in Lua API research. Finish fail-closed install/rollback and one runtime load-proof runner before user testing.
+
+
 ## Codex Sol DXGI bridge implementation task prepared
 
 A long implementation-focused Codex/Sol task has been added:

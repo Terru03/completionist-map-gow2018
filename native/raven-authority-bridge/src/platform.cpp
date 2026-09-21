@@ -23,7 +23,7 @@ bool AddPathPart(std::wstring* path, std::wstring_view part) {
   return true;
 }
 
-bool GetModulePath(std::wstring* path, DWORD* error) {
+bool GetModulePathInternal(std::wstring* path, DWORD* error) {
   if (path == nullptr) {
     if (error != nullptr) {
       *error = ERROR_INVALID_PARAMETER;
@@ -93,8 +93,12 @@ bool BuildSystemDxgiPath(std::wstring* path, DWORD* error) {
   return true;
 }
 
+bool BuildModulePath(std::wstring* path, DWORD* error) {
+  return GetModulePathInternal(path, error);
+}
+
 bool BuildModuleDirectory(std::wstring* path, DWORD* error) {
-  if (!GetModulePath(path, error)) {
+  if (!GetModulePathInternal(path, error)) {
     return false;
   }
   const size_t slash = path->find_last_of(L"\\/");

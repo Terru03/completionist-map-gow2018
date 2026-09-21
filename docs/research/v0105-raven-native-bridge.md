@@ -4,7 +4,7 @@
 
 The selected release architecture is a clean-room Windows x64 `dxgi.dll` proxy. It coexists with the user's upstream `version.dll` Script Loader and never modifies that loader.
 
-Current implementation stage: DXGI forwarding build proof. Raven staged-authority decoding and delivery are still being added.
+Current implementation stage: DXGI forwarding and native staged-authority reader are buildable and pass the accepted archived replay. Delivery into the existing Lua map remains open.
 
 ## Load architecture
 
@@ -20,6 +20,34 @@ The supported `GoW.exe` imports one DXGI symbol: `CreateDXGIFactory1`. The proxy
 - The bridge never calls `SaveGame` and never force-loads a WAD.
 - Bridge diagnostics live under `mods/completionist-map/native/`.
 - Install and rollback must be manifest/hash gated and must leave `version.dll` untouched.
+
+## Raven authority reader
+
+The bridge ports the accepted Channel-A logic without opening a save file:
+
+- exact supported-executable hash gate;
+- proven staged globals at `0x22C6938`, `0x22C6940`, `0x22C696C`, and `0x22C7170`;
+- two equal bounded table/pool reads before decode;
+- native cached Lua length framing;
+- bounded MSB-first bit-phase search;
+- zlib carrier decode using upstream zlib `v1.3.1` pinned to commit `925af44f3cde53c6b076611c297850091b5dc7bb`;
+- exact 53-entry `(registry_hash, object_hash)` matching;
+- native absent-WAD default-false rule;
+- all-or-nothing 53-state publication through `CompletionistMapGetRavenSnapshotV1`.
+
+The worker publishes only a complete snapshot. Present WAD plus missing, conflicting, ambiguous, malformed, changing, or out-of-bounds state rejects the whole candidate. The bridge never exposes a partial table.
+
+Offline replay of the accepted 425-record capture passes with:
+
+```text
+RAVEN_BRIDGE_AUTHORITY_TESTS_PASSED states=53 explicit=42 absentWadFalse=11 killed=27 alive=26
+```
+
+The test also proves the Veithurgard `false,true,true` fixture and stresses atomic snapshot publication between all-alive and all-killed vectors.
+
+## Open delivery boundary
+
+The bridge currently exposes a read-only native snapshot API. The existing Lua map cannot call it yet because `package.loadlib` and all direct built-in authority bindings are closed. No engine bytes are patched. Until a legitimate Lua registration/call boundary or native marker synchronization is proven, this is a load-proof architecture, not runtime-ready map delivery.
 
 ## Compatibility caveat
 

@@ -5,6 +5,7 @@
 #include <atomic>
 #include <string>
 
+#include "authority_runtime.h"
 #include "platform.h"
 
 namespace {
@@ -45,11 +46,7 @@ BOOL CALLBACK ResolveRealDxgi(PINIT_ONCE, PVOID, PVOID*) {
 }
 
 unsigned __stdcall InitializeBridge(void*) {
-  completionist::AppendBridgeLog(
-      "RAVEN_NATIVE_BRIDGE_PROXY_LOADED real_dxgi=system32 "
-      "save_writes=false progression_writes=false");
-  completionist::AppendBridgeLog(
-      "RAVEN_NATIVE_BRIDGE_DELIVERY_PENDING stage=proxy_only");
+  completionist::RunAuthorityWorker();
   return 0;
 }
 
