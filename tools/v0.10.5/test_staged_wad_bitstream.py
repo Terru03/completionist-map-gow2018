@@ -193,6 +193,16 @@ class ChannelATests(unittest.TestCase):
         self.assertIs(result["raven_states"][TARGET], True)
         self.assertNotIn("stream_marker_cap", [r["reason"] for r in result["ambiguity_reasons"]])
 
+    def test_unmatched_raven_state_identity_is_preserved(self):
+        module = subject._decoder()
+        parsed = module.decode_one_carrier(self.dead, self.registry, {})
+        self.assertEqual(len(parsed["raven_state_entries_all"]), 1)
+        self.assertEqual(len(parsed["unmatched_raven_state_entries"]), 1)
+        entry = parsed["unmatched_raven_state_entries"][0]
+        self.assertIsNone(entry["catalogue_id"])
+        self.assertIs(entry["ravenKilled"], True)
+        self.assertTrue(entry["record_payload_hex"].startswith("01"))
+
     def test_raw_identity_need_not_exist_in_envelope(self):
         packed = pack([self.dead], 3)
         target_hash = next(key for key, value in self.objects.items() if value == TARGET)
