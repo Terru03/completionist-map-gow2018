@@ -57,6 +57,14 @@ class AllRavensTemplateTests(unittest.TestCase):
             "defer alive state to atomic 53-Raven authority",
         )
         self.assertEqual(
+            state["event_kill_overlay"],
+            "persists across normal newer snapshots until explicit load boundary",
+        )
+        self.assertEqual(
+            state["event_overlay_clear_policy"],
+            "first strictly newer post-boundary atomic snapshot",
+        )
+        self.assertEqual(
             state["load_boundary_sources"],
             ["EVT_LoadSaveData", "EVT_LoadSaveFile_Done", "OnRestoreCheckpoint"],
         )
@@ -89,6 +97,8 @@ class AllRavensTemplateTests(unittest.TestCase):
         self.assertIn("postLoadBoundedRefresh=true", self.map_hook)
         self.assertIn("positiveEventEvidenceOnly=true", self.map_hook)
         self.assertIn("atomicAuthorityClearsState=true", self.map_hook)
+        self.assertIn("sessionKillOverlay=true", self.map_hook)
+        self.assertIn("loadBoundaryClearsOverlay=true", self.map_hook)
         self.assertIn("restoreBoundedRetry=", self.event_hook)
         self.assertIn("positiveEvidenceOnly=true", self.event_hook)
         self.assertIn("restoreAuthorityBoundary=true", self.event_hook)
