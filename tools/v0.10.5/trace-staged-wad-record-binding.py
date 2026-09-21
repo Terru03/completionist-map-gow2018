@@ -7,8 +7,9 @@ from the current 0xA8 staged table can be proven never-persisted, or whether its
 record was retired to another backing store.
 
 This probe:
-  * enumerates indexed memory references to +/-0xEE18 and nearby WAD fields;
-  * classifies exact +0xEE18 reads/writes using Capstone access bits from index;
+  * scans executable section bytes for the disp32 encodings of +/-0xEE18 and
+    nearby WAD fields, then validates candidates with Capstone;
+  * classifies exact +0xEE18 reads/writes from validated instructions;
   * emits full enclosing functions for every +0xEE18/-0xEE18 hit;
   * records callers/callees and staging-global references;
   * highlights direct writes to the binding field and functions that both touch
@@ -131,27 +132,72 @@ def main()->int:
     md,opimm,opmem,rip=load_capstone(a.capstone_path)
     con=sqlite3.connect(f"file:{a.db.as_posix()}?mode=ro",uri=True)
     try:
-        marks=",".join("?" for _ in RELATED_DISPS)
-        refs=rows(con.execute(
-            f"SELECT site,src_fn,mnemonic,operand_index,base,idx,scale,disp,access "
-            f"FROM mem_refs WHERE disp IN ({marks}) ORDER BY src_fn,site,operand_index",
-            RELATED_DISPS,
-        ))
-        exact=[r for r in refs if r["disp"]==BINDING]
-        write_refs=[r for r in exact if is_write(r["access"])]
-        read_refs=[r for r in exact if not is_write(r["access"])]
+        # The research index deliberately omits many large structure
+        # displacements from mem_refs. Locate candidate functions directly from
+        # the executable bytes instead: every +/-0xEE18 memory operand uses a
+        # disp32 encoding, so searching the executable sections for those
+        # little-endian signed values is lossless for this field. Candidates are
+        # then validated by full Capstone disassembly of the enclosing function.
+        encoded={d:int(d & 0xffffffff).to_bytes(4,"little") for d in RELATED_DISPS}
+        raw_hits=[]
+        candidate_fns=set()
+        for sec_name,vaddr,vsize,rsize,roff in pe.sections:
+            if sec_name!=".text":
+                continue
+            blob=pe.data[roff:roff+rsize]
+            for disp,needle in encoded.items():
+                pos=0
+                while True:
+                    idx=blob.find(needle,pos)
+                    if idx<0:
+                        break
+                    rva=vaddr+idx
+                    fn=fn_for(con,rva)
+                    raw_hits.append({
+                        "section":sec_name,
+                        "disp":disp,
+                        "rva":rva,
+                        "function":fn["begin"] if fn else None,
+                    })
+                    if fn:
+                        candidate_fns.add(fn["begin"])
+                    pos=idx+1
 
-        hit_fns=sorted(set(r["src_fn"] for r in refs))
+        refs=[]
+        exact=[]
         functions=[]
-        for begin in hit_fns:
+        for begin in sorted(candidate_fns):
             fn=fn_for(con,begin)
             if not fn:
                 continue
             instructions=dis(md,pe,fn["begin"],fn["end"],opimm,opmem,rip)
-            binding_ins=[
-                x for x in instructions
-                if any(m["disp"] in (-BINDING,BINDING) for m in x["mem"])
-            ]
+            related_ins=[]
+            binding_ins=[]
+            for x in instructions:
+                for m in x["mem"]:
+                    if m["disp"] in RELATED_DISPS:
+                        row={
+                            "site":x["rva"],
+                            "src_fn":fn["begin"],
+                            "mnemonic":x["mnemonic"],
+                            "op_str":x["op_str"],
+                            "operand_index":m["operand_index"],
+                            "base":m["base"],
+                            "idx":m["index"],
+                            "scale":m["scale"],
+                            "disp":m["disp"],
+                            "access":m["access"],
+                            "bytes":x["bytes"],
+                        }
+                        refs.append(row)
+                        related_ins.append(x)
+                        if m["disp"]==BINDING:
+                            exact.append(row)
+                    if m["disp"] in (-BINDING,BINDING):
+                        binding_ins.append(x)
+            if not related_ins:
+                continue
+            global_hits=[]
             global_hits=[]
             for x in instructions:
                 names=[
@@ -178,6 +224,10 @@ def main()->int:
                 "instructions":instructions,
             })
 
+        write_refs=[r for r in exact if is_write(r["access"])]
+        read_refs=[r for r in exact if not is_write(r["access"])]
+        hit_fns=sorted(set(r["src_fn"] for r in refs))
+
         # Also list every indexed source function that references the main
         # staged globals. This helps identify a bind function even if it writes
         # +0xEE18 indirectly after taking the field address.
@@ -198,7 +248,9 @@ def main()->int:
             "exe_sha256":digest,
             "binding_offset":BINDING,
             "related_displacements":list(RELATED_DISPS),
-            "indexed_related_ref_count":len(refs),
+            "raw_disp32_hit_count":len(raw_hits),
+            "raw_disp32_hits":raw_hits,
+            "validated_related_ref_count":len(refs),
             "exact_binding_ref_count":len(exact),
             "exact_binding_write_count":len(write_refs),
             "exact_binding_read_count":len(read_refs),
@@ -229,13 +281,14 @@ def main()->int:
         f"exe_sha256={digest}",
         "mode=static read-only",
         f"binding_offset=0x{BINDING:X}",
-        f"related_refs={len(refs)} exact_binding_refs={len(exact)} "
+        f"raw_disp32_hits={len(raw_hits)} validated_related_refs={len(refs)} "
+        f"exact_binding_refs={len(exact)} "
         f"writes={len(write_refs)} reads={len(read_refs)}",
         "",
         "EXACT +0xEE18 WRITES",
     ]
     if not write_refs:
-        L.append("  none indexed")
+        L.append("  none validated")
     for r in write_refs:
         L.append(
             f"  site=0x{r['site']:X} fn=0x{r['src_fn']:X} "
