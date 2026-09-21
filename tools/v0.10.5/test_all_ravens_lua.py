@@ -515,15 +515,28 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
 
-    def test_immediate_event_kill_survives_same_generation_map_reopen(self):
+    def test_immediate_event_kill_survives_newer_preboundary_snapshot(self):
         self.probe.setNativeResponse(self.response(1))
         self.probe.open()
         self.probe.publish(self.a["catalogue_id"], True)
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+        # A newer periodic capture can still reflect pre-kill state. Without a
+        # load boundary it must merge the positive event overlay, not revive.
         self.probe.teardown()
+        self.probe.setNativeResponse(self.response(2))
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+        # After an explicit load boundary, a strictly newer atomic snapshot is
+        # allowed to clear the session event overlay.
+        self.probe.boundary()
+        self.probe.setNativeResponse(self.response(3))
+        for _ in range(35):
+            self.probe.update()
+        self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
+        self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
 
     def test_new_native_generation_is_only_alive_clear_path(self):
         self.probe.setNativeResponse(self.response(1, [self.a]))
