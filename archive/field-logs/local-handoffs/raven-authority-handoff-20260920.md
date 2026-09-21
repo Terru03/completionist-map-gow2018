@@ -3703,3 +3703,40 @@ Acceptable intermediate target:
 `RAVEN_NATIVE_BRIDGE_LOAD_PROOF_READY`
 
 Do not spend that window redoing closed Lua/VFS/save-codec/identity research.
+
+
+## Load-proof runner verified before live test
+
+Assistant verification against branch HEAD:
+
+- HEAD: `ccd310013a4d18790ac6bca1792f9a4396bd286e`
+- branch: `codex/all-ravens-release-candidate`
+- runner: `tools/v0.10.5/run-raven-authority-bridge-load-proof-and-push.ps1`
+
+Verified success gates in the runner:
+
+```text
+RAVEN_NATIVE_BRIDGE_PROXY_LOADED
+RAVEN_NATIVE_BRIDGE_DXGI_FORWARDED ... success=true
+RAVEN_NATIVE_BRIDGE_EXE_ACCEPTED
+RAVEN_NATIVE_BRIDGE_SNAPSHOT_ACCEPTED ... count=53 unknown=0
+RAVEN_NATIVE_BRIDGE_DELIVERY_PENDING
+```
+
+The runner also:
+
+- requires GoW closed before install;
+- rebuilds and reruns native tests;
+- installs only the manifest-owned `dxgi.dll`;
+- records the pre-test `version.dll` hash;
+- launches GoW for one advanced-save/map-open pass;
+- extracts only fresh bridge-log lines;
+- rolls the bridge back;
+- verifies exact pre-run `dxgi.dll`/manifest restoration;
+- verifies `version.dll` remains byte-identical;
+- archives the result and pushes it to the same branch;
+- attempts rollback even on failure.
+
+Next action is the live load proof. No additional static research or implementation should be done before this result.
+
+After the proof is pushed, inspect the new runtime-capture evidence first. If it passes, the only remaining architecture boundary is delivery of the accepted native snapshot into the existing Lua map/compass implementation.
