@@ -798,7 +798,6 @@ RTTI proves:
 - vtable `0xE04018` = **LuaClient** (`.?AVLuaClient@@`)
 
 ## LuaLevelClient checkpoint/backing fields
-
 Existing analyzers establish:
 
 - **`LuaLevelClient+0x68` = durable per-resource backing-state node**
@@ -1197,7 +1196,6 @@ Evidence: `archive/field-logs/source-scans/lua-context-vtable-singleton-20260920
 The LuaContext class identity is now statically resolved.
 
 ## LuaContext vtable
-
 The only non-executable qword pointer to `0x4654A0` is:
 
 ```text
@@ -1597,7 +1595,6 @@ Codex then hit its account usage limit before it could commit/push the native-an
 4. The interrupted next step was tracing the **stored checkpoint-record bytes themselves** as a possible read-only authority source that may avoid debugger/code-patching entirely.
 
 The final commands Astra was executing before the limit were focused on:
-
 - exact GameObject CodeSideLuaClass descriptor/callback semantics;
 - class-key / restore `+0xC0` evidence from archived class-descriptor scans;
 - existing active Raven subobject decoder logic;
@@ -2397,7 +2394,6 @@ where `adjusted_record_id` decrements byte index 12 modulo 256.
 Those 11 rows are exactly the 11 live-mismatching nested-container Ravens. No other Raven row satisfies the condition, and there are no non-matching long transform chains outside this set.
 
 The affected immediate parent container names are examples such as:
-
 - `goraven_03`
 - `goraven_01`
 - `goravens`
@@ -2797,7 +2793,6 @@ The corrected runner reached GoW successfully and the injected Lua probe execute
 ```text
 [CompletionistRavenNativeBridgeProbe] BRIDGE_FAILED phase=load ... dynamic libraries not enabled; check your Lua installation
 ```
-
 Safety/restore result:
 
 ```text
@@ -3198,7 +3193,6 @@ GetRefBool   0x845700
 ```
 
 The tracer:
-
 1. disassembles fixed windows at those exact RVAs without relying on runtime-function boundaries;
 2. stops each exact entry window at `ret` to avoid bleeding into adjacent wrappers;
 3. follows only direct `call/jmp` targets to depth 2;
@@ -3598,7 +3592,6 @@ Use a long Codex/Sol pass for this implementation so the new usage window is spe
 ## Clean-room DXGI bridge implementation - proxy and native authority reader complete
 
 Implementation stage commits begin at:
-
 - `667b8fd` - clean-room x64 `dxgi.dll` proxy, System32-only `CreateDXGIFactory1` forwarding, safe post-forward worker start, offline forwarding tests, and reproducible MSVC/CMake build.
 
 The next stage ports the already-accepted authority model into the DLL. It does not reopen Raven research. The bridge now uses:
@@ -4398,7 +4391,6 @@ New native probe:
 
 - `2bd18553e575d4acb3fa157fad632fc0ec168d27`
 - `native/raven-authority-bridge/tools/live_import_probe.cpp`
-
 CMake target:
 
 - `d551431cdc512f2ae5265e717b1240a33460cda9`
@@ -4798,7 +4790,6 @@ and provide the single V3 live proof command.
 
 
 ## Local DXGI offline gate reported successful
-
 The user ran the prepared offline-only gate after:
 
 - stashing the superseded local Sol edits;
@@ -5598,7 +5589,6 @@ For compass actions, v0.10.5 now has an immediate prompt refresh helper that upd
 - footer action text.
 
 A small per-selection intent tracks the just-requested state so asynchronous native compass-manager settlement cannot momentarily re-display the old action.
-
 Expected immediate transitions:
 
 ```text
@@ -5681,3 +5671,95 @@ Required observations:
 6. rollback remains exact.
 
 Do not reopen authority/load/transport research.
+
+## Addendum 2026-09-21 22:05 - final Raven authority redesign CI green
+
+The remaining live persistence and rapid compass-toggle regressions were traced to two distinct races and fixed on `codex/all-ravens-release-candidate`.
+
+### Final persistence/authority model
+
+The release candidate no longer treats a transient gameplay `ravenKilled=false` as authority.
+
+Current rules:
+
+- loaded Raven gameplay events are **positive evidence only**;
+- `ravenKilled=true` hides that exact Raven immediately;
+- `ravenKilled=false` is deferred and cannot resurrect a Raven;
+- immediate event kills are retained in a separate session kill overlay;
+- ordinary newer native snapshots merge that overlay instead of clearing it;
+- only an explicit save/load/checkpoint authority boundary may clear the overlay;
+- after such a boundary, only the first **strictly newer complete 53-Raven snapshot** may replace the previous state.
+
+The native bridge now publishes every accepted 53-Raven capture, even when all 53 states are unchanged. Snapshot generation therefore acts as a capture-freshness token as well as a state version. This allows Lua to prove that an authority snapshot was captured after a load/checkpoint boundary without any save/progression write.
+
+Relevant implementation commits in this pass include:
+
+- `31dba82` - make native Raven snapshot generation a freshness token;
+- `3f5137b` / `7eb713e` - atomic load-boundary reconciliation and kill-only gameplay evidence;
+- `b381ad0` - forbid alive writes through the gameplay event API;
+- `9ca8fe0` - preserve immediate Raven kills in a session overlay until load authority;
+- `e66eaca` - mirror the session-overlay semantics in the pure runtime model.
+
+### Final compass race fix
+
+Rapid Add -> Remove -> Add could lose the Raven HUD target because the game may temporarily expose the newly added Raven marker ID through the stock compass query while the custom class is settling.
+
+The final router now:
+
+- treats the selected Raven's own marker ID as an alias, not a foreign stock target;
+- removes only other stock targets such as the boat fallback;
+- hides known Raven aliases by Raven name when cleanup is required;
+- does not declare Add settled until the custom Raven target is positively observed;
+- does not declare Remove settled until the custom target is gone and no other stock target remains.
+
+This covers the exact live regression where the third Add produced no HUD marker.
+
+### Final CI proof
+
+Final temporary Windows CI run:
+
+- run: `35642311685`
+- tested head: `2163fed4a0173855a773065b5933d93c23b2e618`
+- conclusion: **success**
+
+Verified outputs:
+
+```text
+Ran 18 tests in 0.062s
+Ran 23 tests in 0.005s
+Ran 15 tests in 0.005s
+RAVEN_NATIVE_BRIDGE_RUNNER_TESTS_PASSED ...
+100% tests passed out of 5
+RAVEN_FINAL_AUTHORITY_SECURITY_PASSED findings=0
+```
+
+The temporary workflow was removed immediately after the green run in:
+
+- `da03a792799714c946329c6dbb923c3e4fedfce9`
+- message: `ci(v0.10.5): remove final Raven authority gate`
+
+Safety remains:
+
+- no save writes;
+- no progression/quest writes;
+- no process-memory writes;
+- no static native descriptor writes.
+
+### Exact current boundary
+
+The implementation is now ready for one final local candidate-proof refresh and one reversible live acceptance run.
+
+Before live launch, refresh only the generated Raven Lua candidate pins + authority metadata using the safe proof refresher. The three binary candidate pins must remain unchanged.
+
+The final live acceptance must verify:
+
+1. advanced save still shows only surviving Ravens;
+2. selected Raven shows `Odin's Raven` and `Completionist Map`;
+3. rapid Add -> Remove -> Add leaves the Raven HUD compass marker present;
+4. killing a live Raven removes it immediately;
+5. close/reopen map keeps it absent in the same session;
+6. checkpoint/save-load reconstruction removes exactly the killed set from authoritative state;
+7. true fresh save shows all 53 Ravens;
+8. rollback is exact.
+
+Do not reopen save codec, GameObject identity, DXGI transport, or earlier Raven authority research unless this final live proof exposes a new concrete failure.
