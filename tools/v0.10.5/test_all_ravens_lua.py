@@ -26,7 +26,7 @@ CATALOGUE = json.loads(build.CATALOGUE.read_text(encoding="utf-8"))
 
 
 MAP_PRELUDE = r'''
-calls={logs={},previousShow=0,recycled=0,nativeConnects=0,nativeRequests={}}
+calls={logs={},previousShow=0,recycled=0,nativeConnects=0,nativeRequests={},footerUpdates=0}
 customIds={}
 stockIds={}
 nativeResponse=nil
@@ -74,7 +74,35 @@ end
 print=function(s) calls.logs[#calls.logs+1]=s end
 enabledShowOnCompassMarkerFlags={"stock"}
 lamsConsts={RemoveFromCompass="remove",ReplaceInCompass="replace",AddToCompass="add"}
-util={GetLAMSMsg=function(x) return x end}
+local cursorTop={shown=false}
+function cursorTop:Show() self.shown=true; calls.cursorTopShown=true end
+function cursorTop:Hide() self.shown=false; calls.cursorTopShown=false end
+local mapCursorInfo={}
+function mapCursorInfo:Show() calls.mapCursorShown=true end
+function mapCursorInfo:FindSingleGOByName(name)
+  if name=="CursorInfo_Top" then return cursorTop end
+  return nil
+end
+local cursorHandle={}
+util={
+  GetLAMSMsg=function(x) return x end,
+  GetUiObjByName=function(name)
+    if name=="MapCursorInfo" then return mapCursorInfo end
+    return nil
+  end,
+  GetTextHandle=function(go,name)
+    if go==cursorTop and name=="CursorAction_Text" then return cursorHandle end
+    return nil
+  end,
+}
+UI={
+  SetTextIsClickable=function(handle)
+    if handle==cursorHandle then calls.cursorClickable=true end
+  end,
+  SetText=function(handle,text)
+    if handle==cursorHandle then calls.cursorPrompt=text end
+  end,
+}
 Audio={PlaySound=function(x) calls.sound=x end}
 MapOn={}
 function MapOn.GetShowOnCompassPrompt(s,m) return s.currMarkerID~=nil,"base" end
@@ -113,9 +141,22 @@ function game.Compass.HideMarker(target)
   for _,id in ipairs(stockIds) do if tostring(id)~=tostring(target) then nextStock[#nextStock+1]=id end end
   stockIds=nextStock
 end
+local menu={}
+function menu:UpdateFooterButton(name,show,text)
+  calls.footerName=name
+  calls.footerShow=show
+  calls.footerPrompt=text
+end
+function menu:UpdateFooterButtonText()
+  calls.footerUpdates=calls.footerUpdates+1
+end
 self={currRealmName="Alfheim",currMarkerID=nil,currShownMarkerID=nil,
   completionistMapV100Selected=false,completionistMapV100NornirSelected=nil,
-  completionistMapV100NornirChestSelected=nil,mapIconCollision=nil}
+  completionistMapV100NornirChestSelected=nil,mapIconCollision=nil,menu=menu}
+function self:SetReticleInfo(state,title,desc)
+  calls.reticleTitle=title
+  calls.reticleDescription=desc
+end
 probe={}
 function probe.publish(id,value) return CompletionistMapV105PublishRavenState(id,value,"test") end
 function probe.open() return CompletionistMapV100_CreateMapPin(self,{}) end
@@ -141,6 +182,11 @@ function probe.stockCount() return #stockIds end
 function probe.customAt(i) return customIds[i] end
 function probe.markerId(name) return markerId(name) end
 function probe.tracked() return CompletionistMapV105TrackedCatalogueId end
+function probe.reticleTitle() return calls.reticleTitle end
+function probe.reticleDescription() return calls.reticleDescription end
+function probe.cursorPrompt() return calls.cursorPrompt end
+function probe.footerPrompt() return calls.footerPrompt end
+function probe.footerUpdates() return calls.footerUpdates end
 function probe.teardown() MapOn.ClearIcons(self) end
 function probe.reset() return CompletionistMapV105ResetRavenStates("save_load") end
 function probe.setNativeResponse(value) nativeResponse=value end
@@ -199,6 +245,34 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.customCount(), 0)
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
         self.assertIsNotNone(self.probe.icon(self.b["marker"]["name"]))
+
+    def test_raven_reticle_and_compass_prompt_refresh_immediately(self):
+        self.probe.publish(self.a["catalogue_id"], False)
+        self.probe.publish(self.b["catalogue_id"], False)
+        self.probe.open()
+
+        show, text = self.probe.click(self.a["marker"]["name"])
+        self.assertTrue(show)
+        self.assertEqual(text, "[AdvanceButton] add")
+        self.assertEqual(self.probe.reticleTitle(), "Odin's Raven")
+        self.assertEqual(self.probe.reticleDescription(), "Completionist Map")
+        self.assertEqual(self.probe.cursorPrompt(), "[AdvanceButton] remove")
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+
+        show, text = self.probe.click(self.b["marker"]["name"])
+        self.assertTrue(show)
+        self.assertEqual(text, "[AdvanceButton] replace")
+        self.assertEqual(self.probe.reticleTitle(), "Odin's Raven")
+        self.assertEqual(self.probe.reticleDescription(), "Completionist Map")
+        self.assertEqual(self.probe.cursorPrompt(), "[AdvanceButton] remove")
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+
+        show, text = self.probe.click(self.b["marker"]["name"])
+        self.assertTrue(show)
+        self.assertEqual(text, "[AdvanceButton] remove")
+        self.assertEqual(self.probe.cursorPrompt(), "[AdvanceButton] add")
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] add")
+        self.assertGreaterEqual(self.probe.footerUpdates(), 3)
 
     def test_unknown_hidden_restore_and_teardown(self):
         self.probe.open()
