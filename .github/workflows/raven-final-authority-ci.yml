@@ -26,6 +26,7 @@ jobs:
         shell: pwsh
         run: |
           python -m py_compile .\tools\v0.10.5\raven_runtime_model.py
+          python -m py_compile .\tools\v0.10.5\prepare-all-ravens-delivery-candidate.py
           python -m py_compile .\tools\v0.10.5\test_all_ravens_lua.py
           python -m py_compile .\tools\v0.10.5\test_raven_runtime_model.py
           python -m py_compile .\tools\v0.10.5\test_all_ravens_build.py
