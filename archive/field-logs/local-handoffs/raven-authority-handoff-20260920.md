@@ -2131,3 +2131,16 @@ Across all eight MSB phases, the value `9841` appears at only two candidate leng
 - alignment 3, byte 11407 -> candidate buffer start 11409 -> bit offset `91275`; **valid zlib stream at carrier offset +0x10** and therefore the only surviving native carrier position before canonical graph decoding.
 
 This is the strongest current concrete proof that the staged Channel-A bitstream contains the per-WAD Lua restore carrier at a deterministic bit position. Next step is offline replay of the already captured 425 Channel-A slices with the refined decoder. No new game capture is required for that step.
+
+
+---
+
+# Addendum 2026-09-21 - exact-length replay test fix
+
+Commit: `0125cdf7a6663cad4d5fe2fb9fe0b4601e2526f0`
+
+The first offline replay attempt stopped in `test_cached_lua_length_is_only_cross_check`. This was a decoder-reporting bug introduced by the new exact native-length framing, not a failure of the captured Channel-A data.
+
+With `expected_lua_length` supplied, the refined decoder searches the eight MSB bit phases for that exact 16-bit big-endian length. If the supplied length is deliberately wrong, there may be no matching positions at all. The decoder previously returned zero candidates with an empty rejection list, while the existing fail-closed regression correctly expected an explicit `cached_lua_length_mismatch` reason.
+
+The decoder now records `cached_lua_length_mismatch` when no native length position matches the staged record's expected Lua length. No capture format, native framing, Raven codec, or runtime evidence changed.
