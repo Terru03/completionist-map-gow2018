@@ -2713,7 +2713,7 @@ Files:
 Probe DLL SHA-256:
 
 ```text
-ba66ad78fb6851d79419591b962858c2cd14492ea4be5ee6c56cc060d34137eb
+79afab868a49776c6cd6e7c2bce8efa64a8f8edecb4eb664e7ae923f0da17fa5
 ```
 
 The DLL has no imported runtime dependency and exports:
@@ -2735,3 +2735,20 @@ result=RAVEN_NATIVE_LUA_BRIDGE_PROVEN
 ```
 
 If this passes, the next implementation step is to replace the fixed test booleans with the proven staged Raven authority decoder inside the same native bridge and wire the resulting 53-state snapshot into map-open synchronisation.
+
+
+## Native bridge probe preflight correction
+
+First local run produced capture commit `9a42157` and correctly stopped before game launch with:
+
+```text
+RAVEN_NATIVE_BRIDGE_PROBE_FAILED: Bridge probe DLL SHA mismatch: 79afab868a49776c6cd6e7c2bce8efa64a8f8edecb4eb664e7ae923f0da17fa5
+```
+
+The runner had accidentally pinned a stale pre-commit DLL SHA (`ba66ad78...`) instead of the SHA of the DLL actually committed to Git. No GoW process was launched and no game/save/progression writes occurred.
+
+Correction commit:
+
+- `9104df8116b34db216da232218a8ab0927482a59` - pin the committed probe DLL SHA in the runner.
+
+Next step: rerun the same self-restoring native bridge probe. It should now pass preflight, launch GoW, and wait for a main-menu launch/exit so the Lua C ABI evidence can be captured and pushed.
