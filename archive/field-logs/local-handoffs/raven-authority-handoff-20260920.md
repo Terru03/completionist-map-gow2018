@@ -2293,3 +2293,32 @@ The final object's `parent_prototype_id` is only the already-known byte-12-decre
 5. accepts a solution only when the rebuilt native `0x401` identity hash exactly equals an observed live checkpoint object hash from that same WAD.
 
 No process access or save writes are used. The next step is to run this static solver locally against the shipped WADs and inspect whether the nested cases resolve uniquely.
+
+
+---
+
+# Addendum 2026-09-21 - nested identity insertion model rejected; replacement model added
+
+Runtime-backed static solver evidence commit: `e58b0cecfee2d24160cfaa24631e092b4cff50a2`
+
+Result:
+
+```text
+catalogue_rows_with_live_wad=42
+base_hash_matches_live=31
+unique_solution=0
+multiple_solutions=0
+no_solution=11
+parent_prototype_record_missing=0
+```
+
+Interpretation:
+
+- 31 of the 42 Ravens represented in the live packed checkpoint already match the existing static object-hash reconstruction exactly.
+- All 11 failures are nested-container cases.
+- The first solver tested whether one referenced parent-prototype identity element could simply be inserted anywhere in the existing identity vector. None of the 11 live hashes matched that model.
+- Therefore the missing native parent contribution is not a simple additive element under the current sequence.
+
+Commit `4f0f0e347af8824b3bcf5a21500f722ab6f3547c` extends the static solver with the next native model: a parent object's own `object+0x40` identity element may **replace** the simplified transform-record-derived element currently used for that intermediate parent. The solver now tests both insertion and one-for-one replacement, still accepting only exact equality with live packed-checkpoint object hashes.
+
+Next step: rerun the same static solver. If replacement resolves the 11 cases uniquely, fold those parent identity elements into the 53-entry serialized Raven identity generator. If it still fails, inspect the full parent metadata vector rather than guessing additional elements.
