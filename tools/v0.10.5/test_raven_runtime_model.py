@@ -82,6 +82,16 @@ class RavenRuntimeTests(unittest.TestCase):
         self.assertEqual(model.apply_native_snapshot(3, []), "applied")
         self.assertEqual(model.state[self.a["catalogue_id"]], "unknown")
 
+    def test_false_gameplay_event_never_clears_confirmed_kill(self):
+        model = self.model()
+        self.assertEqual(
+            model.apply_native_snapshot(6, [self.a["catalogue_id"]]), "applied"
+        )
+        self.assertEqual(
+            model.observe_event(self.a["catalogue_id"], False), "deferred"
+        )
+        self.assertEqual(model.state[self.a["catalogue_id"]], "collected")
+
     def test_immediate_event_after_native_refresh_then_new_generation_reasserts(self):
         model = self.model()
         model.open_map(self.a["realm"])
@@ -208,17 +218,33 @@ class RavenRuntimeTests(unittest.TestCase):
             model.observe(self.a["catalogue_id"], True)
             self.assertEqual(model.active_target, target)
 
-    def test_restore_uncollected_reappears_and_recollects(self):
+    def test_restore_false_waits_for_fresh_atomic_authority(self):
         model = self.model()
-        model.observe(self.a["catalogue_id"], True)
+        self.assertEqual(
+            model.apply_native_snapshot(4, [self.a["catalogue_id"]]), "applied"
+        )
         model.open_map(self.a["realm"])
-        model.restore(self.a["catalogue_id"], False)
-        self.assertIn(self.a["catalogue_id"], model.map_icons)
-        self.arm(model, self.a)
-        model.click_raven(self.a["marker"]["uid"])
-        model.observe(self.a["catalogue_id"], True)
         self.assertNotIn(self.a["catalogue_id"], model.map_icons)
-        self.assertIsNone(model.active_target)
+
+        self.assertEqual(model.restore(self.a["catalogue_id"], False), "deferred")
+        self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+        self.assertEqual(model.apply_native_snapshot(4, []), "boundary_wait")
+        self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+
+        self.assertEqual(model.apply_native_snapshot(5, []), "applied")
+        self.assertIn(self.a["catalogue_id"], model.map_icons)
+
+    def test_restore_true_may_hide_immediately_while_boundary_reconciles(self):
+        model = self.model()
+        self.assertEqual(model.apply_native_snapshot(2, []), "applied")
+        model.open_map(self.a["realm"])
+        self.assertIn(self.a["catalogue_id"], model.map_icons)
+        self.assertEqual(model.restore(self.a["catalogue_id"], True), "applied")
+        self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+        self.assertEqual(
+            model.apply_native_snapshot(3, [self.a["catalogue_id"]]), "applied"
+        )
+        self.assertNotIn(self.a["catalogue_id"], model.map_icons)
 
     def test_teardown_cleans_ui_and_no_permanent_polling(self):
         model = self.model()
@@ -230,16 +256,23 @@ class RavenRuntimeTests(unittest.TestCase):
         self.assertIsNone(model.selection)
         self.assertFalse(model.permanent_polling)
 
-    def test_loading_other_save_clears_cached_state_then_defaults_to_catalogue(self):
+    def test_loading_other_save_preserves_last_good_state_until_fresh_snapshot(self):
         model = self.model()
-        model.observe(self.a["catalogue_id"], True)
+        self.assertEqual(
+            model.apply_native_snapshot(10, [self.a["catalogue_id"]]), "applied"
+        )
         model.open_map(self.a["realm"])
         model.load_save()
-        self.assertTrue(all(value == "unknown" for value in model.state.values()))
+        self.assertEqual(model.state[self.a["catalogue_id"]], "collected")
         self.assertEqual(model.map_icons, set())
         self.assertIsNone(model.selection)
         self.assertIsNone(model.active_target)
+
         model.open_map(self.a["realm"])
+        self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+        self.assertEqual(model.apply_native_snapshot(10, []), "boundary_wait")
+        self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+        self.assertEqual(model.apply_native_snapshot(11, []), "applied")
         self.assertIn(self.a["catalogue_id"], model.map_icons)
 
 
