@@ -227,6 +227,22 @@ class RavenRuntimeTests(unittest.TestCase):
             model.observe(self.a["catalogue_id"], True)
             self.assertEqual(model.active_target, target)
 
+    def test_unknown_boundary_baseline_consumes_one_snapshot_before_apply(self):
+        model = self.model()
+        self.assertEqual(
+            model.apply_native_snapshot(4, [self.a["catalogue_id"]]), "applied"
+        )
+        model.open_map(self.a["realm"])
+        model.notify_load_boundary(baseline_available=False)
+
+        self.assertEqual(model.apply_native_snapshot(5, []), "boundary_baseline")
+        self.assertEqual(model.state[self.a["catalogue_id"]], "collected")
+        self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+
+        self.assertEqual(model.apply_native_snapshot(6, []), "applied")
+        self.assertNotEqual(model.state[self.a["catalogue_id"]], "collected")
+        self.assertIn(self.a["catalogue_id"], model.map_icons)
+
     def test_restore_false_waits_for_fresh_atomic_authority(self):
         model = self.model()
         self.assertEqual(
