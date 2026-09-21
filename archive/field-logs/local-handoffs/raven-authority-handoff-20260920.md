@@ -2643,3 +2643,95 @@ absence_default_false_count=11
 ```
 
 This closes the 53-Raven staged authority model. Overall mod `production_ready` remains false until this complete authority result is wired into the runtime map path and validated against fresh-save, old-save, map-reopen, immediate-kill, and restore fixtures.
+
+
+---
+
+# Addendum 2026-09-21 - complete 53-Raven staged authority accepted; native Lua delivery probe prepared
+
+Offline acceptance commit: `24a0c7bc159ecdfdbe7941aca779485eb11e681a`.
+
+The existing archived live staged snapshot now replays as:
+
+```text
+candidate_state_count=53
+unknown_count=0
+absence_default_false_count=11
+production_ready=false
+```
+
+This closes the complete 53-Raven staged authority model:
+
+- 42 Raven states come from explicit decoded `ravenKilled` rows in Channel A;
+- 11 Raven states come from the proven native absent-WAD default-false rule;
+- zero Raven state remains unknown;
+- the Veithurgard `false,true,true` fixture remains exact.
+
+`production_ready` remains false only because this complete authority result still needs to be delivered into the in-game map runtime and validated end-to-end.
+
+## Runtime delivery route
+
+The previous runtime capability capture proves the game's Lua environment has:
+
+```text
+package=table
+package.loadlib=true
+io=nil
+os=nil
+```
+
+The GoW Script Loader source also shows it executes the game's own Lua VM directly. Therefore the preferred runtime architecture is a small in-process, read-only Lua C module loaded with `package.loadlib`, rather than an external Python sidecar or polling process.
+
+The final native module is intended to:
+
+1. read the proven staged WAD table directly from the current GoW process;
+2. decode the complete 53-Raven state vector read-only;
+3. return booleans to Lua;
+4. let the existing map runtime atomically replace Raven state before map-icon synchronisation;
+5. leave the already-proven loaded-Raven `ravenKilled` event path unchanged for immediate kill/restore updates.
+
+No save/progression writes are introduced.
+
+## Native Lua ABI probe
+
+Before porting the decoder, a deliberately minimal bridge probe was added to prove the actual Lua C-function ABI and DLL loading path inside the game.
+
+Commits:
+
+- `2e646bbbd58ad3a0473810e2414d0c067b5ca66b` - native probe C source.
+- `89bd06a9cf47bdb37fe42d6a2faa9436104b33b1` - compiled import-free Windows x64 probe DLL.
+- `99c6fc5f4b79bd62f670557f6e44fb34d3d9ccc9` - Lua `package.loadlib` ABI validation script.
+- `207bda08a35a015f7e00d9c2a1a86d50109a362a` - self-restoring runtime probe runner.
+
+Files:
+
+- `native/v0.10.5/completionist_raven_authority_probe.c`
+- `native/v0.10.5/completionist_raven_authority_probe.dll`
+- `tools/v0.10.5/raven-native-bridge-probe.lua`
+- `tools/v0.10.5/run-raven-native-bridge-probe-and-push.ps1`
+
+Probe DLL SHA-256:
+
+```text
+ba66ad78fb6851d79419591b962858c2cd14492ea4be5ee6c56cc060d34137eb
+```
+
+The DLL has no imported runtime dependency and exports:
+
+- `completionist_raven_probe_a`
+- `completionist_raven_probe_b`
+- `completionist_raven_probe_c`
+- `DllMain`
+
+The three probe functions return success plus 18, 18, and 17 Lua booleans respectively, for exactly 53 test booleans. The Lua probe validates result count, type, and a fixed alternating pattern.
+
+The runner temporarily appends the Lua probe to installed `mapmenu.lua`, copies the test DLL under `mods\\completionist_map`, launches the game, captures only the fresh loader-log lines, then restores `mapmenu.lua` byte-for-byte and restores/removes the DLL. No save needs to be loaded.
+
+Expected acceptance marker:
+
+```text
+[CompletionistRavenNativeBridgeProbe] BRIDGE_OK ... chunks=18,18,17 total=53 ...
+result=RAVEN_NATIVE_LUA_BRIDGE_PROVEN
+```
+
+If this passes, the next implementation step is to replace the fixed test booleans with the proven staged Raven authority decoder inside the same native bridge and wire the resulting 53-state snapshot into map-open synchronisation.
