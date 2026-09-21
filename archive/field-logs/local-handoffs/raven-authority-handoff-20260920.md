@@ -2929,3 +2929,37 @@ Acceptance decision after this run:
 - otherwise close VFS as a delivery route and return to the proven native staged-record owner path.
 
 Next action: run `trace-lua-vfs-registry-and-push.ps1` with GoW closed.
+
+
+## VFS registry trace first run - PE section schema correction
+
+Failed evidence commit:
+
+- `5f9ce0404e13965704a6ca6350fa79b61c15a656`
+- evidence directory: `archive/field-logs/source-scans/lua-vfs-registry-20260921-082511/`
+
+Failure:
+
+```text
+KeyError: 'raw_ptr'
+```
+
+The failure occurred only in the tracer's non-executable section string-scan stage. It did not launch or attach to GoW and did not access or write saves/progression.
+
+Cause:
+
+- the new tracer assumed PE section dictionary keys `raw_ptr` / `raw_size`;
+- the repository's proven PE helper actually exposes `raw` / `rawsize`.
+
+Correction:
+
+- `351c05ae0b2b851de5cab23e27a7a691759f1466` - update the VFS registry tracer to use the existing PE helper schema and clamp the scan range to the executable byte length.
+
+Corrected code now uses:
+
+```python
+start=sec["raw"]
+end=min(len(pe.data), start+sec["rawsize"])
+```
+
+The research question is unchanged. Next action remains the same bounded static VFS registry trace with GoW closed.
