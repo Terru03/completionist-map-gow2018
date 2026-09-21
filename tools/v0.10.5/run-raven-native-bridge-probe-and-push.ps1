@@ -23,7 +23,7 @@ $dllTarget = Join-Path $dllDir 'completionist_raven_authority_probe.dll'
 $loaderLog = Join-Path $GameRoot 'mods\loader_log.txt'
 $exe = Join-Path $GameRoot 'GoW.exe'
 $expectedExeHash = 'caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452'
-$expectedDllHash = 'ba66ad78fb6851d79419591b962858c2cd14492ea4be5ee6c56cc060d34137eb'
+$expectedDllHash = '79afab868a49776c6cd6e7c2bce8efa64a8f8edecb4eb664e7ae923f0da17fa5'
 
 $stamp = (Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss')
 $relativeDir = "archive/field-logs/runtime-captures/raven-native-bridge-probe-$stamp"
