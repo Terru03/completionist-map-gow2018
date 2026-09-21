@@ -4178,3 +4178,45 @@ Acceptance:
 - if a game-root XInput path appears only when a proxy is installed, then revisit initialization timing/logging rather than load-point selection.
 
 Do not change Raven authority while resolving this.
+
+
+## Module-path observer enumeration bug fixed
+
+Failed capture evidence:
+
+- `fd3959ffeb8cf11d962c54973c1959068cf39fe2`
+- capture: `archive/field-logs/runtime-captures/gow-loaded-module-paths-20260921-112406/`
+
+The observer successfully found the actual long-lived game process:
+
+```text
+Live GoW process found: PID=2980
+```
+
+but failed after the 10-second settle period with:
+
+```text
+Module enumeration failed for PID 2980:
+The property 'ModuleName' cannot be found on this object.
+```
+
+Root cause is in the observer tooling, not GoW or module access:
+
+- `@($Process.Modules)` was treated as one `ProcessModuleCollection` object by this PowerShell/.NET runtime;
+- the loop variable therefore became the collection instead of an individual `ProcessModule`;
+- `ModuleName` does not exist on the collection.
+
+Fix commit:
+
+- `6b0583a6ae67ab9872288a1c033a476be92fe41a`
+
+The observer now:
+
+1. stores `$Process.Modules` as `$moduleCollection`;
+2. iterates from `0` to `$moduleCollection.Count - 1`;
+3. accesses each module by index;
+4. reads `ModuleName/FileName/BaseAddress/ModuleMemorySize` from the actual `ProcessModule`.
+
+No native proxy, process writes, save writes, progression writes, or game-file writes are introduced by this fix.
+
+Next action: rerun the same read-only module-path capture with GoW fully closed. The result should directly settle whether the live game process loads `XINPUT1_4.dll` from System32, the game directory, or not at all.
