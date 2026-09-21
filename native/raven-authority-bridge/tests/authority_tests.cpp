@@ -126,6 +126,22 @@ int wmain() {
   reader.join();
   if (torn.load()) return Fail("snapshot store exposed torn state");
 
+  completionist::SnapshotStore freshness_store;
+  completionist::NativeRavenSnapshot stable;
+  stable.killed.fill(false);
+  stable.alive_count = 53;
+  freshness_store.Publish(stable);
+  completionist::NativeRavenSnapshot freshness_first;
+  if (!freshness_store.Read(&freshness_first)) {
+    return Fail("freshness store first read unavailable");
+  }
+  freshness_store.Publish(stable);
+  completionist::NativeRavenSnapshot freshness_second;
+  if (!freshness_store.Read(&freshness_second) ||
+      freshness_second.generation != freshness_first.generation + 1) {
+    return Fail("identical accepted capture did not advance freshness generation");
+  }
+
   completionist::NativeRavenSnapshot wire;
   wire.generation = 7;
   wire.captured_tick_ms = 1234;
@@ -168,6 +184,6 @@ int wmain() {
 
   std::cout << "RAVEN_BRIDGE_AUTHORITY_TESTS_PASSED states=53 explicit=42 "
                "absentWadFalse=11 killed=27 alive=26 delivery=loopback "
-               "collision_refused=true\n";
+               "collision_refused=true freshness_generation=true\n";
   return 0;
 }
