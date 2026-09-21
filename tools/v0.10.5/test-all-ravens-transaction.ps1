@@ -128,6 +128,33 @@ try {
     Restore-State -Manifest $recovery -Game $fakeGame -Candidate $allRavensCandidateRoot -State $fakeState -Active $fakeActive -ProofPath $allRavensProofPath -FileMap $files -CandidateShas $candidateShas -CandidateLabel $label -RepoBranch $branch -CheckInstalled $false -Force $false
     Assert-Snapshot $baseline
 
+    # Prove rollback itself is resumable after an interruption. Each
+    # successfully restored entry is persisted as write_state=restored, so a
+    # retry must skip it and finish the remaining entries exactly.
+    Remove-Item -LiteralPath $fakeState -Recurse -Force
+    New-Item -ItemType Directory -Force -Path $fakeState | Out-Null
+    $rollbackInterrupted = Invoke-TransactionalInstall -Game $fakeGame -Candidate $allRavensCandidateRoot -State $fakeState -Active $fakeActive -FileMap $files -CandidateShas $candidateShas -CandidateLabel $label -RepoBranch $branch -RepoHead 'self-test' -ProofPath $allRavensProofPath
+    $rollbackGuardCalls = 0
+    $rollbackInterruptedCaught = $false
+    $rollbackWriteGuard = {
+        $script:rollbackGuardCalls++
+        if ($script:rollbackGuardCalls -eq 2) {
+            throw 'SELF_TEST_INJECTED_ROLLBACK_INTERRUPTION'
+        }
+    }
+    try {
+        Restore-State -Manifest $rollbackInterrupted -Game $fakeGame -Candidate $allRavensCandidateRoot -State $fakeState -Active $fakeActive -ProofPath $allRavensProofPath -FileMap $files -CandidateShas $candidateShas -CandidateLabel $label -RepoBranch $branch -CheckInstalled $true -Force $false -WriteGuard $rollbackWriteGuard
+    }
+    catch {
+        $rollbackInterruptedCaught = $_.Exception.Message -like '*SELF_TEST_INJECTED_ROLLBACK_INTERRUPTION*'
+    }
+    Assert-True $rollbackInterruptedCaught 'Injected rollback interruption was not observed.'
+    $resumeManifest = Get-ValidatedActiveTransaction -Active $fakeActive -Game $fakeGame -Candidate $allRavensCandidateRoot -State $fakeState -ProofPath $allRavensProofPath -FileMap $files -CandidateShas $candidateShas -CandidateLabel $label -RepoBranch $branch
+    Assert-True ([string]$resumeManifest.status -in @('rolling-back','rolling-back-after-install-failure')) 'Interrupted rollback did not persist a recoverable status.'
+    Assert-True (@($resumeManifest.entries | Where-Object { [string]$_.write_state -eq 'restored' }).Count -ge 1) 'Interrupted rollback did not persist restored progress.'
+    Restore-State -Manifest $resumeManifest -Game $fakeGame -Candidate $allRavensCandidateRoot -State $fakeState -Active $fakeActive -ProofPath $allRavensProofPath -FileMap $files -CandidateShas $candidateShas -CandidateLabel $label -RepoBranch $branch -CheckInstalled $false -Force $false
+    Assert-Snapshot $baseline
+
     Remove-Item -LiteralPath $fakeState -Recurse -Force
     New-Item -ItemType Directory -Force -Path $fakeState | Out-Null
     $tamper = Invoke-TransactionalInstall -Game $fakeGame -Candidate $allRavensCandidateRoot -State $fakeState -Active $fakeActive -FileMap $files -CandidateShas $candidateShas -CandidateLabel $label -RepoBranch $branch -RepoHead 'self-test' -ProofPath $allRavensProofPath
@@ -150,6 +177,7 @@ try {
             exact_install_and_rollback = $true
             all_five_failure_boundaries_rollback = $true
             interruption_recovery = $true
+            rollback_interruption_recovery = $true
             tamper_refusal = $true
             native_delivery_release_gate_open = $true
         }
