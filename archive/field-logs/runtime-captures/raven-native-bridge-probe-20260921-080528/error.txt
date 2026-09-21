@@ -1,0 +1,17 @@
+System.Management.Automation.MethodException: Cannot convert argument "newChar", with value: "
+", for "Replace" to type "System.Char": "Cannot convert value "
+" to type "System.Char". Error: "String must be exactly one character long.""
+ ---> System.Management.Automation.PSInvalidCastException: Cannot convert value "
+" to type "System.Char". Error: "String must be exactly one character long."
+ ---> System.FormatException: String must be exactly one character long.
+   at System.Char.Parse(String s)
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   --- End of inner exception stack trace ---
+   at System.Management.Automation.LanguagePrimitives.ConvertViaParseMethod.ConvertWithoutCulture(Object valueToConvert, Type resultType, Boolean recursion, PSObject originalValueToConvert, IFormatProvider formatProvider, TypeTable backupTable)
+   at CallSite.Target(Closure, CallSite, Object, Char, String)
+   --- End of inner exception stack trace ---
+   at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
+   at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)
+   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
+   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
