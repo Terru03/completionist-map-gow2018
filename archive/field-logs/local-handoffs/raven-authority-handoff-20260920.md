@@ -5309,3 +5309,84 @@ It is combined and reversible:
 - archives and pushes both pass and failure evidence.
 
 Do not rerun native binding research, Raven authority research, DXGI/XInput work, or the delivery CI before the live acceptance result.
+
+
+## First snapshot-delivery live attempt failed before install: candidate root mismatch
+
+User ran the prepared live proof runner from branch state `ace97246c53cf36b5f1db2c7d6a796983028a50c`.
+
+The runner successfully prepared the five-file delivery candidate and printed:
+
+```text
+ALL_RAVENS_NATIVE_DELIVERY_CANDIDATE_PREPARED files=5 map_sha256=d01b64e349bf9f3953dd40d70a23a2e80c1f527e9edb640218dbcaf9ebf4289f
+```
+
+It then failed immediately at its own preflight:
+
+```text
+Candidate misses: exec/dc/pc_le/mapmaster.dcb
+```
+
+This happened **before**:
+
+- offline gates;
+- transactional game-file install;
+- DXGI bridge install;
+- GoW launch.
+
+Therefore this failed attempt made no live game/install changes and required no rollback.
+
+The Python preparer and PowerShell runner intended to use the same relative candidate path, but the live machine resolved them through different canonical/worktree roots. The likely cause is worktree/junction/canonical-path divergence on Windows.
+
+### Candidate-root normalization fix
+
+Preparer commit:
+
+- `bbe9b3758e37726a95cd668e549c1507c1e82aa7`
+- reports the exact canonical `build.OUTPUT.resolve()` root.
+
+Runner commit:
+
+- `992c87d3512d74ac18cce6e1f7c6c63e9d7403fd`
+- captures preparer output;
+- extracts exactly one canonical candidate root;
+- verifies each of the five prepared files against the pinned proof SHA;
+- if the prepared root is already inside this worktree's build tree, uses it directly;
+- otherwise mirrors only the five verified candidate files into this worktree's canonical build root;
+- verifies destination hashes before continuing;
+- emits:
+  `RAVEN_DELIVERY_CANDIDATE_PATH_READY root=... files=5`.
+
+A CI syntax-check pass caught an intermediate authoring typo where a literal `\n` was inserted into the Python source. The user never pulled that broken intermediate commit.
+
+Correction:
+
+- `28c85bed832d1e3bf54d88917882fac82f67ee8b`
+- emits the root marker on a real separate Python line.
+
+### Path-fix CI green
+
+Temporary workflow run:
+
+- run: `35621690487`
+- conclusion: `success`
+
+Verified:
+
+```text
+RAVEN_DELIVERY_PATHFIX_POWERSHELL_PARSE_PASSED
+RAVEN_DELIVERY_PATHFIX_PYTHON_COMPILE_PASSED
+RAVEN_NATIVE_BRIDGE_RUNNER_TESTS_PASSED ...
+```
+
+Temporary path-fix workflow removed after green:
+
+- `337974e7a0dd3c6c969be7468569a21ac0b1d0d5`
+
+Current boundary remains:
+
+```text
+RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_READY
+```
+
+Retry the same reversible live proof runner after pulling the latest branch.
