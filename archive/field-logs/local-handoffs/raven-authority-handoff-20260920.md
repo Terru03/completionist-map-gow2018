@@ -1497,7 +1497,6 @@ Target the point **before** GameObject userdata is converted into opaque runtime
 ---
 
 # Addendum 2026-09-20 23:xx - SerializeHook not a restore interceptor; inspect core.thunk next
-
 Archived persistence-hook evidence was rechecked after closing the Lua backing-cache route.
 
 `engine.SerializeHook` is **not** an interception API for restore. The native handler at `0x4A5D50` directly intersects the proven GameObject token packer `0x60B9C0`; it participates in serialization/token packing rather than exposing the pre-token custom-userdata restore record.
@@ -1997,7 +1996,6 @@ Files now preserved on the Raven branch:
 - `tools/v0.10.5/trace-staged-wad-bitstream-boundary.py`
 - static evidence under `archive/field-logs/source-scans/staged-wad-bitstream-boundary-20260921/`
 ## Static path now pinned by Astra tooling
-
 The new static tracer explicitly archives these native windows:
 
 - Channel-A writer: `0x82B250..0x82B42D`
@@ -2497,7 +2495,6 @@ The corrected identity pipeline is now accepted against the archived live checkp
 - remaining 11 correspond exactly to 9 Raven WADs absent from the current staged table.
 
 The remaining authority problem is therefore WAD coverage, not identity.
-
 Static evidence from the existing staged writer shows `0x6687F0` iterates the game's global WAD object array and calls `0x82C820` only for eligible runtime WAD objects. `0x82C820` serializes through the staged-record index already stored at `WAD+0xEE18`; it does not assign that binding itself.
 
 The next proof target is the lifecycle of `WAD+0xEE18`: where the staged-record index is bound, cleared, retained, or reconstructed. This determines whether a WAD absent from the 425-record staged table can be proven never-persisted/default, or whether its state was retired to another backing store.
@@ -2998,7 +2995,6 @@ Next target: extract only:
 4. all writers to entries/count;
 5. direct callers of `0x84FCC0`;
 6. checkpoint/save/WAD/restore/state/pickle/Raven strings only when they occur in those narrowly relevant functions.
-
 Do not regenerate the broad VFS registry report.
 
 
@@ -3498,7 +3494,6 @@ New tooling:
 - `c5269a7d25125f4217ed607ae8777b6634e5ba49` - `tools/v0.10.5/inspect-gow-native-bridge-load-options-and-push.ps1`
 
 The inspector is static/read-only. It parses normal and delay-load imports from the exact supported `GoW.exe`, then checks/ranks common secondary proxy candidates:
-
 ```text
 dxgi.dll
 dinput8.dll
@@ -3997,7 +3992,6 @@ It now:
 - restores exact pre-run `XINPUT1_4.dll` and manifest state;
 - verifies `version.dll` remains byte-identical;
 - archives and pushes both pass and failure evidence.
-
 Installer and rollback are schema-2/XInput-specific and refuse unknown existing `XINPUT1_4.dll` ownership.
 
 Next action is the V2 live load proof. Do not implement Lua/map delivery until the pushed V2 proof is inspected and passes.
@@ -4997,7 +4991,6 @@ CompletionistMapNative.GetRavenSnapshot()
 ```
 
 Requirements if native Lua registration is used:
-
 - no overwrite/collision with existing binding;
 - idempotent registration;
 - read-only;
@@ -5800,3 +5793,41 @@ The temporary workflow was removed in:
 - message: `ci(v0.10.5): remove final Raven live proof gate`
 
 Current next action remains one local proof refresh followed by the reversible live runner. No further offline research is required before field acceptance.
+
+## Addendum 2026-09-21 23:05 - tracked transaction self-test no longer dirties live proof
+
+A final local launch attempt was blocked before the proof runner started by the outer clean-tree preflight:
+
+```text
+Tracked worktree is not clean
+```
+
+Root cause identified:
+
+- `test-raven-native-snapshot-delivery-offline-gates.ps1` invoked `test-all-ravens-transaction.ps1` without `-ReportPath`;
+- that transaction test defaults to writing:
+  `archive/all-ravens/all-ravens-transaction-self-test.json`;
+- that path is tracked;
+- therefore a successful previous offline gate could regenerate the report with current candidate hashes and leave the local tree dirty;
+- the live proof's pass/failure evidence publishing was not at fault; this specific error occurred before the live runner began, so there was no runner evidence directory to push.
+
+Fix:
+
+- commit `ea1d8fa3f5fb3765fae4d3de556ea7c71b54f5cf`
+- message: `fix(v0.10.5): keep Raven offline gate tree-clean`
+
+The offline gate now:
+
+1. allocates a unique transaction report in the OS temp directory;
+2. passes it explicitly via `-ReportPath`;
+3. validates `ALL_RAVENS_TRANSACTION_SELF_TEST_PASSED`;
+4. removes the temporary report in `finally`.
+
+The tracked historical self-test JSON is no longer rewritten by normal delivery/live-proof gates.
+
+Current local cleanup rule:
+
+- if the only tracked local modification is
+  `archive/all-ravens/all-ravens-transaction-self-test.json`,
+  it is safe to restore that generated report to `HEAD` before pulling;
+- any other tracked modification must be inspected rather than auto-restored.
