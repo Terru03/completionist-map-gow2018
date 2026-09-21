@@ -3537,3 +3537,59 @@ Acceptance decision:
 - if no viable secondary proxy is imported, fall back to a separate launcher/injector architecture rather than modifying the upstream loader.
 
 This step performs no process access, game launch, save access, progression write, or game-file write.
+
+
+## Native bridge load-option result - dxgi.dll selected
+
+Evidence commit:
+
+- `8f8f126c97424d31db4619ff53f11211eab768fa`
+- evidence: latest `archive/field-logs/source-scans/gow-native-bridge-load-options-*/`
+
+Static import inspection completed safely:
+
+```text
+GOW_NATIVE_BRIDGE_LOAD_OPTIONS_COMPLETE
+imported_dlls=38
+preferred=dxgi.dll
+save_opened=false
+save_written=false
+progression_written=false
+game_launched=false
+```
+
+Relevant load candidates:
+
+```text
+dxgi.dll
+  imported=true
+  normal import
+  imported symbols=1
+  CreateDXGIFactory1
+
+XINPUT1_4.dll
+  imported=true
+  normal import
+  imported ordinals=2,3
+  imported symbols=2
+
+VERSION.dll
+  imported=true
+  imported symbols=2
+  GetFileVersionInfoA
+  VerQueryValueA
+  unavailable for Completionist Map because upstream Script Loader already occupies version.dll
+```
+
+Decision:
+
+- select `dxgi.dll` as the primary clean-room native bridge load point;
+- keep `XINPUT1_4.dll` only as fallback;
+- leave the existing upstream Script Loader `version.dll` untouched;
+- do not redistribute a modified Script Loader.
+
+The `dxgi.dll` proxy surface is minimal: GoW directly imports only `CreateDXGIFactory1`, so a clean-room bridge can forward that export to the real system DXGI and perform Completionist Map initialization independently.
+
+Next step should be implementation-focused, not another broad research pass: build a minimal reversible development proof of a clean-room `dxgi.dll` bridge that forwards `CreateDXGIFactory1`, initializes safely outside loader-lock, proves it coexists with the existing Script Loader, and exposes **read-only** Raven authority without save/progression writes.
+
+Use a long Codex/Sol pass for this implementation so the new usage window is spent on one coherent build/testable deliverable rather than multiple short speculative probes.
