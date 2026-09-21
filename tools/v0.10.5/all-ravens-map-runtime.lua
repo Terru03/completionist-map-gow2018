@@ -19,6 +19,8 @@ do
 
   local states = _G.CompletionistMapV105RavenState or {}
   _G.CompletionistMapV105RavenState = states
+  local eventKilled = _G.CompletionistMapV105EventKilled or {}
+  _G.CompletionistMapV105EventKilled = eventKilled
   local previousPrompt = MapOn.GetShowOnCompassPrompt
   local previousShow = MapOn.ShowOnCompass
   local previousUpdate = MapOn.Update
@@ -244,8 +246,10 @@ do
       nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=apply_api_unavailable", "apply_api_unavailable")
       return false, "apply_api_unavailable"
     end
-    local applied, accepted = apply(killedIds, "native:" .. tostring(source) ..
-        ":generation:" .. tostring(generation))
+    local applied, accepted = apply(
+        killedIds,
+        "native:" .. tostring(source) .. ":generation:" .. tostring(generation),
+        boundaryApply)
     if applied ~= true or accepted ~= #killedIds then
       nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=apply_refused", "apply_refused")
       return false, "apply_refused"
@@ -822,6 +826,7 @@ do
           " reason=alive_requires_atomic_authority progressionWrites=false")
       return true
     end
+    eventKilled[catalogueId] = true
     states[catalogueId] = true
     hideExactTracked(row)
     if lastMapOnSelf ~= nil then syncIcons(lastMapOnSelf, "state:" .. tostring(source)) end
@@ -830,8 +835,14 @@ do
     return true
   end
 
-  _G.CompletionistMapV105ApplyPersistedRavenKills = function(catalogueIds, source)
+  _G.CompletionistMapV105ApplyPersistedRavenKills = function(
+      catalogueIds, source, clearEventEvidence)
     if type(catalogueIds) ~= "table" then return false, 0 end
+
+    if clearEventEvidence == true then
+      for catalogueId, _ in pairs(eventKilled) do eventKilled[catalogueId] = nil end
+    end
+
     for catalogueId, _ in pairs(states) do states[catalogueId] = nil end
     local accepted = 0
     for key, value in pairs(catalogueIds) do
@@ -848,9 +859,23 @@ do
         hideExactTracked(row)
       end
     end
+
+    local eventOverlayCount = 0
+    for catalogueId, value in pairs(eventKilled) do
+      local row = byCatalogueId[catalogueId]
+      if value == true and row ~= nil then
+        eventOverlayCount = eventOverlayCount + 1
+        states[catalogueId] = true
+        hideExactTracked(row)
+      end
+    end
+
     if lastMapOnSelf ~= nil then syncIcons(lastMapOnSelf, "persisted:" .. tostring(source)) end
     log("PERSISTED_KILLS", "source=" .. tostring(source) ..
-        " accepted=" .. tostring(accepted) .. " catalogueDefaultVisible=true progressionWrites=false")
+        " accepted=" .. tostring(accepted) ..
+        " eventOverlay=" .. tostring(eventOverlayCount) ..
+        " clearEventEvidence=" .. tostring(clearEventEvidence == true) ..
+        " catalogueDefaultVisible=true progressionWrites=false")
     return true, accepted
   end
 
@@ -922,6 +947,7 @@ do
       " exactCollisionRequired=true markerIdAloneInfersRaven=false" ..
       " permanentPolling=false postLoadBoundedRefresh=true progressionWrites=false catalogueDefaultVisible=true" ..
       " positiveEventEvidenceOnly=true atomicAuthorityClearsState=true" ..
+      " sessionKillOverlay=true loadBoundaryClearsOverlay=true" ..
       " persistedKillBootstrap=true nativeAuthority=loopback_freshness_generation" ..
       " nativePort=" .. tostring(nativePort) .. " staticDescriptorWrites=false")
 end
