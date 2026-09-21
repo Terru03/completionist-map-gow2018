@@ -2844,3 +2844,52 @@ Static read-only tracer added:
 - `98b8fdc2332ca51ebbb87fa292ebdf3a2b1d44b7` - `tools/v0.10.5/trace-lua-vfs-exec-bridge-and-push.ps1`
 
 Next step: run only this static tracer with GoW closed. No save is opened and the game is not launched.
+
+
+## Lua VFSExec static result - direct file bridge rejected
+
+Evidence commit:
+
+- `8fef5feaaf3296bd6e650a3f58fcaf579429a8c2`
+- evidence: `archive/field-logs/source-scans/lua-vfs-exec-bridge-20260921-081523/`
+
+The static tracer completed with:
+
+```text
+LUA_VFS_EXEC_BRIDGE_TRACE_COMPLETE functions=2
+save_opened=false save_written=false progression_written=false game_launched=false
+```
+
+The registration mapping resolves `VFSExec` to function `0x84AB40..0x84AB55` rather than the earlier inferred interior address `0x84AB50`.
+
+Its complete body is only:
+
+```text
+0x84AB40 sub rsp,0x28
+0x84AB44 mov dl,1
+0x84AB46 call 0x84FCC0
+0x84AB4B mov eax,1
+0x84AB50 add rsp,0x28
+0x84AB54 ret
+```
+
+Shared helper `0x84FCC0`:
+
+- retrieves a string-like argument from the caller/UI state;
+- normalises ASCII lowercase letters to uppercase while hashing the string;
+- uses multiplier `0x401` and xor/shift mixing to derive a command/key hash;
+- calls native hash/lookup helper `0x431B90`;
+- searches a global array of registered values/commands;
+- then dispatches through a global object's virtual method `+0x98`;
+- the sibling wrapper at `0x84AB20` calls the same helper with the boolean flag cleared.
+
+No direct file-open/read primitive, path handling, save-file access, Lua source loading, or arbitrary disk payload read is visible in this path.
+
+Conclusion:
+
+- reject the assumption that `VFSExec` itself is a generic Virtual File System file-read/execute bridge;
+- it is a hash-based registered VFS command/value dispatcher;
+- it is only useful if an already-registered VFS command exposes the staged checkpoint authority we need;
+- do not build a runtime file bridge around `VFSExec` without first proving such a registered command exists.
+
+Next productive step: statically resolve the VFS registry behind `0x84FCC0`, identify the registered command/value set and the `+0x98` dispatch implementation, and search specifically for checkpoint/save/staged-WAD related entries. This remains static/read-only. If no relevant authority command exists, close the VFS route and return to the proven staged-record/native-owner path rather than modifying or redistributing Script Loader.
