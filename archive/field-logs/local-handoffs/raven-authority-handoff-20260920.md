@@ -3959,3 +3959,55 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\run-raven-authorit
 ```
 
 Do not reinstall the old `dxgi.dll` proxy. Do not attempt Lua/map delivery until this V2 load proof passes. The remaining post-proof boundary is still delivery of the accepted native 53-state snapshot into the existing map/compass runtime.
+
+
+## V2 XInput load-proof runner verified before live test
+
+Assistant verification against branch HEAD:
+
+- HEAD: `57c1369e56be54e00edfdbe4d33497a0289db7cc`
+- proxy target: `XINPUT1_4.dll`
+- old game-root `dxgi.dll` proxy path is no longer used.
+
+Verified XInput contract source:
+
+`native/raven-authority-bridge/xinput1_4-export-contract.json`
+
+It defines the complete 15-export target contract and preserves exact ordinals:
+
+```text
+1,2,3,4,5,7,8,10,100,101,102,103,104,108,109
+```
+
+The proxy runtime resolves the real System32 `XINPUT1_4.dll`, validates named exports against the same ordinal address, and forwards through generated tail thunks. The Raven snapshot API is separate at ordinal 110.
+
+Verified V2 runner:
+
+`tools/v0.10.5/run-raven-authority-bridge-load-proof-and-push.ps1`
+
+It now:
+
+- requires GoW closed;
+- runs runner regression tests first;
+- rebuilds the bridge and native tests;
+- runs installer ownership/recovery tests;
+- installs only owned `XINPUT1_4.dll`;
+- waits for a fresh proxy startup observation while the launched GoW process remains alive before prompting the user;
+- treats early GoW exit or missing fresh startup log as immediate load failure;
+- captures fresh bridge and Script Loader logs;
+- requires:
+  - proxy loaded;
+  - XInput forwarding ready;
+  - supported exe accepted;
+  - Raven snapshot `count=53 unknown=0`;
+  - delivery-pending marker;
+  - Completionist Map loaded through the existing Script Loader;
+- uses arrays for zero/one/multiple log matches, closing the prior scalar `.Count` bug;
+- on failure stops the launched GoW process before rollback;
+- restores exact pre-run `XINPUT1_4.dll` and manifest state;
+- verifies `version.dll` remains byte-identical;
+- archives and pushes both pass and failure evidence.
+
+Installer and rollback are schema-2/XInput-specific and refuse unknown existing `XINPUT1_4.dll` ownership.
+
+Next action is the V2 live load proof. Do not implement Lua/map delivery until the pushed V2 proof is inspected and passes.
