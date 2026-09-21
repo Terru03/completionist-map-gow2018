@@ -3276,3 +3276,50 @@ Conclusion:
 - do not probe these APIs again.
 
 Next route: start from the **proven staged owner itself** and trace reverse native callers toward the exhaustive Lua registration handler set. This is preferable to guessing more API names. The exact question is whether any already-registered Lua handler reaches the staged record owner through a short direct native call chain. If yes, follow only that concrete handler. If no, record that there is no short direct built-in Lua bridge and move to a release architecture decision.
+
+
+## Staged owner reverse-to-Lua proof queued
+
+The handoff was re-read after closing the exact `GetRef*` handlers. No prior reverse-reachability proof from the staged owner to the exhaustive Lua registration handler set was found, so the next scan is new rather than duplicate work.
+
+New tooling:
+
+- `ce3f004b5c276de97e75d80a3da84a8b9497fe38` - `tools/v0.10.5/trace-staged-owner-reverse-lua-reachability.py`
+- `1231baf2273c0e9cbad813e86bb46ab37e54c711` - `tools/v0.10.5/trace-staged-owner-reverse-lua-reachability-and-push.ps1`
+
+The tracer:
+
+1. parses the already-generated exhaustive native Lua registration catalogue;
+2. statically disassembles GoW runtime functions and builds direct `call/jmp` reverse edges;
+3. seeds from the proven staged owner/restore functions plus every function that directly references the proven staged globals;
+4. walks native callers upward to bounded depth 4;
+5. intersects every visited function with registered Lua handler functions;
+6. reports only concrete staged-owner -> caller -> registered-Lua paths plus small aggregate frontier counts.
+
+Root surface includes:
+
+```text
+0x82C820 staged lookup/writer
+0x82CC0C staged related
+0x82B250 staged related
+0x82CF00 staged restore/rebuild
+0x673A30 WAD bind
+0x673D00 WAD restore/load
+0x676CC0 WAD unbind
+0x67B830 record append
+0x671AD0 record reset
+0x6687F0 staged WAD writer
+plus direct readers/writers of:
+  0x22C696C
+  0x22C7170
+  0x22C7194
+  0x22C6938
+  0x22C6940
+```
+
+Acceptance decision:
+
+- if one or more registered Lua handlers are reachable within this bounded direct native call graph, follow only the shortest concrete path(s) and classify whether they can expose read-only staged Raven authority;
+- if no registered Lua handler is reachable, record that there is no short direct built-in Lua bridge from the staged owner and move to the release-architecture decision rather than guessing additional API names.
+
+The tracer is static/read-only and requires GoW closed.
