@@ -4860,3 +4860,166 @@ V3 expectations:
 - both success and failure evidence are archived and pushed automatically.
 
 If the V3 proof passes, the next engineering boundary is native snapshot delivery into the existing map/compass runtime. Do not redo native load architecture or Raven authority research.
+
+
+## V3 COMPLETE DXGI LIVE PROOF PASSED
+
+Successful runtime proof:
+
+- commit: `6023dd419959bcb0645d08a4a4259dfe56a7b07a`
+- capture: `archive/field-logs/runtime-captures/raven-native-bridge-load-proof-v3-20260921-130020/`
+
+Final result:
+
+```text
+result=RAVEN_NATIVE_BRIDGE_LOAD_PROOF_V3_PASSED
+reason=dxgi_complete_forward_startup_hash_53_state_snapshot_and_script_loader_proven
+proxy_target=dxgi.dll
+proxy_contract=system32-dxgi-v1
+game_launched=true
+rollback_exact=true
+version_dll_untouched=true
+bridge_process_memory_writes=false
+bridge_save_writes=false
+bridge_progression_writes=false
+version_dll_writes=false
+```
+
+Proof checks:
+
+```text
+proxy_loaded=true
+dxgi_forwarded=true
+exe_accepted=true
+snapshot_53_unknown_0=true
+delivery_pending=true
+script_loader_completionist_map_loaded=true
+fresh_log_prefix_match=true
+fresh_loader_log_prefix_match=false
+```
+
+The loader-log prefix mismatch is not a functional failure. Fresh Script Loader evidence was present and the proof's explicit Completionist Map loader check passed.
+
+### Exact live bridge sequence
+
+```text
+RAVEN_NATIVE_BRIDGE_PROXY_LOADED target=dxgi.dll real=system32
+RAVEN_NATIVE_BRIDGE_DXGI_FORWARDED exports=20 success=true
+RAVEN_NATIVE_BRIDGE_EXE_ACCEPTED sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+```
+
+Steam handoff was handled correctly:
+
+```text
+bootstrap_pid=48344
+bootstrap_exited=true
+bootstrap_exit_code=53
+startup_game_pids=29616
+steam_handoff_tolerated=true
+main_menu_settle_seconds=40
+```
+
+The complete proxy therefore fixes the original `CreateDXGIFactory2` loader failure and is compatible with normal GoW + Script Loader startup on the target machine.
+
+### Authoritative Raven snapshots observed live
+
+Before the advanced save finished restoring, the bridge briefly published:
+
+```text
+generation=1
+count=53
+unknown=0
+alive=53
+killed=0
+explicit=0
+absentWadFalse=53
+```
+
+One second later, after the advanced save/checkpoint authority became available, it published the exact expected state:
+
+```text
+generation=2
+count=53
+unknown=0
+alive=26
+killed=27
+explicit=42
+absentWadFalse=11
+```
+
+This exactly matches the accepted advanced-save fixture.
+
+Important delivery implication:
+
+- generation 1 is a transient valid all-false authority view while staged save state is not yet restored;
+- generation 2 is the current advanced-save state;
+- the delivery layer must **not blindly push the first published snapshot during boot**;
+- authoritative map reconstruction should occur on map-open/current-save readiness, using the newest atomic snapshot then available;
+- existing immediate loaded-Raven `ravenKilled` event behavior remains the path for instant kill removal between full authority reconstructions.
+
+For a genuinely fresh save, all 53 alive remains the correct eventual state, so delivery logic cannot simply reject all-alive snapshots. It must use game/save/map lifecycle timing rather than state shape to decide when to synchronize.
+
+### Native load layer CLOSED
+
+The following are now solved and must not be revisited:
+
+- XInput load-point selection;
+- DXGI load-point selection;
+- DXGI export completeness;
+- `CreateDXGIFactory2` compatibility;
+- System32 forwarding;
+- Steam bootstrap process tracking;
+- schema-3 install ownership;
+- rollback/recovery;
+- `version.dll` coexistence;
+- native 53-state authority generation.
+
+Current architecture status:
+
+```text
+RAVEN_NATIVE_LOAD_AND_AUTHORITY_PROVEN
+```
+
+### Next engineering boundary: snapshot delivery
+
+The remaining release blocker is delivering the accepted native atomic 53-state snapshot into the existing Completionist Map map/compass runtime.
+
+Required behavior remains:
+
+1. map open reconstructs the exact 53 Raven states from the latest authoritative native snapshot;
+2. old/advanced saves display only surviving Ravens;
+3. fresh saves display all 53;
+4. killing a currently loaded Raven removes its marker immediately through the existing `ravenKilled` event path;
+5. reopening the map reasserts the exact authoritative saved/checkpoint state;
+6. preserve realm/caption/compass fixes;
+7. no save/progression writes.
+
+Preferred next investigation is the already-captured native Lua binding registration evidence:
+
+- `archive/field-logs/source-scans/native-binding-descriptors-20260914-160311`
+- `archive/field-logs/source-scans/native-binding-registration-context-20260914-164815`
+- `archive/field-logs/source-scans/native-binding-dispatcher-20260914-165955`
+- `archive/field-logs/source-scans/native-binding-table-xrefs-20260914-161300`
+- `archive/field-logs/source-scans/native-lua-binding-xrefs-20260914-065549`
+
+Do not rerun those scans. Inspect the archived evidence first.
+
+Preferred delivery shape:
+
+```text
+CompletionistMapNative.GetRavenSnapshot()
+```
+
+Requirements if native Lua registration is used:
+
+- no overwrite/collision with existing binding;
+- idempotent registration;
+- read-only;
+- no raw save/progression mutation;
+- survives map reopen/load;
+- returns one atomic generation of all 53 states;
+- map sync consumes the newest snapshot only when current save/map lifecycle is ready.
+
+If legitimate registration is not safely available, fall back to a native map-sync integration using known marker data/functions, still without progression writes or forced WAD loading.
+
+Do not redo Raven authority or native load research.
