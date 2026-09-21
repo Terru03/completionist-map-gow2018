@@ -2783,3 +2783,64 @@ probe_game_file_persistence=false
 ```
 
 Next step: rerun the same self-restoring bridge probe.
+
+
+## Native bridge probe result - package.loadlib route CLOSED
+
+Runtime capture commit:
+
+- `6eea3834d095e5d2f5429dc8b007dc0bea0ea8db`
+- evidence: `archive/field-logs/runtime-captures/raven-native-bridge-probe-20260921-080821/`
+
+The corrected runner reached GoW successfully and the injected Lua probe executed. The decisive loader-log line was:
+
+```text
+[CompletionistRavenNativeBridgeProbe] BRIDGE_FAILED phase=load ... dynamic libraries not enabled; check your Lua installation
+```
+
+Safety/restore result:
+
+```text
+game_launched=true
+mapmenu_exact_restore=True
+bridge_dll_restored=true
+probe_process_memory_writes=false
+probe_save_writes=false
+probe_progression_writes=false
+probe_game_file_persistence=false
+```
+
+Conclusion:
+
+- `package.loadlib` is exposed as a Lua function but the compiled Lua runtime has dynamic-library loading disabled.
+- Do not repeat `package.loadlib` path/probing.
+- The previously proposed standalone native Lua C DLL bridge is closed.
+
+### Upstream Script Loader review
+
+The installed Script Loader is Nukem9's `godofwar-gameplay-tweaks` `version.dll`. Upstream source shows that it directly hooks GoW's Lua chunk loader and related engine functions, but it exposes no third-party native plugin ABI. Upstream README also explicitly states `No license provided. TBD.`, so Completionist Map should not plan to redistribute a modified Script Loader binary.
+
+A locally built loader fork may remain useful as a development-only proof, but not as the preferred public release architecture.
+
+### New Lua-only bridge candidate: VFSExec
+
+The exhaustive native Lua registration catalogue already contains the UI/global VFS helpers:
+
+```text
+VFSExec          entry=0x11CA640 inferred handler cluster start=0x84AB50
+VFSGetEnumIndex  entry=0x11CA660 fn=0x84AB60
+VFSGetEnumName   entry=0x11CA680 fn=0x84AB70
+VFSGetFloat      entry=0x11CA6A0 fn=0x84AB90
+VFSGetInt        entry=0x11CA6C0 fn=0x84ABB0
+VFSSetFloat      entry=0x11CA6E0
+VFSSetInt        entry=0x11CA700
+```
+
+Because `VFSExec` is native and already callable from the game's Lua surface, it must be resolved before considering a custom loader fork. If it accepts a disk/VFS-backed file or executable command payload, it could provide the missing read-only authority-delivery bridge while keeping Completionist Map an ordinary Script Loader Lua mod.
+
+Static read-only tracer added:
+
+- `854ef1045fa2cbd6c97346de1c95f9e5526c363c` - `tools/v0.10.5/trace-lua-vfs-exec-bridge.py`
+- `98b8fdc2332ca51ebbb87fa292ebdf3a2b1d44b7` - `tools/v0.10.5/trace-lua-vfs-exec-bridge-and-push.ps1`
+
+Next step: run only this static tracer with GoW closed. No save is opened and the game is not launched.
