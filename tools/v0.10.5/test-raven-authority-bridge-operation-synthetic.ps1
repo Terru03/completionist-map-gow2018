@@ -121,7 +121,41 @@ try {
     Assert-True ((Get-RavenBridgeHash $target) -eq $unknownSha) 'Unknown DLL changed during refused recovery.'
     Assert-True (Test-Path -LiteralPath $op4.Path -PathType Leaf) 'Refused recovery removed its journal.'
 
-    Write-Host 'RAVEN_BRIDGE_OPERATION_SYNTHETIC_PASSED mixed_pair=true missing_target=true absent_pair=true unknown_refused=true'
+    # Case 5: known DLL with an unrelated owned-manifest SHA must still
+    # refuse recovery rather than overwrite ambiguous metadata.
+    Reset-CaseRoot $caseRoot
+    Write-Bytes $target $newBytes
+    $thirdTemp = Join-Path $root 'third.bin'
+    Write-Bytes $thirdTemp ([byte[]](21,22,23,24))
+    $thirdSha = Get-RavenBridgeHash $thirdTemp
+    Write-OwnedManifest $manifest $thirdSha
+    Write-Bytes $backup $oldBytes
+    Write-OwnedManifest $backupManifest $oldSha
+    $op5 = New-RavenBridgeOperation -GameRoot $caseRoot -Operation 'rollback' -OperationSha256 $newSha -RestoreExists $true -RestoreSha256 $oldSha -RestoreDllRelative $backupRel -RestoreManifestRelative $backupManifestRel
+    $manifestRefused = $false
+    try {
+        [void](Complete-RavenBridgeInterruptedOperation -GameRoot $caseRoot)
+    }
+    catch {
+        $manifestRefused = $_.Exception.Message -like '*unknown active manifest*'
+    }
+    Assert-True $manifestRefused 'Unknown active manifest was not refused.'
+    Assert-True ((Get-RavenBridgeHash $target) -eq $newSha) 'Known DLL changed during manifest refusal.'
+    Assert-True (Test-Path -LiteralPath $op5.Path -PathType Leaf) 'Manifest refusal removed journal.'
+
+    # Case 6: journal creation itself must reject restore sources outside the
+    # Completionist-owned backup directory.
+    Reset-CaseRoot $caseRoot
+    $pathRefused = $false
+    try {
+        [void](New-RavenBridgeOperation -GameRoot $caseRoot -Operation 'rollback' -OperationSha256 $newSha -RestoreExists $true -RestoreSha256 $oldSha -RestoreDllRelative 'mods\\evil.dll' -RestoreManifestRelative 'mods\\evil.json')
+    }
+    catch {
+        $pathRefused = $_.Exception.Message -like '*outside the owned backup directory*'
+    }
+    Assert-True $pathRefused 'Out-of-scope journal restore paths were not refused.'
+
+    Write-Host 'RAVEN_BRIDGE_OPERATION_SYNTHETIC_PASSED mixed_pair=true missing_target=true absent_pair=true unknown_dll_refused=true unknown_manifest_refused=true backup_scope_refused=true'
 }
 finally {
     $resolved = [IO.Path]::GetFullPath($root)
