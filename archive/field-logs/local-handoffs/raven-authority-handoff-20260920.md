@@ -2322,3 +2322,53 @@ Interpretation:
 Commit `4f0f0e347af8824b3bcf5a21500f722ab6f3547c` extends the static solver with the next native model: a parent object's own `object+0x40` identity element may **replace** the simplified transform-record-derived element currently used for that intermediate parent. The solver now tests both insertion and one-for-one replacement, still accepting only exact equality with live packed-checkpoint object hashes.
 
 Next step: rerun the same static solver. If replacement resolves the 11 cases uniquely, fold those parent identity elements into the 53-entry serialized Raven identity generator. If it still fails, inspect the full parent metadata vector rather than guessing additional elements.
+
+
+---
+
+# Addendum 2026-09-21 - reversible native hash solver for nested Raven parents
+
+Second insert/replace evidence commit: `403c9a3707c025b128ead480164706722727d286`
+
+The second static run remained unchanged:
+
+```text
+catalogue_rows_with_live_wad=42
+base_hash_matches_live=31
+unique_solution=0
+multiple_solutions=0
+no_solution=11
+parent_prototype_record_missing=0
+```
+
+Therefore both single-element hypotheses are closed:
+
+1. inserting one parent-derived element anywhere in the simplified identity vector;
+2. replacing one existing element with one parent-derived element.
+
+Commit `10b2a20fb39df6a435628aa078bc497cb65fd153` replaces that heuristic search with a reversible-hash solver.
+
+## Reversible-hash method
+
+The native identity hash updates one byte as:
+
+```text
+x = ((state + byte) * 0x401) mod 2^64
+next = x XOR (x >> 6)
+```
+
+Because `0x401` is odd, multiplication is invertible modulo `2^64`, and the right-xorshift is also invertible. The new solver implements an exact byte inverse and self-tests that complete known identity vectors reverse back to state zero.
+
+For each nested Raven row, the solver reverses its known child-record identity element and final Raven prototype identity element from every observed live checkpoint object hash. For siblings under the same intermediate parent, the correct live-hash assignment must yield the same 64-bit state immediately after the parent's native identity contribution.
+
+The solver then:
+
+1. requires one common recovered post-parent state across siblings;
+2. verifies the outer transform prefix state is common;
+3. scans every 16-byte sliding window of the 784-byte parent prototype record, plus byte-12-adjusted variants and explicit parent IDs;
+4. tests exact one-element parent vectors;
+5. tests exact two-element parent vectors with a meet-in-the-middle forward/reverse state join;
+6. accepts only exact 64-bit equality with the recovered parent state;
+7. if exactly one parent vector survives, rebuilds every nested Raven identity and verifies it against its assigned live checkpoint hash.
+
+This converts the remaining 11 nested cases from placement guessing into an exact constraint problem driven by the archived live checkpoint hashes. No game process or save access is required.
