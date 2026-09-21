@@ -2601,3 +2601,45 @@ New tooling:
 - `a99b85659258c29b60dea083c7877c0a7d211160` - static trace-and-push runner.
 
 The next pass classifies every RIP-relative reference to `0x22C696C` with Capstone operand access bits and emits the full function for every actual writer. Acceptance condition: no individual delete/compact writer. If all writes are append, restore/rebuild, or whole-table reset, then an absent WAD key in a live current staged checkpoint can be treated as having no persisted custom Lua state; for Raven `ravenKilled`, whose script default is false and whose kill transition writes true before checkpoint persistence, that closes the absent-WAD authority case without guessing.
+
+
+---
+
+# Addendum 2026-09-21 - staged record absence semantics closed
+
+Record-count lifecycle evidence commit: `826b4f36250d24557d31b6b1dadc5434bcc4ab61`.
+
+The tracer found exactly 7 native writes to the proven staged WAD `record_count` global at RVA `0x22C696C`. All seven are now classified:
+
+1. `0x671C3F` in `0x671AD0` - whole-table reset/reinitialisation. It iterates all existing `0xA8` records, clears their fields, and conditionally sets the entire count to zero. It is not an individual WAD removal path.
+2. `0x673165` in `0x6730C0` - append/create. It searches existing record names; when not found and creation is allowed it uses the old count as the new index, increments the count, and initialises one new `0xA8` record.
+3. `0x67BA68` in `0x67B830` - append/create by name. It searches all existing names and increments count only when no match exists, then initialises one new staged record.
+4. `0x67CC12` in `0x67CC00` - subsystem startup initialisation; explicitly writes zero before allocating backing storage.
+5. `0x68204D` in `0x682020` - subsystem/global startup initialisation; explicitly writes zero before broad engine allocation/initialisation.
+6. `0x82CFAC` in `0x82CF00` - restore/rebuild from serialized input. The function reads a serialized record count, reconstructs that many `0xA8` records/payload slices, then writes the deserialized count.
+7. `0x82D251` in the same `0x82CF00` restore path - append/create for a runtime WAD name not present in the restored staged list. It increments the count and initialises one new record.
+
+There is no decrement, remove-one, swap-delete, compaction, or per-WAD count reduction anywhere in the executable.
+
+Combined with the already-proven normal unload path `0x676CC0`, which writes `record+0x28=-1` and `WAD+0xEE18=-1` while leaving the staged record allocated, this closes staged-record lifetime semantics:
+
+- once a WAD has a staged record in the current checkpoint lineage, normal unload does not make that named record disappear;
+- an individual record cannot later be deleted from the staged table;
+- absence of a Raven WAD name from the current staged table therefore means no persisted custom Lua state exists for that WAD in this staged checkpoint lineage;
+- Raven `ravenKilled` defaults to false in the script and only becomes true on the kill transition before checkpoint persistence;
+- therefore absent Raven WAD => authoritative `ravenKilled=false` for this staged-state model.
+
+Implementation commits:
+
+- `8d4b02ac20aecad950d2543061315906a5f17b4c` - offline replay now classifies absent Raven WADs as `false` with authority `native_absent_wad_default_false`, while present-but-undecodable WADs remain unknown/fail-closed.
+- `2542f64f18bf40ca4e77ff05f9ec51fdbc36d02b` - live read-only staged observer uses the same rule.
+
+Expected offline acceptance on the existing `20260921-060345-c2c9bcc1` capture:
+
+```text
+candidate_state_count=53
+unknown_count=0
+absence_default_false_count=11
+```
+
+This closes the 53-Raven staged authority model. Overall mod `production_ready` remains false until this complete authority result is wired into the runtime map path and validated against fresh-save, old-save, map-reopen, immediate-kill, and restore fixtures.
