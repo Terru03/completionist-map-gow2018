@@ -2,109 +2,226 @@
 
 ## Status
 
-The selected release architecture is now a clean-room Windows x64 `XINPUT1_4.dll` proxy. It coexists with the user's upstream `version.dll` Script Loader and never modifies that loader.
+The selected native load architecture is a clean-room Windows x64 **compatibility-complete `dxgi.dll` proxy**.
 
-The old single-export `dxgi.dll` design is closed after its live loader failure. It must not be installed again. The V2 XInput proxy passes its offline export-contract, safe forwarding, platform, Raven-authority, installer, rollback, recovery, and runner regression tests.
+The XInput proxy route is closed by live evidence: both normal GoW XInput import slots resolve to `C:\Windows\System32\XINPUT1_4.dll` on the target machine, while a game-root XInput proxy produced no bridge startup evidence.
 
-`RAVEN_NATIVE_BRIDGE_LOAD_PROOF_V2_READY`
+The original single-export DXGI proxy is also closed. Its live loader failure was caused by an incomplete export surface: `d3d11.dll` required `CreateDXGIFactory2`, which that proxy did not export.
 
-Native staged-authority read and atomic snapshot publication remain unchanged. Delivery into the existing Lua map remains outside this compatibility-hardening stage.
+The replacement DXGI proxy now implements the complete 20-export System32 contract observed on the target Windows build, preserves names and ordinals, forwards to the explicit System32 DLL, exposes the Raven snapshot API as the sole extra export, and passes native parity/load tests.
 
-## Load architecture
+Current boundary:
 
-The supported `GoW.exe` imports XInput ordinals 2 and 3. The proxy resolves `%SystemRoot%\\System32\\XINPUT1_4.dll` by absolute path, resolves the complete pinned contract once, and uses generated x64 tail thunks to preserve arguments and return semantics. Completionist Map work starts on a separate worker only after a thunk is invoked, outside `DllMain` loader-lock work.
+```text
+RAVEN_DXGI_LOCAL_OFFLINE_GATE_READY
+```
 
-`DllMain` only disables thread attach/detach notifications. Resolution checks each named export by both name and ordinal. Failure routes calls to a non-throwing XInput error stub.
+A local temp-root install/rollback/recovery gate must pass before the V3 live proof is run.
 
-## Proxy architecture comparison
+## DXGI export contract
 
-The real System32 contracts on the target machine were inspected, not inferred from `GoW.exe` alone:
+Pinned target System32 `dxgi.dll` SHA-256:
 
-| Candidate | Complete system surface | Process-wide risk | Common tooling conflict | Result |
-| --- | ---: | --- | --- | --- |
-| `dxgi.dll` | 20 named exports | High: `d3d11.dll` and graphics modules bind through it | High: overlays, capture tools, and ReShade commonly use it | Rejected |
-| `XINPUT1_4.dll` | 15 exports: 8 named, 7 ordinal-only | Lower: controller API scope | Lower than DXGI; exact ordinal forwarding still required | Selected |
+```text
+b12aebf0f077d6c1394b50e2eecdd5e16072c9a0c871f30887b5d170cbf2eaae
+```
 
-The XInput contract is stored in `native/raven-authority-bridge/xinput1_4-export-contract.json`. A generator emits the `.def`, MASM thunks, and C++ contract header from that one file. The proxy preserves ordinals `1,2,3,4,5,7,8,10,100,101,102,103,104,108,109`; the Raven snapshot API uses ordinal 110.
+The observed surface is 20 named exports with ordinals 1 through 20. `CreateDXGIFactory2` is ordinal 12.
 
-The mandatory contract test enumerates the real System32 PE export directory and rejects any count, name, ordinal, alias, or missing-proxy mismatch. The load test resolves ordinal 2 and the `XInputGetState` name to the same thunk, calls it, and accepts only `ERROR_SUCCESS` or `ERROR_DEVICE_NOT_CONNECTED`. This gate would reject the old two-export DXGI binary as an XInput proxy.
+The contract is stored in:
+
+`native/raven-authority-bridge/dxgi-export-contract.json`
+
+A generator emits:
+
+- the proxy `.def`;
+- x64 MASM forwarding thunks;
+- a C++ contract header.
+
+The generated proxy preserves the full real contract. `CompletionistMapGetRavenSnapshotV1` is the sole extra export at ordinal 21.
+
+## Forwarding design
+
+The proxy loads the real DXGI only from the explicit System32 path and validates every expected export by both name and ordinal before forwarding.
+
+Forwarding is implemented with generated tail thunks so arguments, stack state, return values, and ABI semantics remain transparent.
+
+`DllMain` performs no heavy bridge work. It only disables thread attach/detach notifications.
+
+The Raven authority worker starts once, after a forwarded DXGI call is successfully resolved, and runs outside loader lock.
+
+## Offline native compatibility gate
+
+The native suite contains five CTest targets:
+
+1. platform tests;
+2. complete DXGI forwarding/load tests;
+3. export-contract parity tests;
+4. explicit rejection of an intentionally incomplete DXGI fixture;
+5. Raven authority replay/atomic snapshot tests.
+
+The forwarding test copies the built proxy into a temporary directory, loads it there, proves the real System32 DXGI is also loaded without recursion, resolves every contract name/ordinal, resolves the Raven snapshot API, and safely calls:
+
+- `CreateDXGIFactory`;
+- `CreateDXGIFactory1`;
+- `CreateDXGIFactory2`.
+
+The export-contract test compares the complete built surface to the real System32 DXGI and explicitly requires `CreateDXGIFactory2`.
+
+The old-style incomplete proxy fixture is rejected by test.
+
+## Windows CI gate
+
+Temporary GitHub Actions workflow run:
+
+`35600350597`
+
+completed successfully.
+
+Verified on the hosted Windows x64 runner:
+
+```text
+RAVEN_DXGI_POWERSHELL_PARSE_PASSED files=9
+100% tests passed out of 5
+RAVEN_NATIVE_BRIDGE_RUNNER_TESTS_PASSED target=dxgi.dll ...
+RAVEN_DXGI_SECURITY_DIFF_SCAN_PASSED files=21 findings=0
+```
+
+The temporary workflow was removed after the green run.
+
+The build script supports both Visual Studio 2022 and Visual Studio 2026 CMake generators.
 
 ## Safety model
 
-- Supported `GoW.exe` SHA-256: `caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452`.
-- Raven authority reads will be in-process and read-only.
-- No save, progression, quest, collectible, or executable bytes are written.
-- The bridge never calls `SaveGame` and never force-loads a WAD.
-- Bridge diagnostics live under `mods/completionist-map/native/`.
-- Install and rollback must be manifest/hash gated and must leave `version.dll` untouched.
+- Supported `GoW.exe` SHA-256:
+  `caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452`.
+- Raven authority is read-only in process.
+- No `WriteProcessMemory`.
+- No save/progression writes.
+- No `VFSSetFloat` / `VFSSetInt`.
+- No `SaveGame` invocation.
+- No forced WAD loading.
+- No executable-byte patching.
+- Existing upstream `version.dll` Script Loader remains untouched.
+- Bridge diagnostics are written only under `mods/completionist-map/native/`.
+
+The DXGI-task security diff scan checked 21 changed native/tool files and found zero references to the prohibited process-injection/progression-write API set.
 
 ## Raven authority reader
 
-The bridge ports the accepted Channel-A logic without opening a save file:
+The accepted 53-state authority implementation is unchanged.
+
+It uses:
 
 - exact supported-executable hash gate;
-- proven staged globals at `0x22C6938`, `0x22C6940`, `0x22C696C`, and `0x22C7170`;
-- two equal bounded table/pool reads before decode;
-- native cached Lua length framing;
-- bounded MSB-first bit-phase search;
-- zlib carrier decode using upstream zlib `v1.3.1` pinned to commit `925af44f3cde53c6b076611c297850091b5dc7bb`;
-- exact 53-entry `(registry_hash, object_hash)` matching;
-- native absent-WAD default-false rule;
-- all-or-nothing 53-state publication through `CompletionistMapGetRavenSnapshotV1`.
+- proven staged globals;
+- two equal bounded staged snapshots;
+- bounded Channel-A carrier decode;
+- exact 53-entry Raven identity mapping;
+- authoritative absent-WAD default false;
+- atomic all-or-nothing snapshot publication.
 
-The worker publishes only a complete snapshot. Present WAD plus missing, conflicting, ambiguous, malformed, changing, or out-of-bounds state rejects the whole candidate. The bridge never exposes a partial table.
-
-Offline replay of the accepted 425-record capture passes with:
+Accepted fixture:
 
 ```text
-RAVEN_BRIDGE_AUTHORITY_TESTS_PASSED states=53 explicit=42 absentWadFalse=11 killed=27 alive=26
+states=53
+explicit=42
+absentWadFalse=11
+killed=27
+alive=26
+unknown=0
+Veithurgard=false,true,true
 ```
 
-The test also proves the Veithurgard `false,true,true` fixture and stresses atomic snapshot publication between all-alive and all-killed vectors.
+The native API remains:
 
-## Open delivery boundary
+`CompletionistMapGetRavenSnapshotV1`
 
-The bridge currently exposes a read-only native snapshot API. The existing Lua map cannot call it yet because `package.loadlib` and all direct built-in authority bindings are closed. No engine bytes are patched. Until a legitimate Lua registration/call boundary or native marker synchronization is proven, this is a load-proof architecture, not runtime-ready map delivery.
+## Schema-3 install ownership
 
-## Compatibility gate
+Production native target:
 
-The V2 proxy has no direct dependency on XInput and cannot recurse through its import table. It loads only the absolute System32 target. Its generated forwarding surface contains every export observed on the target Windows build, including all ordinal-only entries. The custom Raven API is the sole extra export.
+`dxgi.dll`
 
-## Build
+Build/install manifest schema:
 
-From repository root:
+`3`
 
-```powershell
-& .\tools\v0.10.5\build-raven-authority-bridge.ps1 -Clean
-```
+Proxy contract marker:
 
-Generated binaries stay under ignored `build/` and are not committed.
+`system32-dxgi-v1`
 
-## Install and rollback
+The installer:
 
-The installer requires the exact supported `GoW.exe`, a present `version.dll`, the schema-2 generated build manifest, and a closed game. It refuses any existing `XINPUT1_4.dll` unless an owned manifest names the same target and exact current hash. Upgrade copies both the old DLL and old manifest into the mod-owned backup directory. It never installs the closed single-export `dxgi.dll` design.
+- requires the supported GoW hash;
+- requires the schema-3 build manifest;
+- refuses any existing game-root `dxgi.dll` unless the matching manifest proves it is an exact owned Completionist Map bridge;
+- never overwrites unknown DXGI/ReShade/other proxies;
+- stages copies before replacement;
+- backs up the previous owned DLL and manifest during upgrade;
+- verifies hashes after installation;
+- verifies `version.dll` is byte-identical.
 
-Rollback requires the installed DLL hash to match the owned manifest. It restores a prior owned XInput DLL/manifest pair when one exists; otherwise it removes only the known installed pair. Recovery can unwind an owned XInput chain and can remove only the exact known-bad legacy DXGI hash; it refuses unknown proxies. All paths hash `version.dll` before and after and never write it.
+Rollback:
 
-```powershell
-& .\tools\v0.10.5\install-raven-authority-bridge.ps1
-& .\tools\v0.10.5\rollback-raven-authority-bridge.ps1
-```
+- refuses a tampered installed bridge;
+- restores an exact previous owned schema-3 pair through a staged DLL copy;
+- otherwise removes only the exact owned pair;
+- preserves `version.dll`.
 
-Temp-root regression covers clean install, upgrade backup, chained rollback, unknown-DLL refusal, tampered-DLL refusal, and `version.dll` preservation:
+Recovery:
+
+- unwinds schema-3 owned DXGI chains;
+- can remove only the exact historical known-bad single-export DXGI hash;
+- refuses unknown/unowned game-root DXGI files;
+- does not use the closed XInput production path.
+
+## Local offline gate
+
+Before a live proxy install, run:
+
+`tools/v0.10.5/test-raven-authority-bridge-offline-gates.ps1`
+
+This performs:
+
+1. runner regressions;
+2. clean native build + all five CTest targets;
+3. schema-3 install/upgrade/rollback/recovery tests in a **temporary directory** populated with copies of the real `GoW.exe` and `version.dll`.
+
+It does not install a proxy into the real game directory.
+
+Success marker:
 
 ```text
-RAVEN_NATIVE_BRIDGE_INSTALL_TESTS_PASSED target=XINPUT1_4.dll clean=true upgrade=true unknown_refused=true tamper_refused=true recovery=true version_untouched=true
+RAVEN_DXGI_OFFLINE_GATES_PASSED
 ```
 
-## One runtime proof command
+## V3 live proof
 
-Run from repository root with God of War closed:
+Prepared runner:
 
-```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\run-raven-authority-bridge-load-proof-and-push.ps1
-```
+`tools/v0.10.5/run-raven-authority-bridge-load-proof-and-push.ps1`
 
-The runner tests zero/one/multiple log handling, early exit, missing startup log, Script Loader evidence, and failure rollback. It then rebuilds all native tests, runs the temp-root ownership suite, installs only the owned `XINPUT1_4.dll`, and launches the game. A fresh proxy startup line must appear while the launched process remains alive before the user prompt appears. The user then performs one advanced-save/map-open pass.
+V3:
 
-The pass succeeds only when fresh logs prove System32 XInput contract forwarding, normal startup, Completionist Map loading through the existing Script Loader, supported executable acceptance, and one atomic snapshot with `count=53 unknown=0`. Success and failure both archive evidence. Failure stops the launched GoW process before rollback. Rollback must restore the exact pre-run XInput/manifest state and leave `version.dll` byte-identical. The runner commits and pushes its evidence. Lua map delivery remains pending after a successful load proof.
+- uses `dxgi.dll`;
+- allows 90 seconds for Steam bootstrap/handoff/startup;
+- waits an additional 40-second main-menu settle interval;
+- requires fresh DXGI proxy load/forwarding/executable-acceptance evidence before prompting;
+- asks for one advanced-save/map-open pass;
+- requires `count=53 unknown=0`;
+- requires normal Completionist Map Script Loader evidence;
+- rolls back the exact pre-run DXGI/manifest state;
+- verifies `version.dll` byte-identical;
+- stops GoW before failure rollback;
+- archives and pushes both success and failure evidence.
+
+Do not run V3 until the local offline gate passes.
+
+## Post-load boundary
+
+After a successful V3 load proof, the remaining problem is delivery of the accepted native 53-state snapshot into the existing map/compass runtime.
+
+Preferred next direction remains legitimate in-process Lua registration or another non-progression-mutating native marker-sync boundary.
+
+Do not redo Raven authority research.
