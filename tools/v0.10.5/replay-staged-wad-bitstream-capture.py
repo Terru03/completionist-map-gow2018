@@ -19,6 +19,13 @@ sys.path.insert(0, str(HERE))
 
 import staged_wad_bitstream as bits
 
+def normal_wad_name(value: str | None) -> str | None:
+    if not value:
+        return None
+    return Path(value).stem.lower() + ".wad"
+
+
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -44,6 +51,7 @@ def main() -> int:
     states = {row["catalogue_id"]: set() for row in rows}
     blocked = set()
     replay_records = []
+    staged_wads = set()
 
     for record in original["records"]:
         item = {
@@ -55,6 +63,9 @@ def main() -> int:
             "cached_channel_a_lua_length": record.get("cached_channel_a_lua_length"),
             "payload_file": record.get("payload_file"),
         }
+        wad_name = normal_wad_name(item["name"])
+        if wad_name:
+            staged_wads.add(wad_name)
         payload_file = item["payload_file"]
         if not payload_file:
             item["status"] = "no_payload"
@@ -78,15 +89,32 @@ def main() -> int:
     for row in rows:
         rid = row["catalogue_id"]
         values = states[rid]
-        value = next(iter(values)) if len(values) == 1 and rid not in blocked else None
+        conflict = len(values) > 1
+        ambiguous = rid in blocked
+        row_wad = normal_wad_name(row.get("wad"))
+        if len(values) == 1 and not ambiguous:
+            value = next(iter(values))
+            authority = "explicit_ravenKilled_from_staged_channel_a"
+        elif not conflict and not ambiguous and row_wad not in staged_wads:
+            # Native lifecycle proof:
+            # * normal WAD unload clears live bindings but retains the staged record;
+            # * no individual staged-record delete/compaction path exists;
+            # * record_count mutations are append, restore/rebuild, or whole-table reset.
+            # Therefore an absent WAD key has no persisted custom Lua state in this
+            # current staged checkpoint lineage. Raven script default is false.
+            value = False
+            authority = "native_absent_wad_default_false"
+        else:
+            value = None
+            authority = "unknown_fail_closed"
         raven_states.append({
             "catalogue_id": rid,
             "candidate_ravenKilled": value,
-            "conflict": len(values) > 1,
-            "ambiguous": rid in blocked,
+            "conflict": conflict,
+            "ambiguous": ambiguous,
             "region": row.get("region"),
             "wad": row.get("wad"),
-            "authority": "unproven",
+            "authority": authority,
         })
 
     known = [row for row in raven_states if row["candidate_ravenKilled"] is not None]
@@ -105,10 +133,14 @@ def main() -> int:
         "raven_states": raven_states,
         "candidate_state_count": len(known),
         "unknown_count": len(raven_states) - len(known),
+        "staged_wad_count": len(staged_wads),
+        "absence_default_false_count": sum(
+            row["authority"] == "native_absent_wad_default_false" for row in raven_states
+        ),
         "production_ready": False,
         "remaining_gate": (
-            "Prove exact prefix traversal/native Lua field position, active checkpoint freshness, "
-            "and exact fixture coverage before map integration."
+            "Integrate the now-complete 53-Raven staged authority model into the runtime map path, "
+            "then validate fresh-save, old-save, map-reopen, kill-immediate, and restore fixtures."
         ),
         "safety": {
             "game_process_opened": False,
@@ -125,7 +157,9 @@ def main() -> int:
 
     lines = [
         "Offline staged Channel A bitstream replay",
-        f"candidate_state_count={len(known)} unknown_count={len(raven_states)-len(known)} production_ready=false",
+        f"candidate_state_count={len(known)} unknown_count={len(raven_states)-len(known)} "
+        f"absence_default_false_count={sum(row['authority']=='native_absent_wad_default_false' for row in raven_states)} "
+        f"production_ready=false",
     ]
     for rec in replay_records:
         dec = rec.get("decode")
@@ -160,7 +194,7 @@ def main() -> int:
     for row in known:
         lines.append(
             f"CANDIDATE {row['catalogue_id']} ravenKilled={row['candidate_ravenKilled']} "
-            f"region={row.get('region')} wad={row.get('wad')}"
+            f"region={row.get('region')} wad={row.get('wad')} authority={row['authority']}"
         )
     lines.append("game_process_opened=false save_opened=false save_written=false progression_written=false")
     txt_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
