@@ -28,6 +28,11 @@ do
   local promptIntent = nil
   local promptSettleFrames = 0
   local promptSettleBucket = -1
+  local customCompassOwnsTarget = false
+  local nativeAllowSameGenerationOnce = false
+  local nativeResetRecheckFrames = 0
+  local nativeResetRecheckBucket = -1
+  local nativeResetRecheckLimit = 180
   local nativePort = 43753
   local nativeRequest = "GET RAVEN_SNAPSHOT_V1\n"
   local nativeMaxResponseBytes = 4096
@@ -194,12 +199,21 @@ do
       nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=invalid_generation", "invalid_generation")
       return false, "invalid_generation"
     end
-    if lastNativeGeneration ~= nil and generation <= lastNativeGeneration then
+    if lastNativeGeneration ~= nil and generation < lastNativeGeneration then
       nativeNotice("NATIVE_AUTHORITY_STALE", "generation=" .. tostring(generation) ..
           " last=" .. tostring(lastNativeGeneration),
           "stale:" .. tostring(generation) .. ":" .. tostring(lastNativeGeneration))
       return false, "stale"
     end
+    if lastNativeGeneration ~= nil and generation == lastNativeGeneration and
+        not nativeAllowSameGenerationOnce then
+      nativeNotice("NATIVE_AUTHORITY_STALE", "generation=" .. tostring(generation) ..
+          " last=" .. tostring(lastNativeGeneration),
+          "stale:" .. tostring(generation) .. ":" .. tostring(lastNativeGeneration))
+      return false, "stale"
+    end
+    local sameGenerationReapply =
+        lastNativeGeneration ~= nil and generation == lastNativeGeneration
     if type(snapshot.states) ~= "table" or snapshot.schema ~= 1 or
         type(snapshot.count) ~= "number" or snapshot.count ~= #rows or
         type(snapshot.aliveCount) ~= "number" or
@@ -237,12 +251,14 @@ do
     end
     lastNativeGeneration = generation
     _G.CompletionistMapV105LastNativeRavenGeneration = generation
+    nativeAllowSameGenerationOnce = false
     lastNativeNotice = nil
     log("NATIVE_AUTHORITY_APPLIED", "generation=" .. tostring(generation) ..
         " killed=" .. tostring(snapshot.killedCount) ..
         " alive=" .. tostring(snapshot.aliveCount) ..
         " explicit=" .. tostring(snapshot.explicitCount) ..
-        " absentWadFalse=" .. tostring(snapshot.absenceDefaultFalseCount))
+        " absentWadFalse=" .. tostring(snapshot.absenceDefaultFalseCount) ..
+        " sameGenerationResetReapply=" .. tostring(sameGenerationReapply))
     return true, nil
   end
 
@@ -582,6 +598,7 @@ do
     lastMapOnSelf = self
     local selected = currentSelection(self)
     if selected == nil then
+      customCompassOwnsTarget = false
       promptIntent = nil
       local customOK = hideCustom(nil, "other_target_replace")
       if not customOK then return end
@@ -594,6 +611,7 @@ do
     end
     clearSelection(self, "SELECT_CONSUME")
     if not shouldShow(selected.CatalogueId) then return end
+    customCompassOwnsTarget = true
     local ids, queryOK = customIds()
     if not queryOK then return end
     if contains(ids, selected.IdString) then
@@ -610,6 +628,7 @@ do
         promptSettleFrames = 0
         promptSettleBucket = -1
         suppressLegacyRavenHud()
+        hideStock("raven_remove_guard")
         Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
         refreshPrompt(self, selected)
         log("REMOVE", "name=" .. selected.Name .. " uid=" .. selected.IdString)
@@ -627,6 +646,8 @@ do
       log("SHOW_FAILED", "name=" .. selected.Name .. " error=" .. tostring(showErr))
       return
     end
+    suppressLegacyRavenHud()
+    hideStock("raven_post_show_guard")
     _G.CompletionistMapV105TrackedCatalogueId = selected.CatalogueId
     self.currShownMarkerID = selected.Id
     promptIntent = {
@@ -644,6 +665,33 @@ do
 
   function MapOn:Update(...)
     local result = previousUpdate(self, ...)
+
+    if customCompassOwnsTarget then
+      suppressLegacyRavenHud()
+      local stock, stockOK = stockIds()
+      if stockOK and #stock > 0 then
+        hideStock("custom_raven_owner_guard")
+      end
+    end
+
+    if nativeResetRecheckFrames > 0 then
+      nativeResetRecheckFrames = nativeResetRecheckFrames - 1
+      local elapsed = nativeResetRecheckLimit - nativeResetRecheckFrames
+      local bucket = math.floor(elapsed / 30)
+      if elapsed == 1 or bucket ~= nativeResetRecheckBucket then
+        nativeResetRecheckBucket = bucket
+        local refreshed, reason = refreshNativeAuthority("post_reset_recheck")
+        log("NATIVE_AUTHORITY_RECHECK", "frame=" .. tostring(elapsed) ..
+            " result=" .. (refreshed and "applied" or tostring(reason)) ..
+            " lastGeneration=" .. tostring(lastNativeGeneration))
+      end
+      if nativeResetRecheckFrames == 0 then
+        nativeResetRecheckBucket = -1
+        log("NATIVE_AUTHORITY_RECHECK_DONE",
+            "lastGeneration=" .. tostring(lastNativeGeneration))
+      end
+    end
+
     if promptIntent == nil then return result end
 
     local intent = promptIntent
@@ -724,6 +772,10 @@ do
     if ok and contains(ids, tostring(info.Id)) then
       pcall(function() game.Compass.HideMarker(row.Name) end)
     end
+    if customCompassOwnsTarget then
+      suppressLegacyRavenHud()
+      hideStock("tracked_raven_collected")
+    end
     _G.CompletionistMapV105TrackedCatalogueId = nil
   end
 
@@ -771,8 +823,13 @@ do
     promptIntent = nil
     promptSettleFrames = 0
     promptSettleBucket = -1
+    nativeAllowSameGenerationOnce = true
+    nativeResetRecheckFrames = nativeResetRecheckLimit
+    nativeResetRecheckBucket = -1
     log("STATE_RESET", "source=" .. tostring(source) ..
-        " staleStateRetained=false catalogueDefaultVisible=true progressionWrites=false")
+        " staleStateRetained=false catalogueDefaultVisible=true progressionWrites=false" ..
+        " sameGenerationNativeReapplyOnce=true postResetRecheckFrames=" ..
+        tostring(nativeResetRecheckLimit))
     return true
   end
 
@@ -783,7 +840,7 @@ do
   log("API", "installed=true catalogueCount=" .. tostring(#rows) ..
       " mapResource=" .. mapResource .. " compassClass=" .. ravenClass ..
       " exactCollisionRequired=true markerIdAloneInfersRaven=false" ..
-      " polling=false progressionWrites=false catalogueDefaultVisible=true" ..
+      " permanentPolling=false postResetBoundedRefresh=true progressionWrites=false catalogueDefaultVisible=true" ..
       " persistedKillBootstrap=true nativeAuthority=loopback_map_open" ..
       " nativePort=" .. tostring(nativePort) .. " staticDescriptorWrites=false")
 end
