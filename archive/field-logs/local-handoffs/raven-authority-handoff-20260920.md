@@ -3072,3 +3072,57 @@ Conclusion:
 - do not plan to redistribute a modified unlicensed Script Loader.
 
 Return to the proven staged-record/native-owner path and look for an **already exposed native Lua binding** that can query or resolve the staged GameObject/persisted state directly, rather than inventing a new native loading mechanism. The complete 53-Raven authority model itself remains solved and accepted; only runtime delivery remains open.
+
+
+## Persisted Lua binding proof queued
+
+After closing VFS, the handoff was re-read and the repository's existing Lua API inventories were checked before adding any new scan.
+
+Already-known registered read/query candidates:
+
+```text
+ResolveGameObject  0x84F750
+GetRefBool         0x845700
+GetRefFloat        0x8456E0
+GetRefInt          0x8456C0
+GetRefString       0x8456A0
+LoadCheck          0x84E880
+```
+
+These are the strongest remaining built-in native Lua candidates because they may resolve references or state without requiring a standalone DLL/plugin. The generic GameObject Lua API inventory already exists and should not be repeated.
+
+New bounded static tooling:
+
+- `4d1baa5f7d17b9cde08758bfb59971669093ae2d` - `tools/v0.10.5/trace-lua-persisted-reference-bindings.py`
+- `2e4398481befcc8afd8c5442d8482f0c0905393d` - `tools/v0.10.5/trace-lua-persisted-reference-bindings-and-push.ps1`
+
+The tracer examines only those six handlers plus one-hop direct callers/callees and tests for intersection with the already-proven staged authority surface:
+
+```text
+staged globals:
+  0x22C696C record_count
+  0x22C7170 record_base
+  0x22C7194 record end/cursor
+  0x22C6938 / 0x22C6940 staged auxiliaries
+
+WAD binding:
+  +0xEE18
+
+known staged functions:
+  0x82C820
+  0x82CC0C
+  0x82B250
+  0x82CF00
+  0x673A30
+  0x673D00
+  0x676CC0
+  0x67B830
+  0x671AD0
+```
+
+Acceptance decision:
+
+- any direct staged-global access, `WAD+0xEE18` access, or call into the proven staged owner/restore functions makes that native Lua binding a concrete bridge candidate;
+- if all six are disjoint from the staged authority surface, close this built-in binding set and continue from the native staged owner itself rather than probing unrelated Lua APIs.
+
+The trace is fully static/read-only and requires GoW closed.
