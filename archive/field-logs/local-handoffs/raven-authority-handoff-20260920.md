@@ -1981,3 +1981,77 @@ The following are **reported local Astra findings pending preservation and indep
 Before pulling/resetting/restarting Codex, preserve or commit the existing local working-tree edits from the interrupted Astra pass. Then review the exact native bit-reader semantics and the new decoder before treating the Channel-A claim as proven.
 
 If the local decoder is sound, the next acceptance target remains exact Raven state recovery from the existing staged Channel-A bytes, followed by one live read-only validation against the almost-complete save and the Veithurgard `false,true,true` fixture.
+
+
+---
+
+# Addendum 2026-09-21 - interrupted Astra bitstream work preserved and reviewed
+
+Preserved/rebased/pushed Astra work commit: `45c820a`  
+Original local preservation commit before rebase: `898fce0`
+
+Files now preserved on the Raven branch:
+
+- `docs/superpowers/plans/2026-09-21-raven-missing-checkpoint-stream.md`
+- `tools/v0.10.5/staged_wad_bitstream.py`
+- `tools/v0.10.5/capture-staged-wad-bitstream-raven-state-readonly.py`
+- `tools/v0.10.5/capture-staged-wad-bitstream-raven-state-readonly-and-push.ps1`
+- `tools/v0.10.5/test_staged_wad_bitstream.py`
+- `tools/v0.10.5/test_staged_wad_bitstream_capture.py`
+- `tools/v0.10.5/trace-staged-wad-bitstream-boundary.py`
+- static evidence under `archive/field-logs/source-scans/staged-wad-bitstream-boundary-20260921/`
+
+## Static path now pinned by Astra tooling
+
+The new static tracer explicitly archives these native windows:
+
+- Channel-A writer: `0x82B250..0x82B42D`
+- Lua bit writer: `0x23F9C0..0x23FA94`
+- Channel-A read/cursor reset: `0x6740E1..0x674133`
+- bit-reader init/slot lookup: `0x82C4E0..0x82C6A0`
+- Lua bit reader: `0x23FE12..0x23FE97`
+- checkpoint LuaClient restore call: `0x24001D..0x240078`
+- MSB bit read/write helpers: `0xA20280..0xA20326` / `0xA20220..0xA20280`
+- full WAD bit restore: `0x23FAA0..0x240078`
+- live client roundtrip: `0x464EF0..0x465225`
+- client restore/deferred copy: `0x5B2280..0x5B249F`
+
+This is the first preserved implementation that directly models Channel A as an MSB-first packed bitstream feeding a per-WAD Lua restore buffer and then the known LuaClient restore path.
+
+## Important decoder status
+
+`tools/v0.10.5/staged_wad_bitstream.py` is deliberately fail-closed and labels all output:
+
+```text
+classification=CANDIDATE
+production_ready=false
+enclosing_field_traversal_validated=false
+```
+
+The current offline extractor:
+
+- treats the outer Channel-A envelope as little-endian u16 length + packed bytes;
+- checks all eight bit alignments;
+- reconstructs nested candidate Lua buffers using MSB-first u16 lengths;
+- reuses the solved Raven custom-userdata decoder rather than introducing a second codec;
+- keeps missing Raven state as unknown;
+- rejects conflicting/ambiguous parses and bounded-work cap hits;
+- can archive raw Channel-A payloads for deterministic offline replay.
+
+The RPM capture performs two equal bounded reads of the proven staged table and pool and rejects changed snapshots. It still correctly reports `production_ready=false`.
+
+## Remaining authority gates
+
+Do NOT integrate candidate output into the map yet. The following still need proof:
+
+1. prove the exact enclosing Channel-A field traversal/position rather than finding a syntactically valid carrier at some bit alignment;
+2. prove active-checkpoint freshness of the staged payload used by the observer;
+3. prove state recovery for unloaded/nonresident WADs;
+4. validate exact Veithurgard `false,true,true` and at least one second region;
+5. independently review the bit ordering/length semantics against the archived native instructions.
+
+A live capture runner already exists:
+
+`tools/v0.10.5/capture-staged-wad-bitstream-raven-state-readonly-and-push.ps1`
+
+It requires God of War running on the advanced save and paused, archives all raw Channel-A bytes plus candidate decode results, commits the runtime evidence, and pushes it. Use only after remaining local scratch/research artifacts from the interrupted Astra pass have been preserved so no evidence is lost.
