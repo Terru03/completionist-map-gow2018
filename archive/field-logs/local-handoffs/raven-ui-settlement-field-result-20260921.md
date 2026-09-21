@@ -117,3 +117,26 @@ Live proof `82862a4` now explicitly requires:
 - result records `checkpoint_reload_after_kill_manual=true`.
 
 The generated-candidate refresher now safely refreshes both generated Lua files (mapmenu + precisionchallenge) while freezing the three binary candidate pins.
+
+
+## Validation complete for second regression set
+
+Additional cleanup:
+- `e030176` releases custom Raven compass ownership on explicit save/checkpoint reset so a legitimate stock target is not suppressed after reload.
+- `43f18b0` tests that reload-boundary cleanup.
+
+CI:
+- run `35631783074` passed the complete runtime/test/safety set before the final reload-boundary cleanup;
+- run `35631976792` passed with the reload-boundary cleanup included;
+- Python syntax, Raven Lua integration, state-model, template/build, and write-safety scan all green;
+- temporary workflow removed in `11d8d7a`.
+
+Next boundary:
+1. integrate latest release-candidate branch locally without losing any local proof;
+2. run the self-pushing proof refresh, which now refreshes both generated Lua candidates while freezing binary pins;
+3. rerun live proof;
+4. specifically verify:
+   - Add A -> Remove A -> Add A in one map-open session leaves only Raven A on compass, never a boat/stock target;
+   - kill Raven -> map close/reopen keeps it absent;
+   - reload the checkpoint created after kill -> reopen map -> same Raven remains absent;
+   - stock target behavior remains normal after checkpoint/save reset.
