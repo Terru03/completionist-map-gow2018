@@ -5537,3 +5537,147 @@ Implement and test only these UI fixes:
 5. no save/progression/process writes.
 
 Do not reopen Raven authority, DXGI/XInput, native loading, or snapshot transport research.
+
+
+## Raven reticle text and immediate compass prompt UI fixed
+
+The manual live field result proved old-save killed-Raven filtering worked but exposed three UI regressions:
+
+- missing `Odin's Raven` title;
+- missing `Completionist Map` subtitle;
+- stale Add/Replace/Remove compass action text until another hover/UI refresh.
+
+### Proven historical UI behavior recovered
+
+The original v0.10.1 installer contains the safe Raven reticle path:
+
+```lua
+self:SetReticleInfo(
+  currState,
+  "Odin's Raven",
+  CompletionistMapV100_Description()
+)
+```
+
+The v0.10.3/v0.10.4 Raven production routing contains the proven immediate prompt refresh path:
+
+- `MapCursorInfo`;
+- `CursorInfo_Top`;
+- `CursorAction_Text`;
+- `UI.SetTextIsClickable`;
+- `UI.SetText`;
+- `self.menu:UpdateFooterButton("ShowOnCompass", ...)`;
+- `self.menu:UpdateFooterButtonText()`.
+
+Those historical mechanisms were ported rather than inventing new UI object names.
+
+### Runtime fix
+
+Commit:
+
+- `f4899d9f5d510e4d9b69e640f73290d5623a7e70`
+- message: `fix(v0.10.5): restore Raven reticle and live compass prompt`
+
+Current generalized v0.10.5 behavior:
+
+1. exact custom Raven collision is captured as before;
+2. the stock collision handler still runs;
+3. only if the exact custom Raven selection remains valid, v0.10.5 calls:
+
+```lua
+self:SetReticleInfo(currState, "Odin's Raven", "Completionist Map")
+```
+
+This intentionally does **not** clear `currMarkerID`, because the generalized 53-Raven exact compass ownership path depends on the actual selected marker ID.
+
+Stock/Nornir reticle behavior is left unchanged.
+
+For compass actions, v0.10.5 now has an immediate prompt refresh helper that updates both:
+
+- cursor-card action text;
+- footer action text.
+
+A small per-selection intent tracks the just-requested state so asynchronous native compass-manager settlement cannot momentarily re-display the old action.
+
+Expected immediate transitions:
+
+```text
+Add -> Remove
+Replace -> Remove
+Remove -> Add/Replace as applicable
+```
+
+The intent is cleared on map teardown/reset and does not affect a different selected Raven.
+
+Persistence/native authority code was not changed.
+
+### Regression tests
+
+Commit:
+
+- `2cdb7f5f850d2348db04db0af30b63d3414577d7`
+- message: `test(v0.10.5): cover Raven reticle and immediate compass prompt`
+
+Lua 5.1 tests now explicitly require:
+
+- exact title = `Odin's Raven`;
+- exact subtitle = `Completionist Map`;
+- Add selection immediately shows Remove after action;
+- Replace immediately shows Remove after action;
+- Remove immediately shows Add when no other target remains;
+- both cursor-card and footer text update;
+- existing 53-Raven lifecycle/persistence behavior still passes.
+
+### Windows UI-polish CI green
+
+Temporary workflow run:
+
+- `35624689900`
+- job: `106416046383`
+- conclusion: `success`
+
+Verified:
+
+```text
+100% tests passed out of 5
+
+RAVEN_NATIVE_BRIDGE_RUNNER_TESTS_PASSED
+target=dxgi.dll
+delivery_sequence=true
+rollback=true
+
+Ran 14 tests in 0.031s
+OK
+
+Ran 21 tests in 0.004s
+OK
+
+RAVEN_UI_POLISH_SECURITY_PASSED findings=0
+```
+
+The 14 Lua tests include the new reticle/prompt regression.
+
+Temporary workflow removed after green:
+
+- `b72fc33cf88ce7e1d9fec2a297dc7a80933a800d`
+
+### Current boundary
+
+The core authoritative filtering remains field-proven manually:
+
+- already-killed Ravens absent on the advanced save.
+
+Next action is one live UI regression retest using the existing reversible snapshot-delivery runner.
+
+Required observations:
+
+1. already-killed Ravens remain absent;
+2. selected live Raven shows:
+   - `Odin's Raven`
+   - `Completionist Map`;
+3. Add/Replace/Remove action text changes immediately without moving off the Raven;
+4. compass behavior itself remains correct;
+5. immediate kill removal remains correct;
+6. rollback remains exact.
+
+Do not reopen authority/load/transport research.
