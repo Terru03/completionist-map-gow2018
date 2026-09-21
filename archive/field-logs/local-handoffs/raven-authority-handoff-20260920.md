@@ -5465,3 +5465,75 @@ RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_READY
 ```
 
 Retry the same reversible live proof runner after pulling latest branch.
+
+
+## Manual live snapshot-delivery field result: persistence works; Raven map UI regressions remain
+
+The user completed the corrected live snapshot-delivery test and reported that the core persistence behavior worked in-game.
+
+No new auto-pushed live-proof capture commit is present on the remote branch at this point, so this section records the user's direct field observation only and does **not** claim an archived runner pass.
+
+Observed working behavior:
+
+- the advanced/old save correctly omitted Ravens that were already killed;
+- therefore the native authoritative snapshot -> Lua persisted-kill application -> map icon filtering path worked in the real game.
+
+Observed remaining UI/runtime regressions:
+
+1. selecting a live Raven did not show the expected map title:
+   `Odin's Raven`;
+2. the small subtitle:
+   `Completionist Map`
+   was also absent;
+3. after adding/replacing a Raven on the compass, the map's current compass-action text did not update immediately;
+4. the stale action text corrected only after another UI/hover-style refresh.
+
+This is a **functional persistence pass with UI polish still open**, not final public-release acceptance.
+
+### Proven source of the compass prompt regression
+
+The generalized v0.10.5 runtime currently changes compass state in `MapOn:ShowOnCompass` but does not refresh the visible cursor-card/footer prompt afterwards.
+
+The proven v0.10.4 v3.3 routing code had a `refreshPrompt(self, selected)` helper that:
+
+- recomputed the Raven prompt;
+- updated `MapCursorInfo -> CursorInfo_Top -> CursorAction_Text`;
+- called `self.menu:UpdateFooterButton("ShowOnCompass", ...)`;
+- called `self.menu:UpdateFooterButtonText()`;
+- ran immediately after successful add/replace and remove.
+
+The original v0.10.3 native Raven production code contains the same explicit comment that otherwise the text above the selected marker remains stale until hover changes.
+
+Therefore port the proven prompt-refresh behavior into v0.10.5 rather than inventing a new mechanism.
+
+### Raven title/subtitle boundary
+
+The base map's `MapOn:UpdateReticleInfo(currState, markerInfo)` derives normal marker text from:
+
+```lua
+title = util.GetLAMSMsg(markerInfo.LamsNameId, markerInfo.Id)
+desc = util.GetLAMSMsg(markerInfo.LamsDescriptionId, markerInfo.Id)
+```
+
+The generalized custom Raven marker currently reaches the UI without useful LAMS title/description text, explaining the blank title/subtitle.
+
+Required fix:
+
+- for an exact selected custom Raven only, restore:
+  - title: `Odin's Raven`
+  - description/subtitle: `Completionist Map`;
+- do not change stock/Nornir marker title behavior;
+- use the game's existing `UpdateReticleInfo` UI objects/handles rather than a global text hack;
+- keep the persistence/native-authority path unchanged.
+
+### Current next boundary
+
+Implement and test only these UI fixes:
+
+1. restore Raven title/subtitle on exact Raven selection;
+2. port immediate compass prompt refresh after add/replace/remove;
+3. keep old-save killed-Raven filtering unchanged;
+4. keep realm filtering, selection identity, compass single-active behavior, and immediate `ravenKilled` path unchanged;
+5. no save/progression/process writes.
+
+Do not reopen Raven authority, DXGI/XInput, native loading, or snapshot transport research.
