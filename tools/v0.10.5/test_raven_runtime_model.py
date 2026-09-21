@@ -92,13 +92,22 @@ class RavenRuntimeTests(unittest.TestCase):
         )
         self.assertEqual(model.state[self.a["catalogue_id"]], "collected")
 
-    def test_immediate_event_after_native_refresh_then_new_generation_reasserts(self):
+    def test_immediate_event_survives_periodic_snapshot_until_load_boundary(self):
         model = self.model()
         model.open_map(self.a["realm"])
         self.assertEqual(model.apply_native_snapshot(1, []), "applied")
-        model.observe(self.a["catalogue_id"], True)
+        self.assertEqual(
+            model.observe_event(self.a["catalogue_id"], True), "applied"
+        )
         self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+
         self.assertEqual(model.apply_native_snapshot(2, []), "applied")
+        self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+
+        model.notify_load_boundary()
+        self.assertEqual(model.apply_native_snapshot(2, []), "boundary_wait")
+        self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+        self.assertEqual(model.apply_native_snapshot(3, []), "applied")
         self.assertIn(self.a["catalogue_id"], model.map_icons)
 
     def test_a_b_and_b_a_replacement(self):
