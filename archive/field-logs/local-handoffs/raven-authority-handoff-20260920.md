@@ -2538,3 +2538,66 @@ Fix:
 - `99d692b628b02cb41cf72b7f1c6fcbd24fd45ba6` - cleanup commit.
 
 This removes the `mem_refs` dependency while keeping the analysis fully static/read-only.
+
+
+---
+
+# Addendum 2026-09-21 - WAD binding/unbinding semantics proven; record-count lifecycle tracer added
+
+Corrected raw-executable binding evidence commit: `cb0612192ea34ac900278fc3de036298bc41e0eb`.
+
+The fixed tracer found 15 exact `WAD+0xEE18` references:
+
+- 2 writes;
+- 13 reads.
+
+The two writes have distinct semantics.
+
+## Bind path: 0x673A30 / write at 0x673BEC
+
+`0x673A30` is called from restore/load function `0x673D00` at `0x67421C`.
+
+When the runtime WAD's `+0xEE18` binding is negative, it computes the current staged-record index from the record pointer relative to `0x22C7170` with stride `0xA8`, then writes that index into `WAD+0xEE18`:
+
+```text
+0x673BAF cmp word ptr [rdi+0xEE18],0
+0x673BB7 jge ...
+0x673BC4 lea rax,[record_base]
+...
+0x673BEC mov word ptr [rdi+0xEE18],dx
+```
+
+Therefore `+0xEE18` is the live WAD -> staged-record index binding.
+
+## Unbind path: 0x676CC0 / write at 0x676F76
+
+`0x676FB0` iterates staged records and calls `0x676CC0` at `0x6770A6` for records needing unload/cleanup.
+
+`0x676CC0` resolves the runtime WAD from the staged record's `+0x28` native slot, performs WAD cleanup, and when its unload flag is true does:
+
+```text
+0x676F6E mov ecx,-1
+0x676F73 mov dword ptr [record+0x28],ecx
+0x676F76 mov word ptr [WAD+0xEE18],cx
+```
+
+So normal WAD unload clears both live associations to `-1` but does **not** delete or compact the staged `0xA8` record itself.
+
+This proves the staged table retains a record independently of the runtime WAD binding.
+
+## Record-count mutation evidence already visible
+
+Two writer functions are visible in the same report:
+
+- `0x67B830` searches staged record names and, if no existing name matches, increments `record_count` at `0x67BA68`, initialises a new `0xA8` record, copies the name into `+0x84`, and derives the record key at `+0x24`. This is an append/create path.
+- `0x671AD0` can reset `record_count` at `0x671C3F`; depending on its full-reset mode it clears every record structure and may set the whole count to zero. This is a global table reset/reinitialisation path, not an individual WAD removal path.
+
+A final static proof is still required because the global has many other readers/references and some `mov` sites may also be writes.
+
+New tooling:
+
+- `891e65880d4973100d0c60c6b116d08f58908f25` - all-writer `record_count` lifecycle tracer;
+- `f8f4347ad6f9fd3bc230b78a7cb153d2021da62c` - writer-ID fix;
+- `a99b85659258c29b60dea083c7877c0a7d211160` - static trace-and-push runner.
+
+The next pass classifies every RIP-relative reference to `0x22C696C` with Capstone operand access bits and emits the full function for every actual writer. Acceptance condition: no individual delete/compact writer. If all writes are append, restore/rebuild, or whole-table reset, then an absent WAD key in a live current staged checkpoint can be treated as having no persisted custom Lua state; for Raven `ravenKilled`, whose script default is false and whose kill transition writes true before checkpoint persistence, that closes the absent-WAD authority case without guessing.
