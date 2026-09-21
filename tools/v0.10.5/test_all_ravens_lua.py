@@ -205,6 +205,7 @@ function probe.iconCount()
 end
 function probe.customCount() return #customIds end
 function probe.stockCount() return #stockIds end
+function probe.injectStock(value) stockIds={value} end
 function probe.customAt(i) return customIds[i] end
 function probe.markerId(name) return markerId(name) end
 function probe.tracked() return CompletionistMapV105TrackedCatalogueId end
@@ -413,6 +414,18 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.probe.setNativeResponse(self.response(2))
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+    def test_reset_releases_raven_compass_ownership(self):
+        self.probe.publish(self.a["catalogue_id"], False)
+        self.probe.open()
+        self.probe.click(self.a["marker"]["name"])
+        self.probe.click(self.a["marker"]["name"])
+        self.assertEqual(self.probe.customCount(), 0)
+
+        self.probe.reset()
+        self.probe.injectStock("stock-after-reset")
+        self.probe.update()
+        self.assertEqual(self.probe.stockCount(), 1)
 
     def test_reset_reapplies_same_generation_authority_once(self):
         self.probe.setNativeResponse(self.response(5, [self.a]))
