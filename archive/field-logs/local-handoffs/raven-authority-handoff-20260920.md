@@ -2144,3 +2144,43 @@ The first offline replay attempt stopped in `test_cached_lua_length_is_only_cros
 With `expected_lua_length` supplied, the refined decoder searches the eight MSB bit phases for that exact 16-bit big-endian length. If the supplied length is deliberately wrong, there may be no matching positions at all. The decoder previously returned zero candidates with an empty rejection list, while the existing fail-closed regression correctly expected an explicit `cached_lua_length_mismatch` reason.
 
 The decoder now records `cached_lua_length_mismatch` when no native length position matches the staged record's expected Lua length. No capture format, native framing, Raven codec, or runtime evidence changed.
+
+
+---
+
+# Addendum 2026-09-21 - authoritative Veithurgard packed-state decode achieved
+
+Offline replay evidence commit: `d4557a547a19247b4d15a6bd0c4dba38f0f57fed`
+
+Evidence:
+`archive/field-logs/runtime-captures/staged-wad-bitstream-raven-20260921-060345-c2c9bcc1/replay-report.{json,txt}`
+
+The refined native-length Channel-A replay recovered the exact three `Xpl200_Funeral` Raven states from the live advanced-save capture with one unambiguous Lua carrier candidate at bit offset `91275`:
+
+- `raven_642d0d164af0a5d4076e77933c549a5d` -> `ravenKilled=false`
+  - native world position approximately `(-64.8509, 12.9874, 787.3069)`
+- `raven_e32f7bab42fd7298890f6aa56a734562` -> `ravenKilled=true`
+  - native world position approximately `(-127.9608, 15.5776, 690.0758)`
+- `raven_c945cb53465b58decfcbd4a221cb5326` -> `ravenKilled=true`
+  - native world position approximately `(122.6049, 17.3743, 679.2116)`
+
+This exactly matches the independently established Veithurgard acceptance fixture `false,true,true` and RegionSummary count `2/3`.
+
+This is the first successful recovery of exact per-Raven authoritative checkpoint state for a nonresident WAD from the packed Channel-A stream, using only read-only runtime capture plus offline decode. It closes the core question of whether Channel A actually carries the Lua Raven state.
+
+## Broader coverage finding
+
+The 53-Raven catalogue spans 39 unique WADs. The captured staged WAD table contains exact-name Channel-A records for 30 of those WADs, covering 42 of the 53 Raven catalogue entries. Only the three Veithurgard identities currently join to catalogue IDs, but many other decoded Lua carriers explicitly contain the string `ravenKilled`, including Raven-bearing WADs such as:
+
+- `Riv200_DangersMain`
+- `Xpl940_BeachCave`
+- `Foot500_Top`
+- `Alf355_ChiselDungeon`
+- `Peak140_CavernDark`
+- `Xpl850_DungeonForest`
+- `Xpl300_Stronghold`
+- `Hel300_MainBridge`
+
+Therefore the next blocker is not missing Lua state. It is the save-side GameObject identity join for Raven subobjects outside `Xpl200_Funeral`.
+
+Next step: instrument the canonical carrier decoder to report **all registry-matching GameObject subobject keys whose state row contains `ravenKilled`**, including unmatched object hashes/payloads. Compare those live save identities against the 53 catalogue identities and recover the remaining transform/join rule. Do not fall back to coordinates, RegionSummary-only inference, or absence=alive.
