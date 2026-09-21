@@ -499,6 +499,30 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
         self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
 
+    def test_unavailable_boundary_baseline_requires_two_later_captures(self):
+        self.probe.setNativeResponse(self.response(4, [self.a]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+        # Boundary starts while the native accessor cannot be read. The first
+        # later snapshot may already have been captured before the boundary,
+        # so it can only establish the baseline and must not be applied.
+        self.probe.setNativeResponse(None)
+        self.probe.boundary()
+        self.probe.setNativeResponse(self.response(5))
+        for _ in range(35):
+            self.probe.update()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+        # Only a strictly newer capture after the established baseline may
+        # become post-boundary authority.
+        self.probe.setNativeResponse(self.response(6))
+        for _ in range(35):
+            self.probe.update()
+        self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
+        self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
+
     def test_global_load_event_arms_authority_boundary(self):
         self.probe.setNativeResponse(self.response(8, [self.a]))
         self.probe.open()
