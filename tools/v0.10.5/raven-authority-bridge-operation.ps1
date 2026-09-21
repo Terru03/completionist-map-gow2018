@@ -103,10 +103,422 @@ function New-RavenBridgeOperation(
         throw 'Bridge operation SHA is invalid.'
     }
     if ($RestoreExists) {
-        if ($RestoreSha256.ToLowerInvariant() -notmatch '^[0-9a-f]{64}$' -or
+        if ($RestoreSha256.ToLowerInvariant() -notmatch '^[0-9a-f]{64}
+
+    $journal = [ordered]@{
+        schema = $script:RavenBridgeOperationSchema
+        owner = $script:RavenBridgeOperationOwner
+        operation = $Operation
+        phase = 'prepared'
+        created_utc = (Get-Date).ToUniversalTime().ToString('o')
+        target_relative = $script:RavenBridgeTargetRelative
+        proxy_contract = $script:RavenBridgeProxyContract
+        operation_sha256 = $OperationSha256.ToLowerInvariant()
+        restore_exists = $RestoreExists
+        restore_sha256 = if ($RestoreExists) { $RestoreSha256.ToLowerInvariant() } else { $null }
+        restore_dll_relative = if ($RestoreExists) { $RestoreDllRelative } else { $null }
+        restore_manifest_relative = if ($RestoreExists) { $RestoreManifestRelative } else { $null }
+        save_writes = $false
+        progression_writes = $false
+    }
+    Write-RavenBridgeJsonAtomic -Value $journal -Path $operationPath
+    return [pscustomobject]@{
+        Path = $operationPath
+        Journal = $journal
+    }
+}
+
+function Set-RavenBridgeOperationPhase(
+    [string]$OperationPath,
+    [object]$Journal,
+    [string]$Phase
+) {
+    $allowedPhases = @(
+        'prepared','target-written','manifest-written',
+        'target-restored','pair-restored','target-removed','pair-removed'
+    )
+    if ($Phase -notin $allowedPhases) {
+        throw "Unknown bridge operation phase: $Phase"
+    }
+    $Journal.phase = $Phase
+    Write-RavenBridgeJsonAtomic -Value $Journal -Path $OperationPath
+}
+
+function Get-RavenBridgeOperationPath([string]$GameRoot) {
+    $game = [IO.Path]::GetFullPath($GameRoot)
+    return Assert-RavenBridgeChildPath $game (
+        Join-Path $game $script:RavenBridgeOperationRelative)
+}
+
+function Complete-RavenBridgeInterruptedOperation([string]$GameRoot) {
+    $game = [IO.Path]::GetFullPath($GameRoot)
+    $operationPath = Get-RavenBridgeOperationPath $game
+    if (-not (Test-Path -LiteralPath $operationPath -PathType Leaf)) {
+        return [pscustomobject]@{ Recovered = $false; Operation = $null; RestoredPrevious = $false }
+    }
+
+    $journal = Get-Content -LiteralPath $operationPath -Raw | ConvertFrom-Json
+    $knownPhases = @(
+        'prepared','target-written','manifest-written',
+        'target-restored','pair-restored','target-removed','pair-removed'
+    )
+    if ($journal.schema -ne $script:RavenBridgeOperationSchema -or
+        $journal.owner -ne $script:RavenBridgeOperationOwner -or
+        [string]$journal.operation -notin @('install','rollback') -or
+        [string]$journal.phase -notin $knownPhases -or
+        $journal.target_relative -ne $script:RavenBridgeTargetRelative -or
+        $journal.proxy_contract -ne $script:RavenBridgeProxyContract) {
+        throw 'Bridge operation journal is not recognized.'
+    }
+
+    $operationSha = ([string]$journal.operation_sha256).ToLowerInvariant()
+    if ($operationSha -notmatch '^[0-9a-f]{64}$') {
+        throw 'Bridge operation journal SHA is invalid.'
+    }
+
+    $target = Assert-RavenBridgeChildPath $game (
+        Join-Path $game $script:RavenBridgeTargetRelative)
+    $manifestPath = Assert-RavenBridgeChildPath $game (
+        Join-Path $game $script:RavenBridgeManifestRelative)
+    $restoreExists = [bool]$journal.restore_exists
+    $restoreSha = if ($restoreExists) {
+        ([string]$journal.restore_sha256).ToLowerInvariant()
+    } else { $null }
+    if ($restoreExists) {
+        if ($restoreSha -notmatch '^[0-9a-f]{64} = Test-Path -LiteralPath $target -PathType Leaf
+    if ($targetExists) {
+        $currentSha = Get-RavenBridgeHash $target
+        $allowed = @($operationSha)
+        if ($restoreExists) { $allowed += $restoreSha }
+        if ($currentSha -notin $allowed) {
+            throw "Bridge operation recovery found unknown dxgi.dll SHA: $currentSha"
+        }
+    }
+
+    if ($restoreExists) {
+        if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
+            $currentManifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+            $currentManifestSha = Assert-RavenBridgeOwnedManifest -Manifest $currentManifest
+            if ($currentManifestSha -notin @($operationSha,$restoreSha)) {
+                throw 'Bridge operation recovery found unknown active manifest.'
+            }
+        }
+        $backup = Assert-RavenBridgeChildPath $game (
+            Join-Path $game ([string]$journal.restore_dll_relative))
+        $backupManifest = Assert-RavenBridgeChildPath $game (
+            Join-Path $game ([string]$journal.restore_manifest_relative))
+        foreach ($path in @($backup,$backupManifest)) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+                throw "Bridge operation recovery backup missing: $path"
+            }
+        }
+        if ((Get-RavenBridgeHash $backup) -ne $restoreSha) {
+            throw 'Bridge operation recovery backup DLL SHA changed.'
+        }
+        $previous = Get-Content -LiteralPath $backupManifest -Raw | ConvertFrom-Json
+        [void](Assert-RavenBridgeOwnedManifest -Manifest $previous -ExpectedSha $restoreSha)
+
+        if (-not $targetExists -or (Get-RavenBridgeHash $target) -ne $restoreSha) {
+            Copy-RavenBridgeFileAtomic -Source $backup -Destination $target -ExpectedSha $restoreSha
+        }
+        $manifestCopyArgs = @{
+            Source = $backupManifest
+            Destination = $manifestPath
+            ExpectedSha = (Get-RavenBridgeHash $backupManifest)
+        }
+        Copy-RavenBridgeFileAtomic @manifestCopyArgs
+
+        $restored = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+        [void](Assert-RavenBridgeOwnedManifest -Manifest $restored -ExpectedSha $restoreSha)
+        if ((Get-RavenBridgeHash $target) -ne $restoreSha) {
+            throw 'Bridge operation recovery did not restore previous DLL exactly.'
+        }
+    }
+    else {
+        if ($targetExists) {
+            Remove-Item -LiteralPath $target -Force
+        }
+        if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
+            $owned = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+            $ownedSha = Assert-RavenBridgeOwnedManifest -Manifest $owned
+            if ($ownedSha -ne $operationSha) {
+                throw 'Bridge operation recovery found unexpected active manifest.'
+            }
+            Remove-Item -LiteralPath $manifestPath -Force
+        }
+        if ((Test-Path -LiteralPath $target) -or
+            (Test-Path -LiteralPath $manifestPath)) {
+            throw 'Bridge operation recovery expected owned pair to be absent.'
+        }
+    }
+
+    Remove-Item -LiteralPath $operationPath -Force
+    if (Test-Path -LiteralPath $operationPath) {
+        throw 'Bridge operation journal could not be removed after recovery.'
+    }
+
+    Write-Host (
+        "RAVEN_NATIVE_BRIDGE_OPERATION_RECOVERED operation=$($journal.operation) " +
+        "restore_previous=$($restoreExists.ToString().ToLowerInvariant())")
+    return [pscustomobject]@{
+        Recovered = $true
+        Operation = [string]$journal.operation
+        RestoredPrevious = $restoreExists
+    }
+}
+ -or
             [string]::IsNullOrWhiteSpace($RestoreDllRelative) -or
             [string]::IsNullOrWhiteSpace($RestoreManifestRelative)) {
             throw 'Bridge restore journal is incomplete.'
+        }
+        $backupPrefix = 'mods/completionist-map/native/backups/'
+        $dllRelative = $RestoreDllRelative.Replace('\','/')
+        $manifestRelative = $RestoreManifestRelative.Replace('\','/')
+        if (-not $dllRelative.StartsWith($backupPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+            -not $manifestRelative.StartsWith($backupPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+            throw 'Bridge restore journal paths are outside the owned backup directory.'
+        }
+    }
+
+    $journal = [ordered]@{
+        schema = $script:RavenBridgeOperationSchema
+        owner = $script:RavenBridgeOperationOwner
+        operation = $Operation
+        phase = 'prepared'
+        created_utc = (Get-Date).ToUniversalTime().ToString('o')
+        target_relative = $script:RavenBridgeTargetRelative
+        proxy_contract = $script:RavenBridgeProxyContract
+        operation_sha256 = $OperationSha256.ToLowerInvariant()
+        restore_exists = $RestoreExists
+        restore_sha256 = if ($RestoreExists) { $RestoreSha256.ToLowerInvariant() } else { $null }
+        restore_dll_relative = if ($RestoreExists) { $RestoreDllRelative } else { $null }
+        restore_manifest_relative = if ($RestoreExists) { $RestoreManifestRelative } else { $null }
+        save_writes = $false
+        progression_writes = $false
+    }
+    Write-RavenBridgeJsonAtomic -Value $journal -Path $operationPath
+    return [pscustomobject]@{
+        Path = $operationPath
+        Journal = $journal
+    }
+}
+
+function Set-RavenBridgeOperationPhase(
+    [string]$OperationPath,
+    [object]$Journal,
+    [string]$Phase
+) {
+    $Journal.phase = $Phase
+    Write-RavenBridgeJsonAtomic -Value $Journal -Path $OperationPath
+}
+
+function Get-RavenBridgeOperationPath([string]$GameRoot) {
+    $game = [IO.Path]::GetFullPath($GameRoot)
+    return Assert-RavenBridgeChildPath $game (
+        Join-Path $game $script:RavenBridgeOperationRelative)
+}
+
+function Complete-RavenBridgeInterruptedOperation([string]$GameRoot) {
+    $game = [IO.Path]::GetFullPath($GameRoot)
+    $operationPath = Get-RavenBridgeOperationPath $game
+    if (-not (Test-Path -LiteralPath $operationPath -PathType Leaf)) {
+        return [pscustomobject]@{ Recovered = $false; Operation = $null; RestoredPrevious = $false }
+    }
+
+    $journal = Get-Content -LiteralPath $operationPath -Raw | ConvertFrom-Json
+    if ($journal.schema -ne $script:RavenBridgeOperationSchema -or
+        $journal.owner -ne $script:RavenBridgeOperationOwner -or
+        [string]$journal.operation -notin @('install','rollback') -or
+        $journal.target_relative -ne $script:RavenBridgeTargetRelative -or
+        $journal.proxy_contract -ne $script:RavenBridgeProxyContract) {
+        throw 'Bridge operation journal is not recognized.'
+    }
+
+    $operationSha = ([string]$journal.operation_sha256).ToLowerInvariant()
+    if ($operationSha -notmatch '^[0-9a-f]{64}$') {
+        throw 'Bridge operation journal SHA is invalid.'
+    }
+
+    $target = Assert-RavenBridgeChildPath $game (
+        Join-Path $game $script:RavenBridgeTargetRelative)
+    $manifestPath = Assert-RavenBridgeChildPath $game (
+        Join-Path $game $script:RavenBridgeManifestRelative)
+    $restoreExists = [bool]$journal.restore_exists
+    $restoreSha = if ($restoreExists) {
+        ([string]$journal.restore_sha256).ToLowerInvariant()
+    } else { $null }
+
+    $targetExists = Test-Path -LiteralPath $target -PathType Leaf
+    if ($targetExists) {
+        $currentSha = Get-RavenBridgeHash $target
+        $allowed = @($operationSha)
+        if ($restoreExists) { $allowed += $restoreSha }
+        if ($currentSha -notin $allowed) {
+            throw "Bridge operation recovery found unknown dxgi.dll SHA: $currentSha"
+        }
+    }
+
+    if ($restoreExists) {
+        $backup = Assert-RavenBridgeChildPath $game (
+            Join-Path $game ([string]$journal.restore_dll_relative))
+        $backupManifest = Assert-RavenBridgeChildPath $game (
+            Join-Path $game ([string]$journal.restore_manifest_relative))
+        foreach ($path in @($backup,$backupManifest)) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+                throw "Bridge operation recovery backup missing: $path"
+            }
+        }
+        if ((Get-RavenBridgeHash $backup) -ne $restoreSha) {
+            throw 'Bridge operation recovery backup DLL SHA changed.'
+        }
+        $previous = Get-Content -LiteralPath $backupManifest -Raw | ConvertFrom-Json
+        [void](Assert-RavenBridgeOwnedManifest -Manifest $previous -ExpectedSha $restoreSha)
+
+        if (-not $targetExists -or (Get-RavenBridgeHash $target) -ne $restoreSha) {
+            Copy-RavenBridgeFileAtomic -Source $backup -Destination $target -ExpectedSha $restoreSha
+        }
+        $manifestCopyArgs = @{
+            Source = $backupManifest
+            Destination = $manifestPath
+            ExpectedSha = Get-RavenBridgeHash $backupManifest
+        }
+        Copy-RavenBridgeFileAtomic @manifestCopyArgs
+
+        $restored = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+        [void](Assert-RavenBridgeOwnedManifest -Manifest $restored -ExpectedSha $restoreSha)
+        if ((Get-RavenBridgeHash $target) -ne $restoreSha) {
+            throw 'Bridge operation recovery did not restore previous DLL exactly.'
+        }
+    }
+    else {
+        if ($targetExists) {
+            Remove-Item -LiteralPath $target -Force
+        }
+        if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
+            $owned = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+            $ownedSha = Assert-RavenBridgeOwnedManifest -Manifest $owned
+            if ($ownedSha -ne $operationSha) {
+                throw 'Bridge operation recovery found unexpected active manifest.'
+            }
+            Remove-Item -LiteralPath $manifestPath -Force
+        }
+        if ((Test-Path -LiteralPath $target) -or
+            (Test-Path -LiteralPath $manifestPath)) {
+            throw 'Bridge operation recovery expected owned pair to be absent.'
+        }
+    }
+
+    Remove-Item -LiteralPath $operationPath -Force
+    if (Test-Path -LiteralPath $operationPath) {
+        throw 'Bridge operation journal could not be removed after recovery.'
+    }
+
+    Write-Host (
+        "RAVEN_NATIVE_BRIDGE_OPERATION_RECOVERED operation=$($journal.operation) " +
+        "restore_previous=$($restoreExists.ToString().ToLowerInvariant())")
+    return [pscustomobject]@{
+        Recovered = $true
+        Operation = [string]$journal.operation
+        RestoredPrevious = $restoreExists
+    }
+}
+) {
+            throw 'Bridge operation restore SHA is invalid.'
+        }
+        $backupPrefix = 'mods/completionist-map/native/backups/'
+        $dllRelative = ([string]$journal.restore_dll_relative).Replace('\','/')
+        $manifestRelative = ([string]$journal.restore_manifest_relative).Replace('\','/')
+        if (-not $dllRelative.StartsWith($backupPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+            -not $manifestRelative.StartsWith($backupPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+            throw 'Bridge operation restore paths are outside the owned backup directory.'
+        }
+    }
+
+    $targetExists = Test-Path -LiteralPath $target -PathType Leaf
+    if ($targetExists) {
+        $currentSha = Get-RavenBridgeHash $target
+        $allowed = @($operationSha)
+        if ($restoreExists) { $allowed += $restoreSha }
+        if ($currentSha -notin $allowed) {
+            throw "Bridge operation recovery found unknown dxgi.dll SHA: $currentSha"
+        }
+    }
+
+    if ($restoreExists) {
+        $backup = Assert-RavenBridgeChildPath $game (
+            Join-Path $game ([string]$journal.restore_dll_relative))
+        $backupManifest = Assert-RavenBridgeChildPath $game (
+            Join-Path $game ([string]$journal.restore_manifest_relative))
+        foreach ($path in @($backup,$backupManifest)) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+                throw "Bridge operation recovery backup missing: $path"
+            }
+        }
+        if ((Get-RavenBridgeHash $backup) -ne $restoreSha) {
+            throw 'Bridge operation recovery backup DLL SHA changed.'
+        }
+        $previous = Get-Content -LiteralPath $backupManifest -Raw | ConvertFrom-Json
+        [void](Assert-RavenBridgeOwnedManifest -Manifest $previous -ExpectedSha $restoreSha)
+
+        if (-not $targetExists -or (Get-RavenBridgeHash $target) -ne $restoreSha) {
+            Copy-RavenBridgeFileAtomic -Source $backup -Destination $target -ExpectedSha $restoreSha
+        }
+        $manifestCopyArgs = @{
+            Source = $backupManifest
+            Destination = $manifestPath
+            ExpectedSha = Get-RavenBridgeHash $backupManifest
+        }
+        Copy-RavenBridgeFileAtomic @manifestCopyArgs
+
+        $restored = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+        [void](Assert-RavenBridgeOwnedManifest -Manifest $restored -ExpectedSha $restoreSha)
+        if ((Get-RavenBridgeHash $target) -ne $restoreSha) {
+            throw 'Bridge operation recovery did not restore previous DLL exactly.'
+        }
+    }
+    else {
+        if ($targetExists) {
+            Remove-Item -LiteralPath $target -Force
+        }
+        if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
+            $owned = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+            $ownedSha = Assert-RavenBridgeOwnedManifest -Manifest $owned
+            if ($ownedSha -ne $operationSha) {
+                throw 'Bridge operation recovery found unexpected active manifest.'
+            }
+            Remove-Item -LiteralPath $manifestPath -Force
+        }
+        if ((Test-Path -LiteralPath $target) -or
+            (Test-Path -LiteralPath $manifestPath)) {
+            throw 'Bridge operation recovery expected owned pair to be absent.'
+        }
+    }
+
+    Remove-Item -LiteralPath $operationPath -Force
+    if (Test-Path -LiteralPath $operationPath) {
+        throw 'Bridge operation journal could not be removed after recovery.'
+    }
+
+    Write-Host (
+        "RAVEN_NATIVE_BRIDGE_OPERATION_RECOVERED operation=$($journal.operation) " +
+        "restore_previous=$($restoreExists.ToString().ToLowerInvariant())")
+    return [pscustomobject]@{
+        Recovered = $true
+        Operation = [string]$journal.operation
+        RestoredPrevious = $restoreExists
+    }
+}
+ -or
+            [string]::IsNullOrWhiteSpace($RestoreDllRelative) -or
+            [string]::IsNullOrWhiteSpace($RestoreManifestRelative)) {
+            throw 'Bridge restore journal is incomplete.'
+        }
+        $backupPrefix = 'mods/completionist-map/native/backups/'
+        $dllRelative = $RestoreDllRelative.Replace('\','/')
+        $manifestRelative = $RestoreManifestRelative.Replace('\','/')
+        if (-not $dllRelative.StartsWith($backupPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+            -not $manifestRelative.StartsWith($backupPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+            throw 'Bridge restore journal paths are outside the owned backup directory.'
         }
     }
 
