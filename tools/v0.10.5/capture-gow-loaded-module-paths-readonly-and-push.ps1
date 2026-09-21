@@ -1,7 +1,7 @@
 param(
     [string]$GameRoot = 'G:\SteamLibrary\steamapps\common\GodOfWar',
     [ValidateRange(10,120)][int]$StartupTimeoutSeconds = 60,
-    [ValidateRange(1,30)][int]$SettleSeconds = 10
+    [ValidateRange(5,60)][int]$SettleSeconds = 40
 )
 
 $ErrorActionPreference = 'Stop'
@@ -42,6 +42,108 @@ $json = Join-Path $outDir 'report.json'
 $transcript = $false
 $bootstrap = $null
 
+if (-not ('CompletionistModuleSnapshot' -as [type])) {
+    Add-Type -TypeDefinition @'
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+
+public static class CompletionistModuleSnapshot
+{
+    private const uint TH32CS_SNAPMODULE = 0x00000008;
+    private const uint TH32CS_SNAPMODULE32 = 0x00000010;
+    private static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    private struct MODULEENTRY32
+    {
+        public uint dwSize;
+        public uint th32ModuleID;
+        public uint th32ProcessID;
+        public uint GlblcntUsage;
+        public uint ProccntUsage;
+        public IntPtr modBaseAddr;
+        public uint modBaseSize;
+        public IntPtr hModule;
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+        public string szModule;
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+        public string szExePath;
+    }
+
+    public sealed class ModuleRow
+    {
+        public string Name { get; set; }
+        public string Path { get; set; }
+        public long BaseAddress { get; set; }
+        public uint Size { get; set; }
+    }
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr CreateToolhelp32Snapshot(uint dwFlags, uint th32ProcessID);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern bool Module32FirstW(IntPtr hSnapshot, ref MODULEENTRY32 lpme);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern bool Module32NextW(IntPtr hSnapshot, ref MODULEENTRY32 lpme);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr hObject);
+
+    public static ModuleRow[] Enumerate(int processId)
+    {
+        IntPtr snapshot = CreateToolhelp32Snapshot(
+            TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32,
+            unchecked((uint)processId));
+
+        if (snapshot == INVALID_HANDLE_VALUE)
+            throw new Win32Exception(Marshal.GetLastWin32Error(), "CreateToolhelp32Snapshot failed.");
+
+        try
+        {
+            var rows = new List<ModuleRow>();
+            var entry = new MODULEENTRY32();
+            entry.dwSize = (uint)Marshal.SizeOf(typeof(MODULEENTRY32));
+
+            if (!Module32FirstW(snapshot, ref entry))
+            {
+                int error = Marshal.GetLastWin32Error();
+                if (error == 18) return rows.ToArray(); // ERROR_NO_MORE_FILES
+                throw new Win32Exception(error, "Module32FirstW failed.");
+            }
+
+            do
+            {
+                rows.Add(new ModuleRow
+                {
+                    Name = entry.szModule ?? string.Empty,
+                    Path = entry.szExePath ?? string.Empty,
+                    BaseAddress = entry.modBaseAddr.ToInt64(),
+                    Size = entry.modBaseSize
+                });
+                entry.dwSize = (uint)Marshal.SizeOf(typeof(MODULEENTRY32));
+            }
+            while (Module32NextW(snapshot, ref entry));
+
+            int last = Marshal.GetLastWin32Error();
+            if (last != 0 && last != 18)
+                throw new Win32Exception(last, "Module32NextW failed.");
+
+            return rows.ToArray();
+        }
+        finally
+        {
+            CloseHandle(snapshot);
+        }
+    }
+}
+'@
+}
+
 function Stop-LocalTranscript {
     if ($script:transcript) {
         Stop-Transcript | Out-Null
@@ -52,23 +154,12 @@ function Stop-LocalTranscript {
 function Get-ModuleSnapshot([System.Diagnostics.Process]$Process) {
     $rows = @()
     try {
-        $Process.Refresh()
-        $moduleCollection = $Process.Modules
-        $enumerator = ([System.Collections.IEnumerable]$moduleCollection).GetEnumerator()
-        try {
-            while ($enumerator.MoveNext()) {
-                $module = [System.Diagnostics.ProcessModule]$enumerator.Current
-                $rows += [pscustomobject]@{
-                    module_name = [string]$module.ModuleName
-                    file_name = [string]$module.FileName
-                    base_address = ('0x{0:X16}' -f $module.BaseAddress.ToInt64())
-                    module_memory_size = [int64]$module.ModuleMemorySize
-                }
-            }
-        }
-        finally {
-            if ($enumerator -is [System.IDisposable]) {
-                $enumerator.Dispose()
+        foreach ($module in [CompletionistModuleSnapshot]::Enumerate($Process.Id)) {
+            $rows += [pscustomobject]@{
+                module_name = [string]$module.Name
+                file_name = [string]$module.Path
+                base_address = ('0x{0:X16}' -f [int64]$module.BaseAddress)
+                module_memory_size = [int64]$module.Size
             }
         }
     } catch {
