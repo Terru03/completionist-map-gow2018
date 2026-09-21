@@ -247,6 +247,8 @@ function Publish-Proof([string]$Result, [string]$Reason, [object]$Delivery) {
         "advanced_27_killed_applied=$($Delivery.AdvancedApplied.ToString().ToLowerInvariant())"
         "immediate_raven_kill_event=$($Delivery.ImmediateEvent.ToString().ToLowerInvariant())"
         "map_reopen_observed=$($Delivery.MapReopenObserved.ToString().ToLowerInvariant())"
+        "checkpoint_authority_boundary_observed=$($Delivery.CheckpointBoundaryObserved.ToString().ToLowerInvariant())"
+        "checkpoint_postboundary_snapshot_applied=$($Delivery.PostBoundaryApplied.ToString().ToLowerInvariant())"
         "checkpoint_reload_after_kill_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
         "same_map_readd_no_stock_manual=$($script:sameMapReaddAccepted.ToString().ToLowerInvariant())"
         "fresh_0_killed_applied=$($Delivery.FreshApplied.ToString().ToLowerInvariant())"
@@ -318,7 +320,10 @@ try {
     $checkpointReloadAccepted = $true
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
-    if (-not $delivery.ImmediateEvent -or -not $delivery.MapReopenObserved) { throw 'Immediate event or map-reopen evidence missing.' }
+    if (-not $delivery.ImmediateEvent -or -not $delivery.MapReopenObserved -or
+        -not $delivery.CheckpointBoundaryObserved -or -not $delivery.PostBoundaryApplied) {
+        throw 'Immediate event, map-reopen, or post-checkpoint authority evidence missing.'
+    }
 
     $answer = Read-Host 'Load true fresh save. Open map. Verify all 53 Ravens, captions, realm filter, and compass behavior. Type FRESH_OK, or REGRESSION if anything is wrong'
     if ($answer -ceq 'REGRESSION') { throw 'Fresh-save manual regression reported.' }
