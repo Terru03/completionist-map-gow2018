@@ -3593,3 +3593,32 @@ The `dxgi.dll` proxy surface is minimal: GoW directly imports only `CreateDXGIFa
 Next step should be implementation-focused, not another broad research pass: build a minimal reversible development proof of a clean-room `dxgi.dll` bridge that forwards `CreateDXGIFactory1`, initializes safely outside loader-lock, proves it coexists with the existing Script Loader, and exposes **read-only** Raven authority without save/progression writes.
 
 Use a long Codex/Sol pass for this implementation so the new usage window is spent on one coherent build/testable deliverable rather than multiple short speculative probes.
+
+
+## Codex Sol DXGI bridge implementation task prepared
+
+A long implementation-focused Codex/Sol task has been added:
+
+- `d7051fc749d32c61809d8dea3dc65a1f9f6096eb`
+- `docs/research/CODEX-SOL-v0105-raven-dxgi-native-bridge-task.md`
+
+Purpose:
+
+- spend the next fresh Codex usage window on one coherent buildable deliverable rather than another short exploratory pass;
+- implement the selected clean-room `dxgi.dll` proxy architecture;
+- preserve the untouched upstream `version.dll` Script Loader;
+- port/reuse the already-accepted 53-state Raven authority;
+- solve delivery either through legitimate in-process Lua API registration or, if that cannot be done safely, native marker synchronization;
+- build fail-closed install/rollback tooling;
+- push every meaningful stage;
+- stop only with a buildable development proof or one exact runtime blocker plus its complete runner.
+
+Primary success target:
+
+`RAVEN_NATIVE_BRIDGE_RUNTIME_READY`
+
+Acceptable intermediate target:
+
+`RAVEN_NATIVE_BRIDGE_LOAD_PROOF_READY`
+
+Do not spend that window redoing closed Lua/VFS/save-codec/identity research.
