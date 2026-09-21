@@ -33,6 +33,7 @@ do
   local customCompassOwnsTarget = false
   local nativeBoundaryPending = false
   local nativeBoundaryGeneration = nil
+  local nativeBoundaryBaselineKnown = false
   local nativeResetRecheckFrames = 0
   local nativeResetRecheckBucket = -1
   local nativeResetRecheckLimit = 360
@@ -202,6 +203,15 @@ do
       nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=invalid_generation", "invalid_generation")
       return false, "invalid_generation"
     end
+    if nativeBoundaryPending and not nativeBoundaryBaselineKnown then
+      nativeBoundaryGeneration = generation
+      nativeBoundaryBaselineKnown = true
+      nativeNotice("NATIVE_AUTHORITY_BOUNDARY_BASELINE",
+          "generation=" .. tostring(generation) ..
+          " action=establish_only apply=false",
+          "boundary_baseline:" .. tostring(generation))
+      return false, "boundary_baseline"
+    end
     if nativeBoundaryPending and nativeBoundaryGeneration ~= nil and
         generation <= nativeBoundaryGeneration then
       nativeNotice("NATIVE_AUTHORITY_BOUNDARY_WAIT",
@@ -259,6 +269,7 @@ do
     if boundaryApply then
       nativeBoundaryPending = false
       nativeBoundaryGeneration = nil
+      nativeBoundaryBaselineKnown = false
       nativeResetRecheckFrames = 0
       nativeResetRecheckBucket = -1
     end
@@ -903,19 +914,21 @@ do
   local function currentNativeGeneration()
     local namespace = rawget(_G, "CompletionistMapNative")
     local accessor = type(namespace) == "table" and namespace.GetRavenSnapshot or nil
-    if type(accessor) ~= "function" then return lastNativeGeneration end
+    if type(accessor) ~= "function" then return nil, false end
     local ok, snapshot = pcall(accessor)
-    if not ok or type(snapshot) ~= "table" then return lastNativeGeneration end
+    if not ok or type(snapshot) ~= "table" then return nil, false end
     local generation = tonumber(snapshot.generation)
     if generation == nil or generation < 1 or generation ~= math.floor(generation) then
-      return lastNativeGeneration
+      return nil, false
     end
-    return generation
+    return generation, true
   end
 
   local function beginAuthorityBoundary(source)
     nativeBoundaryPending = true
-    nativeBoundaryGeneration = currentNativeGeneration()
+    local boundaryGeneration, boundaryKnown = currentNativeGeneration()
+    nativeBoundaryGeneration = boundaryGeneration
+    nativeBoundaryBaselineKnown = boundaryKnown
     nativeResetRecheckFrames = nativeResetRecheckLimit
     nativeResetRecheckBucket = -1
     customCompassOwnsTarget = false
@@ -929,7 +942,9 @@ do
       lastMapOnSelf.currShownMarkerID = nil
     end
     log("AUTHORITY_BOUNDARY", "source=" .. tostring(source) ..
-        " baselineGeneration=" .. tostring(nativeBoundaryGeneration) ..
+        " baselineGeneration=" ..
+        (nativeBoundaryBaselineKnown and tostring(nativeBoundaryGeneration) or "unavailable") ..
+        " baselineKnown=" .. tostring(nativeBoundaryBaselineKnown) ..
         " staleStateRetained=true atomicAuthorityRequired=true" ..
         " postBoundaryRecheckFrames=" .. tostring(nativeResetRecheckLimit) ..
         " progressionWrites=false")
@@ -973,6 +988,7 @@ do
       " permanentPolling=false postLoadBoundedRefresh=true progressionWrites=false catalogueDefaultVisible=true" ..
       " positiveEventEvidenceOnly=true atomicAuthorityClearsState=true" ..
       " sessionKillOverlay=true loadBoundaryClearsOverlay=true" ..
+      " unknownBoundaryBaselineConsumesOneCapture=true" ..
       " persistedKillBootstrap=true nativeAuthority=loopback_freshness_generation" ..
       " nativePort=" .. tostring(nativePort) .. " staticDescriptorWrites=false")
 end
