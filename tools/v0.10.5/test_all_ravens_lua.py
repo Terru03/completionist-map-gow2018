@@ -170,7 +170,12 @@ function game.Compass.HideMarker(target)
     calls.baseOverwriteOnce=true
   end
   local nextStock={}
-  for _,id in ipairs(stockIds) do if tostring(id)~=tostring(target) then nextStock[#nextStock+1]=id end end
+  for _,id in ipairs(stockIds) do
+    local stockName=markerNamesById[id]
+    if tostring(id)~=tostring(target) and stockName~=target then
+      nextStock[#nextStock+1]=id
+    end
+  end
   stockIds=nextStock
 end
 local menu={}
