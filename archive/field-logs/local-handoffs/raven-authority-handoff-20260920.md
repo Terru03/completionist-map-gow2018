@@ -2487,3 +2487,32 @@ Find the authoritative persisted checkpoint/save state for WADs that are not rep
 3. stale physical-save-ring state, which must not be treated as current authority without a freshness proof.
 
 Preferred next route: trace the staged-table population/lookup path from the known `0x82C820 / 0x82CC0C / 0x82B250` checkpoint machinery to identify the backing authoritative store or miss path used when a WAD key is absent from the 425-record table. Preserve the no-write/read-only requirement.
+
+
+---
+
+# Addendum 2026-09-21 - 42-state acceptance complete; staged WAD binding lifecycle probe added
+
+The corrected identity pipeline is now accepted against the archived live checkpoint capture:
+
+- 42 exact Raven states resolved;
+- 27 killed / 15 alive;
+- 30 Raven-bearing carriers;
+- zero ambiguity;
+- zero unmatched Raven state keys;
+- remaining 11 correspond exactly to 9 Raven WADs absent from the current staged table.
+
+The remaining authority problem is therefore WAD coverage, not identity.
+
+Static evidence from the existing staged writer shows `0x6687F0` iterates the game's global WAD object array and calls `0x82C820` only for eligible runtime WAD objects. `0x82C820` serializes through the staged-record index already stored at `WAD+0xEE18`; it does not assign that binding itself.
+
+The next proof target is the lifecycle of `WAD+0xEE18`: where the staged-record index is bound, cleared, retained, or reconstructed. This determines whether a WAD absent from the 425-record staged table can be proven never-persisted/default, or whether its state was retired to another backing store.
+
+New tooling:
+
+- `0ba903293669d4ead0ea3849449a4c95760f238a` - `trace-staged-wad-record-binding.py`
+- `ed767f650e38c97f7645a0b892fe323a6c597c2c` - static trace-and-push runner
+
+The tracer enumerates all indexed memory references to `+/-0xEE18` and neighbouring WAD fields, classifies direct writes to `+0xEE18`, captures full enclosing functions, caller/callee relationships, and overlap with the staged-record globals `0x22C696C / 0x22C7170 / 0x22C7194 / 0x22C6938 / 0x22C6940`.
+
+No process or save access is used.
