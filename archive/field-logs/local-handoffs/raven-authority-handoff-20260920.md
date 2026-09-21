@@ -4308,3 +4308,51 @@ The observer now:
 The next run should therefore capture the stable long-lived GoW module list without relying on PowerShell's ProcessModuleCollection behavior.
 
 Next action: rerun the same read-only module-path observer with GoW fully closed.
+
+
+## Module observer switched from Toolhelp to PSAPI
+
+Fourth failed capture evidence:
+
+- `bc527c9eea67342ab1891fecdf7cdc063197cdc4`
+- capture: `archive/field-logs/runtime-captures/gow-loaded-module-paths-20260921-113723/`
+
+The observer again found the long-lived GoW process and waited the updated 40-second settle interval:
+
+```text
+Live GoW process found: PID=51916
+Waiting 40 seconds for modules to settle...
+```
+
+Then Windows Toolhelp module enumeration failed:
+
+```text
+CreateToolhelp32Snapshot failed.
+```
+
+The archived exception did not expose a useful Win32 code through the PowerShell wrapper. Since three separate `Process.Modules` approaches and now Toolhelp have failed, stop iterating on those APIs.
+
+Important user timing note:
+
+- GoW takes roughly 35 seconds to reach the main menu on this machine;
+- the observer now waits 40 seconds, so process/module-settle timing is no longer the likely blocker.
+
+Also, loading a save is **not required** for the XInput load-point question because static evidence already shows `XINPUT1_4.dll` as a normal GoW import; it should be resolved during process startup.
+
+Fix commit:
+
+- `df21d3db3c13c27fde41cb5442ae7d81a6a69e04`
+
+The observer now uses the read-only PSAPI route:
+
+1. `OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ)`;
+2. `EnumProcessModulesEx(..., LIST_MODULES_ALL)`;
+3. `GetModuleFileNameExW` for the exact module path;
+4. `GetModuleInformation` for base address and image size;
+5. closes the process handle.
+
+No process writes, memory modification, save/progression writes, proxy install, or game-file modification are performed.
+
+If PSAPI succeeds, the result should finally settle whether the live process uses System32 `XINPUT1_4.dll`, a game-root copy, or no XInput module at all.
+
+Do not spend remaining Codex/Sol usage on this capture plumbing. Preserve it for the next substantive bridge/delivery implementation step once the load-point evidence is known.
