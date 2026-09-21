@@ -22,6 +22,7 @@ $exe = Join-Path $game 'GoW.exe'
 $version = Join-Path $game 'version.dll'
 $proxy = Join-Path $game 'dxgi.dll'
 $bridgeManifest = Join-Path $game 'mods\completionist-map\native\raven-native-bridge-manifest.json'
+$bridgeOperation = Join-Path $game 'mods\completionist-map\native\raven-native-bridge-operation.json'
 $bridgeLog = Join-Path $game 'mods\completionist-map\native\raven-native-bridge.log'
 $loaderLog = Join-Path $game 'mods\loader_log.txt'
 $offlineGate = Join-Path $repo 'tools\v0.10.5\test-raven-native-snapshot-delivery-offline-gates.ps1'
@@ -160,6 +161,9 @@ function Test-GameFileSnapshot([System.Collections.IDictionary]$Expected) {
     return $true
 }
 
+if (Test-Path -LiteralPath $bridgeOperation -PathType Leaf) {
+    throw 'Unfinished Raven bridge operation journal exists before live proof. Run startup recovery first.'
+}
 $mapBefore = Get-GameFileSnapshot
 $proxyBeforeExists = Test-Path -LiteralPath $proxy -PathType Leaf
 $manifestBeforeExists = Test-Path -LiteralPath $bridgeManifest -PathType Leaf
@@ -204,6 +208,7 @@ function Test-BridgeRollbackState {
     if ($proxyAfterExists -ne $proxyBeforeExists -or $manifestAfterExists -ne $manifestBeforeExists) { return $false }
     if ($proxyAfterExists -and (Get-LowerHash $proxy) -ne $proxyBeforeHash) { return $false }
     if ($manifestAfterExists -and (Get-LowerHash $bridgeManifest) -ne $manifestBeforeHash) { return $false }
+    if (Test-Path -LiteralPath $bridgeOperation -PathType Leaf) { return $false }
     return (Get-LowerHash $version) -eq $versionBefore
 }
 
@@ -255,6 +260,7 @@ function Publish-Proof([string]$Result, [string]$Reason, [object]$Delivery) {
         "ordered_acceptance=$($Delivery.Ordered.ToString().ToLowerInvariant())"
         "map_candidate_rollback_exact=$($mapExact.ToString().ToLowerInvariant())"
         "dxgi_manifest_rollback_exact=$($bridgeExact.ToString().ToLowerInvariant())"
+        "dxgi_operation_journal_absent=$(((-not (Test-Path -LiteralPath $bridgeOperation -PathType Leaf))).ToString().ToLowerInvariant())"
         "version_dll_untouched=$(((Get-LowerHash $version) -eq $versionBefore).ToString().ToLowerInvariant())"
         'static_descriptor_writes=false'
         'bridge_process_memory_writes=false'
