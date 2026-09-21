@@ -4136,3 +4136,45 @@ Rollback note:
 Immediate priority: with GoW fully closed, run the schema-2 recovery tool to remove/rollback only the owned Completionist Map XInput proxy and manifest. Verify the game root is clean before any further bridge test.
 
 After cleanup, build a **read-only live module-path observer** that records which `XINPUT1_4.dll` module the actual long-lived GoW process loaded, if any, before choosing the next architecture. Do not modify Raven authority, saves, progression, or `version.dll`.
+
+
+## Read-only live XInput module-path observer queued
+
+New tooling:
+
+- `7ca8ef76f6af85a0885e809125517f10dcfebad4`
+- `tools/v0.10.5/capture-gow-loaded-module-paths-readonly-and-push.ps1`
+
+Purpose:
+
+- answer the current runtime question directly without installing any native proxy;
+- launch GoW from a clean recovered game root;
+- tolerate the Steam bootstrap/handoff;
+- find the actual readable long-lived `GoW/GodOfWar` process;
+- enumerate its loaded module paths read-only;
+- report specifically:
+  - `XINPUT1_4.dll`
+  - `version.dll`
+  - `dxgi.dll`
+  - full module list for context;
+- archive and push the evidence.
+
+Safety gates:
+
+- refuses to run if GoW is already open;
+- refuses to run if a game-root `XINPUT1_4.dll` exists;
+- refuses to run if the Raven native bridge manifest still exists;
+- performs no process writes;
+- performs no save/progression writes;
+- installs no proxy;
+- writes only repository evidence.
+
+The capture waits briefly for modules to settle, then asks the user to quit GoW before it commits/pushes the evidence.
+
+Acceptance:
+
+- if `XINPUT1_4.dll` is loaded from System32, the local-proxy architecture is being bypassed by loader behavior and should be abandoned;
+- if no `XINPUT1_4.dll` is loaded at all, XInput is not a viable automatic load point for this game path;
+- if a game-root XInput path appears only when a proxy is installed, then revisit initialization timing/logging rather than load-point selection.
+
+Do not change Raven authority while resolving this.
