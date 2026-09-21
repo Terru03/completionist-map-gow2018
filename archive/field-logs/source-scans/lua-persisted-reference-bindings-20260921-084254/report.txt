@@ -1,0 +1,19 @@
+Completionist Map - Lua persisted reference binding trace
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+selected_function_count=4
+any_staged_touch=false
+
+FUNCTION 0x67C190..0x67C1B3 labels=- touches_staged=false
+
+FUNCTION 0x6BFBF0..0x6BFCC3 labels=- touches_staged=false
+  JMP 0x6BFC6B -> 0x6BFBF0 raw=0x6BFCAA
+  CALL 0x6BFCAA -> - raw=0x6BDE50
+
+FUNCTION 0x84E880..0x84E8F5 labels=LoadCheck touches_staged=false
+  CALL 0x84E8BF -> 0x6BFBF0 raw=0x6BFBF0
+  CALL 0x84E8CE -> 0x67C190 raw=0x67C190
+
+FUNCTION 0x84F750..0x84F7C9 labels=ResolveGameObject touches_staged=false
+  JMP 0x84F7B9 -> 0x84F750 raw=0x84F794
+
+SAFETY static_exe_read_only=true game_launched=false process_accessed=false save_opened=false save_written=false progression_written=false game_files_written=false
