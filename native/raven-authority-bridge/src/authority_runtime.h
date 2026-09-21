@@ -31,6 +31,7 @@ class SnapshotStore {
 };
 
 void RunAuthorityWorker();
+void SetDxgiForwardResult(HRESULT result);
 
 }  // namespace completionist
 

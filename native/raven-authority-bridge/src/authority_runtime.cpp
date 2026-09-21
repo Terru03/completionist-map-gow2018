@@ -4,8 +4,10 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 #include <span>
 #include <string>
@@ -37,6 +39,7 @@ struct StagedHeader {
 };
 
 SnapshotStore g_snapshot_store;
+std::atomic<long> g_dxgi_forward_result{E_UNEXPECTED};
 
 bool SafeCopy(const void* source, void* destination, std::size_t length) {
   if (source == nullptr || destination == nullptr || length == 0) return false;
@@ -202,6 +205,13 @@ void RunAuthorityWorker() {
   AppendBridgeLog(
       "RAVEN_NATIVE_BRIDGE_PROXY_LOADED real_dxgi=system32 "
       "save_writes=false progression_writes=false");
+  const HRESULT forward_result = g_dxgi_forward_result.load();
+  char forward_line[96]{};
+  std::snprintf(forward_line, sizeof(forward_line),
+                "RAVEN_NATIVE_BRIDGE_DXGI_FORWARDED hresult=0x%08lX success=%s",
+                static_cast<unsigned long>(forward_result),
+                SUCCEEDED(forward_result) ? "true" : "false");
+  AppendBridgeLog(forward_line);
   std::wstring executable;
   DWORD path_error = ERROR_SUCCESS;
   if (!BuildModulePath(&executable, &path_error)) {
@@ -279,6 +289,10 @@ void RunAuthorityWorker() {
     }
     Sleep(1000);
   }
+}
+
+void SetDxgiForwardResult(HRESULT result) {
+  g_dxgi_forward_result.store(result);
 }
 
 bool ReadPublishedSnapshot(NativeRavenSnapshot* snapshot) {

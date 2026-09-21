@@ -3631,6 +3631,26 @@ Current exact boundary:
 Do not redo authority, identity, save codec, absence, VFS, `package.loadlib`, or built-in Lua API research. Finish fail-closed install/rollback and one runtime load-proof runner before user testing.
 
 
+## DXGI bridge install and rollback gates complete
+
+Fail-closed tools now exist:
+
+- `tools/v0.10.5/build-raven-authority-bridge.ps1`
+- `tools/v0.10.5/install-raven-authority-bridge.ps1`
+- `tools/v0.10.5/rollback-raven-authority-bridge.ps1`
+- `tools/v0.10.5/test-raven-authority-bridge-install.ps1`
+
+The build emits an ignored artifact manifest with exact DLL hash and source commit. Install requires the supported exe hash, verifies `version.dll` before/after, and refuses unknown or changed `dxgi.dll`. Upgrade backs up the prior owned DLL and manifest. Rollback deletes only the exact manifest hash and can restore the prior owned pair.
+
+Fresh temp-root result using a read-only copy of the supported game executable:
+
+```text
+RAVEN_NATIVE_BRIDGE_INSTALL_TESTS_PASSED clean=true upgrade=true unknown_refused=true tamper_refused=true version_untouched=true
+```
+
+No live game directory was changed by this test. Next task is one self-logging user runtime runner that installs, launches, captures load/snapshot proof, rolls back, archives evidence, commits, and pushes.
+
+
 ## Codex Sol DXGI bridge implementation task prepared
 
 A long implementation-focused Codex/Sol task has been added:

@@ -80,6 +80,7 @@ extern "C" HRESULT WINAPI CompletionistCreateDXGIFactory1(REFIID riid,
     return ForwardingFailure(factory);
   }
   const HRESULT result = g_create_factory(riid, factory);
+  completionist::SetDxgiForwardResult(result);
   StartWorkerOnce();
   return result;
 }
