@@ -3901,3 +3901,61 @@ It requires Sol to:
 - push only when `RAVEN_NATIVE_BRIDGE_LOAD_PROOF_V2_READY`.
 
 No further live bridge install should occur before those offline gates pass.
+
+
+## Proxy compatibility hardening complete - V2 load proof ready
+
+Implementation commits:
+
+- `ca7402a` - replace the closed minimal DXGI design with a compatibility-complete `XINPUT1_4.dll` proxy;
+- `3ccab7a` - migrate manifest ownership, install, rollback, and recovery to schema-2 XInput handling;
+- `388a913` - fix the proof runner scalar bug and add startup/failure/rollback regression coverage.
+
+Architecture decision:
+
+- real System32 `dxgi.dll`: 20 named exports and high process-wide graphics/overlay conflict risk;
+- real System32 `XINPUT1_4.dll`: 15 exports total, 8 named and 7 ordinal-only;
+- selected `XINPUT1_4.dll` as the smaller, lower-risk complete proxy surface.
+
+The proxy contract is generated from:
+
+`native/raven-authority-bridge/xinput1_4-export-contract.json`
+
+It preserves exact ordinals:
+
+```text
+1,2,3,4,5,7,8,10,100,101,102,103,104,108,109
+```
+
+Generated x64 tail thunks preserve Win64 argument registers, resolve the absolute System32 DLL outside `DllMain`, and tail-jump without changing XInput semantics. The Raven snapshot API remains exported separately at ordinal 110. The accepted authority decoder was not redesigned.
+
+Fresh offline gates:
+
+```text
+RAVEN_BRIDGE_EXPORT_CONTRACT_TEST_PASSED system_exports=15 named=8 ordinal_only=7
+RAVEN_BRIDGE_FORWARDING_TEST_PASSED target=XINPUT1_4.dll
+RAVEN_BRIDGE_AUTHORITY_TESTS_PASSED states=53 explicit=42 absentWadFalse=11 killed=27 alive=26
+100% tests passed, 0 tests failed out of 4
+RAVEN_NATIVE_BRIDGE_INSTALL_TESTS_PASSED target=XINPUT1_4.dll clean=true upgrade=true unknown_refused=true tamper_refused=true recovery=true version_untouched=true
+RAVEN_NATIVE_BRIDGE_RUNNER_TESTS_PASSED zero=true one=true multiple=true early_exit=true missing_log=true script_loader=true rollback=true
+```
+
+The proof runner now:
+
+- uses arrays safely for zero, one, or many log lines;
+- treats early GoW exit or absent fresh proxy log as load failure;
+- requires fresh Script Loader evidence from the Completionist Map API line;
+- stops a launched game on failure before rollback;
+- restores the exact prior `XINPUT1_4.dll` and manifest state;
+- verifies `version.dll` byte-identical;
+- archives and pushes both pass and failure evidence.
+
+## RAVEN_NATIVE_BRIDGE_LOAD_PROOF_V2_READY
+
+Run exactly one command from repository root with GoW closed:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\run-raven-authority-bridge-load-proof-and-push.ps1
+```
+
+Do not reinstall the old `dxgi.dll` proxy. Do not attempt Lua/map delivery until this V2 load proof passes. The remaining post-proof boundary is still delivery of the accepted native 53-state snapshot into the existing map/compass runtime.

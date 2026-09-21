@@ -4,7 +4,9 @@
 
 The selected release architecture is now a clean-room Windows x64 `XINPUT1_4.dll` proxy. It coexists with the user's upstream `version.dll` Script Loader and never modifies that loader.
 
-The old single-export `dxgi.dll` design is closed after its live loader failure. It must not be installed again. The V2 XInput proxy passes its offline export-contract, safe forwarding, platform, and Raven-authority tests. Installer and runner migration remain before the next live proof.
+The old single-export `dxgi.dll` design is closed after its live loader failure. It must not be installed again. The V2 XInput proxy passes its offline export-contract, safe forwarding, platform, Raven-authority, installer, rollback, recovery, and runner regression tests.
+
+`RAVEN_NATIVE_BRIDGE_LOAD_PROOF_V2_READY`
 
 Native staged-authority read and atomic snapshot publication remain unchanged. Delivery into the existing Lua map remains outside this compatibility-hardening stage.
 
@@ -100,9 +102,9 @@ RAVEN_NATIVE_BRIDGE_INSTALL_TESTS_PASSED target=XINPUT1_4.dll clean=true upgrade
 Run from repository root with God of War closed:
 
 ```powershell
-git pull --ff-only origin codex/all-ravens-release-candidate; & .\tools\v0.10.5\run-raven-authority-bridge-load-proof-and-push.ps1
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\run-raven-authority-bridge-load-proof-and-push.ps1
 ```
 
-The runner rebuilds and retests, installs only the owned `dxgi.dll`, launches the game, asks for one advanced-save/map-open pass, extracts fresh bridge lines, rolls back to the exact prior DLL/manifest state, verifies `version.dll` stayed byte-identical, archives evidence, commits it, and pushes this branch.
+The runner tests zero/one/multiple log handling, early exit, missing startup log, Script Loader evidence, and failure rollback. It then rebuilds all native tests, runs the temp-root ownership suite, installs only the owned `XINPUT1_4.dll`, and launches the game. A fresh proxy startup line must appear while the launched process remains alive before the user prompt appears. The user then performs one advanced-save/map-open pass.
 
-The pass succeeds only when the log proves System32 proxy load, successful `CreateDXGIFactory1` forwarding, supported exe acceptance, and one atomic snapshot with `count=53 unknown=0`. The expected terminal state is `RAVEN_NATIVE_BRIDGE_LOAD_PROOF_READY`; Lua map delivery remains pending.
+The pass succeeds only when fresh logs prove System32 XInput contract forwarding, normal startup, Completionist Map loading through the existing Script Loader, supported executable acceptance, and one atomic snapshot with `count=53 unknown=0`. Success and failure both archive evidence. Failure stops the launched GoW process before rollback. Rollback must restore the exact pre-run XInput/manifest state and leave `version.dll` byte-identical. The runner commits and pushes its evidence. Lua map delivery remains pending after a successful load proof.
