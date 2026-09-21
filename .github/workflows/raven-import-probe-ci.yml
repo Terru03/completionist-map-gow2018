@@ -1,0 +1,23 @@
+name: Raven import probe CI
+
+on:
+  push:
+    branches:
+      - codex/all-ravens-release-candidate
+  workflow_dispatch:
+
+jobs:
+  build-probe:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        shell: pwsh
+        run: cmake -S native/raven-authority-bridge -B build/raven-authority-bridge -G "Visual Studio 17 2022" -A x64 -DBUILD_TESTING=ON
+      - name: Build targeted probe
+        shell: pwsh
+        run: cmake --build build/raven-authority-bridge --config Release --target raven_bridge_import_probe
+      - name: Self-test PEB reader
+        shell: pwsh
+        run: .\build\raven-authority-bridge\Release\raven_bridge_import_probe.exe --self-test
