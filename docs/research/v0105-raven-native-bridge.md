@@ -4,7 +4,9 @@
 
 The selected release architecture is a clean-room Windows x64 `dxgi.dll` proxy. It coexists with the user's upstream `version.dll` Script Loader and never modifies that loader.
 
-Current implementation stage: DXGI forwarding and native staged-authority reader are buildable and pass the accepted archived replay. Delivery into the existing Lua map remains open.
+`RAVEN_NATIVE_BRIDGE_LOAD_PROOF_READY`
+
+DXGI forwarding, native staged-authority read, atomic snapshot publication, install, rollback, and one self-logging runtime proof runner are ready. Live load evidence still needs David's one command. Delivery into the existing Lua map remains the one open architecture boundary.
 
 ## Load architecture
 
@@ -79,3 +81,15 @@ Temp-root regression covers clean install, upgrade backup, chained rollback, unk
 ```text
 RAVEN_NATIVE_BRIDGE_INSTALL_TESTS_PASSED clean=true upgrade=true unknown_refused=true tamper_refused=true version_untouched=true
 ```
+
+## One runtime proof command
+
+Run from repository root with God of War closed:
+
+```powershell
+git pull --ff-only origin codex/all-ravens-release-candidate; & .\tools\v0.10.5\run-raven-authority-bridge-load-proof-and-push.ps1
+```
+
+The runner rebuilds and retests, installs only the owned `dxgi.dll`, launches the game, asks for one advanced-save/map-open pass, extracts fresh bridge lines, rolls back to the exact prior DLL/manifest state, verifies `version.dll` stayed byte-identical, archives evidence, commits it, and pushes this branch.
+
+The pass succeeds only when the log proves System32 proxy load, successful `CreateDXGIFactory1` forwarding, supported exe acceptance, and one atomic snapshot with `count=53 unknown=0`. The expected terminal state is `RAVEN_NATIVE_BRIDGE_LOAD_PROOF_READY`; Lua map delivery remains pending.

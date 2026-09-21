@@ -3651,6 +3651,31 @@ RAVEN_NATIVE_BRIDGE_INSTALL_TESTS_PASSED clean=true upgrade=true unknown_refused
 No live game directory was changed by this test. Next task is one self-logging user runtime runner that installs, launches, captures load/snapshot proof, rolls back, archives evidence, commits, and pushes.
 
 
+## RAVEN_NATIVE_BRIDGE_LOAD_PROOF_READY
+
+The complete targeted runner is now:
+
+`tools/v0.10.5/run-raven-authority-bridge-load-proof-and-push.ps1`
+
+It:
+
+1. rebuilds and runs all three offline test executables;
+2. installs only the manifest-owned `dxgi.dll` after exact exe/hash gates;
+3. launches GoW and asks for one advanced-save plus map-open pass;
+4. requires fresh log proof for System32 proxy load, successful `CreateDXGIFactory1` forwarding, supported exe acceptance, and `count=53 unknown=0` atomic authority;
+5. rolls back to the exact pre-run `dxgi.dll`/manifest state;
+6. verifies `version.dll` is byte-identical;
+7. archives, commits, and pushes the evidence.
+
+Exact user command from repository root, with GoW closed:
+
+```powershell
+git pull --ff-only origin codex/all-ravens-release-candidate; & .\tools\v0.10.5\run-raven-authority-bridge-load-proof-and-push.ps1
+```
+
+No more static authority research is needed. The one open boundary after load proof is native-snapshot delivery into the existing Lua map/compass implementation. Do not claim `RAVEN_NATIVE_BRIDGE_RUNTIME_READY` until that delivery is implemented and the fresh/advanced/immediate-kill/map-reopen fixtures pass end to end.
+
+
 ## Codex Sol DXGI bridge implementation task prepared
 
 A long implementation-focused Codex/Sol task has been added:
