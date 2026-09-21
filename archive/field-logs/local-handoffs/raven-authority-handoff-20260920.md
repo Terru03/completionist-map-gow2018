@@ -4569,3 +4569,31 @@ Requirements before next live DXGI test:
 The post-load boundary remains delivery of the accepted atomic 53-state Raven snapshot into the existing map/compass runtime.
 
 Do not redo Raven authority research.
+
+
+## Complete DXGI proxy Sol task prepared
+
+Focused next-pass task:
+
+- commit: `406e5484667da4882f6204fddc8f9f5416ec934f`
+- file: `docs/research/CODEX-SOL-v0105-dxgi-complete-proxy-task.md`
+
+This task starts from the successful XInput IAT owner proof and explicitly forbids revisiting XInput or Raven authority research.
+
+It directs Sol to:
+
+- implement a compatibility-complete game-root `dxgi.dll` proxy;
+- generate and validate the full real DXGI export contract, including names/ordinals;
+- ensure `CreateDXGIFactory2` and the rest of the required public surface are present;
+- use generated ABI-transparent forwarding rather than a hand-written partial proxy;
+- preserve accepted Raven authority code;
+- restore installer/rollback/recovery ownership to DXGI;
+- add offline export-parity and load/resolve tests;
+- use a Windows CI compile/test gate before involving the user;
+- prepare a reversible V3 live proof only after all offline gates pass.
+
+Target stop state:
+
+`RAVEN_DXGI_COMPLETE_PROXY_LOAD_PROOF_READY`
+
+Do not enter Lua/map delivery before a later live DXGI load proof actually passes.
