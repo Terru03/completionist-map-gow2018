@@ -30,7 +30,8 @@ $rollbackBridge = Join-Path $repo 'tools\v0.10.5\rollback-raven-authority-bridge
 $support = Join-Path $repo 'tools\v0.10.5\raven-native-bridge-runner-support.ps1'
 $engine = Join-Path $repo 'tools\v0.10.4\nornir-runtime-candidate3.ps1'
 $proofPath = Join-Path $repo 'archive\all-ravens\all-ravens-release-candidate-offline.json'
-$worktreeCandidateRoot = Join-Path $repo 'build\v0.10.5-all-ravens-release-candidate\offline\candidate\game-root'\n$candidateRoot = $worktreeCandidateRoot
+$worktreeCandidateRoot = Join-Path $repo 'build\v0.10.5-all-ravens-release-candidate\offline\candidate\game-root'
+$candidateRoot = $worktreeCandidateRoot
 $prepareCandidate = Join-Path $repo 'tools\v0.10.5\prepare-all-ravens-delivery-candidate.py'
 
 foreach ($required in @($exe,$version,$offlineGate,$installBridge,$rollbackBridge,$support,$engine,$proofPath,$prepareCandidate)) {
