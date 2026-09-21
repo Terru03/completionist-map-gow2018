@@ -4220,3 +4220,43 @@ The observer now:
 No native proxy, process writes, save writes, progression writes, or game-file writes are introduced by this fix.
 
 Next action: rerun the same read-only module-path capture with GoW fully closed. The result should directly settle whether the live game process loads `XINPUT1_4.dll` from System32, the game directory, or not at all.
+
+
+## Module-path observer Count bug fixed
+
+Second failed capture evidence:
+
+- `08016f53b90bc5cf6fbf6edb1973f7d35087fb3c`
+- capture: `archive/field-logs/runtime-captures/gow-loaded-module-paths-20260921-112801/`
+
+The observer again successfully found the long-lived GoW process:
+
+```text
+Live GoW process found: PID=29972
+```
+
+but then failed with:
+
+```text
+Module enumeration failed for PID 29972:
+The property 'Count' cannot be found on this object.
+```
+
+This confirms the same PowerShell/.NET collection-wrapper issue one level later: the `Process.Modules` object is available, but direct `.Count` access is not reliable in this runtime.
+
+Fix commit:
+
+- `335e47554a743c99524d35b4e1e21e387afa3ba0`
+
+The observer now avoids PowerShell collection semantics entirely:
+
+1. casts the module collection to `System.Collections.IEnumerable`;
+2. obtains its explicit .NET enumerator;
+3. walks modules with `MoveNext()`;
+4. casts each item to `System.Diagnostics.ProcessModule`;
+5. reads `ModuleName`, `FileName`, `BaseAddress`, and `ModuleMemorySize`;
+6. disposes the enumerator if applicable.
+
+This remains fully read-only and does not install a proxy or modify process memory, saves, progression, `version.dll`, or game files.
+
+Next action: rerun the same module-path capture with GoW fully closed.
