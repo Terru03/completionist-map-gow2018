@@ -2893,3 +2893,39 @@ Conclusion:
 - do not build a runtime file bridge around `VFSExec` without first proving such a registered command exists.
 
 Next productive step: statically resolve the VFS registry behind `0x84FCC0`, identify the registered command/value set and the `+0x98` dispatch implementation, and search specifically for checkpoint/save/staged-WAD related entries. This remains static/read-only. If no relevant authority command exists, close the VFS route and return to the proven staged-record/native-owner path rather than modifying or redistributing Script Loader.
+
+
+## VFS registry resolver tooling added
+
+The handoff was re-read after recording the `VFSExec` result. The next step remains exactly the bounded static registry proof described above.
+
+New tooling:
+
+- `0d83eb491d10176e983a958e1d9ef2c4f29ee7a4` - `tools/v0.10.5/trace-lua-vfs-registry.py`
+- `89a05a30c54c3a1344b4abd480a6dfd074fcc37d` - `tools/v0.10.5/trace-lua-vfs-registry-and-push.ps1`
+
+The tracer is static/read-only and targets:
+
+```text
+shared helper      0x84FCC0
+hash lookup helper 0x431B90
+registry count     0x2D481B4
+registry entries   0x504C0A0
+dispatcher pointer 0x123B680
+```
+
+It:
+
+1. finds every code reference to the three VFS registry/dispatcher globals;
+2. finds all direct callers of the shared helper and hash helper;
+3. emits full enclosing functions plus one-hop callers/callees;
+4. captures printable RIP-relative strings from those functions;
+5. scans non-executable image data for VFS/save/checkpoint/WAD/Lua/restore/slot/state/pickle/Raven labels;
+6. performs no process attach, game launch, save access, save write, progression write, or game-file write.
+
+Acceptance decision after this run:
+
+- if a registered VFS command/value clearly reaches checkpoint/save/staged-WAD authority, follow only that concrete route;
+- otherwise close VFS as a delivery route and return to the proven native staged-record owner path.
+
+Next action: run `trace-lua-vfs-registry-and-push.ps1` with GoW closed.
