@@ -1871,3 +1871,82 @@ Run the dual-channel observer on the almost-complete save. The decisive result i
 ```
 
 for the VikingFuneral Raven and ideally decodes its `ravenKilled` field. If channel A yields the Raven entries, this becomes the authoritative global map-open reconstruction source. If the identity appears but graph decode fails, inspect only that carrier framing/state table next; do not broaden the search.
+
+
+---
+
+# Addendum 2026-09-21 - dual staged payload capture negative; move to exact native consumer trace
+
+Runtime evidence commit: `109fcaeac781a6c80e40dc58ae1bf6e4819606c6`  
+Evidence: `archive/field-logs/runtime-captures/staged-wad-dual-payload-raven-state-readonly-20260921-052345/`
+
+The dual-channel runtime observer successfully read both proven variable-payload descriptors for all 425 staged WAD records.
+
+Results:
+
+```text
+record_count=425
+pool_size=1055845
+total_payload_bytes_read=1055845
+
+Channel A (+0x30/+0x38, +0x40 size):
+  payload_records=425
+  payload_bytes=1046167
+  exact Raven identity count=0
+  decoded Raven entries=0
+
+Channel B (+0x48/+0x50, +0x58 size):
+  payload_records=422
+  payload_bytes=9678
+  exact Raven identity count=0
+  decoded Raven entries=0
+
+known VikingFuneral Raven identity hits=0
+conflicts=0
+```
+
+This is a genuine negative for both staged variable payload channels on the loaded almost-complete save. Channel A is very large and accounts for essentially the entire remainder of the shared pool, but it is not a direct custom-userdata carrier stream and contains none of the 53 serialized Raven GameObject identities. Channel B remains the small ordinary WAD checkpoint custom-userdata stream already characterised earlier.
+
+Concrete Funeral example:
+
+- `Xpl200_Funeral` record index 220 / key `0xEE`
+- Channel A size `22505`, SHA-256 `87d0864cae15f95573cf6d329065b0775fb12461a5dd912f66bd0dacea944734`
+- Channel B size `155`, SHA-256 `2d1ecac2a96a3e30eb10edfce7e5860291ef55ba3099c1db7b45a0e8c6fa39a4`
+- neither channel contains `01b0b227342530c24ea9652dba0717be98`.
+
+Do not repeat broader pool scans. The next boundary is now the **native consumer/transform of Channel A and the remaining non-payload fields of the 0xA8 record**, plus any separate checkpoint stream outside this record table.
+
+Important static facts retained:
+
+- Channel A descriptor = record `+0x30/+0x38/+0x40`.
+- Channel B descriptor = record `+0x48/+0x50/+0x58`.
+- record `+0x20` is flags/state bits.
+- record `+0x24` is stable WAD key/ID.
+- record `+0x84` is name/string storage.
+- `0x82D760` explicitly frees/restores Channel A through `0x667230` using descriptor `record+0x30`.
+- `0x82D660` separately restores/frees Channel B.
+- the custom-userdata restore bridge remains proven: LuaClient vtable `+0x80 -> 0x5B2280 -> 0x7E9550`.
+
+## New Codex/Astra boundary
+
+Use a fresh high-reasoning native pass to trace exactly where Channel A is consumed/transformed and whether another record field or external per-WAD/global structure carries the Lua custom-userdata stream. Start from concrete field accesses and object ownership, not broad xrefs.
+
+Primary functions to analyse first:
+
+- `0x82C820`
+- `0x82CF00`
+- `0x82D660`
+- `0x82D760`
+- `0x667230`
+- `0x6687F0`
+- `0x66BA10`
+- `0x549481`
+- `0x25CFD0`
+- `0x23FAA0`
+
+Required end result is one of:
+
+1. identify the exact transform/destination of Channel A and a later transient buffer that contains the Raven carrier; or
+2. prove Channel A is unrelated to Lua checkpoint state and identify the separate global checkpoint structure that feeds `0x465143/0x4651E2 -> LuaClient+0x80 -> 0x5B2280 -> 0x7E9550`.
+
+Do not redo GameObject codec, carrier framing, raw allocator scans, save-ring timestamp inference, RegionSummary inference, or ordinary Lua thunk searches.
