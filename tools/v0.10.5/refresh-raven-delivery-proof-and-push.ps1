@@ -63,7 +63,9 @@ function Publish-Evidence([string]$Message, [bool]$IncludeProof) {
     }
     & git add -f -- $relativeDir
     if ($LASTEXITCODE -ne 0) { throw 'git add evidence failed.' }
-    & git commit -m $Message -- $(if ($IncludeProof) { @($proofRelative, $relativeDir) } else { @($relativeDir) }) | Out-Host
+    $commitPaths = @($relativeDir)
+    if ($IncludeProof) { $commitPaths = @($proofRelative, $relativeDir) }
+    & git commit -m $Message -- @commitPaths | Out-Host
     if ($LASTEXITCODE -ne 0) { throw 'git commit evidence failed.' }
     & git push origin $ExpectedBranch | Out-Host
     if ($LASTEXITCODE -ne 0) { throw 'git push evidence failed.' }
