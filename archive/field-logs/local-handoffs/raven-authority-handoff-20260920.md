@@ -5057,3 +5057,255 @@ RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_READY
 ```
 
 No local user action is needed until that task has produced green offline/CI gates and one reversible live acceptance runner.
+
+
+## Native snapshot delivery implementation and hardened CI green
+
+The focused Sol delivery pass completed the implementation up to the live acceptance boundary before Codex usage expired.
+
+### Delivery architecture
+
+Archived native-binding evidence was inspected first.
+
+The safe conclusion was:
+
+- the shipped native function descriptor table is fixed/sorted;
+- the dispatcher bsearch uses the fixed 309-entry table;
+- no safe post-startup registrar was proven;
+- therefore do **not** append/overwrite/patch the existing descriptor table.
+
+Instead the already-proven DXGI bridge exposes one read-only atomic Raven snapshot over a narrow local loopback transport, queried by Lua only when the map opens.
+
+This preserves:
+
+- no static descriptor writes;
+- no game code-byte patching;
+- no save/progression writes;
+- no permanent polling;
+- existing immediate `ravenKilled` event behavior.
+
+### Native loopback endpoint
+
+Commit:
+
+- `6dbba17f8c8994c3191eb3494d359dd158aff222`
+- message: `feat(v0.10.5): expose Raven snapshot on loopback`
+
+Files:
+
+- `native/raven-authority-bridge/src/snapshot_delivery.cpp`
+- `native/raven-authority-bridge/src/snapshot_delivery.h`
+
+Contract:
+
+```text
+address=127.0.0.1
+port=43753
+request=GET RAVEN_SNAPSHOT_V1\n
+```
+
+Native endpoint properties:
+
+- binds only `INADDR_LOOPBACK`;
+- uses `SO_EXCLUSIVEADDRUSE`;
+- one fixed bounded request format;
+- client recv/send socket timeouts: 250 ms;
+- reads one already-atomic `NativeRavenSnapshot`;
+- serializes:
+  - schema;
+  - generation;
+  - captured tick;
+  - count=53;
+  - unknown=0;
+  - alive/killed;
+  - explicit;
+  - absent-WAD-false;
+  - exact killed catalogue IDs;
+- if no snapshot exists yet, returns `UNAVAILABLE`;
+- any bind collision/refusal fails closed for the process;
+- endpoint startup is idempotent.
+
+Native log marker:
+
+```text
+RAVEN_NATIVE_BRIDGE_DELIVERY_READY mechanism=loopback_socket address=127.0.0.1 port=43753 static_descriptor_writes=false save_writes=false progression_writes=false
+```
+
+### Lua map-open delivery
+
+Commit:
+
+- `512767923b82bb636dd6e9eaa35f532537588baa`
+- message: `feat(v0.10.5): apply native Raven snapshots on map open`
+
+`tools/v0.10.5/all-ravens-map-runtime.lua` now:
+
+1. owns a private `CompletionistMapNative.GetRavenSnapshot` wrapper only if no collision exists;
+2. requires `socket.core`;
+3. connects only to `127.0.0.1:43753`;
+4. requests one snapshot on map create/open;
+5. validates:
+   - schema=1;
+   - generation >= 1;
+   - count=53;
+   - unknown=0;
+   - alive+killed=53;
+   - explicit+absentWadFalse=53;
+   - every killed ID is a known catalogue ID;
+   - no duplicate killed IDs;
+   - killed-ID count matches reported killed count;
+6. applies only a strictly newer generation;
+7. calls existing `CompletionistMapV105ApplyPersistedRavenKills`;
+8. only after authority refresh does normal map pin creation + Raven icon sync occur.
+
+Important order:
+
+```text
+refreshNativeAuthority("map_create")
+-> base CompletionistMapV100_CreateMapPin
+-> syncIcons(self, "map_create")
+```
+
+No redesign of map/compass state was needed.
+
+Existing immediate loaded-Raven event path in:
+
+`tools/v0.10.5/all-ravens-gameplay-events.lua`
+
+remains unchanged.
+
+If the native accessor is unavailable, malformed, stale, or collides with another API, Lua fails closed and does not blindly clear valid event-derived Raven state.
+
+Generation semantics are monotonic:
+
+- newer generation: apply;
+- same generation: ignore;
+- older generation: ignore.
+
+This specifically preserves an immediate event kill across a same-generation map reopen, while a newer authoritative native generation can later reassert current persisted state.
+
+### Security hardening after formal review
+
+Formal review found one real low-risk local DoS issue in the initial Lua client: `receive("*l")` had no response-size bound if another local process won the port first.
+
+Fix commit:
+
+- `a3509b6be9a168d6eda56c9343339064b3e7dc3f`
+- message: `fix(v0.10.5): bound native snapshot response reads`
+
+Current Lua receive behavior:
+
+```text
+nativeMaxResponseBytes=4096
+total timeout=0.25 s
+read=1 byte at a time until newline
+CR rejected
+oversize response fails closed
+```
+
+The normal 53-Raven wire payload is well below the 4 KiB cap.
+
+### Offline/live proof tooling
+
+Commit:
+
+- `3725ea7232ec468f9270b35ef46140c6566a1963`
+- message: `test(v0.10.5): prepare reversible Raven delivery proof`
+
+Added:
+
+- `tools/v0.10.5/test-raven-native-snapshot-delivery-offline-gates.ps1`
+- `tools/v0.10.5/prepare-all-ravens-delivery-candidate.py`
+- `tools/v0.10.5/run-raven-native-snapshot-delivery-live-proof-and-push.ps1`
+
+The local offline gate was reported green by Sol after the security fix:
+
+- native MSVC `/W4 /WX`;
+- 5/5 native CTests;
+- 13 Lua 5.1 tests;
+- 21 runtime model tests;
+- candidate/build tests;
+- transaction rollback;
+- PowerShell parse;
+- security token gate.
+
+### Hardened Windows CI rerun green
+
+CI rerun commit:
+
+- `86ccda3b643a4b689ac77502b74ef2771da71842`
+- message: `ci(v0.10.5): revalidate bounded Raven delivery`
+
+Run:
+
+- `35619106676`
+- job: `106397360584`
+- conclusion: `success`
+
+Exact verified outputs include:
+
+```text
+100% tests passed out of 5
+
+RAVEN_NATIVE_BRIDGE_BUILD_OK
+sha256=c27837aba95daa00de4faf60ff14f915c474b76d9cfe3910c0979298d6495771
+
+RAVEN_NATIVE_BRIDGE_RUNNER_TESTS_PASSED
+target=dxgi.dll
+delivery_sequence=true
+rollback=true
+
+Ran 13 tests in 0.034s
+OK
+
+Ran 21 tests in 0.005s
+OK
+
+RAVEN_SNAPSHOT_DELIVERY_WINDOWS_SECURITY_PASSED
+findings=0
+process_writes=false
+save_writes=false
+progression_writes=false
+static_descriptor_writes=false
+bounded_response=true
+```
+
+The exact runtime-proven v3.3 build fixture is not installed on the hosted CI machine, so fixture-dependent build tests were skipped there; template/native-delivery contract tests still ran, and the full local offline gate used the real local fixture.
+
+Temporary CI workflow was removed after the hardened rerun passed:
+
+- `18ecbccb1fa3aff5d58644cf45a42ed0c352c923`
+- message: `ci(v0.10.5): remove bounded delivery gate`
+
+### Current boundary
+
+Current branch state advances to:
+
+```text
+RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_READY
+```
+
+The single prepared live runner is:
+
+`tools/v0.10.5/run-raven-native-snapshot-delivery-live-proof-and-push.ps1`
+
+It is combined and reversible:
+
+- regenerates/pins the five-file All-Ravens map candidate;
+- reruns offline gates first;
+- transactionally installs the five map/runtime candidate files;
+- installs the owned schema-3 DXGI bridge;
+- tolerates Steam bootstrap and waits for native delivery ready;
+- requires manual acceptance in this exact order:
+  1. advanced save: exact 26 live / 27 killed absent + captions/realm/compass;
+  2. kill one loaded live Raven: exact marker disappears immediately;
+  3. close/reopen map: killed Raven remains absent;
+  4. true fresh save: all 53 Ravens shown + captions/realm/compass;
+- requires matching log evidence for the ordered sequence;
+- asks user to quit GoW fully;
+- restores the exact pre-run five game files;
+- rolls back exact pre-run DXGI/manifest state;
+- verifies `version.dll` unchanged;
+- archives and pushes both pass and failure evidence.
+
+Do not rerun native binding research, Raven authority research, DXGI/XInput work, or the delivery CI before the live acceptance result.
