@@ -53,7 +53,9 @@ function Get-ModuleSnapshot([System.Diagnostics.Process]$Process) {
     $rows = @()
     try {
         $Process.Refresh()
-        foreach ($module in @($Process.Modules)) {
+        $moduleCollection = $Process.Modules
+        for ($index = 0; $index -lt $moduleCollection.Count; $index++) {
+            $module = $moduleCollection[$index]
             $rows += [pscustomobject]@{
                 module_name = [string]$module.ModuleName
                 file_name = [string]$module.FileName
