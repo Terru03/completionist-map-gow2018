@@ -2752,3 +2752,34 @@ Correction commit:
 - `9104df8116b34db216da232218a8ab0927482a59` - pin the committed probe DLL SHA in the runner.
 
 Next step: rerun the same self-restoring native bridge probe. It should now pass preflight, launch GoW, and wait for a main-menu launch/exit so the Lua C ABI evidence can be captured and pushed.
+
+
+## Native bridge probe PowerShell newline correction
+
+Second local run produced capture commit `317bfa2e033ed4b3764789f428fe0fadeceec52c` and again stopped before game launch.
+
+Failure:
+
+```text
+Cannot convert argument "newChar" ... for "Replace" to type "System.Char"
+```
+
+Cause: PowerShell selected the `String.Replace(char,char)` overload for `$probeText.Replace([char]10, [Environment]::NewLine)`, but Windows CRLF is a two-character string.
+
+Correction commit:
+
+- `be48b481932405f66b25adad3669c3647d8e2777` - normalise CRLF/CR/LF using string replacements before appending the Lua probe.
+
+Safety evidence from the failed run:
+
+```text
+game_launched=false
+mapmenu_restored=true
+bridge_dll_restored=true
+probe_process_memory_writes=false
+probe_save_writes=false
+probe_progression_writes=false
+probe_game_file_persistence=false
+```
+
+Next step: rerun the same self-restoring bridge probe.
