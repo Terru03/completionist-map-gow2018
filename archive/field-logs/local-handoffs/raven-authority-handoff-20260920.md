@@ -4059,3 +4059,32 @@ Next runner must:
 6. preserve exact rollback and `version.dll` checks.
 
 Do not change Raven authority or proxy forwarding while fixing this runner behavior.
+
+
+## Steam-aware V2 runner patch ready
+
+The V2 proof itself did not disprove the XInput bridge. It exposed a runner assumption: the PID returned by direct `GoW.exe` launch can exit during Steam handoff while a successor game process launches successfully.
+
+Fix commits:
+
+- `cfc8712397203263bf896c6f46ecf1516349a150` - startup observation now requires both a fresh proxy log and a live game process, but treats process absence as a wait state rather than immediate failure;
+- `19f035270c548eebfce718d657b95069358d6238` - regression coverage for Steam handoff gap, proxy-log-before-successor, live-process+log success, missing log, Script Loader evidence, and rollback;
+- `65ff0d60d8f518ceff52e85da99bfc5150585d58` - live runner now tracks any successor `GoW/GodOfWar` PID instead of only the bootstrap PID.
+
+New startup behavior:
+
+1. snapshot baseline GoW PIDs (normally none because the runner requires GoW closed);
+2. launch `GoW.exe`;
+3. tolerate the returned bootstrap process exiting, including the previously observed exit code 53;
+4. keep the owned `XINPUT1_4.dll` installed during the handoff window;
+5. poll for any new live `GoW/GodOfWar` successor process;
+6. require both:
+   - fresh `RAVEN_NATIVE_BRIDGE_PROXY_LOADED` evidence;
+   - at least one live successor game process;
+7. only fail after the full startup timeout if that combined condition never appears.
+
+The runner also archives `startup-processes.txt` with bootstrap PID/exit code and the live successor PID(s).
+
+No Raven authority, XInput forwarding, install, rollback, save, or progression behavior changed.
+
+Next action: rerun the same V2 proof with GoW closed. If it passes, the proxy/load layer is proven and the next boundary is native snapshot delivery to the map/compass runtime.
