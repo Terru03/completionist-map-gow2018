@@ -1,0 +1,106 @@
+Completionist Map - Lua VFSExec bridge static trace
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+
+FUNCTION 0x84AB40..0x84AB55 labels=VFSExec
+  CALL 0x84AB46 -> 0x84FCC0 raw=0x84FCC0
+  DISASM
+    0x0084AB40 4883ec28                 sub      rsp, 0x28
+    0x0084AB44 b201                     mov      dl, 1
+    0x0084AB46 e875510000               call     0x14084fcc0
+    0x0084AB4B b801000000               mov      eax, 1
+    0x0084AB50 4883c428                 add      rsp, 0x28
+    0x0084AB54 c3                       ret      
+
+FUNCTION 0x84FCC0..0x84FDE8 labels=-
+  CALLER 0x84AB20 site=0x84AB26
+  CALLER 0x84AB40 site=0x84AB46
+  CALLER 0x84FCC0 site=0x84FDE6
+  CALL 0x84FD62 -> 0x431B90 raw=0x431B90
+  CALL 0x84FDDF -> - raw=0x3ED3A6
+  JMP 0x84FDE6 -> 0x84FCC0 raw=0x84FD9A
+  DISASM
+    0x0084FCC0 48895c2408               mov      qword ptr [rsp + 8], rbx
+    0x0084FCC5 4889742410               mov      qword ptr [rsp + 0x10], rsi
+    0x0084FCCA 57                       push     rdi
+    0x0084FCCB 4883ec20                 sub      rsp, 0x20
+    0x0084FCCF 8b8178020000             mov      eax, dword ptr [rcx + 0x278]
+    0x0084FCD5 0fb6f2                   movzx    esi, dl
+    0x0084FCD8 2b817c020000             sub      eax, dword ptr [rcx + 0x27c]
+    0x0084FCDE 33db                     xor      ebx, ebx
+    0x0084FCE0 488b7cc138               mov      rdi, qword ptr [rcx + rax*8 + 0x38]
+    0x0084FCE5 488b4110                 mov      rax, qword ptr [rcx + 0x10]
+    0x0084FCE9 488d0de0b89e00           lea      rcx, [rip + 0x9eb8e0]
+    0x0084FCF0 4885c0                   test     rax, rax
+    0x0084FCF3 488d5008                 lea      rdx, [rax + 8]
+    0x0084FCF7 480f44d3                 cmove    rdx, rbx
+    0x0084FCFB 0fb602                   movzx    eax, byte ptr [rdx]
+    0x0084FCFE 488b0cc1                 mov      rcx, qword ptr [rcx + rax*8]
+    0x0084FD02 488b01                   mov      rax, qword ptr [rcx]
+    0x0084FD05 ff9090000000             call     qword ptr [rax + 0x90]
+    0x0084FD0B 448bcb                   mov      r9d, ebx
+    0x0084FD0E 4885ff                   test     rdi, rdi
+    0x0084FD11 7444                     je       0x14084fd57
+    0x0084FD13 0fb607                   movzx    eax, byte ptr [rdi]
+    0x0084FD16 84c0                     test     al, al
+    0x0084FD18 743d                     je       0x14084fd57
+    0x0084FD1A 4c8d5701                 lea      r10, [rdi + 1]
+    0x0084FD1E 6690                     nop      
+    0x0084FD20 440fb6c0                 movzx    r8d, al
+    0x0084FD24 4d8d5201                 lea      r10, [r10 + 1]
+    0x0084FD28 2c61                     sub      al, 0x61
+    0x0084FD2A 3c19                     cmp      al, 0x19
+    0x0084FD2C 418d48e0                 lea      ecx, [r8 - 0x20]
+    0x0084FD30 0fb6d1                   movzx    edx, cl
+    0x0084FD33 410f47d0                 cmova    edx, r8d
+    0x0084FD37 0fb6c2                   movzx    eax, dl
+    0x0084FD3A 4903c1                   add      rax, r9
+    0x0084FD3D 4c69c801040000           imul     r9, rax, 0x401
+    0x0084FD44 498bc1                   mov      rax, r9
+    0x0084FD47 48c1e806                 shr      rax, 6
+    0x0084FD4B 4c33c8                   xor      r9, rax
+    0x0084FD4E 410fb642ff               movzx    eax, byte ptr [r10 - 1]
+    0x0084FD53 84c0                     test     al, al
+    0x0084FD55 75c9                     jne      0x14084fd20
+    0x0084FD57 33d2                     xor      edx, edx
+    0x0084FD59 41b813010000             mov      r8d, 0x113
+    0x0084FD5F 498bc9                   mov      rcx, r9
+    0x0084FD62 e8291ebeff               call     0x140431b90
+    0x0084FD67 48633d46844f02           movsxd   rdi, dword ptr [rip + 0x24f8446]
+    0x0084FD6E 4c8d052bc37f04           lea      r8, [rip + 0x47fc32b]
+    0x0084FD75 85ff                     test     edi, edi
+    0x0084FD77 7e16                     jle      0x14084fd8f
+    0x0084FD79 498bc8                   mov      rcx, r8
+    0x0084FD7C 0f1f4000                 nop      dword ptr [rax]
+    0x0084FD80 483901                   cmp      qword ptr [rcx], rax
+    0x0084FD83 743b                     je       0x14084fdc0
+    0x0084FD85 ffc3                     inc      ebx
+    0x0084FD87 4883c108                 add      rcx, 8
+    0x0084FD8B 3bdf                     cmp      ebx, edi
+    0x0084FD8D 7cf1                     jl       0x14084fd80
+    0x0084FD8F 4084f6                   test     sil, sil
+    0x0084FD92 750c                     jne      0x14084fda0
+    0x0084FD94 498904f8                 mov      qword ptr [r8 + rdi*8], rax
+    0x0084FD98 ffc7                     inc      edi
+    0x0084FD9A 893d14844f02             mov      dword ptr [rip + 0x24f8414], edi
+    0x0084FDA0 488b0dd9b89e00           mov      rcx, qword ptr [rip + 0x9eb8d9]
+    0x0084FDA7 488b01                   mov      rax, qword ptr [rcx]
+    0x0084FDAA 488b5c2430               mov      rbx, qword ptr [rsp + 0x30]
+    0x0084FDAF 488b742438               mov      rsi, qword ptr [rsp + 0x38]
+    0x0084FDB4 4883c420                 add      rsp, 0x20
+    0x0084FDB8 5f                       pop      rdi
+    0x0084FDB9 48ffa098000000           jmp      qword ptr [rax + 0x98]
+    0x0084FDC0 4084f6                   test     sil, sil
+    0x0084FDC3 74db                     je       0x14084fda0
+    0x0084FDC5 8d4301                   lea      eax, [rbx + 1]
+    0x0084FDC8 3bc7                     cmp      eax, edi
+    0x0084FDCA 7d18                     jge      0x14084fde4
+    0x0084FDCC 4898                     cdqe     
+    0x0084FDCE 498d14c0                 lea      rdx, [r8 + rax*8]
+    0x0084FDD2 4863c3                   movsxd   rax, ebx
+    0x0084FDD5 498d0cc0                 lea      rcx, [r8 + rax*8]
+    0x0084FDD9 41b808000000             mov      r8d, 8
+    0x0084FDDF e8c2d5b9ff               call     0x1403ed3a6
+    0x0084FDE4 ffcf                     dec      edi
+    0x0084FDE6 ebb2                     jmp      0x14084fd9a
+
+SAFETY static_exe_read_only=true game_launched=false process_accessed=false save_opened=false save_written=false progression_written=false game_files_written=false
