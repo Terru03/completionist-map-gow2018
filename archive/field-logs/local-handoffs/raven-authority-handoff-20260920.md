@@ -3177,3 +3177,37 @@ GetRefBool   0x845700
 did not map to separate runtime-function records in the PE exception-function table, so the first tracer did **not** actually disassemble or prove their implementations. Do not close `GetRef*` yet.
 
 Next step: disassemble fixed byte windows at those exact four RVAs independent of runtime-function boundaries, follow their direct targets narrowly, and test those targets against the proven staged globals/functions. This is the final unresolved part of this built-in binding set.
+
+
+## Exact GetRef handler proof queued
+
+The handoff was re-read after the persisted-binding trace. The only unresolved part of that built-in Lua binding set is now the four exact `GetRef*` handlers, because those RVAs are not represented as separate PE exception/runtime-function records.
+
+New tooling:
+
+- `f80db270588e1eb35a4511a2bb1c6cbe2c719af8` - `tools/v0.10.5/trace-lua-getref-exact-handlers.py`
+- `510203ede1920e2b477f9581ed7f08566fc2affb` - `tools/v0.10.5/trace-lua-getref-exact-handlers-and-push.ps1`
+
+Exact entrypoints:
+
+```text
+GetRefString 0x8456A0
+GetRefInt    0x8456C0
+GetRefFloat  0x8456E0
+GetRefBool   0x845700
+```
+
+The tracer:
+
+1. disassembles fixed windows at those exact RVAs without relying on runtime-function boundaries;
+2. stops each exact entry window at `ret` to avoid bleeding into adjacent wrappers;
+3. follows only direct `call/jmp` targets to depth 2;
+4. checks all visited code for the proven staged globals, `WAD+0xEE18`, and known staged owner/restore functions;
+5. records exact disassembly and direct targets for final semantic classification.
+
+Acceptance decision:
+
+- if any `GetRef*` path intersects the staged authority surface, preserve it as the concrete built-in Lua bridge candidate;
+- if all four remain disjoint through the narrow direct-target trace, close the entire `ResolveGameObject / GetRef* / LoadCheck` built-in binding set and move to the native staged owner itself.
+
+Static/read-only only; GoW must be closed.
