@@ -209,6 +209,16 @@ class ChannelATests(unittest.TestCase):
         self.assertEqual(parent["record_payload_hex"], entry["record_payload_hex"])
         self.assertIn("parsed_gameobject", parent)
 
+    def test_registry_object_pair_identity_map(self):
+        target_hash = next(key for key, value in self.objects.items() if value == TARGET)
+        pair_map = {(self.registry, target_hash): TARGET}
+        result = subject.extract_channel_a(pack([self.dead], 6), None, pair_map)
+        self.assertTrue(result["unambiguous"])
+        self.assertEqual(result["candidate_count"], 1)
+        self.assertIs(result["raven_states"][TARGET], True)
+        parsed = result["candidates"][0]["carrier"]["raven_entries"][0]
+        self.assertEqual(parsed["catalogue_id"], TARGET)
+
     def test_raw_identity_need_not_exist_in_envelope(self):
         packed = pack([self.dead], 3)
         target_hash = next(key for key, value in self.objects.items() if value == TARGET)
