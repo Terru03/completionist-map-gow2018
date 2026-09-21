@@ -66,6 +66,7 @@ add_library(raven_authority_bridge SHARED
   src/authority_runtime.cpp
   src/hash.cpp
   src/snapshot_store.cpp
+  src/snapshot_delivery.cpp
   src/dxgi_proxy.cpp
   src/platform.cpp
   "${GENERATED_DXGI_DEF}"
@@ -79,7 +80,7 @@ target_include_directories(raven_authority_bridge PRIVATE
   "${zlib_SOURCE_DIR}"
   "${zlib_BINARY_DIR}"
 )
-target_link_libraries(raven_authority_bridge PRIVATE zlibstatic bcrypt)
+target_link_libraries(raven_authority_bridge PRIVATE zlibstatic bcrypt ws2_32)
 target_compile_definitions(raven_authority_bridge PRIVATE
   WIN32_LEAN_AND_MEAN
   NOMINMAX
@@ -196,7 +197,9 @@ if(BUILD_TESTING)
   add_executable(raven_bridge_authority_tests
     tests/authority_tests.cpp
     src/authority_decoder.cpp
+    src/platform.cpp
     src/snapshot_store.cpp
+    src/snapshot_delivery.cpp
   )
   add_dependencies(raven_bridge_authority_tests raven_bridge_generated_data)
   target_compile_features(raven_bridge_authority_tests PRIVATE cxx_std_20)
@@ -206,7 +209,7 @@ if(BUILD_TESTING)
     "${zlib_SOURCE_DIR}"
     "${zlib_BINARY_DIR}"
   )
-  target_link_libraries(raven_bridge_authority_tests PRIVATE zlibstatic)
+  target_link_libraries(raven_bridge_authority_tests PRIVATE zlibstatic ws2_32)
   target_compile_definitions(raven_bridge_authority_tests PRIVATE
     WIN32_LEAN_AND_MEAN
     NOMINMAX

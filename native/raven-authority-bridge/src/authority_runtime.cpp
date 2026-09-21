@@ -17,6 +17,7 @@
 #include "hash.h"
 #include "platform.h"
 #include "raven_catalogue.generated.h"
+#include "snapshot_delivery.h"
 
 namespace completionist {
 namespace {
@@ -228,6 +229,7 @@ void RunAuthorityWorker() {
     return;
   }
   AppendBridgeLog("RAVEN_NATIVE_BRIDGE_EXE_ACCEPTED sha256=" + hash);
+  StartSnapshotDeliveryServer(ReadPublishedSnapshot);
   const std::uintptr_t module_base = reinterpret_cast<std::uintptr_t>(
       GetModuleHandleW(nullptr));
   if (module_base == 0) {

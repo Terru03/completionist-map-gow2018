@@ -16,6 +16,7 @@
 #include "authority_runtime.h"
 #include "raven_catalogue.generated.h"
 #include "raven_fixture.generated.h"
+#include "snapshot_delivery.h"
 
 namespace {
 
@@ -125,7 +126,48 @@ int wmain() {
   reader.join();
   if (torn.load()) return Fail("snapshot store exposed torn state");
 
+  completionist::NativeRavenSnapshot wire;
+  wire.generation = 7;
+  wire.captured_tick_ms = 1234;
+  wire.alive_count = decoded.alive_count;
+  wire.killed_count = decoded.killed_count;
+  wire.explicit_count = decoded.explicit_count;
+  wire.absence_default_false_count = decoded.absence_default_false_count;
+  wire.killed = decoded.killed;
+  const std::string response =
+      completionist::BuildRavenSnapshotWireResponse(wire);
+  if (!response.starts_with("RAVEN_SNAPSHOT_V1 schema=1 generation=7 ") ||
+      response.find(" count=53 unknown=0 alive=26 killed=27 explicit=42 ") ==
+          std::string::npos ||
+      response.find("raven_c945cb53465b58decfcbd4a221cb5326") ==
+          std::string::npos ||
+      response.find("raven_642d0d164af0a5d4076e77933c549a5d") !=
+          std::string::npos ||
+      response.back() != '\n') {
+    return Fail("Lua wire snapshot differs");
+  }
+
+  std::uint16_t bound_port = 0;
+  int listener_error = 0;
+  const std::uintptr_t first_listener =
+      completionist::delivery_test::OpenLoopbackListener(
+          0, &bound_port, &listener_error);
+  if (first_listener == completionist::delivery_test::kInvalidListener ||
+      bound_port == 0 || listener_error != 0) {
+    return Fail("loopback listener did not bind exclusively");
+  }
+  const std::uintptr_t collision =
+      completionist::delivery_test::OpenLoopbackListener(
+          bound_port, nullptr, &listener_error);
+  if (collision != completionist::delivery_test::kInvalidListener) {
+    completionist::delivery_test::CloseLoopbackListener(collision);
+    completionist::delivery_test::CloseLoopbackListener(first_listener);
+    return Fail("loopback listener collision was not refused");
+  }
+  completionist::delivery_test::CloseLoopbackListener(first_listener);
+
   std::cout << "RAVEN_BRIDGE_AUTHORITY_TESTS_PASSED states=53 explicit=42 "
-               "absentWadFalse=11 killed=27 alive=26\n";
+               "absentWadFalse=11 killed=27 alive=26 delivery=loopback "
+               "collision_refused=true\n";
   return 0;
 }
