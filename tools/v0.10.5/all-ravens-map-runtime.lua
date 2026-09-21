@@ -535,7 +535,7 @@ do
           end
         end
         local stock, stockOK = stockIds()
-        if hasOtherCustom or (stockOK and #stock > 0) then
+        if hasOtherCustom or (stockOK and hasOther(stock, selected.IdString)) then
           return actionText(lamsConsts.ReplaceInCompass)
         end
         return actionText(lamsConsts.AddToCompass)
@@ -546,7 +546,7 @@ do
       return actionText(lamsConsts.RemoveFromCompass)
     end
     local stock = stockIds()
-    if #ids > 0 or #stock > 0 then
+    if #ids > 0 or hasOther(stock, selected.IdString) then
       return actionText(lamsConsts.ReplaceInCompass)
     end
     return actionText(lamsConsts.AddToCompass)
@@ -655,7 +655,7 @@ do
       return
     end
     local customOK, customCount = hideCustom(selected.IdString, "raven_replace")
-    local stockOK, stockCount = hideStock("raven_replace")
+    local stockOK, stockCount = hideStockExcept(selected.IdString, "raven_replace")
     if not customOK or not stockOK then return end
     suppressLegacyRavenHud()
     local showOK, showErr = pcall(function()
@@ -688,7 +688,7 @@ do
 
     if customCompassOwnsTarget then
       suppressLegacyRavenHud()
-      local exceptIdString = nil
+      local exceptIdString = promptIntent and promptIntent.IdString or nil
       local trackedRow = byCatalogueId[_G.CompletionistMapV105TrackedCatalogueId]
       if trackedRow ~= nil then
         local trackedInfo = markerInfo(trackedRow.Name)
@@ -771,13 +771,14 @@ do
         promptSettleBucket = bucket
         pcall(function() game.Compass.HideMarker(row.Name) end)
       end
-      if stockOK and #stock > 0 then
-        hideStock("raven_remove_async_retry")
+      if stockOK and hasOther(stock, intent.IdString) then
+        hideStockExcept(intent.IdString, "raven_remove_async_retry")
       end
       local customAfter, customAfterOK = customIds()
       local stockAfter, stockAfterOK = stockIds()
       if promptSettleFrames >= 3 and customAfterOK and stockAfterOK and
-          not contains(customAfter, intent.IdString) and #stockAfter == 0 then
+          not contains(customAfter, intent.IdString) and
+          not hasOther(stockAfter, intent.IdString) then
         promptIntent = nil
         promptSettleFrames = 0
         promptSettleBucket = -1
