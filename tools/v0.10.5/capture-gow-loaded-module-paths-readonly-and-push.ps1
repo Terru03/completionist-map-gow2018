@@ -54,13 +54,21 @@ function Get-ModuleSnapshot([System.Diagnostics.Process]$Process) {
     try {
         $Process.Refresh()
         $moduleCollection = $Process.Modules
-        for ($index = 0; $index -lt $moduleCollection.Count; $index++) {
-            $module = $moduleCollection[$index]
-            $rows += [pscustomobject]@{
-                module_name = [string]$module.ModuleName
-                file_name = [string]$module.FileName
-                base_address = ('0x{0:X16}' -f [int64]$module.BaseAddress)
-                module_memory_size = [int64]$module.ModuleMemorySize
+        $enumerator = ([System.Collections.IEnumerable]$moduleCollection).GetEnumerator()
+        try {
+            while ($enumerator.MoveNext()) {
+                $module = [System.Diagnostics.ProcessModule]$enumerator.Current
+                $rows += [pscustomobject]@{
+                    module_name = [string]$module.ModuleName
+                    file_name = [string]$module.FileName
+                    base_address = ('0x{0:X16}' -f $module.BaseAddress.ToInt64())
+                    module_memory_size = [int64]$module.ModuleMemorySize
+                }
+            }
+        }
+        finally {
+            if ($enumerator -is [System.IDisposable]) {
+                $enumerator.Dispose()
             }
         }
     } catch {
