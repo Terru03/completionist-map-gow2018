@@ -1950,3 +1950,12 @@ Required end result is one of:
 2. prove Channel A is unrelated to Lua checkpoint state and identify the separate global checkpoint structure that feeds `0x465143/0x4651E2 -> LuaClient+0x80 -> 0x5B2280 -> 0x7E9550`.
 
 Do not redo GameObject codec, carrier framing, raw allocator scans, save-ring timestamp inference, RegionSummary inference, or ordinary Lua thunk searches.
+
+
+## Fresh Astra/Codex task prepared
+
+A new tightly scoped high-reasoning task was added in commit `805c19048fe8881a3ac411edf1627986066a3b96`:
+
+`docs/research/ASTRA-v0105-raven-missing-checkpoint-stream-task.md`
+
+Use this task instead of the older broad restore-interceptor task. It incorporates the dual-channel negative and directs analysis toward the exact Channel-A consumer / LuaClient restore-buffer provenance boundary.
