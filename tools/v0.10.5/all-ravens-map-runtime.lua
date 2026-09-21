@@ -29,10 +29,11 @@ do
   local promptSettleFrames = 0
   local promptSettleBucket = -1
   local customCompassOwnsTarget = false
-  local nativeAllowSameGenerationOnce = false
+  local nativeBoundaryPending = false
+  local nativeBoundaryGeneration = nil
   local nativeResetRecheckFrames = 0
   local nativeResetRecheckBucket = -1
-  local nativeResetRecheckLimit = 180
+  local nativeResetRecheckLimit = 360
   local nativePort = 43753
   local nativeRequest = "GET RAVEN_SNAPSHOT_V1\n"
   local nativeMaxResponseBytes = 4096
@@ -199,21 +200,21 @@ do
       nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=invalid_generation", "invalid_generation")
       return false, "invalid_generation"
     end
-    if lastNativeGeneration ~= nil and generation < lastNativeGeneration then
+    if nativeBoundaryPending and nativeBoundaryGeneration ~= nil and
+        generation <= nativeBoundaryGeneration then
+      nativeNotice("NATIVE_AUTHORITY_BOUNDARY_WAIT",
+          "generation=" .. tostring(generation) ..
+          " baseline=" .. tostring(nativeBoundaryGeneration),
+          "boundary:" .. tostring(generation) .. ":" .. tostring(nativeBoundaryGeneration))
+      return false, "boundary_wait"
+    end
+    if lastNativeGeneration ~= nil and generation <= lastNativeGeneration then
       nativeNotice("NATIVE_AUTHORITY_STALE", "generation=" .. tostring(generation) ..
           " last=" .. tostring(lastNativeGeneration),
           "stale:" .. tostring(generation) .. ":" .. tostring(lastNativeGeneration))
       return false, "stale"
     end
-    if lastNativeGeneration ~= nil and generation == lastNativeGeneration and
-        not nativeAllowSameGenerationOnce then
-      nativeNotice("NATIVE_AUTHORITY_STALE", "generation=" .. tostring(generation) ..
-          " last=" .. tostring(lastNativeGeneration),
-          "stale:" .. tostring(generation) .. ":" .. tostring(lastNativeGeneration))
-      return false, "stale"
-    end
-    local sameGenerationReapply =
-        lastNativeGeneration ~= nil and generation == lastNativeGeneration
+    local boundaryApply = nativeBoundaryPending
     if type(snapshot.states) ~= "table" or snapshot.schema ~= 1 or
         type(snapshot.count) ~= "number" or snapshot.count ~= #rows or
         type(snapshot.aliveCount) ~= "number" or
@@ -251,14 +252,19 @@ do
     end
     lastNativeGeneration = generation
     _G.CompletionistMapV105LastNativeRavenGeneration = generation
-    nativeAllowSameGenerationOnce = false
+    if boundaryApply then
+      nativeBoundaryPending = false
+      nativeBoundaryGeneration = nil
+      nativeResetRecheckFrames = 0
+      nativeResetRecheckBucket = -1
+    end
     lastNativeNotice = nil
     log("NATIVE_AUTHORITY_APPLIED", "generation=" .. tostring(generation) ..
         " killed=" .. tostring(snapshot.killedCount) ..
         " alive=" .. tostring(snapshot.aliveCount) ..
         " explicit=" .. tostring(snapshot.explicitCount) ..
         " absentWadFalse=" .. tostring(snapshot.absenceDefaultFalseCount) ..
-        " sameGenerationResetReapply=" .. tostring(sameGenerationReapply))
+        " postBoundary=" .. tostring(boundaryApply))
     return true, nil
   end
 
@@ -476,16 +482,29 @@ do
     return true, hidden, nil
   end
 
-  local function hideStock(reason)
+  local function hideStockExcept(exceptIdString, reason)
     local ids, ok, err = stockIds()
     if not ok then return false, 0, err end
     local hidden = 0
     for _, id in ipairs(ids) do
-      local hideOK = pcall(function() game.Compass.HideMarker(id) end)
-      if not hideOK then return false, hidden, "hide_failed:" .. tostring(id) end
-      hidden = hidden + 1
+      if exceptIdString == nil or tostring(id) ~= exceptIdString then
+        local hideOK = pcall(function() game.Compass.HideMarker(id) end)
+        if not hideOK then return false, hidden, "hide_failed:" .. tostring(id) end
+        hidden = hidden + 1
+      end
     end
     return true, hidden, nil
+  end
+
+  local function hideStock(reason)
+    return hideStockExcept(nil, reason)
+  end
+
+  local function hasOther(ids, exceptIdString)
+    for _, id in ipairs(ids or {}) do
+      if exceptIdString == nil or tostring(id) ~= exceptIdString then return true end
+    end
+    return false
   end
 
   local function actionText(lamsId)
@@ -611,10 +630,10 @@ do
     end
     clearSelection(self, "SELECT_CONSUME")
     if not shouldShow(selected.CatalogueId) then return end
-    customCompassOwnsTarget = true
     local ids, queryOK = customIds()
     if not queryOK then return end
     if contains(ids, selected.IdString) then
+      customCompassOwnsTarget = true
       local ok = pcall(function() game.Compass.HideMarker(selected.Name) end)
       if ok then
         if _G.CompletionistMapV105TrackedCatalogueId == selected.CatalogueId then
@@ -646,8 +665,9 @@ do
       log("SHOW_FAILED", "name=" .. selected.Name .. " error=" .. tostring(showErr))
       return
     end
+    customCompassOwnsTarget = true
     suppressLegacyRavenHud()
-    hideStock("raven_post_show_guard")
+    hideStockExcept(selected.IdString, "raven_post_show_guard")
     _G.CompletionistMapV105TrackedCatalogueId = selected.CatalogueId
     self.currShownMarkerID = selected.Id
     promptIntent = {
@@ -668,9 +688,15 @@ do
 
     if customCompassOwnsTarget then
       suppressLegacyRavenHud()
+      local exceptIdString = nil
+      local trackedRow = byCatalogueId[_G.CompletionistMapV105TrackedCatalogueId]
+      if trackedRow ~= nil then
+        local trackedInfo = markerInfo(trackedRow.Name)
+        if trackedInfo ~= nil then exceptIdString = tostring(trackedInfo.Id) end
+      end
       local stock, stockOK = stockIds()
-      if stockOK and #stock > 0 then
-        hideStock("custom_raven_owner_guard")
+      if stockOK and hasOther(stock, exceptIdString) then
+        hideStockExcept(exceptIdString, "custom_raven_owner_guard")
       end
     end
 
@@ -722,7 +748,12 @@ do
     suppressLegacyRavenHud()
 
     if intent.State == "tracked" then
-      if customOK and stockOK and contains(custom, intent.IdString) and #stock == 0 then
+      if stockOK and hasOther(stock, intent.IdString) then
+        hideStockExcept(intent.IdString, "raven_replace_async_retry")
+        stock = stockIds()
+      end
+      if customOK and contains(custom, intent.IdString) and
+          not hasOther(stock, intent.IdString) then
         promptIntent = nil
         promptSettleFrames = 0
         promptSettleBucket = -1
@@ -730,29 +761,30 @@ do
         log("PROMPT_SETTLED", "state=tracked name=" .. row.Name)
       else
         promptSettleFrames = promptSettleFrames + 1
-        local bucket = math.floor(promptSettleFrames / 30)
-        if stockOK and #stock > 0 and
-            (promptSettleFrames == 1 or bucket ~= promptSettleBucket) then
-          promptSettleBucket = bucket
-          hideStock("raven_replace_async_retry")
-        end
         refreshPrompt(self, selected)
       end
     elseif intent.State == "untracked" then
-      if customOK and not contains(custom, intent.IdString) then
+      promptSettleFrames = promptSettleFrames + 1
+      local bucket = math.floor(promptSettleFrames / 30)
+      if customOK and contains(custom, intent.IdString) and
+          (promptSettleFrames == 1 or bucket ~= promptSettleBucket) then
+        promptSettleBucket = bucket
+        pcall(function() game.Compass.HideMarker(row.Name) end)
+      end
+      if stockOK and #stock > 0 then
+        hideStock("raven_remove_async_retry")
+      end
+      local customAfter, customAfterOK = customIds()
+      local stockAfter, stockAfterOK = stockIds()
+      if promptSettleFrames >= 3 and customAfterOK and stockAfterOK and
+          not contains(customAfter, intent.IdString) and #stockAfter == 0 then
         promptIntent = nil
         promptSettleFrames = 0
         promptSettleBucket = -1
+        customCompassOwnsTarget = false
         refreshPrompt(self, selected)
         log("PROMPT_SETTLED", "state=untracked name=" .. row.Name)
       else
-        promptSettleFrames = promptSettleFrames + 1
-        local bucket = math.floor(promptSettleFrames / 30)
-        if customOK and contains(custom, intent.IdString) and
-            (promptSettleFrames == 1 or bucket ~= promptSettleBucket) then
-          promptSettleBucket = bucket
-          pcall(function() game.Compass.HideMarker(row.Name) end)
-        end
         refreshPrompt(self, selected)
       end
     else
@@ -814,24 +846,63 @@ do
     return true, accepted
   end
 
-  _G.CompletionistMapV105ResetRavenStates = function(source)
-    for catalogueId, _ in pairs(states) do states[catalogueId] = nil end
-    if lastMapOnSelf ~= nil then
-      clearIcons(lastMapOnSelf, "state_reset:" .. tostring(source))
+  local function currentNativeGeneration()
+    local namespace = rawget(_G, "CompletionistMapNative")
+    local accessor = type(namespace) == "table" and namespace.GetRavenSnapshot or nil
+    if type(accessor) ~= "function" then return lastNativeGeneration end
+    local ok, snapshot = pcall(accessor)
+    if not ok or type(snapshot) ~= "table" then return lastNativeGeneration end
+    local generation = tonumber(snapshot.generation)
+    if generation == nil or generation < 1 or generation ~= math.floor(generation) then
+      return lastNativeGeneration
     end
-    _G.CompletionistMapV105TrackedCatalogueId = nil
+    return generation
+  end
+
+  local function beginAuthorityBoundary(source)
+    nativeBoundaryPending = true
+    nativeBoundaryGeneration = currentNativeGeneration()
+    nativeResetRecheckFrames = nativeResetRecheckLimit
+    nativeResetRecheckBucket = -1
     customCompassOwnsTarget = false
     promptIntent = nil
     promptSettleFrames = 0
     promptSettleBucket = -1
-    nativeAllowSameGenerationOnce = true
-    nativeResetRecheckFrames = nativeResetRecheckLimit
-    nativeResetRecheckBucket = -1
-    log("STATE_RESET", "source=" .. tostring(source) ..
-        " staleStateRetained=false catalogueDefaultVisible=true progressionWrites=false" ..
-        " sameGenerationNativeReapplyOnce=true postResetRecheckFrames=" ..
-        tostring(nativeResetRecheckLimit))
+    _G.CompletionistMapV105TrackedCatalogueId = nil
+    hideCustom(nil, "authority_boundary")
+    log("AUTHORITY_BOUNDARY", "source=" .. tostring(source) ..
+        " baselineGeneration=" .. tostring(nativeBoundaryGeneration) ..
+        " staleStateRetained=true atomicAuthorityRequired=true" ..
+        " postBoundaryRecheckFrames=" .. tostring(nativeResetRecheckLimit) ..
+        " progressionWrites=false")
     return true
+  end
+
+  _G.CompletionistMapV105NotifyAuthorityBoundary = beginAuthorityBoundary
+  _G.CompletionistMapV105ResetRavenStates = beginAuthorityBoundary
+
+  local pendingBoundary = rawget(_G, "CompletionistMapV105PendingAuthorityBoundary")
+  if pendingBoundary ~= nil then
+    _G.CompletionistMapV105PendingAuthorityBoundary = nil
+    beginAuthorityBoundary(pendingBoundary)
+  end
+
+  if not _G.CompletionistMapV105LoadBoundaryHooksInstalled then
+    _G.CompletionistMapV105LoadBoundaryHooksInstalled = true
+    local thunkOK, thunk = pcall(require, "core.thunk")
+    if thunkOK and type(thunk) == "table" and type(thunk.Install) == "function" then
+      for _, eventName in ipairs({"EVT_LoadSaveData", "EVT_LoadSaveFile_Done"}) do
+        local name = eventName
+        local hookOK, hookErr = pcall(thunk.Install, name, function(...)
+          beginAuthorityBoundary(name)
+        end)
+        log("LOAD_BOUNDARY_HOOK", "event=" .. name ..
+            " installed=" .. tostring(hookOK) ..
+            (hookOK and "" or " error=" .. tostring(hookErr)))
+      end
+    else
+      log("LOAD_BOUNDARY_HOOK", "installed=false reason=core_thunk_unavailable")
+    end
   end
 
   for catalogueId, value in pairs(_G.CompletionistMapV105PendingRavenState or {}) do
@@ -841,8 +912,9 @@ do
   log("API", "installed=true catalogueCount=" .. tostring(#rows) ..
       " mapResource=" .. mapResource .. " compassClass=" .. ravenClass ..
       " exactCollisionRequired=true markerIdAloneInfersRaven=false" ..
-      " permanentPolling=false postResetBoundedRefresh=true progressionWrites=false catalogueDefaultVisible=true" ..
-      " persistedKillBootstrap=true nativeAuthority=loopback_map_open" ..
+      " permanentPolling=false postLoadBoundedRefresh=true progressionWrites=false catalogueDefaultVisible=true" ..
+      " positiveEventEvidenceOnly=true atomicAuthorityClearsState=true" ..
+      " persistedKillBootstrap=true nativeAuthority=loopback_freshness_generation" ..
       " nativePort=" .. tostring(nativePort) .. " staticDescriptorWrites=false")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVENS
