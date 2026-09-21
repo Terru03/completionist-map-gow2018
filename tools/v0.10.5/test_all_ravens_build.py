@@ -73,7 +73,8 @@ class AllRavensTemplateTests(unittest.TestCase):
 
     def test_rendered_event_hook_keeps_immediate_kill_path(self):
         self.assertEqual(self.event_hook.count("{CatalogueId="), 53)
-        self.assertIn("ravenKilled == true", self.event_hook)
+        self.assertIn("ravenKilled ~= true", self.event_hook)
+        self.assertIn("fn(row.CatalogueId, true, source)", self.event_hook)
         self.assertIn("CompletionistMapV105PublishRavenState", self.event_hook)
 
     def test_hooks_have_no_progression_write_or_polling_loop(self):
@@ -148,7 +149,8 @@ class AllRavensBuildTests(unittest.TestCase):
         text = self.outputs[build.EVENT_LUA].decode("utf-8")
         suffix = text[text.index("-- BEGIN COMPLETIONIST V0.10.5 ALL RAVEN EVENTS"):]
         self.assertEqual(suffix.count("{CatalogueId="), 53)
-        self.assertIn("ravenKilled == true", suffix)
+        self.assertIn("ravenKilled ~= true", suffix)
+        self.assertIn("fn(row.CatalogueId, true, source)", suffix)
         self.assertIn("dx * dx + dy * dy + dz * dz <= 0.25", suffix)
 
     def test_hooks_add_no_progression_write(self):
