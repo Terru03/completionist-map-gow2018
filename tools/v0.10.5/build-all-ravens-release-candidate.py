@@ -290,6 +290,8 @@ def state_contract() -> dict:
         "unknown_state_policy": "catalogue default visible only before any authoritative kill evidence",
         "immediate_kill_path": "loaded Raven ravenKilled=true event",
         "event_false_policy": "defer alive state to atomic 53-Raven authority",
+        "event_kill_overlay": "persists across normal newer snapshots until explicit load boundary",
+        "event_overlay_clear_policy": "first strictly newer post-boundary atomic snapshot",
         "load_boundary_sources": ["EVT_LoadSaveData", "EVT_LoadSaveFile_Done", "OnRestoreCheckpoint"],
     }
 
