@@ -103,12 +103,14 @@ def main():
         raise RuntimeError("output folder must be empty")
     if sys.platform != "win32" or ctypes.sizeof(ctypes.c_void_p) != 8:
         raise RuntimeError("64-bit Windows required")
-    rows = json.loads((REPO / "catalogue/odins-ravens-save-identities.json").read_text(encoding="utf-8"))["identities"]
-    object_map = {int(row["object_hash_hex"], 16): row["catalogue_id"] for row in rows}
-    registries = {int(row["registry_hash_hex"], 16) for row in rows}
-    if len(rows) != 53 or len(object_map) != 53 or len(set(object_map.values())) != 53 or len(registries) != 1:
-        raise RuntimeError("expected 53 unique Raven identities in one registry")
-    registry = next(iter(registries))
+    rows = json.loads((REPO / "catalogue/odins-ravens-gameobject-identities.json").read_text(encoding="utf-8"))["ravens"]
+    object_map = {
+        (int(row["registry_hash_hex"], 16), int(row["object_hash_hex"], 16)): row["catalogue_id"]
+        for row in rows
+    }
+    if len(rows) != 53 or len(object_map) != 53 or len(set(object_map.values())) != 53:
+        raise RuntimeError("expected 53 unique Raven (registry, object) identities")
+    registry = None
     obs = load_observer()
     kernel = obs.k32_api()
     pid, name = obs.find_process(kernel)
