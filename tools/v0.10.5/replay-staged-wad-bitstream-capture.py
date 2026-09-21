@@ -31,10 +31,15 @@ def main() -> int:
         raise RuntimeError(f"missing capture report: {report_path}")
 
     original = json.loads(report_path.read_text(encoding="utf-8"))
-    catalogue = json.loads((REPO / "catalogue/odins-ravens-save-identities.json").read_text(encoding="utf-8"))
-    rows = catalogue["identities"]
-    object_map = {int(row["object_hash_hex"], 16): row["catalogue_id"] for row in rows}
-    registry = int(catalogue["registry_hash_hex"], 16)
+    catalogue = json.loads((REPO / "catalogue/odins-ravens-gameobject-identities.json").read_text(encoding="utf-8"))
+    rows = catalogue["ravens"]
+    object_map = {
+        (int(row["registry_hash_hex"], 16), int(row["object_hash_hex"], 16)): row["catalogue_id"]
+        for row in rows
+    }
+    registry = None
+    if len(rows) != 53 or len(object_map) != 53:
+        raise RuntimeError("expected 53 unique Raven (registry, object) identities")
 
     states = {row["catalogue_id"]: set() for row in rows}
     blocked = set()
