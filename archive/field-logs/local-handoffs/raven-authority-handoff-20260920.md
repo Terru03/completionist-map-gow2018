@@ -4088,3 +4088,51 @@ The runner also archives `startup-processes.txt` with bootstrap PID/exit code an
 No Raven authority, XInput forwarding, install, rollback, save, or progression behavior changed.
 
 Next action: rerun the same V2 proof with GoW closed. If it passes, the proxy/load layer is proven and the next boundary is native snapshot delivery to the map/compass runtime.
+
+
+## Steam-aware V2 retry: game runs but XInput proxy emits no bridge log
+
+Runtime evidence commit:
+
+- `2fcbb1bb38277049ee81d803842fe62c092fcde9`
+- capture: `archive/field-logs/runtime-captures/raven-native-bridge-load-proof-v2-20260921-111655/`
+
+Observed result:
+
+```text
+result=RAVEN_NATIVE_BRIDGE_LOAD_PROOF_V2_FAILED
+reason=Expected fresh bridge startup log plus a live GoW process did not appear within 30 seconds. bootstrap_exit_code=53
+rollback_exact=false
+version_dll_untouched=true
+```
+
+Important evidence:
+
+- the initial direct `GoW.exe` process again exited with code 53;
+- fresh Script Loader log contains hundreds of normal game startup/script-load lines beginning at 14:17:22;
+- therefore the actual game process did run;
+- `bridge-log-fresh.txt` contains only `NO_FRESH_BRIDGE_LOG_LINES`;
+- there was no `RAVEN_NATIVE_BRIDGE_PROXY_LOADED` line at all;
+- the runner timed out rather than reaching its user prompt.
+
+This means the current blocker is **not** Steam PID tracking anymore. The actual game launched, but the game-root `XINPUT1_4.dll` did not produce evidence that it was loaded/initialized.
+
+The proof does not yet distinguish between:
+
+1. the successor game process never loading the game-root XInput proxy at all;
+2. Windows loader KnownDLL/API-set behavior resolving XInput from System32 despite the local file;
+3. the proxy module loading but none of its forwarded exports being called, with logging tied too late to first export resolution.
+
+The next observation must identify the actual loaded XInput module path in the live GoW process. Do not speculate between these possibilities.
+
+Rollback note:
+
+- `rollback-error.txt` says `Close God of War first.`;
+- automatic rollback failed while the real game process was still alive;
+- `rollback_exact=false`;
+- `version.dll` remained untouched;
+- pre-run state had no game-root `XINPUT1_4.dll` and no bridge manifest.
+
+Immediate priority: with GoW fully closed, run the schema-2 recovery tool to remove/rollback only the owned Completionist Map XInput proxy and manifest. Verify the game root is clean before any further bridge test.
+
+After cleanup, build a **read-only live module-path observer** that records which `XINPUT1_4.dll` module the actual long-lived GoW process loaded, if any, before choosing the next architecture. Do not modify Raven authority, saves, progression, or `version.dll`.
