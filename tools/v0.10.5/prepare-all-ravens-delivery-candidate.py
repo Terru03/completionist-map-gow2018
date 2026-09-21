@@ -108,6 +108,8 @@ def prepare(check_only: bool, refresh_proof: bool = False) -> None:
         rendered[relative] = refreshed
 
     if refresh_proof:
+        proof["router"] = build.router_contract()
+        proof["state"] = build.state_contract()
         build.stage.write_bytes_atomic(
             build.REPORT.parent,
             build.REPORT,
