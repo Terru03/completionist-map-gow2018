@@ -11,15 +11,17 @@ Proven structure:
     hover family:     50dafefd65605b41a2aed011a5f4ce22
 
 The 64-bit object hash is the native 0x401 rolling hash over the concatenated
-16-byte identity elements. Registry hash is the already-proven GameObject
-registry hash shared by the serialized Raven references.
+16-byte identity elements.
+
+The serialized registry hash is WAD-specific. Packed Channel-A checkpoint
+evidence proves it is the native case-folded 0x401 name hash of the WAD stem
+without ".wad" (for example xpl200_funeral -> 0x4EC230253427B2B0).
 """
 from __future__ import annotations
 import argparse, json
 from pathlib import Path
 
 MASK64=0xFFFFFFFFFFFFFFFF
-REGISTRY_HASH=0x4EC230253427B2B0
 PERCH_HOP_ELEMENT=bytes.fromhex("805b030bf339564cb157837c52906465")
 HOVER_ELEMENT=bytes.fromhex("50dafefd65605b41a2aed011a5f4ce22")
 
@@ -62,6 +64,17 @@ def identity_hash(elements:list[bytes])->int:
             value^=value>>6
     return value
 
+def name_hash(name:str)->int:
+    value=0
+    for byte in name.upper().encode("ascii"):
+        value=((value+byte)*0x401)&MASK64
+        value^=value>>6
+    return value
+
+def registry_hash_for_wad(wad:str)->int:
+    name=Path(wad).stem.lower()
+    return name_hash(name)
+
 def payload(registry_hash:int,object_hash:int)->bytes:
     return bytes([1])+registry_hash.to_bytes(8,"little")+object_hash.to_bytes(8,"little")
 
@@ -70,6 +83,7 @@ def build_row(row:dict)->dict:
     proto=prototype_element(row)
     elements=scene+[proto]
     obj_hash=identity_hash(elements)
+    registry_hash=registry_hash_for_wad(row["source"]["wad"])
     return {
         "catalogue_id":row["catalogue_id"],
         "display_name":row["display_name"],
@@ -80,9 +94,9 @@ def build_row(row:dict)->dict:
         "scene_identity_elements_hex":[x.hex() for x in scene],
         "prototype_identity_element_hex":proto.hex(),
         "identity_elements_hex":[x.hex() for x in elements],
-        "registry_hash_hex":f"0x{REGISTRY_HASH:016X}",
+        "registry_hash_hex":f"0x{registry_hash:016X}",
         "object_hash_hex":f"0x{obj_hash:016X}",
-        "serialized_flag1_hex":payload(REGISTRY_HASH,obj_hash).hex(),
+        "serialized_flag1_hex":payload(registry_hash,obj_hash).hex(),
     }
 
 def main():
@@ -112,7 +126,7 @@ def main():
     result={
         "schema":1,
         "kind":"completionist_map_raven_serialized_gameobject_identity_catalogue",
-        "registry_hash_hex":f"0x{REGISTRY_HASH:016X}",
+        "registry_hash_mode":"native_name_hash_of_lowercase_wad_stem",
         "count":len(rows),
         "unique_object_hashes":len(set(hashes)),
         "prototype_families":{
@@ -146,8 +160,8 @@ def main():
     lines=[
         "Completionist Map - Raven serialized GameObject identities",
         f"count={len(rows)} unique_object_hashes={len(set(hashes))}",
-        f"registry_hash=0x{REGISTRY_HASH:016X}",
-        f"known_raven={KNOWN_ID} object_hash={known['object_hash_hex']} exact_match=true",
+        "registry_hash_mode=native_name_hash_of_lowercase_wad_stem",
+        f"known_raven={KNOWN_ID} registry_hash={known['registry_hash_hex']} object_hash={known['object_hash_hex']} exact_match=true",
         "",
     ]
     for r in rows:
