@@ -4493,3 +4493,79 @@ Therefore the user is **not** being used as the compile test for this probe.
 If the targeted live probe itself cannot fully resolve the owner, the runner records `CAPTURE_INCOMPLETE` and still pushes all evidence rather than dying on a secondary observation method.
 
 Next action: run this targeted capture once with GoW closed. Leave the game at the main menu. No save load is needed.
+
+
+## XINPUT1_4 local-proxy route CLOSED by targeted live IAT proof
+
+Successful runtime evidence:
+
+- commit: `1a6507bd4fd1a5c64e9d31b91b4add0dfafbd97f`
+- capture: `archive/field-logs/runtime-captures/gow-xinput-iat-owner-20260921-115740/`
+
+The CI-proven targeted native probe ran successfully against the actual long-lived GoW process after the 40-second main-menu settle window.
+
+Exact live result:
+
+```text
+RAVEN_IMPORT_PROBE_PROCESS pid=4364 dll=XINPUT1_4.dll slots=2 image_base=0x7FF6189C0000
+RAVEN_IMPORT_SLOT iat_rva=0xD48A48 ordinal=3 target=0x7FF87C0E9FA0 owner_method=peb owner=C:\WINDOWS\SYSTEM32\XINPUT1_4.dll
+RAVEN_IMPORT_SLOT iat_rva=0xD48A50 ordinal=2 target=0x7FF87C0E9A60 owner_method=peb owner=C:\WINDOWS\SYSTEM32\XINPUT1_4.dll
+RAVEN_IMPORT_PROBE_COMPLETE dll=XINPUT1_4.dll slots=2 owner_consistent=true
+```
+
+Runner result:
+
+```text
+result=GOW_XINPUT_IAT_OWNER_CAPTURE_COMPLETE
+probe_exit_code=0
+probe_complete=true
+proxy_installed=false
+process_writes=false
+save_writes=false
+progression_writes=false
+game_file_writes=false
+```
+
+Secondary evidence:
+
+```text
+tasklist /m XINPUT1_4.dll:
+GoW.exe 4364 XINPUT1_4.dll
+```
+
+KnownDLL registry evidence did not list `XINPUT1_4.dll` under the queried KnownDLLs key, but that does not change the actual live import ownership result.
+
+This closes the XInput question:
+
+- GoW's two normal XInput import slots are resolved to the System32 `XINPUT1_4.dll`;
+- the previously installed game-root Completionist Map `XINPUT1_4.dll` produced no bridge startup line while GoW/Script Loader still ran normally;
+- therefore the local `XINPUT1_4.dll` proxy is not a viable automatic bridge load point on this machine/runtime path.
+
+**Do not spend further time on XInput proxy loading.**
+
+The useful result is that this removes the last ambiguity from the V2 failure.
+
+## Native load architecture next boundary
+
+Return to DXGI as the only currently proven game-root automatic native load point:
+
+- the earlier local `dxgi.dll` definitely reached Windows loader resolution;
+- its failure was specifically an incomplete proxy export surface (`CreateDXGIFactory2` missing);
+- therefore the next native-load implementation should be a compatibility-complete DXGI proxy, not another XInput experiment.
+
+Requirements before next live DXGI test:
+
+1. reconstruct/implement a complete transparent DXGI forwarding surface for the target Windows system `dxgi.dll`;
+2. do not use the old single-export proxy;
+3. add an export-contract gate that compares the built proxy against the real/system DXGI public export contract;
+4. include at minimum all standard factory/debug/declaration exports required by system graphics modules and common consumers, not only GoW's direct imports;
+5. preserve all ordinals where applicable;
+6. intercept only one safe initialization path for Completionist Map startup;
+7. preserve existing accepted Raven authority decoder/snapshot code unchanged;
+8. keep `version.dll` untouched;
+9. keep installer/rollback ownership fail-closed;
+10. only prepare another live DXGI proof after offline load/resolve tests pass.
+
+The post-load boundary remains delivery of the accepted atomic 53-state Raven snapshot into the existing map/compass runtime.
+
+Do not redo Raven authority research.
