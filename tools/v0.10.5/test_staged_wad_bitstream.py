@@ -202,6 +202,12 @@ class ChannelATests(unittest.TestCase):
         self.assertIsNone(entry["catalogue_id"])
         self.assertIs(entry["ravenKilled"], True)
         self.assertTrue(entry["record_payload_hex"].startswith("01"))
+        self.assertEqual(len(parsed["raven_state_parent_keys"]), 1)
+        parent = parsed["raven_state_parent_keys"][0]
+        self.assertEqual(parent["key_tag"], 5)
+        self.assertIs(parent["ravenKilled"], True)
+        self.assertEqual(parent["record_payload_hex"], entry["record_payload_hex"])
+        self.assertIn("parsed_gameobject", parent)
 
     def test_raw_identity_need_not_exist_in_envelope(self):
         packed = pack([self.dead], 3)
