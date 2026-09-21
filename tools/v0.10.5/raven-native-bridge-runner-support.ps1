@@ -50,11 +50,14 @@ function Test-RavenBridgeStartupObservation {
         [AllowEmptyCollection()][string[]]$FreshLines = @()
     )
     $proof = Test-RavenBridgeProofLines -Lines @($FreshLines)
-    if ($proof.ProxyLoaded) {
-        return [pscustomobject]@{ Ready = $true; Reason = 'proxy_log_observed' }
+    if ($proof.ProxyLoaded -and $ProcessRunning) {
+        return [pscustomobject]@{ Ready = $true; Reason = 'proxy_log_and_live_game_observed' }
+    }
+    if ($proof.ProxyLoaded -and -not $ProcessRunning) {
+        return [pscustomobject]@{ Ready = $false; Reason = 'proxy_log_observed_waiting_for_game_process' }
     }
     if (-not $ProcessRunning) {
-        return [pscustomobject]@{ Ready = $false; Reason = 'game_exited_before_bridge_startup' }
+        return [pscustomobject]@{ Ready = $false; Reason = 'waiting_for_game_process' }
     }
     return [pscustomobject]@{ Ready = $false; Reason = 'expected_fresh_bridge_log_missing' }
 }
