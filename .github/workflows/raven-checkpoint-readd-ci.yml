@@ -49,7 +49,7 @@ jobs:
           foreach ($path in $paths) {
             $text = Get-Content -LiteralPath $path -Raw
             foreach ($pattern in $patterns) {
-              if ($text -match [regex]::Escape($pattern)) { $findings += "$path:$pattern" }
+              if ($text -match [regex]::Escape($pattern)) { $findings += "${path}:$pattern" }
             }
           }
           if ($findings.Count -gt 0) { throw "Prohibited tokens: $($findings -join ', ')" }
