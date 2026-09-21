@@ -4260,3 +4260,51 @@ The observer now avoids PowerShell collection semantics entirely:
 This remains fully read-only and does not install a proxy or modify process memory, saves, progression, `version.dll`, or game files.
 
 Next action: rerun the same module-path capture with GoW fully closed.
+
+
+## Module observer switched to Toolhelp snapshot
+
+Third failed capture evidence:
+
+- `25ee58559baacb72bb91053b652a121fb8e2bc5b`
+- capture: `archive/field-logs/runtime-captures/gow-loaded-module-paths-20260921-113426/`
+
+The observer again found the real long-lived GoW process:
+
+```text
+Live GoW process found: PID=51064
+```
+
+but `Process.Modules` failed again, this time with:
+
+```text
+Module enumeration failed for PID 51064:
+You cannot call a method on a null-valued expression.
+```
+
+The user also reported that GoW takes roughly **35 seconds to reach the main menu** on this machine. The previous observer waited only 10 seconds after detecting the long-lived process.
+
+Conclusion:
+
+- stop using PowerShell/.NET `Process.Modules` entirely for this evidence path;
+- do not treat a 10-second post-process delay as a settled module set on this machine.
+
+Fix commit:
+
+- `04aafe9fd79f3878972b391d42e2fe7784c517f5`
+
+The observer now:
+
+1. uses Windows Toolhelp APIs directly:
+   - `CreateToolhelp32Snapshot`
+   - `Module32FirstW`
+   - `Module32NextW`
+2. requests only module enumeration flags (`TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32`);
+3. performs no process writes or memory modification;
+4. no longer touches `Process.Modules`;
+5. changes the default module-settle delay from 10 seconds to **40 seconds**, slightly beyond the user's observed ~35-second main-menu time;
+6. still refuses any installed game-root XInput proxy/bridge manifest before capture.
+
+The next run should therefore capture the stable long-lived GoW module list without relying on PowerShell's ProcessModuleCollection behavior.
+
+Next action: rerun the same read-only module-path observer with GoW fully closed.
