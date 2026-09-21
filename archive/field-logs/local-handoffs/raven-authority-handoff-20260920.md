@@ -1959,3 +1959,25 @@ A new tightly scoped high-reasoning task was added in commit `805c19048fe8881a3a
 `docs/research/ASTRA-v0105-raven-missing-checkpoint-stream-task.md`
 
 Use this task instead of the older broad restore-interceptor task. It incorporates the dual-channel negative and directs analysis toward the exact Channel-A consumer / LuaClient restore-buffer provenance boundary.
+
+
+---
+
+# Addendum 2026-09-21 - interrupted Astra pass reports Channel-A bitstream restore path
+
+The fresh Astra High pass against `docs/research/ASTRA-v0105-raven-missing-checkpoint-stream-task.md` hit its usage limit before any of its new edits were committed or pushed. The remote branch therefore still ended at `76c46b5b9c798cc872930694e99b131941a3a009` when this note was added.
+
+The following are **reported local Astra findings pending preservation and independent verification**, not yet Git-proven facts:
+
+1. Channel A is interpreted as a **packed bitstream**. Therefore the earlier raw-byte exact-identity search cannot rule out Raven state in Channel A.
+2. Astra traced the native path far enough to conclude that Channel A is consumed by a bit reader and produces a **per-WAD Lua restore buffer**, which then feeds the already-proven Lua restore dispatcher.
+3. This explains why Channel A can be the authority source even though none of the 17-byte Raven identities appear byte-aligned in its raw bytes.
+4. Astra began implementing a bounded bitstream reader/decoder and intended to keep the raw Channel-A bytes for offline replay against known alive/dead Raven fixtures.
+5. The game was closed at the end of the pass; Astra expected one final live validation command after finishing/reviewing the decoder.
+6. The interrupted local work reportedly modified five files, including `docs/superpowers/plans/2026-09-21-raven-missing-checkpoint-stream.md`, but those changes were not pushed before the quota limit.
+
+## Immediate recovery boundary
+
+Before pulling/resetting/restarting Codex, preserve or commit the existing local working-tree edits from the interrupted Astra pass. Then review the exact native bit-reader semantics and the new decoder before treating the Channel-A claim as proven.
+
+If the local decoder is sound, the next acceptance target remains exact Raven state recovery from the existing staged Channel-A bytes, followed by one live read-only validation against the almost-complete save and the Veithurgard `false,true,true` fixture.
