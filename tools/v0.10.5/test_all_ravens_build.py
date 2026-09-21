@@ -23,7 +23,58 @@ def file_sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-@unittest.skipUnless(GAME.is_dir(), "runtime-proven v3.3 source fixture not installed")
+def exact_source_fixture_available() -> bool:
+    if not GAME.is_dir():
+        return False
+    return all(
+        (GAME / relative).is_file() and file_sha(GAME / relative) == expected
+        for relative, expected in build.SOURCE_HASHES.items()
+    )
+
+
+class AllRavensTemplateTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.catalogue = json.loads(build.CATALOGUE.read_text(encoding="utf-8"))
+        cls.map_hook = build.render_lua(
+            cls.catalogue,
+            HERE / "all-ravens-map-runtime.lua",
+            "-- @@RAVEN_CATALOGUE_ROWS@@",
+        ).decode("utf-8")
+        cls.event_hook = build.render_lua(
+            cls.catalogue,
+            HERE / "all-ravens-gameplay-events.lua",
+            "-- @@RAVEN_STATE_ROWS@@",
+            True,
+        ).decode("utf-8")
+
+    def test_rendered_lua_has_53_rows_and_native_delivery_contract(self):
+        self.assertEqual(self.map_hook.count("{CatalogueId="), 53)
+        for token in (
+            'require, "socket.core"', 'connect("127.0.0.1", nativePort)',
+            "CompletionistMapNative", "GetRavenSnapshot",
+            "CompletionistMapV105ApplyPersistedRavenKills",
+            'refreshNativeAuthority("map_create")', "staticDescriptorWrites=false",
+        ):
+            self.assertIn(token, self.map_hook)
+
+    def test_rendered_event_hook_keeps_immediate_kill_path(self):
+        self.assertEqual(self.event_hook.count("{CatalogueId="), 53)
+        self.assertIn("ravenKilled == true", self.event_hook)
+        self.assertIn("CompletionistMapV105PublishRavenState", self.event_hook)
+
+    def test_hooks_have_no_progression_write_or_polling_loop(self):
+        forbidden = (
+            "SetMarkerState", "SetToken", "SetProgress",
+            "IncrementQuestProgress", "StartQuest",
+        )
+        for text in (self.map_hook, self.event_hook):
+            for token in forbidden:
+                self.assertNotIn(token, text)
+        self.assertIn("polling=false", self.map_hook)
+
+
+@unittest.skipUnless(exact_source_fixture_available(), "exact runtime-proven v3.3 source fixture not installed")
 class AllRavensBuildTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -68,6 +119,9 @@ class AllRavensBuildTests(unittest.TestCase):
             "exact_collision_object", "currMarkerID", "CompletionistRaven",
             "goMapIconCompletionistRaven", "markerIdAloneInfersRaven=false",
             "CompletionistMapV105TrackedCatalogueId", "Map.RecycleIcon",
+            "CompletionistMapNative", "GetRavenSnapshot",
+            "CompletionistMapV105ApplyPersistedRavenKills",
+            'refreshNativeAuthority("map_create")', "staticDescriptorWrites=false",
         ):
             self.assertIn(token, suffix)
 

@@ -16,6 +16,7 @@ class RavenRuntimeModel:
         self.active_target = None
         self.map_open = False
         self.permanent_polling = False
+        self.last_native_generation: int | None = None
 
     def set_realm(self, realm: str):
         self.realm = realm
@@ -60,6 +61,15 @@ class RavenRuntimeModel:
             self.selection = None
         self._sync_icons()
         return accepted
+
+    def apply_native_snapshot(self, generation: int, catalogue_ids) -> str:
+        if generation < 1:
+            return "invalid"
+        if self.last_native_generation is not None and generation <= self.last_native_generation:
+            return "stale"
+        self.apply_persisted_kills(catalogue_ids)
+        self.last_native_generation = generation
+        return "applied"
 
     def restore(self, catalogue_id: str, collected: bool):
         self.observe(catalogue_id, collected)

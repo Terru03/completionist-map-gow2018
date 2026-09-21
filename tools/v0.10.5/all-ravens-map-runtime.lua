@@ -24,6 +24,10 @@ do
   local previousCollision = MapOn.MapCollisionChangeHandler
   local lastMapOnSelf = nil
   local selectionGeneration = 0
+  local nativePort = 43753
+  local nativeRequest = "GET RAVEN_SNAPSHOT_V1\n"
+  local lastNativeGeneration = tonumber(_G.CompletionistMapV105LastNativeRavenGeneration)
+  local lastNativeNotice = nil
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
@@ -35,6 +39,195 @@ do
 
   local function shouldShow(catalogueId)
     return byCatalogueId[catalogueId] ~= nil and not isCollected(catalogueId)
+  end
+
+  local function nativeNotice(category, fields, key)
+    if key == lastNativeNotice then return end
+    lastNativeNotice = key
+    log(category, fields)
+  end
+
+  local function closeSocket(client)
+    if client ~= nil then pcall(function() client:close() end) end
+  end
+
+  local function parseNativeSnapshot(line)
+    if line == "RAVEN_SNAPSHOT_V1 UNAVAILABLE" then
+      return nil, "snapshot_not_ready"
+    end
+    if type(line) ~= "string" or
+        string.sub(line, 1, string.len("RAVEN_SNAPSHOT_V1 ")) ~= "RAVEN_SNAPSHOT_V1 " then
+      return nil, "response_header"
+    end
+    local fields = {}
+    for key, value in string.gmatch(line, "([%a][%w]*)=([^%s]+)") do
+      if fields[key] ~= nil then return nil, "duplicate_field:" .. key end
+      fields[key] = value
+    end
+    local function integer(name)
+      local value = tonumber(fields[name])
+      if value == nil or value < 0 or value ~= math.floor(value) then
+        return nil
+      end
+      return value
+    end
+    local schema = integer("schema")
+    local generation = integer("generation")
+    local capturedTickMs = integer("capturedTickMs")
+    local count = integer("count")
+    local unknown = integer("unknown")
+    local alive = integer("alive")
+    local killed = integer("killed")
+    local explicit = integer("explicit")
+    local absentWadFalse = integer("absentWadFalse")
+    if schema ~= 1 or generation == nil or generation < 1 or
+        capturedTickMs == nil or count ~= #rows or unknown ~= 0 or
+        alive == nil or killed == nil or alive + killed ~= #rows or
+        explicit == nil or absentWadFalse == nil or
+        explicit + absentWadFalse ~= #rows or fields.killedIds == nil then
+      return nil, "response_counts"
+    end
+    local states = {}
+    for catalogueId, _ in pairs(byCatalogueId) do states[catalogueId] = false end
+    local killedCatalogueIds = {}
+    if fields.killedIds ~= "-" then
+      for catalogueId in string.gmatch(fields.killedIds, "([^,]+)") do
+        if byCatalogueId[catalogueId] == nil then
+          return nil, "unknown_catalogue_id"
+        end
+        if states[catalogueId] == true then
+          return nil, "duplicate_catalogue_id"
+        end
+        states[catalogueId] = true
+        killedCatalogueIds[#killedCatalogueIds + 1] = catalogueId
+      end
+    end
+    if #killedCatalogueIds ~= killed then return nil, "killed_count" end
+    return {
+      schema = schema, generation = generation, capturedTickMs = capturedTickMs,
+      count = count, aliveCount = alive, killedCount = killed,
+      explicitCount = explicit,
+      absenceDefaultFalseCount = absentWadFalse,
+      states = states, killedCatalogueIds = killedCatalogueIds,
+    }, nil
+  end
+
+  local function getRavenSnapshot()
+    local socketOK, socket = pcall(require, "socket.core")
+    if not socketOK or type(socket) ~= "table" or type(socket.tcp) ~= "function" then
+      return nil, "socket_core_unavailable"
+    end
+    local createOK, client = pcall(socket.tcp)
+    if not createOK or client == nil then return nil, "socket_create" end
+    pcall(function() client:settimeout(0.25) end)
+    local connectOK, connected, connectError = pcall(function()
+      return client:connect("127.0.0.1", nativePort)
+    end)
+    if not connectOK or connected == nil then
+      closeSocket(client)
+      return nil, "connect:" .. tostring(connectOK and connectError or connected)
+    end
+    local sendOK, sent, sendError = pcall(function()
+      return client:send(nativeRequest)
+    end)
+    if not sendOK or sent ~= string.len(nativeRequest) then
+      closeSocket(client)
+      return nil, "send:" .. tostring(sendOK and sendError or sent)
+    end
+    local receiveOK, line, receiveError = pcall(function()
+      return client:receive("*l")
+    end)
+    closeSocket(client)
+    if not receiveOK or line == nil then
+      return nil, "receive:" .. tostring(receiveOK and receiveError or line)
+    end
+    return parseNativeSnapshot(line)
+  end
+
+  local nativeNamespace = rawget(_G, "CompletionistMapNative")
+  if nativeNamespace == nil then
+    nativeNamespace = {}
+    rawset(_G, "CompletionistMapNative", nativeNamespace)
+  end
+  if type(nativeNamespace) == "table" then
+    if rawget(nativeNamespace, "GetRavenSnapshot") == nil then
+      nativeNamespace.GetRavenSnapshot = getRavenSnapshot
+    elseif type(nativeNamespace.GetRavenSnapshot) ~= "function" then
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=api_collision", "api_collision")
+    end
+  else
+    nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=namespace_collision", "namespace_collision")
+  end
+
+  local function refreshNativeAuthority(source)
+    local namespace = rawget(_G, "CompletionistMapNative")
+    local accessor = type(namespace) == "table" and namespace.GetRavenSnapshot or nil
+    if type(accessor) ~= "function" then
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=api_unavailable", "api_unavailable")
+      return false, "api_unavailable"
+    end
+    local ok, snapshot, reason = pcall(accessor)
+    if not ok or type(snapshot) ~= "table" then
+      local unavailable = ok and tostring(reason) or "call_failed:" .. tostring(snapshot)
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=" .. unavailable,
+          "unavailable:" .. unavailable)
+      return false, unavailable
+    end
+    local generation = tonumber(snapshot.generation)
+    if generation == nil or generation < 1 or generation ~= math.floor(generation) then
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=invalid_generation", "invalid_generation")
+      return false, "invalid_generation"
+    end
+    if lastNativeGeneration ~= nil and generation <= lastNativeGeneration then
+      nativeNotice("NATIVE_AUTHORITY_STALE", "generation=" .. tostring(generation) ..
+          " last=" .. tostring(lastNativeGeneration),
+          "stale:" .. tostring(generation) .. ":" .. tostring(lastNativeGeneration))
+      return false, "stale"
+    end
+    if type(snapshot.states) ~= "table" or snapshot.schema ~= 1 or
+        type(snapshot.count) ~= "number" or snapshot.count ~= #rows or
+        type(snapshot.aliveCount) ~= "number" or
+        type(snapshot.killedCount) ~= "number" or
+        snapshot.aliveCount + snapshot.killedCount ~= #rows or
+        type(snapshot.explicitCount) ~= "number" or
+        type(snapshot.absenceDefaultFalseCount) ~= "number" or
+        snapshot.explicitCount + snapshot.absenceDefaultFalseCount ~= #rows then
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=invalid_snapshot", "invalid_snapshot")
+      return false, "invalid_snapshot"
+    end
+    local killedIds = {}
+    for catalogueId, _ in pairs(byCatalogueId) do
+      local value = snapshot.states[catalogueId]
+      if type(value) ~= "boolean" then
+        nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=incomplete_states", "incomplete_states")
+        return false, "incomplete_states"
+      end
+      if value then killedIds[#killedIds + 1] = catalogueId end
+    end
+    if #killedIds ~= snapshot.killedCount then
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=state_count_mismatch", "state_count_mismatch")
+      return false, "state_count_mismatch"
+    end
+    local apply = _G.CompletionistMapV105ApplyPersistedRavenKills
+    if type(apply) ~= "function" then
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=apply_api_unavailable", "apply_api_unavailable")
+      return false, "apply_api_unavailable"
+    end
+    local applied, accepted = apply(killedIds, "native:" .. tostring(source) ..
+        ":generation:" .. tostring(generation))
+    if applied ~= true or accepted ~= #killedIds then
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=apply_refused", "apply_refused")
+      return false, "apply_refused"
+    end
+    lastNativeGeneration = generation
+    _G.CompletionistMapV105LastNativeRavenGeneration = generation
+    lastNativeNotice = nil
+    log("NATIVE_AUTHORITY_APPLIED", "generation=" .. tostring(generation) ..
+        " killed=" .. tostring(snapshot.killedCount) ..
+        " alive=" .. tostring(snapshot.aliveCount) ..
+        " explicit=" .. tostring(snapshot.explicitCount) ..
+        " absentWadFalse=" .. tostring(snapshot.absenceDefaultFalseCount))
+    return true, nil
   end
 
   local function rememberMarkerId(name, info)
@@ -137,6 +330,8 @@ do
 
   local createPins = CompletionistMapV100_CreateMapPin
   CompletionistMapV100_CreateMapPin = function(self, currState)
+    lastMapOnSelf = nil
+    refreshNativeAuthority("map_create")
     local result = createPins(self, currState)
     syncIcons(self, "map_create")
     return result
@@ -147,6 +342,7 @@ do
     assert(type(previous) == "function", "Missing map lifecycle method: " .. method)
     MapOn[method] = function(self, ...)
       clearIcons(self, "map_teardown:" .. method)
+      if lastMapOnSelf == self then lastMapOnSelf = nil end
       return previous(self, ...)
     end
   end
@@ -403,6 +599,7 @@ do
       " mapResource=" .. mapResource .. " compassClass=" .. ravenClass ..
       " exactCollisionRequired=true markerIdAloneInfersRaven=false" ..
       " polling=false progressionWrites=false catalogueDefaultVisible=true" ..
-      " persistedKillBootstrap=true")
+      " persistedKillBootstrap=true nativeAuthority=loopback_map_open" ..
+      " nativePort=" .. tostring(nativePort) .. " staticDescriptorWrites=false")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVENS

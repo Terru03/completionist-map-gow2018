@@ -73,6 +73,24 @@ class RavenRuntimeTests(unittest.TestCase):
         self.assertNotIn(self.a["catalogue_id"], model.map_icons)
         self.assertIn(self.b["catalogue_id"], model.map_icons)
 
+    def test_native_generation_is_monotonic_and_same_generation_does_not_churn(self):
+        model = self.model()
+        self.assertEqual(model.apply_native_snapshot(2, [self.a["catalogue_id"]]), "applied")
+        self.assertEqual(model.apply_native_snapshot(2, []), "stale")
+        self.assertEqual(model.apply_native_snapshot(1, []), "stale")
+        self.assertEqual(model.state[self.a["catalogue_id"]], "collected")
+        self.assertEqual(model.apply_native_snapshot(3, []), "applied")
+        self.assertEqual(model.state[self.a["catalogue_id"]], "unknown")
+
+    def test_immediate_event_after_native_refresh_then_new_generation_reasserts(self):
+        model = self.model()
+        model.open_map(self.a["realm"])
+        self.assertEqual(model.apply_native_snapshot(1, []), "applied")
+        model.observe(self.a["catalogue_id"], True)
+        self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+        self.assertEqual(model.apply_native_snapshot(2, []), "applied")
+        self.assertIn(self.a["catalogue_id"], model.map_icons)
+
     def test_a_b_and_b_a_replacement(self):
         model = self.model()
         model.observe(self.a["catalogue_id"], False)

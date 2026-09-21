@@ -26,9 +26,33 @@ CATALOGUE = json.loads(build.CATALOGUE.read_text(encoding="utf-8"))
 
 
 MAP_PRELUDE = r'''
-calls={logs={},previousShow=0,recycled=0}
+calls={logs={},previousShow=0,recycled=0,nativeConnects=0,nativeRequests={}}
 customIds={}
 stockIds={}
+nativeResponse=nil
+local nativeSocket={}
+function nativeSocket.tcp()
+  local client={}
+  function client:settimeout(value) calls.nativeTimeout=value; return 1 end
+  function client:connect(host,port)
+    calls.nativeConnects=calls.nativeConnects+1
+    calls.nativeHost=host
+    calls.nativePort=port
+    if nativeResponse==nil then return nil,"connection refused" end
+    return 1
+  end
+  function client:send(request)
+    calls.nativeRequests[#calls.nativeRequests+1]=request
+    return string.len(request)
+  end
+  function client:receive(mode) return nativeResponse end
+  function client:close() calls.nativeCloses=(calls.nativeCloses or 0)+1; return 1 end
+  return client
+end
+require=function(name)
+  if name=="socket.core" then return nativeSocket end
+  error("unexpected require:" .. tostring(name))
+end
 local markerIds={}
 local markerNamesById={}
 local nextMarkerId=10000
@@ -112,6 +136,15 @@ function probe.markerId(name) return markerId(name) end
 function probe.tracked() return CompletionistMapV105TrackedCatalogueId end
 function probe.teardown() MapOn.ClearIcons(self) end
 function probe.reset() return CompletionistMapV105ResetRavenStates("save_load") end
+function probe.setNativeResponse(value) nativeResponse=value end
+function probe.nativeConnects() return calls.nativeConnects end
+function probe.lastNativeGeneration() return CompletionistMapV105LastNativeRavenGeneration end
+function probe.collectedCount()
+  local n=0
+  for _,value in pairs(CompletionistMapV105RavenState or {}) do if value==true then n=n+1 end end
+  return n
+end
+function probe.state(id) return CompletionistMapV105RavenState[id] end
 '''
 
 
@@ -125,6 +158,17 @@ class AllRavensMapLuaTests(unittest.TestCase):
         alfheim = [row for row in CATALOGUE["ravens"] if row["realm"] == "Alfheim"]
         self.a, self.b = alfheim
         self.probe = self.lua.globals().probe
+
+    def response(self, generation: int, killed_rows=()):
+        killed_ids = [row["catalogue_id"] for row in killed_rows]
+        killed = len(killed_ids)
+        encoded = ",".join(killed_ids) if killed_ids else "-"
+        return (
+            "RAVEN_SNAPSHOT_V1 schema=1 "
+            f"generation={generation} capturedTickMs={1000 + generation} "
+            f"count=53 unknown=0 alive={53 - killed} killed={killed} "
+            f"explicit={53 - killed} absentWadFalse={killed} killedIds={encoded}"
+        )
 
     def test_a_b_same_click_stock_and_kill_lifecycle(self):
         self.probe.publish(self.a["catalogue_id"], False)
@@ -151,13 +195,13 @@ class AllRavensMapLuaTests(unittest.TestCase):
 
     def test_unknown_hidden_restore_and_teardown(self):
         self.probe.open()
-        self.assertEqual(self.probe.iconCount(), 0)
+        self.assertEqual(self.probe.iconCount(), 2)
         self.probe.publish(self.a["catalogue_id"], False)
-        self.assertEqual(self.probe.iconCount(), 1)
+        self.assertEqual(self.probe.iconCount(), 2)
         self.probe.publish(self.a["catalogue_id"], True)
-        self.assertEqual(self.probe.iconCount(), 0)
-        self.probe.publish(self.a["catalogue_id"], False)
         self.assertEqual(self.probe.iconCount(), 1)
+        self.probe.publish(self.a["catalogue_id"], False)
+        self.assertEqual(self.probe.iconCount(), 2)
         self.probe.teardown()
         self.assertEqual(self.probe.iconCount(), 0)
 
@@ -170,7 +214,89 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.iconCount(), 0)
         self.assertIsNone(self.probe.tracked())
         self.probe.open()
-        self.assertEqual(self.probe.iconCount(), 0)
+        self.assertEqual(self.probe.iconCount(), 2)
+
+    def test_advanced_native_snapshot_applies_27_killed_before_icon_sync(self):
+        killed = CATALOGUE["ravens"][:27]
+        self.probe.setNativeResponse(self.response(2, killed))
+        self.probe.open()
+        self.assertEqual(self.probe.collectedCount(), 27)
+        self.assertEqual(self.probe.lastNativeGeneration(), 2)
+        self.assertEqual(self.probe.nativeConnects(), 1)
+        expected_visible = sum(
+            row["realm"] == "Alfheim" and row not in killed
+            for row in CATALOGUE["ravens"]
+        )
+        self.assertEqual(self.probe.iconCount(), expected_visible)
+
+    def test_fresh_native_snapshot_applies_zero_killed_and_53_visible_state(self):
+        self.probe.publish(self.a["catalogue_id"], True)
+        self.probe.setNativeResponse(self.response(1))
+        self.probe.open()
+        self.assertEqual(self.probe.collectedCount(), 0)
+        self.assertEqual(self.probe.iconCount(), 2)
+        self.assertEqual(self.probe.lastNativeGeneration(), 1)
+
+    def test_same_and_older_native_generations_do_not_churn(self):
+        self.probe.setNativeResponse(self.response(3, [self.a]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.probe.setNativeResponse(self.response(3, [self.b]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNot(self.probe.state(self.b["catalogue_id"]), True)
+        self.probe.setNativeResponse(self.response(2))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+    def test_native_unavailable_preserves_immediate_event_state(self):
+        self.probe.publish(self.a["catalogue_id"], True)
+        self.probe.setNativeResponse(None)
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+    def test_immediate_event_kill_survives_same_generation_map_reopen(self):
+        self.probe.setNativeResponse(self.response(1))
+        self.probe.open()
+        self.probe.publish(self.a["catalogue_id"], True)
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+        self.probe.teardown()
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+    def test_new_native_generation_reasserts_map_state_on_reopen(self):
+        self.probe.setNativeResponse(self.response(1, [self.a]))
+        self.probe.open()
+        self.probe.publish(self.a["catalogue_id"], False)
+        self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
+        self.probe.teardown()
+        self.probe.setNativeResponse(self.response(2, [self.a]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+    def test_malformed_native_snapshot_falls_back_without_state_clear(self):
+        self.probe.publish(self.a["catalogue_id"], True)
+        self.probe.setNativeResponse(
+            "RAVEN_SNAPSHOT_V1 schema=1 generation=8 capturedTickMs=9 "
+            "count=53 unknown=0 alive=53 killed=0 explicit=0 "
+            "absentWadFalse=53 killedIds=not_a_raven"
+        )
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.lastNativeGeneration())
+
+    def test_colliding_native_accessor_with_incomplete_table_fails_closed(self):
+        self.probe.publish(self.a["catalogue_id"], True)
+        self.lua.execute(
+            "CompletionistMapNative.GetRavenSnapshot=function() "
+            "return {schema=1,generation=9,count=53,states={}} end"
+        )
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.lastNativeGeneration())
 
 
 EVENT_PRELUDE = r'''
