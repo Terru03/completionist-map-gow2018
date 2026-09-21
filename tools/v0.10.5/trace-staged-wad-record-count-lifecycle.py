@@ -109,7 +109,7 @@ def main():
             for x in ins:
                 for m in x["rip_mem"]:
                     if m["target"]==COUNT:
-                        entry={**x,"access":m["access"],"write":is_write(m["access"])}
+                        entry={**x,"src_fn":fn["begin"],"access":m["access"],"write":is_write(m["access"])}
                         count_refs.append(entry); refs.append(entry)
                     for name,target in GLOBALS.items():
                         if m["target"]==target:
@@ -154,7 +154,7 @@ def main():
         "RECORD_COUNT WRITES",
     ]
     for w in writes:
-        L.append(f"  site=0x{w['rva']:X} fn=0x{fn_for(con,w['rva'])['begin']:X} "
+        L.append(f"  site=0x{w['rva']:X} fn=0x{w['src_fn']:X} "
                  f"{w['mnemonic']} {w['op_str']} access={w['access']}")
     L+=["","WRITER FUNCTIONS"]
     for item in functions:
