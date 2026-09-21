@@ -90,9 +90,13 @@ try {
 
     $proof = Get-Content -LiteralPath $proofPath -Raw | ConvertFrom-Json
     $mapEntry = $proof.files.PSObject.Properties['mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua']
+    $eventEntry = $proof.files.PSObject.Properties['mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua']
     if ($null -eq $mapEntry) { throw 'Refreshed proof misses mapmenu.lua.' }
+    if ($null -eq $eventEntry) { throw 'Refreshed proof misses precisionchallenge.lua.' }
     $mapSha = [string]$mapEntry.Value.sha256
     $mapBytes = [int64]$mapEntry.Value.bytes
+    $eventSha = [string]$eventEntry.Value.sha256
+    $eventBytes = [int64]$eventEntry.Value.bytes
 
     @(
         'result=RAVEN_DELIVERY_PROOF_REFRESH_PASSED'
@@ -100,11 +104,13 @@ try {
         "branch=$ExpectedBranch"
         "mapmenu_sha256=$mapSha"
         "mapmenu_bytes=$mapBytes"
+        "precisionchallenge_sha256=$eventSha"
+        "precisionchallenge_bytes=$eventBytes"
         'source_game_rebuild=false'
-        'non_map_candidate_pins_unchanged=true'
+        'non_generated_binary_pins_unchanged=true'
     ) | Set-Content -LiteralPath $resultFile -Encoding UTF8
 
-    Write-Host "RAVEN_DELIVERY_PROOF_REFRESH_PASSED mapmenu_sha256=$mapSha bytes=$mapBytes"
+    Write-Host "RAVEN_DELIVERY_PROOF_REFRESH_PASSED mapmenu_sha256=$mapSha map_bytes=$mapBytes precisionchallenge_sha256=$eventSha event_bytes=$eventBytes"
     Publish-Evidence 'build(v0.10.5): refresh Raven delivery proof after UI polish' $true
     Write-Host "Evidence pushed: $relativeDir"
 }
