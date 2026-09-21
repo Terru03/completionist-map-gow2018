@@ -65,6 +65,10 @@ class AllRavensTemplateTests(unittest.TestCase):
             "first strictly newer post-boundary atomic snapshot",
         )
         self.assertEqual(
+            state["unknown_boundary_baseline_policy"],
+            "first later readable snapshot establishes baseline only; next newer snapshot may apply",
+        )
+        self.assertEqual(
             state["load_boundary_sources"],
             ["EVT_LoadSaveData", "EVT_LoadSaveFile_Done", "OnRestoreCheckpoint"],
         )
@@ -99,6 +103,7 @@ class AllRavensTemplateTests(unittest.TestCase):
         self.assertIn("atomicAuthorityClearsState=true", self.map_hook)
         self.assertIn("sessionKillOverlay=true", self.map_hook)
         self.assertIn("loadBoundaryClearsOverlay=true", self.map_hook)
+        self.assertIn("unknownBoundaryBaselineConsumesOneCapture=true", self.map_hook)
         self.assertIn("restoreBoundedRetry=", self.event_hook)
         self.assertIn("positiveEvidenceOnly=true", self.event_hook)
         self.assertIn("restoreAuthorityBoundary=true", self.event_hook)
