@@ -2372,3 +2372,50 @@ The solver then:
 7. if exactly one parent vector survives, rebuilds every nested Raven identity and verifies it against its assigned live checkpoint hash.
 
 This converts the remaining 11 nested cases from placement guessing into an exact constraint problem driven by the archived live checkpoint hashes. No game process or save access is required.
+
+
+---
+
+# Addendum 2026-09-21 - self-prototype parent skip rule solved and pipeline integration started
+
+Reversible-hash evidence commit: `a432ad325f2982ec3d0426acf516149fab47f2c1`.
+
+The reversible solver produced a decisive result in all six unresolved WADs: the recovered native hash state immediately after the intermediate parent was **identical to the hash state immediately before that parent**. Therefore the intermediate parent contributes zero GameObject identity elements.
+
+This exactly explains all 11 live object-hash mismatches.
+
+## Static discriminator
+
+Across the full 53-Raven catalogue, exactly 11 rows satisfy:
+
+```text
+adjusted_record_id(transform_chain[1].record_id) == native.parent_prototype_id
+```
+
+where `adjusted_record_id` decrements byte index 12 modulo 256.
+
+Those 11 rows are exactly the 11 live-mismatching nested-container Ravens. No other Raven row satisfies the condition, and there are no non-matching long transform chains outside this set.
+
+The affected immediate parent container names are examples such as:
+
+- `goraven_03`
+- `goraven_01`
+- `goravens`
+- `gochallenges`
+- `gospecial_ravens_03`
+
+This is a structural rule, not a WAD-name special case.
+
+## Pipeline commits
+
+- `3529d350413dc4071aa85632fc8023741f579193` - serialized Raven identity generator now omits an immediate self-prototype parent when the adjusted parent transform ID equals `native.parent_prototype_id`.
+- `915e07cd5b78d0bedfb22c3010164f63d5ff14a0` - canonical Raven carrier decoder can resolve catalogue IDs by the full `(registry_hash, object_hash)` pair when no single global registry is supplied.
+- `6166a58a7607837e6e48f4a27d39ffbd68d240fe` - offline staged replay now loads `catalogue/odins-ravens-gameobject-identities.json` and builds a 53-entry pair map.
+- `5b5ca8a39fd567d8dca0cb5a56c0ace0ab09fdd5` - live staged observer likewise uses the per-WAD pair map.
+- `d5dc72f36d7812c21ea5f5f94fd7e57c636baa64` - regression coverage proves a frozen Raven carrier resolves correctly through a `(registry, object)` identity map with no global-registry assumption.
+
+## Expected next acceptance result
+
+After regenerating `catalogue/odins-ravens-gameobject-identities.json` with the corrected self-prototype skip rule and WAD-derived registry hashes, an offline replay of the existing `20260921-060345-c2c9bcc1` Channel-A capture should resolve all **42 Raven state rows whose Raven-bearing WADs are present in that staged table**, not just the three Xpl200_Funeral Ravens.
+
+No new game capture is required for this acceptance test.
