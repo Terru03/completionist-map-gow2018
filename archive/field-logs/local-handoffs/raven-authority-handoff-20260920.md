@@ -3373,3 +3373,46 @@ However:
 Therefore do **not** claim a usable Lua bridge yet.
 
 Next step: statically disassemble only `GetAppMasterVersion 0x783880`, `GetLevelId 0x847F10`, their direct callees, and `0x66B650` for context. Classify whether either read handler can select arbitrary staged records/custom userdata or only returns one fixed metadata value. If both are fixed metadata-only, close the short direct built-in Lua bridge route and move to release architecture.
+
+
+## Read-side staged Lua intersection classification queued
+
+The handoff was re-read after the reverse staged-owner trace. That trace found ten registered Lua intersections, but only two are read-looking:
+
+```text
+GetAppMasterVersion 0x783880
+GetLevelId          0x847F10
+```
+
+The remaining concrete route is `SaveGame 0x84F1C0 -> 0x66B650 -> staged serialization`, which is write-side and cannot be used by the mod.
+
+New tooling:
+
+- `ff1fb8f12f676d362fa8d9a1907c0997da7ac5e4` - `tools/v0.10.5/trace-lua-read-staged-intersections.py`
+- `dd4cb0f4fab7208a6b5126b8423524d069b94b8e` - `tools/v0.10.5/trace-lua-read-staged-intersections-and-push.ps1`
+
+The classifier statically disassembles:
+
+```text
+GetAppMasterVersion 0x783880
+GetLevelId          0x847F10
+0x66B650            save-pipeline context
+```
+
+plus only their direct callees.
+
+It records:
+
+- exact disassembly;
+- direct calls/jumps;
+- exact staged-global accesses;
+- RIP-relative strings/globals;
+- argument-derived memory accesses through `rcx/rdx/r8/r9`.
+
+Acceptance decision:
+
+- if either read handler accepts/selects a staged record/key and can return arbitrary/custom persisted data without writes, preserve it as the built-in authority bridge;
+- if both only return fixed metadata fields, close the short direct built-in Lua bridge route;
+- `SaveGame` remains evidence of pipeline integration only and must not be invoked by Completionist Map.
+
+Static/read-only only; GoW must be closed.
