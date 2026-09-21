@@ -3323,3 +3323,53 @@ Acceptance decision:
 - if no registered Lua handler is reachable, record that there is no short direct built-in Lua bridge from the staged owner and move to the release-architecture decision rather than guessing additional API names.
 
 The tracer is static/read-only and requires GoW closed.
+
+
+## Reverse staged-owner trace result - SaveGame path found; two read handlers need semantic classification
+
+Evidence commit:
+
+- `539220129f5fb4cc8bb03921972947f9e3156a41`
+- evidence: `archive/field-logs/source-scans/staged-owner-reverse-lua-20260921-092551/`
+
+The bounded reverse trace completed safely:
+
+```text
+roots=80
+reverse_nodes_visited=247
+lua_paths=10
+max_depth=4
+save_opened=false
+save_written=false
+progression_written=false
+game_launched=false
+```
+
+Concrete Lua intersections:
+
+```text
+depth 0:
+  GetAppMasterVersion  handler 0x783880
+    directly references 0x22C7170 (record_base)
+
+  GetLevelId           handler 0x847F10
+    directly references 0x22C7170 (record_base)
+    directly references 0x22C696C (record_count)
+
+write-side path:
+  SaveGame 0x84F1C0
+    -> 0x66B650
+    -> 0x6687F0 staged WAD writer
+    -> 0x82C820 staged record writer
+```
+
+This proves the staged authority is directly integrated into the native save pipeline.
+
+However:
+
+- `SaveGame` is a write-oriented route and cannot be used by Completionist Map because the runtime authority reader must not trigger save/progression writes.
+- Presence of `GetAppMasterVersion` and `GetLevelId` on staged globals does not yet prove they are generic readers; they may be fixed metadata accessors over the same save/checkpoint owner.
+
+Therefore do **not** claim a usable Lua bridge yet.
+
+Next step: statically disassemble only `GetAppMasterVersion 0x783880`, `GetLevelId 0x847F10`, their direct callees, and `0x66B650` for context. Classify whether either read handler can select arbitrary staged records/custom userdata or only returns one fixed metadata value. If both are fixed metadata-only, close the short direct built-in Lua bridge route and move to release architecture.
