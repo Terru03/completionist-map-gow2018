@@ -177,31 +177,61 @@ def solve_row(row: dict, wad_info: dict, live_hashes: set[int]) -> dict:
         candidates = candidate_elements(parent_record, wad_info["by_id"])
         for candidate in candidates:
             element = candidate["element"]
+
+            # Model A: parent metadata contributes an additional identity element.
             for pos in range(len(base) + 1):
                 tested += 1
                 trial = base[:pos] + [element] + base[pos:]
                 got = identity_hash(trial)
-                if got not in live_hashes:
-                    continue
-                solutions.append({
-                    "live_object_hash_hex": f"0x{got:016X}",
-                    "insert_position": pos,
-                    "candidate_mode": candidate["mode"],
-                    "candidate_element_hex": element.hex(),
-                    "parent_prototype_record_name": parent_record["name"],
-                    "parent_prototype_record_id": parent_record["id"].hex(),
-                    "source_payload_offset": f"0x{candidate['source_offset']:X}",
-                    "source_reference_hex": candidate["source_value"].hex(),
-                    "target_record_names": candidate["target_names"],
-                    "target_record_ids": candidate["target_ids"],
-                    "identity_elements_hex": [x.hex() for x in trial],
-                })
+                if got in live_hashes:
+                    solutions.append({
+                        "operation": "insert",
+                        "live_object_hash_hex": f"0x{got:016X}",
+                        "insert_position": pos,
+                        "candidate_mode": candidate["mode"],
+                        "candidate_element_hex": element.hex(),
+                        "parent_prototype_record_name": parent_record["name"],
+                        "parent_prototype_record_id": parent_record["id"].hex(),
+                        "source_payload_offset": f"0x{candidate['source_offset']:X}",
+                        "source_reference_hex": candidate["source_value"].hex(),
+                        "target_record_names": candidate["target_names"],
+                        "target_record_ids": candidate["target_ids"],
+                        "identity_elements_hex": [x.hex() for x in trial],
+                    })
+
+            # Model B: an intermediate parent object's own object+0x40 identity
+            # replaces the transform-record-derived element currently used by
+            # the simplified catalogue reconstruction.
+            for pos in range(len(base)):
+                tested += 1
+                trial = list(base)
+                replaced = trial[pos]
+                trial[pos] = element
+                got = identity_hash(trial)
+                if got in live_hashes:
+                    solutions.append({
+                        "operation": "replace",
+                        "live_object_hash_hex": f"0x{got:016X}",
+                        "replace_position": pos,
+                        "replaced_element_hex": replaced.hex(),
+                        "candidate_mode": candidate["mode"],
+                        "candidate_element_hex": element.hex(),
+                        "parent_prototype_record_name": parent_record["name"],
+                        "parent_prototype_record_id": parent_record["id"].hex(),
+                        "source_payload_offset": f"0x{candidate['source_offset']:X}",
+                        "source_reference_hex": candidate["source_value"].hex(),
+                        "target_record_names": candidate["target_names"],
+                        "target_record_ids": candidate["target_ids"],
+                        "identity_elements_hex": [x.hex() for x in trial],
+                    })
 
     unique = {}
     for solution in solutions:
         key = (
+            solution["operation"],
             solution["live_object_hash_hex"],
-            solution["insert_position"],
+            solution.get("insert_position"),
+            solution.get("replace_position"),
             solution["candidate_element_hex"],
         )
         unique[key] = solution
@@ -318,7 +348,8 @@ def main() -> int:
             )
             for solution in row.get("solutions", []):
                 lines.append(
-                    f"    MATCH live={solution['live_object_hash_hex']} pos={solution['insert_position']} "
+                    f"    MATCH operation={solution['operation']} live={solution['live_object_hash_hex']} "
+                    f"pos={solution.get('insert_position', solution.get('replace_position'))} "
                     f"element={solution['candidate_element_hex']} mode={solution['candidate_mode']} "
                     f"parent={solution['parent_prototype_record_name']} "
                     f"source={solution['source_reference_hex']}@{solution['source_payload_offset']} "
