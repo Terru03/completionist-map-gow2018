@@ -1,0 +1,64 @@
+Completionist Map - GoW native bridge load options
+exe_sha256=caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+imported_dll_count=38
+
+PROXY_CANDIDATES
+  dxgi.dll: imported=true kinds=normal imports=1 occupied=false
+    names=CreateDXGIFactory1
+  xinput1_4.dll: imported=true kinds=normal imports=2 occupied=false
+    ordinals=2, 3
+  version.dll: imported=true kinds=normal imports=2 occupied=true
+    reason=already occupied by Nukem9 Script Loader
+    names=GetFileVersionInfoA, VerQueryValueA
+  cryptsp.dll: imported=false kinds=- imports=0 occupied=false
+  dbghelp.dll: imported=false kinds=- imports=0 occupied=false
+  dinput8.dll: imported=false kinds=- imports=0 occupied=false
+  dsound.dll: imported=false kinds=- imports=0 occupied=false
+  winhttp.dll: imported=false kinds=- imports=0 occupied=false
+  wininet.dll: imported=false kinds=- imports=0 occupied=false
+  winmm.dll: imported=false kinds=- imports=0 occupied=false
+  xinput9_1_0.dll: imported=false kinds=- imports=0 occupied=false
+
+PREFERRED_STATIC_CANDIDATE dxgi.dll imports=1 kinds=normal
+
+ALL_IMPORTED_DLLS
+  ADVAPI32.dll kinds=normal imports=7
+  api-ms-win-crt-convert-l1-1-0.dll kinds=normal imports=11
+  api-ms-win-crt-environment-l1-1-0.dll kinds=normal imports=2
+  api-ms-win-crt-filesystem-l1-1-0.dll kinds=normal imports=4
+  api-ms-win-crt-heap-l1-1-0.dll kinds=normal imports=8
+  api-ms-win-crt-locale-l1-1-0.dll kinds=normal imports=2
+  api-ms-win-crt-math-l1-1-0.dll kinds=normal imports=34
+  api-ms-win-crt-multibyte-l1-1-0.dll kinds=normal imports=2
+  api-ms-win-crt-runtime-l1-1-0.dll kinds=normal imports=32
+  api-ms-win-crt-stdio-l1-1-0.dll kinds=normal imports=41
+  api-ms-win-crt-string-l1-1-0.dll kinds=normal imports=39
+  api-ms-win-crt-time-l1-1-0.dll kinds=normal imports=5
+  api-ms-win-crt-utility-l1-1-0.dll kinds=normal imports=4
+  bink2w64.dll kinds=normal imports=14
+  d3d11.dll kinds=normal imports=1
+  D3DCOMPILER_47.dll kinds=normal imports=1
+  dxgi.dll kinds=normal imports=1
+  GDI32.dll kinds=normal imports=2
+  IPHLPAPI.DLL kinds=normal imports=1
+  KERNEL32.dll kinds=normal imports=146
+  libSceGnm.dll kinds=normal imports=24
+  libSceGpuAddress.dll kinds=normal imports=8
+  libSceJobManager.dll kinds=normal imports=7
+  libScePad.dll kinds=normal imports=9
+  MSVCP140.dll kinds=normal imports=10
+  ole32.dll kinds=normal imports=7
+  OLEAUT32.dll kinds=normal imports=2
+  RPCRT4.dll kinds=normal imports=1
+  SETUPAPI.dll kinds=normal imports=5
+  SHELL32.dll kinds=normal imports=1
+  steam_api64.dll kinds=normal imports=9
+  USER32.dll kinds=normal imports=64
+  VCRUNTIME140.dll kinds=normal imports=21
+  VERSION.dll kinds=normal imports=2
+  WLDAP32.dll kinds=normal imports=16
+  WS2_32.dll kinds=normal imports=4
+  WSOCK32.dll kinds=normal imports=30
+  XINPUT1_4.dll kinds=normal imports=2
+
+SAFETY static_exe_read_only=true game_launched=false process_accessed=false save_opened=false save_written=false progression_written=false game_files_written=false
