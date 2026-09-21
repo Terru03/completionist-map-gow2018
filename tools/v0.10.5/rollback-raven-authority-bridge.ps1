@@ -41,7 +41,7 @@ if (Test-Path -LiteralPath $journalPath -PathType Leaf) {
     Write-Host (
         "RAVEN_NATIVE_BRIDGE_ROLLBACK_RECOVERED_INTERRUPTION operation=$($recovered.Operation) " +
         "restored_previous=$($recovered.RestoredPrevious.ToString().ToLowerInvariant())")
-    exit 0
+    return
 }
 $target = Assert-ChildPath $game (Join-Path $game $TargetRelative)
 $version = Assert-ChildPath $game (Join-Path $game 'version.dll')
