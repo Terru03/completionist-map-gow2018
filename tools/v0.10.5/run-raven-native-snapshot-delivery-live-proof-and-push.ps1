@@ -300,19 +300,22 @@ try {
         throw 'GoW exited during main-menu settle.'
     }
 
-    $answer = Read-Host 'Load advanced Raven save. Open map. Verify exact 26 live markers, 27 absent, captions, realm filter, and compass add/remove/replace. Type ADVANCED_OK'
+    $answer = Read-Host 'Load advanced Raven save. Open map. Verify exact 26 live markers, 27 absent, captions, realm filter, compass add/remove/replace, immediate bottom-row text, and same-Raven add/remove leaving no HUD target. Type ADVANCED_OK, or REGRESSION if anything is wrong'
+    if ($answer -ceq 'REGRESSION') { throw 'Advanced-save manual regression reported.' }
     if ($answer -cne 'ADVANCED_OK') { throw 'Advanced-save manual acceptance not confirmed.' }
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
     if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied) { throw 'Advanced 27-killed Lua apply evidence missing.' }
 
-    $answer = Read-Host 'Kill one loaded live Raven. Verify exact marker vanishes at once. Close and reopen map; verify it stays absent. Type IMMEDIATE_OK'
+    $answer = Read-Host 'Kill one loaded live Raven. Verify exact marker vanishes at once. Close and reopen map; verify it stays absent. Type IMMEDIATE_OK, or REGRESSION if anything is wrong'
+    if ($answer -ceq 'REGRESSION') { throw 'Immediate-kill manual regression reported.' }
     if ($answer -cne 'IMMEDIATE_OK') { throw 'Immediate-kill manual acceptance not confirmed.' }
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
     if (-not $delivery.ImmediateEvent -or -not $delivery.MapReopenObserved) { throw 'Immediate event or map-reopen evidence missing.' }
 
-    $answer = Read-Host 'Load true fresh save. Open map. Verify all 53 Ravens, captions, realm filter, and compass behavior. Type FRESH_OK'
+    $answer = Read-Host 'Load true fresh save. Open map. Verify all 53 Ravens, captions, realm filter, and compass behavior. Type FRESH_OK, or REGRESSION if anything is wrong'
+    if ($answer -ceq 'REGRESSION') { throw 'Fresh-save manual regression reported.' }
     if ($answer -cne 'FRESH_OK') { throw 'Fresh-save manual acceptance not confirmed.' }
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
