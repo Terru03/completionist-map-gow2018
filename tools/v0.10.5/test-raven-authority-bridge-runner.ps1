@@ -75,13 +75,16 @@ if (-not $proofWithLoader.ProxyLoaded -or
 $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @(
     'RAVEN_NATIVE_BRIDGE_DELIVERY_READY mechanism=loopback_socket address=127.0.0.1 port=43753 static_descriptor_writes=false save_writes=false progression_writes=false'
 ) -LoaderLines @(
-    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=2 killed=27 alive=26 explicit=42 absentWadFalse=11',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=2 killed=27 alive=26 explicit=42 absentWadFalse=11 postBoundary=false',
     '[CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_a collected=true source=OnHitByWeapon progressionWrites=false',
     '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_REFRESH source=map_create result=stale lastGeneration=2',
-    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=3 killed=0 alive=53 explicit=0 absentWadFalse=53'
+    '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=OnRestoreCheckpoint baselineGeneration=3 staleStateRetained=true atomicAuthorityRequired=true',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=4 killed=28 alive=25 explicit=43 absentWadFalse=10 postBoundary=true',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=5 killed=0 alive=53 explicit=0 absentWadFalse=53 postBoundary=true'
 )
 if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied -or
     -not $delivery.ImmediateEvent -or -not $delivery.MapReopenObserved -or
+    -not $delivery.CheckpointBoundaryObserved -or -not $delivery.PostBoundaryApplied -or
     -not $delivery.FreshApplied -or -not $delivery.Ordered) {
     throw 'Native snapshot delivery proof-line regression failed.'
 }
