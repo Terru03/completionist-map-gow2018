@@ -33,6 +33,7 @@ do
   local promptSettleBucket = -1
   local customCompassOwnsTarget = false
   local nativeBoundaryPending = false
+  local beginAuthorityBoundary = nil
   local nativeBoundaryEpoch =
       tonumber(_G.CompletionistMapV105NativeBoundaryEpoch) or 0
   local nativeBoundaryCaptureReady = false
@@ -297,29 +298,10 @@ do
       end
       if restoreEpoch > 0 and
           (lastNativeRestoreEpoch == nil or restoreEpoch > lastNativeRestoreEpoch) then
-        nativeBoundaryPending = true
-        nativeBoundaryEpoch = restoreEpoch
-        _G.CompletionistMapV105NativeBoundaryEpoch = restoreEpoch
-        nativeBoundaryCaptureReady = true
-        nativeBoundarySource = "native_restore_epoch"
-        nativeResetRecheckFrames = nativeResetRecheckLimit
-        nativeResetRecheckBucket = -1
-        customCompassOwnsTarget = false
-        promptIntent = nil
-        promptSettleFrames = 0
-        promptSettleBucket = -1
-        _G.CompletionistMapV105TrackedCatalogueId = nil
-        hideCustom(nil, "native_restore_epoch")
-        if lastMapOnSelf ~= nil then
-          clearSelection(lastMapOnSelf, "native_restore_epoch")
-          lastMapOnSelf.currShownMarkerID = nil
+        if type(beginAuthorityBoundary) ~= "function" then
+          return false, "boundary_api_unavailable"
         end
-        log("AUTHORITY_BOUNDARY",
-            "source=native_restore_epoch boundaryEpoch=" ..
-            tostring(restoreEpoch) ..
-            " previousEpoch=" .. tostring(lastNativeRestoreEpoch) ..
-            " captureReady=true staleStateRetained=true" ..
-            " atomicAuthorityRequired=true progressionWrites=false")
+        beginAuthorityBoundary("native_restore_epoch", true, restoreEpoch)
         return refreshNativeAuthority(tostring(source) .. ":restore_epoch")
       end
     end
@@ -1070,8 +1052,12 @@ do
     return true, accepted
   end
 
-  local function beginAuthorityBoundary(source, captureReady)
-    nativeBoundaryEpoch = nativeBoundaryEpoch + 1
+  beginAuthorityBoundary = function(source, captureReady, forcedEpoch)
+    if forcedEpoch ~= nil then
+      nativeBoundaryEpoch = forcedEpoch
+    else
+      nativeBoundaryEpoch = nativeBoundaryEpoch + 1
+    end
     _G.CompletionistMapV105NativeBoundaryEpoch = nativeBoundaryEpoch
     nativeBoundaryPending = true
     nativeBoundaryCaptureReady = captureReady ~= false
