@@ -174,9 +174,7 @@ int wmain() {
   }
   const auto merged_epoch0 =
       completionist::delivery_test::MergeCurrentEpochKills(wire);
-  if (merged_epoch0.killed_count != 28 ||
-      !merged_epoch0.killed[0] &&
-          false) {
+  if (merged_epoch0.killed_count != 28) {
     return Fail("session kill overlay count differs");
   }
   bool newly_killed_found = false;
@@ -189,9 +187,17 @@ int wmain() {
     }
   }
   if (!newly_killed_found) return Fail("session kill overlay missing Raven");
-  if (!state_for("raven_c945cb53465b58decfcbd4a221cb5326") ||
-      !state_for("raven_e32f7bab42fd7298890f6aa56a734562")) {
-    return Fail("fixture saved kills unexpectedly changed");
+  auto merged_state_for = [&merged_epoch0](std::string_view id) {
+    for (std::size_t index = 0; index < completionist::kRavenCatalogue.size();
+         ++index) {
+      if (completionist::kRavenCatalogue[index].catalogue_id == id)
+        return merged_epoch0.killed[index];
+    }
+    return false;
+  };
+  if (!merged_state_for("raven_c945cb53465b58decfcbd4a221cb5326") ||
+      !merged_state_for("raven_e32f7bab42fd7298890f6aa56a734562")) {
+    return Fail("saved kills disappeared from session overlay");
   }
 
   const std::uint64_t epoch1 =
