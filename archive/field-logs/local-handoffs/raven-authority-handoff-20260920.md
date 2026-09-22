@@ -7598,3 +7598,44 @@ Correction:
 No authority/save/native state logic changed. Generated `mapmenu.lua` changed
 again, so delivery proof refresh + full offline gates are required before the
 next live cosmetic stress test.
+
+
+### Cosmetic polish follow-up 2026-09-22 - queued rapid re-add baseline green offline
+
+Delivery proof refresh:
+
+- `3ec78087cba91274d353ad32801b0f0d5eeb49b2`.
+
+Successful evidence-publishing offline run:
+
+- evidence commit:
+  `7cfb6df425af9569716cb218027f284d4d681ab8`;
+- tested head:
+  `3ec78087cba91274d353ad32801b0f0d5eeb49b2`;
+- evidence directory:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-offline-20260922-121240`.
+
+Verified green:
+
+- native CTest 5/5;
+- Lua integration 44/44;
+- Raven state model 25/25;
+- transaction rollback;
+- PowerShell syntax;
+- scoped security gate.
+
+The previously failing queued-readd regressions now pass:
+
+- `test_rapid_readd_wins_delayed_native_remove`;
+- `test_raven_reticle_and_compass_prompt_refresh_immediately`.
+
+Field-shaped cosmetic regressions also pass:
+
+- `test_first_add_refreshes_footer_without_sticking_cursor_text`;
+- `test_same_raven_readd_keeps_stock_presentation_state_clear`;
+- `test_same_raven_add_remove_keeps_compass_empty_and_prompt_settled`;
+- `test_pending_action_does_not_overwrite_other_raven_prompt`.
+
+The cosmetic branch is ready for another short `-CosmeticOnly` field stress run,
+with the live prompt now explicitly requiring the fast Add -> Remove -> Add
+three-click case.
