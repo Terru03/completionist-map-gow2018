@@ -130,6 +130,13 @@ class LegendaryChestIdentityTests(unittest.TestCase):
             identity.identity_hash(prefix + [prototype]),
         )
 
+    def test_shared_loader_adjusted_identity_is_distinct_and_pinned(self):
+        raw = resolver.EXPECTED_PROTOTYPE
+        adjusted = identity.adjusted_record_id(raw).hex()
+        self.assertEqual(raw, "966624c84fc6b8590179bfd6c72c2086")
+        self.assertEqual(adjusted, "966624c84fc6b8590179bfd6c62c2086")
+        self.assertNotEqual(raw, adjusted)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
