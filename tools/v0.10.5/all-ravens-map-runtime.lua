@@ -1264,20 +1264,34 @@ do
     return actionText(lamsConsts.AddToCompass)
   end
 
+  local function refreshCommittedFooter(self, selected)
+    if self == nil or self.menu == nil or selected == nil then return end
+    local intent = promptIntent
+    if intent == nil or intent.IdString ~= selected.IdString or
+        intent.CatalogueId ~= selected.CatalogueId or intent.Name ~= selected.Name then
+      return
+    end
+
+    -- The action has already been committed even if the stock map consumed
+    -- currMarkerID. Refresh only the bottom-row footer here. Do not write the
+    -- floating MapCursorInfo text after selection ownership has been consumed.
+    promptOverride = selected
+    local show, text = MapOn.GetShowOnCompassPrompt(self, self.menu)
+    if show == true then
+      self.menu:UpdateFooterButton("ShowOnCompass", true, text)
+      self.menu:UpdateFooterButtonText()
+      log("FOOTER_REFRESH_COMMITTED", "name=" .. selected.Name ..
+          " state=" .. tostring(intent.State) ..
+          " text=" .. tostring(text))
+    end
+    promptOverride = nil
+  end
+
   local function refreshPrompt(self, selected)
     if self == nil or self.menu == nil or selected == nil then return end
     selected = currentSelection(self) or selected
-    local intentOwns =
-        promptIntent ~= nil and
-        promptIntent.IdString == selected.IdString and
-        promptIntent.CatalogueId == selected.CatalogueId and
-        promptIntent.Name == selected.Name
-    if not intentOwns and not promptOwned(self, true, selected) then return end
+    if not promptOwned(self, true, selected) then return end
 
-    -- Once ShowOnCompass has consumed the collision selection the base map can
-    -- clear currMarkerID before our immediate footer redraw. The exact
-    -- promptIntent above is already the action we just committed, so it is a
-    -- stronger owner than that transient base-field state.
     -- v0.10.4's proven footer path temporarily routes the menu's own prompt
     -- query through the exact Raven selection. Without this, the subsequent
     -- UpdateFooterButtonText() redraw can re-query the base map after the
@@ -1391,7 +1405,7 @@ do
         suppressLegacyRavenHud()
         hideStock("raven_remove_guard")
         Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
-        refreshPrompt(self, selected)
+        refreshCommittedFooter(self, selected)
         log("REMOVE", "name=" .. selected.Name .. " uid=" .. selected.IdString)
       end
       return
@@ -1410,23 +1424,12 @@ do
     customCompassOwnsTarget = true
     suppressLegacyRavenHud()
     hideStockExcept(selected.IdString, "raven_post_show_guard")
-    local postShowStock, postShowStockOK = stockIds()
-    local sameUidStockRace =
-        postShowStockOK and contains(postShowStock, selected.IdString)
-    if sameUidStockRace then
-      -- HideMarker cannot safely distinguish two compass entries that share
-      -- this marker UID. Do not delete the stock twin here: make the custom
-      -- Raven class the final writer again, which is what naturally happens
-      -- when another marker is selected and this Raven is re-added.
-      suppressLegacyRavenHud()
-      pcall(function() game.Compass.ShowMarker(selected.Name, ravenClass) end)
-      suppressLegacyRavenHud()
-      log("COMPASS_SAME_UID_REASSERT",
-          "phase=post_show name=" .. selected.Name ..
-          " uid=" .. selected.IdString .. " customClass=" .. ravenClass)
-    end
     _G.CompletionistMapV105TrackedCatalogueId = selected.CatalogueId
-    self.currShownMarkerID = selected.Id
+    -- currShownMarkerID is stock map-compass presentation state. Leaving the
+    -- custom Raven UID here lets the stock/boat artwork reclaim the same UID
+    -- on rapid Remove -> Add. Custom ownership lives in trackedCatalogueId and
+    -- the CompletionistRaven compass class instead.
+    self.currShownMarkerID = nil
     promptIntent = {
       IdString=selected.IdString, State="tracked",
       Name=selected.Name, CatalogueId=selected.CatalogueId,
@@ -1434,7 +1437,7 @@ do
     promptSettleFrames = 0
     promptSettleBucket = -1
     Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
-    refreshPrompt(self, selected)
+    refreshCommittedFooter(self, selected)
     log("SHOW", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
         " replacedCustomCount=" .. tostring(customCount) ..
         " replacedStockCount=" .. tostring(stockCount))
@@ -1515,32 +1518,20 @@ do
         hideStockExcept(intent.IdString, "raven_replace_async_retry")
         stock = stockIds()
       end
-      if stockOK and contains(stock, intent.IdString) and
-          intent.SameUidReasserted ~= true then
-        suppressLegacyRavenHud()
-        pcall(function() game.Compass.ShowMarker(row.Name, ravenClass) end)
-        suppressLegacyRavenHud()
-        intent.SameUidReasserted = true
-        custom, customOK = customIds()
-        stock, stockOK = stockIds()
-        log("COMPASS_SAME_UID_REASSERT",
-            "phase=settle name=" .. row.Name ..
-            " uid=" .. intent.IdString .. " customClass=" .. ravenClass)
-      end
       if customOK and contains(custom, intent.IdString) and
           not hasOther(stock, intent.IdString) then
         promptSettleFrames = 0
         promptSettleBucket = -1
-        refreshPrompt(self, selected)
+        refreshCommittedFooter(self, selected)
         if not intent.Settled then log("PROMPT_SETTLED", "state=tracked name=" .. row.Name) end
         intent.Settled = true
       else
         promptSettleFrames = promptSettleFrames + 1
-        refreshPrompt(self, selected)
+        refreshCommittedFooter(self, selected)
       end
     elseif intent.State == "untracked" then
       if intent.Settled then
-        refreshPrompt(self, selected)
+        refreshCommittedFooter(self, selected)
         return result
       end
       promptSettleFrames = promptSettleFrames + 1
@@ -1562,10 +1553,10 @@ do
         promptSettleFrames = 0
         promptSettleBucket = -1
         customCompassOwnsTarget = false
-        refreshPrompt(self, selected)
+        refreshCommittedFooter(self, selected)
         log("PROMPT_SETTLED", "state=untracked name=" .. row.Name)
       else
-        refreshPrompt(self, selected)
+        refreshCommittedFooter(self, selected)
       end
     else
       promptIntent = nil
