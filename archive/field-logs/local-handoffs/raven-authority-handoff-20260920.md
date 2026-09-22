@@ -7413,3 +7413,46 @@ This preserves the intended rules:
 
 Generated `mapmenu.lua` changed again, so proof refresh and full offline gates
 must be rerun before the next cosmetic-only field test.
+
+
+### Cosmetic polish follow-up 2026-09-22 - newer-selection handoff completed
+
+Proof refresh succeeded at:
+
+- `30fc7e538edaba9ce168d4c99bb3d83232dea97d`.
+
+Offline evidence then failed at:
+
+- `1996a60a73323abd6b9d46d2cd5f2b8b2df4673b`;
+- evidence directory:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-offline-20260922-114418`.
+
+Both field-shaped cosmetic regressions still passed:
+
+- `test_first_add_refreshes_footer_without_sticking_cursor_text`;
+- `test_same_raven_readd_keeps_stock_presentation_state_clear`.
+
+The only failing regression remained:
+
+- `test_pending_action_does_not_overwrite_other_raven_prompt`.
+
+The previous fix correctly stopped Raven A's committed footer intent from
+overwriting Raven B after selection moved, but it yielded without refreshing
+Raven B after the synthetic base update, leaving `base-stale` instead of B's
+expected `Replace` prompt.
+
+Fix:
+
+- `f50eb377fe27d86b6da9031bcffaebaf70842026`
+  - `refreshCommittedActionUi()` now detects a newer exact Raven selection;
+  - that newer Raven receives the normal selection-owned `refreshPrompt()`;
+  - the older committed intent then stops immediately.
+
+This restores the intended ownership transfer:
+
+1. same selected Raven -> normal cursor + footer refresh;
+2. consumed selection -> committed footer-only refresh;
+3. newer Raven selection -> full UI ownership transfers to the newer Raven.
+
+Generated `mapmenu.lua` changed, so proof refresh and offline gates must be
+rerun once more before field testing.
