@@ -17,7 +17,10 @@ EXPECTED_TRACKED = 33
 EXPECTED_RAW = 64
 EXPECTED_TRIAL_EXCLUDED = 27
 EXPECTED_UNRESOLVED = 4
-CHEST_OWN_IDENTITY_ELEMENT = bytes.fromhex("947a7c50b25f004ea3365dd8dc232ee1")\nOPENED_STATE_NUMERIC = 4\nOPENED_STATE_FLOAT32 = 4.0\nOPENED_STATE_RAW_HEX = "0100008040"
+CHEST_OWN_IDENTITY_ELEMENT = bytes.fromhex("947a7c50b25f004ea3365dd8dc232ee1")
+OPENED_STATE_NUMERIC = 4
+OPENED_STATE_FLOAT32 = 4.0
+OPENED_STATE_RAW_HEX = "0100008040"
 
 
 def adjusted_record_id(hex_id: str) -> bytes:
@@ -241,5 +244,9 @@ def static_contract(catalogue: dict) -> dict:
         "unresolved": len(unresolved),
         "unique_scene_identities": len(set(scenes)),
         "self_prototype_parents_skipped": skipped_count,
-        "runtime_proven_own_identity_element_hex": CHEST_OWN_IDENTITY_ELEMENT.hex(),\n        "state_semantics_proven": True,\n        "opened_state_numeric": OPENED_STATE_NUMERIC,\n        "opened_state_float32": OPENED_STATE_FLOAT32,\n        "opened_state_raw_hex": OPENED_STATE_RAW_HEX,
+        "runtime_proven_own_identity_element_hex": CHEST_OWN_IDENTITY_ELEMENT.hex(),
+        "state_semantics_proven": True,
+        "opened_state_numeric": OPENED_STATE_NUMERIC,
+        "opened_state_float32": OPENED_STATE_FLOAT32,
+        "opened_state_raw_hex": OPENED_STATE_RAW_HEX,
     }
