@@ -32,8 +32,10 @@ do
   local promptSettleBucket = -1
   local customCompassOwnsTarget = false
   local nativeBoundaryPending = false
-  local nativeBoundaryGeneration = nil
-  local nativeBoundaryBaselineKnown = false
+  local nativeBoundaryEpoch =
+      tonumber(_G.CompletionistMapV105NativeBoundaryEpoch) or 0
+  local nativeBoundaryCaptureReady = false
+  local nativeBoundarySource = nil
   local nativeResetRecheckFrames = 0
   local nativeResetRecheckBucket = -1
   local nativeResetRecheckLimit = 360
