@@ -189,6 +189,14 @@ int wmain() {
   wire.explicit_count = decoded.explicit_count;
   wire.absence_default_false_count = decoded.absence_default_false_count;
   wire.killed = decoded.killed;
+  wire.known = decoded.known;
+  wire.explicit_state = decoded.explicit_state;
+  for (std::size_t index = 0; index < completionist::kRavenCatalogue.size();
+       ++index) {
+    wire.absence_default_state[index] =
+        decoded.known[index] && !decoded.explicit_state[index];
+  }
+  wire.unknown_count = 0;
   completionist::delivery_test::ResetSessionAuthority();
   const std::string response =
       completionist::BuildRavenSnapshotWireResponse(wire, 0);
@@ -205,8 +213,6 @@ int wmain() {
   }
 
   completionist::NativeRavenSnapshot partial = wire;
-  partial.known.fill(true);
-  partial.explicit_state.fill(true);
   partial.partial_usable = true;
   partial.unknown_count = 1;
   partial.explicit_count = 41;
@@ -236,6 +242,7 @@ int wmain() {
       partial_response.find(
           "unknownIds=raven_642d0d164af0a5d4076e77933c549a5d") ==
           std::string::npos ||
+      partial_response.find(" absenceIds=-") != std::string::npos ||
       partial_response.back() != '\n') {
     return Fail("Lua partial wire snapshot differs");
   }
