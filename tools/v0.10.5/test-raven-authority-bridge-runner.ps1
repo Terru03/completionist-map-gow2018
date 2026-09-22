@@ -81,6 +81,7 @@ $bridgeReady = @(
 )
 $validLoader = @(
     '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=2 killed=27 alive=26 explicit=42 absentWadFalse=11 postBoundary=true boundaryEpoch=7 restoreEpoch=7 authority=capture_v2',
+    '[CompletionistMap v0.10.5-raven-events] BRIDGE_KILL_NOTE source=OnHitByWeapon catalogueId=raven_a delivered=true detail=RAVEN_NOTE_V1 OK kind=killed restoreEpoch=7 progressionWrites=false',
     '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=3 killed=28 alive=25 explicit=42 absentWadFalse=11 postBoundary=false boundaryEpoch=0 restoreEpoch=7 authority=latest_v1',
     '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=native_restore_epoch boundaryEpoch=8 captureReady=true staleStateRetained=true atomicAuthorityRequired=true postBoundaryRecheckFrames=360 progressionWrites=false',
     '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=4 killed=28 alive=25 explicit=42 absentWadFalse=11 postBoundary=true boundaryEpoch=8 restoreEpoch=8 authority=capture_v2',
@@ -101,6 +102,7 @@ if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied -or
 
 $derivedLoader = @(
     '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_DERIVED knownKilled=25 knownAlive=27 nativeUnknown=1 absenceUnresolved=11 resolvedUnresolved=12 finalKilled=25 finalAlive=28 postBoundary=true boundaryEpoch=7 restoreEpoch=7 authority=native_partial_plus_region_summary readOnly=true progressionWrites=false',
+    '[CompletionistMap v0.10.5-raven-events] BRIDGE_KILL_NOTE source=OnHitByWeapon catalogueId=raven_a delivered=true detail=RAVEN_NOTE_V1 OK kind=killed restoreEpoch=7 progressionWrites=false',
     '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_DERIVED knownKilled=26 knownAlive=27 nativeUnknown=0 absenceUnresolved=11 resolvedUnresolved=11 finalKilled=26 finalAlive=27 postBoundary=false boundaryEpoch=0 restoreEpoch=7 authority=native_partial_plus_region_summary readOnly=true progressionWrites=false',
     '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=native_restore_epoch boundaryEpoch=8 captureReady=true staleStateRetained=true atomicAuthorityRequired=true postBoundaryRecheckFrames=360 progressionWrites=false',
     '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_DERIVED knownKilled=26 knownAlive=27 nativeUnknown=0 absenceUnresolved=11 resolvedUnresolved=11 finalKilled=26 finalAlive=27 postBoundary=true boundaryEpoch=8 restoreEpoch=8 authority=native_partial_plus_region_summary readOnly=true progressionWrites=false',
@@ -116,14 +118,14 @@ if (-not $derivedDelivery.AdvancedApplied -or -not $derivedDelivery.AdvancedDeri
 }
 
 $mismatchedEpochLines = @($validLoader)
-$mismatchedEpochLines[3] = '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=4 killed=28 alive=25 explicit=42 absentWadFalse=11 postBoundary=true boundaryEpoch=99 restoreEpoch=99 authority=capture_v2'
+$mismatchedEpochLines[4] = '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=4 killed=28 alive=25 explicit=42 absentWadFalse=11 postBoundary=true boundaryEpoch=99 restoreEpoch=99 authority=capture_v2'
 $mismatched = Test-RavenSnapshotDeliveryProofLines -BridgeLines $bridgeReady -LoaderLines $mismatchedEpochLines
 if ($mismatched.PostBoundaryApplied -or $mismatched.CheckpointBoundaryEpochMatched -or $mismatched.Ordered) {
     throw 'Mismatched checkpoint bridge epoch was accepted.'
 }
 
 $freshV1Lines = @($validLoader)
-$freshV1Lines[5] = '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=5 killed=0 alive=53 explicit=0 absentWadFalse=53 postBoundary=false boundaryEpoch=0 restoreEpoch=9 authority=latest_v1'
+$freshV1Lines[6] = '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=5 killed=0 alive=53 explicit=0 absentWadFalse=53 postBoundary=false boundaryEpoch=0 restoreEpoch=9 authority=latest_v1'
 $freshV1 = Test-RavenSnapshotDeliveryProofLines -BridgeLines $bridgeReady -LoaderLines $freshV1Lines
 if ($freshV1.FreshApplied -or $freshV1.FreshBoundaryEpochMatched -or $freshV1.Ordered) {
     throw 'Fresh-save V1 snapshot was accepted as boundary authority.'
@@ -133,6 +135,45 @@ $missingKillBridge = @($bridgeReady | Where-Object { $_ -notmatch 'RAVEN_NATIVE_
 $missingKill = Test-RavenSnapshotDeliveryProofLines -BridgeLines $missingKillBridge -LoaderLines $validLoader
 if ($missingKill.ImmediateEvent -or $missingKill.Ordered) {
     throw 'Missing cross-context Raven kill note was accepted.'
+}
+
+# Restore/start callbacks may report already-killed Ravens before the actual
+# gameplay kill. The proof must ignore that noise, use the latest authority
+# immediately before OnHitByWeapon as its +1 baseline, and accept a matching
+# checkpoint V2 even when map reopen does not itself request native authority.
+$restoreNoiseBridge = @(
+    'RAVEN_NATIVE_BRIDGE_DELIVERY_READY mechanism=loopback_socket address=127.0.0.1 port=43753 static_descriptor_writes=false save_writes=false progression_writes=false',
+    'RAVEN_NATIVE_BRIDGE_KILL_NOTED catalogueId=raven_old_a restoreEpoch=1 save_writes=false progression_writes=false',
+    'RAVEN_NATIVE_BRIDGE_KILL_NOTED catalogueId=raven_old_b restoreEpoch=1 save_writes=false progression_writes=false',
+    'RAVEN_NATIVE_BRIDGE_KILL_NOTED catalogueId=raven_manual restoreEpoch=1 save_writes=false progression_writes=false',
+    'RAVEN_NATIVE_BRIDGE_BOUNDARY_NOTED restoreEpoch=2 advanced=true source=checkpoint save_writes=false progression_writes=false',
+    'RAVEN_NATIVE_BRIDGE_BOUNDARY_NOTED restoreEpoch=3 advanced=true source=checkpoint save_writes=false progression_writes=false'
+)
+$restoreNoiseLoader = @(
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_DERIVED knownKilled=25 knownAlive=27 nativeUnknown=1 absenceUnresolved=11 resolvedUnresolved=12 finalKilled=25 finalAlive=28 postBoundary=false boundaryEpoch=0 restoreEpoch=0 authority=native_partial_plus_region_summary readOnly=true progressionWrites=false',
+    '[CompletionistMap v0.10.5-raven-events] BRIDGE_KILL_NOTE source=OnRestoreCheckpoint catalogueId=raven_old_a delivered=true detail=RAVEN_NOTE_V1 OK kind=killed restoreEpoch=1 progressionWrites=false',
+    '[CompletionistMap v0.10.5-raven-events] BRIDGE_KILL_NOTE source=OnStart catalogueId=raven_old_b delivered=true detail=RAVEN_NOTE_V1 OK kind=killed restoreEpoch=1 progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_DERIVED knownKilled=27 knownAlive=26 nativeUnknown=0 absenceUnresolved=11 resolvedUnresolved=11 finalKilled=27 finalAlive=26 postBoundary=false boundaryEpoch=0 restoreEpoch=1 authority=native_partial_plus_region_summary readOnly=true progressionWrites=false',
+    '[CompletionistMap v0.10.5-raven-events] BRIDGE_KILL_NOTE source=OnHitByWeapon catalogueId=raven_manual delivered=true detail=RAVEN_NOTE_V1 OK kind=killed restoreEpoch=1 progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=native_restore_epoch boundaryEpoch=2 captureReady=true staleStateRetained=true atomicAuthorityRequired=true postBoundaryRecheckFrames=360 progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_DERIVED knownKilled=28 knownAlive=25 nativeUnknown=0 absenceUnresolved=11 resolvedUnresolved=11 finalKilled=28 finalAlive=25 postBoundary=true boundaryEpoch=2 restoreEpoch=2 authority=native_partial_plus_region_summary readOnly=true progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=native_restore_epoch boundaryEpoch=3 captureReady=true staleStateRetained=true atomicAuthorityRequired=true postBoundaryRecheckFrames=360 progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=9 killed=0 alive=53 explicit=0 absentWadFalse=53 postBoundary=true boundaryEpoch=3 restoreEpoch=3 authority=capture_v2'
+)
+$restoreNoise = Test-RavenSnapshotDeliveryProofLines -BridgeLines $restoreNoiseBridge -LoaderLines $restoreNoiseLoader
+if (-not $restoreNoise.ImmediateEvent -or
+    $restoreNoise.GameplayKillCatalogueId -ne 'raven_manual' -or
+    $restoreNoise.ImmediateKillEpoch -ne 1 -or
+    $restoreNoise.KillBaselineKilled -ne 27 -or
+    $restoreNoise.KillBaselineAlive -ne 26 -or
+    $restoreNoise.MapReopenObserved -or
+    -not $restoreNoise.CheckpointBoundaryObserved -or
+    -not $restoreNoise.PostBoundaryApplied -or
+    -not $restoreNoise.CheckpointBoundaryEpochMatched -or
+    $restoreNoise.CheckpointBoundaryEpoch -ne 2 -or
+    -not $restoreNoise.FreshApplied -or
+    -not $restoreNoise.Ordered) {
+    throw 'Restore-noise gameplay-kill proof regression failed.'
 }
 
 $wrongOrder = Test-RavenSnapshotDeliveryProofLines -BridgeLines $bridgeReady -LoaderLines @(
