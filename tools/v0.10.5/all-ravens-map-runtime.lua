@@ -1171,6 +1171,50 @@ do
     return ids or {}, true, nil
   end
 
+  local function idsForLog(ids)
+    local values = {}
+    for _, id in ipairs(ids or {}) do values[#values + 1] = tostring(id) end
+    if #values == 0 then return "-" end
+    return table.concat(values, ",")
+  end
+
+  local function routingStateForLog(self, selected, includeTargets)
+    local intent = promptIntent
+    local fields = {
+      "selectedName=" .. tostring(selected and selected.Name or "-"),
+      "selectedUid=" .. tostring(selected and selected.IdString or "-"),
+      "selectedState=" .. tostring(selected and selected.State or "-"),
+      "currMarkerID=" .. tostring(self and self.currMarkerID or "-"),
+      "currShownMarkerID=" .. tostring(self and self.currShownMarkerID or "-"),
+      "trackedCatalogueId=" .. tostring(_G.CompletionistMapV105TrackedCatalogueId or "-"),
+      "customOwns=" .. tostring(customCompassOwnsTarget == true),
+      "intentUid=" .. tostring(intent and intent.IdString or "-"),
+      "intentState=" .. tostring(intent and intent.State or "-"),
+      "intentPendingReadd=" .. tostring(intent and intent.PendingReadd == true),
+      "intentSettled=" .. tostring(intent and intent.Settled == true),
+      "baseRavenSelected=" .. tostring(self and self.completionistMapV100Selected == true),
+      "baseNornirSelected=" .. tostring(self and self.completionistMapV100NornirSelected ~= nil),
+      "baseNornirChestSelected=" .. tostring(self and self.completionistMapV100NornirChestSelected ~= nil),
+    }
+    if includeTargets == true then
+      local custom, customOK, customErr = customIds()
+      local stock, stockOK, stockErr = stockIds()
+      fields[#fields + 1] = "customTargets=" .. idsForLog(custom)
+      fields[#fields + 1] = "customTargetsOK=" .. tostring(customOK)
+      if not customOK then fields[#fields + 1] = "customTargetsError=" .. tostring(customErr) end
+      fields[#fields + 1] = "stockTargets=" .. idsForLog(stock)
+      fields[#fields + 1] = "stockTargetsOK=" .. tostring(stockOK)
+      if not stockOK then fields[#fields + 1] = "stockTargetsError=" .. tostring(stockErr) end
+    end
+    return table.concat(fields, " ")
+  end
+
+  local function packResults(...)
+    return {n=select("#", ...), ...}
+  end
+
+  local unpackResults = unpack or table.unpack
+
   local function contains(ids, idString)
     for _, id in ipairs(ids or {}) do
       if tostring(id) == idString then return true end
@@ -1387,11 +1431,27 @@ do
     lastMapOnSelf = self
     local show, text = previousPrompt(self, currMenu)
     if promptOverride ~= nil then
+      log("PROMPT_ROUTE_OVERRIDE",
+          "baseShow=" .. tostring(show) ..
+          " baseText=" .. tostring(text) .. " " ..
+          routingStateForLog(self, promptOverride, false))
       return true, promptText(promptOverride)
     end
     local selected = currentSelection(self)
-    if selected == nil then return show, text end
+    if selected == nil then
+      if promptIntent ~= nil then
+        log("PROMPT_BASE_DELEGATE_WITH_INTENT",
+            "baseShow=" .. tostring(show) ..
+            " baseText=" .. tostring(text) .. " " ..
+            routingStateForLog(self, nil, false))
+      end
+      return show, text
+    end
     if not promptOwned(self, show, selected) then
+      log("PROMPT_OWNER_MISMATCH",
+          "baseShow=" .. tostring(show) ..
+          " baseText=" .. tostring(text) .. " " ..
+          routingStateForLog(self, selected, true))
       clearSelection(self, "prompt_owner_mismatch")
       return show, text
     end
@@ -1403,15 +1463,27 @@ do
   function MapOn:ShowOnCompass(currState)
     lastMapOnSelf = self
     local selected = currentSelection(self)
+    log("SHOWONCOMPASS_ENTRY", routingStateForLog(self, selected, true))
     if selected == nil then
+      log("SHOWONCOMPASS_DELEGATE_BEFORE",
+          "reason=no_exact_raven " .. routingStateForLog(self, nil, true))
       customCompassOwnsTarget = false
       promptIntent = nil
       local customOK = hideCustom(nil, "other_target_replace")
-      if not customOK then return end
+      if not customOK then
+        log("SHOWONCOMPASS_DELEGATE_ABORT",
+            "reason=hide_custom_failed " .. routingStateForLog(self, nil, true))
+        return
+      end
       _G.CompletionistMapV105TrackedCatalogueId = nil
-      return previousShow(self, currState)
+      local results = packResults(previousShow(self, currState))
+      log("SHOWONCOMPASS_DELEGATE_AFTER",
+          "reason=no_exact_raven " .. routingStateForLog(self, nil, true))
+      return unpackResults(results, 1, results.n)
     end
     if selected.State ~= "armed-custom" or not promptOwned(self, true, selected) then
+      log("SHOWONCOMPASS_REFUSED",
+          "reason=action_not_exact " .. routingStateForLog(self, selected, true))
       clearSelection(self, "action_not_exact")
       return
     end
