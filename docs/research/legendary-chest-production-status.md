@@ -285,3 +285,84 @@ This inventory is deliberately non-authoritative: it does not yet claim which
 state-bearing subobject is the Legendary Chest or what numeric/string state
 means OPENED. The purpose is to identify the recurring standard chest schema
 and exact serialized parent keys before any binding is accepted.
+
+
+### Staged state inventory accepted 2026-09-22
+
+Evidence commit:
+
+`5f8709a4e6792b81c7e391ec2ef0b8ab759f2fef`
+
+Capture:
+
+`archive/field-logs/source-scans/legendary-staged-state-20260922-142029`
+
+Result:
+
+- tracked Legendary catalogue rows: 33;
+- tracked source WADs: 27;
+- rows represented by the frozen staged capture: 32;
+- represented WADs: 26;
+- absent row: the `xpl100_httk.wad` Legendary Chest;
+- generic state-bearing subobjects inventoried: 244;
+- distinct state-row schema signatures: 7;
+- Raven decoder modified: false;
+- game process accessed: false;
+- save/progression writes: false.
+
+The dominant exact schema is:
+
+`{ state = <tag1 scalar> }`
+
+Observed across:
+
+- 206 serialized subobjects;
+- all 26 represented tracked Legendary WADs;
+- one record class key:
+  `0x75E050AB149B4062`.
+
+Every dominant-schema parent is a serialized GameObject save reference. Its
+registry hash exactly equals the native case-folded WAD-stem hash for the
+containing WAD.
+
+Observed scalar bit patterns are:
+
+- `0x3F800000` = 1.0;
+- `0x40000000` = 2.0;
+- `0x40400000` = 3.0;
+- `0x40800000` = 4.0.
+
+These values are preserved as enum-like state evidence only. OPENED semantics are
+not yet claimed.
+
+The catalogue's textual/composite
+`physical_instance_guid.state_instance_guid` does not directly hash to any
+dominant staged parent object hash under the native 0x401 byte hash. The save key
+therefore remains the native GameObject identity hash, not the text component key.
+
+### Current identity-resolution gate
+
+All 33 tracked Legendary Chests share prototype loader ID:
+
+`966624c84fc6b8590179bfd6c72c2086`
+
+New tooling:
+
+- `tools/v0.10.5/resolve-legendary-serialized-identities-static.py`;
+- `tools/v0.10.5/run-legendary-serialized-identities-static-and-push.ps1`.
+
+The resolver:
+
+1. reads only shipped tracked Legendary WAD files;
+2. walks exact record references around the shared prototype loader;
+3. discovers candidate 16-byte prototype/object identity elements;
+4. evaluates explicit chest scene-boundary grammars;
+5. computes native 0x401 GameObject hashes;
+6. compares them against the exact 206 dominant staged `state` parent hashes;
+7. accepts only one unique candidate+grammar combination matching all 32
+   represented tracked catalogue rows;
+8. derives all 33 serialized GameObject identities from that unique solution.
+
+The gate fails closed if the best result is less than 32/32 or if multiple exact
+solutions exist. Even a successful identity resolution does not yet prove which
+numeric state means OPENED.
