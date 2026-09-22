@@ -230,6 +230,57 @@ int wmain() {
     return Fail("later restore did not drop session-only kill");
   }
 
+  // A fresh/new-game transition does not necessarily call any Raven
+  // OnRestoreCheckpoint. The raw saved authority is monotonic within one
+  // playthrough: if a previously killed Raven becomes alive, that is
+  // process-wide proof that a different save/checkpoint/new game was loaded.
+  completionist::delivery_test::ResetSessionAuthority();
+  if (completionist::delivery_test::ObserveAuthoritativeBase(wire, 1000) != 0) {
+    return Fail("initial authoritative base changed restore epoch");
+  }
+  if (!completionist::delivery_test::NoteKilled(
+          "raven_642d0d164af0a5d4076e77933c549a5d") ||
+      completionist::delivery_test::MergeCurrentEpochKills(wire).killed_count !=
+          28) {
+    return Fail("pre-fresh session kill setup differs");
+  }
+  if (completionist::delivery_test::ObserveAuthoritativeBase(wire, 1100) != 0) {
+    return Fail("unchanged authoritative base inferred a boundary");
+  }
+
+  NativeRavenSnapshot fresh = wire;
+  fresh.killed.fill(false);
+  fresh.killed_count = 0;
+  fresh.alive_count = 53;
+  fresh.explicit_count = 0;
+  fresh.absence_default_false_count = 53;
+
+  const std::uint64_t inferred_fresh_epoch =
+      completionist::delivery_test::ObserveAuthoritativeBase(fresh, 5000);
+  if (inferred_fresh_epoch != 1 ||
+      completionist::delivery_test::CurrentRestoreEpoch() != 1) {
+    return Fail("authoritative revival did not infer fresh restore epoch");
+  }
+  if (completionist::delivery_test::MergeCurrentEpochKills(fresh).killed_count !=
+      0) {
+    return Fail("old session kill leaked into inferred fresh epoch");
+  }
+  if (completionist::delivery_test::ObserveAuthoritativeBase(fresh, 5100) != 1) {
+    return Fail("stable fresh authority advanced restore epoch twice");
+  }
+  if (completionist::delivery_test::NoteRestoreBoundary(5200) != 1) {
+    return Fail("post-inference duplicate Raven restore did not coalesce");
+  }
+
+  // If a gameplay restore already advanced the epoch, a later raw revival is
+  // the expected saved-state change for that boundary and must not double-step.
+  completionist::delivery_test::ResetSessionAuthority();
+  if (completionist::delivery_test::ObserveAuthoritativeBase(wire, 1000) != 0 ||
+      completionist::delivery_test::NoteRestoreBoundary(5000) != 1 ||
+      completionist::delivery_test::ObserveAuthoritativeBase(fresh, 5100) != 1) {
+    return Fail("explicit restore plus authoritative revival double-advanced");
+  }
+
   const std::string boundary_response =
       completionist::BuildRavenBoundarySnapshotWireResponse(wire, 42);
   if (!boundary_response.starts_with(
@@ -265,6 +316,6 @@ int wmain() {
 
   std::cout << "RAVEN_BRIDGE_AUTHORITY_TESTS_PASSED states=53 explicit=42 "
                "absentWadFalse=11 killed=27 alive=26 delivery=loopback "
-               "collision_refused=true freshness_generation=true boundary_epoch_wire=true session_epoch_overlay=true\n";
+               "collision_refused=true freshness_generation=true boundary_epoch_wire=true session_epoch_overlay=true inferred_restore_epoch=true\n";
   return 0;
 }
