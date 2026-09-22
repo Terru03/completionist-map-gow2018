@@ -7255,3 +7255,47 @@ Repair:
   - proves the same path still refuses a generated hook whose base Lua bytes are not runtime-proven.
 
 The failed refresh restored its pre-refresh tracked/generated state exactly before publishing failure evidence, so no contaminated candidate was left installed or accepted.
+
+
+#### Raven map visibility accepted in field 2026-09-22
+
+Targeted live proof:
+
+- proof commit: `61decc5c64df2bd0f3f61ae4914ce63f1b47a464`;
+- result: `RAVEN_MAP_VISIBILITY_LIVE_PROOF_PASSED`;
+- reason: `map_filters_and_mystic_gateway_fast_travel_visibility_proven`;
+- `map_filter_visibility_manual=true`;
+- `mystic_gateway_visibility_manual=true`;
+- `native_delivery_ready=true`;
+- advanced authority observed during the run: 28 killed / 25 alive;
+- map candidate rollback exact: true;
+- DXGI bridge rollback exact: true;
+- DXGI operation journal absent after rollback: true;
+- `version.dll` untouched: true;
+- process-memory writes: false;
+- save writes: false;
+- progression writes: false;
+- static descriptor writes: false.
+
+Offline gates in the same run passed before installation, including:
+
+- native bridge build/CTest/rollback gates;
+- 47 Lua 5.1 integration tests;
+- 25 Raven runtime-model tests;
+- template/build contract checks;
+- five-file transaction rollback self-test;
+- PowerShell syntax gate;
+- scoped write-API/security gate.
+
+Accepted behavior:
+
+- living Ravens are visible on Show All;
+- living Ravens are visible on Completionist;
+- living Ravens are visible on the dedicated RAVENS filter;
+- Ravens disappear immediately on unrelated map filters;
+- switching back restores only living Ravens;
+- killed Ravens are never revived by filter changes;
+- the dedicated RAVENS filter is available in every realm represented by the 53-Raven catalogue;
+- no Raven icons appear on the Mystic Gateway fast-travel destination map.
+
+This feature branch is therefore accepted for promotion into the Raven release candidate.
