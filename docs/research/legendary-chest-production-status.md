@@ -618,3 +618,57 @@ The current loaded session already supplies one high-value target:
 `xpl250_funeralinterior.wad -> registry 241`.
 
 All probes remain read-only and the Raven runtime remains frozen.
+
+
+### Correct live registry produced exact staged identity intersections
+
+Evidence commit:
+
+`acca00089c81848825aab40b8a064e15c688056a`
+
+After resolving the actual live WAD registry instead of hard-coding registry 238,
+the staged/runtime intersection succeeded.
+
+For live `xpl250_funeralinterior.wad`:
+
+- registry: `241`;
+- non-null/identity-builder objects reconstructed: 5,429;
+- staged dominant simple-state hashes in that WAD: 6;
+- exact staged/runtime object-hash intersections: 6/6;
+- reconstruction failures: 0.
+
+The tracked chest is
+`legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb`.
+
+Its strongest exact native identity match is live slot 880:
+
+- runtime token: `0x000000000DC001E3`;
+- staged/runtime object hash: `0x748BE60F37BAB846`;
+- staged state raw: `0100008040` (numeric semantics still intentionally
+  unclaimed);
+- native identity vector:
+  1. `d507eb21a5b18f45bc5265b60f30fd1c` = adjusted `goxpl250_ents`;
+  2. `8e825d9cee977f42b76892e6e4509f4d` = adjusted
+     `goxpl250_ents_nooffset`;
+  3. `feacd6d6d12a4f44a2ce490beba185ba` = adjusted physical Legendary
+     placement;
+  4. `30c16eb3812d4240b49d3a1254d63108` = adjusted `gochestscript`;
+  5. `947a7c50b25f004ea3365dd8dc232ee1` = live object+0x40 own identity.
+
+The reusable `gochest_legendary_parent` is omitted because its adjusted record
+identity equals `native.parent_prototype_id`, matching the already-proven Raven
+self-prototype omission rule.
+
+This establishes the runtime Legendary chest identity grammar:
+
+`root owners -> physical placement -> gochestscript -> own identity`
+
+with own identity element:
+
+`947a7c50b25f004ea3365dd8dc232ee1`
+
+The static 32/32 staged proof is now being rerun with this runtime-proven element
+injected explicitly. State-value semantics remain unproven and are not promoted
+by this identity result.
+
+All capture/proof tooling remains read-only; Raven runtime remains frozen.
