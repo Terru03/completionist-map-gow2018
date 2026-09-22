@@ -230,6 +230,10 @@ bool CaptureAcceptedSnapshot(std::uintptr_t module_base,
       output->killed = decoded.killed;
       output->known = decoded.known;
       output->explicit_state = decoded.explicit_state;
+      for (std::size_t index = 0; index < kRavenCatalogue.size(); ++index) {
+        output->absence_default_state[index] =
+            decoded.known[index] && !decoded.explicit_state[index];
+      }
       output->captured_tick_ms = GetTickCount64();
       output->alive_count = decoded.alive_count;
       output->killed_count = decoded.killed_count;
@@ -291,6 +295,9 @@ bool CaptureAcceptedSnapshot(std::uintptr_t module_base,
   snapshot.killed = decoded.killed;
   snapshot.known.fill(true);
   snapshot.explicit_state = decoded.explicit_state;
+  for (std::size_t index = 0; index < kRavenCatalogue.size(); ++index) {
+    snapshot.absence_default_state[index] = !decoded.explicit_state[index];
+  }
   snapshot.captured_tick_ms = GetTickCount64();
   snapshot.alive_count = decoded.alive_count;
   snapshot.killed_count = decoded.killed_count;
@@ -299,6 +306,23 @@ bool CaptureAcceptedSnapshot(std::uintptr_t module_base,
       decoded.absence_default_false_count;
   snapshot.unknown_count = 0;
   snapshot.partial_usable = false;
+
+  const bool stable_zero_candidate =
+      snapshot.killed_count == 0 &&
+      snapshot.alive_count == kRavenCatalogue.size() &&
+      snapshot.explicit_count == 0 &&
+      snapshot.absence_default_false_count == kRavenCatalogue.size();
+
+  // A nonzero image containing WAD-absence defaults is not exact authority.
+  // Those false values only mean the WAD was not staged. Preserve the image
+  // as partial evidence so Lua can reconcile it against live RegionSummary.
+  if (snapshot.absence_default_false_count > 0 && !stable_zero_candidate) {
+    snapshot.partial_usable = true;
+    *output = snapshot;
+    g_publication_gate.Reject();
+    *reason = "absence_default_requires_region_summary";
+    return false;
+  }
 
   if (!g_publication_gate.Observe(snapshot, snapshot.captured_tick_ms)) {
     *reason = "all_false_authority_unconfirmed";
