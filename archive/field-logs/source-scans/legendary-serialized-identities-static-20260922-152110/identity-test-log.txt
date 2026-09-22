@@ -1,0 +1,35 @@
+test_fast_candidate_hash_continuation_matches_full_identity_hash (__main__.LegendaryChestIdentityTests.test_fast_candidate_hash_continuation_matches_full_identity_hash) ... ERROR
+test_native_wad_name_hash_matches_known_algorithm (__main__.LegendaryChestIdentityTests.test_native_wad_name_hash_matches_known_algorithm) ... ok
+test_physical_placement_anchor_may_repeat_but_full_scene_is_unique (__main__.LegendaryChestIdentityTests.test_physical_placement_anchor_may_repeat_but_full_scene_is_unique) ... ok
+test_runtime_proven_xpl250_identity_vector_and_hash (__main__.LegendaryChestIdentityTests.test_runtime_proven_xpl250_identity_vector_and_hash) ... ok
+test_scene_identity_contract_is_unique_and_structural (__main__.LegendaryChestIdentityTests.test_scene_identity_contract_is_unique_and_structural) ... ok
+test_serialized_payload_is_flag_plus_two_hashes (__main__.LegendaryChestIdentityTests.test_serialized_payload_is_flag_plus_two_hashes) ... ok
+test_shared_loader_adjusted_identity_is_distinct_and_pinned (__main__.LegendaryChestIdentityTests.test_shared_loader_adjusted_identity_is_distinct_and_pinned) ... ERROR
+test_static_production_partition_is_pinned (__main__.LegendaryChestIdentityTests.test_static_production_partition_is_pinned) ... ok
+test_structural_rule_keeps_locked_chest_object_but_omits_parent (__main__.LegendaryChestIdentityTests.test_structural_rule_keeps_locked_chest_object_but_omits_parent) ... ok
+test_structural_rule_omits_organizational_wrappers (__main__.LegendaryChestIdentityTests.test_structural_rule_omits_organizational_wrappers) ... ok
+test_tracked_rows_are_exact_opened_state_collectibles (__main__.LegendaryChestIdentityTests.test_tracked_rows_are_exact_opened_state_collectibles) ... ok
+test_unstaged_xpl100_identity_is_structurally_deterministic (__main__.LegendaryChestIdentityTests.test_unstaged_xpl100_identity_is_structurally_deterministic) ... ok
+
+======================================================================
+ERROR: test_fast_candidate_hash_continuation_matches_full_identity_hash (__main__.LegendaryChestIdentityTests.test_fast_candidate_hash_continuation_matches_full_identity_hash)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\test_legendary_chest_identity.py", line 219, in test_fast_candidate_hash_continuation_matches_full_identity_hash
+    resolver.continue_identity_hash(prefix_hash, prototype),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module '_legendary_static_resolver_test' has no attribute 'continue_identity_hash'
+
+======================================================================
+ERROR: test_shared_loader_adjusted_identity_is_distinct_and_pinned (__main__.LegendaryChestIdentityTests.test_shared_loader_adjusted_identity_is_distinct_and_pinned)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\test_legendary_chest_identity.py", line 224, in test_shared_loader_adjusted_identity_is_distinct_and_pinned
+    raw = resolver.EXPECTED_PROTOTYPE
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module '_legendary_static_resolver_test' has no attribute 'EXPECTED_PROTOTYPE'
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.010s
+
+FAILED (errors=2)
