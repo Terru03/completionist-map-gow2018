@@ -7191,3 +7191,39 @@ Evidence wrapper support for the polish branch:
 Next step: refresh the pinned five-file proof on the cosmetic branch and run the
 full evidence-publishing offline gates. Only after those pass should the two
 cosmetic interactions be field-checked in GoW.
+
+
+### Cosmetic polish follow-up 2026-09-22 - proof refreshed; offline wrapper branch parameter fixed
+
+User ran the cosmetic-branch proof refresh successfully:
+
+- proof refresh commit:
+  `f50bfdc7ea88ce55e2bceb8ad0bfa1c79cd8e3d5`;
+- delivered map SHA-256:
+  `09699476a007250ed28e307347054147a8619c8f38a648bc167c46a703eaa01b`;
+- proof evidence directory:
+  `archive/field-logs/runtime-captures/raven-delivery-proof-refresh-20260922-111730`.
+
+The following offline wrapper invocation then failed before running tests because
+the cosmetic-branch parameterization patch had removed the hard-coded
+`$ExpectedBranch` assignment without successfully adding the parameter under
+`Set-StrictMode`.
+
+Fixes:
+
+- `75db26a101adad3a04f4fb5af3121849413ee902`
+  - outer evidence wrapper now declares `-ExpectedBranch`;
+  - passes the same value into the inner offline gate.
+
+- `4c25b9ffcbf78ed00ffcbffd74e7c115ff0d5cd5`
+  - inner offline gate now also declares `-ExpectedBranch`;
+  - removes its fixed RC-branch assignment.
+
+The preflight failure itself is archived from the user's terminal report:
+
+- `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-offline-20260922-1117-preflight/console-log.txt`;
+- matching `result.txt` records that no offline tests started.
+
+Next step is only to pull the cosmetic branch and rerun the offline evidence
+wrapper with `-ExpectedBranch codex/all-ravens-cosmetic-polish`. The delivery
+proof refresh does NOT need repeating.
