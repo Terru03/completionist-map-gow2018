@@ -22,8 +22,8 @@
       "sha256": "b7039c3c558e82dd9cbd4053b2bf9baddfd34b9ad65f34d631556ad9a7378054"
     },
     "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": {
-      "bytes": 262345,
-      "sha256": "e3f8cbe209e52f2ec96815c9700b0d7574eeba0a98658b765f67c71a4f710db8"
+      "bytes": 265889,
+      "sha256": "4e52a35be5d31016c58921b7d93bda84402568ad438497ca30c8672185b1ac97"
     }
   },
   "game_files_written": false,
@@ -67,7 +67,11 @@
     "currMarkerID_alone_infers_raven": false,
     "data_driven_entries": 53,
     "exact_collision_object_required_before_uid": true,
+    "fast_travel_map_visibility": false,
+    "hidden_map_selection_policy": "disarm exact Raven selection while filtered or in fast travel",
     "initial_marker_policy": "hidden_until_atomic_authority",
+    "map_visibility_policy": "Show All, Completionist, or Ravens filter only",
+    "map_visibility_source": "existing filterButtonMapping/filterIndex plus isOpenedForFastTravel",
     "native_boundary_authority": "bridge-owned restoreEpoch observed through V1 then matching echoed boundaryEpoch from synchronous V2 capture before state replacement",
     "native_boundary_snapshot_schema": 2,
     "native_generation_is_capture_freshness": false,
@@ -79,6 +83,7 @@
     "native_snapshot_transport": "loopback-only V1 latest snapshot plus V2 synchronous boundary capture",
     "native_static_descriptor_writes": false,
     "permanent_polling": false,
+    "raven_filter_scope": "every realm represented by the 53-Raven catalogue",
     "same_raven_second_click_removes": true,
     "shared_map_resource": "goMapIconCompletionistRaven",
     "single_active_target": true,
