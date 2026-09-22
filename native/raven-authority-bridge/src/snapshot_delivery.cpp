@@ -212,20 +212,30 @@ BaseObservation ObserveAuthoritativeBaseInternal(
 NativeRavenSnapshot MergeCurrentEpochKillsInternal(
     const NativeRavenSnapshot& snapshot) {
   NativeRavenSnapshot merged = snapshot;
+  if (!merged.partial_usable) {
+    merged.known.fill(true);
+    merged.unknown_count = 0;
+  }
   {
     std::lock_guard<std::mutex> lock(g_session_mutex);
     for (std::size_t index = 0; index < merged.killed.size(); ++index) {
       if (g_kill_noted[index] && g_kill_epochs[index] == g_restore_epoch) {
+        if (!merged.known[index]) {
+          merged.known[index] = true;
+          if (merged.unknown_count > 0) --merged.unknown_count;
+        }
         merged.killed[index] = true;
       }
     }
   }
   merged.killed_count = 0;
-  for (const bool killed : merged.killed) {
-    if (killed) ++merged.killed_count;
+  std::uint32_t known_count = 0;
+  for (std::size_t index = 0; index < merged.killed.size(); ++index) {
+    if (!merged.known[index]) continue;
+    ++known_count;
+    if (merged.killed[index]) ++merged.killed_count;
   }
-  merged.alive_count =
-      static_cast<std::uint32_t>(merged.killed.size()) - merged.killed_count;
+  merged.alive_count = known_count - merged.killed_count;
   return merged;
 }
 
@@ -388,9 +398,12 @@ unsigned __stdcall ServeSnapshots(void* raw_listener) {
 
     NativeRavenSnapshot snapshot;
     if (request.kind == RequestKind::kLatestV1) {
-      if (g_snapshot_reader == nullptr || !g_snapshot_reader(&snapshot)) {
-        SendAll(client, "RAVEN_SNAPSHOT_V1 UNAVAILABLE\n");
-      } else {
+      bool full_available =
+          g_snapshot_reader != nullptr && g_snapshot_reader(&snapshot);
+      if (!full_available && g_snapshot_capturer != nullptr) {
+        full_available = g_snapshot_capturer(&snapshot);
+      }
+      if (full_available) {
         const BaseObservation observation =
             ObserveAuthoritativeBaseInternal(snapshot, GetTickCount64(), false);
         if (observation.inferred_boundary) {
@@ -404,6 +417,20 @@ unsigned __stdcall ServeSnapshots(void* raw_listener) {
         snapshot = MergeCurrentEpochKillsInternal(snapshot);
         SendAll(client, BuildRavenSnapshotWireResponse(
                             snapshot, observation.restore_epoch));
+      } else if (snapshot.partial_usable) {
+        const std::uint64_t restore_epoch = CurrentRestoreEpochInternal();
+        snapshot = MergeCurrentEpochKillsInternal(snapshot);
+        AppendBridgeLog(
+            "RAVEN_NATIVE_BRIDGE_PARTIAL_SNAPSHOT restoreEpoch=" +
+            std::to_string(restore_epoch) +
+            " unknown=" + std::to_string(snapshot.unknown_count) +
+            " knownKilled=" + std::to_string(snapshot.killed_count) +
+            " knownAlive=" + std::to_string(snapshot.alive_count) +
+            " readOnly=true save_writes=false progression_writes=false");
+        SendAll(client, BuildRavenPartialSnapshotWireResponse(
+                            snapshot, restore_epoch));
+      } else {
+        SendAll(client, "RAVEN_SNAPSHOT_V1 UNAVAILABLE\n");
       }
     } else if (request.kind == RequestKind::kBoundaryCaptureV2) {
       const std::uint64_t restore_epoch = CurrentRestoreEpochInternal();
@@ -440,6 +467,17 @@ unsigned __stdcall ServeSnapshots(void* raw_listener) {
               " save_writes=false progression_writes=false");
           snapshot = MergeCurrentEpochKillsInternal(snapshot);
           SendAll(client, BuildRavenBoundarySnapshotWireResponse(
+                              snapshot, request.boundary_epoch));
+        } else if (snapshot.partial_usable) {
+          snapshot = MergeCurrentEpochKillsInternal(snapshot);
+          AppendBridgeLog(
+              "RAVEN_NATIVE_BRIDGE_PARTIAL_BOUNDARY_SNAPSHOT boundaryEpoch=" +
+              std::to_string(request.boundary_epoch) +
+              " unknown=" + std::to_string(snapshot.unknown_count) +
+              " knownKilled=" + std::to_string(snapshot.killed_count) +
+              " knownAlive=" + std::to_string(snapshot.alive_count) +
+              " readOnly=true save_writes=false progression_writes=false");
+          SendAll(client, BuildRavenPartialBoundarySnapshotWireResponse(
                               snapshot, request.boundary_epoch));
         } else {
           SendAll(client,
@@ -522,6 +560,52 @@ std::string BuildRavenBoundarySnapshotWireResponse(
          std::to_string(snapshot.explicit_count) + " absentWadFalse=" +
          std::to_string(snapshot.absence_default_false_count) + " killedIds=" +
          killed_ids + "\n";
+}
+
+namespace {
+
+std::string BuildPartialWireResponse(
+    const NativeRavenSnapshot& snapshot, std::string_view header,
+    std::string_view epoch_key, std::uint64_t epoch) {
+  std::string killed_ids;
+  std::string unknown_ids;
+  for (std::size_t index = 0; index < kRavenCatalogue.size(); ++index) {
+    if (!snapshot.known[index]) {
+      if (!unknown_ids.empty()) unknown_ids.push_back(',');
+      unknown_ids.append(kRavenCatalogue[index].catalogue_id);
+      continue;
+    }
+    if (!snapshot.killed[index]) continue;
+    if (!killed_ids.empty()) killed_ids.push_back(',');
+    killed_ids.append(kRavenCatalogue[index].catalogue_id);
+  }
+  if (killed_ids.empty()) killed_ids = "-";
+  if (unknown_ids.empty()) unknown_ids = "-";
+  return std::string(header) + " schema=" +
+         (header == "RAVEN_SNAPSHOT_V2 PARTIAL" ? "2 " : "1 ") +
+         std::string(epoch_key) + "=" + std::to_string(epoch) +
+         " capturedTickMs=" + std::to_string(snapshot.captured_tick_ms) +
+         " count=53 unknown=" + std::to_string(snapshot.unknown_count) +
+         " alive=" + std::to_string(snapshot.alive_count) +
+         " killed=" + std::to_string(snapshot.killed_count) +
+         " explicit=" + std::to_string(snapshot.explicit_count) +
+         " absentWadFalse=" +
+         std::to_string(snapshot.absence_default_false_count) +
+         " killedIds=" + killed_ids + " unknownIds=" + unknown_ids + "\n";
+}
+
+}  // namespace
+
+std::string BuildRavenPartialSnapshotWireResponse(
+    const NativeRavenSnapshot& snapshot, std::uint64_t restore_epoch) {
+  return BuildPartialWireResponse(
+      snapshot, "RAVEN_SNAPSHOT_V1 PARTIAL", "restoreEpoch", restore_epoch);
+}
+
+std::string BuildRavenPartialBoundarySnapshotWireResponse(
+    const NativeRavenSnapshot& snapshot, std::uint64_t boundary_epoch) {
+  return BuildPartialWireResponse(
+      snapshot, "RAVEN_SNAPSHOT_V2 PARTIAL", "boundaryEpoch", boundary_epoch);
 }
 
 bool StartSnapshotDeliveryServer(SnapshotReader reader,
