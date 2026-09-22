@@ -144,8 +144,11 @@ def native_component_key(override: dict, component_guid: str) -> str | None:
     return values[0]
 
 
-def summary_index(dcb_root: Path) -> tuple[dict[str, dict], dict]:
-    master = raven.Dcb(dcb_root / "mapmaster.dcb")
+def summary_index(
+        dcb_root: Path, mapmaster_path: Path | None = None
+) -> tuple[dict[str, dict], dict]:
+    master_path = Path(mapmaster_path).resolve() if mapmaster_path else dcb_root / "mapmaster.dcb"
+    master = raven.Dcb(master_path)
     realm_labels = {raven.name_hash(name): name for name in raven.REALM_NAMES}
     region_labels = {raven.name_hash(name): name for name in raven.REGION_NAMES}
     result: dict[str, dict] = {}
@@ -390,9 +393,11 @@ def build_nornir_binding_evidence(row: dict, dcb_root: Path,
     return evidence
 
 
-def collectible_summary_index(dcb_root: Path) -> tuple[dict[str, dict], dict, dict]:
+def collectible_summary_index(
+        dcb_root: Path, mapmaster_path: Path | None = None
+) -> tuple[dict[str, dict], dict, dict]:
     """Join all collectible quest targets to native realm/region identities."""
-    summaries, map_evidence = summary_index(dcb_root)
+    summaries, map_evidence = summary_index(dcb_root, mapmaster_path)
     targets, quest_evidence = quest_targets(dcb_root)
     prefix_rows = {}
     for name, row in summaries.items():
@@ -1223,12 +1228,16 @@ def validate_legendary_classification_evidence(evidence: dict) -> None:
         "positive Legendary evidence lacks deterministic native locator")
 
 
-def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
+def scan_native(
+        game_root: Path = GAME, mapmaster_path: Path | None = None
+) -> tuple[dict, dict]:
     game_root = Path(game_root).resolve()
     dcb_root = game_root / "exec" / "dc" / "pc_le"
     wad_root = game_root / "exec" / "wad" / "pc_le"
     check(dcb_root.is_dir() and wad_root.is_dir(), f"unsupported game root: {game_root}")
-    summaries, map_evidence, quest_evidence = collectible_summary_index(dcb_root)
+    summaries, map_evidence, quest_evidence = collectible_summary_index(
+        dcb_root, mapmaster_path
+    )
     targets, _unused_evidence = quest_targets(dcb_root)
     target_records = quest_target_records(dcb_root)
     entries = []
@@ -1523,10 +1532,11 @@ def write_atomic(path: Path, content: str) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--game-root", type=Path, default=GAME)
+    parser.add_argument("--mapmaster", type=Path)
     parser.add_argument("--output")
     parser.add_argument("--audit")
     args = parser.parse_args()
-    catalogue, audit = scan_native(args.game_root)
+    catalogue, audit = scan_native(args.game_root, args.mapmaster)
     audit["catalogue_sha256"] = hashlib.sha256(
         canonical_json(catalogue).encode("utf-8")).hexdigest()
     if args.output:
