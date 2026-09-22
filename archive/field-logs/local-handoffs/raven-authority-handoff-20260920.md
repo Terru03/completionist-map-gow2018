@@ -6354,3 +6354,52 @@ green, refresh the delivery proof and repeat the old-save live proof. The
 expected field signature after map-script reload is
 `RAVEN_NATIVE_BRIDGE_BOUNDARY_CACHE_HIT boundaryEpoch=1`, followed by
 `NATIVE_AUTHORITY_APPLIED` and the surviving Raven markers only.
+
+
+## Addendum 2026-09-22 11:35 - proof-refresh wrapper rejected a legitimate no-op
+
+Field artifact:
+
+- failure commit: `0caaf53974089c78e95879fca383c2eba9ae0b72`
+- capture:
+  `archive/field-logs/runtime-captures/raven-delivery-proof-refresh-20260922-080323`
+
+The live proof never launched. The failure occurred inside
+`refresh-raven-delivery-proof-and-push.ps1`.
+
+Observed transcript:
+
+```text
+ALL_RAVENS_NATIVE_DELIVERY_CANDIDATE_PREPARED ...
+ALL_RAVENS_NATIVE_DELIVERY_CANDIDATE_PREPARED ...
+Unexpected tracked changes:
+RAVEN_DELIVERY_PROOF_REFRESH_FAILED:
+Proof refresh changed an unexpected tracked path.
+```
+
+There were **no paths printed after** `Unexpected tracked changes:`. The
+wrapper required `git diff --name-only` to contain exactly one path, the proof
+JSON. In this run the diff was correctly empty because the new work changed only
+the native bridge and native tests; the pinned five-file candidate, router
+contract, state contract, map hook, and event hook already matched the existing
+proof exactly.
+
+This was a wrapper guard bug, not a delivery-proof mismatch.
+
+Fixes:
+
+- `14e2ff49688128c6b31e5cc8307aa43ae3deee0e`
+  - proof refresh now accepts either:
+    - zero tracked changes, meaning the pinned proof is already current; or
+    - exactly `archive/all-ravens/all-ravens-release-candidate-offline.json`;
+  - any other tracked path still fails closed;
+  - no-op success commits/pushes evidence with `proof_changed=false`.
+
+- `b6c208f991d30dea4fd17318233ebe7bbd4c36ea`
+  - synthetic wrapper test now covers the exact native-only no-change case;
+  - existing rollback, blocked-commit, and blocked-push cases remain covered.
+
+Next action: run the synthetic proof-refresh wrapper test locally, then rerun
+the proof refresh and native live proof. The Raven boundary-cache fix itself has
+not yet had its Windows native CTest/live validation because the wrapper stopped
+the previous command before those stages.
