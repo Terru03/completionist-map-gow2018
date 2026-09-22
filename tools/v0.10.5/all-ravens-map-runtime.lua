@@ -1267,8 +1267,17 @@ do
   local function refreshPrompt(self, selected)
     if self == nil or self.menu == nil or selected == nil then return end
     selected = currentSelection(self) or selected
-    if not promptOwned(self, true, selected) then return end
+    local intentOwns =
+        promptIntent ~= nil and
+        promptIntent.IdString == selected.IdString and
+        promptIntent.CatalogueId == selected.CatalogueId and
+        promptIntent.Name == selected.Name
+    if not intentOwns and not promptOwned(self, true, selected) then return end
 
+    -- Once ShowOnCompass has consumed the collision selection the base map can
+    -- clear currMarkerID before our immediate footer redraw. The exact
+    -- promptIntent above is already the action we just committed, so it is a
+    -- stronger owner than that transient base-field state.
     -- v0.10.4's proven footer path temporarily routes the menu's own prompt
     -- query through the exact Raven selection. Without this, the subsequent
     -- UpdateFooterButtonText() redraw can re-query the base map after the
@@ -1401,6 +1410,21 @@ do
     customCompassOwnsTarget = true
     suppressLegacyRavenHud()
     hideStockExcept(selected.IdString, "raven_post_show_guard")
+    local postShowStock, postShowStockOK = stockIds()
+    local sameUidStockRace =
+        postShowStockOK and contains(postShowStock, selected.IdString)
+    if sameUidStockRace then
+      -- HideMarker cannot safely distinguish two compass entries that share
+      -- this marker UID. Do not delete the stock twin here: make the custom
+      -- Raven class the final writer again, which is what naturally happens
+      -- when another marker is selected and this Raven is re-added.
+      suppressLegacyRavenHud()
+      pcall(function() game.Compass.ShowMarker(selected.Name, ravenClass) end)
+      suppressLegacyRavenHud()
+      log("COMPASS_SAME_UID_REASSERT",
+          "phase=post_show name=" .. selected.Name ..
+          " uid=" .. selected.IdString .. " customClass=" .. ravenClass)
+    end
     _G.CompletionistMapV105TrackedCatalogueId = selected.CatalogueId
     self.currShownMarkerID = selected.Id
     promptIntent = {
@@ -1490,6 +1514,18 @@ do
       if stockOK and hasOther(stock, intent.IdString) then
         hideStockExcept(intent.IdString, "raven_replace_async_retry")
         stock = stockIds()
+      end
+      if stockOK and contains(stock, intent.IdString) and
+          intent.SameUidReasserted ~= true then
+        suppressLegacyRavenHud()
+        pcall(function() game.Compass.ShowMarker(row.Name, ravenClass) end)
+        suppressLegacyRavenHud()
+        intent.SameUidReasserted = true
+        custom, customOK = customIds()
+        stock, stockOK = stockIds()
+        log("COMPASS_SAME_UID_REASSERT",
+            "phase=settle name=" .. row.Name ..
+            " uid=" .. intent.IdString .. " customClass=" .. ravenClass)
       end
       if customOK and contains(custom, intent.IdString) and
           not hasOther(stock, intent.IdString) then
