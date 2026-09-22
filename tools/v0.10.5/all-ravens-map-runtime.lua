@@ -1236,6 +1236,9 @@ do
       if promptIntent.State == "tracked" then
         return actionText(lamsConsts.RemoveFromCompass)
       elseif promptIntent.State == "untracked" then
+        if promptIntent.PendingReadd == true then
+          return actionText(lamsConsts.RemoveFromCompass)
+        end
         local ids, customOK = customIds()
         local hasOtherCustom = false
         if customOK then
@@ -1288,6 +1291,9 @@ do
     if show == true then
       self.menu:UpdateFooterButton("ShowOnCompass", true, text)
       self.menu:UpdateFooterButtonText()
+      -- The stock footer redraw can use cached action state. Make the exact
+      -- committed action the final footer writer for this click.
+      self.menu:UpdateFooterButton("ShowOnCompass", true, text)
       log("FOOTER_REFRESH_COMMITTED", "name=" .. selected.Name ..
           " state=" .. tostring(intent.State) ..
           " text=" .. tostring(text))
@@ -1411,6 +1417,21 @@ do
     end
     clearSelection(self, "SELECT_CONSUME")
     if not shouldShow(selected.CatalogueId) then return end
+
+    if promptIntent ~= nil and
+        promptIntent.IdString == selected.IdString and
+        promptIntent.State == "untracked" and
+        promptIntent.Settled ~= true then
+      promptIntent.PendingReadd = true
+      promptIntent.PendingReaddName = selected.Name
+      promptIntent.PendingReaddCatalogueId = selected.CatalogueId
+      refreshCommittedFooter(self, selected)
+      log("READD_QUEUED", "name=" .. selected.Name ..
+          " uid=" .. selected.IdString ..
+          " settleFrames=" .. tostring(promptSettleFrames))
+      return
+    end
+
     local ids, queryOK = customIds()
     if not queryOK then return end
     local wantsRemove = contains(ids, selected.IdString)
@@ -1434,7 +1455,7 @@ do
         suppressLegacyRavenHud()
         hideStock("raven_remove_guard")
         Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
-        refreshCommittedActionUi(self, selected)
+        refreshCommittedFooter(self, selected)
         log("REMOVE", "name=" .. selected.Name .. " uid=" .. selected.IdString)
       end
       return
@@ -1466,7 +1487,7 @@ do
     promptSettleFrames = 0
     promptSettleBucket = -1
     Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
-    refreshCommittedActionUi(self, selected)
+    refreshCommittedFooter(self, selected)
     log("SHOW", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
         " replacedCustomCount=" .. tostring(customCount) ..
         " replacedStockCount=" .. tostring(stockCount))
@@ -1573,11 +1594,47 @@ do
       if stockOK and hasOther(stock, intent.IdString) then
         hideStockExcept(intent.IdString, "raven_remove_async_retry")
       end
+      if stockOK and contains(stock, intent.IdString) and
+          (promptSettleFrames == 1 or bucket ~= promptSettleBucket) then
+        hideStock("raven_remove_same_uid_retry")
+      end
       local customAfter, customAfterOK = customIds()
       local stockAfter, stockAfterOK = stockIds()
       if promptSettleFrames >= 3 and customAfterOK and stockAfterOK and
           not contains(customAfter, intent.IdString) and
+          not contains(stockAfter, intent.IdString) and
           not hasOther(stockAfter, intent.IdString) then
+        if intent.PendingReadd == true and shouldShow(row.CatalogueId) then
+          suppressLegacyRavenHud()
+          hideStock("raven_readd_settled_guard")
+          local showOK, showErr = pcall(function()
+            game.Compass.ShowMarker(row.Name, ravenClass)
+          end)
+          if showOK then
+            suppressLegacyRavenHud()
+            hideStockExcept(intent.IdString, "raven_readd_post_show_guard")
+            _G.CompletionistMapV105TrackedCatalogueId = row.CatalogueId
+            self.currShownMarkerID = nil
+            intent.State = "tracked"
+            intent.PendingReadd = nil
+            intent.PendingReaddName = nil
+            intent.PendingReaddCatalogueId = nil
+            intent.Settled = false
+            promptSettleFrames = 0
+            promptSettleBucket = -1
+            customCompassOwnsTarget = true
+            Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
+            refreshCommittedFooter(self, selected)
+            log("READD_APPLIED", "name=" .. row.Name ..
+                " uid=" .. intent.IdString ..
+                " customClass=" .. ravenClass)
+            return result
+          end
+          log("READD_FAILED", "name=" .. row.Name ..
+              " uid=" .. intent.IdString ..
+              " error=" .. tostring(showErr))
+        end
+
         intent.Settled = true
         promptSettleFrames = 0
         promptSettleBucket = -1
