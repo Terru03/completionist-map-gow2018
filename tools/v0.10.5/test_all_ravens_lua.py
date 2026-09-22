@@ -133,7 +133,13 @@ end
 function MapOn.MapCollisionChangeHandler(s,state,collisions,realm)
   if collisions and collisions[1] then s.currMarkerID=collisions[1].id else s.currMarkerID=nil end
 end
-function MapOn.SubmenuExit(s) end
+function MapOn.SubmenuExit(s)
+  -- Real-game regression: base teardown can reclaim HUD ownership after the
+  -- Raven Update watchdog stops, leaving a stock/boat target.
+  customIds={}
+  stockIds={"boat"}
+  calls.baseExitReassert=true
+end
 function MapOn.Exit(s) end
 function MapOn.ClearIcons(s) end
 CompletionistMapV100_CreateMapPin=function(s,state) return "base" end
@@ -246,6 +252,8 @@ function probe.cursorPrompt() return calls.cursorPrompt end
 function probe.footerPrompt() return calls.footerPrompt end
 function probe.footerUpdates() return calls.footerUpdates end
 function probe.update() return MapOn.Update(self,0) end
+function probe.submenuExit() return MapOn.SubmenuExit(self) end
+function probe.shownClass() return calls.class end
 function probe.legacyRavenHudActive() return CompletionistMapV100Target.active end
 function probe.teardown() MapOn.ClearIcons(self) end
 function probe.reset() return CompletionistMapV105ResetRavenStates("save_load") end
@@ -468,13 +476,32 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertTrue(show)
         self.assertEqual(text, "[AdvanceButton] add")
         self.assertEqual(self.probe.customCount(), 1)
-        self.assertEqual(self.probe.stockCount(), 0)
+        self.assertEqual(
+            self.probe.stockOtherCount(self.probe.markerId(self.a["marker"]["name"])), 0
+        )
         self.assertFalse(self.probe.legacyRavenHudActive())
         self.probe.update()
         self.assertEqual(self.probe.customCount(), 1)
-        self.assertEqual(self.probe.stockCount(), 0)
+        self.assertEqual(
+            self.probe.stockOtherCount(self.probe.markerId(self.a["marker"]["name"])), 0
+        )
         self.assertFalse(self.probe.legacyRavenHudActive())
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+
+    def test_map_exit_reasserts_custom_raven_after_base_boat_reclaim(self):
+        self.probe.open()
+        name = self.a["marker"]["name"]
+        self.probe.click(name)
+        self.assertEqual(self.probe.customCount(), 1)
+
+        self.probe.submenuExit()
+
+        self.assertEqual(self.probe.customCount(), 1)
+        self.assertEqual(
+            self.probe.stockOtherCount(self.probe.markerId(name)), 0
+        )
+        self.assertEqual(self.probe.shownClass(), "CompletionistRaven")
+        self.assertFalse(self.probe.legacyRavenHudActive())
 
     def test_false_event_cannot_revive_and_postboundary_snapshot_can(self):
         self.probe.open()
