@@ -73,8 +73,30 @@ function Test-RavenSnapshotDeliveryProofLines(
         'RAVEN_NATIVE_BRIDGE_DELIVERY_READY mechanism=loopback_socket .*' +
         'static_descriptor_writes=false save_writes=false progression_writes=false'))
 
+    # Cross-context Raven lifecycle authority is proven by the native bridge,
+    # not by map-Lua _G. A kill note belongs to one restore epoch; later
+    # checkpoint/fresh boundaries must advance that epoch.
+    $bridgeKillIndex = -1
+    $bridgeKillEpoch = $null
+    $bridgeBoundaryEpochs = New-Object System.Collections.Generic.List[uint64]
+    for ($index = 0; $index -lt $safeBridge.Count; $index++) {
+        $line = [string]$safeBridge[$index]
+        if ($bridgeKillIndex -lt 0 -and
+            $line -match 'RAVEN_NATIVE_BRIDGE_KILL_NOTED catalogueId=([^ ]+) restoreEpoch=([0-9]+) ') {
+            $bridgeKillIndex = $index
+            $bridgeKillEpoch = [uint64]$Matches[2]
+            continue
+        }
+        if ($bridgeKillIndex -ge 0 -and
+            $line -match 'RAVEN_NATIVE_BRIDGE_BOUNDARY_NOTED restoreEpoch=([0-9]+) advanced=true ') {
+            $epoch = [uint64]$Matches[1]
+            if ($null -eq $bridgeKillEpoch -or $epoch -gt $bridgeKillEpoch) {
+                $bridgeBoundaryEpochs.Add($epoch)
+            }
+        }
+    }
+
     $advancedIndex = -1
-    $eventIndex = -1
     $reopenIndex = -1
     $checkpointBoundaryIndex = -1
     $checkpointApplyIndex = -1
@@ -95,39 +117,47 @@ function Test-RavenSnapshotDeliveryProofLines(
             continue
         }
 
-        if ($advancedIndex -ge 0 -and $eventIndex -lt 0 -and
-            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] STATE .*collected=true source=OnHitByWeapon') {
-            $eventIndex = $index
-            continue
-        }
-
-        if ($eventIndex -ge 0 -and $reopenIndex -lt 0 -and
-            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_REFRESH source=map_create ') {
-            $reopenIndex = $index
+        # The first map reconstruction after the bridge kill note must contain
+        # the full old saved set PLUS the new kill: 28/25. This is the
+        # machine-verifiable replacement for the impossible cross-sandbox
+        # map-Lua OnHit event.
+        if ($advancedIndex -ge 0 -and $reopenIndex -lt 0 -and
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*killed=28 alive=25 .*postBoundary=false .*restoreEpoch=([0-9]+) .*authority=latest_v1') {
+            $observedKillEpoch = [uint64]$Matches[1]
+            if ($null -eq $bridgeKillEpoch -or $observedKillEpoch -eq $bridgeKillEpoch) {
+                $reopenIndex = $index
+            }
             continue
         }
 
         if ($reopenIndex -ge 0 -and $checkpointBoundaryIndex -lt 0 -and
-            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] AUTHORITY_BOUNDARY source=(?:OnRestoreCheckpoint|EVT_LoadSaveFile_Done) boundaryEpoch=([0-9]+) captureReady=true ') {
-            $checkpointBoundaryIndex = $index
-            $checkpointEpoch = [uint64]$Matches[1]
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] AUTHORITY_BOUNDARY .*source=native_restore_epoch .*boundaryEpoch=([0-9]+) .*captureReady=true ') {
+            $candidateEpoch = [uint64]$Matches[1]
+            if ($bridgeBoundaryEpochs.Contains($candidateEpoch)) {
+                $checkpointBoundaryIndex = $index
+                $checkpointEpoch = $candidateEpoch
+            }
             continue
         }
 
         if ($checkpointBoundaryIndex -ge 0 -and $checkpointApplyIndex -lt 0 -and
-            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*killed=28 alive=25 .*postBoundary=true boundaryEpoch=([0-9]+) authority=capture_v2') {
-            $observedEpoch = [uint64]$Matches[1]
-            if ($null -ne $checkpointEpoch -and $observedEpoch -eq $checkpointEpoch) {
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*killed=28 alive=25 .*postBoundary=true boundaryEpoch=([0-9]+) restoreEpoch=([0-9]+) authority=capture_v2') {
+            $boundaryEpoch = [uint64]$Matches[1]
+            $restoreEpoch = [uint64]$Matches[2]
+            if ($null -ne $checkpointEpoch -and
+                $boundaryEpoch -eq $checkpointEpoch -and
+                $restoreEpoch -eq $checkpointEpoch) {
                 $checkpointApplyIndex = $index
                 $checkpointEpochMatched = $true
             }
             continue
         }
 
-        if ($checkpointApplyIndex -ge 0 -and $freshIndex -lt 0 -and
-            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] AUTHORITY_BOUNDARY source=(?:OnRestoreCheckpoint|EVT_LoadSaveFile_Done) boundaryEpoch=([0-9]+) captureReady=true ') {
+        if ($checkpointApplyIndex -ge 0 -and $freshBoundaryIndex -lt 0 -and
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] AUTHORITY_BOUNDARY .*source=native_restore_epoch .*boundaryEpoch=([0-9]+) .*captureReady=true ') {
             $candidateEpoch = [uint64]$Matches[1]
-            if ($null -eq $checkpointEpoch -or $candidateEpoch -ne $checkpointEpoch) {
+            if ($candidateEpoch -gt [uint64]$checkpointEpoch -and
+                $bridgeBoundaryEpochs.Contains($candidateEpoch)) {
                 $freshBoundaryIndex = $index
                 $freshEpoch = $candidateEpoch
             }
@@ -135,19 +165,34 @@ function Test-RavenSnapshotDeliveryProofLines(
         }
 
         if ($freshBoundaryIndex -ge 0 -and $freshIndex -lt 0 -and
-            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*killed=0 alive=53 .*postBoundary=true boundaryEpoch=([0-9]+) authority=capture_v2') {
-            $observedEpoch = [uint64]$Matches[1]
-            if ($null -ne $freshEpoch -and $observedEpoch -eq $freshEpoch) {
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*killed=0 alive=53 .*postBoundary=true boundaryEpoch=([0-9]+) restoreEpoch=([0-9]+) authority=capture_v2') {
+            $boundaryEpoch = [uint64]$Matches[1]
+            $restoreEpoch = [uint64]$Matches[2]
+            if ($null -ne $freshEpoch -and
+                $boundaryEpoch -eq $freshEpoch -and
+                $restoreEpoch -eq $freshEpoch) {
                 $freshIndex = $index
                 $freshEpochMatched = $true
             }
         }
     }
 
+    $bridgeOrdered = $bridgeKillIndex -ge 0 -and
+        $bridgeBoundaryEpochs.Count -ge 2 -and
+        $bridgeBoundaryEpochs[0] -gt [uint64]$bridgeKillEpoch -and
+        $bridgeBoundaryEpochs[1] -gt $bridgeBoundaryEpochs[0]
+    $loaderOrdered = $advancedIndex -ge 0 -and
+        $reopenIndex -gt $advancedIndex -and
+        $checkpointBoundaryIndex -gt $reopenIndex -and
+        $checkpointApplyIndex -gt $checkpointBoundaryIndex -and
+        $freshBoundaryIndex -gt $checkpointApplyIndex -and
+        $freshIndex -gt $freshBoundaryIndex
+
     return [pscustomobject]@{
         DeliveryReady = @($deliveryReady).Count -gt 0
         AdvancedApplied = $advancedIndex -ge 0
-        ImmediateEvent = $eventIndex -ge 0
+        ImmediateEvent = $bridgeKillIndex -ge 0
+        ImmediateKillEpoch = $bridgeKillEpoch
         MapReopenObserved = $reopenIndex -ge 0
         CheckpointBoundaryObserved = $checkpointBoundaryIndex -ge 0
         PostBoundaryApplied = $checkpointApplyIndex -ge 0
@@ -157,12 +202,7 @@ function Test-RavenSnapshotDeliveryProofLines(
         FreshApplied = $freshIndex -ge 0
         FreshBoundaryEpochMatched = $freshEpochMatched
         FreshBoundaryEpoch = $freshEpoch
-        Ordered = $advancedIndex -ge 0 -and $eventIndex -gt $advancedIndex -and
-            $reopenIndex -gt $eventIndex -and
-            $checkpointBoundaryIndex -gt $reopenIndex -and
-            $checkpointApplyIndex -gt $checkpointBoundaryIndex -and
-            $freshBoundaryIndex -gt $checkpointApplyIndex -and
-            $freshIndex -gt $freshBoundaryIndex
+        Ordered = $bridgeOrdered -and $loaderOrdered
     }
 }
 
