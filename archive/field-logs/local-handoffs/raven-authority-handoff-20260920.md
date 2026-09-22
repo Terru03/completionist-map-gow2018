@@ -6658,3 +6658,29 @@ Regression coverage:
 Codex quota expired before it could continue the audit. No additional Codex
 findings were produced. Windows offline gates must be rerun from the current
 head before the proof refresh or live game test.
+
+
+### Follow-up 2026-09-22 18:20 - every top-level Raven PowerShell run must publish evidence
+
+User requirement clarified: PowerShell validation/runtime commands used for the
+Raven RC must archive their console output to Git and push it, rather than only
+printing locally.
+
+Implemented:
+
+- `02d06bba9d02d7989934aa7d5d2568da07e6f289`
+  - added
+    `tools/v0.10.5/test-raven-native-snapshot-delivery-offline-gates-and-push.ps1`;
+  - captures the complete offline-gate console transcript;
+  - records result/error metadata and the exact tested HEAD;
+  - commits and pushes evidence on both success and failure;
+  - performs a fast-forward pull before testing;
+  - commits only its own evidence directory.
+
+- `c2840e4f5fa2dc02967f4aa0ae382222e9235d1d`
+  - adds the new evidence publisher to the PowerShell syntax gate.
+
+Existing proof-refresh and live-proof top-level runners already publish their
+own evidence. Future commands given to the user should use the `*-and-push.ps1`
+or equivalent evidence-publishing wrappers so no meaningful PowerShell test run
+exists only in the local terminal.
