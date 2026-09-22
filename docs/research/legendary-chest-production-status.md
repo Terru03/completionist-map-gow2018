@@ -403,3 +403,40 @@ This is a tooling-performance repair only. It does not alter the identity
 grammar, staged checkpoint oracle, state semantics, Raven runtime, active saves,
 or game files. The 32/32 identity gate remains unproven until the repaired
 resolver completes and archives its result.
+
+
+### Static identity resolver second performance repair 2026-09-22
+
+The first optimisation, a compiled multi-pattern regex over WAD payloads, remained
+unacceptably expensive. On the repaired run the resolver consumed about 205 CPU
+seconds and was still inside WAD 1/27.
+
+The reference walk was therefore removed from candidate discovery entirely.
+
+Reason this is safe and stronger:
+
+- the old payload walker only accepted a 16-byte value when that value was
+  already an exact parsed WAD record ID;
+- therefore every candidate the old two-hop graph walk could ever emit is
+  already present in the parsed record table;
+- the new resolver scores the superset of all exact record IDs from all 27
+  tracked Legendary WADs;
+- semantic record names are retained only as diagnostic evidence and never as an
+  acceptance filter;
+- acceptance remains exactly one candidate+scene grammar reproducing all 32/32
+  represented staged GameObject hashes.
+
+Scoring is also reduced to the necessary work:
+
+- each row/grammar scene prefix hash is computed once;
+- each prototype candidate is tested by continuing that hash with only the
+  final 16-byte identity element;
+- the smallest staged hash set is used as the first exact discriminator before
+  wider validation;
+- progress is emitted during both WAD inventory and candidate scoring.
+
+A unit test now proves that the fast hash continuation is byte-for-byte
+equivalent to hashing the full identity vector.
+
+No Raven runtime files, active saves, progression state, or game files are
+modified by this repair.
