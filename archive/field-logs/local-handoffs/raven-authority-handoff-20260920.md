@@ -7493,3 +7493,61 @@ Verified green:
 
 The cosmetic branch is ready for the short `-CosmeticOnly` field proof again.
 No full Raven persistence/fresh-save repetition is required.
+
+
+### Cosmetic polish field report 2026-09-22 - sticky cursor fixed; rapid re-add race and footer immediacy remain
+
+Latest cosmetic-only live capture:
+
+- evidence commit:
+  `2847dda590d8916c175326538caf025056f4f8d4`;
+- capture:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-live-proof-20260922-115230`;
+- runner result says `RAVEN_COSMETIC_POLISH_LIVE_PROOF_PASSED` because
+  `COSMETIC_OK` was entered during the scripted check.
+
+That result is superseded by the user's immediate post-run field report:
+
+- sticky floating cursor text is fixed;
+- footer text still does not update immediately on the first Add;
+- boat-dock artwork can still appear if Add -> Remove -> Add is performed in
+  very quick succession (roughly three clicks in under two seconds);
+- the same sequence with longer pauses does not reproduce the boat artwork.
+
+Log timing confirms normal slower cycles always reach
+`PROMPT_SETTLED state=untracked` before the next Add. The field-only failure is
+therefore the third click arriving while removal settlement is still in flight.
+
+Replacement fix:
+
+- `b6ea70e1dda98b093923143ac81e2604bdd1e763`
+  - Add/Remove now always perform the committed footer-only refresh directly on
+    the action click;
+  - committed footer makes the exact action the final footer writer after the
+    stock `UpdateFooterButtonText()` redraw;
+  - rapid same-Raven Add received while the previous Remove is unsettled is
+    queued instead of creating a second overlapping target;
+  - remove settlement now also clears same-UID stock state;
+  - queued Add is applied only after custom + stock state is clean, then
+    recreates `CompletionistRaven` with `currShownMarkerID=nil`.
+
+Regression update:
+
+- `581d5ccd235e285937d136c04549f8e8381f9041`
+  - rapid third click is required to queue;
+  - custom Raven is required to appear only after removal settlement;
+  - slower settled Remove -> Add remains immediate;
+  - normal first Add must log the committed-footer path.
+
+Live-proof prompt update:
+
+- `49a78d8b7f6b882712899531b051f431e1a67820`
+  - `-CosmeticOnly` now explicitly requires:
+    1. immediate footer update;
+    2. no sticky floating cursor text;
+    3. deliberate rapid Add -> Remove -> Add stress;
+    4. normal slower Remove -> Add.
+
+The functional Raven RC remains untouched. Generated `mapmenu.lua` changed,
+so delivery proof refresh + full offline gates are required before the next
+field check.
