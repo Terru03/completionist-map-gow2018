@@ -1,13 +1,14 @@
 param(
     [string]$GameRoot = 'G:\SteamLibrary\steamapps\common\GodOfWar',
     [ValidateRange(30, 180)][int]$StartupTimeoutSeconds = 90,
-    [ValidateRange(20, 90)][int]$MainMenuSettleSeconds = 40
+    [ValidateRange(20, 90)][int]$MainMenuSettleSeconds = 40,
+    [string]$ExpectedBranch = 'codex/all-ravens-release-candidate',
+    [switch]$MapVisibilityOnly
 )
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-$ExpectedBranch = 'codex/all-ravens-release-candidate'
 $repo = (& git rev-parse --show-toplevel 2>$null).Trim()
 if ([string]::IsNullOrWhiteSpace($repo)) { throw 'Not inside repository.' }
 Set-Location $repo
@@ -47,11 +48,13 @@ $engineHash = [Convert]::ToHexString(
 if ($engineHash -ne '83f11f8e3a5b6e56ad5d06ba22baa779f91c986ace42ab3017de2b2231d7057a') {
     throw 'Transaction engine canonical SHA differs.'
 }
+$RunnerExpectedBranch = $ExpectedBranch
 . $engine -LibraryOnly
 # The v0.10.4 transaction engine defines its own $ExpectedBranch when
-# dot-sourced. Restore this runner's branch contract immediately afterwards so
-# evidence/result metadata and pushes cannot be redirected to the old branch.
-$ExpectedBranch = 'codex/all-ravens-release-candidate'
+# dot-sourced. Restore this runner's caller-selected branch contract
+# immediately afterwards so evidence/result metadata and pushes stay on the
+# intended Raven branch.
+$ExpectedBranch = $RunnerExpectedBranch
 
 $pythonExe = 'python.exe'
 $pythonPrefix = @()
@@ -187,6 +190,7 @@ $published = $false
 $checkpointReloadAccepted = $false
 $crossSaveRevivalAccepted = $false
 $sameMapReaddAccepted = $false
+$mapVisibilityAccepted = $false
 $mapManifest = $null
 $gameProcess = $null
 
@@ -274,6 +278,9 @@ function Publish-Proof([string]$Result, [string]$Reason, [object]$Delivery) {
         "immediate_reopen_postkill_save_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
         "cross_save_revival_manual=$($script:crossSaveRevivalAccepted.ToString().ToLowerInvariant())"
         "same_map_readd_no_stock_manual=$($script:sameMapReaddAccepted.ToString().ToLowerInvariant())"
+        "map_visibility_only_mode=$($MapVisibilityOnly.ToString().ToLowerInvariant())"
+        "map_filter_visibility_manual=$($script:mapVisibilityAccepted.ToString().ToLowerInvariant())"
+        "mystic_gateway_visibility_manual=$($script:mapVisibilityAccepted.ToString().ToLowerInvariant())"
         "fresh_boundary_observed=$($Delivery.FreshBoundaryObserved.ToString().ToLowerInvariant())"
         "fresh_boundary_epoch_matched=$($Delivery.FreshBoundaryEpochMatched.ToString().ToLowerInvariant())"
         "fresh_boundary_epoch=$($Delivery.FreshBoundaryEpoch)"
@@ -303,7 +310,7 @@ try {
     $transcript = $true
 
     Write-Host 'RAVEN SNAPSHOT DELIVERY LIVE PROOF - OFFLINE GATES FIRST'
-    & $offlineGate -GameRootFixture $game
+    & $offlineGate -GameRootFixture $game -ExpectedBranch $ExpectedBranch
     if ($LASTEXITCODE -ne 0) { throw 'Snapshot delivery offline gates failed.' }
 
     $head = (& git rev-parse HEAD).Trim()
@@ -333,41 +340,52 @@ try {
         throw 'GoW exited during main-menu settle.'
     }
 
-    $answer = Read-Host 'Load advanced Raven save. Open map. Verify exact surviving Raven set, captions, realm filter, and immediate bottom-row text. Then on the SAME Raven without closing the map do Add -> Remove -> Add; verify the Raven is tracked again and NO boat/stock HUD marker appears. Type ADVANCED_OK, or REGRESSION if anything is wrong'
-    if ($answer -eq 'REGRESSION') { throw 'Advanced-save or same-map Raven re-add manual regression reported.' }
-    if ($answer -ne 'ADVANCED_OK') { throw 'Advanced-save/same-map re-add manual acceptance not confirmed.' }
-    $sameMapReaddAccepted = $true
-    $logs = Get-FreshLogs
-    $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
-    if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied) { throw 'Advanced-save Lua authority evidence missing.' }
-
-    $answer = Read-Host 'Kill one loaded live Raven. Verify exact marker vanishes at once. Close/reopen map and verify it stays absent. NOW create a NEW MANUAL SAVE after the kill (do not rely on an autosave/checkpoint), then load that exact new save, reopen the map, and verify the same Raven is still absent. Type IMMEDIATE_OK only after loading that exact post-kill manual save, or REGRESSION if anything is wrong'
-    if ($answer -eq 'REGRESSION') { throw 'Immediate-kill or checkpoint-reload manual regression reported.' }
-    if ($answer -ne 'IMMEDIATE_OK') { throw 'Immediate-kill/checkpoint-reload manual acceptance not confirmed.' }
-    $checkpointReloadAccepted = $true
-    $logs = Get-FreshLogs
-    $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
-    if (-not $delivery.ImmediateEvent -or
-        -not $delivery.CheckpointBoundaryObserved -or -not $delivery.PostBoundaryApplied -or
-        -not $delivery.CheckpointBoundaryEpochMatched) {
-        throw 'Gameplay Raven kill note or matching +1 post-kill save-load V2 authority evidence missing.'
+    if ($MapVisibilityOnly) {
+        $answer = Read-Host 'MAP VISIBILITY CHECK: Load a save with at least one living Raven. On the normal map: (1) Show All must show living Ravens; (2) RAVENS must show living Ravens; (3) switch to at least two non-Raven filters such as Mystic Gateways/Shops/Artefacts and Ravens must disappear immediately; (4) switch back to Show All or RAVENS and only living Ravens must return; (5) close the map, interact with a Mystic Gateway and open its FAST TRAVEL destination map: NO Raven icons may be visible there in any realm. Type MAP_VISIBILITY_OK only if every check passes, or REGRESSION if anything is wrong'
+        if ($answer -eq 'REGRESSION') { throw 'Raven map filter or Mystic Gateway visibility regression reported.' }
+        if ($answer -ne 'MAP_VISIBILITY_OK') { throw 'Raven map visibility acceptance not confirmed.' }
+        $mapVisibilityAccepted = $true
+        $logs = Get-FreshLogs
+        $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
+        if (-not $delivery.DeliveryReady) { throw 'Native delivery readiness disappeared during map visibility proof.' }
     }
-
-    $answer = Read-Host 'Now load a DIFFERENT pre-kill/older save where that same Raven is still alive. Open the map and verify that Raven comes back, while the newly loaded save otherwise shows its own Raven state. Type CROSSSAVE_OK, or REGRESSION if anything is wrong'
-    if ($answer -eq 'REGRESSION') { throw 'Cross-save Raven revival/manual state isolation regression reported.' }
-    if ($answer -ne 'CROSSSAVE_OK') { throw 'Cross-save Raven revival/manual state isolation acceptance not confirmed.' }
-    $crossSaveRevivalAccepted = $true
-
-    $answer = Read-Host 'Load true fresh save. Open map. Verify all 53 Ravens, captions, realm filter, and compass behavior. Type FRESH_OK, or REGRESSION if anything is wrong'
-    if ($answer -eq 'REGRESSION') { throw 'Fresh-save manual regression reported.' }
-    if ($answer -ne 'FRESH_OK') { throw 'Fresh-save manual acceptance not confirmed.' }
-    $logs = Get-FreshLogs
-    $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
-    if (-not $delivery.FreshBoundaryObserved -or
-        -not $delivery.FreshApplied -or
-        -not $delivery.FreshBoundaryEpochMatched -or
-        -not $delivery.Ordered) {
-        throw 'Fresh 0-killed matching V2 boundary authority evidence missing.'
+    else {
+        $answer = Read-Host 'Load advanced Raven save. Open map. Verify exact surviving Raven set, captions, realm filter, and immediate bottom-row text. Then on the SAME Raven without closing the map do Add -> Remove -> Add; verify the Raven is tracked again and NO boat/stock HUD marker appears. Type ADVANCED_OK, or REGRESSION if anything is wrong'
+        if ($answer -eq 'REGRESSION') { throw 'Advanced-save or same-map Raven re-add manual regression reported.' }
+        if ($answer -ne 'ADVANCED_OK') { throw 'Advanced-save/same-map re-add manual acceptance not confirmed.' }
+        $sameMapReaddAccepted = $true
+        $logs = Get-FreshLogs
+        $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
+        if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied) { throw 'Advanced-save Lua authority evidence missing.' }
+    
+        $answer = Read-Host 'Kill one loaded live Raven. Verify exact marker vanishes at once. Close/reopen map and verify it stays absent. NOW create a NEW MANUAL SAVE after the kill (do not rely on an autosave/checkpoint), then load that exact new save, reopen the map, and verify the same Raven is still absent. Type IMMEDIATE_OK only after loading that exact post-kill manual save, or REGRESSION if anything is wrong'
+        if ($answer -eq 'REGRESSION') { throw 'Immediate-kill or checkpoint-reload manual regression reported.' }
+        if ($answer -ne 'IMMEDIATE_OK') { throw 'Immediate-kill/checkpoint-reload manual acceptance not confirmed.' }
+        $checkpointReloadAccepted = $true
+        $logs = Get-FreshLogs
+        $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
+        if (-not $delivery.ImmediateEvent -or
+            -not $delivery.CheckpointBoundaryObserved -or -not $delivery.PostBoundaryApplied -or
+            -not $delivery.CheckpointBoundaryEpochMatched) {
+            throw 'Gameplay Raven kill note or matching +1 post-kill save-load V2 authority evidence missing.'
+        }
+    
+        $answer = Read-Host 'Now load a DIFFERENT pre-kill/older save where that same Raven is still alive. Open the map and verify that Raven comes back, while the newly loaded save otherwise shows its own Raven state. Type CROSSSAVE_OK, or REGRESSION if anything is wrong'
+        if ($answer -eq 'REGRESSION') { throw 'Cross-save Raven revival/manual state isolation regression reported.' }
+        if ($answer -ne 'CROSSSAVE_OK') { throw 'Cross-save Raven revival/manual state isolation acceptance not confirmed.' }
+        $crossSaveRevivalAccepted = $true
+    
+        $answer = Read-Host 'Load true fresh save. Open map. Verify all 53 Ravens, captions, realm filter, and compass behavior. Type FRESH_OK, or REGRESSION if anything is wrong'
+        if ($answer -eq 'REGRESSION') { throw 'Fresh-save manual regression reported.' }
+        if ($answer -ne 'FRESH_OK') { throw 'Fresh-save manual acceptance not confirmed.' }
+        $logs = Get-FreshLogs
+        $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
+        if (-not $delivery.FreshBoundaryObserved -or
+            -not $delivery.FreshApplied -or
+            -not $delivery.FreshBoundaryEpochMatched -or
+            -not $delivery.Ordered) {
+            throw 'Fresh 0-killed matching V2 boundary authority evidence missing.'
+        }
     }
 
     while ($true) {
@@ -384,8 +402,14 @@ try {
     Restore-MapCandidate
     if (-not (Test-BridgeRollbackState) -or -not (Test-GameFileSnapshot $mapBefore)) { throw 'Combined rollback was not exact.' }
 
-    Publish-Proof 'RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_PASSED' 'advanced_immediate_reopen_checkpoint_reload_fresh_delivery_proven' $delivery
-    Write-Host 'RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_PASSED'
+    if ($MapVisibilityOnly) {
+        Publish-Proof 'RAVEN_MAP_VISIBILITY_LIVE_PROOF_PASSED' 'map_filters_and_mystic_gateway_fast_travel_visibility_proven' $delivery
+        Write-Host 'RAVEN_MAP_VISIBILITY_LIVE_PROOF_PASSED'
+    }
+    else {
+        Publish-Proof 'RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_PASSED' 'advanced_immediate_reopen_checkpoint_reload_fresh_delivery_proven' $delivery
+        Write-Host 'RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_PASSED'
+    }
     Write-Host "Evidence: $relativeDir"
 }
 catch {
