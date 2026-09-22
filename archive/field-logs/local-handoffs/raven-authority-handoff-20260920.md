@@ -7693,3 +7693,53 @@ it capture rendered pixels/raw input. Before another behavioral patch, add
 logging-only instrumentation around ShowOnCompass entry/ownership/delegation and
 before/after custom+stock target sets so the exact rapid-click escape path is
 field-proven instead of inferred.
+
+
+### Cosmetic polish routing instrumentation 2026-09-22 - field proof gate before behavior change
+
+Continuation point:
+
+- prior field evidence: `e343fe5b3e3ce14c19b527472d00936e4d57b4b5`;
+- prior interpretation/handoff: `521de80eeb1325176dc25b5d8ca5ad8a1a1abbf1`;
+- branch remains `codex/all-ravens-cosmetic-polish`.
+
+The field capture proved the synthetic queued-readd theory was not the real rapid-click path:
+
+- rapid interaction reached `SELECT_DISARM reason=prompt_owner_mismatch`;
+- no `READD_QUEUED` or `READD_APPLIED` occurred;
+- the later custom `SHOW` reported `replacedStockCount=1`, proving a stock target had already won before v0.10.5 regained control;
+- slow Add -> Remove -> Add remained clean.
+
+Logging-only source instrumentation:
+
+- `0307ec05145c378d91ee8845d3d7e1fa8665541e`
+  - adds `PROMPT_OWNER_MISMATCH` with exact base prompt state, `currMarkerID`, `currShownMarkerID`, tracked catalogue owner, prompt intent, base selection flags, and custom/stock target sets;
+  - adds `SHOWONCOMPASS_ENTRY`;
+  - adds `SHOWONCOMPASS_DELEGATE_BEFORE` and `SHOWONCOMPASS_DELEGATE_AFTER` around the exact saved base `previousShow` call;
+  - preserves all base `ShowOnCompass` return values with a pack/unpack wrapper;
+  - adds `SHOWONCOMPASS_DELEGATE_ABORT` if the pre-delegation custom cleanup fails;
+  - adds `SHOWONCOMPASS_REFUSED` for the non-exact custom action guard;
+  - adds `PROMPT_ROUTE_OVERRIDE` for committed explicit Raven prompt writes;
+  - adds `PROMPT_BASE_DELEGATE_WITH_INTENT` when a later base prompt query occurs after exact collision ownership has been consumed but a committed Raven prompt intent still exists.
+- This commit intentionally changes no routing decision, marker ownership policy, persistence, authority, save state, or progression state.
+
+Instrumentation regression coverage:
+
+- `5ea1478d61c2bef283faf609eaa3d81db183f3aa`
+  - synthetic exact Raven -> transient mismatched `currMarkerID` -> prompt disarm -> base `ShowOnCompass` delegation must emit the full before/after boundary and end with the synthetic stock target;
+  - a later unoverridden prompt query after a committed Raven action must emit `PROMPT_BASE_DELEGATE_WITH_INTENT`;
+  - the latter is only synthetic evidence that the footer can re-enter the base prompt path. It is not yet treated as the field root cause.
+
+No GitHub Actions are configured for these commits. The canonical local v0.10.5 Lua/offline gates must run before the next live reproduction.
+
+Next field proof:
+
+1. refresh the generated All-Ravens delivery proof on `codex/all-ravens-cosmetic-polish`;
+2. run the full offline evidence gate and push its result;
+3. run `run-raven-native-snapshot-delivery-live-proof-and-push.ps1 -ExpectedBranch codex/all-ravens-cosmetic-polish -CosmeticOnly`;
+4. reproduce FIRST Add footer immediacy once;
+5. reproduce rapid Add -> Remove -> Add once, deliberately fast enough to trigger the boat regression;
+6. type `REGRESSION` if either defect appears so the script rolls back exactly and pushes the full capture;
+7. inspect the new routing categories above before making any behavior change.
+
+The specific field question is now deterministic: after `PROMPT_OWNER_MISMATCH`, does the next `SHOWONCOMPASS_DELEGATE_BEFORE` already contain a transient stock/current marker owner, and does `SHOWONCOMPASS_DELEGATE_AFTER` create the boat target? For the footer, does a later `PROMPT_BASE_DELEGATE_WITH_INTENT` occur after the committed Raven footer write?
