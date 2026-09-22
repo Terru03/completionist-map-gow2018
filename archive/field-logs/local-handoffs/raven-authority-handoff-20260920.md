@@ -7227,3 +7227,37 @@ The preflight failure itself is archived from the user's terminal report:
 Next step is only to pull the cosmetic branch and rerun the offline evidence
 wrapper with `-ExpectedBranch codex/all-ravens-cosmetic-polish`. The delivery
 proof refresh does NOT need repeating.
+
+
+### Cosmetic polish follow-up 2026-09-22 - second offline preflight failure fixed
+
+Evidence commit:
+
+- `ec388130df14c993a9a49c2e1811acbf2f29e3b0`
+- evidence directory:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-offline-20260922-112318`
+- result:
+  `RAVEN_NATIVE_SNAPSHOT_DELIVERY_OFFLINE_GATES_FAILED`.
+
+The evidence wrapper and inner snapshot-delivery gate accepted the cosmetic
+branch correctly, but stage 1/8 failed before native tests because
+`test-raven-authority-bridge-offline-gates.ps1` still hard-coded
+`codex/all-ravens-release-candidate`.
+
+Fixes:
+
+- `926ba9a52e837b926d178c6b3631584299ee1a7d`
+  - snapshot-delivery offline gate passes `-ExpectedBranch` into the bridge
+    offline gate.
+
+- `50ecda762c1e58ef5c0ea3dc691d0cf3222c5cd8`
+  - bridge offline gate declares `-ExpectedBranch` and no longer hard-codes
+    the RC branch.
+
+The four scripts invoked below that bridge gate were checked and do not contain
+the same branch hard-pin. The proof refresh at
+`f50bfdc7ea88ce55e2bceb8ad0bfa1c79cd8e3d5` remains valid and does not need
+to be repeated.
+
+Next step: pull the cosmetic branch and rerun only the evidence-publishing
+offline wrapper.
