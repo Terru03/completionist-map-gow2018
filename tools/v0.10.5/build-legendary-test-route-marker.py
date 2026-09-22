@@ -105,7 +105,7 @@ def patch_mapmaster(path: Path) -> tuple[bytes, dict]:
             source, old_offset + 0x20, blob, destination + 0x20, relocations
         )
 
-    donor_offset = int(donor[0]["offset"], 16)
+    donor_offset = donor[0]["offset"]
     destination = len(blob)
     blob.extend(source.blob[donor_offset:donor_offset + 0x48])
     struct.pack_into("<Q", blob, destination, TARGET_UID)
