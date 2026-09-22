@@ -1,5 +1,5 @@
 -- BEGIN COMPLETIONIST V0.10.5 ALL RAVENS
--- Data drives all Raven work. Catalogue Ravens are visible unless explicitly collected.
+-- Data drives all Raven work. Raven markers stay hidden until atomic authority is established.
 do
   local prefix = "[CompletionistMap v0.10.5-all-ravens] "
   local ravenClass = "CompletionistRaven"
@@ -21,6 +21,8 @@ do
   _G.CompletionistMapV105RavenState = states
   local eventKilled = _G.CompletionistMapV105EventKilled or {}
   _G.CompletionistMapV105EventKilled = eventKilled
+  local hasAuthoritativeRavenState =
+      _G.CompletionistMapV105HasAuthoritativeRavenState == true
   local previousPrompt = MapOn.GetShowOnCompassPrompt
   local previousShow = MapOn.ShowOnCompass
   local previousUpdate = MapOn.Update
@@ -60,7 +62,8 @@ do
   end
 
   local function shouldShow(catalogueId)
-    return byCatalogueId[catalogueId] ~= nil and not isCollected(catalogueId)
+    return hasAuthoritativeRavenState and
+        byCatalogueId[catalogueId] ~= nil and not isCollected(catalogueId)
   end
 
   local function nativeNotice(category, fields, key)
@@ -1071,12 +1074,14 @@ do
       end
     end
 
+    hasAuthoritativeRavenState = true
+    _G.CompletionistMapV105HasAuthoritativeRavenState = true
     if lastMapOnSelf ~= nil then syncIcons(lastMapOnSelf, "persisted:" .. tostring(source)) end
     log("PERSISTED_KILLS", "source=" .. tostring(source) ..
         " accepted=" .. tostring(accepted) ..
         " eventOverlay=" .. tostring(eventOverlayCount) ..
         " clearEventEvidence=" .. tostring(clearEventEvidence == true) ..
-        " catalogueDefaultVisible=true progressionWrites=false")
+        " authorityEstablished=true catalogueDefaultVisible=false progressionWrites=false")
     return true, accepted
   end
 
@@ -1156,7 +1161,7 @@ do
   log("API", "installed=true catalogueCount=" .. tostring(#rows) ..
       " mapResource=" .. mapResource .. " compassClass=" .. ravenClass ..
       " exactCollisionRequired=true markerIdAloneInfersRaven=false" ..
-      " permanentPolling=false postLoadBoundedRefresh=true progressionWrites=false catalogueDefaultVisible=true" ..
+      " permanentPolling=false postLoadBoundedRefresh=true progressionWrites=false catalogueDefaultVisible=false" ..
       " positiveEventEvidenceOnly=true atomicAuthorityClearsState=true" ..
       " sessionKillOverlay=true loadBoundaryClearsOverlay=true" ..
       " boundaryEpochCapture=true loadDataCaptureReady=false loadDoneCaptureReady=true" ..
