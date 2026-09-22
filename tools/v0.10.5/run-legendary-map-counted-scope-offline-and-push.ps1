@@ -32,7 +32,7 @@ $Audit = Join-Path $RepoRoot 'docs\research\all-collectibles-native-audit.json'
 $Capture = Join-Path $RepoRoot 'archive\field-logs\runtime-captures\staged-wad-bitstream-raven-20260921-060345-c2c9bcc1'
 
 foreach ($required in @(
-    $Resolver, $IdentityTests, $RavenGuard, $Catalogue, $Audit,
+    $Resolver, $IdentityHelper, $IdentityTests, $RavenGuard, $Catalogue, $Audit,
     (Join-Path $Capture 'report.json')
 )) {
     if (-not (Test-Path -LiteralPath $required)) {
@@ -46,9 +46,9 @@ if (@(Get-Process -ErrorAction SilentlyContinue | Where-Object {
     throw 'Close God of War. This proof is fully offline and does not need the game running.'
 }
 
-& $python.Source -m py_compile $Resolver
+& $python.Source -m py_compile $Resolver $IdentityHelper $IdentityTests
 if ($LASTEXITCODE -ne 0) {
-    throw 'Legendary scope resolver failed Python syntax validation.'
+    throw 'Legendary scope Python syntax validation failed.'
 }
 
 & $python.Source $IdentityTests
