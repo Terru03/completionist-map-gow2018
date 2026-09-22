@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import importlib.util
 import json
 from pathlib import Path
+import sys
 import unittest
 
 import legendary_chest_identity as identity
@@ -10,6 +12,14 @@ import legendary_chest_identity as identity
 
 HERE = Path(__file__).resolve().parent
 CATALOGUE = HERE.parents[1] / "config" / "collectibles" / "v0.10.5" / "all-collectibles.json"
+RESOLVER_PATH = HERE / "resolve-legendary-serialized-identities-static.py"
+
+_spec = importlib.util.spec_from_file_location("_legendary_static_resolver_test", RESOLVER_PATH)
+if _spec is None or _spec.loader is None:
+    raise RuntimeError(f"unable to load resolver: {RESOLVER_PATH}")
+resolver = importlib.util.module_from_spec(_spec)
+sys.modules[_spec.name] = resolver
+_spec.loader.exec_module(resolver)
 
 
 class LegendaryChestIdentityTests(unittest.TestCase):
@@ -107,6 +117,38 @@ class LegendaryChestIdentityTests(unittest.TestCase):
             payload.hex(),
             "01887766554433221100ffeeddccbbaa99",
         )
+
+    def test_static_record_id_matcher_preserves_overlapping_exact_hits(self):
+        first = b"0123456789ABCDEF"
+        second = b"123456789ABCDEFG"
+        ids = {
+            first: [{
+                "name": "first",
+                "id": first,
+                "offset": 0x10,
+                "kind": "test",
+            }],
+            second: [{
+                "name": "second",
+                "id": second,
+                "offset": 0x20,
+                "kind": "test",
+            }],
+        }
+        rec = {
+            "data": b"0123456789ABCDEFG",
+            "name": "synthetic",
+            "id": b"SYNTHETIC_RECORD!",
+            "offset": 0x100,
+        }
+        matcher = resolver.compile_record_id_matcher(ids)
+        hits = resolver.refs_in_record(rec, ids, matcher)
+        self.assertEqual([hit["payload_offset"] for hit in hits], ["0x0", "0x1"])
+        self.assertEqual(
+            [hit["value_hex"] for hit in hits],
+            [first.hex(), second.hex()],
+        )
+
 
 
 if __name__ == "__main__":
