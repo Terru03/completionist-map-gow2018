@@ -7368,3 +7368,48 @@ Regression coverage:
 Functional Raven authority/save/native logic remains identical to the accepted
 RC baseline. The delivery proof must be refreshed again because generated
 `mapmenu.lua` changed.
+
+
+### Cosmetic polish follow-up 2026-09-22 - footer-only fix caught one newer-selection edge case
+
+Proof refresh succeeded at:
+
+- `3600381ee50ea191453f9d082492233c618fc0c4`.
+
+Offline evidence then failed at:
+
+- `8e1b2cce2b1d90f7a503205e58bc6f3211efc25f`;
+- evidence directory:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-offline-20260922-114043`.
+
+Important result: both new cosmetic regressions passed:
+
+- `test_first_add_refreshes_footer_without_sticking_cursor_text`;
+- `test_same_raven_readd_keeps_stock_presentation_state_clear`.
+
+The single failure was the pre-existing regression:
+
+- `test_pending_action_does_not_overwrite_other_raven_prompt`.
+
+Cause:
+
+After tracking Raven A, moving the cursor to Raven B leaves A's settlement
+`promptIntent` alive. The new footer-only watchdog could still redraw A's
+`Remove` footer even though Raven B had become the current exact map
+selection.
+
+Fix:
+
+- `bcd7a72b0ad63f41b786b0c1a5986a1f22cb8ede`
+  - `refreshCommittedFooter()` now checks `currentSelection(self)`;
+  - if another Raven currently owns selection, the older committed intent
+    yields and performs no footer write.
+
+This preserves the intended rules:
+
+1. committed action may refresh the footer after base selection is consumed;
+2. it may never force floating cursor text without live selection ownership;
+3. it may never overwrite a newer Raven selection.
+
+Generated `mapmenu.lua` changed again, so proof refresh and full offline gates
+must be rerun before the next cosmetic-only field test.
