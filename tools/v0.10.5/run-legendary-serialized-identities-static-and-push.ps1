@@ -37,8 +37,7 @@ foreach ($path in @(
     $Catalogue,
     $StagedReport,
     $IdentityTests,
-    $RavenGuard,
-    (Join-Path $GameRoot 'GoW.exe')
+    $RavenGuard
 )) {
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
         throw "Missing required file: $path"
@@ -61,8 +60,8 @@ $failureMessage = ''
 Start-Transcript -LiteralPath $console -Force | Out-Null
 try {
     Write-Host 'LEGENDARY CHEST SERIALIZED IDENTITY RESOLUTION - STATIC / READ ONLY'
-    Write-Host 'Uses shipped WAD files plus the archived staged checkpoint inventory.'
-    Write-Host 'God of War does not need to be running.'
+    Write-Host 'Uses the audited Legendary catalogue plus the archived staged checkpoint inventory.'
+    Write-Host 'No game files or live process are required.'
     Write-Host ''
 
     & pwsh -NoProfile -ExecutionPolicy Bypass -File $RavenGuard
@@ -134,8 +133,8 @@ try {
         'result=LEGENDARY_SERIALIZED_IDENTITY_RESOLUTION_PASSED'
         'staged_binding=32/32'
         'derived_identities=33'
-        "scene_grammar=$($report.winner.scene_grammar)"
-        "prototype_identity_hex=$($report.winner.prototype_identity_hex)"
+        "identity_rule=$($report.winner.scene_grammar)"
+        "own_identity_hex=$($report.winner.prototype_identity_hex)"
         "simple_state_parent_count=$($report.simple_state_oracle.parent_count)"
         'state_semantics_proven=false'
         'process_accessed=false'
