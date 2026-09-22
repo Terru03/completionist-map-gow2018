@@ -254,8 +254,13 @@ function Publish-Proof([string]$Result, [string]$Reason, [object]$Delivery) {
         "map_reopen_observed=$($Delivery.MapReopenObserved.ToString().ToLowerInvariant())"
         "checkpoint_authority_boundary_observed=$($Delivery.CheckpointBoundaryObserved.ToString().ToLowerInvariant())"
         "checkpoint_postboundary_snapshot_applied=$($Delivery.PostBoundaryApplied.ToString().ToLowerInvariant())"
+        "checkpoint_boundary_epoch_matched=$($Delivery.CheckpointBoundaryEpochMatched.ToString().ToLowerInvariant())"
+        "checkpoint_boundary_epoch=$($Delivery.CheckpointBoundaryEpoch)"
         "checkpoint_reload_after_kill_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
         "same_map_readd_no_stock_manual=$($script:sameMapReaddAccepted.ToString().ToLowerInvariant())"
+        "fresh_boundary_observed=$($Delivery.FreshBoundaryObserved.ToString().ToLowerInvariant())"
+        "fresh_boundary_epoch_matched=$($Delivery.FreshBoundaryEpochMatched.ToString().ToLowerInvariant())"
+        "fresh_boundary_epoch=$($Delivery.FreshBoundaryEpoch)"
         "fresh_0_killed_applied=$($Delivery.FreshApplied.ToString().ToLowerInvariant())"
         "ordered_acceptance=$($Delivery.Ordered.ToString().ToLowerInvariant())"
         "map_candidate_rollback_exact=$($mapExact.ToString().ToLowerInvariant())"
@@ -327,8 +332,9 @@ try {
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
     if (-not $delivery.ImmediateEvent -or -not $delivery.MapReopenObserved -or
-        -not $delivery.CheckpointBoundaryObserved -or -not $delivery.PostBoundaryApplied) {
-        throw 'Immediate event, map-reopen, or post-checkpoint authority evidence missing.'
+        -not $delivery.CheckpointBoundaryObserved -or -not $delivery.PostBoundaryApplied -or
+        -not $delivery.CheckpointBoundaryEpochMatched) {
+        throw 'Immediate event, map-reopen, or matching V2 checkpoint authority evidence missing.'
     }
 
     $answer = Read-Host 'Load true fresh save. Open map. Verify all 53 Ravens, captions, realm filter, and compass behavior. Type FRESH_OK, or REGRESSION if anything is wrong'
@@ -336,7 +342,12 @@ try {
     if ($answer -cne 'FRESH_OK') { throw 'Fresh-save manual acceptance not confirmed.' }
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
-    if (-not $delivery.FreshApplied -or -not $delivery.Ordered) { throw 'Fresh 0-killed ordered Lua apply evidence missing.' }
+    if (-not $delivery.FreshBoundaryObserved -or
+        -not $delivery.FreshApplied -or
+        -not $delivery.FreshBoundaryEpochMatched -or
+        -not $delivery.Ordered) {
+        throw 'Fresh 0-killed matching V2 boundary authority evidence missing.'
+    }
 
     while ($true) {
         $answer = Read-Host 'Quit GoW fully, then type FINALIZE'
