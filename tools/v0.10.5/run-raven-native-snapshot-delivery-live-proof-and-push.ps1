@@ -269,8 +269,8 @@ function Publish-Proof([string]$Result, [string]$Reason, [object]$Delivery) {
         "checkpoint_postboundary_snapshot_applied=$($Delivery.PostBoundaryApplied.ToString().ToLowerInvariant())"
         "checkpoint_boundary_epoch_matched=$($Delivery.CheckpointBoundaryEpochMatched.ToString().ToLowerInvariant())"
         "checkpoint_boundary_epoch=$($Delivery.CheckpointBoundaryEpoch)"
-        "checkpoint_reload_after_kill_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
-        "immediate_reopen_checkpoint_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
+        "postkill_save_reload_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
+        "immediate_reopen_postkill_save_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
         "same_map_readd_no_stock_manual=$($script:sameMapReaddAccepted.ToString().ToLowerInvariant())"
         "fresh_boundary_observed=$($Delivery.FreshBoundaryObserved.ToString().ToLowerInvariant())"
         "fresh_boundary_epoch_matched=$($Delivery.FreshBoundaryEpochMatched.ToString().ToLowerInvariant())"
@@ -339,7 +339,7 @@ try {
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
     if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied) { throw 'Advanced-save Lua authority evidence missing.' }
 
-    $answer = Read-Host 'Kill one loaded live Raven. Verify exact marker vanishes at once. Close/reopen map and verify it stays absent. Then reload the checkpoint created after that kill, reopen the map, and verify the same Raven is still absent. Type IMMEDIATE_OK, or REGRESSION if anything is wrong'
+    $answer = Read-Host 'Kill one loaded live Raven. Verify exact marker vanishes at once. Close/reopen map and verify it stays absent. NOW create a NEW MANUAL SAVE after the kill (do not rely on an autosave/checkpoint), then load that exact new save, reopen the map, and verify the same Raven is still absent. Type IMMEDIATE_OK only after loading that exact post-kill manual save, or REGRESSION if anything is wrong'
     if ($answer -eq 'REGRESSION') { throw 'Immediate-kill or checkpoint-reload manual regression reported.' }
     if ($answer -ne 'IMMEDIATE_OK') { throw 'Immediate-kill/checkpoint-reload manual acceptance not confirmed.' }
     $checkpointReloadAccepted = $true
@@ -348,7 +348,7 @@ try {
     if (-not $delivery.ImmediateEvent -or
         -not $delivery.CheckpointBoundaryObserved -or -not $delivery.PostBoundaryApplied -or
         -not $delivery.CheckpointBoundaryEpochMatched) {
-        throw 'Gameplay Raven kill note or matching +1 V2 checkpoint authority evidence missing.'
+        throw 'Gameplay Raven kill note or matching +1 post-kill save-load V2 authority evidence missing.'
     }
 
     $answer = Read-Host 'Load true fresh save. Open map. Verify all 53 Ravens, captions, realm filter, and compass behavior. Type FRESH_OK, or REGRESSION if anything is wrong'
