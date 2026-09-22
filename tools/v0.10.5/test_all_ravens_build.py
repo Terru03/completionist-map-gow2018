@@ -62,12 +62,14 @@ class AllRavensTemplateTests(unittest.TestCase):
         self.assertIn("current restoreEpoch", state["event_kill_overlay"])
         self.assertIn("restoreEpoch advance", state["event_overlay_clear_policy"])
         self.assertIn("native loopback bridge", state["load_boundary_authority"])
+        self.assertIn("killed state revives", state["load_boundary_authority"])
         self.assertIn("bridge-owned", state["boundary_epoch_policy"])
         self.assertEqual(
             state["load_boundary_sources"],
             [
                 "native_bridge_restoreEpoch",
                 "OnRestoreCheckpoint_bridge_note",
+                "authoritative_killed_to_alive_inference",
                 "EVT_LoadSaveData_fallback",
                 "EVT_LoadSaveFile_Done_fallback",
             ],
