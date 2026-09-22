@@ -26,6 +26,7 @@ $stamp = (Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss')
 $relativeDir = "archive/field-logs/runtime-captures/raven-native-snapshot-delivery-offline-$stamp"
 $outDir = Join-Path $repo ($relativeDir -replace '/', [IO.Path]::DirectorySeparatorChar)
 $console = Join-Path $outDir 'console-log.txt'
+$innerConsole = Join-Path $outDir 'offline-gates-console-log.txt'
 $resultFile = Join-Path $outDir 'result.txt'
 $errorFile = Join-Path $outDir 'error.txt'
 New-Item -ItemType Directory -Path $outDir -Force | Out-Null
@@ -82,10 +83,18 @@ try {
     $testedHead = (& git rev-parse HEAD).Trim()
     Write-Host "tested_head=$testedHead"
 
-    & pwsh -NoProfile -ExecutionPolicy Bypass -File $inner -GameRootFixture $GameRootFixture
+    # Start-Transcript does not reliably capture output emitted by a nested
+    # pwsh process. Tee the complete child stream into its own evidence file
+    # while still mirroring it to the user's terminal.
+    & pwsh -NoProfile -ExecutionPolicy Bypass -File $inner -GameRootFixture $GameRootFixture 2>&1 |
+        Tee-Object -FilePath $innerConsole
     $innerExit = $LASTEXITCODE
     if ($innerExit -ne 0) {
         throw "Offline Raven gates failed with exit=$innerExit"
+    }
+    if (-not (Test-Path -LiteralPath $innerConsole -PathType Leaf) -or
+        (Get-Item -LiteralPath $innerConsole).Length -eq 0) {
+        throw 'Offline Raven gates produced no archived child console output.'
     }
 
     @(
@@ -95,6 +104,7 @@ try {
         "tested_head=$testedHead"
         "inner_exit=$innerExit"
         'console_archived=true'
+        'inner_console_archived=true'
         'evidence_push_requested=true'
     ) | Set-Content -LiteralPath $resultFile -Encoding UTF8
 
