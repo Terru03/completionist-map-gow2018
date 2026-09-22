@@ -30,6 +30,7 @@ calls={logs={},previousShow=0,previousUpdate=0,recycled=0,nativeConnects=0,nativ
 customIds={}
 stockIds={}
 nativeResponse=nil
+nativeBoundaryResponse=nil
 local nativeSocket={}
 function nativeSocket.tcp()
   local client={}
@@ -38,17 +39,24 @@ function nativeSocket.tcp()
     calls.nativeConnects=calls.nativeConnects+1
     calls.nativeHost=host
     calls.nativePort=port
-    if nativeResponse==nil then return nil,"connection refused" end
+    if nativeResponse==nil and nativeBoundaryResponse==nil then return nil,"connection refused" end
     self.receiveIndex=1
+    self.response=nil
     return 1
   end
   function client:send(request)
     calls.nativeRequests[#calls.nativeRequests+1]=request
+    if string.sub(request,1,string.len("CAPTURE RAVEN_SNAPSHOT_V2 "))=="CAPTURE RAVEN_SNAPSHOT_V2 " then
+      self.response=nativeBoundaryResponse
+    else
+      self.response=nativeResponse
+    end
+    if self.response==nil then return nil,"no response" end
     return string.len(request)
   end
   function client:receive(size)
     if size~=1 then error("unexpected receive size:" .. tostring(size)) end
-    local value=string.sub(nativeResponse,self.receiveIndex,self.receiveIndex)
+    local value=string.sub(self.response,self.receiveIndex,self.receiveIndex)
     if value=="" then return nil,"closed" end
     self.receiveIndex=self.receiveIndex+1
     return value
@@ -244,7 +252,10 @@ function probe.fireLoad(name)
   return true
 end
 function probe.setNativeResponse(value) nativeResponse=value end
+function probe.setNativeBoundaryResponse(value) nativeBoundaryResponse=value end
 function probe.nativeConnects() return calls.nativeConnects end
+function probe.nativeRequest(i) return calls.nativeRequests[i] end
+function probe.nativeRequestCount() return #calls.nativeRequests end
 function probe.lastNativeGeneration() return CompletionistMapV105LastNativeRavenGeneration end
 function probe.collectedCount()
   local n=0
@@ -273,6 +284,18 @@ class AllRavensMapLuaTests(unittest.TestCase):
         return (
             "RAVEN_SNAPSHOT_V1 schema=1 "
             f"generation={generation} capturedTickMs={1000 + generation} "
+            f"count=53 unknown=0 alive={53 - killed} killed={killed} "
+            f"explicit={53 - killed} absentWadFalse={killed} killedIds={encoded}\n"
+        )
+
+    def boundary_response(self, epoch: int, generation: int, killed_rows=()):
+        killed_ids = [row["catalogue_id"] for row in killed_rows]
+        killed = len(killed_ids)
+        encoded = ",".join(killed_ids) if killed_ids else "-"
+        return (
+            "RAVEN_SNAPSHOT_V2 schema=2 "
+            f"boundaryEpoch={epoch} generation={generation} "
+            f"capturedTickMs={2000 + generation} "
             f"count=53 unknown=0 alive={53 - killed} killed={killed} "
             f"explicit={53 - killed} absentWadFalse={killed} killedIds={encoded}\n"
         )
@@ -477,6 +500,37 @@ class AllRavensMapLuaTests(unittest.TestCase):
 
         self.probe.teardown()
         self.assertEqual(self.probe.iconCount(), 0)
+
+    def test_boundary_accepts_only_matching_postload_capture_not_newer_periodic_state(self):
+        self.probe.setNativeResponse(self.response(10, [self.a]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+        # A load boundary is now active. The background V1 stream can continue
+        # producing newer generations that still describe the old save. Those
+        # generations must never settle the boundary.
+        self.probe.setNativeResponse(self.response(11))
+        self.probe.boundary()
+        for _ in range(35):
+            self.probe.update()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+        # The authoritative post-load capture is requested explicitly after
+        # the boundary and carries the boundary epoch echoed by the bridge.
+        self.probe.setNativeBoundaryResponse(self.boundary_response(1, 12))
+        for _ in range(35):
+            self.probe.update()
+        self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
+        self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
+        requests = [
+            self.probe.nativeRequest(i)
+            for i in range(1, self.probe.nativeRequestCount() + 1)
+        ]
+        self.assertTrue(any(
+            request == "CAPTURE RAVEN_SNAPSHOT_V2 boundaryEpoch=1\n"
+            for request in requests
+        ))
 
     def test_load_boundary_preserves_last_good_state_until_fresh_snapshot(self):
         self.probe.setNativeResponse(self.response(4, [self.a]))
