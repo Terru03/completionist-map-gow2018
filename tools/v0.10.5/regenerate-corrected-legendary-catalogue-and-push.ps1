@@ -12,7 +12,12 @@ if ([string]::IsNullOrWhiteSpace($RepoRoot)) { throw 'Not inside the Completioni
 Set-Location $RepoRoot
 $branch = (& git branch --show-current).Trim()
 if ($branch -ne $ExpectedBranch) { throw "Wrong branch '$branch'; expected '$ExpectedBranch'." }
-if (@(& git status --porcelain).Count -gt 0) { throw 'Working tree must be clean before catalogue regeneration.' }
+$dirty = @(& git status --porcelain)
+if ($dirty.Count -gt 0) {
+    Write-Host 'Working tree is not clean:' -ForegroundColor Yellow
+    $dirty | ForEach-Object { Write-Host "  $_" }
+    throw 'Working tree must be clean before catalogue regeneration. Review the paths printed above; do not discard them blindly.'
+}
 if (@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -in @('GoW','GodOfWar') }).Count -gt 0) { throw 'Close God of War before static catalogue regeneration.' }
 
 $python = Get-Command python -ErrorAction SilentlyContinue
