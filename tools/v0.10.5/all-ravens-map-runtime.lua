@@ -1272,6 +1272,14 @@ do
       return
     end
 
+    -- A different live Raven selection is stronger than the previous action's
+    -- settlement intent. Never let Raven A's footer watchdog overwrite Raven B
+    -- after the user has moved the map cursor.
+    local current = currentSelection(self)
+    if current ~= nil and current.IdString ~= selected.IdString then
+      return
+    end
+
     -- The action has already been committed even if the stock map consumed
     -- currMarkerID. Refresh only the bottom-row footer here. Do not write the
     -- floating MapCursorInfo text after selection ownership has been consumed.
