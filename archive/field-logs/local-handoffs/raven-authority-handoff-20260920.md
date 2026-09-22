@@ -7639,3 +7639,57 @@ Field-shaped cosmetic regressions also pass:
 The cosmetic branch is ready for another short `-CosmeticOnly` field stress run,
 with the live prompt now explicitly requiring the fast Add -> Remove -> Add
 three-click case.
+
+
+### Cosmetic polish field stress 2026-09-22 - capture exposes real-vs-synthetic routing mismatch
+
+Latest cosmetic stress capture:
+
+- evidence commit:
+  `e343fe5b3e3ce14c19b527472d00936e4d57b4b5`;
+- capture:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-live-proof-20260922-121825`;
+- result:
+  `RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_FAILED`;
+- reason:
+  `Raven cosmetic regression reported.`;
+- rollback exact; no save/progression/process/static-descriptor writes.
+
+User field report:
+
+- footer still does not visibly update immediately;
+- sticky cursor remains fixed;
+- rapid Add -> Remove -> Add still produces boat artwork;
+- slow Add -> Remove -> Add works perfectly.
+
+Important runtime evidence:
+
+- first handled Add at 15:22:05:
+  - `SHOW ... replacedStockCount=0`;
+- during later interaction the exact Raven repeatedly reaches
+  `SELECT_DISARM reason=prompt_owner_mismatch`;
+- no `READD_QUEUED` or `READD_APPLIED` occurs anywhere in the real capture;
+- at 15:22:26 v0.10.5 handles another Add as a fresh `SHOW`, with
+  `replacedStockCount=1`.
+- therefore the field failure does not take the synthetic queued-readd path at
+  all. At least one rapid click is leaving v0.10.5 prompt/action ownership and a
+  stock target exists by the time the later custom Add is handled.
+- slow path is visible later:
+  - 15:23:49 `REMOVE` followed by `PROMPT_SETTLED state=untracked`;
+  - 15:24:07 `SHOW ... replacedStockCount=0` followed by tracked settlement.
+
+Footer evidence:
+
+- `FOOTER_REFRESH_COMMITTED` is emitted on the same second as `SHOW`, yet
+  the user still sees stale footer text.
+- therefore logging proves our write call occurs, but not that it survives the
+  game's later UI redraw or becomes the rendered footer for that frame.
+
+Capture limitation now identified:
+
+The current live logger does not explicitly record the stock/base
+`previousShow` delegation path after v0.10.5 loses prompt ownership, nor does
+it capture rendered pixels/raw input. Before another behavioral patch, add
+logging-only instrumentation around ShowOnCompass entry/ownership/delegation and
+before/after custom+stock target sets so the exact rapid-click escape path is
+field-proven instead of inferred.
