@@ -79,6 +79,8 @@ $evidence = Join-Path $RepoRoot ($relativeEvidence -replace '/', [IO.Path]::Dire
 New-Item -ItemType Directory -Force -Path $evidence | Out-Null
 $console = Join-Path $evidence 'console-log.txt'
 $resultFile = Join-Path $evidence 'result.txt'
+$catalogueTestLog = Join-Path $evidence 'catalogue-tests.txt'
+$legendaryTestLog = Join-Path $evidence 'legendary-tests.txt'
 $beforeCatalogue = (Get-FileHash -LiteralPath $Catalogue -Algorithm SHA256).Hash.ToLowerInvariant()
 $beforeAudit = (Get-FileHash -LiteralPath $Audit -Algorithm SHA256).Hash.ToLowerInvariant()
 $exitCode = 0
@@ -95,10 +97,12 @@ try {
         throw "Catalogue regeneration used non-native mapmaster evidence: sha=$($generatedMap.sha256) bytes=$($generatedMap.bytes)"
     }
     Write-Host "NATIVE_MAPMASTER_EVIDENCE_VERIFIED sha=$NativeMapmasterSha bytes=$NativeMapmasterBytes" -ForegroundColor Green
-    & $python.Source $CatalogueTests
-    if ($LASTEXITCODE -ne 0) { throw "Catalogue tests failed with exit code $LASTEXITCODE." }
-    & $python.Source $LegendaryTests
-    if ($LASTEXITCODE -ne 0) { throw "Legendary identity tests failed with exit code $LASTEXITCODE." }
+    & $python.Source $CatalogueTests 2>&1 | Tee-Object -FilePath $catalogueTestLog
+    $catalogueTestExit = $LASTEXITCODE
+    if ($catalogueTestExit -ne 0) { throw "Catalogue tests failed with exit code $catalogueTestExit." }
+    & $python.Source $LegendaryTests 2>&1 | Tee-Object -FilePath $legendaryTestLog
+    $legendaryTestExit = $LASTEXITCODE
+    if ($legendaryTestExit -ne 0) { throw "Legendary identity tests failed with exit code $legendaryTestExit." }
     $verifyScript = Join-Path $evidence 'verify.py'
     @(
 'import collections, json, pathlib, sys'
