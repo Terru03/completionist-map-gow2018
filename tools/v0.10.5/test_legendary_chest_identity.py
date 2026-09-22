@@ -55,10 +55,19 @@ class LegendaryChestIdentityTests(unittest.TestCase):
             scene, skipped = identity.scene_identity_elements(row)
             with self.subTest(row=row["catalogue_id"]):
                 self.assertGreaterEqual(len(scene), 2)
-                self.assertEqual(len(skipped), 1)
-                self.assertEqual(
-                    skipped[0]["reason"],
-                    "immediate_parent_adjusted_id_equals_parent_prototype_id",
+                self.assertGreaterEqual(len(skipped), 1)
+                skipped_names = {
+                    item["source_record_name"] for item in skipped
+                }
+                self.assertIn("gochest_legendary_parent", skipped_names)
+                self.assertTrue(
+                    all(
+                        item["reason"] in {
+                            "organizational_scene_wrapper",
+                            "reusable_parent_container",
+                        }
+                        for item in skipped
+                    )
                 )
                 self.assertNotIn(tuple(scene), seen)
                 seen.add(tuple(scene))
@@ -117,6 +126,64 @@ class LegendaryChestIdentityTests(unittest.TestCase):
         self.assertEqual(
             identity.identity_hash(scene + [identity.CHEST_OWN_IDENTITY_ELEMENT]),
             0x748BE60F37BAB846,
+        )
+
+    def test_structural_rule_omits_organizational_wrappers(self):
+        row = next(
+            item for item in self.rows
+            if item["catalogue_id"] == "legendary_chest_c14a0f2b4559d859347854bccb307f63"
+        )
+        scene, skipped = identity.scene_identity_elements(row)
+        expected_indices = [5, 4, 2, 0]
+        expected = [
+            identity.adjusted_record_id(
+                row["source"]["transform_chain"][index]["record_id"]
+            )
+            for index in expected_indices
+        ]
+        self.assertEqual(scene, expected)
+        self.assertIn(
+            "goloot",
+            {item["source_record_name"] for item in skipped},
+        )
+
+    def test_structural_rule_keeps_locked_chest_object_but_omits_parent(self):
+        row = next(
+            item for item in self.rows
+            if item["catalogue_id"] == "legendary_chest_ace99ef5472abcbac29bd2b396a3fdf3"
+        )
+        scene, skipped = identity.scene_identity_elements(row)
+        expected_indices = [7, 6, 4, 2, 0]
+        expected = [
+            identity.adjusted_record_id(
+                row["source"]["transform_chain"][index]["record_id"]
+            )
+            for index in expected_indices
+        ]
+        self.assertEqual(scene, expected)
+        skipped_names = {
+            item["source_record_name"] for item in skipped
+        }
+        self.assertIn("gochest_legendary_locked_roots_parent", skipped_names)
+        self.assertNotIn("gochestobj", skipped_names)
+
+    def test_unstaged_xpl100_identity_is_structurally_deterministic(self):
+        row = next(
+            item for item in self.rows
+            if item["catalogue_id"] == "legendary_chest_890a24d24d2864a1567af691c615870f"
+        )
+        scene, skipped = identity.scene_identity_elements(row)
+        expected_indices = [5, 4, 2, 0]
+        expected = [
+            identity.adjusted_record_id(
+                row["source"]["transform_chain"][index]["record_id"]
+            )
+            for index in expected_indices
+        ]
+        self.assertEqual(scene, expected)
+        self.assertIn(
+            "gocontainers",
+            {item["source_record_name"] for item in skipped},
         )
 
     def test_native_wad_name_hash_matches_known_algorithm(self):
