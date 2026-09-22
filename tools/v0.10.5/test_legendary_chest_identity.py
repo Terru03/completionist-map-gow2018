@@ -33,7 +33,8 @@ class LegendaryChestIdentityTests(unittest.TestCase):
         self.assertEqual(contract["raw"], 64)
         self.assertEqual(contract["tracked"], 33)
         self.assertEqual(contract["trial_excluded"], 27)
-        self.assertEqual(contract["unresolved"], 4)
+        self.assertEqual(contract["non_map_counted"], 2)
+        self.assertEqual(contract["unresolved"], 2)
         self.assertEqual(contract["unique_scene_identities"], 33)
 
     def test_tracked_rows_are_exact_opened_state_collectibles(self):
