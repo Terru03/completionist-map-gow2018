@@ -225,6 +225,7 @@ NativeRavenSnapshot MergeCurrentEpochKillsInternal(
           if (merged.unknown_count > 0) --merged.unknown_count;
         }
         merged.killed[index] = true;
+        merged.absence_default_state[index] = false;
       }
     }
   }
@@ -398,11 +399,12 @@ unsigned __stdcall ServeSnapshots(void* raw_listener) {
 
     NativeRavenSnapshot snapshot;
     if (request.kind == RequestKind::kLatestV1) {
+      // Never serve the publication store before attempting a fresh capture.
+      // A different save can make the previously published image stale while
+      // the new staged WAD table is still partial. Fresh partial evidence must
+      // win over any prior process-local snapshot.
       bool full_available =
-          g_snapshot_reader != nullptr && g_snapshot_reader(&snapshot);
-      if (!full_available && g_snapshot_capturer != nullptr) {
-        full_available = g_snapshot_capturer(&snapshot);
-      }
+          g_snapshot_capturer != nullptr && g_snapshot_capturer(&snapshot);
       if (full_available) {
         const BaseObservation observation =
             ObserveAuthoritativeBaseInternal(snapshot, GetTickCount64(), false);
