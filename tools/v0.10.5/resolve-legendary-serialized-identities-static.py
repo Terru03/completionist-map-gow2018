@@ -241,6 +241,30 @@ def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
             flush=True,
         )
 
+    # Runtime proof in xpl250_funeralinterior identified the exact own identity
+    # element of the tracked Legendary chest GameObject. It is not a WAD record
+    # ID, so inject it explicitly alongside the already-rejected record-ID
+    # candidate space.
+    runtime_value = identity.CHEST_OWN_IDENTITY_ELEMENT.hex()
+    support.setdefault(runtime_value, {
+        "value_hex": runtime_value,
+        "wad_hits": {"xpl250_funeralinterior.wad"},
+        "hits": 1,
+        "semantic_hits": 1,
+        "depths": [],
+        "target_names": {"runtime_proven_legendary_chest_own_identity"},
+        "forms": {"runtime_proven_live_identity"},
+        "examples": [{
+            "wad": "xpl250_funeralinterior.wad",
+            "record_name": "runtime GameObject object+0x40 identity",
+            "record_id_hex": None,
+            "candidate_form": "runtime_proven_live_identity",
+            "candidate_value_hex": runtime_value,
+            "record_offset": None,
+            "record_kind": "live_runtime_identity",
+        }],
+    })
+
     # Keep the loader itself as an explicit control even if a WAD parser change
     # were ever to stop exposing it as a record ID.
     support.setdefault(EXPECTED_PROTOTYPE, {
@@ -301,6 +325,8 @@ def score_candidates(rows: list[dict], oracle: dict[str, set[int]], candidates: 
         )
 
     grammars = sorted(scene_variants(represented_rows[0]))
+    if "historical_self_parent_omit" not in grammars:
+        raise RuntimeError("runtime-proven Legendary scene grammar is missing")
     prefix_hashes = {
         grammar: [
             (
@@ -517,6 +543,7 @@ def main() -> int:
         "prototype_occurrences": static["prototype_occurrences"],
         "prototype_candidate_count": len(static["candidates"]),
         "candidate_space_includes_adjusted_record_ids": True,
+        "candidate_space_includes_runtime_proven_own_identity": True,
         "prototype_candidates": static["candidates"][:128],
         "score_count": len(scores),
         "top_scores": scores[:80],
