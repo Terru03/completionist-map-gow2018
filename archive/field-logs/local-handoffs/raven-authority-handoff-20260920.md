@@ -7065,3 +7065,75 @@ Verified from pushed child console:
 
 The only remaining required field confirmation is that a true fresh save now
 receives and renders the 0/53 authority instead of showing no Raven markers.
+
+
+### FINAL RAVEN ACCEPTANCE 2026-09-22 - all required behaviors field-proven
+
+User final field report after the fresh-overlay fix:
+
+- fresh save: correct;
+- cross-save transition: correct;
+- older save: correct;
+- newer save: correct;
+- previously proven advanced-save state, custom Raven artwork/captions/filter,
+  same-Raven Add -> Remove -> Add, immediate kill disappearance, and post-kill
+  save reload remain correct.
+
+Final fresh-fix live evidence:
+
+- capture/evidence commit:
+  `e522268e45bdd0d8f966bdb7ddf336eb344cad7d`
+- capture:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-live-proof-20260922-104411`
+- native bridge:
+  `RAVEN_NATIVE_BRIDGE_SNAPSHOT_ACCEPTED generation=1 count=53 unknown=0 alive=53 killed=0 explicit=0 absentWadFalse=53`
+- Lua:
+  `NATIVE_AUTHORITY_APPLIED generation=8 killed=0 alive=53 explicit=0 absentWadFalse=53 postBoundary=false boundaryEpoch=0 restoreEpoch=0 authority=latest_v1`
+
+The runner result file for this final session remains FAILED and must not be
+rewritten: this run was used as a verification pass across existing saves and
+did not include a new exact `OnHitByWeapon` event in the runner's mandatory
+scripted order. Its automated failure is therefore a sequencing/proof-harness
+mismatch, not a field behavior failure.
+
+The preceding live capture
+`6a5904a34d71b0ee82b92b83ac2e936f94fccc68` already proved the complementary
+non-fresh behaviors in the scripted sequence:
+
+- real `OnHitByWeapon` kill observed;
+- immediate Raven disappearance manually accepted;
+- post-kill manual-save reload accepted and matching +1 V2 authority observed;
+- cross-save revival manually accepted;
+- same-map Add -> Remove -> Add manually accepted with no stock-marker fallback.
+
+That prior run failed only at fresh bootstrap, which was the exact defect fixed
+by `c07acea9a2d532693cbf6948dce7483bd6a13609` and then proven in the final
+capture above.
+
+Together, the two immutable pushed live captures plus the final user field
+acceptance prove the Raven RC requirements:
+
+1. fresh save exposes all 53 physical Ravens;
+2. existing saves expose only surviving Ravens;
+3. a killed Raven disappears immediately;
+4. post-kill save reload keeps it absent;
+5. switching to a save where that Raven is alive revives it correctly;
+6. switching among older/newer saves reconstructs each save independently;
+7. same-Raven Add -> Remove -> Add retains the custom Raven marker/artwork;
+8. custom captions/artwork/realm filtering remain correct;
+9. no process-memory, save, progression, or static-descriptor writes are used.
+
+Offline release baseline remains:
+
+- delivery proof refresh:
+  `137078e13a6be45ed9dad60260972070f8f72406`;
+- offline evidence:
+  `906b75b1f77e0f1f5785a59c99ad5c1e7a0490f5`;
+- native CTest 5/5;
+- Lua 42/42;
+- Raven state model 25/25;
+- transaction / PowerShell / security gates all green.
+
+ALL-RAVENS RC is field-accepted. Further collectible implementation should
+remain on the separate all-collectibles branch; do not contaminate this Raven
+RC branch with broad collectible work.
