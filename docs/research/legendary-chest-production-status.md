@@ -803,3 +803,40 @@ normal-gameplay transition:
 
 Tooling must remain read-only. The only save/progression write is the game's
 normal action when the player opens the chest.
+
+
+### Map-summary counts are not identical to physical tracked rows
+
+User map evidence on the current almost-complete save reports River Pass Legendary
+Chests as complete at `4/4`.
+
+Native audit independently proves:
+
+- `RegionSummary_LegendaryChest_Parent_Riverpass` target = 4;
+- the physical Legendary catalogue currently has five tracked rows in the
+  Riverpass namespace;
+- frozen staged exact states for those five rows are four at scalar `4.0` and
+  one scripted `gofinalchest02` row at scalar `2.0`.
+
+Therefore raw physical-row count must not be used as the map-summary target.
+The extra scripted physical row is not counted by the River Pass 4/4 summary.
+
+This is also a useful but deliberately non-final calibration for the state
+semantics experiment: scalar `4.0` aligns with all four map-counted River Pass
+chests on a user-confirmed 4/4 save. It remains evidence only until a controlled
+before/open/after transition proves OPENED.
+
+Using the same comparison against native RegionSummary targets, the strongest
+candidate incomplete regions in the frozen staged snapshot are:
+
+- Peakspass / The Mountain: target 3, two rows at 4.0 and one `peak500_chimneytop`
+  row at 2.0;
+- BeachWaterfall: target 2, one row at 4.0 and one at 3.0;
+- BeachMaze: target 1, row at 2.0;
+- CalderaShores: target 1, row at 2.0;
+- IslandArch: target 2, rows at 1.0 and 2.0;
+- IslandClimb: target 1, row at 1.0;
+- HTTK: target 1 but absent from the frozen staged capture.
+
+This shortlist is for selecting a controlled test chest only; it does not promote
+numeric state semantics.
