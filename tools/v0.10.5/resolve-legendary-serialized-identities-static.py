@@ -74,13 +74,13 @@ def compile_record_id_matcher(ids: dict[bytes, list[dict]]):
     The previous resolver sliced and dictionary-looked-up every byte position in
     every traversed record. On the shipped WADs that turned the two-hop graph
     walk into minutes of Python CPU time. A bytes-regex lookahead keeps the same
-    byte-exact, overlap-preserving semantics while moving the scan into the C
-    regex engine.
+    byte-exact, overlap-preserving semantics while moving candidate searching
+    into the C regex engine.
     """
     values = sorted(ids)
     if not values:
         return None
-    pattern = b"(?=(" + b"|".join(re.escape(value) for value in values) + b"))"
+    pattern = b"|".join(re.escape(value) for value in values)
     return re.compile(pattern)
 
 
@@ -93,9 +93,16 @@ def refs_in_record(
     hits = []
     if matcher is None:
         return hits
-    for match in matcher.finditer(data):
-        value = match.group(1)
-        off = match.start(1)
+    search_at = 0
+    while True:
+        match = matcher.search(data, search_at)
+        if match is None:
+            break
+        value = match.group(0)
+        off = match.start()
+        # Advance by one byte, not by match width, so this remains equivalent
+        # to the old exhaustive byte-window scan even for overlapping hits.
+        search_at = off + 1
         targets = ids.get(value)
         if not targets:
             continue
