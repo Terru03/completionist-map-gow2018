@@ -12,6 +12,7 @@ struct NativeRavenSnapshot {
   std::array<bool, 53> killed{};
   std::array<bool, 53> known{};
   std::array<bool, 53> explicit_state{};
+  std::array<bool, 53> absence_default_state{};
   std::uint64_t generation = 0;
   std::uint64_t captured_tick_ms = 0;
   std::uint32_t alive_count = 0;
