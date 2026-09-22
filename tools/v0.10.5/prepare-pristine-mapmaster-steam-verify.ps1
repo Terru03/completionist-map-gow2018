@@ -83,9 +83,10 @@ $manifest = [ordered]@{
         bytes = [long]$currentMap.Length
         sha256 = $currentMapSha
     }
-    expected_pristine_mapmaster = [ordered]@{
+    historical_catalogue_source = [ordered]@{
         bytes = 75872
         sha256 = '1e1d5086815bc8553490bff915fea210a8be4f80ce6c88b418b62d7050690a31'
+        note = 'Historical catalogue provenance only; do not assume current Steam build reproduces this binary.'
     }
     files = $manifestRows
 }
@@ -114,4 +115,4 @@ try {
 }
 Write-Host ''
 Write-Host 'Do not launch God of War after validation.' -ForegroundColor Yellow
-Write-Host 'When Steam reports validation complete, run tools\v0.10.5\finish-pristine-mapmaster-steam-verify-and-regenerate.ps1.' -ForegroundColor Yellow
+Write-Host 'After Steam reports validation complete, run tools\v0.10.5\audit-current-steam-mapmaster-legendary-compatibility-and-push.ps1.' -ForegroundColor Yellow
