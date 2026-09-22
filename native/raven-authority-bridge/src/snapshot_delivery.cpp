@@ -230,8 +230,12 @@ NativeRavenSnapshot MergeCurrentEpochKillsInternal(
     }
   }
   merged.killed_count = 0;
+  merged.absence_default_false_count = 0;
   std::uint32_t known_count = 0;
   for (std::size_t index = 0; index < merged.killed.size(); ++index) {
+    if (merged.absence_default_state[index]) {
+      ++merged.absence_default_false_count;
+    }
     if (!merged.known[index]) continue;
     ++known_count;
     if (merged.killed[index]) ++merged.killed_count;
@@ -571,7 +575,12 @@ std::string BuildPartialWireResponse(
     std::string_view epoch_key, std::uint64_t epoch) {
   std::string killed_ids;
   std::string unknown_ids;
+  std::string absence_ids;
   for (std::size_t index = 0; index < kRavenCatalogue.size(); ++index) {
+    if (snapshot.absence_default_state[index]) {
+      if (!absence_ids.empty()) absence_ids.push_back(',');
+      absence_ids.append(kRavenCatalogue[index].catalogue_id);
+    }
     if (!snapshot.known[index]) {
       if (!unknown_ids.empty()) unknown_ids.push_back(',');
       unknown_ids.append(kRavenCatalogue[index].catalogue_id);
@@ -583,6 +592,7 @@ std::string BuildPartialWireResponse(
   }
   if (killed_ids.empty()) killed_ids = "-";
   if (unknown_ids.empty()) unknown_ids = "-";
+  if (absence_ids.empty()) absence_ids = "-";
   return std::string(header) + " schema=" +
          (header == "RAVEN_SNAPSHOT_V2 PARTIAL" ? "2 " : "1 ") +
          std::string(epoch_key) + "=" + std::to_string(epoch) +
@@ -593,7 +603,8 @@ std::string BuildPartialWireResponse(
          " explicit=" + std::to_string(snapshot.explicit_count) +
          " absentWadFalse=" +
          std::to_string(snapshot.absence_default_false_count) +
-         " killedIds=" + killed_ids + " unknownIds=" + unknown_ids + "\n";
+         " killedIds=" + killed_ids + " unknownIds=" + unknown_ids +
+         " absenceIds=" + absence_ids + "\n";
 }
 
 }  // namespace
