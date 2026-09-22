@@ -986,3 +986,32 @@ Production completion rule is now:
 Legendary identity resolution and persisted completion semantics are both closed.
 The next engineering phase is production marker integration and runtime
 save/load validation.
+
+
+### 2026-09-22 Legendary scope runner syntax repair
+
+Two consecutive offline scope attempts were blocked before the actual scope
+resolver executed.
+
+Root cause:
+
+- commit `3b50a5b093c5899e2be1ec8d6b984af9fe1d2ec4` inserted literal
+  backslash-n text into `legendary_chest_identity.py`;
+- the same OPENED-semantics promotion also left literal backslash-n text in
+  `resolve-legendary-serialized-identities-static.py`;
+- the scope runner's syntax preflight compiled the new scope resolver, helper,
+  and test file, but did not compile the older static resolver that the test
+  dynamically imports.
+
+Repairs:
+
+- `e11151e700258bc11f4520b6bbb98769483830a6` repairs all literal-newline
+  corruption in `legendary_chest_identity.py`;
+- `ea06aa2270ab86b5cb1dab2848896c5225501b8d` repairs the two malformed
+  state-semantics blocks in the static identity resolver;
+- `5e6bc060fbb411cd51b1c088527ac5d551837ae6` adds the dynamically imported
+  static resolver to preflight and compiles each dependency individually with
+  `py_compile.compile(..., doraise=True)`.
+
+The failed attempts never reached the map-counted scope resolver and made no
+game/save/progression changes.
