@@ -6709,3 +6709,36 @@ Fix:
 Re-run the evidence-publishing offline wrapper from this or later HEAD so the
 repository contains a complete detailed gate transcript, not only a PASS exit
 code.
+
+
+### Follow-up 2026-09-22 18:40 - full pushed offline gate evidence is green
+
+Complete evidence-publishing offline run:
+
+- evidence commit:
+  `97de04f247ac76032cb82b552f630cdc416db04d`
+- tested code/documentation head:
+  `774d119d53f637b93f367ee5e8917ef0ab5816f0`
+- evidence directory:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-offline-20260922-092921`
+- detailed nested PowerShell output is archived in:
+  `offline-gates-console-log.txt`
+
+Verified from the pushed transcript:
+
+- Raven bridge runner regressions passed;
+- clean native build passed;
+- CTest 5/5 passed;
+- DXGI install/rollback/recovery passed;
+- interrupted bridge operation recovery passed;
+- Lua integration: 40/40 passed;
+- Raven state-model: 25/25 passed;
+- candidate/template suite: 15 total, 4 applicable passed and 11 source-fixture-dependent tests skipped because the exact runtime-proven v3.3 source fixture is not installed;
+- pinned five-file candidate preparation passed;
+- five-file transaction rollback self-test passed;
+- PowerShell syntax gate passed for 6 files;
+- security gate passed:
+  `process_writes=false save_writes=false progression_writes=false static_descriptor_writes=false loopback_only=true`.
+
+This is the current offline-green baseline. Next meaningful step is the live GoW
+Raven snapshot-delivery proof using the evidence-publishing live runner.
