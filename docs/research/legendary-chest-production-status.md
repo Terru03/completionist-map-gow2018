@@ -174,3 +174,42 @@ Repair:
 
 This attempt does not count against the Legendary runtime identity hypothesis
 because the live identity sweep was never reached.
+
+
+### Third attempt 2026-09-22 — shared placement anchor diagnostic correction
+
+Evidence commit:
+
+`c780e3f9ff77d36c0994a6f28accddc5bfbf0f5b`
+
+Static tests passed, but the live sweep stopped before enumerating registry objects
+because the new diagnostic incorrectly required every physical placement record ID
+to be globally unique.
+
+Catalogue reality:
+
+- 33 tracked Legendary Chests;
+- 32 unique adjusted physical-placement anchors;
+- exactly one duplicated placement-anchor group;
+- shared generic placement record:
+  `b6ff101a177e574eb1f404264111e71a`;
+- affected rows:
+  - `legendary_chest_ace99ef5472abcbac29bd2b396a3fdf3`
+    (`xpl980_beachwaterfall.wad`);
+  - `legendary_chest_d63295f244f330219b003c913c0dab69`
+    (`peak720_summitascenthub.wad`);
+- both use the generic placement name `gochestobj`;
+- their complete physical scene paths remain distinct;
+- all 33 complete physical scene identities remain unique.
+
+Repair:
+
+- placement anchors are now diagnostic many-to-many keys rather than acceptance
+  identities;
+- anchor hits preserve all candidate catalogue rows;
+- exact acceptance still requires a unique complete physical scene path;
+- the shared-anchor case is pinned by unit test.
+
+This failure therefore does not weaken the exact-identity strategy; it confirms
+that a single placement record is insufficient and the full scene path is the
+correct discriminator.
