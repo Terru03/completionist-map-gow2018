@@ -164,7 +164,6 @@ function game.Compass.ShowMarker(name,class)
   customIds={markerId(name)}
   calls.shown=name
   calls.class=class
-  calls.showCount=(calls.showCount or 0)+1
   if calls.clearCurrMarkerOnNextShow then
     calls.clearCurrMarkerOnNextShow=false
     self.currMarkerID=nil
@@ -260,8 +259,21 @@ function probe.reticleDescription() return calls.reticleDescription end
 function probe.cursorPrompt() return calls.cursorPrompt end
 function probe.footerPrompt() return calls.footerPrompt end
 function probe.footerUpdates() return calls.footerUpdates end
-function probe.showCount() return calls.showCount or 0 end
 function probe.clearCurrMarkerOnNextShow() calls.clearCurrMarkerOnNextShow=true end
+function probe.seedCursorPrompt(value) calls.cursorPrompt=value end
+function probe.currShownMarkerId() return self.currShownMarkerID end
+function probe.artworkOwner(name)
+  local id=markerId(name)
+  if self.currShownMarkerID~=nil and tostring(self.currShownMarkerID)==tostring(id) then
+    for _,stockId in ipairs(stockIds) do
+      if tostring(stockId)==tostring(id) then return "stock" end
+    end
+  end
+  for _,customId in ipairs(customIds) do
+    if tostring(customId)==tostring(id) then return "custom" end
+  end
+  return "none"
+end
 function probe.update() return MapOn.Update(self,0) end
 function probe.submenuExit() return MapOn.SubmenuExit(self) end
 function probe.shownClass() return calls.class end
@@ -652,9 +664,10 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.lua.execute("self.currMarkerID='stock'; MapOn.ShowOnCompass(self,{})")
         self.assertEqual(self.probe.stockCount(), 1)
 
-    def test_first_add_refreshes_footer_even_if_base_clears_marker_owner(self):
+    def test_first_add_refreshes_footer_without_sticking_cursor_text(self):
         self.probe.publish(self.a["catalogue_id"], False)
         self.probe.open()
+        self.probe.seedCursorPrompt("base-cursor")
         self.probe.clearCurrMarkerOnNextShow()
 
         show, text = self.probe.click(self.a["marker"]["name"])
@@ -662,10 +675,31 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertTrue(show)
         self.assertEqual(text, "[AdvanceButton] add")
         self.assertEqual(self.probe.customCount(), 1)
-        # No Update() call here: the exact action intent must own the immediate
-        # bottom-row redraw even after the base map clears currMarkerID.
-        self.assertEqual(self.probe.cursorPrompt(), "[AdvanceButton] remove")
+        # The action is committed after the base map consumed currMarkerID.
+        # Only the bottom footer may be forced; floating cursor text must remain
+        # owned by the base cursor lifecycle.
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+        self.assertEqual(self.probe.cursorPrompt(), "base-cursor")
+        self.assertIsNone(self.probe.currShownMarkerId())
+
+    def test_same_raven_readd_keeps_stock_presentation_state_clear(self):
+        self.probe.publish(self.a["catalogue_id"], False)
+        self.probe.open()
+        name = self.a["marker"]["name"]
+
+        self.probe.click(name)
+        self.probe.update()
+        self.probe.click(name)
+        self.probe.update()
+        self.probe.click(name)
+
+        self.assertEqual(self.probe.customCount(), 1)
+        # The synthetic legacy race leaves a same-UID stock entry behind.
+        # Custom artwork must still win because custom tracking never exposes
+        # that UID through the stock currShownMarkerID presentation field.
+        self.assertIsNone(self.probe.currShownMarkerId())
+        self.assertEqual(self.probe.artworkOwner(name), "custom")
+        self.assertFalse(self.probe.legacyRavenHudActive())
 
     def test_raven_reticle_and_compass_prompt_refresh_immediately(self):
         self.probe.publish(self.a["catalogue_id"], False)
@@ -738,9 +772,7 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] add")
 
         # Re-adding the exact same Raven in the same map-open session used to
-        # resurrect a same-UID legacy/stock boat artwork owner. Simulate that
-        # race and require the custom Raven class to be the final writer.
-        show_count_before = self.probe.showCount()
+        # resurrect a legacy/stock boat HUD target. Simulate that race.
         show, text = self.probe.click(self.a["marker"]["name"])
         self.assertTrue(show)
         self.assertEqual(text, "[AdvanceButton] add")
@@ -748,19 +780,12 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(
             self.probe.stockOtherCount(self.probe.markerId(self.a["marker"]["name"])), 0
         )
-        self.assertGreaterEqual(self.probe.showCount() - show_count_before, 2)
-        self.assertEqual(self.probe.shownClass(), "CompletionistRaven")
-        self.assertIn("COMPASS_SAME_UID_REASSERT", self.probe.logs())
         self.assertFalse(self.probe.legacyRavenHudActive())
-
-        # One bounded settlement reassert may occur if the same-UID stock entry
-        # still exists, but the custom class must remain the final writer.
         self.probe.update()
         self.assertEqual(self.probe.customCount(), 1)
         self.assertEqual(
             self.probe.stockOtherCount(self.probe.markerId(self.a["marker"]["name"])), 0
         )
-        self.assertEqual(self.probe.shownClass(), "CompletionistRaven")
         self.assertFalse(self.probe.legacyRavenHudActive())
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
 
