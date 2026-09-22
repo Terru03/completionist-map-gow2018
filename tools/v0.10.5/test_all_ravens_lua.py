@@ -149,7 +149,11 @@ function Map.CreateMarkerIcon(id,region,label)
   return {id=id,shown=false,Show=function(self) self.shown=true end}
 end
 function Map.RecycleIcon(go) calls.recycled=calls.recycled+1; go.recycled=true end
-game={Map={},Compass={}}
+regionSummaryCompleted={}
+game={Map={},Compass={},QuestManager={}}
+function game.QuestManager.GetQuestProgressAndGoal(parent)
+  return nil,regionSummaryCompleted[parent]
+end
 function game.Map.GetMarkerInfo(name) return {Id=markerId(name),X=1,Y=2,Z=3} end
 function game.Compass.FindMarkersByIconClass(classes)
   if classes[1]=="CompletionistRaven" then return customIds end
@@ -266,6 +270,12 @@ function probe.fireLoad(name)
 end
 function probe.setNativeResponse(value) nativeResponse=value end
 function probe.setNativeBoundaryResponse(value) nativeBoundaryResponse=value end
+function probe.setRegionSummaryCompleted(parent,value)
+  regionSummaryCompleted[parent]=value
+end
+function probe.logs()
+  return table.concat(calls.logs,"\n")
+end
 function probe.nativeConnects() return calls.nativeConnects end
 function probe.nativeRequest(i) return calls.nativeRequests[i] end
 function probe.nativeRequestCount() return #calls.nativeRequests end
@@ -318,6 +328,78 @@ class AllRavensMapLuaTests(unittest.TestCase):
             f"count=53 unknown=0 alive={53 - killed} killed={killed} "
             f"explicit={53 - killed} absentWadFalse={killed} killedIds={encoded}\n"
         )
+
+    def partial_response(
+        self, unknown_row, killed_rows=(), restore_epoch: int = 0, boundary_epoch=None
+    ):
+        killed_ids = [row["catalogue_id"] for row in killed_rows]
+        killed = len(killed_ids)
+        encoded = ",".join(killed_ids) if killed_ids else "-"
+        header = (
+            "RAVEN_SNAPSHOT_V1 PARTIAL schema=1 "
+            f"restoreEpoch={restore_epoch} "
+            if boundary_epoch is None
+            else "RAVEN_SNAPSHOT_V2 PARTIAL schema=2 "
+            f"boundaryEpoch={boundary_epoch} "
+        )
+        return (
+            header
+            + f"capturedTickMs=3000 count=53 unknown=1 alive={52 - killed} "
+            + f"killed={killed} explicit=41 absentWadFalse=11 "
+            + f"killedIds={encoded} unknownIds={unknown_row['catalogue_id']}\n"
+        )
+
+    def test_partial_native_snapshot_resolves_single_alfheim_unknown_alive(self):
+        parent = self.a["progression"]["parent_quest"]
+        self.probe.setRegionSummaryCompleted(parent, 0)
+        self.probe.setNativeResponse(self.partial_response(self.a))
+        self.probe.open()
+        self.assertTrue(self.probe.hasAuthority())
+        self.assertFalse(self.probe.state(self.a["catalogue_id"]))
+        self.assertFalse(self.probe.state(self.b["catalogue_id"]))
+        self.assertEqual(self.probe.iconCount(), 2)
+        self.assertIsNone(self.probe.lastNativeGeneration())
+        self.assertIn("NATIVE_AUTHORITY_DERIVED", self.probe.logs())
+
+    def test_partial_native_snapshot_resolves_single_alfheim_unknown_killed(self):
+        parent = self.a["progression"]["parent_quest"]
+        self.probe.setRegionSummaryCompleted(parent, 1)
+        self.probe.setNativeResponse(self.partial_response(self.a))
+        self.probe.open()
+        self.assertTrue(self.probe.hasAuthority())
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertFalse(self.probe.state(self.b["catalogue_id"]))
+        self.assertEqual(self.probe.iconCount(), 1)
+
+    def test_partial_native_snapshot_refuses_bonus_parent(self):
+        bonus = next(
+            row
+            for row in CATALOGUE["ravens"]
+            if row["progression"]["parent_quest"] == "RegionSummary_RP_Raven_Parent"
+        )
+        self.probe.setRegionSummaryCompleted("RegionSummary_RP_Raven_Parent", 0)
+        self.probe.setNativeResponse(self.partial_response(bonus))
+        self.probe.open()
+        self.assertFalse(self.probe.hasAuthority())
+        self.assertEqual(self.probe.iconCount(), 0)
+        self.assertIn("NATIVE_AUTHORITY_PARTIAL_REFUSED", self.probe.logs())
+
+    def test_partial_boundary_snapshot_reestablishes_authority(self):
+        parent = self.a["progression"]["parent_quest"]
+        self.probe.setNativeResponse(self.response(1))
+        self.probe.open()
+        self.assertTrue(self.probe.hasAuthority())
+
+        self.probe.boundary()
+        self.probe.setRegionSummaryCompleted(parent, 0)
+        self.probe.setNativeBoundaryResponse(
+            self.partial_response(self.a, boundary_epoch=1)
+        )
+        self.probe.open()
+        self.assertTrue(self.probe.hasAuthority())
+        self.assertEqual(self.probe.boundaryEpoch(), 1)
+        self.assertEqual(self.probe.iconCount(), 2)
+        self.assertIn("authority=native_partial_plus_region_summary", self.probe.logs())
 
     def test_no_authority_bootstrap_hides_all_ravens(self):
         self.probe.setNativeResponse(None)
