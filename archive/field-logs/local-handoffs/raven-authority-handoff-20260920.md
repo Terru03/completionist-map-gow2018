@@ -6684,3 +6684,28 @@ Existing proof-refresh and live-proof top-level runners already publish their
 own evidence. Future commands given to the user should use the `*-and-push.ps1`
 or equivalent evidence-publishing wrappers so no meaningful PowerShell test run
 exists only in the local terminal.
+
+
+### Follow-up 2026-09-22 18:32 - offline evidence wrapper now captures nested PowerShell output
+
+The first successful evidence-publishing offline run produced commit
+`1c245e999d3bc0a80dbf63bf1be39bda23f4bcba` and a PASS result for tested
+HEAD `159b765310150dcf879da1551eb741336c298e10`, but inspection of its archived
+`console-log.txt` showed that `Start-Transcript` captured only the wrapper
+host output, not the nested child `pwsh` gate stream.
+
+This did not invalidate the exit-code PASS, but it did not satisfy the user's
+requirement that all meaningful PowerShell output be preserved in Git.
+
+Fix:
+
+- `a1df1484cc2c0f0a8c1436565fdbbb61e1c80307`
+- the wrapper now pipes the nested offline-gate process through `Tee-Object`;
+- full child stdout/stderr is archived separately as
+  `offline-gates-console-log.txt` while still being mirrored to the terminal;
+- success now requires that the child console evidence file exists and is
+  non-empty.
+
+Re-run the evidence-publishing offline wrapper from this or later HEAD so the
+repository contains a complete detailed gate transcript, not only a PASS exit
+code.
