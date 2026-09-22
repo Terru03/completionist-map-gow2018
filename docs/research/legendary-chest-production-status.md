@@ -142,3 +142,35 @@ The next read-only capture additionally archives:
 
 This guarantees that another failure will identify the missing native suffix
 grammar rather than returning an unexplained 0/33.
+
+
+### Second live attempt 2026-09-22 — static gate rejected before runtime capture
+
+Evidence commit:
+
+`20fa09e205fd2909af5f627db3059516ce75960f`
+
+The runner stopped at the static identity tests before executing the registry
+capture. No new runtime evidence was collected in this attempt.
+
+Root cause:
+
+- the corrected physical identity grammar intentionally removes the two nested
+  reusable records;
+- 10 of the 33 tracked Legendary Chests then have a valid two-record physical
+  scene path (physical chest + direct scene owner);
+- the unit test still required at least three physical scene records;
+- those valid short chains were therefore rejected by the test rather than by
+  the runtime model.
+
+Repair:
+
+- minimum physical scene length corrected from 3 to 2;
+- all 33 physical scene identities remain unique;
+- all 33 retain the exact
+  `gochestscript -> gochest_legendary_parent` nested structure;
+- runner now archives Python unittest and capture stdout/stderr separately so a
+  future pre-runtime failure cannot lose its exact diagnostics.
+
+This attempt does not count against the Legendary runtime identity hypothesis
+because the live identity sweep was never reached.
