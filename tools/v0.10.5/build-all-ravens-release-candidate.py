@@ -71,10 +71,12 @@ def render_lua(catalogue: dict, template_path: Path, token: str, state_rows: boo
             )
         else:
             lines.append(
-                "    {CatalogueId=%s,Name=%s,UidHex=%s,Realm=%s,RegionId=%s},"
+                "    {CatalogueId=%s,Name=%s,UidHex=%s,Realm=%s,RegionId=%s,ParentQuest=%s},"
                 % (
                     lua_quote(row["catalogue_id"]), lua_quote(row["marker"]["name"]),
-                    lua_quote(row["marker"]["uid"]), lua_quote(row["realm"]), lua_quote(row["region_id"]),
+                    lua_quote(row["marker"]["uid"]), lua_quote(row["realm"]),
+                    lua_quote(row["region_id"]),
+                    lua_quote(row["progression"]["parent_quest"]),
                 )
             )
     text = template_path.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
