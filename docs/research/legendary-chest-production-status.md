@@ -763,3 +763,43 @@ All new structural-rule tests passed, including:
 
 The obsolete candidate-scan assertions were removed and replaced with a pinned
 structural-resolver contract test. No identity rule or runtime evidence changed.
+
+
+### Legendary serialized identity resolution accepted
+
+Acceptance evidence:
+
+`6ee6ebd6affa5fe0ddcbd7e815d28b526f80efec`
+
+The deterministic structural resolver passed:
+
+- identity tests: 11/11;
+- tracked Legendary catalogue rows: 33;
+- frozen staged represented rows: 32;
+- exact staged bindings: 32/32;
+- derived identities: 33;
+- unique derived object hashes: 33;
+- identity rule: `legendary_runtime_staged_structural_v1`;
+- own identity element:
+  `947a7c50b25f004ea3365dd8dc232ee1`;
+- one unstaged row, `xpl100_httk.wad`, derived deterministically from the
+  same structural rule;
+- no process access, active-save access, progression writes, game-file writes,
+  or Raven runtime changes.
+
+Legendary serialized GameObject identity resolution is therefore closed.
+
+Remaining research gate:
+
+Prove the numeric semantics of the persisted `state` scalar with one controlled
+normal-gameplay transition:
+
+1. capture exact known Legendary states before;
+2. open exactly one previously unopened tracked Legendary Chest normally;
+3. allow the game to checkpoint/save normally;
+4. capture exact known Legendary states after;
+5. require exactly one tracked identity to change;
+6. promote the after value to `OPENED` only from that controlled transition.
+
+Tooling must remain read-only. The only save/progression write is the game's
+normal action when the player opens the chest.
