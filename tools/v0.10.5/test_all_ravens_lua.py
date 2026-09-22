@@ -194,10 +194,15 @@ function menu:UpdateFooterButton(name,show,text)
 end
 function menu:UpdateFooterButtonText()
   calls.footerUpdates=calls.footerUpdates+1
+  if self.owner~=nil then
+    local show,text=MapOn.GetShowOnCompassPrompt(self.owner,self)
+    if show then calls.footerPrompt=text end
+  end
 end
 self={currRealmName="Alfheim",currMarkerID=nil,currShownMarkerID=nil,
   completionistMapV100Selected=false,completionistMapV100NornirSelected=nil,
   completionistMapV100NornirChestSelected=nil,mapIconCollision=nil,menu=menu}
+menu.owner=self
 function self:SetReticleInfo(state,title,desc)
   calls.reticleTitle=title
   calls.reticleDescription=desc
@@ -462,15 +467,11 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertTrue(show)
         self.assertEqual(text, "[AdvanceButton] add")
         self.assertEqual(self.probe.customCount(), 1)
-        self.assertEqual(
-            self.probe.stockOtherCount(self.probe.markerId(self.a["marker"]["name"])), 0
-        )
+        self.assertEqual(self.probe.stockCount(), 0)
         self.assertFalse(self.probe.legacyRavenHudActive())
         self.probe.update()
         self.assertEqual(self.probe.customCount(), 1)
-        self.assertEqual(
-            self.probe.stockOtherCount(self.probe.markerId(self.a["marker"]["name"])), 0
-        )
+        self.assertEqual(self.probe.stockCount(), 0)
         self.assertFalse(self.probe.legacyRavenHudActive())
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
 
