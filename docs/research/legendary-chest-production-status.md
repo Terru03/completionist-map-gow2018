@@ -485,3 +485,55 @@ The shared Legendary loader is therefore tested explicitly in both forms:
 
 A unit test pins this exact adjusted loader transformation. Acceptance remains
 one unique candidate+grammar reproducing all 32/32 represented staged hashes.
+
+
+### Adjusted-record suffix hypothesis rejected; runtime hash intersection next
+
+Evidence commit:
+
+`289a6c2eecc35299dc4fb8b522b695cb277785b5`
+
+The second fast static sweep expanded the candidate set to both raw and native
+byte-12-adjusted WAD record IDs:
+
+- 407,157 unique candidate identity values;
+- four scene grammars;
+- 1,628,628 candidate+grammar exact-gate tests;
+- no candidate survived the first staged-hash discriminator.
+
+This rejects the model:
+
+`authored scene chain + one raw/adjusted WAD record identity element`.
+
+Additional structural confirmation:
+
+- the first chest's `state_instance_guid`
+  `b36ec130-4042-2d81-123a-9db40831d654`
+  maps exactly, under the native four-byte-group identity encoding, to the
+  byte-12-adjusted `gochestscript` record identity;
+- its physical instance GUID maps the same way to the adjusted physical
+  placement record identity;
+- therefore the catalogue instance/record relationship is internally coherent;
+- the unresolved piece is the native runtime parent/metadata-vector composition,
+  not the catalogue GUID extraction.
+
+New tooling:
+
+- `tools/v0.10.5/capture-legendary-staged-runtime-identity-intersection-readonly.py`;
+- `tools/v0.10.5/run-legendary-staged-runtime-identity-intersection-readonly-and-push.ps1`.
+
+The probe reuses the proven registry-238 native identity builder and compares the
+hash of every resident GameObject identity directly against the 206 archived
+dominant staged `{state=<tag1 scalar>}` parent hashes.
+
+For every exact hash intersection it archives:
+
+- native identity elements in exact runtime order;
+- builder parent/metadata-vector events;
+- object+0x40 own identity;
+- runtime slot/token;
+- staged WAD and state value;
+- overlap with all known Legendary authored identity elements.
+
+This is read-only:
+`PROCESS_VM_READ|PROCESS_QUERY_INFORMATION` only. Ravens remain frozen.
