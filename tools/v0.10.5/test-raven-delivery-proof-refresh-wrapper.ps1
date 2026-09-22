@@ -62,6 +62,9 @@ def digest(path: Path) -> str:
 
 mode = os.environ.get("RAVEN_WRAPPER_TEST_MODE", "success")
 if "--refresh-proof" in sys.argv:
+    if mode == "no_change":
+        print("FAKE_RAVEN_PREPARE_REFRESH_NO_CHANGE")
+        raise SystemExit(0)
     map_path.write_bytes(b"map-new")
     event_path.write_bytes(b"event-new")
     proof = json.loads(proof_path.read_text(encoding="utf-8"))
@@ -214,7 +217,19 @@ try {
     Assert-True (([Text.Encoding]::UTF8.GetString([IO.File]::ReadAllBytes($pushFail.Events))) -eq 'event-new') 'Preserved commit lost refreshed event candidate.'
     Assert-TrackedClean $pushFail
 
-    Write-Host 'RAVEN_PROOF_REFRESH_WRAPPER_TESTS_PASSED rollback_after_check_failure=true blocked_commit_cleanup=true push_failure_commit_preserved=true'
+    # Scenario 4: refresh/check succeed but the pinned proof is already current.
+    # This is the exact native-only field regression from 2026-09-22.
+    $noChange = New-TestRepo (Join-Path $root 'no-change')
+    $exitCode = Invoke-Wrapper $noChange 'no_change'
+    Assert-True ($exitCode -eq 0) 'No-op proof refresh was incorrectly rejected.'
+    Assert-BaselineBytes $noChange
+    Assert-TrackedClean $noChange
+    $noChangeHead = (& git -C $noChange.Work rev-parse HEAD).Trim()
+    Assert-True ($noChangeHead -ne $noChange.InitialHead) 'No-op proof verification evidence was not committed.'
+    $remoteNoChangeHead = (& git --git-dir=$($noChange.Remote) rev-parse refs/heads/codex/all-ravens-release-candidate).Trim()
+    Assert-True ($remoteNoChangeHead -eq $noChangeHead) 'No-op proof verification evidence was not pushed.'
+
+    Write-Host 'RAVEN_PROOF_REFRESH_WRAPPER_TESTS_PASSED rollback_after_check_failure=true blocked_commit_cleanup=true push_failure_commit_preserved=true no_change_refresh=true'
 }
 finally {
     $resolved = [IO.Path]::GetFullPath($root)
