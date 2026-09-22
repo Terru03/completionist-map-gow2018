@@ -25,6 +25,7 @@ $python = Get-Command python -ErrorAction SilentlyContinue
 if (-not $python) { throw 'python.exe was not found in PATH.' }
 
 $Resolver = Join-Path $RepoRoot 'tools\v0.10.5\resolve-legendary-map-counted-scope-offline.py'
+$IdentityHelper = Join-Path $RepoRoot 'tools\v0.10.5\legendary_chest_identity.py'
 $IdentityTests = Join-Path $RepoRoot 'tools\v0.10.5\test_legendary_chest_identity.py'
 $RavenGuard = Join-Path $RepoRoot 'tools\v0.10.5\test-raven-frozen-baseline.ps1'
 $Catalogue = Join-Path $RepoRoot 'config\collectibles\v0.10.5\all-collectibles.json'
