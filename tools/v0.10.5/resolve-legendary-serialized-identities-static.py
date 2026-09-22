@@ -19,7 +19,6 @@ import argparse
 from collections import defaultdict
 import importlib.util
 import json
-import re
 from pathlib import Path
 import sys
 
@@ -67,62 +66,6 @@ def record_for_offset(records: list[dict], at: int):
             return rec, "payload", at - header_start
     return None, None, None
 
-
-def compile_record_id_matcher(ids: dict[bytes, list[dict]]):
-    """Compile one C-level multi-pattern matcher for all 16-byte WAD record IDs.
-
-    The previous resolver sliced and dictionary-looked-up every byte position in
-    every traversed record. On the shipped WADs that turned the two-hop graph
-    walk into minutes of Python CPU time. A bytes-regex lookahead keeps the same
-    byte-exact, overlap-preserving semantics while moving candidate searching
-    into the C regex engine.
-    """
-    values = sorted(ids)
-    if not values:
-        return None
-    pattern = b"|".join(re.escape(value) for value in values)
-    return re.compile(pattern)
-
-
-def refs_in_record(
-    rec: dict,
-    ids: dict[bytes, list[dict]],
-    matcher,
-) -> list[dict]:
-    data = rec["data"]
-    hits = []
-    if matcher is None:
-        return hits
-    search_at = 0
-    while True:
-        match = matcher.search(data, search_at)
-        if match is None:
-            break
-        value = match.group(0)
-        off = match.start()
-        # Advance by one byte, not by match width, so this remains equivalent
-        # to the old exhaustive byte-window scan even for overlapping hits.
-        search_at = off + 1
-        targets = ids.get(value)
-        if not targets:
-            continue
-        hits.append({
-            "value_hex": value.hex(),
-            "payload_offset": f"0x{off:X}",
-            "source_record_name": rec["name"],
-            "source_record_id_hex": rec["id"].hex(),
-            "source_record_offset": f"0x{rec['offset']:X}",
-            "targets": [
-                {
-                    "name": target["name"],
-                    "id_hex": target["id"].hex(),
-                    "offset": f"0x{target['offset']:X}",
-                    "kind": target["kind"],
-                }
-                for target in targets[:16]
-            ],
-        })
-    return hits
 
 def scene_variants(row: dict) -> dict[str, list[bytes]]:
     chain = row["source"]["transform_chain"]
@@ -210,6 +153,19 @@ def simple_state_oracle(staged_report: dict) -> tuple[dict[str, set[int]], dict]
 
 
 def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
+    """Inventory candidate identity elements directly from parsed WAD record IDs.
+
+    The previous implementation searched record payloads for references to other
+    record IDs and followed two graph hops from the shared loader. That search
+    was only a candidate-discovery heuristic: every value it could emit was
+    already constrained to be an exact WAD record ID. Therefore scanning payload
+    bytes adds no authority to the final 32/32 staged-hash proof.
+
+    We now score the superset of every exact record ID in the 27 tracked WADs.
+    This is both faster and more conservative: no true candidate accepted by the
+    old graph walk can be lost, while the existing unique-exact staged binding
+    remains the sole acceptance criterion.
+    """
     prototype = bytes.fromhex(EXPECTED_PROTOTYPE)
     wad_root = game_root / "exec" / "wad" / "pc_le"
     if not wad_root.is_dir():
@@ -218,7 +174,6 @@ def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
     wad_names = sorted({row["source"]["wad"] for row in rows})
     support: dict[str, dict] = {}
     occurrences = []
-    parsed_wads = {}
 
     for wad_index, wad_name in enumerate(wad_names, start=1):
         print(
@@ -230,17 +185,7 @@ def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
             raise RuntimeError(f"missing tracked Legendary WAD: {path}")
         raw = path.read_bytes()
         records = raven.parse_wad(raw)
-        ids: dict[bytes, list[dict]] = defaultdict(list)
-        for rec in records:
-            ids[rec["id"]].append(rec)
-        matcher = compile_record_id_matcher(ids)
-        parsed_wads[wad_name] = {
-            "raw": raw,
-            "records": records,
-            "ids": ids,
-        }
 
-        source_records = []
         for at in find_all(raw, prototype):
             rec, where, rel = record_for_offset(records, at)
             occurrences.append({
@@ -252,70 +197,49 @@ def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
                 "record_id_hex": rec["id"].hex() if rec else None,
                 "record_offset": f"0x{rec['offset']:X}" if rec else None,
             })
-            if rec is not None and all(existing is not rec for existing in source_records):
-                source_records.append(rec)
 
         for rec in records:
-            if rec["id"] == prototype and all(existing is not rec for existing in source_records):
-                source_records.append(rec)
+            value_hex = rec["id"].hex()
+            item = support.setdefault(value_hex, {
+                "value_hex": value_hex,
+                "wad_hits": set(),
+                "hits": 0,
+                "semantic_hits": 0,
+                "depths": [],
+                "target_names": set(),
+                "examples": [],
+            })
+            item["wad_hits"].add(wad_name)
+            item["hits"] += 1
+            item["target_names"].add(rec["name"])
+            if any(
+                term in rec["name"].lower()
+                for term in ("chest", "legendary", "proto", "interact")
+            ):
+                item["semantic_hits"] += 1
+            if len(item["examples"]) < 12:
+                item["examples"].append({
+                    "wad": wad_name,
+                    "record_name": rec["name"],
+                    "record_id_hex": value_hex,
+                    "record_offset": f"0x{rec['offset']:X}",
+                    "record_kind": rec["kind"],
+                })
 
-        # Follow direct references plus one additional hop. This is broader than
-        # the original Raven diagnostic while still bounded to exact record IDs.
-        frontier = list(source_records)
-        seen_records = {id(rec) for rec in source_records}
-        for depth in (1, 2):
-            next_frontier = []
-            for rec in frontier:
-                for hit in refs_in_record(rec, ids, matcher):
-                    value_hex = hit["value_hex"]
-                    item = support.setdefault(value_hex, {
-                        "value_hex": value_hex,
-                        "wad_hits": set(),
-                        "hits": 0,
-                        "semantic_hits": 0,
-                        "depths": set(),
-                        "target_names": set(),
-                        "examples": [],
-                    })
-                    item["wad_hits"].add(wad_name)
-                    item["hits"] += 1
-                    item["depths"].add(depth)
-                    target_names = [target["name"] for target in hit["targets"]]
-                    item["target_names"].update(target_names)
-                    semantic = any(
-                        any(term in name.lower() for term in (
-                            "chest", "legendary", "proto", "interact"
-                        ))
-                        for name in [rec["name"], *target_names]
-                    )
-                    if semantic:
-                        item["semantic_hits"] += 1
-                    if len(item["examples"]) < 12:
-                        item["examples"].append({
-                            "wad": wad_name,
-                            "depth": depth,
-                            **hit,
-                        })
-                    for target in hit["targets"]:
-                        raw_id = bytes.fromhex(target["id_hex"])
-                        for target_rec in ids.get(raw_id, []):
-                            if id(target_rec) not in seen_records:
-                                seen_records.add(id(target_rec))
-                                next_frontier.append(target_rec)
-            frontier = next_frontier
         print(
             f"STATIC_IDENTITY_SCAN_DONE wad={wad_index}/{len(wad_names)} "
             f"name={wad_name} candidates_so_far={len(support)}",
             flush=True,
         )
 
-    # Include the loader ID itself as a negative/control candidate.
+    # Keep the loader itself as an explicit control even if a WAD parser change
+    # were ever to stop exposing it as a record ID.
     support.setdefault(EXPECTED_PROTOTYPE, {
         "value_hex": EXPECTED_PROTOTYPE,
         "wad_hits": set(),
         "hits": 0,
         "semantic_hits": 0,
-        "depths": set(),
+        "depths": [],
         "target_names": set(),
         "examples": [],
     })
@@ -328,7 +252,7 @@ def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
             "wads": sorted(item["wad_hits"]),
             "hits": item["hits"],
             "semantic_hits": item["semantic_hits"],
-            "depths": sorted(item["depths"]),
+            "depths": list(item["depths"]),
             "target_names": sorted(item["target_names"]),
             "examples": item["examples"],
         })
@@ -346,6 +270,15 @@ def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
     }
 
 
+def continue_identity_hash(value: int, element: bytes) -> int:
+    if len(element) != 16:
+        raise ValueError("identity element length changed")
+    for byte in element:
+        value = ((value + byte) * 0x401) & identity.MASK64
+        value ^= value >> 6
+    return value & identity.MASK64
+
+
 def score_candidates(rows: list[dict], oracle: dict[str, set[int]], candidates: list[dict]):
     represented_rows = [
         row for row in rows
@@ -356,34 +289,87 @@ def score_candidates(rows: list[dict], oracle: dict[str, set[int]], candidates: 
             f"expected {EXPECTED_STAGED} represented rows, got {len(represented_rows)}"
         )
 
+    grammars = sorted(scene_variants(represented_rows[0]))
+    prefix_hashes = {
+        grammar: [
+            (
+                row,
+                identity.identity_hash(scene_variants(row)[grammar]),
+                oracle[row["source"]["wad"].lower()],
+            )
+            for row in represented_rows
+        ]
+        for grammar in grammars
+    }
+
+    # Use the smallest staged candidate set as the first discriminator. Almost
+    # every false prototype is rejected after one 16-byte continuation.
+    for grammar in grammars:
+        prefix_hashes[grammar].sort(key=lambda item: len(item[2]))
+
     scores = []
-    for candidate in candidates:
+    total = len(candidates)
+    for candidate_index, candidate in enumerate(candidates, start=1):
+        if candidate_index == 1 or candidate_index % 5000 == 0 or candidate_index == total:
+            print(
+                f"STATIC_IDENTITY_SCORE candidate={candidate_index}/{total}",
+                flush=True,
+            )
         proto = bytes.fromhex(candidate["value_hex"])
         if len(proto) != 16:
             continue
-        for grammar in sorted(scene_variants(represented_rows[0])):
-            matches = []
+        for grammar in grammars:
+            probes = prefix_hashes[grammar]
+            first_row, first_prefix, first_oracle = probes[0]
+            first_hash = continue_identity_hash(first_prefix, proto)
+            if first_hash not in first_oracle:
+                scores.append({
+                    "prototype_identity_hex": candidate["value_hex"],
+                    "scene_grammar": grammar,
+                    "match_count": 0,
+                    "miss_count": EXPECTED_STAGED,
+                    "candidate_static_evidence": {
+                        "wad_hit_count": candidate["wad_hit_count"],
+                        "hits": candidate["hits"],
+                        "semantic_hits": candidate["semantic_hits"],
+                        "depths": candidate["depths"],
+                        "target_names": candidate["target_names"],
+                    },
+                    "matches": [],
+                    "misses": [{
+                        "catalogue_id": first_row["catalogue_id"],
+                        "wad": first_row["source"]["wad"],
+                        "object_hash_hex": f"0x{first_hash:016X}",
+                    }],
+                })
+                continue
+
+            matches = [{
+                "catalogue_id": first_row["catalogue_id"],
+                "wad": first_row["source"]["wad"],
+                "object_hash_hex": f"0x{first_hash:016X}",
+            }]
             misses = []
-            for row in represented_rows:
-                scene = scene_variants(row)[grammar]
-                object_hash = identity.identity_hash(scene + [proto])
-                if object_hash in oracle[row["source"]["wad"].lower()]:
-                    matches.append({
-                        "catalogue_id": row["catalogue_id"],
-                        "wad": row["source"]["wad"],
-                        "object_hash_hex": f"0x{object_hash:016X}",
-                    })
+            for row, prefix_hash, row_oracle in probes[1:]:
+                object_hash = continue_identity_hash(prefix_hash, proto)
+                entry = {
+                    "catalogue_id": row["catalogue_id"],
+                    "wad": row["source"]["wad"],
+                    "object_hash_hex": f"0x{object_hash:016X}",
+                }
+                if object_hash in row_oracle:
+                    matches.append(entry)
                 else:
-                    misses.append({
-                        "catalogue_id": row["catalogue_id"],
-                        "wad": row["source"]["wad"],
-                        "object_hash_hex": f"0x{object_hash:016X}",
-                    })
+                    misses.append(entry)
+                    # Exact 32/32 is the only success condition. Once this
+                    # candidate misses, further rows cannot change acceptance.
+                    break
+
             scores.append({
                 "prototype_identity_hex": candidate["value_hex"],
                 "scene_grammar": grammar,
                 "match_count": len(matches),
-                "miss_count": len(misses),
+                "miss_count": EXPECTED_STAGED - len(matches),
                 "candidate_static_evidence": {
                     "wad_hit_count": candidate["wad_hit_count"],
                     "hits": candidate["hits"],
@@ -394,6 +380,7 @@ def score_candidates(rows: list[dict], oracle: dict[str, set[int]], candidates: 
                 "matches": matches,
                 "misses": misses,
             })
+
     scores.sort(
         key=lambda item: (
             -item["match_count"],
