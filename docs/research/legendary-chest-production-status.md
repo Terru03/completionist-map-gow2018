@@ -366,3 +366,40 @@ The resolver:
 The gate fails closed if the best result is less than 32/32 or if multiple exact
 solutions exist. Even a successful identity resolution does not yet prove which
 numeric state means OPENED.
+
+
+### Static identity resolver performance repair 2026-09-22
+
+The first execution of the static identity resolver passed the six preflight tests
+but then spent more than ten minutes inside the WAD reference walk without
+producing a resolver result.
+
+A live process check showed:
+
+- resolver PID: 20304;
+- CPU consumed: 824.6 seconds;
+- working set: approximately 219 MiB;
+- process remained CPU-active rather than deadlocked;
+- no evidence/result commit had reached the remote branch;
+- remote head was still `e93fa97029f58303126fb4fe654cd4a8cd9b8817`.
+
+Root cause:
+
+- `refs_in_record()` tested a freshly sliced 16-byte window at every byte
+  position in every traversed WAD record;
+- the two-hop candidate walk therefore performed the expensive search in Python
+  rather than in native code.
+
+Repair:
+
+- compile one exact multi-pattern bytes matcher from the WAD record-ID set;
+- perform candidate searching in Python's C regex engine;
+- retain one-byte advancement after a match so overlapping 16-byte identities
+  remain observable, preserving the old exhaustive semantics;
+- add an explicit synthetic overlap regression test;
+- emit and stream per-WAD progress from the resolver runner.
+
+This is a tooling-performance repair only. It does not alter the identity
+grammar, staged checkpoint oracle, state semantics, Raven runtime, active saves,
+or game files. The 32/32 identity gate remains unproven until the repaired
+resolver completes and archives its result.
