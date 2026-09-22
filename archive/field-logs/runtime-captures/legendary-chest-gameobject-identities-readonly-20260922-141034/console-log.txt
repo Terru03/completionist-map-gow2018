@@ -1,0 +1,52 @@
+**********************
+PowerShell transcript start
+Start time: 20260922171034
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\run-legendary-chest-gameobject-identities-readonly-and-push.ps1
+Process ID: 23124
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+LEGENDARY CHEST IDENTITY PROOF - READ ONLY
+No gameplay action is required.
+Uses ReadProcessMemory only; no process/save/progression writes.
+
+
+test_native_wad_name_hash_matches_known_algorithm (__main__.LegendaryChestIdentityTests.test_native_wad_name_hash_matches_known_algorithm) ... ok
+test_scene_identity_contract_is_unique_and_structural (__main__.LegendaryChestIdentityTests.test_scene_identity_contract_is_unique_and_structural) ... ok
+test_serialized_payload_is_flag_plus_two_hashes (__main__.LegendaryChestIdentityTests.test_serialized_payload_is_flag_plus_two_hashes) ... ok
+test_static_production_partition_is_pinned (__main__.LegendaryChestIdentityTests.test_static_production_partition_is_pinned) ... ok
+test_tracked_rows_are_exact_opened_state_collectibles (__main__.LegendaryChestIdentityTests.test_tracked_rows_are_exact_opened_state_collectibles) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.008s
+
+OK
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\capture-legendary-chest-gameobject-identities-readonly.py", line 755, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\capture-legendary-chest-gameobject-identities-readonly.py", line 591, in main
+    stats, raw_matches, ambiguous, diagnostics = sweep(
+                                                 ~~~~~^
+        k, process, base, registry, rows
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\capture-legendary-chest-gameobject-identities-readonly.py", line 372, in sweep
+    raise RuntimeError("duplicate adjusted Legendary placement anchor")
+RuntimeError: duplicate adjusted Legendary placement anchor
+**********************
+PowerShell transcript end
+End time: 20260922171036
+**********************
