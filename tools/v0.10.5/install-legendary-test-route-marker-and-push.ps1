@@ -66,6 +66,8 @@ $console = Join-Path $evidence 'console-log.txt'
 $transcriptStarted = $false
 $installed = $false
 $backedUp = $false
+$installFailed = $false
+$installFailureMessage = ''
 
 function Stop-LocalTranscript {
     if ($script:transcriptStarted) {
@@ -183,6 +185,8 @@ try {
 }
 catch {
     $message = $_.Exception.Message
+    $script:installFailed = $true
+    $script:installFailureMessage = $message
     if ($installed -or $backedUp) {
         try { Restore-Backup } catch {}
     }
@@ -191,7 +195,6 @@ catch {
         "reason=$message"
         "rollback_attempted=$($backedUp.ToString().ToLowerInvariant())"
     ) | Set-Content -LiteralPath (Join-Path $evidence 'result.txt') -Encoding UTF8
-    throw
 }
 finally {
     Stop-LocalTranscript
@@ -200,11 +203,20 @@ finally {
 
 & git add -f -- $relativeEvidence
 if ($LASTEXITCODE -ne 0) { throw 'git add diagnostic install evidence failed.' }
-& git commit -m "research(v0.10.5): install temporary Legendary route marker $stamp" -- $relativeEvidence
+$commitMessage = if ($script:installFailed) {
+    "research(v0.10.5): archive Legendary route marker install failure $stamp"
+} else {
+    "research(v0.10.5): install temporary Legendary route marker $stamp"
+}
+& git commit -m $commitMessage -- $relativeEvidence
 if ($LASTEXITCODE -ne 0) { throw 'git commit diagnostic install evidence failed.' }
 & git push origin $ExpectedBranch
 if ($LASTEXITCODE -ne 0) { throw 'git push diagnostic install evidence failed.' }
 $head = (& git rev-parse HEAD).Trim()
+
+if ($script:installFailed) {
+    throw "Legendary route marker install failed; evidence pushed in $head. $($script:installFailureMessage)"
+}
 
 Write-Host ''
 Write-Host "LEGENDARY_TEST_ROUTE_MARKER_PUSHED $head" -ForegroundColor Green
