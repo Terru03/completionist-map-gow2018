@@ -529,9 +529,32 @@ do
     local previous = MapOn[method]
     assert(type(previous) == "function", "Missing map lifecycle method: " .. method)
     MapOn[method] = function(self, ...)
+      local trackedCatalogueId =
+          customCompassOwnsTarget and _G.CompletionistMapV105TrackedCatalogueId or nil
       clearIcons(self, "map_teardown:" .. method)
+      local result = previous(self, ...)
+
+      -- The stock map lifecycle may reclaim compass ownership after MapOn.Update
+      -- has stopped running. If a custom Raven is still tracked, make the
+      -- custom class the final writer and remove only foreign stock targets.
+      local row = trackedCatalogueId and byCatalogueId[trackedCatalogueId] or nil
+      if row ~= nil and shouldShow(row.CatalogueId) then
+        local info = markerInfo(row.Name)
+        if info ~= nil then
+          suppressLegacyRavenHud()
+          pcall(function() game.Compass.ShowMarker(row.Name, ravenClass) end)
+          hideStockExcept(tostring(info.Id), "map_teardown_owner_guard")
+          suppressLegacyRavenHud()
+          self.currShownMarkerID = nil
+          log("COMPASS_EXIT_REASSERT",
+              "method=" .. method .. " name=" .. row.Name ..
+              " uid=" .. tostring(info.Id) ..
+              " customClass=" .. ravenClass)
+        end
+      end
+
       if lastMapOnSelf == self then lastMapOnSelf = nil end
-      return previous(self, ...)
+      return result
     end
   end
 
@@ -821,7 +844,7 @@ do
       return
     end
     local customOK, customCount = hideCustom(selected.IdString, "raven_replace")
-    local stockOK, stockCount = hideStock("raven_replace")
+    local stockOK, stockCount = hideStockExcept(selected.IdString, "raven_replace")
     if not customOK or not stockOK then return end
     suppressLegacyRavenHud()
     local showOK, showErr = pcall(function()
@@ -833,7 +856,7 @@ do
     end
     customCompassOwnsTarget = true
     suppressLegacyRavenHud()
-    hideStock("raven_post_show_guard")
+    hideStockExcept(selected.IdString, "raven_post_show_guard")
     _G.CompletionistMapV105TrackedCatalogueId = selected.CatalogueId
     self.currShownMarkerID = selected.Id
     promptIntent = {
@@ -861,8 +884,8 @@ do
         if trackedInfo ~= nil then exceptIdString = tostring(trackedInfo.Id) end
       end
       local stock, stockOK = stockIds()
-      if stockOK and #stock > 0 then
-        hideStock("custom_raven_owner_guard")
+      if stockOK and hasOther(stock, exceptIdString) then
+        hideStockExcept(exceptIdString, "custom_raven_owner_guard")
       end
     end
 
@@ -920,12 +943,12 @@ do
         custom, customOK = customIds()
         stock, stockOK = stockIds()
       end
-      if stockOK and #stock > 0 then
-        hideStock("raven_replace_async_retry")
+      if stockOK and hasOther(stock, intent.IdString) then
+        hideStockExcept(intent.IdString, "raven_replace_async_retry")
         stock = stockIds()
       end
       if customOK and contains(custom, intent.IdString) and
-          stockOK and #stock == 0 then
+          not hasOther(stock, intent.IdString) then
         promptSettleFrames = 0
         promptSettleBucket = -1
         refreshPrompt(self, selected)
@@ -947,14 +970,14 @@ do
         promptSettleBucket = bucket
         pcall(function() game.Compass.HideMarker(row.Name) end)
       end
-      if stockOK and #stock > 0 then
-        hideStock("raven_remove_async_retry")
+      if stockOK and hasOther(stock, intent.IdString) then
+        hideStockExcept(intent.IdString, "raven_remove_async_retry")
       end
       local customAfter, customAfterOK = customIds()
       local stockAfter, stockAfterOK = stockIds()
       if promptSettleFrames >= 3 and customAfterOK and stockAfterOK and
           not contains(customAfter, intent.IdString) and
-          #stockAfter == 0 then
+          not hasOther(stockAfter, intent.IdString) then
         intent.Settled = true
         promptSettleFrames = 0
         promptSettleBucket = -1
