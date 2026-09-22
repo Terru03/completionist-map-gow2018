@@ -18,12 +18,12 @@
       "sha256": "2cebb4bfc0a4cf76c0d4145b7408be10ad7c6ad2350d571263c5050c7ab6480a"
     },
     "mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua": {
-      "bytes": 26274,
-      "sha256": "1b0b9777b0c465087da1e45b5ad439b3acb2180b3c4dc2399e207d55982b34b0"
+      "bytes": 27230,
+      "sha256": "07cbe9d3b901d6b67e5170f9fdf69dfa7e98a0e19fdb279b15cee662d231cee0"
     },
     "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": {
-      "bytes": 225628,
-      "sha256": "1b80c6adf5327358820fce6e25afea03543783df46cd57575977f3a36980db68"
+      "bytes": 234429,
+      "sha256": "4f61a56ce4c91663e54ebbc886c21d8b1b921ebf2426d43aa078643d661221a3"
     }
   },
   "game_files_written": false,
@@ -66,11 +66,15 @@
     "currMarkerID_alone_infers_raven": false,
     "data_driven_entries": 53,
     "exact_collision_object_required_before_uid": true,
+    "native_boundary_authority": "matching echoed boundaryEpoch from synchronous V2 capture requested after load completion",
+    "native_boundary_snapshot_schema": 2,
+    "native_generation_is_capture_freshness": false,
     "native_generation_monotonic": true,
+    "native_generation_role": "ordering only; never sufficient to prove post-load authority",
     "native_refresh_before_icon_sync": true,
     "native_snapshot_port": 43753,
     "native_snapshot_schema": 1,
-    "native_snapshot_transport": "loopback-only bounded request/response on map open",
+    "native_snapshot_transport": "loopback-only V1 latest snapshot plus V2 synchronous boundary capture",
     "native_static_descriptor_writes": false,
     "permanent_polling": false,
     "same_raven_second_click_removes": true,
@@ -89,13 +93,23 @@
     "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": "16e13b342f3bbe98ac9b87eb34bf0115e6b04340d6e41270f38a557f2ed51493"
   },
   "state": {
-    "immediate_kill_path": "loaded Raven ravenKilled event",
+    "boundary_epoch_policy": "Lua-generated monotonic epoch must be echoed by synchronous V2 capture before state replacement",
+    "event_false_policy": "defer alive state to atomic 53-Raven authority",
+    "event_kill_overlay": "persists across all periodic V1 snapshots until explicit load boundary authority",
+    "event_overlay_clear_policy": "matching V2 boundary capture only",
+    "immediate_kill_path": "loaded Raven ravenKilled=true event",
+    "load_boundary_authority": "EVT_LoadSaveData disarms capture; EVT_LoadSaveFile_Done and post-return OnRestoreCheckpoint arm a new boundary epoch",
+    "load_boundary_sources": [
+      "EVT_LoadSaveData",
+      "EVT_LoadSaveFile_Done",
+      "OnRestoreCheckpoint"
+    ],
     "loaded_instance_match": "exact parent quest plus unique native world position",
     "lua_application_point": "CompletionistMapV105ApplyPersistedRavenKills",
-    "map_open_refresh": "latest newer native generation before syncIcons",
+    "map_open_refresh": "V1 strictly newer generation only when no load boundary is pending",
     "native_field": "ravenKilled",
-    "native_unavailable_policy": "preserve valid event-derived state",
-    "unknown_state_policy": "catalogue default visible",
+    "native_unavailable_policy": "preserve last-good state and positive event-derived kills",
+    "unknown_state_policy": "catalogue default visible only before any authoritative kill evidence",
     "unloaded_instance_query": "atomic 53-state native Raven snapshot",
     "writes_progression": false
   }
