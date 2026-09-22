@@ -277,6 +277,7 @@ function probe.collectedCount()
   return n
 end
 function probe.state(id) return CompletionistMapV105RavenState[id] end
+function probe.hasAuthority() return CompletionistMapV105HasAuthoritativeRavenState==true end
 '''
 
 
@@ -290,6 +291,9 @@ class AllRavensMapLuaTests(unittest.TestCase):
         alfheim = [row for row in CATALOGUE["ravens"] if row["realm"] == "Alfheim"]
         self.a, self.b = alfheim
         self.probe = self.lua.globals().probe
+        # Most UI-routing tests assume the catalogue is already authorized.
+        # Individual authority tests override this response explicitly.
+        self.probe.setNativeResponse(self.response(1))
 
     def response(self, generation: int, killed_rows=(), restore_epoch: int = 0):
         killed_ids = [row["catalogue_id"] for row in killed_rows]
@@ -314,6 +318,19 @@ class AllRavensMapLuaTests(unittest.TestCase):
             f"count=53 unknown=0 alive={53 - killed} killed={killed} "
             f"explicit={53 - killed} absentWadFalse={killed} killedIds={encoded}\n"
         )
+
+    def test_no_authority_bootstrap_hides_all_ravens(self):
+        self.probe.setNativeResponse(None)
+        self.probe.open()
+        self.assertEqual(self.probe.iconCount(), 0)
+        self.assertFalse(self.probe.hasAuthority())
+
+        # Once an atomic fresh 53-state snapshot is available, the same map
+        # context may reveal the catalogue normally.
+        self.probe.setNativeResponse(self.response(1))
+        self.probe.open()
+        self.assertTrue(self.probe.hasAuthority())
+        self.assertEqual(self.probe.iconCount(), 2)
 
     def test_a_b_same_click_stock_and_kill_lifecycle(self):
         self.probe.publish(self.a["catalogue_id"], False)

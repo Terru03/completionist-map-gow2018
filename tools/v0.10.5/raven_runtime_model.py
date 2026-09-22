@@ -21,6 +21,7 @@ class RavenRuntimeModel:
         self.authority_boundary_epoch = 0
         self.authority_boundary_capture_ready = False
         self.event_killed: set[str] = set()
+        self.has_authority = False
 
     def set_realm(self, realm: str):
         self.realm = realm
@@ -68,6 +69,7 @@ class RavenRuntimeModel:
             self.active_target = None
         if self.selection is not None and self.state.get(self.selection) == "collected":
             self.selection = None
+        self.has_authority = True
         self._sync_icons()
         return accepted
 
@@ -131,7 +133,7 @@ class RavenRuntimeModel:
         self.map_icons.clear()
 
     def _sync_icons(self):
-        if not self.map_open:
+        if not self.map_open or not self.has_authority:
             self.map_icons.clear()
             return
         self.map_icons = {

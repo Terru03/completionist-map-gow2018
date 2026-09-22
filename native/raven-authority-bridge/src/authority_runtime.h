@@ -30,6 +30,57 @@ class SnapshotStore {
   std::uint64_t next_generation_ = 1;
 };
 
+// Prevent a transient startup image where all 53 Ravens appear default-alive
+// from becoming authority before the staged checkpoint table has settled.
+class SnapshotPublicationGate {
+ public:
+  bool Observe(const NativeRavenSnapshot& snapshot, std::uint64_t now_ms) {
+    bool all_false = snapshot.alive_count == 53 &&
+                     snapshot.killed_count == 0 &&
+                     snapshot.explicit_count == 0 &&
+                     snapshot.absence_default_false_count == 53;
+    if (all_false) {
+      for (const bool killed : snapshot.killed) {
+        if (killed) {
+          all_false = false;
+          break;
+        }
+      }
+    }
+
+    if (!all_false) {
+      zero_pending_ = false;
+      zero_confirmed_ = false;
+      zero_first_tick_ms_ = 0;
+      return true;
+    }
+
+    if (zero_confirmed_) return true;
+    if (!zero_pending_) {
+      zero_pending_ = true;
+      zero_first_tick_ms_ = now_ms;
+      return false;
+    }
+    if (now_ms < zero_first_tick_ms_ ||
+        now_ms - zero_first_tick_ms_ < 750) {
+      return false;
+    }
+    zero_confirmed_ = true;
+    return true;
+  }
+
+  void Reject() {
+    zero_pending_ = false;
+    zero_confirmed_ = false;
+    zero_first_tick_ms_ = 0;
+  }
+
+ private:
+  bool zero_pending_ = false;
+  bool zero_confirmed_ = false;
+  std::uint64_t zero_first_tick_ms_ = 0;
+};
+
 void RunAuthorityWorker();
 void SetProxyForwardReady(bool ready);
 bool ReadPublishedSnapshot(NativeRavenSnapshot* snapshot);

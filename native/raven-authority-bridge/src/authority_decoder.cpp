@@ -511,27 +511,42 @@ DecodedRavenSnapshot DecodeRavenSnapshot(
       explicit_states[entry.raven_index] = entry.killed;
     }
   }
+  std::string first_unknown;
+  result.unknown_count = 0;
   for (std::size_t index = 0; index < kRavenCatalogue.size(); ++index) {
     if (explicit_states[index].has_value()) {
       result.killed[index] = *explicit_states[index];
+      result.known[index] = true;
+      result.explicit_state[index] = true;
       ++result.explicit_count;
     } else if (!staged_wads.contains(std::string(kRavenCatalogue[index].wad))) {
       result.killed[index] = false;
+      result.known[index] = true;
       ++result.absence_default_false_count;
     } else {
-      result.reason = "present_wad_without_exact_state:" +
-                      std::string(kRavenCatalogue[index].catalogue_id);
-      return result;
+      ++result.unknown_count;
+      if (first_unknown.empty()) {
+        first_unknown = std::string(kRavenCatalogue[index].catalogue_id);
+      }
+      continue;
     }
     if (result.killed[index]) ++result.killed_count;
   }
   result.alive_count =
-      static_cast<std::uint32_t>(kRavenCatalogue.size()) - result.killed_count;
+      static_cast<std::uint32_t>(result.explicit_count +
+                                 result.absence_default_false_count) -
+      result.killed_count;
+  if (result.unknown_count != 0) {
+    result.reason = "present_wad_without_exact_state:" + first_unknown;
+    return result;
+  }
   if (result.explicit_count + result.absence_default_false_count !=
       kRavenCatalogue.size()) {
     result.reason = "snapshot_count_not_53";
     return result;
   }
+  result.alive_count =
+      static_cast<std::uint32_t>(kRavenCatalogue.size()) - result.killed_count;
   result.accepted = true;
   result.reason = "accepted";
   return result;

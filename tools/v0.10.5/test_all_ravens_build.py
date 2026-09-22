@@ -53,12 +53,19 @@ class AllRavensTemplateTests(unittest.TestCase):
         state = build.state_contract()
         self.assertFalse(router["native_generation_is_capture_freshness"])
         self.assertEqual(router["native_boundary_snapshot_schema"], 2)
+        self.assertEqual(router["bootstrap_all_false_stability_ms"], 750)
+        self.assertEqual(
+            router["initial_marker_policy"], "hidden_until_atomic_authority"
+        )
         self.assertIn("ordering only", router["native_generation_role"])
         self.assertIn("boundaryEpoch", router["native_boundary_authority"])
         self.assertEqual(
             state["event_false_policy"],
             "defer alive state to atomic 53-Raven authority",
         )
+        self.assertIn("fail closed hidden", state["unknown_state_policy"])
+        self.assertIn("two accepted observations", state["bootstrap_all_false_policy"])
+        self.assertIn("before first authority", state["native_unavailable_policy"])
         self.assertIn("current restoreEpoch", state["event_kill_overlay"])
         self.assertIn("restoreEpoch advance", state["event_overlay_clear_policy"])
         self.assertIn("native loopback bridge", state["load_boundary_authority"])
@@ -105,6 +112,10 @@ class AllRavensTemplateTests(unittest.TestCase):
                 self.assertNotIn(token, text)
         self.assertIn("permanentPolling=false", self.map_hook)
         self.assertIn("postLoadBoundedRefresh=true", self.map_hook)
+        self.assertIn("catalogueDefaultVisible=false", self.map_hook)
+        self.assertIn("REGION_SUMMARY_DIAGNOSTIC", self.map_hook)
+        self.assertIn("GetQuestProgressAndGoal", self.map_hook)
+        self.assertIn("ParentQuest=", self.map_hook)
         self.assertIn("positiveEventEvidenceOnly=true", self.map_hook)
         self.assertIn("atomicAuthorityClearsState=true", self.map_hook)
         self.assertIn("sessionKillOverlay=true", self.map_hook)

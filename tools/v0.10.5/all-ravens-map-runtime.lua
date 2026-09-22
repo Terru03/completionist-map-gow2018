@@ -1,5 +1,5 @@
 -- BEGIN COMPLETIONIST V0.10.5 ALL RAVENS
--- Data drives all Raven work. Catalogue Ravens are visible unless explicitly collected.
+-- Data drives all Raven work. Raven markers stay hidden until atomic authority is established.
 do
   local prefix = "[CompletionistMap v0.10.5-all-ravens] "
   local ravenClass = "CompletionistRaven"
@@ -21,6 +21,8 @@ do
   _G.CompletionistMapV105RavenState = states
   local eventKilled = _G.CompletionistMapV105EventKilled or {}
   _G.CompletionistMapV105EventKilled = eventKilled
+  local hasAuthoritativeRavenState =
+      _G.CompletionistMapV105HasAuthoritativeRavenState == true
   local previousPrompt = MapOn.GetShowOnCompassPrompt
   local previousShow = MapOn.ShowOnCompass
   local previousUpdate = MapOn.Update
@@ -50,6 +52,7 @@ do
   local lastNativeRestoreEpoch =
       tonumber(_G.CompletionistMapV105LastNativeRestoreEpoch)
   local lastNativeNotice = nil
+  local lastRegionSummaryDiagnosticKey = nil
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
@@ -60,13 +63,77 @@ do
   end
 
   local function shouldShow(catalogueId)
-    return byCatalogueId[catalogueId] ~= nil and not isCollected(catalogueId)
+    return hasAuthoritativeRavenState and
+        byCatalogueId[catalogueId] ~= nil and not isCollected(catalogueId)
   end
 
   local function nativeNotice(category, fields, key)
     if key == lastNativeNotice then return end
     lastNativeNotice = key
     log(category, fields)
+  end
+
+  local function logRegionSummaryDiagnostics(source)
+    if hasAuthoritativeRavenState then return end
+    if type(game) ~= "table" or type(game.QuestManager) ~= "table" or
+        type(game.QuestManager.GetQuestProgressAndGoal) ~= "function" then
+      nativeNotice("REGION_SUMMARY_DIAGNOSTIC",
+          "source=" .. tostring(source) .. " available=false",
+          "region_summary_unavailable")
+      return
+    end
+
+    local groups = {}
+    for _, row in ipairs(rows) do
+      if type(row.ParentQuest) == "string" and row.ParentQuest ~= "" then
+        local group = groups[row.ParentQuest]
+        if group == nil then
+          group = {count=0, realms={}}
+          groups[row.ParentQuest] = group
+        end
+        group.count = group.count + 1
+        group.realms[row.Realm] = true
+      end
+    end
+
+    local parents = {}
+    for parent, _ in pairs(groups) do parents[#parents + 1] = parent end
+    table.sort(parents)
+
+    local records = {}
+    local keyParts = {}
+    for _, parent in ipairs(parents) do
+      local group = groups[parent]
+      local ok, progress, goal = pcall(
+          game.QuestManager.GetQuestProgressAndGoal, parent)
+      local progressNumber = ok and tonumber(progress) or nil
+      local goalNumber = ok and tonumber(goal) or nil
+      local realmNames = {}
+      for realm, _ in pairs(group.realms) do realmNames[#realmNames + 1] = realm end
+      table.sort(realmNames)
+      local realmText = table.concat(realmNames, ",")
+      local safeCountMatch =
+          progressNumber ~= nil and goalNumber ~= nil and
+          goalNumber == group.count
+      local record =
+          "parent=" .. parent ..
+          " progress=" .. tostring(progressNumber) ..
+          " goal=" .. tostring(goalNumber) ..
+          " catalogueCount=" .. tostring(group.count) ..
+          " safeCountMatch=" .. tostring(safeCountMatch) ..
+          " realms=" .. realmText
+      records[#records + 1] = record
+      keyParts[#keyParts + 1] = record
+    end
+
+    local key = table.concat(keyParts, "|")
+    if key == lastRegionSummaryDiagnosticKey then return end
+    lastRegionSummaryDiagnosticKey = key
+    for _, record in ipairs(records) do
+      log("REGION_SUMMARY_DIAGNOSTIC",
+          "source=" .. tostring(source) .. " " .. record ..
+          " readOnly=true progressionWrites=false")
+    end
   end
 
   local function closeSocket(client)
@@ -522,6 +589,9 @@ do
     log("NATIVE_AUTHORITY_REFRESH", "source=map_create result=" ..
         (refreshed and "applied" or tostring(refreshReason)) ..
         " lastGeneration=" .. tostring(lastNativeGeneration))
+    if not refreshed and not hasAuthoritativeRavenState then
+      logRegionSummaryDiagnostics("map_create")
+    end
     local result = createPins(self, currState)
     syncIcons(self, "map_create")
     return result
@@ -1071,12 +1141,14 @@ do
       end
     end
 
+    hasAuthoritativeRavenState = true
+    _G.CompletionistMapV105HasAuthoritativeRavenState = true
     if lastMapOnSelf ~= nil then syncIcons(lastMapOnSelf, "persisted:" .. tostring(source)) end
     log("PERSISTED_KILLS", "source=" .. tostring(source) ..
         " accepted=" .. tostring(accepted) ..
         " eventOverlay=" .. tostring(eventOverlayCount) ..
         " clearEventEvidence=" .. tostring(clearEventEvidence == true) ..
-        " catalogueDefaultVisible=true progressionWrites=false")
+        " authorityEstablished=true catalogueDefaultVisible=false progressionWrites=false")
     return true, accepted
   end
 
@@ -1156,7 +1228,7 @@ do
   log("API", "installed=true catalogueCount=" .. tostring(#rows) ..
       " mapResource=" .. mapResource .. " compassClass=" .. ravenClass ..
       " exactCollisionRequired=true markerIdAloneInfersRaven=false" ..
-      " permanentPolling=false postLoadBoundedRefresh=true progressionWrites=false catalogueDefaultVisible=true" ..
+      " permanentPolling=false postLoadBoundedRefresh=true progressionWrites=false catalogueDefaultVisible=false" ..
       " positiveEventEvidenceOnly=true atomicAuthorityClearsState=true" ..
       " sessionKillOverlay=true loadBoundaryClearsOverlay=true" ..
       " boundaryEpochCapture=true loadDataCaptureReady=false loadDoneCaptureReady=true" ..

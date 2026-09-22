@@ -27,6 +27,7 @@ constexpr std::uintptr_t kPayloadSizeRva = 0x22C6938;
 constexpr std::uintptr_t kPayloadBaseRva = 0x22C6940;
 constexpr std::uintptr_t kRecordCountRva = 0x22C696C;
 constexpr std::uintptr_t kRecordBaseRva = 0x22C7170;
+constexpr std::uintptr_t kTransientLoadSlotRva = 0x1078F4C;
 constexpr std::size_t kRecordStride = 0xA8;
 constexpr std::size_t kMaxRecords = 4096;
 constexpr std::size_t kMaxPoolSize = 0x140000;
@@ -41,6 +42,7 @@ struct StagedHeader {
 };
 
 SnapshotStore g_snapshot_store;
+SnapshotPublicationGate g_publication_gate;
 std::atomic<bool> g_proxy_forward_ready{false};
 std::atomic<std::uintptr_t> g_module_base{0};
 std::mutex g_capture_mutex;
@@ -210,11 +212,59 @@ bool CaptureAcceptedSnapshot(std::uintptr_t module_base,
   std::lock_guard<std::mutex> lock(g_capture_mutex);
 
   std::vector<StagedRecordInput> records;
-  if (!CaptureRecords(module_base, &records, reason)) return false;
+  if (!CaptureRecords(module_base, &records, reason)) {
+    g_publication_gate.Reject();
+    return false;
+  }
 
   const DecodedRavenSnapshot decoded = DecodeRavenSnapshot(records);
   if (!decoded.accepted) {
-    *reason = decoded.reason;
+    g_publication_gate.Reject();
+
+    std::string diagnostic = decoded.reason +
+        " explicit=" + std::to_string(decoded.explicit_count) +
+        " absentWadFalse=" +
+        std::to_string(decoded.absence_default_false_count) +
+        " unknown=" + std::to_string(decoded.unknown_count) +
+        " knownKilled=" + std::to_string(decoded.killed_count) +
+        " stagedRecords=" + std::to_string(records.size());
+
+    std::int32_t load_slot = INT32_MIN;
+    if (ReadValue(module_base + kTransientLoadSlotRva, &load_slot)) {
+      diagnostic += " transientLoadSlot=" + std::to_string(load_slot);
+    }
+
+    std::string unknown_ids;
+    std::string explicit_killed_ids;
+    std::string explicit_alive_ids;
+    std::string absent_ids;
+    for (std::size_t index = 0; index < kRavenCatalogue.size(); ++index) {
+      auto append_id = [&](std::string* target) {
+        if (!target->empty()) target->push_back(',');
+        target->append(kRavenCatalogue[index].catalogue_id);
+      };
+      if (!decoded.known[index]) {
+        append_id(&unknown_ids);
+      } else if (decoded.explicit_state[index]) {
+        if (decoded.killed[index]) {
+          append_id(&explicit_killed_ids);
+        } else {
+          append_id(&explicit_alive_ids);
+        }
+      } else {
+        append_id(&absent_ids);
+      }
+    }
+    diagnostic += " unknownIds=" +
+        (unknown_ids.empty() ? std::string("-") : unknown_ids);
+    diagnostic += " explicitKilledIds=" +
+        (explicit_killed_ids.empty() ? std::string("-") : explicit_killed_ids);
+    diagnostic += " explicitAliveIds=" +
+        (explicit_alive_ids.empty() ? std::string("-") : explicit_alive_ids);
+    diagnostic += " absentWadIds=" +
+        (absent_ids.empty() ? std::string("-") : absent_ids);
+
+    *reason = std::move(diagnostic);
     return false;
   }
 
@@ -226,6 +276,11 @@ bool CaptureAcceptedSnapshot(std::uintptr_t module_base,
   snapshot.explicit_count = decoded.explicit_count;
   snapshot.absence_default_false_count =
       decoded.absence_default_false_count;
+
+  if (!g_publication_gate.Observe(snapshot, snapshot.captured_tick_ms)) {
+    *reason = "all_false_authority_unconfirmed";
+    return false;
+  }
 
   g_snapshot_store.Publish(snapshot);
   if (!g_snapshot_store.Read(output)) {

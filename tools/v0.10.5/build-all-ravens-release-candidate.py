@@ -71,10 +71,12 @@ def render_lua(catalogue: dict, template_path: Path, token: str, state_rows: boo
             )
         else:
             lines.append(
-                "    {CatalogueId=%s,Name=%s,UidHex=%s,Realm=%s,RegionId=%s},"
+                "    {CatalogueId=%s,Name=%s,UidHex=%s,Realm=%s,RegionId=%s,ParentQuest=%s},"
                 % (
                     lua_quote(row["catalogue_id"]), lua_quote(row["marker"]["name"]),
-                    lua_quote(row["marker"]["uid"]), lua_quote(row["realm"]), lua_quote(row["region_id"]),
+                    lua_quote(row["marker"]["uid"]), lua_quote(row["realm"]),
+                    lua_quote(row["region_id"]),
+                    lua_quote(row["progression"]["parent_quest"]),
                 )
             )
     text = template_path.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
@@ -277,6 +279,8 @@ def router_contract() -> dict:
         "native_generation_role": "ordering only; never sufficient to prove post-load authority",
         "native_boundary_authority": "bridge-owned restoreEpoch observed through V1 then matching echoed boundaryEpoch from synchronous V2 capture before state replacement",
         "native_refresh_before_icon_sync": True,
+        "bootstrap_all_false_stability_ms": 750,
+        "initial_marker_policy": "hidden_until_atomic_authority",
         "native_static_descriptor_writes": False,
     }
 
@@ -289,8 +293,9 @@ def state_contract() -> dict:
         "unloaded_instance_query": "atomic 53-state native Raven snapshot",
         "lua_application_point": "CompletionistMapV105ApplyPersistedRavenKills",
         "map_open_refresh": "V1 requires valid restoreEpoch; any new nonzero bridge epoch is reconciled through matching V2 before state replacement",
-        "native_unavailable_policy": "preserve last-good state and positive event-derived kills",
-        "unknown_state_policy": "catalogue default visible only before any authoritative kill evidence",
+        "native_unavailable_policy": "preserve last-good state and positive event-derived kills; before first authority render no Raven markers",
+        "unknown_state_policy": "fail closed hidden until the first atomic 53-Raven authority snapshot",
+        "bootstrap_all_false_policy": "explicit=0 absentWadFalse=53 killed=0 requires two accepted observations separated by at least 750ms with no rejection between them",
         "immediate_kill_path": "loaded Raven ravenKilled=true event -> loopback RAVEN_KILLED note -> current restoreEpoch overlay",
         "session_kill_merge": "authoritative decoded saved kills union bridge kill notes from current restoreEpoch",
         "event_false_policy": "defer alive state to atomic 53-Raven authority",

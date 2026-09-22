@@ -25,10 +25,15 @@ class RavenRuntimeTests(unittest.TestCase):
         return RavenRuntimeModel(self.catalogue)
 
     def arm(self, model, row):
+        # Compass/collision routing tests operate only after an atomic map
+        # authority has made Raven markers eligible for interaction.
+        if not model.has_authority:
+            model.apply_persisted_kills([])
         self.assertEqual(model.collide(f"object:{row['catalogue_id']}"), row["catalogue_id"])
 
     def test_realm_filtering(self):
         model = self.model()
+        model.apply_persisted_kills([])
         model.open_map(self.a["realm"])
         self.assertIn(self.a["catalogue_id"], model.map_icons)
         self.assertNotIn(self.other_realm["catalogue_id"], model.map_icons)
@@ -36,8 +41,7 @@ class RavenRuntimeTests(unittest.TestCase):
 
     def test_collected_hidden_uncollected_shown_and_mixed_save(self):
         model = self.model()
-        model.observe(self.a["catalogue_id"], True)
-        model.observe(self.b["catalogue_id"], False)
+        model.apply_persisted_kills([self.a["catalogue_id"]])
         model.open_map(self.a["realm"])
         self.assertNotIn(self.a["catalogue_id"], model.map_icons)
         self.assertIn(self.b["catalogue_id"], model.map_icons)
@@ -45,6 +49,8 @@ class RavenRuntimeTests(unittest.TestCase):
     def test_fully_collected_and_fresh_simulation(self):
         model = self.model()
         model.open_map("Midgard")
+        self.assertEqual(model.map_icons, set())
+        self.assertEqual(model.apply_persisted_kills([]), 0)
         self.assertEqual(len(model.map_icons), 45)
         for row in self.catalogue["ravens"]:
             model.observe(row["catalogue_id"], True)
@@ -52,9 +58,13 @@ class RavenRuntimeTests(unittest.TestCase):
         self.assertEqual(model.apply_persisted_kills([]), 0)
         self.assertEqual(len(model.map_icons), 45)
 
-    def test_unknown_state_defaults_visible(self):
+    def test_unknown_state_defaults_hidden_until_authority(self):
         model = self.model()
         model.open_map(self.a["realm"])
+        self.assertEqual(model.map_icons, set())
+        self.assertFalse(model.has_authority)
+        model.apply_persisted_kills([])
+        self.assertTrue(model.has_authority)
         self.assertIn(self.a["catalogue_id"], model.map_icons)
 
     def test_persisted_kill_bootstrap_hides_only_confirmed_ids(self):
@@ -114,6 +124,7 @@ class RavenRuntimeTests(unittest.TestCase):
 
     def test_a_b_and_b_a_replacement(self):
         model = self.model()
+        model.apply_persisted_kills([])
         model.observe(self.a["catalogue_id"], False)
         model.observe(self.b["catalogue_id"], False)
         model.open_map(self.a["realm"])
@@ -129,6 +140,7 @@ class RavenRuntimeTests(unittest.TestCase):
     def test_stock_and_nornir_replacement_both_directions(self):
         for family in ("stock", "nornir"):
             model = self.model()
+            model.apply_persisted_kills([])
             model.observe(self.a["catalogue_id"], False)
             model.open_map(self.a["realm"])
             model.click_other(family, "x")
