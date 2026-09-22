@@ -1,0 +1,39 @@
+**********************
+PowerShell transcript start
+Start time: 20260922161448
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\refresh-raven-delivery-proof-and-push.ps1 -ExpectedBranch codex/all-ravens-map-filter-visibility
+Process ID: 28432
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+RAVEN DELIVERY PROOF REFRESH - START
+branch=codex/all-ravens-map-filter-visibility
+start_head=8b0af9dac38262bb75b2108227da08effbfdaa38
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\prepare-all-ravens-delivery-candidate.py", line 235, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\prepare-all-ravens-delivery-candidate.py", line 231, in main
+    prepare(args.check, args.refresh_proof)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\prepare-all-ravens-delivery-candidate.py", line 136, in prepare
+    raise ValueError(
+    ...<2 lines>...
+    )
+ValueError: existing generated candidate matches neither pinned proof nor current rendered runtime: mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua
+PS>TerminatingError(): "Python command failed exit=1 args=C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\prepare-all-ravens-delivery-candidate.py --refresh-proof"
+**********************
+PowerShell transcript end
+End time: 20260922161448
+**********************
