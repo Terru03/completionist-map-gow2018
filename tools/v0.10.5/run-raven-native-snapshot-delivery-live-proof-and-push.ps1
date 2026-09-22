@@ -185,6 +185,7 @@ $mapRolledBack = $false
 $launched = $false
 $published = $false
 $checkpointReloadAccepted = $false
+$crossSaveRevivalAccepted = $false
 $sameMapReaddAccepted = $false
 $mapManifest = $null
 $gameProcess = $null
@@ -271,6 +272,7 @@ function Publish-Proof([string]$Result, [string]$Reason, [object]$Delivery) {
         "checkpoint_boundary_epoch=$($Delivery.CheckpointBoundaryEpoch)"
         "postkill_save_reload_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
         "immediate_reopen_postkill_save_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
+        "cross_save_revival_manual=$($script:crossSaveRevivalAccepted.ToString().ToLowerInvariant())"
         "same_map_readd_no_stock_manual=$($script:sameMapReaddAccepted.ToString().ToLowerInvariant())"
         "fresh_boundary_observed=$($Delivery.FreshBoundaryObserved.ToString().ToLowerInvariant())"
         "fresh_boundary_epoch_matched=$($Delivery.FreshBoundaryEpochMatched.ToString().ToLowerInvariant())"
@@ -350,6 +352,11 @@ try {
         -not $delivery.CheckpointBoundaryEpochMatched) {
         throw 'Gameplay Raven kill note or matching +1 post-kill save-load V2 authority evidence missing.'
     }
+
+    $answer = Read-Host 'Now load a DIFFERENT pre-kill/older save where that same Raven is still alive. Open the map and verify that Raven comes back, while the newly loaded save otherwise shows its own Raven state. Type CROSSSAVE_OK, or REGRESSION if anything is wrong'
+    if ($answer -eq 'REGRESSION') { throw 'Cross-save Raven revival/manual state isolation regression reported.' }
+    if ($answer -ne 'CROSSSAVE_OK') { throw 'Cross-save Raven revival/manual state isolation acceptance not confirmed.' }
+    $crossSaveRevivalAccepted = $true
 
     $answer = Read-Host 'Load true fresh save. Open map. Verify all 53 Ravens, captions, realm filter, and compass behavior. Type FRESH_OK, or REGRESSION if anything is wrong'
     if ($answer -eq 'REGRESSION') { throw 'Fresh-save manual regression reported.' }
