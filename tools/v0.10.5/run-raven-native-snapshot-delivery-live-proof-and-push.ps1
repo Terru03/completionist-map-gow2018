@@ -251,6 +251,8 @@ function Publish-Proof([string]$Result, [string]$Reason, [object]$Delivery) {
         "native_delivery_ready=$($Delivery.DeliveryReady.ToString().ToLowerInvariant())"
         "advanced_27_killed_applied=$($Delivery.AdvancedApplied.ToString().ToLowerInvariant())"
         "immediate_raven_kill_event=$($Delivery.ImmediateEvent.ToString().ToLowerInvariant())"
+        "bridge_kill_note_observed=$($Delivery.ImmediateEvent.ToString().ToLowerInvariant())"
+        "bridge_kill_restore_epoch=$($Delivery.ImmediateKillEpoch)"
         "map_reopen_observed=$($Delivery.MapReopenObserved.ToString().ToLowerInvariant())"
         "checkpoint_authority_boundary_observed=$($Delivery.CheckpointBoundaryObserved.ToString().ToLowerInvariant())"
         "checkpoint_postboundary_snapshot_applied=$($Delivery.PostBoundaryApplied.ToString().ToLowerInvariant())"
@@ -334,7 +336,7 @@ try {
     if (-not $delivery.ImmediateEvent -or -not $delivery.MapReopenObserved -or
         -not $delivery.CheckpointBoundaryObserved -or -not $delivery.PostBoundaryApplied -or
         -not $delivery.CheckpointBoundaryEpochMatched) {
-        throw 'Immediate event, map-reopen, or matching V2 checkpoint authority evidence missing.'
+        throw 'Bridge kill note, 28-kill map reconstruction, or matching V2 checkpoint authority evidence missing.'
     }
 
     $answer = Read-Host 'Load true fresh save. Open map. Verify all 53 Ravens, captions, realm filter, and compass behavior. Type FRESH_OK, or REGRESSION if anything is wrong'

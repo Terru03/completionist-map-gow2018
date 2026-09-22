@@ -133,7 +133,13 @@ end
 function MapOn.MapCollisionChangeHandler(s,state,collisions,realm)
   if collisions and collisions[1] then s.currMarkerID=collisions[1].id else s.currMarkerID=nil end
 end
-function MapOn.SubmenuExit(s) end
+function MapOn.SubmenuExit(s)
+  -- Real-game regression: base teardown can reclaim HUD ownership after the
+  -- Raven Update watchdog stops, leaving a stock/boat target.
+  customIds={}
+  stockIds={"boat"}
+  calls.baseExitReassert=true
+end
 function MapOn.Exit(s) end
 function MapOn.ClearIcons(s) end
 CompletionistMapV100_CreateMapPin=function(s,state) return "base" end
@@ -194,10 +200,15 @@ function menu:UpdateFooterButton(name,show,text)
 end
 function menu:UpdateFooterButtonText()
   calls.footerUpdates=calls.footerUpdates+1
+  if self.owner~=nil then
+    local show,text=MapOn.GetShowOnCompassPrompt(self.owner,self)
+    if show then calls.footerPrompt=text end
+  end
 end
 self={currRealmName="Alfheim",currMarkerID=nil,currShownMarkerID=nil,
   completionistMapV100Selected=false,completionistMapV100NornirSelected=nil,
   completionistMapV100NornirChestSelected=nil,mapIconCollision=nil,menu=menu}
+menu.owner=self
 function self:SetReticleInfo(state,title,desc)
   calls.reticleTitle=title
   calls.reticleDescription=desc
@@ -241,6 +252,8 @@ function probe.cursorPrompt() return calls.cursorPrompt end
 function probe.footerPrompt() return calls.footerPrompt end
 function probe.footerUpdates() return calls.footerUpdates end
 function probe.update() return MapOn.Update(self,0) end
+function probe.submenuExit() return MapOn.SubmenuExit(self) end
+function probe.shownClass() return calls.class end
 function probe.legacyRavenHudActive() return CompletionistMapV100Target.active end
 function probe.teardown() MapOn.ClearIcons(self) end
 function probe.reset() return CompletionistMapV105ResetRavenStates("save_load") end
@@ -278,13 +291,14 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.a, self.b = alfheim
         self.probe = self.lua.globals().probe
 
-    def response(self, generation: int, killed_rows=()):
+    def response(self, generation: int, killed_rows=(), restore_epoch: int = 0):
         killed_ids = [row["catalogue_id"] for row in killed_rows]
         killed = len(killed_ids)
         encoded = ",".join(killed_ids) if killed_ids else "-"
         return (
             "RAVEN_SNAPSHOT_V1 schema=1 "
-            f"generation={generation} capturedTickMs={1000 + generation} "
+            f"restoreEpoch={restore_epoch} generation={generation} "
+            f"capturedTickMs={1000 + generation} "
             f"count=53 unknown=0 alive={53 - killed} killed={killed} "
             f"explicit={53 - killed} absentWadFalse={killed} killedIds={encoded}\n"
         )
@@ -474,6 +488,21 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertFalse(self.probe.legacyRavenHudActive())
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
 
+    def test_map_exit_reasserts_custom_raven_after_base_boat_reclaim(self):
+        self.probe.open()
+        name = self.a["marker"]["name"]
+        self.probe.click(name)
+        self.assertEqual(self.probe.customCount(), 1)
+
+        self.probe.submenuExit()
+
+        self.assertEqual(self.probe.customCount(), 1)
+        self.assertEqual(
+            self.probe.stockOtherCount(self.probe.markerId(name)), 0
+        )
+        self.assertEqual(self.probe.shownClass(), "CompletionistRaven")
+        self.assertFalse(self.probe.legacyRavenHudActive())
+
     def test_false_event_cannot_revive_and_postboundary_snapshot_can(self):
         self.probe.open()
         self.assertEqual(self.probe.iconCount(), 2)
@@ -502,6 +531,37 @@ class AllRavensMapLuaTests(unittest.TestCase):
 
         self.probe.teardown()
         self.assertEqual(self.probe.iconCount(), 0)
+
+    def test_native_restore_epoch_forces_matching_v2_before_state_replacement(self):
+        self.probe.setNativeResponse(self.response(1, [self.a], restore_epoch=0))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+        # A bridge-owned restore epoch is process-wide and can be observed even
+        # when the gameplay and map Lua sandboxes do not share _G.
+        self.probe.setNativeResponse(self.response(2, [], restore_epoch=1))
+        self.probe.setNativeBoundaryResponse(self.boundary_response(1, 3, [self.a, self.b]))
+        self.probe.open()
+
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertTrue(self.probe.state(self.b["catalogue_id"]))
+        requests = [
+            self.probe.nativeRequest(i)
+            for i in range(1, self.probe.nativeRequestCount() + 1)
+        ]
+        self.assertIn("CAPTURE RAVEN_SNAPSHOT_V2 boundaryEpoch=1\n", requests)
+
+    def test_first_nonzero_restore_epoch_requires_v2_capture(self):
+        self.probe.setNativeResponse(self.response(10, [], restore_epoch=4))
+        self.probe.setNativeBoundaryResponse(self.boundary_response(4, 11, [self.a]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+        requests = [
+            self.probe.nativeRequest(i)
+            for i in range(1, self.probe.nativeRequestCount() + 1)
+        ]
+        self.assertIn("CAPTURE RAVEN_SNAPSHOT_V2 boundaryEpoch=4\n", requests)
 
     def test_boundary_accepts_only_matching_postload_capture_not_newer_periodic_state(self):
         self.probe.setNativeResponse(self.response(10, [self.a]))
@@ -715,7 +775,7 @@ class AllRavensMapLuaTests(unittest.TestCase):
     def test_malformed_native_snapshot_falls_back_without_state_clear(self):
         self.probe.publish(self.a["catalogue_id"], True)
         self.probe.setNativeResponse(
-            "RAVEN_SNAPSHOT_V1 schema=1 generation=8 capturedTickMs=9 "
+            "RAVEN_SNAPSHOT_V1 schema=1 restoreEpoch=0 generation=8 capturedTickMs=9 "
             "count=53 unknown=0 alive=53 killed=0 explicit=0 "
             "absentWadFalse=53 killedIds=not_a_raven"
         )
@@ -727,7 +787,7 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.probe.publish(self.a["catalogue_id"], True)
         self.lua.execute(
             "CompletionistMapNative.GetRavenSnapshot=function() "
-            "return {schema=1,generation=9,count=53,states={}} end"
+            "return {schema=1,restoreEpoch=0,generation=9,count=53,states={}} end"
         )
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
@@ -742,7 +802,7 @@ class AllRavensMapLuaTests(unittest.TestCase):
 
 
 EVENT_PRELUDE = r'''
-calls={published={},timers=0,timerCallbacks={},boundaries={}}
+calls={published={},timers=0,timerCallbacks={},boundaries={},notes={}}
 print=function(s) end
 ravenKilled=false
 regionSummaryQuest=QUEST
@@ -754,6 +814,33 @@ end}
 OnHitByWeapon=function(...) ravenKilled=true end
 OnRestoreCheckpoint=function(...) end
 OnStart=function(...) end
+local bridgeResponse=""
+local bridgeIndex=1
+local bridgeClient={}
+function bridgeClient:settimeout(...) return true end
+function bridgeClient:connect(host,port) return 1 end
+function bridgeClient:send(request)
+  calls.notes[#calls.notes+1]=request
+  if string.sub(request,1,string.len("NOTE RAVEN_KILLED_V1 "))=="NOTE RAVEN_KILLED_V1 " then
+    bridgeResponse="RAVEN_NOTE_V1 OK kind=killed restoreEpoch=0\n"
+  else
+    bridgeResponse="RAVEN_NOTE_V1 OK kind=boundary restoreEpoch=1 advanced=true\n"
+  end
+  bridgeIndex=1
+  return string.len(request)
+end
+function bridgeClient:receive(size)
+  local value=string.sub(bridgeResponse,bridgeIndex,bridgeIndex)
+  if value=="" then return nil,"closed" end
+  bridgeIndex=bridgeIndex+1
+  return value
+end
+function bridgeClient:close() return true end
+local socketCore={tcp=function() return bridgeClient end}
+require=function(name)
+  if name=="socket.core" then return socketCore end
+  error("module unavailable: "..tostring(name))
+end
 game={Map={},Compass={}}
 function game.Map.GetMarkerInfo(name) return {Id=name} end
 function game.Compass.FindMarkersByIconClass(classes) return {} end
@@ -782,6 +869,12 @@ function probe.value(i) return calls.published[i].value end
 function probe.timerCount() return calls.timers end
 function probe.boundaryCount() return #calls.boundaries end
 function probe.boundary(i) return calls.boundaries[i] end
+function probe.noteCount() return #calls.notes end
+function probe.note(i) return calls.notes[i] end
+function probe.bridgeOnly()
+  CompletionistMapV105PublishRavenState=nil
+  CompletionistMapV105NotifyAuthorityBoundary=nil
+end
 '''
 
 
@@ -821,6 +914,38 @@ class AllRavensEventLuaTests(unittest.TestCase):
         self.assertTrue(probe.runNextTimer())
         self.assertEqual(probe.count(), 2)
         self.assertTrue(probe.value(2))
+
+    def test_cross_context_kill_and_restore_use_native_bridge(self):
+        row = CATALOGUE["ravens"][0]
+        x, y, z = row["source"]["native_world_position"]
+        lua = LuaRuntime(unpack_returned_tuples=True)
+        globals_ = lua.globals()
+        globals_.QUEST = row["progression"]["parent_quest"]
+        globals_.PX, globals_.PY, globals_.PZ = x, y, z
+        lua.execute(EVENT_PRELUDE)
+        hook = build.render_lua(
+            CATALOGUE,
+            HERE / "all-ravens-gameplay-events.lua",
+            "-- @@RAVEN_STATE_ROWS@@",
+            True,
+        )
+        lua.execute(hook.decode("utf-8"))
+        probe = lua.globals().probe
+        probe.bridgeOnly()
+
+        probe.hit()
+        notes = [probe.note(i) for i in range(1, probe.noteCount() + 1)]
+        self.assertIn(
+            f"NOTE RAVEN_KILLED_V1 catalogueId={row['catalogue_id']}\n",
+            notes,
+        )
+
+        before = probe.noteCount()
+        probe.restore(False)
+        notes = [probe.note(i) for i in range(before + 1, probe.noteCount() + 1)]
+        self.assertIn("NOTE RAVEN_BOUNDARY_V1 source=checkpoint\n", notes)
+        # A false restored state is never sent as an alive/revival note.
+        self.assertFalse(any("RAVEN_KILLED" in note for note in notes))
 
 
 if __name__ == "__main__":

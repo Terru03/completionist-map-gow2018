@@ -73,16 +73,19 @@ if (-not $proofWithLoader.ProxyLoaded -or
 }
 
 $bridgeReady = @(
-    'RAVEN_NATIVE_BRIDGE_DELIVERY_READY mechanism=loopback_socket address=127.0.0.1 port=43753 static_descriptor_writes=false save_writes=false progression_writes=false'
+    'RAVEN_NATIVE_BRIDGE_DELIVERY_READY mechanism=loopback_socket address=127.0.0.1 port=43753 static_descriptor_writes=false save_writes=false progression_writes=false',
+    'RAVEN_NATIVE_BRIDGE_KILL_NOTED catalogueId=raven_a restoreEpoch=7 save_writes=false progression_writes=false',
+    'RAVEN_NATIVE_BRIDGE_BOUNDARY_NOTED restoreEpoch=8 advanced=true source=checkpoint save_writes=false progression_writes=false',
+    'RAVEN_NATIVE_BRIDGE_BOUNDARY_NOTED restoreEpoch=8 advanced=false source=checkpoint save_writes=false progression_writes=false',
+    'RAVEN_NATIVE_BRIDGE_BOUNDARY_NOTED restoreEpoch=9 advanced=true source=checkpoint save_writes=false progression_writes=false'
 )
 $validLoader = @(
-    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=2 killed=27 alive=26 explicit=42 absentWadFalse=11 postBoundary=false boundaryEpoch=0 authority=latest_v1',
-    '[CompletionistMap v0.10.5-all-ravens] STATE catalogueId=raven_a collected=true source=OnHitByWeapon progressionWrites=false',
-    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_REFRESH source=map_create result=stale lastGeneration=2',
-    '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=OnRestoreCheckpoint boundaryEpoch=7 captureReady=true staleStateRetained=true atomicAuthorityRequired=true',
-    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=4 killed=28 alive=25 explicit=43 absentWadFalse=10 postBoundary=true boundaryEpoch=7 authority=capture_v2',
-    '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=EVT_LoadSaveFile_Done boundaryEpoch=8 captureReady=true staleStateRetained=true atomicAuthorityRequired=true',
-    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=5 killed=0 alive=53 explicit=0 absentWadFalse=53 postBoundary=true boundaryEpoch=8 authority=capture_v2'
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=2 killed=27 alive=26 explicit=42 absentWadFalse=11 postBoundary=true boundaryEpoch=7 restoreEpoch=7 authority=capture_v2',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=3 killed=28 alive=25 explicit=42 absentWadFalse=11 postBoundary=false boundaryEpoch=0 restoreEpoch=7 authority=latest_v1',
+    '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=native_restore_epoch boundaryEpoch=8 captureReady=true staleStateRetained=true atomicAuthorityRequired=true postBoundaryRecheckFrames=360 progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=4 killed=28 alive=25 explicit=42 absentWadFalse=11 postBoundary=true boundaryEpoch=8 restoreEpoch=8 authority=capture_v2',
+    '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=native_restore_epoch boundaryEpoch=9 captureReady=true staleStateRetained=true atomicAuthorityRequired=true postBoundaryRecheckFrames=360 progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=5 killed=0 alive=53 explicit=0 absentWadFalse=53 postBoundary=true boundaryEpoch=9 restoreEpoch=9 authority=capture_v2'
 )
 $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines $bridgeReady -LoaderLines $validLoader
 if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied -or
@@ -91,27 +94,34 @@ if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied -or
     -not $delivery.CheckpointBoundaryEpochMatched -or
     -not $delivery.FreshBoundaryObserved -or -not $delivery.FreshApplied -or
     -not $delivery.FreshBoundaryEpochMatched -or -not $delivery.Ordered -or
-    $delivery.CheckpointBoundaryEpoch -ne 7 -or $delivery.FreshBoundaryEpoch -ne 8) {
-    throw 'Native V2 snapshot delivery proof-line regression failed.'
+    $delivery.ImmediateKillEpoch -ne 7 -or
+    $delivery.CheckpointBoundaryEpoch -ne 8 -or $delivery.FreshBoundaryEpoch -ne 9) {
+    throw 'Native bridge-epoch snapshot delivery proof-line regression failed.'
 }
 
 $mismatchedEpochLines = @($validLoader)
-$mismatchedEpochLines[4] = '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=4 killed=28 alive=25 explicit=43 absentWadFalse=10 postBoundary=true boundaryEpoch=99 authority=capture_v2'
+$mismatchedEpochLines[3] = '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=4 killed=28 alive=25 explicit=42 absentWadFalse=11 postBoundary=true boundaryEpoch=99 restoreEpoch=99 authority=capture_v2'
 $mismatched = Test-RavenSnapshotDeliveryProofLines -BridgeLines $bridgeReady -LoaderLines $mismatchedEpochLines
 if ($mismatched.PostBoundaryApplied -or $mismatched.CheckpointBoundaryEpochMatched -or $mismatched.Ordered) {
-    throw 'Mismatched checkpoint boundary epoch was accepted.'
+    throw 'Mismatched checkpoint bridge epoch was accepted.'
 }
 
 $freshV1Lines = @($validLoader)
-$freshV1Lines[6] = '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=5 killed=0 alive=53 explicit=0 absentWadFalse=53 postBoundary=false boundaryEpoch=0 authority=latest_v1'
+$freshV1Lines[5] = '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=5 killed=0 alive=53 explicit=0 absentWadFalse=53 postBoundary=false boundaryEpoch=0 restoreEpoch=9 authority=latest_v1'
 $freshV1 = Test-RavenSnapshotDeliveryProofLines -BridgeLines $bridgeReady -LoaderLines $freshV1Lines
 if ($freshV1.FreshApplied -or $freshV1.FreshBoundaryEpochMatched -or $freshV1.Ordered) {
     throw 'Fresh-save V1 snapshot was accepted as boundary authority.'
 }
 
+$missingKillBridge = @($bridgeReady | Where-Object { $_ -notmatch 'RAVEN_NATIVE_BRIDGE_KILL_NOTED' })
+$missingKill = Test-RavenSnapshotDeliveryProofLines -BridgeLines $missingKillBridge -LoaderLines $validLoader
+if ($missingKill.ImmediateEvent -or $missingKill.Ordered) {
+    throw 'Missing cross-context Raven kill note was accepted.'
+}
+
 $wrongOrder = Test-RavenSnapshotDeliveryProofLines -BridgeLines $bridgeReady -LoaderLines @(
-    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=1 killed=0 alive=53 postBoundary=false boundaryEpoch=0 authority=latest_v1',
-    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=2 killed=27 alive=26 postBoundary=false boundaryEpoch=0 authority=latest_v1'
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=1 killed=0 alive=53 postBoundary=true boundaryEpoch=9 restoreEpoch=9 authority=capture_v2',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=2 killed=27 alive=26 postBoundary=true boundaryEpoch=7 restoreEpoch=7 authority=capture_v2'
 )
 if ($wrongOrder.Ordered) { throw 'Out-of-order delivery proof was accepted.' }
 
@@ -130,4 +140,4 @@ if ($didRollbackAgain -or $rollbackCalls -ne 1) {
     throw 'Duplicate rollback regression failed.'
 }
 
-Write-Host 'RAVEN_NATIVE_BRIDGE_RUNNER_TESTS_PASSED target=dxgi.dll zero=true one=true multiple=true steam_handoff=true proxy_before_successor=true missing_log=true dxgi_forwarding=true script_loader=true delivery_sequence=true boundary_epoch_match=true fresh_v2_only=true rollback=true'
+Write-Host 'RAVEN_NATIVE_BRIDGE_RUNNER_TESTS_PASSED target=dxgi.dll zero=true one=true multiple=true steam_handoff=true proxy_before_successor=true missing_log=true dxgi_forwarding=true script_loader=true delivery_sequence=true bridge_kill_note=true restore_epoch_match=true fresh_v2_only=true rollback=true'

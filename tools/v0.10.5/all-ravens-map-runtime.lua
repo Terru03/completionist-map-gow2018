@@ -28,10 +28,14 @@ do
   local lastMapOnSelf = nil
   local selectionGeneration = 0
   local promptIntent = nil
+  local promptOverride = nil
   local promptSettleFrames = 0
   local promptSettleBucket = -1
   local customCompassOwnsTarget = false
   local nativeBoundaryPending = false
+  local beginAuthorityBoundary = nil
+  local hideStockExcept = nil
+  local suppressLegacyRavenHud = nil
   local nativeBoundaryEpoch =
       tonumber(_G.CompletionistMapV105NativeBoundaryEpoch) or 0
   local nativeBoundaryCaptureReady = false
@@ -43,6 +47,8 @@ do
   local nativeRequest = "GET RAVEN_SNAPSHOT_V1\n"
   local nativeMaxResponseBytes = 4096
   local lastNativeGeneration = tonumber(_G.CompletionistMapV105LastNativeRavenGeneration)
+  local lastNativeRestoreEpoch =
+      tonumber(_G.CompletionistMapV105LastNativeRestoreEpoch)
   local lastNativeNotice = nil
 
   local function log(category, fields)
@@ -119,13 +125,15 @@ do
     local killed = integer("killed")
     local explicit = integer("explicit")
     local absentWadFalse = integer("absentWadFalse")
+    local restoreEpoch = expectedSchema == 1 and integer("restoreEpoch") or nil
     local boundaryEpoch = expectedSchema == 2 and integer("boundaryEpoch") or nil
 
     if schema ~= expectedSchema or generation == nil or generation < 1 or
         capturedTickMs == nil or count ~= #rows or unknown ~= 0 or
         alive == nil or killed == nil or alive + killed ~= #rows or
         explicit == nil or absentWadFalse == nil or
-        explicit + absentWadFalse ~= #rows or fields.killedIds == nil then
+        explicit + absentWadFalse ~= #rows or fields.killedIds == nil or
+        (expectedSchema == 1 and restoreEpoch == nil) then
       return nil, "response_counts"
     end
     if expectedSchema == 2 and
@@ -153,7 +161,7 @@ do
 
     return {
       schema = schema, generation = generation, capturedTickMs = capturedTickMs,
-      boundaryEpoch = boundaryEpoch,
+      restoreEpoch = restoreEpoch, boundaryEpoch = boundaryEpoch,
       count = count, aliveCount = alive, killedCount = killed,
       explicitCount = explicit,
       absenceDefaultFalseCount = absentWadFalse,
@@ -275,6 +283,31 @@ do
       return false, unavailable
     end
 
+    if not boundaryApply then
+      local restoreEpoch = tonumber(snapshot.restoreEpoch)
+      if restoreEpoch == nil or restoreEpoch < 0 or
+          restoreEpoch ~= math.floor(restoreEpoch) then
+        nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+            "reason=invalid_restore_epoch", "invalid_restore_epoch")
+        return false, "invalid_restore_epoch"
+      end
+      if lastNativeRestoreEpoch ~= nil and restoreEpoch < lastNativeRestoreEpoch then
+        nativeNotice("NATIVE_AUTHORITY_STALE",
+            "restoreEpoch=" .. tostring(restoreEpoch) ..
+            " lastRestoreEpoch=" .. tostring(lastNativeRestoreEpoch),
+            "stale_restore_epoch:" .. tostring(restoreEpoch))
+        return false, "stale_restore_epoch"
+      end
+      if restoreEpoch > 0 and
+          (lastNativeRestoreEpoch == nil or restoreEpoch > lastNativeRestoreEpoch) then
+        if type(beginAuthorityBoundary) ~= "function" then
+          return false, "boundary_api_unavailable"
+        end
+        beginAuthorityBoundary("native_restore_epoch", true, restoreEpoch)
+        return refreshNativeAuthority(tostring(source) .. ":restore_epoch")
+      end
+    end
+
     local generation = tonumber(snapshot.generation)
     if generation == nil or generation < 1 or generation ~= math.floor(generation) then
       nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
@@ -353,11 +386,16 @@ do
     lastNativeGeneration = generation
     _G.CompletionistMapV105LastNativeRavenGeneration = generation
     if boundaryApply then
+      lastNativeRestoreEpoch = requestedBoundaryEpoch
+      _G.CompletionistMapV105LastNativeRestoreEpoch = requestedBoundaryEpoch
       nativeBoundaryPending = false
       nativeBoundaryCaptureReady = false
       nativeBoundarySource = nil
       nativeResetRecheckFrames = 0
       nativeResetRecheckBucket = -1
+    elseif snapshot.restoreEpoch ~= nil then
+      lastNativeRestoreEpoch = snapshot.restoreEpoch
+      _G.CompletionistMapV105LastNativeRestoreEpoch = snapshot.restoreEpoch
     end
 
     lastNativeNotice = nil
@@ -370,6 +408,8 @@ do
         " postBoundary=" .. tostring(boundaryApply) ..
         " boundaryEpoch=" ..
         tostring(boundaryApply and requestedBoundaryEpoch or 0) ..
+        " restoreEpoch=" ..
+        tostring(boundaryApply and requestedBoundaryEpoch or snapshot.restoreEpoch or 0) ..
         " authority=" .. (boundaryApply and "capture_v2" or "latest_v1"))
     return true, nil
   end
@@ -491,9 +531,32 @@ do
     local previous = MapOn[method]
     assert(type(previous) == "function", "Missing map lifecycle method: " .. method)
     MapOn[method] = function(self, ...)
+      local trackedCatalogueId =
+          customCompassOwnsTarget and _G.CompletionistMapV105TrackedCatalogueId or nil
       clearIcons(self, "map_teardown:" .. method)
+      local result = previous(self, ...)
+
+      -- The stock map lifecycle may reclaim compass ownership after MapOn.Update
+      -- has stopped running. If a custom Raven is still tracked, make the
+      -- custom class the final writer and remove only foreign stock targets.
+      local row = trackedCatalogueId and byCatalogueId[trackedCatalogueId] or nil
+      if row ~= nil and shouldShow(row.CatalogueId) then
+        local info = markerInfo(row.Name)
+        if info ~= nil then
+          suppressLegacyRavenHud()
+          pcall(function() game.Compass.ShowMarker(row.Name, ravenClass) end)
+          hideStockExcept(tostring(info.Id), "map_teardown_owner_guard")
+          suppressLegacyRavenHud()
+          self.currShownMarkerID = nil
+          log("COMPASS_EXIT_REASSERT",
+              "method=" .. method .. " name=" .. row.Name ..
+              " uid=" .. tostring(info.Id) ..
+              " customClass=" .. ravenClass)
+        end
+      end
+
       if lastMapOnSelf == self then lastMapOnSelf = nil end
-      return previous(self, ...)
+      return result
     end
   end
 
@@ -588,7 +651,7 @@ do
     return true, hidden, nil
   end
 
-  local function hideStockExcept(exceptIdString, reason)
+  hideStockExcept = function(exceptIdString, reason)
     local ids, ok, err = stockIds()
     if not ok then return false, 0, err end
     local hidden = 0
@@ -618,7 +681,7 @@ do
     return "[AdvanceButton] " .. util.GetLAMSMsg(lamsId)
   end
 
-  local function suppressLegacyRavenHud()
+  suppressLegacyRavenHud = function()
     local target = _G.CompletionistMapV100Target
     if target ~= nil and target.type == "Raven" and target.active == true then
       target.active = false
@@ -653,7 +716,7 @@ do
       return actionText(lamsConsts.RemoveFromCompass)
     end
     local stock = stockIds()
-    if #ids > 0 or hasOther(stock, selected.IdString) then
+    if #ids > 0 or #stock > 0 then
       return actionText(lamsConsts.ReplaceInCompass)
     end
     return actionText(lamsConsts.AddToCompass)
@@ -663,7 +726,18 @@ do
     if self == nil or self.menu == nil or selected == nil then return end
     selected = currentSelection(self) or selected
     if not promptOwned(self, true, selected) then return end
-    local text = promptText(selected)
+
+    -- v0.10.4's proven footer path temporarily routes the menu's own prompt
+    -- query through the exact Raven selection. Without this, the subsequent
+    -- UpdateFooterButtonText() redraw can re-query the base map after the
+    -- action selection has been consumed and overwrite Remove with Add.
+    promptOverride = selected
+    local show, text = MapOn.GetShowOnCompassPrompt(self, self.menu)
+    if show ~= true then
+      promptOverride = nil
+      return
+    end
+
     local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
     if goMapCursorText ~= nil then
       goMapCursorText:Show()
@@ -679,6 +753,7 @@ do
     end
     self.menu:UpdateFooterButton("ShowOnCompass", true, text)
     self.menu:UpdateFooterButtonText()
+    promptOverride = nil
     log("PROMPT_REFRESH", "name=" .. selected.Name ..
         " state=" .. tostring(promptIntent and promptIntent.State or "observed") ..
         " text=" .. tostring(text))
@@ -711,6 +786,9 @@ do
   function MapOn:GetShowOnCompassPrompt(currMenu)
     lastMapOnSelf = self
     local show, text = previousPrompt(self, currMenu)
+    if promptOverride ~= nil then
+      return true, promptText(promptOverride)
+    end
     local selected = currentSelection(self)
     if selected == nil then return show, text end
     if not promptOwned(self, show, selected) then
@@ -1002,8 +1080,12 @@ do
     return true, accepted
   end
 
-  local function beginAuthorityBoundary(source, captureReady)
-    nativeBoundaryEpoch = nativeBoundaryEpoch + 1
+  beginAuthorityBoundary = function(source, captureReady, forcedEpoch)
+    if forcedEpoch ~= nil then
+      nativeBoundaryEpoch = forcedEpoch
+    else
+      nativeBoundaryEpoch = nativeBoundaryEpoch + 1
+    end
     _G.CompletionistMapV105NativeBoundaryEpoch = nativeBoundaryEpoch
     nativeBoundaryPending = true
     nativeBoundaryCaptureReady = captureReady ~= false
