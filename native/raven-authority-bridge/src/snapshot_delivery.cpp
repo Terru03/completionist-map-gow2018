@@ -64,6 +64,16 @@ bool g_have_boundary_note = false;
 std::array<std::uint64_t, 53> g_kill_epochs{};
 std::array<bool, 53> g_kill_noted{};
 
+bool g_have_authoritative_base = false;
+std::array<bool, 53> g_last_authoritative_killed{};
+std::uint64_t g_last_authoritative_epoch = 0;
+
+struct BaseObservation {
+  std::uint64_t restore_epoch = 0;
+  bool inferred_boundary = false;
+  std::uint32_t revived_count = 0;
+};
+
 std::size_t FindCatalogueIndex(std::string_view catalogue_id) {
   for (std::size_t index = 0; index < kRavenCatalogue.size(); ++index) {
     if (kRavenCatalogue[index].catalogue_id == catalogue_id) return index;
@@ -98,6 +108,69 @@ bool NoteKilledInternal(std::string_view catalogue_id,
 std::uint64_t CurrentRestoreEpochInternal() {
   std::lock_guard<std::mutex> lock(g_session_mutex);
   return g_restore_epoch;
+}
+
+BaseObservation ObserveAuthoritativeBaseInternal(
+    const NativeRavenSnapshot& snapshot, std::uint64_t now_ms,
+    bool boundary_capture) {
+  std::lock_guard<std::mutex> lock(g_session_mutex);
+
+  BaseObservation result;
+  result.restore_epoch = g_restore_epoch;
+
+  if (!g_have_authoritative_base) {
+    g_have_authoritative_base = true;
+    g_last_authoritative_killed = snapshot.killed;
+    g_last_authoritative_epoch = g_restore_epoch;
+    return result;
+  }
+
+  bool any_change = false;
+  for (std::size_t index = 0; index < snapshot.killed.size(); ++index) {
+    if (g_last_authoritative_killed[index] != snapshot.killed[index]) {
+      any_change = true;
+    }
+    if (g_last_authoritative_killed[index] && !snapshot.killed[index]) {
+      ++result.revived_count;
+    }
+  }
+
+  // A V2 capture belongs to an already-established boundary. Likewise, if
+  // gameplay already advanced the bridge epoch, the next changed raw base
+  // consumes that existing boundary instead of creating another one.
+  if (boundary_capture) {
+    g_last_authoritative_killed = snapshot.killed;
+    g_last_authoritative_epoch = g_restore_epoch;
+    result.restore_epoch = g_restore_epoch;
+    return result;
+  }
+
+  if (g_restore_epoch > g_last_authoritative_epoch) {
+    if (any_change) {
+      g_last_authoritative_killed = snapshot.killed;
+      g_last_authoritative_epoch = g_restore_epoch;
+    }
+    result.restore_epoch = g_restore_epoch;
+    return result;
+  }
+
+  // Within one save/playthrough Raven progression is monotonic: a raw
+  // authoritative killed=true becoming killed=false cannot be caused by
+  // normal gameplay. It is process-wide evidence that another checkpoint,
+  // save, or a fresh game became authoritative even if no Raven instance
+  // emitted OnRestoreCheckpoint.
+  if (result.revived_count > 0) {
+    ++g_restore_epoch;
+    g_have_boundary_note = true;
+    g_last_boundary_note_ms = now_ms;
+    result.restore_epoch = g_restore_epoch;
+    result.inferred_boundary = true;
+  }
+
+  g_last_authoritative_killed = snapshot.killed;
+  g_last_authoritative_epoch = g_restore_epoch;
+  result.restore_epoch = g_restore_epoch;
+  return result;
 }
 
 NativeRavenSnapshot MergeCurrentEpochKillsInternal(
@@ -282,9 +355,19 @@ unsigned __stdcall ServeSnapshots(void* raw_listener) {
       if (g_snapshot_reader == nullptr || !g_snapshot_reader(&snapshot)) {
         SendAll(client, "RAVEN_SNAPSHOT_V1 UNAVAILABLE\n");
       } else {
-        const std::uint64_t restore_epoch = CurrentRestoreEpochInternal();
+        const BaseObservation observation =
+            ObserveAuthoritativeBaseInternal(snapshot, GetTickCount64(), false);
+        if (observation.inferred_boundary) {
+          AppendBridgeLog(
+              "RAVEN_NATIVE_BRIDGE_BOUNDARY_NOTED restoreEpoch=" +
+              std::to_string(observation.restore_epoch) +
+              " advanced=true source=authoritative_revive revived=" +
+              std::to_string(observation.revived_count) +
+              " save_writes=false progression_writes=false");
+        }
         snapshot = MergeCurrentEpochKillsInternal(snapshot);
-        SendAll(client, BuildRavenSnapshotWireResponse(snapshot, restore_epoch));
+        SendAll(client, BuildRavenSnapshotWireResponse(
+                            snapshot, observation.restore_epoch));
       }
     } else if (request.kind == RequestKind::kBoundaryCaptureV2) {
       const std::uint64_t restore_epoch = CurrentRestoreEpochInternal();
@@ -300,9 +383,19 @@ unsigned __stdcall ServeSnapshots(void* raw_listener) {
                 "RAVEN_SNAPSHOT_V2 UNAVAILABLE boundaryEpoch=" +
                     std::to_string(request.boundary_epoch) + "\n");
       } else {
-        snapshot = MergeCurrentEpochKillsInternal(snapshot);
-        SendAll(client, BuildRavenBoundarySnapshotWireResponse(
-                            snapshot, request.boundary_epoch));
+        const BaseObservation observation =
+            ObserveAuthoritativeBaseInternal(snapshot, GetTickCount64(), true);
+        if (observation.restore_epoch != request.boundary_epoch) {
+          SendAll(client,
+                  "RAVEN_SNAPSHOT_V2 UNAVAILABLE boundaryEpoch=" +
+                      std::to_string(request.boundary_epoch) +
+                      " currentRestoreEpoch=" +
+                      std::to_string(observation.restore_epoch) + "\n");
+        } else {
+          snapshot = MergeCurrentEpochKillsInternal(snapshot);
+          SendAll(client, BuildRavenBoundarySnapshotWireResponse(
+                              snapshot, request.boundary_epoch));
+        }
       }
     } else if (request.kind == RequestKind::kNoteKilledV1) {
       std::uint64_t restore_epoch = 0;
@@ -440,6 +533,9 @@ void ResetSessionAuthority() {
   g_have_boundary_note = false;
   g_kill_epochs.fill(0);
   g_kill_noted.fill(false);
+  g_have_authoritative_base = false;
+  g_last_authoritative_killed.fill(false);
+  g_last_authoritative_epoch = 0;
 }
 
 std::uint64_t NoteRestoreBoundary(std::uint64_t now_ms) {
@@ -452,6 +548,11 @@ bool NoteKilled(std::string_view catalogue_id) {
 
 std::uint64_t CurrentRestoreEpoch() {
   return CurrentRestoreEpochInternal();
+}
+
+std::uint64_t ObserveAuthoritativeBase(
+    const NativeRavenSnapshot& snapshot, std::uint64_t now_ms) {
+  return ObserveAuthoritativeBaseInternal(snapshot, now_ms, false).restore_epoch;
 }
 
 NativeRavenSnapshot MergeCurrentEpochKills(
