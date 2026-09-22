@@ -64,6 +64,7 @@ class AllRavensTemplateTests(unittest.TestCase):
         self.assertFalse(router["fast_travel_map_visibility"])
         self.assertIn("isOpenedForFastTravel", router["map_visibility_source"])
         self.assertIn("disarm", router["hidden_map_selection_policy"])
+        self.assertIn("every realm", router["raven_filter_scope"])
         self.assertIn("ordering only", router["native_generation_role"])
         self.assertIn("boundaryEpoch", router["native_boundary_authority"])
         self.assertEqual(
@@ -99,6 +100,7 @@ class AllRavensTemplateTests(unittest.TestCase):
             'refreshNativeAuthority("map_create")', "staticDescriptorWrites=false",
             "ravenMapVisible", "ravenFilterKind", "isOpenedForFastTravel",
             'filter == -101', 'filter == -102', "MAP_VISIBILITY",
+            "RAVEN_FILTER_MAPPING", "previousUpdateFilterButtonMapping",
         ):
             self.assertIn(token, self.map_hook)
 
