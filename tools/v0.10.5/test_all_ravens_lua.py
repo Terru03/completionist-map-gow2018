@@ -396,6 +396,30 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertTrue(self.probe.hasAuthority())
         self.assertEqual(self.probe.iconCount(), 2)
 
+    def test_confirmed_fresh_zero_is_refused_when_live_region_count_is_nonzero(self):
+        parent = self.a["progression"]["parent_quest"]
+        self.probe.setRegionSummaryCompleted(parent, 1)
+        self.probe.setNativeResponse(
+            "RAVEN_SNAPSHOT_V1 schema=1 restoreEpoch=0 generation=9 "
+            "capturedTickMs=1009 count=53 unknown=0 alive=53 killed=0 "
+            "explicit=0 absentWadFalse=53 killedIds=-\n"
+        )
+        self.probe.open()
+        self.assertFalse(self.probe.hasAuthority())
+        self.assertEqual(self.probe.iconCount(), 0)
+        self.assertIn("fresh_zero_conflict", self.probe.logs())
+
+    def test_confirmed_fresh_zero_accepts_available_zero_region_counts(self):
+        self._set_region_counts([])
+        self.probe.setNativeResponse(
+            "RAVEN_SNAPSHOT_V1 schema=1 restoreEpoch=0 generation=10 "
+            "capturedTickMs=1010 count=53 unknown=0 alive=53 killed=0 "
+            "explicit=0 absentWadFalse=53 killedIds=-\n"
+        )
+        self.probe.open()
+        self.assertTrue(self.probe.hasAuthority())
+        self.assertEqual(self.probe.iconCount(), 2)
+
     def test_full_native_snapshot_conflicting_with_region_summary_is_refused(self):
         stale = self.response(9, [self.a, self.b])
         parent = self.a["progression"]["parent_quest"]
