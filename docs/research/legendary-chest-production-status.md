@@ -574,3 +574,47 @@ It enumerates the already-proven 64-slot live WAD-context table, normalizes live
 WAD names, and intersects them with the 27 tracked Legendary WADs. It always
 archives the result, including the zero-match case, and performs no writes to
 GoW, saves, progression, game files, or Raven runtime.
+
+
+### Residency capture exposed registry-scoping bug 2026-09-22
+
+Evidence commit:
+
+`ec817ab980330f8fbced12d45ee901415b7652fa`
+
+The first live WAD-context inventory reported zero tracked WADs only because its
+normalizer required the live name to contain the literal `.wad` suffix. The
+proved runtime context actually returns bare WAD stems.
+
+The raw evidence already contains:
+
+- `Xpl250_FuneralInterior` at live context index 9;
+- live GameObject registry ID `241`;
+- catalogue row
+  `legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb`;
+- tracked source WAD `xpl250_funeralinterior.wad`.
+
+This exposes the more important bug in the previous staged/runtime intersection:
+
+- it scanned only registry `238`;
+- in the same session registry `238` belonged to `Xpl200_Funeral`;
+- the actually resident tracked Legendary WAD was registry `241`.
+
+Therefore the zero-hit evidence in
+`85513b17d53c596710e55c670aab7f82fe4135b4` cannot be used to reject the
+identity mapping. It inspected the wrong live registry for the tracked chest.
+
+Repairs:
+
+- bare runtime WAD stems now normalize by appending `.wad`;
+- the staged/runtime intersection now resolves the live WAD-context table first;
+- every resident tracked Legendary WAD is paired with its actual live registry;
+- only that WAD's staged dominant-state object hashes are compared against its
+  corresponding live registry;
+- the runtime token is encoded with the actual registry ID rather than a
+  hard-coded 238.
+
+The current loaded session already supplies one high-value target:
+`xpl250_funeralinterior.wad -> registry 241`.
+
+All probes remain read-only and the Raven runtime remains frozen.
