@@ -36,14 +36,17 @@ do
   local function notifyAuthorityBoundary(source)
     local fn = _G.CompletionistMapV105NotifyAuthorityBoundary
     if type(fn) == "function" then
-      local ok, result = pcall(fn, source)
+      local ok, result = pcall(fn, source, true)
       log("AUTHORITY_BOUNDARY_NOTIFY", "source=" .. tostring(source) ..
-          " delivered=" .. tostring(ok and result == true))
+          " captureReady=true delivered=" .. tostring(ok and result == true))
       return
     end
-    _G.CompletionistMapV105PendingAuthorityBoundary = source
+    _G.CompletionistMapV105PendingAuthorityBoundary = {
+      source = source,
+      captureReady = true,
+    }
     log("AUTHORITY_BOUNDARY_NOTIFY", "source=" .. tostring(source) ..
-        " delivered=false pending=true")
+        " captureReady=true delivered=false pending=true")
   end
 
   local function publish(source)
@@ -145,6 +148,7 @@ do
       " nativeField=ravenKilled exactQuestAndPosition=true boundedRetry=" .. tostring(retryLimit) ..
       " restoreBoundedRetry=" .. tostring(restoreRetryLimit) ..
       " positiveEvidenceOnly=true restoreAuthorityBoundary=true" ..
+      " restoreBoundaryCaptureReadyAfterReturn=true" ..
       " permanentPolling=false progressionWrites=false")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVEN EVENTS
