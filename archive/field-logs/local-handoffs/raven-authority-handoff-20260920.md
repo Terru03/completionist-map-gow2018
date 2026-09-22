@@ -7456,3 +7456,40 @@ This restores the intended ownership transfer:
 
 Generated `mapmenu.lua` changed, so proof refresh and offline gates must be
 rerun once more before field testing.
+
+
+### Cosmetic polish follow-up 2026-09-22 - clean offline baseline after prompt ownership fixes
+
+Delivery proof refresh:
+
+- `b37f7a6680e45b551733afdd80de057870d75fef`.
+
+Successful evidence-publishing offline run:
+
+- evidence commit:
+  `13b66c84d975cbdbe65abd2636fdb6f9b8f78309`;
+- tested head:
+  `b37f7a6680e45b551733afdd80de057870d75fef`;
+- evidence directory:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-offline-20260922-114956`.
+
+Verified green:
+
+- Raven bridge runner regressions passed;
+- native CTest 5/5 passed;
+- Lua integration 44/44 passed;
+- field-shaped cosmetic regressions passed:
+  - `test_first_add_refreshes_footer_without_sticking_cursor_text`;
+  - `test_same_raven_readd_keeps_stock_presentation_state_clear`;
+- selection ownership regression passed:
+  - `test_pending_action_does_not_overwrite_other_raven_prompt`;
+- existing same-Raven settlement regression passed;
+- Raven state model 25/25 passed;
+- candidate/template applicable tests passed;
+- transaction rollback passed;
+- PowerShell syntax passed;
+- security gate passed with
+  `process_writes=false save_writes=false progression_writes=false static_descriptor_writes=false loopback_only=true`.
+
+The cosmetic branch is ready for the short `-CosmeticOnly` field proof again.
+No full Raven persistence/fresh-save repetition is required.
