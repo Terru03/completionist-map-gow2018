@@ -7137,3 +7137,57 @@ Offline release baseline remains:
 ALL-RAVENS RC is field-accepted. Further collectible implementation should
 remain on the separate all-collectibles branch; do not contaminate this Raven
 RC branch with broad collectible work.
+
+
+### Raven cosmetic polish branch 2026-09-22 - footer immediacy + same-UID artwork ownership
+
+Functional Raven RC remains frozen at:
+
+- branch: `codex/all-ravens-release-candidate`
+- accepted functional baseline:
+  `056f30a01baf938423ac1f738efb540795600d53`
+
+Cosmetic work is isolated on:
+
+- branch: `codex/all-ravens-cosmetic-polish`
+- created directly from the accepted functional baseline.
+
+User-reported polish defects:
+
+1. on a newly opened map, adding the first custom Raven to the compass does not
+   always update the bottom-row Add/Remove text immediately;
+2. Add -> Remove -> Add on the same Raven can let the stock/boat-dock artwork
+   temporarily win over the custom Raven artwork until another marker is
+   selected and the Raven is re-added.
+
+UI-only fixes:
+
+- `305227e5199ea2ed0467917a5f59a9ad7d185330`
+  - immediate prompt refresh now accepts the exact committed `promptIntent`
+    as owner even if the base map clears `currMarkerID` after the action;
+  - when a same-UID stock entry races the custom Raven after re-add, the custom
+    `CompletionistRaven` class is reasserted as the final writer immediately;
+  - one bounded settlement reassert is allowed while the same-UID stock entry
+    remains;
+  - no authority, RegionSummary, native bridge, save, kill-state, or
+    persistence logic changed.
+
+Regression coverage:
+
+- `06facccd3c1a7052e7975c1f285d304640ce4596`
+  - first Add must refresh cursor/footer to Remove immediately even when the
+    synthetic base map clears `currMarkerID` during ShowMarker;
+  - same-Raven Add -> Remove -> Add race now requires at least one custom-class
+    final-writer reassert and keeps `CompletionistRaven` as the final shown
+    class.
+
+Evidence wrapper support for the polish branch:
+
+- `0e98a5fcd53e5b072114e13b01ac3ef166e04161`
+  - proof-refresh wrapper accepts an explicit expected branch;
+- `f2d7480ba16cb89185f15d90e2a193d888f4aff0`
+  - offline evidence wrapper accepts an explicit expected branch.
+
+Next step: refresh the pinned five-file proof on the cosmetic branch and run the
+full evidence-publishing offline gates. Only after those pass should the two
+cosmetic interactions be field-checked in GoW.
