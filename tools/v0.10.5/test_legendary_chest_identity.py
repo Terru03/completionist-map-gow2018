@@ -57,6 +57,35 @@ class LegendaryChestIdentityTests(unittest.TestCase):
                 seen.add(tuple(scene))
         self.assertEqual(len(seen), 33)
 
+
+    def test_physical_placement_anchor_may_repeat_but_full_scene_is_unique(self):
+        anchors = {}
+        scenes = {}
+        for row in self.rows:
+            placement = row["source"]["transform_chain"][2]
+            anchor = identity.adjusted_record_id(
+                placement["record_id"]
+            ).hex()
+            anchors.setdefault(anchor, []).append(row["catalogue_id"])
+            scene, _ = identity.scene_identity_elements(row)
+            scenes.setdefault(tuple(scene), []).append(row["catalogue_id"])
+
+        repeated = {
+            key: value for key, value in anchors.items()
+            if len(value) > 1
+        }
+        self.assertEqual(len(anchors), 32)
+        self.assertEqual(len(repeated), 1)
+        self.assertEqual(
+            sorted(next(iter(repeated.values()))),
+            sorted([
+                "legendary_chest_ace99ef5472abcbac29bd2b396a3fdf3",
+                "legendary_chest_d63295f244f330219b003c913c0dab69",
+            ]),
+        )
+        self.assertEqual(len(scenes), 33)
+        self.assertTrue(all(len(value) == 1 for value in scenes.values()))
+
     def test_native_wad_name_hash_matches_known_algorithm(self):
         self.assertEqual(
             identity.registry_hash_for_wad("alf600_templeint.wad"),
