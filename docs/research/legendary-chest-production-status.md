@@ -916,3 +916,73 @@ writes, save/progression writes, game-file writes, or Raven runtime changes.
 The temporary endpoint route marker may remain installed during this capture;
 it modifies only map UI/static map-coordinate resources and does not affect the
 Legendary chest WAD GameObjects being identified.
+
+
+### Live Mountain GameObject capture and OPENED semantics closure
+
+Live capture evidence:
+
+`fec187519d09e3783b942aa00bc1081bb32419d5`
+
+The current Mountain session exposed exactly one resident tracked Legendary Chest:
+
+- catalogue ID:
+  `legendary_chest_d63295f244f330219b003c913c0dab69`;
+- WAD: `peak720_summitascenthub.wad`;
+- live registry: `221`;
+- live slot: `1189`;
+- packed runtime token: `0x00000000129401BB`;
+- object pointer: `0x7FF29F3CE670` in that capture;
+- object hash: `0x3978566FB35C5EAD`;
+- exact full native identity-vector match: yes;
+- registry objects reconstructed: 7,721;
+- reconstruction failures: 0.
+
+This independently confirms the solved Legendary identity rule in a second
+Mountain WAD using exact live-vector equality.
+
+The same chest's accepted staged checkpoint carrier stores:
+
+- field: `state`;
+- raw scalar: `0100008040`;
+- float32 value: `4.0`.
+
+State semantics are now directly proven by stock game script evidence rather
+than inferred from map counts.
+
+The audited stock
+`gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua`
+defines:
+
+`ENABLED = 1, DISABLED = 2, LOCKED = 3, OPENED = 4`
+
+and its normal chest-opening path explicitly executes:
+
+`state = states.OPENED`
+
+For `chestType == "Legendary"`, the same path then updates the region's
+Legendary Chest summary via:
+
+`UpdateRegionSummary(currentRegion, "LegendaryChest")`
+
+Therefore the persisted tag-1 scalar value `4.0` is conclusively the standard
+Legendary Chest `OPENED` state.
+
+Permanent proof artifacts:
+
+- `archive/field-logs/source-scans/legendary-opened-state-semantics-20260922-161151/report.json`;
+- `archive/field-logs/source-scans/legendary-opened-state-semantics-20260922-161151/report.txt`;
+- helper constants:
+  `OPENED_STATE_NUMERIC = 4`,
+  `OPENED_STATE_FLOAT32 = 4.0`,
+  `OPENED_STATE_RAW_HEX = 0100008040`.
+
+Production completion rule is now:
+
+- hide a Legendary Chest marker iff its exact persisted state is `4.0`;
+- any missing, absent, undecodable, conflicting, or ambiguous state must not be
+  treated as completed.
+
+Legendary identity resolution and persisted completion semantics are both closed.
+The next engineering phase is production marker integration and runtime
+save/load validation.
