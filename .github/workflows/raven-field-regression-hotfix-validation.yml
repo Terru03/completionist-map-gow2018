@@ -1,0 +1,91 @@
+name: Raven field regression hotfix validation
+
+on:
+  push:
+    branches: [codex/raven-field-regression-hotfix]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install Lua runtime
+        shell: pwsh
+        run: python -m pip install --disable-pip-version-check lupa
+      - name: Raven Lua model proof and rollback tests
+        shell: pwsh
+        run: |
+          python .\tools\v0.10.5\test_all_ravens_lua.py
+          if ($LASTEXITCODE -ne 0) { throw 'Lua tests failed' }
+          python .\tools\v0.10.5\test_raven_runtime_model.py
+          if ($LASTEXITCODE -ne 0) { throw 'Model tests failed' }
+          python .\tools\v0.10.5\test_all_ravens_build.py
+          if ($LASTEXITCODE -ne 0) { throw 'Build/template tests failed' }
+          python .\tools\v0.10.5\test_raven_delivery_prepare_transaction.py
+          if ($LASTEXITCODE -ne 0) { throw 'Candidate/proof transaction tests failed' }
+          .\tools\v0.10.5\test-raven-delivery-proof-refresh-wrapper.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'Proof wrapper tests failed' }
+          .\tools\v0.10.5\test-raven-authority-bridge-runner.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'Bridge runner tests failed' }
+          .\tools\v0.10.5\test-raven-transaction-resume-synthetic.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'Five-file rollback resume failed' }
+          .\tools\v0.10.5\test-raven-authority-bridge-operation-synthetic.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'DXGI operation recovery failed' }
+
+          $parseFiles=@(
+            '.\tools\v0.10.5\raven-authority-bridge-operation.ps1',
+            '.\tools\v0.10.5\install-raven-authority-bridge.ps1',
+            '.\tools\v0.10.5\rollback-raven-authority-bridge.ps1',
+            '.\tools\v0.10.5\recover-raven-authority-bridge-startup.ps1',
+            '.\tools\v0.10.5\refresh-raven-delivery-proof-and-push.ps1',
+            '.\tools\v0.10.5\raven-native-bridge-runner-support.ps1',
+            '.\tools\v0.10.5\run-raven-native-snapshot-delivery-live-proof-and-push.ps1'
+          )
+          foreach($parseFile in $parseFiles) {
+            $tokens=$null; $errors=$null
+            [void][System.Management.Automation.Language.Parser]::ParseFile(
+              (Resolve-Path $parseFile), [ref]$tokens, [ref]$errors)
+            if(@($errors).Count -ne 0) {
+              $errors | ForEach-Object { Write-Host "$parseFile :: $($_.Message)" }
+              throw "PowerShell parse failed: $parseFile"
+            }
+          }
+          Write-Host "RAVEN_FIELD_HOTFIX_POWERSHELL_PARSE_PASSED files=$($parseFiles.Count)"
+      - name: Native bridge build and CTest
+        shell: pwsh
+        run: |
+          cmake -S .\native\raven-authority-bridge -B .\build\field-hotfix-native -A x64 -DBUILD_TESTING=ON
+          if ($LASTEXITCODE -ne 0) { throw 'CMake configure failed' }
+          cmake --build .\build\field-hotfix-native --config Release --parallel 2
+          if ($LASTEXITCODE -ne 0) { throw 'Native build failed' }
+          ctest --test-dir .\build\field-hotfix-native -C Release --output-on-failure
+          if ($LASTEXITCODE -ne 0) { throw 'Native CTest failed' }
+      - name: Safety scan
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $paths=@(
+            '.\tools\v0.10.5\all-ravens-map-runtime.lua',
+            '.\tools\v0.10.5\all-ravens-gameplay-events.lua',
+            '.\native\raven-authority-bridge\src\authority_runtime.cpp',
+            '.\native\raven-authority-bridge\src\snapshot_delivery.cpp'
+          )
+          $forbidden=@(
+            'WriteProcessMemory','NtWriteVirtualMemory','VirtualAllocEx','VirtualProtectEx',
+            'CreateRemoteThread','QueueUserAPC','SetThreadContext','DebugActiveProcess',
+            'SetMarkerState','SetToken','SetProgress','IncrementQuestProgress','StartQuest'
+          )
+          $findings=@()
+          foreach($file in $paths) {
+            $text=Get-Content -LiteralPath $file -Raw
+            foreach($token in $forbidden) {
+              if($text -match [regex]::Escape($token)) { $findings += "${file}:${token}" }
+            }
+          }
+          if($findings.Count -gt 0) { throw "Prohibited tokens: $($findings -join ', ')" }
+          Write-Host 'RAVEN_FIELD_HOTFIX_SECURITY_PASSED findings=0'
