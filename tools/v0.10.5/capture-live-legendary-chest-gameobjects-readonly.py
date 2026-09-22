@@ -45,7 +45,7 @@ identity = native.identity
 def normalize_wad_name(value: str | None) -> str | None:
     if not value:
         return None
-    text = value.strip().replace("/", "\")
+    text = value.strip().replace("/", "\\")
     if not text:
         return None
     name = ntpath.basename(text).lower()
