@@ -30,6 +30,19 @@ class SnapshotStore {
   std::uint64_t next_generation_ = 1;
 };
 
+// Prevent a transient startup image where all 53 Ravens appear default-alive
+// from becoming authority before the staged checkpoint table has settled.
+class SnapshotPublicationGate {
+ public:
+  bool Observe(const NativeRavenSnapshot& snapshot, std::uint64_t now_ms);
+  void Reject();
+
+ private:
+  bool zero_pending_ = false;
+  bool zero_confirmed_ = false;
+  std::uint64_t zero_first_tick_ms_ = 0;
+};
+
 void RunAuthorityWorker();
 void SetProxyForwardReady(bool ready);
 bool ReadPublishedSnapshot(NativeRavenSnapshot* snapshot);
