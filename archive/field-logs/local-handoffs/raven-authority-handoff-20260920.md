@@ -6623,3 +6623,38 @@ Native validation from the failed run was green before this Lua fixture failure:
 
 Lua suite reached 38 tests with exactly one fixture-caused failure. Re-run the
 offline gates from this commit before any live game validation.
+
+
+### Follow-up 2026-09-22 18:00 - Codex audit fresh-zero contradiction fixed
+
+The limited Codex read-only audit reached two findings before quota expired.
+
+1. Lua 37/38 with one failure:
+   - this was the already-fixed synthetic helper contamination;
+   - `partial_response()` had reset RegionSummary counters;
+   - fixed in `3c213b5c6d277b9d4be4a420a5276958c70596b5`.
+
+2. Fresh 0/53 bypass skipped live RegionSummary conflict checking:
+   - this was a valid issue on `352c4dd`;
+   - a stable native all-false image could be accepted even when a live parent
+     already reported completed Ravens.
+
+Fix:
+
+- `f2af954d51558c657a884a07b6869a944b3f94c2`
+  - confirmed fresh 0/53 still works when RegionSummary is unavailable;
+  - if any available parent completed count is non-zero, the zero snapshot is
+    refused with `fresh_zero_region_summary_conflict`;
+  - this preserves early fresh/new-game bootstrap without allowing known live
+    quest state to be overwritten by a contradictory zero image.
+
+Regression coverage:
+
+- `8ce50bee5eb46d2176cd0344b0042e8316071f2a`
+  - zero snapshot accepted when RegionSummary is unavailable;
+  - zero snapshot accepted when available parent counts are all zero;
+  - zero snapshot refused when any available parent count is non-zero.
+
+Codex quota expired before it could continue the audit. No additional Codex
+findings were produced. Windows offline gates must be rerun from the current
+head before the proof refresh or live game test.
