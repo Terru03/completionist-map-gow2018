@@ -273,6 +273,7 @@ def router_contract() -> dict:
         "fast_travel_map_visibility": False,
         "map_visibility_source": "existing filterButtonMapping/filterIndex plus isOpenedForFastTravel",
         "hidden_map_selection_policy": "disarm exact Raven selection while filtered or in fast travel",
+        "raven_filter_scope": "every realm represented by the 53-Raven catalogue",
         "permanent_polling": False,
         "native_snapshot_transport": "loopback-only V1 latest snapshot plus V2 synchronous boundary capture",
         "native_snapshot_port": 43753,
