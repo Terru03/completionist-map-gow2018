@@ -6844,3 +6844,48 @@ Next step: rerun the evidence-publishing live GoW proof. Its authority counts ar
 intentionally dynamic; the advanced save may now contain the Raven killed during
 the previous test, and the validator anchors +1 to the latest authority
 immediately before the new exact `OnHitByWeapon` event.
+
+
+### Follow-up 2026-09-22 19:35 - second live run proved checkpoint was pre-kill; switch persistence test to explicit manual save
+
+Live evidence commit:
+
+- `3278a1237a028fec6d6f7ae73ca540446be5bd25`
+- capture:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-live-proof-20260922-095935`
+
+This run reached the real gameplay kill but correctly failed the +1 persistence
+gate.
+
+Observed sequence:
+
+- advanced authority epoch 1: 28 killed / 25 alive;
+- another loaded checkpoint/save epoch 2: 27 / 26;
+- exact gameplay kill:
+  `source=OnHitByWeapon catalogueId=raven_642d0d164af0a5d4076e77933c549a5d restoreEpoch=2`;
+- later restore boundary epoch 3 reconstructed 27 / 26 again, not 28 / 25.
+
+Map-side evidence after epoch-3 authority explicitly shows the killed Raven was
+alive again:
+
+- `STATE_DEFERRED ... catalogueId=raven_642d... reason=alive_requires_atomic_authority`;
+- `NATIVE_AUTHORITY_DERIVED ... finalKilled=27 finalAlive=26 postBoundary=true boundaryEpoch=3 restoreEpoch=3`;
+- `ART_PREFLIGHT candidate=Completionist_V103_Veithurgard_Raven_01 ... collected=false`;
+- `ART_RESULT active=true ... collectedAtRender=false`.
+
+Therefore the loaded checkpoint did not contain the gameplay kill. The previous
+prompt incorrectly assumed a new checkpoint/autosave existed after killing a
+Raven.
+
+Validation fix only:
+
+- `c906c3d68ae5256b91bd98f2c72c567d0c35c20f`
+- live proof now requires the user to create a NEW MANUAL SAVE after the Raven
+  kill, then load that exact post-kill save;
+- the user must only enter `IMMEDIATE_OK` after verifying the Raven is absent
+  on the reloaded post-kill manual save;
+- result metadata now records `postkill_save_reload_manual`.
+
+No Raven runtime state logic was weakened or bypassed. The +1 post-boundary
+authority gate remains mandatory. Re-run pushed offline gates before the next
+live test because the PowerShell runner changed.
