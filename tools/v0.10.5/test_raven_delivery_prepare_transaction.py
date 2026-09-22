@@ -197,6 +197,45 @@ class RavenDeliveryPrepareTransactionTests(unittest.TestCase):
         self.assertEqual(proof_after["router"], self.build.router_contract())
         self.assertEqual(proof_after["state"], self.build.state_contract())
 
+    def test_refresh_replaces_stale_generated_hook_when_base_is_proven(self):
+        stale_map = (
+            self.map_base
+            + b"\n-- BEGIN COMPLETIONIST V0.10.5 ALL RAVENS\n"
+            + b"-- stale feature-branch map hook\n"
+        )
+        map_path = self.output / self.build.MAP_LUA
+        map_path.write_bytes(stale_map)
+
+        prepare_mod.prepare(check_only=False, refresh_proof=True)
+        prepare_mod.prepare(check_only=True, refresh_proof=False)
+
+        catalogue = json.loads(self.catalogue.read_text(encoding="utf-8"))
+        spec = prepare_mod.GENERATED[self.build.MAP_LUA]
+        expected = self.map_base + b"\n" + self.build.render_lua(
+            catalogue,
+            spec["template"],
+            spec["token"],
+            spec["state_rows"],
+        )
+        self.assertEqual(map_path.read_bytes(), expected)
+
+        proof_after = json.loads(self.report.read_text(encoding="utf-8"))
+        self.assertEqual(
+            proof_after["files"][self.build.MAP_LUA],
+            {"sha256": sha(expected), "bytes": len(expected)},
+        )
+
+    def test_refresh_still_refuses_generated_hook_with_unproven_base(self):
+        bad_map = (
+            b"tampered-map-base"
+            + b"\n-- BEGIN COMPLETIONIST V0.10.5 ALL RAVENS\n"
+            + b"-- stale feature-branch map hook\n"
+        )
+        (self.output / self.build.MAP_LUA).write_bytes(bad_map)
+
+        with self.assertRaisesRegex(ValueError, "base is not runtime-proven source"):
+            prepare_mod.prepare(check_only=False, refresh_proof=True)
+
     def test_file_set_mismatch_refuses_before_any_write(self):
         extra = self.output / "unexpected.bin"
         extra.write_bytes(b"unexpected")
