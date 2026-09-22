@@ -1,0 +1,36 @@
+**********************
+PowerShell transcript start
+Start time: 20260922142318
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\test-raven-native-snapshot-delivery-offline-gates-and-push.ps1 -ExpectedBranch codex/all-ravens-cosmetic-polish
+Process ID: 8320
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+RAVEN NATIVE SNAPSHOT DELIVERY OFFLINE GATES + EVIDENCE PUSH - START
+branch=codex/all-ravens-cosmetic-polish
+head_before_pull=a963ed64b584dff0502cfca2cf302caa7c4169bf
+Already up to date.
+tested_head=a963ed64b584dff0502cfca2cf302caa7c4169bf
+RAVEN NATIVE SNAPSHOT DELIVERY OFFLINE GATES
+1/8 native MSVC / CTest / schema-3 rollback gates
+Exception: C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\tools\v0.10.5\test-raven-authority-bridge-offline-gates.ps1:14
+Line |
+  14 |      throw "Need branch $ExpectedBranch."
+     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Need branch codex/all-ravens-release-candidate.
+RAVEN_NATIVE_SNAPSHOT_DELIVERY_OFFLINE_GATES_AND_PUSH_FAILED: Offline Raven gates failed with exit=1
+**********************
+PowerShell transcript end
+End time: 20260922142320
+**********************
