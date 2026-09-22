@@ -14,6 +14,10 @@ std::string BuildRavenSnapshotWireResponse(
     const NativeRavenSnapshot& snapshot, std::uint64_t restore_epoch);
 std::string BuildRavenBoundarySnapshotWireResponse(
     const NativeRavenSnapshot& snapshot, std::uint64_t boundary_epoch);
+std::string BuildRavenPartialSnapshotWireResponse(
+    const NativeRavenSnapshot& snapshot, std::uint64_t restore_epoch);
+std::string BuildRavenPartialBoundarySnapshotWireResponse(
+    const NativeRavenSnapshot& snapshot, std::uint64_t boundary_epoch);
 
 using SnapshotReader = bool (*)(NativeRavenSnapshot* snapshot);
 using SnapshotCapturer = bool (*)(NativeRavenSnapshot* snapshot);
