@@ -1,5 +1,6 @@
 param(
-    [string]$GameRootFixture = 'G:\SteamLibrary\steamapps\common\GodOfWar'
+    [string]$GameRootFixture = 'G:\SteamLibrary\steamapps\common\GodOfWar',
+    [string]$ExpectedBranch = 'codex/all-ravens-release-candidate'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -85,7 +86,7 @@ try {
     # Start-Transcript does not reliably capture output emitted by a nested
     # pwsh process. Tee the complete child stream into its own evidence file
     # while still mirroring it to the user's terminal.
-    & pwsh -NoProfile -ExecutionPolicy Bypass -File $inner -GameRootFixture $GameRootFixture 2>&1 |
+    & pwsh -NoProfile -ExecutionPolicy Bypass -File $inner -GameRootFixture $GameRootFixture -ExpectedBranch $ExpectedBranch 2>&1 |
         Tee-Object -FilePath $innerConsole
     $innerExit = $LASTEXITCODE
     if ($innerExit -ne 0) {
