@@ -249,7 +249,7 @@ def main() -> int:
         "unstaged_catalogue_ids": [
             row["catalogue_id"] for row in unstaged
         ],
-        "state_semantics_proven": False,
+        "state_semantics_proven": True,\n        "opened_state": {\n            "numeric": identity.OPENED_STATE_NUMERIC,\n            "float32": identity.OPENED_STATE_FLOAT32,\n            "raw_hex": identity.OPENED_STATE_RAW_HEX,\n            "proof": "stock interact_chest_standard.lua defines OPENED=4",\n        },
         "safety": {
             "static_game_files_read_only": True,
             "archived_checkpoint_only": True,
@@ -286,7 +286,7 @@ def main() -> int:
             "unstaged_catalogue_ids="
             + ",".join(row["catalogue_id"] for row in unstaged)
         ),
-        "state_semantics_proven=false",
+        "state_semantics_proven=true",\n        f"opened_state_numeric={identity.OPENED_STATE_NUMERIC}",\n        f"opened_state_float32={identity.OPENED_STATE_FLOAT32}",\n        f"opened_state_raw_hex={identity.OPENED_STATE_RAW_HEX}",
         "",
         "IDENTITIES",
     ]
