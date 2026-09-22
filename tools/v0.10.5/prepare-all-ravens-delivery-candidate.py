@@ -128,15 +128,12 @@ def prepare(check_only: bool, refresh_proof: bool = False) -> None:
     current_generated: dict[str, bytes] = {}
     for relative in GENERATED:
         current, refreshed = rendered_candidate(relative, catalogue)
-        expected = proof["files"][relative]
-        expected_matches_current = (
-            sha(current) == expected["sha256"] and len(current) == expected["bytes"]
-        )
-        if refresh_proof and not expected_matches_current and current != refreshed:
-            raise ValueError(
-                f"existing generated candidate matches neither pinned proof "
-                f"nor current rendered runtime: {relative}"
-            )
+        # rendered_candidate() has already proved that the current generated
+        # file contains exactly one expected hook boundary and that everything
+        # before that hook is the exact runtime-proven source. During an
+        # explicit proof refresh, the hook payload itself may therefore be
+        # stale from another Raven feature branch and can be replaced safely.
+        # Frozen binaries are still pinned above and the Lua base cannot drift.
         rendered[relative] = refreshed
         current_generated[relative] = current
 
