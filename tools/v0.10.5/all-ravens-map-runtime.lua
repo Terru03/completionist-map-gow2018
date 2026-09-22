@@ -1013,10 +1013,35 @@ do
       icons[name] = nil
     end
     self.completionistMapV105RavenIcons = icons
+    self.completionistMapV105RavenVisibilityKey = nil
     promptIntent = nil
     promptSettleFrames = 0
     promptSettleBucket = -1
     clearSelection(self, reason)
+  end
+
+  -- v0.10.1's pinned map source defines the custom filter contract as:
+  --   1    = Show All
+  --   -101 = Completionist
+  --   -102 = Ravens
+  -- The all-Ravens layer must follow that same contract and must never render
+  -- collectible pins while the map is opened for Mystic Gateway fast travel.
+  local function ravenFilterKind(self)
+    if self == nil or type(self.filterButtonMapping) ~= "table" then return 1 end
+    local index = tonumber(self.filterIndex) or 1
+    return self.filterButtonMapping[index] or 1
+  end
+
+  local function ravenMapVisible(self)
+    if self == nil or self.isOpenedForFastTravel == true then return false end
+    local filter = ravenFilterKind(self)
+    return filter == 1 or filter == -101 or filter == -102
+  end
+
+  local function ravenVisibilityKey(self)
+    return tostring(self and self.currRealmName or "-") .. ":" ..
+      tostring(self and self.isOpenedForFastTravel == true) .. ":" ..
+      tostring(ravenFilterKind(self))
   end
 
   local function syncIcons(self, reason)
@@ -1026,14 +1051,37 @@ do
     local icons = self.completionistMapV105RavenIcons or {}
     self.completionistMapV105RavenIcons = icons
     local realm = self.currRealmName
+    local mapVisible = ravenMapVisible(self)
+    local filter = ravenFilterKind(self)
+    local visibilityKey = ravenVisibilityKey(self)
+    if self.completionistMapV105RavenVisibilityKey ~= visibilityKey then
+      self.completionistMapV105RavenVisibilityKey = visibilityKey
+      log("MAP_VISIBILITY",
+          "reason=" .. tostring(reason) ..
+          " realm=" .. tostring(realm) ..
+          " fastTravel=" .. tostring(self.isOpenedForFastTravel == true) ..
+          " filter=" .. tostring(filter) ..
+          " ravensVisible=" .. tostring(mapVisible))
+    end
+
+    if not mapVisible then
+      clearSelection(self, "raven_map_hidden_by_mode_or_filter")
+    end
+
     for name, go in pairs(icons) do
       local row = byName[name]
       if row == nil or row.Realm ~= realm or isCollected(row.CatalogueId) then
         recycle(go)
         if self.mapIconCollision == go then self.mapIconCollision = nil end
         icons[name] = nil
+      else
+        pcall(function()
+          if mapVisible then go:Show() else go:Hide() end
+        end)
       end
     end
+    if not mapVisible then return end
+
     for _, row in ipairs(rows) do
       if row.Realm == realm and shouldShow(row.CatalogueId) and icons[row.Name] == nil then
         local ok, value = pcall(function()
@@ -1135,6 +1183,10 @@ do
   local function currentSelection(self)
     local selected = self and self.completionistMapV105SelectedRaven or nil
     if selected == nil then return nil end
+    if not ravenMapVisible(self) then
+      clearSelection(self, "raven_map_hidden_by_mode_or_filter")
+      return nil
+    end
     local icons = self.completionistMapV105RavenIcons or {}
     if selected.Generation ~= selectionGeneration or
         icons[selected.Name] ~= selected.ObjectRef or
@@ -1418,6 +1470,11 @@ do
 
   function MapOn:Update(...)
     local result = previousUpdate(self, ...)
+
+    if self ~= nil and
+        self.completionistMapV105RavenVisibilityKey ~= ravenVisibilityKey(self) then
+      syncIcons(self, "map_mode_or_filter_change")
+    end
 
     if customCompassOwnsTarget then
       suppressLegacyRavenHud()
