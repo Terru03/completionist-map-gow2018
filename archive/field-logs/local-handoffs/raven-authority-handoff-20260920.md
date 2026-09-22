@@ -6137,3 +6137,108 @@ The clean integration tree is byte-identical to the cleaned green hotfix tree:
 Next action: refresh the offline delivery proof metadata, then rerun the final
 live proof. No codec/WAD/GameObject/save research should be reopened unless the
 next field evidence contradicts this model.
+
+
+## Addendum 2026-09-22 10:45 - old-save false 0/53 bootstrap isolated and fail-closed
+
+Field regression artifact:
+
+- commit: `22b3d26020894514e3dad826dc5772c02e98c81e`
+- capture:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-live-proof-20260922-064207`
+
+Observed on an older almost-complete save:
+
+- realms known by the user to have all Ravens killed showed custom Raven markers;
+- switching toward Midgard crashed the game;
+- the runner failed at the first manual acceptance gate and rolled back exactly.
+
+### Root cause
+
+Bridge timeline:
+
+```text
+06:44:05 accepted generation=1 count=53 alive=53 killed=0 explicit=0 absentWadFalse=53
+06:44:06 rejected present_wad_without_exact_state:raven_95b9c6444d479ac68207b1829d02909b
+```
+
+The first 0/53 image was therefore a transient staged-WAD warm-up image, not
+authoritative fresh-save truth. The map accepted it immediately and populated
+all 53 custom markers before the decoder became correctly fail-closed one
+second later.
+
+A second unsafe bootstrap assumption was also present: before any native
+authority existed, unknown Raven state defaulted to visible.
+
+### Safe bootstrap integration
+
+Integrated RC commit:
+
+- `687e1213c1c33e8f54d969175b6d0bd6e152c893`
+- message:
+  `fix(v0.10.5): fail closed until Raven authority is proven`
+
+Validated source branch:
+
+- `codex/raven-bootstrap-authority-hotfix`
+- final validated head:
+  `0646f52eb1ff0343468b08ea21a2e169b3335be5`
+- CI run:
+  `35698607271`
+- conclusion: **success**
+
+Permanent changes integrated byte-for-byte from the green branch:
+
+1. Native all-false publication quarantine:
+   - first `alive=53 killed=0 explicit=0 absentWadFalse=53` image is withheld;
+   - it must remain accepted for at least 750 ms before publication;
+   - any capture/decoder rejection resets confirmation;
+   - nonzero/full authority is not delayed.
+
+2. Map fail-closed bootstrap:
+   - before the first authoritative Raven state, custom Raven markers default
+     hidden instead of visible;
+   - last-good authority is still retained across later load boundaries.
+
+3. Read-only diagnostics for unresolved old saves:
+   - native rejection logs now retain explicit killed IDs, explicit alive IDs,
+     absent-WAD IDs, unresolved IDs, staged record count, and transient load slot;
+   - map logs every RegionSummary Raven parent with
+     `progress / goal / catalogueCount / safeCountMatch`;
+   - diagnostics cannot create/remove markers and perform no progression writes.
+
+Validation:
+
+```text
+Lua integration:                 31 passed
+Pure runtime model:              25 passed
+Candidate/template contract:     15 passed (11 fixture-dependent skipped in CI)
+Candidate/proof transaction:      4 passed
+Proof-refresh wrapper:            passed
+Runner / rollback gates:          passed
+Native bridge CTest:              5/5 passed
+Safety scan:                      findings=0
+```
+
+### RegionSummary static coverage
+
+The archived `quests.dcb` structure proves 22 Raven parent goals totaling 51.
+
+Only two parents differ from the 53-object physical catalogue:
+
+```text
+RegionSummary_RP_Raven_Parent     target=6  catalogue=7
+RegionSummary_CALS_Raven_Parent   target=1  catalogue=2
+```
+
+All other 20 parents match exactly and cover 44 physical Ravens.
+
+The catalogue identifies both exceptional parents as containing one bonus
+untracked Raven but does not prove which physical child is the bonus. Do not
+invent that mapping.
+
+Next required evidence: run the safe RC on the same older almost-complete save,
+open the map long enough to emit native partial-state diagnostics plus all
+RegionSummary progress/goal values, then archive/push and rollback. Use those
+facts to decide whether a deterministic partial-authority constraint solver can
+close old-save state without any save/process/progression writes.
