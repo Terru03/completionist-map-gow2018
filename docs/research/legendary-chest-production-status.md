@@ -440,3 +440,48 @@ equivalent to hashing the full identity vector.
 
 No Raven runtime files, active saves, progression state, or game files are
 modified by this repair.
+
+
+### Static identity resolver completed, raw-record hypothesis rejected 2026-09-22
+
+Evidence commit:
+
+`e89118a3612c7dca285b45f6bcc5466f9944c1a3`
+
+The direct-record resolver completed successfully as tooling and archived a
+negative identity result in about 15 seconds.
+
+Observed:
+
+- 27/27 tracked Legendary WADs parsed;
+- 211,370 unique raw record-ID candidates inventoried;
+- four explicit scene grammars evaluated;
+- 845,480 candidate+grammar combinations gated;
+- no raw record-ID candidate survived the first exact staged-hash
+  discriminator;
+- therefore no raw record ID can be the missing final 16-byte identity element
+  under any currently tested scene grammar;
+- Raven runtime, active saves, progression state, and game files were untouched.
+
+Diagnostic caveat:
+
+The fast scorer stops a candidate at its first miss because only an exact 32/32
+binding can pass. Therefore the reported failure value `best=0/32` is an exact
+gate result, not a complete per-candidate partial-match census.
+
+Next hypothesis:
+
+The scene chain already uses the proven native record-ID identity transform,
+which decrements byte 12. The failed candidate set contained raw record IDs only.
+The resolver now includes both:
+
+- raw record IDs;
+- byte-12-decremented adjusted record IDs.
+
+The shared Legendary loader is therefore tested explicitly in both forms:
+
+- raw: `966624c84fc6b8590179bfd6c72c2086`;
+- adjusted: `966624c84fc6b8590179bfd6c62c2086`.
+
+A unit test pins this exact adjusted loader transformation. Acceptance remains
+one unique candidate+grammar reproducing all 32/32 represented staged hashes.
