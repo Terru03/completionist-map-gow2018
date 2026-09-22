@@ -142,6 +142,16 @@ function MapOn.SubmenuExit(s)
 end
 function MapOn.Exit(s) end
 function MapOn.ClearIcons(s) end
+function MapOn.Menu_Next_Filter(s,direction)
+  s.filterIndex=(s.filterIndex+direction-1)%#s.filterButtonMapping+1
+end
+function MapOn.UpdateFilterButtonMapping(s)
+  s.filterButtonMapping={1,2}
+  s.filterIndex=1
+end
+function MapOn.UpdateFilterUI(s)
+  calls.filterUIUpdates=(calls.filterUIUpdates or 0)+1
+end
 CompletionistMapV100_CreateMapPin=function(s,state) return "base" end
 Map={}
 function Map.FindRegionFromMarker(id) return true,"region" end
@@ -236,6 +246,14 @@ function probe.setFilter(logical)
   self.filterButtonMapping={logical}
   self.filterIndex=1
 end
+function probe.setFilterMapping(values,index)
+  self.filterButtonMapping=values
+  self.filterIndex=index or 1
+end
+function probe.nextFilter(direction) return MapOn.Menu_Next_Filter(self,direction) end
+function probe.refreshFilterMapping() return MapOn.UpdateFilterButtonMapping(self) end
+function probe.filterCount() return #self.filterButtonMapping end
+function probe.filterAt(index) return self.filterButtonMapping[index] end
 function probe.click(name)
   local go=probe.icon(name)
   MapOn.MapCollisionChangeHandler(self,{},go and {go} or {},self.currRealmName)
@@ -610,6 +628,27 @@ class AllRavensMapLuaTests(unittest.TestCase):
 
         self.assertIn("filter=-102", self.probe.logs())
         self.assertIn("ravensVisible=true", self.probe.logs())
+
+    def test_filter_change_applies_raven_visibility_without_waiting_for_update(self):
+        self.probe.open()
+        name = self.a["marker"]["name"]
+        self.assertTrue(self.probe.iconShown(name))
+
+        mapping = self.lua.table_from([1, -102, -103])
+        self.probe.setFilterMapping(mapping, 1)
+        self.probe.nextFilter(1)
+        self.assertTrue(self.probe.iconShown(name))
+
+        self.probe.nextFilter(1)
+        self.assertFalse(self.probe.iconShown(name))
+        self.assertIn("reason=filter_change", self.probe.logs())
+
+    def test_ravens_filter_is_added_to_alfheim_filter_mapping(self):
+        self.probe.refreshFilterMapping()
+        values = [self.probe.filterAt(i) for i in range(1, self.probe.filterCount() + 1)]
+        self.assertIn(-102, values)
+        self.assertIn("RAVEN_FILTER_MAPPING", self.probe.logs())
+        self.assertIn("realm=Alfheim", self.probe.logs())
 
     def test_filter_restore_does_not_revive_killed_raven(self):
         self.probe.setNativeResponse(self.response(2, [self.a]))
