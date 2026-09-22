@@ -45,7 +45,14 @@ class LegendaryChestIdentityTests(unittest.TestCase):
             scene, skipped = identity.scene_identity_elements(row)
             with self.subTest(row=row["catalogue_id"]):
                 self.assertGreaterEqual(len(scene), 3)
-                self.assertEqual(len(skipped), 1)
+                self.assertEqual(len(skipped), 2)
+                self.assertEqual(
+                    {item["reason"] for item in skipped},
+                    {
+                        "nested_reusable_state_subobject",
+                        "nested_reusable_legendary_parent",
+                    },
+                )
                 self.assertNotIn(tuple(scene), seen)
                 seen.add(tuple(scene))
         self.assertEqual(len(seen), 33)
