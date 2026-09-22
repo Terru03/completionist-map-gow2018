@@ -6242,3 +6242,115 @@ open the map long enough to emit native partial-state diagnostics plus all
 RegionSummary progress/goal values, then archive/push and rollback. Use those
 facts to decide whether a deterministic partial-authority constraint solver can
 close old-save state without any save/process/progression writes.
+
+
+## Addendum 2026-09-22 11:15 - old-save zero-marker regression reduced to lost same-epoch boundary authority
+
+Field artifact:
+
+- commit: `35fa4152e987b9015b9d3ad7813e48e8c42276a4`
+- capture:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-live-proof-20260922-074317`
+- user-visible result: no custom Raven markers rendered on the older
+  almost-complete save; runner was intentionally rejected and rolled back.
+
+### What the capture proves
+
+The fail-closed bootstrap guard behaved correctly. It did not resurrect killed
+Ravens. The zero-marker result came from authority becoming unavailable later,
+not from a false all-alive publication.
+
+Bridge chronology:
+
+```text
+07:49:41.962 snapshot accepted: generation=1, alive=26, killed=27, explicit=42, absentWadFalse=11
+07:49:44.744 restore boundary advanced: restoreEpoch=1
+07:49:50.082 complete post-boundary capture: generation=9, alive=26, killed=27
+07:50:01.464 later decoder rejection: present_wad_without_exact_state:raven_95b9c6444d479ac68207b1829d02909b
+```
+
+The map consumed the valid post-boundary image before the later unload noise:
+
+```text
+10:49:50 NATIVE_AUTHORITY_APPLIED generation=9 killed=28 alive=25
+         boundaryEpoch=1 restoreEpoch=1 authority=capture_v2
+```
+
+The 28th killed Raven is the current-epoch positive kill overlay merged over
+the raw saved 27-killed snapshot.
+
+After the map script later reloaded, the bridge still knew restore epoch 1, but
+the V2 API attempted a brand-new capture. One now-unloaded/present-WAD Raven was
+undecodable, so V2 returned unavailable. With no map-local previous authority
+after the script reload, the fail-closed policy correctly hid all Ravens.
+
+Therefore the missing primitive was not another Raven-state heuristic. It was a
+process-local retained copy of the **already-proven complete boundary snapshot**.
+
+### RegionSummary evidence
+
+The diagnostics also yielded a strong independent consistency check.
+
+The 22 runtime values currently logged under the `goal` label sum to **25**.
+For every one of the 22 Raven parent quests, that value exactly equals the
+number of native explicit killed IDs in the rejected partial snapshot. This
+strongly indicates the runtime accessor is the live completed-count value and
+the diagnostic label is misleading; `progress=nil` is the accessor that did
+not resolve.
+
+The one unresolved Raven was:
+
+`raven_95b9c6444d479ac68207b1829d02909b`
+
+It belongs to `RegionSummary_ALF_Raven_Parent`. That parent has two physical
+Ravens, runtime completed count 0, one explicit-alive child, and the unresolved
+child. Alfheim is not one of the two bonus/untracked exceptional parent groups,
+so a RegionSummary constraint solver would deterministically resolve this
+particular unknown as alive.
+
+That solver is retained as a validation/fallback direction only. It is not
+needed for the primary regression because a complete matching-epoch V2 image
+had already been captured.
+
+### Same-epoch boundary retention fix
+
+RC commits:
+
+- `d5be84ffeb020feb3afa3494b18c0e465c44b3c8`
+  - test interface for the process-local boundary cache;
+- `28a99d988912f92500378288b2ac36aec0d99da7`
+  - bridge implementation;
+- `dc21594d609e1d22542fecd67bad99a2ad67e3bf`
+  - native regression coverage.
+
+Behaviour:
+
+1. A successful V2 capture is cached as its raw 53-Raven saved-state image for
+   the current restore epoch.
+2. If a later V2 fresh capture fails because WAD staging is temporarily partial,
+   the bridge may serve that cached image **only when the requested boundary
+   epoch still exactly equals the current restore epoch**.
+3. Current-epoch positive kill notes are merged at response time, not stored
+   inside the cached raw base.
+4. Any explicit restore-epoch advance invalidates the cache immediately.
+5. Any restore epoch inferred from authoritative killed-to-alive revival also
+   invalidates the cache immediately.
+6. A stale epoch cannot repopulate or read the cache.
+7. No game process memory, save data, progression data, or static descriptor is
+   written by this mechanism.
+
+The native test now covers same-epoch retention, overlay separation, explicit
+boundary invalidation, stale-epoch refusal, new-epoch replacement, and inferred
+boundary invalidation.
+
+Validation state at this handoff update:
+
+- GitHub direct branch commits have no attached Actions run/status;
+- Windows native compile/CTest and the full offline proof gates are **pending**;
+- do not claim this fix green until those local gates pass.
+
+Next action: pull the RC locally and run the native/offline delivery gates. If
+green, refresh the delivery proof and repeat the old-save live proof. The
+expected field signature after map-script reload is
+`RAVEN_NATIVE_BRIDGE_BOUNDARY_CACHE_HIT boundaryEpoch=1`, followed by
+`NATIVE_AUTHORITY_APPLIED` and the surviving Raven markers only.
