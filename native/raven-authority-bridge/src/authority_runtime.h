@@ -33,6 +33,7 @@ class SnapshotStore {
 void RunAuthorityWorker();
 void SetProxyForwardReady(bool ready);
 bool ReadPublishedSnapshot(NativeRavenSnapshot* snapshot);
+bool CaptureFreshSnapshot(NativeRavenSnapshot* snapshot);
 
 }  // namespace completionist
 
