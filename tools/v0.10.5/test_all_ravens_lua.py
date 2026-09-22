@@ -257,6 +257,7 @@ function probe.nativeConnects() return calls.nativeConnects end
 function probe.nativeRequest(i) return calls.nativeRequests[i] end
 function probe.nativeRequestCount() return #calls.nativeRequests end
 function probe.lastNativeGeneration() return CompletionistMapV105LastNativeRavenGeneration end
+function probe.boundaryEpoch() return CompletionistMapV105NativeBoundaryEpoch end
 function probe.collectedCount()
   local n=0
   for _,value in pairs(CompletionistMapV105RavenState or {}) do if value==true then n=n+1 end end
@@ -492,7 +493,8 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
 
         self.probe.boundary()
-        self.probe.setNativeResponse(self.response(2))
+        epoch = int(self.probe.boundaryEpoch())
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 2))
         for _ in range(35):
             self.probe.update()
         self.assertEqual(self.probe.iconCount(), 2)
@@ -518,7 +520,8 @@ class AllRavensMapLuaTests(unittest.TestCase):
 
         # The authoritative post-load capture is requested explicitly after
         # the boundary and carries the boundary epoch echoed by the bridge.
-        self.probe.setNativeBoundaryResponse(self.boundary_response(1, 12))
+        epoch = int(self.probe.boundaryEpoch())
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 12))
         for _ in range(35):
             self.probe.update()
         self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
@@ -528,50 +531,46 @@ class AllRavensMapLuaTests(unittest.TestCase):
             for i in range(1, self.probe.nativeRequestCount() + 1)
         ]
         self.assertTrue(any(
-            request == "CAPTURE RAVEN_SNAPSHOT_V2 boundaryEpoch=1\n"
+            request == f"CAPTURE RAVEN_SNAPSHOT_V2 boundaryEpoch={epoch}\n"
             for request in requests
         ))
 
-    def test_load_boundary_preserves_last_good_state_until_fresh_snapshot(self):
+    def test_load_boundary_preserves_last_good_state_until_matching_capture(self):
         self.probe.setNativeResponse(self.response(4, [self.a]))
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
 
-        # Boundary captures generation 4 as its baseline. A same-generation
-        # response is pre-boundary and must not revive the Raven.
         self.probe.boundary()
-        self.probe.setNativeResponse(self.response(4))
-        self.probe.open()
-        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
-        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+        epoch = int(self.probe.boundaryEpoch())
 
-        # The first strictly newer capture is the atomic authority for the
-        # restored checkpoint and may legitimately make the Raven alive.
-        self.probe.setNativeResponse(self.response(5))
-        self.probe.update()
-        self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
-        self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
-
-    def test_unavailable_boundary_baseline_requires_two_later_captures(self):
-        self.probe.setNativeResponse(self.response(4, [self.a]))
-        self.probe.open()
-        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
-
-        # Boundary starts while the native accessor cannot be read. The first
-        # later snapshot may already have been captured before the boundary,
-        # so it can only establish the baseline and must not be applied.
-        self.probe.setNativeResponse(None)
-        self.probe.boundary()
-        self.probe.setNativeResponse(self.response(5))
+        # Periodic V1 state is irrelevant while the boundary is pending.
+        self.probe.setNativeResponse(self.response(50))
         for _ in range(35):
             self.probe.update()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
 
-        # Only a strictly newer capture after the established baseline may
-        # become post-boundary authority.
-        self.probe.setNativeResponse(self.response(6))
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 51))
+        for _ in range(35):
+            self.probe.update()
+        self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
+        self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
+
+    def test_unavailable_boundary_capture_preserves_state_until_capture_succeeds(self):
+        self.probe.setNativeResponse(self.response(4, [self.a]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+        self.probe.boundary()
+        epoch = int(self.probe.boundaryEpoch())
+        self.probe.setNativeBoundaryResponse(None)
+        for _ in range(35):
+            self.probe.update()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 6))
         for _ in range(35):
             self.probe.update()
         self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
@@ -582,12 +581,14 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
         self.assertTrue(self.probe.fireLoad("EVT_LoadSaveFile_Done"))
+        epoch = int(self.probe.boundaryEpoch())
 
-        self.probe.setNativeResponse(self.response(8))
-        self.probe.update()
+        self.probe.setNativeResponse(self.response(99))
+        for _ in range(35):
+            self.probe.update()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
 
-        self.probe.setNativeResponse(self.response(9))
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 100))
         for _ in range(35):
             self.probe.update()
         self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
@@ -612,7 +613,8 @@ class AllRavensMapLuaTests(unittest.TestCase):
         # of prior session event evidence.
         self.probe.setNativeResponse(self.response(1))
         self.probe.boundary()
-        self.probe.setNativeResponse(self.response(2))
+        epoch = int(self.probe.boundaryEpoch())
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 2))
         self.probe.open()
         for _ in range(35):
             self.probe.update()
@@ -651,16 +653,17 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
 
         self.probe.reset()
-        self.probe.setNativeResponse(self.response(7, [self.b]))
+        epoch = int(self.probe.boundaryEpoch())
+        self.probe.setNativeResponse(self.response(70, [self.b]))
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
         self.assertIsNot(self.probe.state(self.b["catalogue_id"]), True)
 
-        self.probe.setNativeResponse(self.response(8, [self.b]))
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 71, [self.b]))
         self.probe.update()
         self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
         self.assertTrue(self.probe.state(self.b["catalogue_id"]))
-        self.assertEqual(self.probe.lastNativeGeneration(), 8)
+        self.assertEqual(self.probe.lastNativeGeneration(), 71)
 
     def test_native_unavailable_preserves_immediate_event_state(self):
         self.probe.publish(self.a["catalogue_id"], True)
@@ -686,7 +689,8 @@ class AllRavensMapLuaTests(unittest.TestCase):
         # After an explicit load boundary, a strictly newer atomic snapshot is
         # allowed to clear the session event overlay.
         self.probe.boundary()
-        self.probe.setNativeResponse(self.response(3))
+        epoch = int(self.probe.boundaryEpoch())
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 3))
         for _ in range(35):
             self.probe.update()
         self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
