@@ -68,6 +68,16 @@ bool g_have_authoritative_base = false;
 std::array<bool, 53> g_last_authoritative_killed{};
 std::uint64_t g_last_authoritative_epoch = 0;
 
+bool g_have_boundary_snapshot = false;
+std::uint64_t g_boundary_snapshot_epoch = 0;
+NativeRavenSnapshot g_boundary_snapshot{};
+
+void ClearBoundarySnapshotLocked() {
+  g_have_boundary_snapshot = false;
+  g_boundary_snapshot_epoch = 0;
+  g_boundary_snapshot = NativeRavenSnapshot{};
+}
+
 struct BaseObservation {
   std::uint64_t restore_epoch = 0;
   bool inferred_boundary = false;
@@ -87,7 +97,10 @@ std::uint64_t NoteRestoreBoundaryInternal(std::uint64_t now_ms,
   const bool is_new =
       !g_have_boundary_note || now_ms < g_last_boundary_note_ms ||
       now_ms - g_last_boundary_note_ms > kBoundaryCoalesceMs;
-  if (is_new) ++g_restore_epoch;
+  if (is_new) {
+    ++g_restore_epoch;
+    ClearBoundarySnapshotLocked();
+  }
   g_have_boundary_note = true;
   g_last_boundary_note_ms = now_ms;
   if (advanced != nullptr) *advanced = is_new;
@@ -108,6 +121,28 @@ bool NoteKilledInternal(std::string_view catalogue_id,
 std::uint64_t CurrentRestoreEpochInternal() {
   std::lock_guard<std::mutex> lock(g_session_mutex);
   return g_restore_epoch;
+}
+
+void CacheBoundarySnapshotInternal(
+    const NativeRavenSnapshot& snapshot, std::uint64_t boundary_epoch) {
+  std::lock_guard<std::mutex> lock(g_session_mutex);
+  if (boundary_epoch != g_restore_epoch) return;
+  g_boundary_snapshot = snapshot;
+  g_boundary_snapshot_epoch = boundary_epoch;
+  g_have_boundary_snapshot = true;
+}
+
+bool ReadBoundarySnapshotInternal(
+    std::uint64_t boundary_epoch, NativeRavenSnapshot* snapshot) {
+  if (snapshot == nullptr) return false;
+  std::lock_guard<std::mutex> lock(g_session_mutex);
+  if (!g_have_boundary_snapshot ||
+      g_boundary_snapshot_epoch != boundary_epoch ||
+      boundary_epoch != g_restore_epoch) {
+    return false;
+  }
+  *snapshot = g_boundary_snapshot;
+  return true;
 }
 
 BaseObservation ObserveAuthoritativeBaseInternal(
@@ -161,6 +196,7 @@ BaseObservation ObserveAuthoritativeBaseInternal(
   // emitted OnRestoreCheckpoint.
   if (result.revived_count > 0) {
     ++g_restore_epoch;
+    ClearBoundarySnapshotLocked();
     g_have_boundary_note = true;
     g_last_boundary_note_ms = now_ms;
     result.restore_epoch = g_restore_epoch;
@@ -377,24 +413,38 @@ unsigned __stdcall ServeSnapshots(void* raw_listener) {
                     std::to_string(request.boundary_epoch) +
                     " currentRestoreEpoch=" + std::to_string(restore_epoch) +
                     "\n");
-      } else if (g_snapshot_capturer == nullptr ||
-                 !g_snapshot_capturer(&snapshot)) {
-        SendAll(client,
-                "RAVEN_SNAPSHOT_V2 UNAVAILABLE boundaryEpoch=" +
-                    std::to_string(request.boundary_epoch) + "\n");
       } else {
-        const BaseObservation observation =
-            ObserveAuthoritativeBaseInternal(snapshot, GetTickCount64(), true);
-        if (observation.restore_epoch != request.boundary_epoch) {
-          SendAll(client,
-                  "RAVEN_SNAPSHOT_V2 UNAVAILABLE boundaryEpoch=" +
-                      std::to_string(request.boundary_epoch) +
-                      " currentRestoreEpoch=" +
-                      std::to_string(observation.restore_epoch) + "\n");
-        } else {
+        const bool captured =
+            g_snapshot_capturer != nullptr && g_snapshot_capturer(&snapshot);
+        if (captured) {
+          const BaseObservation observation =
+              ObserveAuthoritativeBaseInternal(snapshot, GetTickCount64(), true);
+          if (observation.restore_epoch != request.boundary_epoch) {
+            SendAll(client,
+                    "RAVEN_SNAPSHOT_V2 UNAVAILABLE boundaryEpoch=" +
+                        std::to_string(request.boundary_epoch) +
+                        " currentRestoreEpoch=" +
+                        std::to_string(observation.restore_epoch) + "\n");
+          } else {
+            CacheBoundarySnapshotInternal(snapshot, request.boundary_epoch);
+            snapshot = MergeCurrentEpochKillsInternal(snapshot);
+            SendAll(client, BuildRavenBoundarySnapshotWireResponse(
+                                snapshot, request.boundary_epoch));
+          }
+        } else if (ReadBoundarySnapshotInternal(request.boundary_epoch,
+                                                &snapshot)) {
+          AppendBridgeLog(
+              "RAVEN_NATIVE_BRIDGE_BOUNDARY_CACHE_HIT boundaryEpoch=" +
+              std::to_string(request.boundary_epoch) +
+              " generation=" + std::to_string(snapshot.generation) +
+              " save_writes=false progression_writes=false");
           snapshot = MergeCurrentEpochKillsInternal(snapshot);
           SendAll(client, BuildRavenBoundarySnapshotWireResponse(
                               snapshot, request.boundary_epoch));
+        } else {
+          SendAll(client,
+                  "RAVEN_SNAPSHOT_V2 UNAVAILABLE boundaryEpoch=" +
+                      std::to_string(request.boundary_epoch) + "\n");
         }
       }
     } else if (request.kind == RequestKind::kNoteKilledV1) {
@@ -536,6 +586,7 @@ void ResetSessionAuthority() {
   g_have_authoritative_base = false;
   g_last_authoritative_killed.fill(false);
   g_last_authoritative_epoch = 0;
+  ClearBoundarySnapshotLocked();
 }
 
 std::uint64_t NoteRestoreBoundary(std::uint64_t now_ms) {
@@ -558,6 +609,16 @@ std::uint64_t ObserveAuthoritativeBase(
 NativeRavenSnapshot MergeCurrentEpochKills(
     const NativeRavenSnapshot& snapshot) {
   return MergeCurrentEpochKillsInternal(snapshot);
+}
+
+void CacheBoundarySnapshot(
+    const NativeRavenSnapshot& snapshot, std::uint64_t boundary_epoch) {
+  CacheBoundarySnapshotInternal(snapshot, boundary_epoch);
+}
+
+bool ReadBoundarySnapshot(
+    std::uint64_t boundary_epoch, NativeRavenSnapshot* snapshot) {
+  return ReadBoundarySnapshotInternal(boundary_epoch, snapshot);
 }
 
 }  // namespace delivery_test
