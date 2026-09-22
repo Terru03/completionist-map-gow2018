@@ -357,8 +357,19 @@ do
       }, nil
     end
 
+    -- A stable raw fresh-save image is all absence-default false rows.
+    -- Process-local positive kill notes from the previous save can still be
+    -- merged into that image before Lua sees it when no gameplay Raven exists
+    -- to advance the bridge epoch. In that exact case the apparent killed rows
+    -- are overlay-only: explicit remains zero and each overlay kill replaces
+    -- one absence-default row. Preserve the shape for RegionSummary-guarded
+    -- fresh-zero normalization instead of rejecting it as malformed.
+    local freshZeroOverlayShape =
+        explicit == 0 and alive + killed == #rows and
+        absentWadFalse + killed == #rows
     if generation == nil or generation < 1 or unknown ~= 0 or
-        alive + killed ~= #rows or explicit + absentWadFalse ~= #rows then
+        alive + killed ~= #rows or
+        (explicit + absentWadFalse ~= #rows and not freshZeroOverlayShape) then
       return nil, "response_counts"
     end
 
@@ -465,14 +476,18 @@ do
 
     local groups = buildRegionSummaryGroups()
 
-    -- The native publication gate already requires this all-false image to
-    -- remain stable for 750 ms. It is the fresh/new-game bootstrap and must
-    -- still work before RegionSummary quests are initialised. However, if any
-    -- live parent count is already available and non-zero, that is a direct
-    -- contradiction and the zero image must fail closed.
-    if snapshot.killedCount == 0 and snapshot.aliveCount == #rows and
+    -- The native publication gate already requires the raw all-false image to
+    -- remain stable for 750 ms. A fresh save can inherit process-local positive
+    -- kill notes from the previous save if no Raven gameplay instance existed
+    -- to advance the bridge epoch. Those overlay-only kills are recognizable:
+    -- no state is explicit, and every apparent kill replaces one WAD-absence
+    -- default row. RegionSummary is the independent veto before normalizing
+    -- that exact shape back to the raw 0/53 fresh authority.
+    local freshZeroBase =
         snapshot.explicitCount == 0 and
-        snapshot.absenceDefaultFalseCount == #rows then
+        snapshot.aliveCount + snapshot.killedCount == #rows and
+        snapshot.absenceDefaultFalseCount + snapshot.killedCount == #rows
+    if freshZeroBase then
       for parent, group in pairs(groups) do
         local targetCount = regionSummaryTargetCount(parent, group.count)
         local completed = readRegionSummaryCompleted(parent, targetCount)
@@ -480,13 +495,21 @@ do
           nativeNotice("NATIVE_AUTHORITY_REGION_REFUSED",
               "reason=fresh_zero_conflict parent=" .. tostring(parent) ..
               " completed=" .. tostring(completed) ..
+              " overlayKilled=" .. tostring(snapshot.killedCount) ..
               " source=" .. tostring(source),
               "fresh_zero_conflict:" .. tostring(parent) .. ":" ..
-              tostring(completed))
-          return false, "fresh_zero_region_summary_conflict"
+              tostring(completed) .. ":" .. tostring(snapshot.killedCount))
+          return false, "fresh_zero_region_summary_conflict", false
         end
       end
-      return true, nil
+      if snapshot.killedCount > 0 then
+        nativeNotice("NATIVE_AUTHORITY_FRESH_ZERO_NORMALIZED",
+            "overlayKilled=" .. tostring(snapshot.killedCount) ..
+            " source=" .. tostring(source) ..
+            " readOnly=true progressionWrites=false",
+            "fresh_zero_normalized:" .. tostring(snapshot.killedCount))
+      end
+      return true, nil, true
     end
     for parent, group in pairs(groups) do
       local targetCount = regionSummaryTargetCount(parent, group.count)
@@ -806,7 +829,7 @@ do
       return resolved, partialReason
     end
 
-    local regionValid, regionReason =
+    local regionValid, regionReason, normalizeFreshZero =
         validateFullNativeAuthority(snapshot, source)
     if not regionValid then
       nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
@@ -831,6 +854,11 @@ do
     end
 
     local expectedSchema = boundaryApply and 2 or 1
+    local freshZeroBase =
+        normalizeFreshZero == true and
+        snapshot.explicitCount == 0 and
+        snapshot.aliveCount + snapshot.killedCount == #rows and
+        snapshot.absenceDefaultFalseCount + snapshot.killedCount == #rows
     if type(snapshot.states) ~= "table" or snapshot.schema ~= expectedSchema or
         type(snapshot.count) ~= "number" or snapshot.count ~= #rows or
         type(snapshot.aliveCount) ~= "number" or
@@ -838,7 +866,8 @@ do
         snapshot.aliveCount + snapshot.killedCount ~= #rows or
         type(snapshot.explicitCount) ~= "number" or
         type(snapshot.absenceDefaultFalseCount) ~= "number" or
-        snapshot.explicitCount + snapshot.absenceDefaultFalseCount ~= #rows then
+        (snapshot.explicitCount + snapshot.absenceDefaultFalseCount ~= #rows and
+         not freshZeroBase) then
       nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
           "reason=invalid_snapshot", "invalid_snapshot")
       return false, "invalid_snapshot"
@@ -862,9 +891,12 @@ do
             "reason=incomplete_states", "incomplete_states")
         return false, "incomplete_states"
       end
-      if value then killedIds[#killedIds + 1] = catalogueId end
+      if not freshZeroBase and value then
+        killedIds[#killedIds + 1] = catalogueId
+      end
     end
-    if #killedIds ~= snapshot.killedCount then
+    if (not freshZeroBase and #killedIds ~= snapshot.killedCount) or
+        (freshZeroBase and #killedIds ~= 0) then
       nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
           "reason=state_count_mismatch", "state_count_mismatch")
       return false, "state_count_mismatch"
