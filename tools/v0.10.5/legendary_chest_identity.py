@@ -68,34 +68,57 @@ def tracked_rows(catalogue: dict) -> list[dict]:
 
 
 def scene_identity_elements(row: dict) -> tuple[list[bytes], list[dict]]:
-    """Return the exact scene portion of the GameObject identity.
+    """Return the physical-placement scene portion of a chest identity.
 
-    This is the same proven transform rule used by the 53 Raven identities:
-    reverse the authored transform chain, decrement byte 12 of each native
-    record ID, and omit the immediate self-prototype parent only when its
-    adjusted identity exactly equals native.parent_prototype_id.
+    The audited Legendary transform chain starts inside the reusable state
+    subobject:
+
+      [0] gochestscript
+      [1] gochest_legendary_parent
+      [2] physical authored chest placement
+      [3..] scene owners out to the WAD root
+
+    A GameObject identity for the physical chest is therefore formed from the
+    authored placement and its scene owners, not from the two nested reusable
+    descendants.  Each retained record uses the same proven native identity
+    transform as Ravens: decrement byte 12 and reverse root -> object.
     """
     chain = row["source"]["transform_chain"]
-    parent_prototype_id = str(row["native"]["parent_prototype_id"]).lower()
-    kept: list[bytes] = []
+    if len(chain) < 3:
+        raise ValueError(f"{row['catalogue_id']}: Legendary chain is too short")
     skipped: list[dict] = []
-    for original_index, item in reversed(list(enumerate(chain))):
-        element = adjusted_record_id(item["record_id"])
-        if original_index == 1 and element.hex() == parent_prototype_id:
-            skipped.append(
-                {
-                    "source_record_name": item["name"],
-                    "source_record_id": item["record_id"],
-                    "adjusted_identity_hex": element.hex(),
-                    "reason": (
-                        "immediate_parent_adjusted_id_equals_"
-                        "parent_prototype_id"
-                    ),
-                }
-            )
-            continue
-        kept.append(element)
+    for original_index in (0, 1):
+        item = chain[original_index]
+        skipped.append(
+            {
+                "source_record_name": item["name"],
+                "source_record_id": item["record_id"],
+                "adjusted_identity_hex": adjusted_record_id(
+                    item["record_id"]
+                ).hex(),
+                "reason": (
+                    "nested_reusable_state_subobject"
+                    if original_index == 0
+                    else "nested_reusable_legendary_parent"
+                ),
+            }
+        )
+    kept = [
+        adjusted_record_id(item["record_id"])
+        for item in reversed(chain[2:])
+    ]
     return kept, skipped
+
+
+def diagnostic_identity_variants(row: dict) -> dict[str, list[bytes]]:
+    """Candidate scene grammars retained only for runtime diagnosis."""
+    chain = row["source"]["transform_chain"]
+    adjusted = [adjusted_record_id(item["record_id"]) for item in chain]
+    return {
+        "physical_placement": list(reversed(adjusted[2:])),
+        "include_legendary_parent": list(reversed(adjusted[1:])),
+        "include_script_and_parent": list(reversed(adjusted)),
+    }
 
 
 def static_contract(catalogue: dict) -> dict:
