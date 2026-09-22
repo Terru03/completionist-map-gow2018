@@ -707,7 +707,7 @@ do
     -- UpdateFooterButtonText() redraw can re-query the base map after the
     -- action selection has been consumed and overwrite Remove with Add.
     promptOverride = selected
-    local show, text = self:GetShowOnCompassPrompt(self.menu)
+    local show, text = MapOn.GetShowOnCompassPrompt(self, self.menu)
     if show ~= true then
       promptOverride = nil
       return
