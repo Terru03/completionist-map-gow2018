@@ -1425,6 +1425,9 @@ do
       promptIntent.PendingReadd = true
       promptIntent.PendingReaddName = selected.Name
       promptIntent.PendingReaddCatalogueId = selected.CatalogueId
+      _G.CompletionistMapV105TrackedCatalogueId = selected.CatalogueId
+      customCompassOwnsTarget = true
+      self.currShownMarkerID = nil
       refreshCommittedFooter(self, selected)
       log("READD_QUEUED", "name=" .. selected.Name ..
           " uid=" .. selected.IdString ..
@@ -1455,6 +1458,7 @@ do
         suppressLegacyRavenHud()
         hideStock("raven_remove_guard")
         Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
+        refreshCommittedActionUi(self, selected)
         refreshCommittedFooter(self, selected)
         log("REMOVE", "name=" .. selected.Name .. " uid=" .. selected.IdString)
       end
@@ -1487,6 +1491,7 @@ do
     promptSettleFrames = 0
     promptSettleBucket = -1
     Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
+    refreshCommittedActionUi(self, selected)
     refreshCommittedFooter(self, selected)
     log("SHOW", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
         " replacedCustomCount=" .. tostring(customCount) ..
@@ -1600,10 +1605,15 @@ do
       end
       local customAfter, customAfterOK = customIds()
       local stockAfter, stockAfterOK = stockIds()
-      if promptSettleFrames >= 3 and customAfterOK and stockAfterOK and
+      local removalClean =
+          customAfterOK and stockAfterOK and
           not contains(customAfter, intent.IdString) and
           not contains(stockAfter, intent.IdString) and
-          not hasOther(stockAfter, intent.IdString) then
+          not hasOther(stockAfter, intent.IdString)
+      local settleReady =
+          (intent.PendingReadd == true and removalClean) or
+          (promptSettleFrames >= 3 and removalClean)
+      if settleReady then
         if intent.PendingReadd == true and shouldShow(row.CatalogueId) then
           suppressLegacyRavenHud()
           hideStock("raven_readd_settled_guard")
