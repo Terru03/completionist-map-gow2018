@@ -6891,3 +6891,40 @@ proof must now distinguish BOTH required behaviors:
 
 Do not interpret the 27 / 26 epoch-3 authority in this capture as a runtime
 failure.
+
+
+### Follow-up 2026-09-22 19:50 - live proof now distinguishes persistence from cross-save revival
+
+User clarified that the second live run deliberately loaded another save in
+which the just-killed Raven was still alive. Therefore the Raven reappearing
+after that restore was correct and is positive evidence for save isolation.
+
+The live proof flow now explicitly covers both directions:
+
+1. kill one live Raven;
+2. verify immediate disappearance and map close/reopen;
+3. create a NEW manual save after the kill;
+4. load that exact post-kill save and verify the Raven remains absent;
+5. load a DIFFERENT pre-kill/older save where that same Raven is alive and
+   verify it reappears;
+6. load a true fresh save and verify all 53 Ravens.
+
+Implementation:
+
+- `b148f91877595ae1ae93eb128cf31006cbfe1a0d`
+  - proof parser no longer assumes the first restore after post-kill
+    persistence is the fresh save;
+  - it tolerates intermediate cross-save restore boundaries and selects the
+    later boundary whose matching authority is actually 0/53.
+
+- `17c769cc3c967022de26d99d2d04fa501f8ac110`
+  - live runner adds explicit `CROSSSAVE_OK` manual acceptance;
+  - result metadata records `cross_save_revival_manual`.
+
+- `d493891a5ca026449da1688ed5e675c17e41f2fc`
+  - regression fixture includes an intermediate non-fresh cross-save boundary
+    before the fresh 0/53 boundary.
+
+The runtime behavior from capture
+`3278a1237a028fec6d6f7ae73ca540446be5bd25` must NOT be described as a
+persistence failure. It demonstrated correct revival from a different save.
