@@ -295,7 +295,8 @@ do
             "stale_restore_epoch:" .. tostring(restoreEpoch))
         return false, "stale_restore_epoch"
       end
-      if lastNativeRestoreEpoch ~= nil and restoreEpoch > lastNativeRestoreEpoch then
+      if restoreEpoch > 0 and
+          (lastNativeRestoreEpoch == nil or restoreEpoch > lastNativeRestoreEpoch) then
         nativeBoundaryPending = true
         nativeBoundaryEpoch = restoreEpoch
         _G.CompletionistMapV105NativeBoundaryEpoch = restoreEpoch
