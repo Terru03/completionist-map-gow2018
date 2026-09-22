@@ -999,6 +999,17 @@ def apply_legendary_map_scope_correction(
     required = LEGENDARY_NON_MAP_COUNTED_IDS | set(LEGENDARY_RECOVERED_MAP_TARGETS)
     check(required <= set(by_id), "Legendary scope correction rows missing")
 
+    for catalogue_id in LEGENDARY_NON_MAP_COUNTED_IDS:
+        row = by_id[catalogue_id]
+        row["progression"]["excluded_inferred_parent_quest"] = (
+            row["progression"].get("parent_quest")
+        )
+        row["progression"]["excluded_parent_quest_source"] = (
+            row["progression"].get("parent_quest_source")
+        )
+        row["progression"]["parent_quest"] = None
+        row["progression"]["parent_quest_source"] = "excluded_by_map_count_scope_proof"
+
     for catalogue_id, quest in LEGENDARY_RECOVERED_MAP_TARGETS.items():
         check(quest in summaries, f"missing recovered Legendary summary: {quest}")
         row = by_id[catalogue_id]
