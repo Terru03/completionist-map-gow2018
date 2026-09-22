@@ -226,13 +226,17 @@ function Test-RavenSnapshotDeliveryProofLines(
         }
 
         if ($checkpointApplyIndex -ge 0 -and $index -gt $checkpointApplyIndex -and
-            $freshBoundaryIndex -lt 0 -and
             $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] AUTHORITY_BOUNDARY .*source=native_restore_epoch .*boundaryEpoch=([0-9]+) .*captureReady=true ') {
             $candidateEpoch = [uint64]$Matches[1]
             if ($candidateEpoch -gt [uint64]$checkpointEpoch -and
                 $bridgeBoundaryEpochs.Contains($candidateEpoch)) {
+                # Do not assume the first later restore is the fresh-save load.
+                # Cross-save revival may be tested first. Keep the most recent
+                # eligible boundary as a fresh candidate until a matching
+                # post-boundary 0/53 authority appears.
                 $freshBoundaryIndex = $index
                 $freshEpoch = $candidateEpoch
+                $freshEpochMatched = $false
             }
         }
 
