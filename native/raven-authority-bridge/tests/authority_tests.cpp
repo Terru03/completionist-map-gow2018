@@ -204,12 +204,63 @@ int wmain() {
     return Fail("Lua wire snapshot differs");
   }
 
+  completionist::NativeRavenSnapshot partial = wire;
+  partial.known.fill(true);
+  partial.explicit_state.fill(true);
+  partial.partial_usable = true;
+  partial.unknown_count = 1;
+  partial.explicit_count = 41;
+  partial.absence_default_false_count = 11;
+  std::size_t partial_unknown_index = completionist::kRavenCatalogue.size();
+  for (std::size_t index = 0; index < completionist::kRavenCatalogue.size();
+       ++index) {
+    if (completionist::kRavenCatalogue[index].catalogue_id ==
+        "raven_642d0d164af0a5d4076e77933c549a5d") {
+      partial_unknown_index = index;
+      break;
+    }
+  }
+  if (partial_unknown_index >= completionist::kRavenCatalogue.size() ||
+      partial.killed[partial_unknown_index]) {
+    return Fail("partial wire fixture Raven differs");
+  }
+  partial.known[partial_unknown_index] = false;
+  partial.explicit_state[partial_unknown_index] = false;
+  --partial.alive_count;
+  const std::string partial_response =
+      completionist::BuildRavenPartialSnapshotWireResponse(partial, 0);
+  if (!partial_response.starts_with(
+          "RAVEN_SNAPSHOT_V1 PARTIAL schema=1 restoreEpoch=0 ") ||
+      partial_response.find(" unknown=1 alive=25 killed=27 explicit=41 ") ==
+          std::string::npos ||
+      partial_response.find(
+          "unknownIds=raven_642d0d164af0a5d4076e77933c549a5d") ==
+          std::string::npos ||
+      partial_response.back() != '\n') {
+    return Fail("Lua partial wire snapshot differs");
+  }
+  const std::string partial_boundary_response =
+      completionist::BuildRavenPartialBoundarySnapshotWireResponse(partial, 3);
+  if (!partial_boundary_response.starts_with(
+          "RAVEN_SNAPSHOT_V2 PARTIAL schema=2 boundaryEpoch=3 ")) {
+    return Fail("Lua partial boundary wire snapshot differs");
+  }
+
   // Session-only kill evidence augments, but never replaces, the decoded
   // authoritative saved set. A later restore epoch makes prior session notes
   // ineligible so an older checkpoint can legitimately revive that Raven.
   if (!completionist::delivery_test::NoteKilled(
           "raven_642d0d164af0a5d4076e77933c549a5d")) {
     return Fail("session kill note rejected known Raven");
+  }
+  const auto merged_partial_epoch0 =
+      completionist::delivery_test::MergeCurrentEpochKills(partial);
+  if (merged_partial_epoch0.unknown_count != 0 ||
+      !merged_partial_epoch0.known[partial_unknown_index] ||
+      !merged_partial_epoch0.killed[partial_unknown_index] ||
+      merged_partial_epoch0.killed_count != 28 ||
+      merged_partial_epoch0.alive_count != 25) {
+    return Fail("session kill overlay did not resolve partial Raven");
   }
   const auto merged_epoch0 =
       completionist::delivery_test::MergeCurrentEpochKills(wire);
@@ -425,6 +476,6 @@ int wmain() {
 
   std::cout << "RAVEN_BRIDGE_AUTHORITY_TESTS_PASSED states=53 explicit=42 "
                "absentWadFalse=11 killed=27 alive=26 delivery=loopback "
-               "collision_refused=true freshness_generation=true boundary_epoch_wire=true session_epoch_overlay=true inferred_restore_epoch=true boundary_snapshot_cache=true\n";
+               "collision_refused=true freshness_generation=true boundary_epoch_wire=true session_epoch_overlay=true inferred_restore_epoch=true boundary_snapshot_cache=true partial_snapshot_wire=true\n";
   return 0;
 }
