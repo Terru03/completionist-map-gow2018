@@ -139,8 +139,9 @@ function Invoke-Wrapper([object]$Fixture, [string]$Mode) {
         $env:RAVEN_WRAPPER_TEST_MODE = $Mode
         Push-Location $Fixture.Work
         try {
-            & pwsh -NoProfile -ExecutionPolicy Bypass -File $Fixture.Wrapper
-            return $LASTEXITCODE
+            & pwsh -NoProfile -ExecutionPolicy Bypass -File $Fixture.Wrapper | Out-Host
+            $childExitCode = [int]$LASTEXITCODE
+            return $childExitCode
         }
         finally {
             Pop-Location
