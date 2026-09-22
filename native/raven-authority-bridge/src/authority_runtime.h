@@ -10,12 +10,16 @@ namespace completionist {
 
 struct NativeRavenSnapshot {
   std::array<bool, 53> killed{};
+  std::array<bool, 53> known{};
+  std::array<bool, 53> explicit_state{};
   std::uint64_t generation = 0;
   std::uint64_t captured_tick_ms = 0;
   std::uint32_t alive_count = 0;
   std::uint32_t killed_count = 0;
   std::uint32_t explicit_count = 0;
   std::uint32_t absence_default_false_count = 0;
+  std::uint32_t unknown_count = 53;
+  bool partial_usable = false;
 };
 
 class SnapshotStore {
