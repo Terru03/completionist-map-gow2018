@@ -52,6 +52,8 @@ $outJson = Join-Path $outDir 'report.json'
 $outText = Join-Path $outDir 'report.txt'
 $console = Join-Path $outDir 'console-log.txt'
 $resultFile = Join-Path $outDir 'result.txt'
+$staticLog = Join-Path $outDir 'static-test-log.txt'
+$captureLog = Join-Path $outDir 'capture-log.txt'
 New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 
 $exitCode = 0
@@ -66,8 +68,13 @@ try {
     & pwsh -NoProfile -ExecutionPolicy Bypass -File $RavenGuard
     if ($LASTEXITCODE -ne 0) { throw 'Frozen Raven baseline guard failed.' }
 
-    & $python.Source $StaticTest
-    if ($LASTEXITCODE -ne 0) { throw 'Legendary Chest static identity tests failed.' }
+    $staticLines = @(& $python.Source $StaticTest 2>&1)
+    $staticExit = $LASTEXITCODE
+    $staticLines | ForEach-Object { Write-Host "$_" }
+    $staticLines | Set-Content -LiteralPath $staticLog -Encoding UTF8
+    if ($staticExit -ne 0) {
+        throw "Legendary Chest static identity tests failed with exit code $staticExit."
+    }
 
     $captureArgs = @(
         $Capture,
@@ -76,9 +83,12 @@ try {
         '--output-json', $outJson,
         '--output-text', $outText
     )
-    & $python.Source @captureArgs
-    if ($LASTEXITCODE -ne 0) {
-        throw "Legendary Chest read-only identity sweep failed with exit code $LASTEXITCODE."
+    $captureLines = @(& $python.Source @captureArgs 2>&1)
+    $captureExit = $LASTEXITCODE
+    $captureLines | ForEach-Object { Write-Host "$_" }
+    $captureLines | Set-Content -LiteralPath $captureLog -Encoding UTF8
+    if ($captureExit -ne 0) {
+        throw "Legendary Chest read-only identity sweep failed with exit code $captureExit."
     }
 
     $report = Get-Content -LiteralPath $outJson -Raw | ConvertFrom-Json
