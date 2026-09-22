@@ -420,6 +420,54 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertTrue(self.probe.hasAuthority())
         self.assertEqual(self.probe.iconCount(), 2)
 
+    def test_fresh_boundary_normalizes_stale_previous_save_kill_overlay(self):
+        self._set_region_counts([])
+        stale_ids = ",".join(
+            [self.a["catalogue_id"], self.b["catalogue_id"]]
+        )
+        self.probe.setNativeResponse(
+            "RAVEN_SNAPSHOT_V1 schema=1 restoreEpoch=4 generation=20 "
+            "capturedTickMs=1020 count=53 unknown=0 alive=53 killed=0 "
+            "explicit=0 absentWadFalse=53 killedIds=-\n"
+        )
+        self.probe.setNativeBoundaryResponse(
+            "RAVEN_SNAPSHOT_V2 schema=2 boundaryEpoch=4 generation=21 "
+            "capturedTickMs=2021 count=53 unknown=0 alive=51 killed=2 "
+            f"explicit=0 absentWadFalse=51 killedIds={stale_ids}\n"
+        )
+        self.probe.open()
+
+        self.assertTrue(self.probe.hasAuthority())
+        self.assertEqual(self.probe.collectedCount(), 0)
+        self.assertEqual(self.probe.iconCount(), 2)
+        self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
+        self.assertIsNot(self.probe.state(self.b["catalogue_id"]), True)
+        self.assertIn("NATIVE_AUTHORITY_FRESH_ZERO_NORMALIZED", self.probe.logs())
+        self.assertIn("overlayKilled=2", self.probe.logs())
+
+    def test_fresh_boundary_overlay_normalization_is_vetoed_by_live_count(self):
+        self._set_region_counts([])
+        parent = self.a["progression"]["parent_quest"]
+        self.probe.setRegionSummaryCompleted(parent, 1)
+        stale_ids = ",".join(
+            [self.a["catalogue_id"], self.b["catalogue_id"]]
+        )
+        self.probe.setNativeResponse(
+            "RAVEN_SNAPSHOT_V1 schema=1 restoreEpoch=4 generation=22 "
+            "capturedTickMs=1022 count=53 unknown=0 alive=53 killed=0 "
+            "explicit=0 absentWadFalse=53 killedIds=-\n"
+        )
+        self.probe.setNativeBoundaryResponse(
+            "RAVEN_SNAPSHOT_V2 schema=2 boundaryEpoch=4 generation=23 "
+            "capturedTickMs=2023 count=53 unknown=0 alive=51 killed=2 "
+            f"explicit=0 absentWadFalse=51 killedIds={stale_ids}\n"
+        )
+        self.probe.open()
+
+        self.assertFalse(self.probe.hasAuthority())
+        self.assertEqual(self.probe.iconCount(), 0)
+        self.assertIn("fresh_zero_conflict", self.probe.logs())
+
     def test_full_native_snapshot_conflicting_with_region_summary_is_refused(self):
         stale = self.response(9, [self.a, self.b])
         parent = self.a["progression"]["parent_quest"]
