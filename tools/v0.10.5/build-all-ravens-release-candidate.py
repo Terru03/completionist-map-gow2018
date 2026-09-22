@@ -275,7 +275,7 @@ def router_contract() -> dict:
         "native_generation_monotonic": True,
         "native_generation_is_capture_freshness": False,
         "native_generation_role": "ordering only; never sufficient to prove post-load authority",
-        "native_boundary_authority": "matching echoed boundaryEpoch from synchronous V2 capture requested after load completion",
+        "native_boundary_authority": "bridge-owned restoreEpoch observed through V1 then matching echoed boundaryEpoch from synchronous V2 capture before state replacement",
         "native_refresh_before_icon_sync": True,
         "native_static_descriptor_writes": False,
     }
@@ -291,13 +291,14 @@ def state_contract() -> dict:
         "map_open_refresh": "V1 strictly newer generation only when no load boundary is pending",
         "native_unavailable_policy": "preserve last-good state and positive event-derived kills",
         "unknown_state_policy": "catalogue default visible only before any authoritative kill evidence",
-        "immediate_kill_path": "loaded Raven ravenKilled=true event",
+        "immediate_kill_path": "loaded Raven ravenKilled=true event -> loopback RAVEN_KILLED note -> current restoreEpoch overlay",
+        "session_kill_merge": "authoritative decoded saved kills union bridge kill notes from current restoreEpoch",
         "event_false_policy": "defer alive state to atomic 53-Raven authority",
         "event_kill_overlay": "persists across all periodic V1 snapshots until explicit load boundary authority",
         "event_overlay_clear_policy": "matching V2 boundary capture only",
-        "load_boundary_authority": "EVT_LoadSaveData disarms capture; EVT_LoadSaveFile_Done and post-return OnRestoreCheckpoint arm a new boundary epoch",
+        "load_boundary_authority": "native loopback bridge coalesces gameplay OnRestoreCheckpoint notes into restoreEpoch; map V1 observes epoch changes and requires matching V2 capture",
         "boundary_epoch_policy": "Lua-generated monotonic epoch must be echoed by synchronous V2 capture before state replacement",
-        "load_boundary_sources": ["EVT_LoadSaveData", "EVT_LoadSaveFile_Done", "OnRestoreCheckpoint"],
+        "load_boundary_sources": ["native_bridge_restoreEpoch", "OnRestoreCheckpoint_bridge_note", "EVT_LoadSaveData_fallback", "EVT_LoadSaveFile_Done_fallback"],
     }
 
 
