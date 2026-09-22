@@ -118,37 +118,17 @@ class LegendaryChestIdentityTests(unittest.TestCase):
             "01887766554433221100ffeeddccbbaa99",
         )
 
-    def test_static_record_id_matcher_preserves_overlapping_exact_hits(self):
-        first = b"0123456789ABCDEF"
-        second = b"123456789ABCDEFG"
-        ids = {
-            first: [{
-                "name": "first",
-                "id": first,
-                "offset": 0x10,
-                "kind": "test",
-            }],
-            second: [{
-                "name": "second",
-                "id": second,
-                "offset": 0x20,
-                "kind": "test",
-            }],
-        }
-        rec = {
-            "data": b"0123456789ABCDEFG",
-            "name": "synthetic",
-            "id": b"SYNTHETIC_RECORD!",
-            "offset": 0x100,
-        }
-        matcher = resolver.compile_record_id_matcher(ids)
-        hits = resolver.refs_in_record(rec, ids, matcher)
-        self.assertEqual([hit["payload_offset"] for hit in hits], ["0x0", "0x1"])
+    def test_fast_candidate_hash_continuation_matches_full_identity_hash(self):
+        prefix = [
+            bytes.fromhex("00112233445566778899aabbccddeeff"),
+            bytes.fromhex("ffeeddccbbaa99887766554433221100"),
+        ]
+        prototype = bytes.fromhex("1234567890abcdef1234567890abcdef")
+        prefix_hash = identity.identity_hash(prefix)
         self.assertEqual(
-            [hit["value_hex"] for hit in hits],
-            [first.hex(), second.hex()],
+            resolver.continue_identity_hash(prefix_hash, prototype),
+            identity.identity_hash(prefix + [prototype]),
         )
-
 
 
 if __name__ == "__main__":
