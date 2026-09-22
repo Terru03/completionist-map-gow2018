@@ -199,32 +199,41 @@ def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
             })
 
         for rec in records:
-            value_hex = rec["id"].hex()
-            item = support.setdefault(value_hex, {
-                "value_hex": value_hex,
-                "wad_hits": set(),
-                "hits": 0,
-                "semantic_hits": 0,
-                "depths": [],
-                "target_names": set(),
-                "examples": [],
-            })
-            item["wad_hits"].add(wad_name)
-            item["hits"] += 1
-            item["target_names"].add(rec["name"])
-            if any(
-                term in rec["name"].lower()
-                for term in ("chest", "legendary", "proto", "interact")
-            ):
-                item["semantic_hits"] += 1
-            if len(item["examples"]) < 12:
-                item["examples"].append({
-                    "wad": wad_name,
-                    "record_name": rec["name"],
-                    "record_id_hex": value_hex,
-                    "record_offset": f"0x{rec['offset']:X}",
-                    "record_kind": rec["kind"],
+            raw_hex = rec["id"].hex()
+            forms = (
+                ("raw_record_id", raw_hex),
+                ("adjusted_record_id", identity.adjusted_record_id(raw_hex).hex()),
+            )
+            for form_name, value_hex in forms:
+                item = support.setdefault(value_hex, {
+                    "value_hex": value_hex,
+                    "wad_hits": set(),
+                    "hits": 0,
+                    "semantic_hits": 0,
+                    "depths": [],
+                    "target_names": set(),
+                    "forms": set(),
+                    "examples": [],
                 })
+                item["wad_hits"].add(wad_name)
+                item["hits"] += 1
+                item["target_names"].add(rec["name"])
+                item["forms"].add(form_name)
+                if any(
+                    term in rec["name"].lower()
+                    for term in ("chest", "legendary", "proto", "interact")
+                ):
+                    item["semantic_hits"] += 1
+                if len(item["examples"]) < 12:
+                    item["examples"].append({
+                        "wad": wad_name,
+                        "record_name": rec["name"],
+                        "record_id_hex": raw_hex,
+                        "candidate_form": form_name,
+                        "candidate_value_hex": value_hex,
+                        "record_offset": f"0x{rec['offset']:X}",
+                        "record_kind": rec["kind"],
+                    })
 
         print(
             f"STATIC_IDENTITY_SCAN_DONE wad={wad_index}/{len(wad_names)} "
@@ -241,6 +250,7 @@ def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
         "semantic_hits": 0,
         "depths": [],
         "target_names": set(),
+        "forms": {"raw_loader_control"},
         "examples": [],
     })
 
@@ -254,6 +264,7 @@ def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
             "semantic_hits": item["semantic_hits"],
             "depths": list(item["depths"]),
             "target_names": sorted(item["target_names"]),
+            "forms": sorted(item.get("forms", [])),
             "examples": item["examples"],
         })
     candidates.sort(
@@ -334,6 +345,7 @@ def score_candidates(rows: list[dict], oracle: dict[str, set[int]], candidates: 
                         "semantic_hits": candidate["semantic_hits"],
                         "depths": candidate["depths"],
                         "target_names": candidate["target_names"],
+                        "forms": candidate.get("forms", []),
                     },
                     "matches": [],
                     "misses": [{
@@ -504,6 +516,7 @@ def main() -> int:
         "prototype_loader_id": EXPECTED_PROTOTYPE,
         "prototype_occurrences": static["prototype_occurrences"],
         "prototype_candidate_count": len(static["candidates"]),
+        "candidate_space_includes_adjusted_record_ids": True,
         "prototype_candidates": static["candidates"][:128],
         "score_count": len(scores),
         "top_scores": scores[:80],
@@ -549,6 +562,7 @@ def main() -> int:
             f"grammar={score['scene_grammar']} "
             f"proto={score['prototype_identity_hex']} "
             f"semantic_hits={ev['semantic_hits']} wad_hits={ev['wad_hit_count']} "
+            f"forms={','.join(ev.get('forms', []))} "
             f"targets={','.join(ev['target_names'][:6])}"
         )
     if winner is not None:
