@@ -230,48 +230,68 @@ do
 
   local function refreshNativeAuthority(source)
     local namespace = rawget(_G, "CompletionistMapNative")
-    local accessor = type(namespace) == "table" and namespace.GetRavenSnapshot or nil
-    if type(accessor) ~= "function" then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=api_unavailable", "api_unavailable")
-      return false, "api_unavailable"
+    if type(namespace) ~= "table" then
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=namespace_unavailable", "namespace_unavailable")
+      return false, "namespace_unavailable"
     end
-    local ok, snapshot, reason = pcall(accessor)
+
+    local boundaryApply = nativeBoundaryPending
+    local requestedBoundaryEpoch = nil
+    local accessor = nil
+    if boundaryApply then
+      if not nativeBoundaryCaptureReady then
+        nativeNotice("NATIVE_AUTHORITY_BOUNDARY_WAIT",
+            "epoch=" .. tostring(nativeBoundaryEpoch) ..
+            " source=" .. tostring(nativeBoundarySource) ..
+            " reason=load_not_complete",
+            "boundary_not_ready:" .. tostring(nativeBoundaryEpoch))
+        return false, "boundary_not_ready"
+      end
+      accessor = namespace.CaptureRavenBoundarySnapshot
+      requestedBoundaryEpoch = nativeBoundaryEpoch
+    else
+      accessor = namespace.GetRavenSnapshot
+    end
+
+    if type(accessor) ~= "function" then
+      local apiName = boundaryApply and "capture_api_unavailable" or "api_unavailable"
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=" .. apiName, apiName)
+      return false, apiName
+    end
+
+    local ok, snapshot, reason
+    if boundaryApply then
+      ok, snapshot, reason = pcall(accessor, requestedBoundaryEpoch)
+    else
+      ok, snapshot, reason = pcall(accessor)
+    end
     if not ok or type(snapshot) ~= "table" then
       local unavailable = ok and tostring(reason) or "call_failed:" .. tostring(snapshot)
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=" .. unavailable,
-          "unavailable:" .. unavailable)
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=" .. unavailable,
+          "unavailable:" .. tostring(boundaryApply) .. ":" .. unavailable)
       return false, unavailable
     end
+
     local generation = tonumber(snapshot.generation)
     if generation == nil or generation < 1 or generation ~= math.floor(generation) then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=invalid_generation", "invalid_generation")
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=invalid_generation", "invalid_generation")
       return false, "invalid_generation"
     end
-    if nativeBoundaryPending and not nativeBoundaryBaselineKnown then
-      nativeBoundaryGeneration = generation
-      nativeBoundaryBaselineKnown = true
-      nativeNotice("NATIVE_AUTHORITY_BOUNDARY_BASELINE",
-          "generation=" .. tostring(generation) ..
-          " action=establish_only apply=false",
-          "boundary_baseline:" .. tostring(generation))
-      return false, "boundary_baseline"
-    end
-    if nativeBoundaryPending and nativeBoundaryGeneration ~= nil and
-        generation <= nativeBoundaryGeneration then
-      nativeNotice("NATIVE_AUTHORITY_BOUNDARY_WAIT",
-          "generation=" .. tostring(generation) ..
-          " baseline=" .. tostring(nativeBoundaryGeneration),
-          "boundary:" .. tostring(generation) .. ":" .. tostring(nativeBoundaryGeneration))
-      return false, "boundary_wait"
-    end
     if lastNativeGeneration ~= nil and generation <= lastNativeGeneration then
-      nativeNotice("NATIVE_AUTHORITY_STALE", "generation=" .. tostring(generation) ..
-          " last=" .. tostring(lastNativeGeneration),
+      nativeNotice("NATIVE_AUTHORITY_STALE",
+          "generation=" .. tostring(generation) ..
+          " last=" .. tostring(lastNativeGeneration) ..
+          " postBoundary=" .. tostring(boundaryApply),
           "stale:" .. tostring(generation) .. ":" .. tostring(lastNativeGeneration))
       return false, "stale"
     end
-    local boundaryApply = nativeBoundaryPending
-    if type(snapshot.states) ~= "table" or snapshot.schema ~= 1 or
+
+    local expectedSchema = boundaryApply and 2 or 1
+    if type(snapshot.states) ~= "table" or snapshot.schema ~= expectedSchema or
         type(snapshot.count) ~= "number" or snapshot.count ~= #rows or
         type(snapshot.aliveCount) ~= "number" or
         type(snapshot.killedCount) ~= "number" or
@@ -279,51 +299,78 @@ do
         type(snapshot.explicitCount) ~= "number" or
         type(snapshot.absenceDefaultFalseCount) ~= "number" or
         snapshot.explicitCount + snapshot.absenceDefaultFalseCount ~= #rows then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=invalid_snapshot", "invalid_snapshot")
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=invalid_snapshot", "invalid_snapshot")
       return false, "invalid_snapshot"
     end
+
+    if boundaryApply and snapshot.boundaryEpoch ~= requestedBoundaryEpoch then
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=boundary_epoch_mismatch expected=" ..
+          tostring(requestedBoundaryEpoch) .. " actual=" ..
+          tostring(snapshot.boundaryEpoch),
+          "boundary_epoch_mismatch:" .. tostring(requestedBoundaryEpoch) ..
+          ":" .. tostring(snapshot.boundaryEpoch))
+      return false, "boundary_epoch_mismatch"
+    end
+
     local killedIds = {}
     for catalogueId, _ in pairs(byCatalogueId) do
       local value = snapshot.states[catalogueId]
       if type(value) ~= "boolean" then
-        nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=incomplete_states", "incomplete_states")
+        nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+            "reason=incomplete_states", "incomplete_states")
         return false, "incomplete_states"
       end
       if value then killedIds[#killedIds + 1] = catalogueId end
     end
     if #killedIds ~= snapshot.killedCount then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=state_count_mismatch", "state_count_mismatch")
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=state_count_mismatch", "state_count_mismatch")
       return false, "state_count_mismatch"
     end
+
     local apply = _G.CompletionistMapV105ApplyPersistedRavenKills
     if type(apply) ~= "function" then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=apply_api_unavailable", "apply_api_unavailable")
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=apply_api_unavailable", "apply_api_unavailable")
       return false, "apply_api_unavailable"
     end
+
     local applied, accepted = apply(
         killedIds,
-        "native:" .. tostring(source) .. ":generation:" .. tostring(generation),
+        "native:" .. tostring(source) ..
+        ":generation:" .. tostring(generation) ..
+        (boundaryApply and ":boundaryEpoch:" ..
+            tostring(requestedBoundaryEpoch) or ""),
         boundaryApply)
     if applied ~= true or accepted ~= #killedIds then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=apply_refused", "apply_refused")
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=apply_refused", "apply_refused")
       return false, "apply_refused"
     end
+
     lastNativeGeneration = generation
     _G.CompletionistMapV105LastNativeRavenGeneration = generation
     if boundaryApply then
       nativeBoundaryPending = false
-      nativeBoundaryGeneration = nil
-      nativeBoundaryBaselineKnown = false
+      nativeBoundaryCaptureReady = false
+      nativeBoundarySource = nil
       nativeResetRecheckFrames = 0
       nativeResetRecheckBucket = -1
     end
+
     lastNativeNotice = nil
-    log("NATIVE_AUTHORITY_APPLIED", "generation=" .. tostring(generation) ..
+    log("NATIVE_AUTHORITY_APPLIED",
+        "generation=" .. tostring(generation) ..
         " killed=" .. tostring(snapshot.killedCount) ..
         " alive=" .. tostring(snapshot.aliveCount) ..
         " explicit=" .. tostring(snapshot.explicitCount) ..
         " absentWadFalse=" .. tostring(snapshot.absenceDefaultFalseCount) ..
-        " postBoundary=" .. tostring(boundaryApply))
+        " postBoundary=" .. tostring(boundaryApply) ..
+        " boundaryEpoch=" ..
+        tostring(boundaryApply and requestedBoundaryEpoch or 0) ..
+        " authority=" .. (boundaryApply and "capture_v2" or "latest_v1"))
     return true, nil
   end
 
