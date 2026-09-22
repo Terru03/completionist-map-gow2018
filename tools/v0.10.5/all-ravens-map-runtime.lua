@@ -1102,6 +1102,46 @@ do
     end
   end
 
+  local previousNextFilter = MapOn.Menu_Next_Filter
+  if type(previousNextFilter) == "function" then
+    MapOn.Menu_Next_Filter = function(self, ...)
+      local result = previousNextFilter(self, ...)
+      syncIcons(self, "filter_change")
+      return result
+    end
+  end
+
+  local previousUpdateFilterButtonMapping = MapOn.UpdateFilterButtonMapping
+  if type(previousUpdateFilterButtonMapping) == "function" then
+    MapOn.UpdateFilterButtonMapping = function(self, ...)
+      local result = previousUpdateFilterButtonMapping(self, ...)
+      local realmHasRavens = false
+      for _, row in ipairs(rows) do
+        if row.Realm == self.currRealmName then
+          realmHasRavens = true
+          break
+        end
+      end
+      if realmHasRavens and type(self.filterButtonMapping) == "table" then
+        local hasRavenFilter = false
+        for _, logical in ipairs(self.filterButtonMapping) do
+          if logical == -102 then
+            hasRavenFilter = true
+            break
+          end
+        end
+        if not hasRavenFilter then
+          self.filterButtonMapping[#self.filterButtonMapping + 1] = -102
+          if type(self.UpdateFilterUI) == "function" then self:UpdateFilterUI() end
+          log("RAVEN_FILTER_MAPPING",
+              "realm=" .. tostring(self.currRealmName) ..
+              " added=true logical=-102")
+        end
+      end
+      return result
+    end
+  end
+
   local createPins = CompletionistMapV100_CreateMapPin
   CompletionistMapV100_CreateMapPin = function(self, currState)
     lastMapOnSelf = nil
