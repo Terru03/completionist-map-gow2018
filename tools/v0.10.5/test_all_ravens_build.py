@@ -59,19 +59,18 @@ class AllRavensTemplateTests(unittest.TestCase):
             state["event_false_policy"],
             "defer alive state to atomic 53-Raven authority",
         )
-        self.assertEqual(
-            state["event_kill_overlay"],
-            "persists across all periodic V1 snapshots until explicit load boundary authority",
-        )
-        self.assertEqual(
-            state["event_overlay_clear_policy"],
-            "matching V2 boundary capture only",
-        )
-        self.assertIn("EVT_LoadSaveData disarms", state["load_boundary_authority"])
-        self.assertIn("echoed", state["boundary_epoch_policy"])
+        self.assertIn("current restoreEpoch", state["event_kill_overlay"])
+        self.assertIn("restoreEpoch advance", state["event_overlay_clear_policy"])
+        self.assertIn("native loopback bridge", state["load_boundary_authority"])
+        self.assertIn("bridge-owned", state["boundary_epoch_policy"])
         self.assertEqual(
             state["load_boundary_sources"],
-            ["EVT_LoadSaveData", "EVT_LoadSaveFile_Done", "OnRestoreCheckpoint"],
+            [
+                "native_bridge_restoreEpoch",
+                "OnRestoreCheckpoint_bridge_note",
+                "EVT_LoadSaveData_fallback",
+                "EVT_LoadSaveFile_Done_fallback",
+            ],
         )
 
     def test_rendered_lua_has_53_rows_and_native_delivery_contract(self):
@@ -80,7 +79,7 @@ class AllRavensTemplateTests(unittest.TestCase):
             'require, "socket.core"', 'connect("127.0.0.1", nativePort)',
             "CompletionistMapNative", "GetRavenSnapshot",
             "CaptureRavenBoundarySnapshot", "RAVEN_SNAPSHOT_V2",
-            "boundaryEpoch", "CompletionistMapV105ApplyPersistedRavenKills",
+            "restoreEpoch", "boundaryEpoch", "CompletionistMapV105ApplyPersistedRavenKills",
             'refreshNativeAuthority("map_create")', "staticDescriptorWrites=false",
         ):
             self.assertIn(token, self.map_hook)
@@ -88,6 +87,9 @@ class AllRavensTemplateTests(unittest.TestCase):
     def test_rendered_event_hook_keeps_immediate_kill_path(self):
         self.assertEqual(self.event_hook.count("{CatalogueId="), 53)
         self.assertIn("ravenKilled ~= true", self.event_hook)
+        self.assertIn("NOTE RAVEN_KILLED_V1 catalogueId=", self.event_hook)
+        self.assertIn("NOTE RAVEN_BOUNDARY_V1 source=checkpoint", self.event_hook)
+        self.assertIn('require, "socket.core"', self.event_hook)
         self.assertIn("fn(row.CatalogueId, true, source)", self.event_hook)
         self.assertIn("CompletionistMapV105PublishRavenState", self.event_hook)
 
