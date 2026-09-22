@@ -537,3 +537,40 @@ For every exact hash intersection it archives:
 
 This is read-only:
 `PROCESS_VM_READ|PROCESS_QUERY_INFORMATION` only. Ravens remain frozen.
+
+
+### Staged/runtime hash intersection negative; residency must be established
+
+Evidence commit:
+
+`85513b17d53c596710e55c670aab7f82fe4135b4`
+
+The direct staged/runtime hash intersection completed cleanly:
+
+- registry 238 count: 49,152;
+- non-null GameObjects: 18,519;
+- identity-method GameObjects: 18,519;
+- native identities reconstructed: 18,519;
+- reconstruction failures: 0;
+- staged dominant state hashes tested: 206 unique;
+- exact runtime object-hash intersections: 0.
+
+Raven evidence confirms that the 64-bit serialized `object_hash` is the same
+native 0x401 identity hash used by the live GameObject identity builder. The
+negative result therefore does not invalidate the hash comparison itself.
+
+The remaining ambiguity is residency: the archived staged checkpoint contains
+state for unloaded WADs, while the live registry only exposes objects from
+currently resident content. A zero intersection cannot distinguish
+"checkpoint-only/unloaded target objects" from a deeper identity-structure
+problem until at least one tracked Legendary WAD is proven resident.
+
+New read-only tooling:
+
+- `tools/v0.10.5/capture-legendary-live-wad-contexts-readonly.py`;
+- `tools/v0.10.5/run-legendary-live-wad-contexts-readonly-and-push.ps1`.
+
+It enumerates the already-proven 64-slot live WAD-context table, normalizes live
+WAD names, and intersects them with the 27 tracked Legendary WADs. It always
+archives the result, including the zero-match case, and performs no writes to
+GoW, saves, progression, game files, or Raven runtime.
