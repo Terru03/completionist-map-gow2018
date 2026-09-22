@@ -48,6 +48,10 @@ if ($engineHash -ne '83f11f8e3a5b6e56ad5d06ba22baa779f91c986ace42ab3017de2b2231d
     throw 'Transaction engine canonical SHA differs.'
 }
 . $engine -LibraryOnly
+# The v0.10.4 transaction engine defines its own $ExpectedBranch when
+# dot-sourced. Restore this runner's branch contract immediately afterwards so
+# evidence/result metadata and pushes cannot be redirected to the old branch.
+$ExpectedBranch = 'codex/all-ravens-release-candidate'
 
 $pythonExe = 'python.exe'
 $pythonPrefix = @()
@@ -320,16 +324,16 @@ try {
     }
 
     $answer = Read-Host 'Load advanced Raven save. Open map. Verify exact surviving Raven set, captions, realm filter, and immediate bottom-row text. Then on the SAME Raven without closing the map do Add -> Remove -> Add; verify the Raven is tracked again and NO boat/stock HUD marker appears. Type ADVANCED_OK, or REGRESSION if anything is wrong'
-    if ($answer -ceq 'REGRESSION') { throw 'Advanced-save or same-map Raven re-add manual regression reported.' }
-    if ($answer -cne 'ADVANCED_OK') { throw 'Advanced-save/same-map re-add manual acceptance not confirmed.' }
+    if ($answer -eq 'REGRESSION') { throw 'Advanced-save or same-map Raven re-add manual regression reported.' }
+    if ($answer -ne 'ADVANCED_OK') { throw 'Advanced-save/same-map re-add manual acceptance not confirmed.' }
     $sameMapReaddAccepted = $true
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
     if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied) { throw 'Advanced 27-killed Lua apply evidence missing.' }
 
     $answer = Read-Host 'Kill one loaded live Raven. Verify exact marker vanishes at once. Close/reopen map and verify it stays absent. Then reload the checkpoint created after that kill, reopen the map, and verify the same Raven is still absent. Type IMMEDIATE_OK, or REGRESSION if anything is wrong'
-    if ($answer -ceq 'REGRESSION') { throw 'Immediate-kill or checkpoint-reload manual regression reported.' }
-    if ($answer -cne 'IMMEDIATE_OK') { throw 'Immediate-kill/checkpoint-reload manual acceptance not confirmed.' }
+    if ($answer -eq 'REGRESSION') { throw 'Immediate-kill or checkpoint-reload manual regression reported.' }
+    if ($answer -ne 'IMMEDIATE_OK') { throw 'Immediate-kill/checkpoint-reload manual acceptance not confirmed.' }
     $checkpointReloadAccepted = $true
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
@@ -340,8 +344,8 @@ try {
     }
 
     $answer = Read-Host 'Load true fresh save. Open map. Verify all 53 Ravens, captions, realm filter, and compass behavior. Type FRESH_OK, or REGRESSION if anything is wrong'
-    if ($answer -ceq 'REGRESSION') { throw 'Fresh-save manual regression reported.' }
-    if ($answer -cne 'FRESH_OK') { throw 'Fresh-save manual acceptance not confirmed.' }
+    if ($answer -eq 'REGRESSION') { throw 'Fresh-save manual regression reported.' }
+    if ($answer -ne 'FRESH_OK') { throw 'Fresh-save manual acceptance not confirmed.' }
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
     if (-not $delivery.FreshBoundaryObserved -or
@@ -353,7 +357,7 @@ try {
 
     while ($true) {
         $answer = Read-Host 'Quit GoW fully, then type FINALIZE'
-        if ($answer -ceq 'FINALIZE' -and @(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -in @('GoW','GodOfWar') }).Count -eq 0) { break }
+        if ($answer -eq 'FINALIZE' -and @(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -in @('GoW','GodOfWar') }).Count -eq 0) { break }
         Write-Host 'GoW still open or token differs.'
     }
     $logs = Get-FreshLogs
