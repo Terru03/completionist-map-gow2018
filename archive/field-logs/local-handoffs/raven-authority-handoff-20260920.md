@@ -5831,3 +5831,208 @@ Current local cleanup rule:
   `archive/all-ravens/all-ravens-transaction-self-test.json`,
   it is safe to restore that generated report to `HEAD` before pulling;
 - any other tracked modification must be inspected rather than auto-restored.
+
+
+## Addendum 2026-09-22 07:35 - adversarial audit integrated; V2 load authority
+
+The Raven release candidate passed an independent adversarial audit and the permanent fixes were integrated cleanly onto the RC.
+
+### Clean integration
+
+Previous RC tip:
+
+- `28e11f01ac173ed59d3432fe61edef052aa82c43`
+- preserved live-proof history:
+  `test(v0.10.5): capture Raven snapshot delivery proof 20260921-174437`
+
+Clean integration commit:
+
+- `db2211ed6cc2089e97cdee09d490697dc09126f7`
+- message: `fix(v0.10.5): integrate adversarial Raven release audit`
+- exactly 28 permanent source/test/release-gate files;
+- no temporary audit workflow;
+- no audit plan;
+- no audit-only red/green capture artifacts.
+
+The RC branch was fast-forwarded directly from `28e11f0` to `db2211ed`.
+
+### Critical authority correction: generation alone is NOT load authority
+
+The earlier addendum said a strictly newer native generation after a load/checkpoint boundary could prove freshness.
+
+That assumption is now superseded.
+
+Adversarial analysis reproduced this race:
+
+1. old save/checkpoint Raven state is still staged;
+2. a load/checkpoint transition begins;
+3. after the boundary, the periodic native worker can sample the still-old staged state;
+4. that sample receives a numerically newer generation;
+5. generation therefore proves capture order only, not that the sampled data belongs to the newly restored save.
+
+The RC now uses **epoch-bound V2 capture authority**.
+
+Normal, non-boundary map refresh still reads:
+
+```text
+GET RAVEN_SNAPSHOT_V1
+```
+
+A completed save/checkpoint boundary owns a monotonically increasing Lua epoch and requests:
+
+```text
+CAPTURE RAVEN_SNAPSHOT_V2 boundaryEpoch=<N>
+```
+
+The native bridge performs a fresh read/decode in direct response to that request and returns:
+
+```text
+RAVEN_SNAPSHOT_V2 schema=2 boundaryEpoch=<N> generation=<G> ...
+```
+
+While a load/checkpoint boundary is pending:
+
+- periodic V1 snapshots cannot settle it, regardless of generation;
+- stale/mismatched V2 epochs are rejected;
+- only a complete 53-Raven V2 capture with the exact active boundary epoch can replace retained authority/session-kill state.
+
+Load arming is also ordered:
+
+- `EVT_LoadSaveData`: boundary pending but capture not ready;
+- `EVT_LoadSaveFile_Done`: arms epoch-bound capture;
+- `OnRestoreCheckpoint`: capture is armed only after the wrapped restore returns.
+
+This is still read-only with respect to the game:
+
+- no save writes;
+- no progression/quest writes;
+- no process-memory writes;
+- no static native descriptor writes.
+
+### Compass/UI adversarial fixes
+
+Five deterministic races were reproduced and fixed:
+
+1. rapid Add -> Remove -> Add losing the latest intent;
+2. late base update overwriting settled footer/cursor text;
+3. Raven A's pending prompt overwriting Raven B while the cursor moved;
+4. stale Raven ownership suppressing legitimate stock target after kill;
+5. stale Raven selection hijacking the next stock action after a load boundary.
+
+The exact same-Raven rapid re-add path now remains a release-gated regression.
+
+### Candidate proof refresh is transactional
+
+The proof refresh path was hardened so failure cannot strand partial candidate/proof state.
+
+Deterministic tests now cover:
+
+- generated Lua write failure;
+- candidate/proof check failure;
+- blocked commit cleanup;
+- staged evidence cleanup;
+- failed push preserving the successful local proof commit for retry.
+
+Proof-refresh wrapper result:
+
+```text
+RAVEN_PROOF_REFRESH_WRAPPER_TESTS_PASSED
+rollback_after_check_failure=true
+blocked_commit_cleanup=true
+push_failure_commit_preserved=true
+```
+
+### Five-file rollback interruption proof
+
+The existing transaction engine was confirmed resumable during rollback through a fixture-free synthetic test:
+
+```text
+RAVEN_SYNTHETIC_ROLLBACK_RESUME_PASSED
+files=5 interruption=true resumed=true exact=true
+```
+
+### Owned DXGI pair is now interruption-safe
+
+A separate release-blocking packaging defect was fixed.
+
+Previously, interruption after restoring an older `dxgi.dll` but before restoring its matching manifest could leave:
+
+```text
+old DLL + new manifest
+```
+
+The normal recovery path could then refuse the mixed pair.
+
+Install/rollback/startup recovery now use an owned operation journal created before destructive writes.
+
+Recovery is fail-closed and permits only:
+
+- the current operation SHA;
+- the exact previous owned SHA recorded in the journal;
+- backup files inside the Completionist-owned backup directory.
+
+Unknown DLL or manifest state is still refused.
+
+Synthetic proof:
+
+```text
+RAVEN_BRIDGE_OPERATION_SYNTHETIC_PASSED
+mixed_pair=true
+missing_target=true
+absent_pair=true
+unknown_dll_refused=true
+unknown_manifest_refused=true
+backup_scope_refused=true
+```
+
+The final live proof also requires the operation journal to be absent after rollback.
+
+### Independent clean-integration CI
+
+Temporary validation branch:
+
+- `codex/raven-release-final-integration`
+- clean code commit tested: `db2211ed6cc2089e97cdee09d490697dc09126f7`
+- workflow-bearing descendant: `372da4cc7b994335fa19871660152cd3983897e8`
+- run: `35687273046`
+- conclusion: **success**
+
+Verified results:
+
+```text
+Lua integration:                 26 passed
+Pure runtime model:              25 passed
+Candidate/template contract:     15 passed
+Candidate/proof transaction:      4 passed
+Proof-refresh wrapper:            passed
+Native/live proof parser:         passed
+Five-file rollback resume:        passed
+DXGI operation-journal recovery:  passed
+PowerShell parser:                7 files passed
+Native bridge CTest:              5/5 passed
+Safety scan:                      findings=0
+```
+
+The 28 permanent integration blobs were also checked byte-for-byte against the final green audit tree: mismatches = 0.
+
+### Final remaining action
+
+Do not reopen codec, identity, carrier, WAD, save-ring, DXGI discovery, or Raven-authority research.
+
+The remaining task is a **single final real-game field acceptance** on the current RC:
+
+1. refresh the pinned Raven delivery proof transactionally;
+2. advanced save shows only surviving Ravens;
+3. exact Raven reticle:
+   - `Odin's Raven`
+   - `Completionist Map`;
+4. same-map rapid Add -> Remove -> Add leaves the Raven HUD target present and no boat/stock fallback;
+5. killing one live Raven removes it immediately;
+6. map close/reopen keeps it absent;
+7. checkpoint/save reload emits a boundary epoch and accepts only matching `capture_v2` authority;
+8. restored Raven set is exact;
+9. genuine fresh save shows all 53;
+10. five-file + DXGI rollback is exact;
+11. no Raven bridge operation journal remains.
+
+Only a concrete failure in that final field pass should reopen implementation work.
