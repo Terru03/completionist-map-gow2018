@@ -126,6 +126,45 @@ int wmain() {
   reader.join();
   if (torn.load()) return Fail("snapshot store exposed torn state");
 
+  completionist::SnapshotPublicationGate bootstrap_gate;
+  completionist::NativeRavenSnapshot bootstrap_zero;
+  bootstrap_zero.killed.fill(false);
+  bootstrap_zero.alive_count = 53;
+  bootstrap_zero.killed_count = 0;
+  bootstrap_zero.explicit_count = 0;
+  bootstrap_zero.absence_default_false_count = 53;
+
+  // Exact field regression from 2026-09-22: one startup 0/53 image was
+  // followed one second later by a present-WAD ambiguity. The first image
+  // must never be publishable.
+  if (bootstrap_gate.Observe(bootstrap_zero, 1000)) {
+    return Fail("first all-false bootstrap image was accepted");
+  }
+  bootstrap_gate.Reject();
+  if (bootstrap_gate.Observe(bootstrap_zero, 3000)) {
+    return Fail("all-false image after rejection bypassed quarantine");
+  }
+  if (bootstrap_gate.Observe(bootstrap_zero, 3499)) {
+    return Fail("rapid all-false confirmation bypassed stability window");
+  }
+  if (!bootstrap_gate.Observe(bootstrap_zero, 4000)) {
+    return Fail("stable all-false authority never confirmed");
+  }
+  if (!bootstrap_gate.Observe(bootstrap_zero, 4001)) {
+    return Fail("confirmed all-false authority did not remain usable");
+  }
+
+  completionist::NativeRavenSnapshot nonzero = bootstrap_zero;
+  nonzero.killed[0] = true;
+  nonzero.alive_count = 52;
+  nonzero.killed_count = 1;
+  nonzero.explicit_count = 1;
+  nonzero.absence_default_false_count = 52;
+  bootstrap_gate.Reject();
+  if (!bootstrap_gate.Observe(nonzero, 5000)) {
+    return Fail("nonzero Raven authority was unnecessarily quarantined");
+  }
+
   completionist::SnapshotStore freshness_store;
   completionist::NativeRavenSnapshot stable;
   stable.killed.fill(false);
