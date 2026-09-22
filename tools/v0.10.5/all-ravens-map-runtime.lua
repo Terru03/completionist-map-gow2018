@@ -213,6 +213,12 @@ do
       return nil, "response_header"
     end
 
+    local partialHeader =
+        expectedSchema == 2 and "RAVEN_SNAPSHOT_V2 PARTIAL " or
+            "RAVEN_SNAPSHOT_V1 PARTIAL "
+    local isPartial =
+        string.sub(line, 1, string.len(partialHeader)) == partialHeader
+
     local fields = {}
     for key, value in string.gmatch(line, "([%a][%w]*)=([^%s]+)") do
       if fields[key] ~= nil then return nil, "duplicate_field:" .. key end
@@ -239,11 +245,10 @@ do
     local restoreEpoch = expectedSchema == 1 and integer("restoreEpoch") or nil
     local boundaryEpoch = expectedSchema == 2 and integer("boundaryEpoch") or nil
 
-    if schema ~= expectedSchema or generation == nil or generation < 1 or
-        capturedTickMs == nil or count ~= #rows or unknown ~= 0 or
-        alive == nil or killed == nil or alive + killed ~= #rows or
+    if schema ~= expectedSchema or capturedTickMs == nil or count ~= #rows or
+        unknown == nil or alive == nil or killed == nil or
         explicit == nil or absentWadFalse == nil or
-        explicit + absentWadFalse ~= #rows or fields.killedIds == nil or
+        fields.killedIds == nil or
         (expectedSchema == 1 and restoreEpoch == nil) then
       return nil, "response_counts"
     end
@@ -251,6 +256,81 @@ do
         (boundaryEpoch == nil or boundaryEpoch < 1 or
          boundaryEpoch ~= expectedBoundaryEpoch) then
       return nil, "boundary_epoch_mismatch"
+    end
+
+    if isPartial then
+      if generation ~= nil or unknown < 1 or
+          alive + killed + unknown ~= #rows or
+          explicit + absentWadFalse > alive + killed or
+          fields.unknownIds == nil then
+        return nil, "partial_counts"
+      end
+
+      local states = {}
+      for catalogueId, _ in pairs(byCatalogueId) do states[catalogueId] = false end
+
+      local unknownCatalogueIds = {}
+      local unknownSeen = {}
+      if fields.unknownIds ~= "-" then
+        for catalogueId in string.gmatch(fields.unknownIds, "([^,]+)") do
+          if byCatalogueId[catalogueId] == nil then
+            return nil, "unknown_catalogue_id"
+          end
+          if unknownSeen[catalogueId] then
+            return nil, "duplicate_unknown_catalogue_id"
+          end
+          unknownSeen[catalogueId] = true
+          states[catalogueId] = nil
+          unknownCatalogueIds[#unknownCatalogueIds + 1] = catalogueId
+        end
+      end
+      if #unknownCatalogueIds ~= unknown then
+        return nil, "partial_unknown_count"
+      end
+
+      local killedCatalogueIds = {}
+      local killedSeen = {}
+      if fields.killedIds ~= "-" then
+        for catalogueId in string.gmatch(fields.killedIds, "([^,]+)") do
+          if byCatalogueId[catalogueId] == nil then
+            return nil, "unknown_catalogue_id"
+          end
+          if unknownSeen[catalogueId] then
+            return nil, "partial_overlap"
+          end
+          if killedSeen[catalogueId] then
+            return nil, "duplicate_catalogue_id"
+          end
+          killedSeen[catalogueId] = true
+          states[catalogueId] = true
+          killedCatalogueIds[#killedCatalogueIds + 1] = catalogueId
+        end
+      end
+      if #killedCatalogueIds ~= killed then return nil, "killed_count" end
+
+      local inferredAlive = 0
+      for catalogueId, _ in pairs(byCatalogueId) do
+        if states[catalogueId] == false then inferredAlive = inferredAlive + 1 end
+      end
+      if inferredAlive ~= alive then return nil, "partial_alive_count" end
+
+      return {
+        partial = true,
+        schema = schema, capturedTickMs = capturedTickMs,
+        restoreEpoch = restoreEpoch, boundaryEpoch = boundaryEpoch,
+        count = count, unknownCount = unknown,
+        aliveCount = alive, killedCount = killed,
+        explicitCount = explicit,
+        absenceDefaultFalseCount = absentWadFalse,
+        states = states,
+        killedCatalogueIds = killedCatalogueIds,
+        unknownCatalogueIds = unknownCatalogueIds,
+      }, nil
+    end
+
+    if generation == nil or generation < 1 or unknown ~= 0 or
+        alive + killed ~= #rows or explicit + absentWadFalse ~= #rows then
+      return nil, "response_counts"
     end
 
     local states = {}
@@ -271,9 +351,11 @@ do
     if #killedCatalogueIds ~= killed then return nil, "killed_count" end
 
     return {
+      partial = false,
       schema = schema, generation = generation, capturedTickMs = capturedTickMs,
       restoreEpoch = restoreEpoch, boundaryEpoch = boundaryEpoch,
-      count = count, aliveCount = alive, killedCount = killed,
+      count = count, unknownCount = 0,
+      aliveCount = alive, killedCount = killed,
       explicitCount = explicit,
       absenceDefaultFalseCount = absentWadFalse,
       states = states, killedCatalogueIds = killedCatalogueIds,
