@@ -107,7 +107,7 @@ function Test-RavenSnapshotDeliveryProofLines(
             continue
         }
 
-        if ($reopenIndex -ge 0 -and $checkpointApplyIndex -lt 0 -and
+        if ($reopenIndex -ge 0 -and $checkpointBoundaryIndex -lt 0 -and
             $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] AUTHORITY_BOUNDARY source=(?:OnRestoreCheckpoint|EVT_LoadSaveFile_Done) boundaryEpoch=([0-9]+) captureReady=true ') {
             $checkpointBoundaryIndex = $index
             $checkpointEpoch = [uint64]$Matches[1]
@@ -115,7 +115,7 @@ function Test-RavenSnapshotDeliveryProofLines(
         }
 
         if ($checkpointBoundaryIndex -ge 0 -and $checkpointApplyIndex -lt 0 -and
-            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*postBoundary=true boundaryEpoch=([0-9]+) authority=capture_v2') {
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*killed=28 alive=25 .*postBoundary=true boundaryEpoch=([0-9]+) authority=capture_v2') {
             $observedEpoch = [uint64]$Matches[1]
             if ($null -ne $checkpointEpoch -and $observedEpoch -eq $checkpointEpoch) {
                 $checkpointApplyIndex = $index
