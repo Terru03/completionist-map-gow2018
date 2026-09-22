@@ -88,3 +88,57 @@ For the 33 proven Legendary identities:
 Only after persisted-state authority passes do we build Legendary map markers,
 filters, Mystic Gateway suppression, compass behavior, immediate-open removal,
 save/load reconciliation, and the final targeted live proof.
+
+
+## Gate 1 first live attempt — failed safely, grammar corrected
+
+First live attempt:
+
+- evidence commit: `bc8e030aec5e4cdc2208bf01c845a8c45ee4b017`;
+- capture:
+  `archive/field-logs/runtime-captures/legendary-chest-gameobject-identities-readonly-20260922-140106`;
+- registry 238 count: 49152;
+- non-null GameObjects: 18519;
+- identity-method GameObjects: 18519;
+- successfully reconstructed identity vectors: 18519;
+- reconstruction failures: 0;
+- authored WAD record checks: 173/173 exact;
+- tracked Legendary resolutions: 0/33;
+- process-memory writes: false;
+- save/progression writes: false;
+- game-file writes: false.
+
+The runtime registry reader was therefore proven healthy. The rejected assumption was
+the first Legendary identity grammar.
+
+The audited Legendary transform chain starts at a reusable nested state object:
+
+1. `gochestscript`;
+2. `gochest_legendary_parent`;
+3. physical authored Legendary Chest placement;
+4. scene owners out to the WAD root.
+
+The first attempt incorrectly carried the nested reusable script side into the
+physical GameObject scene identity. Raven chains do not have this same
+physical-parent / reusable-state-subobject split.
+
+Current diagnostic grammar:
+
+- physical scene identity uses transform-chain rows 2..end only;
+- rows are reversed to root -> physical object;
+- each retained native record ID uses the already-proven byte-12 decrement;
+- rows 0 and 1 are explicitly classified as nested reusable descendants, not
+  physical scene records;
+- acceptance is still conservative and has not been declared proven.
+
+The next read-only capture additionally archives:
+
+- every runtime object whose complete identity starts with the exact physical
+  scene prefix;
+- the remaining suffix identity elements after that prefix;
+- exact adjusted physical-placement anchor hits;
+- raw physical-placement anchor hits;
+- suffix-signature frequencies across matching objects.
+
+This guarantees that another failure will identify the missing native suffix
+grammar rather than returning an unexplained 0/33.
