@@ -60,6 +60,22 @@ class RavenDeliveryPrepareTransactionTests(unittest.TestCase):
         source_hashes[self.build.EVENT_LUA] = sha(self.event_base)
         self.build.SOURCE_HASHES = source_hashes
 
+        def fixture_atomic_write(root: Path, path: Path, raw: bytes, label: str):
+            root = Path(root)
+            path = Path(path)
+            if path == root or not path.is_relative_to(root):
+                raise ValueError(f"{label} escaped fixture root: {path}")
+            path.parent.mkdir(parents=True, exist_ok=True)
+            temp = path.with_name(path.name + ".fixture-write.tmp")
+            try:
+                temp.write_bytes(raw)
+                temp.replace(path)
+            finally:
+                temp.unlink(missing_ok=True)
+
+        self.fixture_atomic_write = fixture_atomic_write
+        self.build.stage.write_bytes_atomic = self.fixture_atomic_write
+
         self.binary_bytes = {
             self.build.MASTER: b"fixture-mapmaster-binary",
             self.build.COORDS: b"fixture-mapcoords-binary",
@@ -114,7 +130,7 @@ class RavenDeliveryPrepareTransactionTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(), expected, path)
 
     def inject_failure_on_write(self, fail_at: int):
-        original = self.saved["write_bytes_atomic"]
+        original = self.fixture_atomic_write
         calls = {"count": 0}
 
         def failing_write(root, path, raw, label):
@@ -185,7 +201,7 @@ class RavenDeliveryPrepareTransactionTests(unittest.TestCase):
         extra = self.output / "unexpected.bin"
         extra.write_bytes(b"unexpected")
         calls = {"count": 0}
-        original = self.saved["write_bytes_atomic"]
+        original = self.fixture_atomic_write
 
         def counting_write(root, path, raw, label):
             calls["count"] += 1
