@@ -248,7 +248,7 @@ int wmain() {
     return Fail("unchanged authoritative base inferred a boundary");
   }
 
-  NativeRavenSnapshot fresh = wire;
+  completionist::NativeRavenSnapshot fresh = wire;
   fresh.killed.fill(false);
   fresh.killed_count = 0;
   fresh.alive_count = 53;
