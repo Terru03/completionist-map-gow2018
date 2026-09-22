@@ -6036,3 +6036,104 @@ The remaining task is a **single final real-game field acceptance** on the curre
 11. no Raven bridge operation journal remains.
 
 Only a concrete failure in that final field pass should reopen implementation work.
+
+
+## Addendum 2026-09-22 09:16 - field hotfix passed advanced/checkpoint; fresh epoch inference fixed
+
+Live proof artifact:
+
+- commit: `094b761e01831462a8b71b7a0ddea4d184e82d15`
+- capture: `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-live-proof-20260922-060228`
+- result: failed **only** because fresh-save 0-killed V2 authority was missing.
+
+The run materially proved the field regressions fixed before the fresh transition:
+
+- advanced save applied exact **27 killed / 26 alive**;
+- loaded Raven kill crossed Lua contexts through
+  `RAVEN_NATIVE_BRIDGE_KILL_NOTED`;
+- same-session map reconstruction applied **28 killed / 25 alive**;
+- checkpoint reload advanced to restore epoch 2;
+- matching V2 checkpoint authority applied **28 / 25**;
+- manual rapid same-Raven re-add / no-stock fallback acceptance passed;
+- rollback was exact;
+- DXGI operation journal absent;
+- no process/save/progression/static-descriptor writes.
+
+### Fresh-save failure root cause
+
+The raw native source correctly changed to:
+
+```text
+53 alive / 0 killed
+```
+
+but a genuine fresh/new-game transition did not emit any Raven
+`OnRestoreCheckpoint` bridge note.
+
+The bridge therefore remained on restore epoch 2, and three old epoch-2 positive
+kill notes from loaded Raven instances were unioned with the fresh raw snapshot,
+producing **3 killed / 50 alive**.
+
+This was not a save decoder failure and not a stale generation problem. It was
+a missing process-wide new-game boundary source.
+
+### Fresh/new-game boundary inference fix
+
+Integrated RC commit:
+
+- `dbe557d8c1ead3325e6fc01718434431736aac54`
+- message:
+  `fix(v0.10.5): infer fresh Raven restore epoch from saved-state revival`
+
+The bridge now tracks the last authoritative raw 53-Raven base state.
+
+Within one save/playthrough Raven progression is monotonic: a raw authoritative
+`killed=true -> killed=false` transition cannot be caused by normal Raven
+progression. If such a revival is observed while the bridge is still in the same
+base restore epoch, the bridge infers a new restore epoch before applying the
+current-epoch session overlay.
+
+Rules:
+
+- explicit Raven restore note already advanced epoch -> later raw revival consumes
+  that existing epoch and does **not** double-step;
+- no explicit restore note + authoritative revival -> bridge advances restore epoch;
+- previous epoch's session-only kill notes become ineligible immediately;
+- map V1 sees the new bridge restore epoch and requires matching V2 capture;
+- the fresh/new-game raw 0/53 base therefore remains exactly 0/53.
+
+Native regression covers:
+
+```text
+27 saved kills
++ one current-epoch session kill = 28
+fresh raw saved authority = 0
+=> inferred new restore epoch
+=> old session overlay excluded
+=> merged fresh result = 0 killed / 53 alive
+```
+
+It also proves:
+
+- unchanged saved authority does not infer a boundary;
+- stable fresh authority does not increment twice;
+- an explicit restore followed by raw revival does not double-advance;
+- duplicate Raven restore callback shortly after inference coalesces into the
+  inferred epoch.
+
+Validation:
+
+- branch: `codex/raven-fresh-save-boundary-hotfix`
+- green CI run: `35694696180`
+- conclusion: **success**
+- runtime/proof/rollback gates passed;
+- native bridge build passed;
+- native CTest **5/5 passed**;
+- safety scan **findings=0**.
+
+The clean integration tree is byte-identical to the cleaned green hotfix tree:
+`8ca9fe3a1962dccc79bc65935307b94324acef96`.
+
+Next action: refresh the offline delivery proof metadata, then rerun the final
+live proof. No codec/WAD/GameObject/save research should be reopened unless the
+next field evidence contradicts this model.
