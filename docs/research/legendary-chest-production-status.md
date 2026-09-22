@@ -672,3 +672,69 @@ injected explicitly. State-value semantics remain unproven and are not promoted
 by this identity result.
 
 All capture/proof tooling remains read-only; Raven runtime remains frozen.
+
+
+### Structural identity rule solved across all represented Legendary chests
+
+The failed global-candidate run in
+`78256ff319db43d647103dce1978d3e45c9d9d6e` did not invalidate the live
+own-identity element. Its fast scorer stopped each candidate on the first
+catalogue row that missed, so it could not reveal partial generalisation.
+
+Direct per-row validation of the live-proven own identity element
+
+`947a7c50b25f004ea3365dd8dc232ee1`
+
+showed:
+
+- 16/32 represented tracked chests matched immediately when every authored
+  transform node except reusable `*_parent` nodes was retained;
+- every remaining miss contained extra editor/organizational transform wrappers
+  such as `gopickups`, `goloot`, `go____loot`, `gochests`,
+  `godrainvaultsetup2`, or `go___drainsetup___`;
+- an exact staged-oracle subset search was then run per row over the authored
+  transform chain while preserving native root-to-object order;
+- all 32 represented rows had exactly one matching subset;
+- there were zero ambiguous rows and zero unsolved rows;
+- every unique solution follows one common structural rule.
+
+Resolved structural rule:
+
+1. locate the physical chest placement using
+   `native.placement_final_record_id`;
+2. outside the physical placement, retain only true scene owners ending in
+   `_ents`, `_ents_nooffset`, `_ents_offset`, or `_cbt`;
+3. omit outer organizational wrappers such as pickup/loot/container grouping
+   nodes;
+4. retain the physical placement;
+5. inside the physical placement, retain concrete nested chest objects such as
+   `gochestobj` and `gochestscript`;
+6. omit reusable nested `*_parent` containers;
+7. apply the native byte-12 decrement to every retained authored record;
+8. append the runtime-proven own identity element
+   `947a7c50b25f004ea3365dd8dc232ee1`.
+
+This rule reproduces exactly one staged object hash for every one of the 32
+represented tracked Legendary chests.
+
+The unstaged tracked chest
+`legendary_chest_890a24d24d2864a1567af691c615870f` in
+`xpl100_httk.wad` has the same structural layout:
+
+`root ents -> ents_nooffset -> physical placement -> gochestscript -> own`
+
+with the intermediate `gocontainers` wrapper omitted, so its identity is now
+deterministic from the same rule.
+
+Implementation updates:
+
+- `legendary_chest_identity.py` now encodes the structural rule;
+- the old 407k-candidate resolver has been replaced by a deterministic 33-row
+  builder;
+- the static gate now validates the 32 represented rows directly against the
+  archived checkpoint oracle and derives the 33rd without live/process/WAD
+  access;
+- tests pin ordinary, organizational-wrapper, locked-root, live xpl250, and
+  unstaged xpl100 cases.
+
+State-value semantics are still deliberately separate and remain unproven.
