@@ -429,6 +429,156 @@ do
         "reason=namespace_collision", "namespace_collision")
   end
 
+  local function resolvePartialNativeAuthority(
+      snapshot, source, boundaryApply, requestedBoundaryEpoch)
+    if snapshot.partial ~= true or type(snapshot.states) ~= "table" or
+        type(snapshot.unknownCount) ~= "number" or snapshot.unknownCount < 1 then
+      return false, "partial_invalid"
+    end
+    if boundaryApply and snapshot.boundaryEpoch ~= requestedBoundaryEpoch then
+      return false, "partial_boundary_epoch_mismatch"
+    end
+
+    local groups = buildRegionSummaryGroups()
+    local resolved = {}
+    for catalogueId, _ in pairs(byCatalogueId) do
+      resolved[catalogueId] = snapshot.states[catalogueId]
+    end
+
+    local solvedUnknown = 0
+    for parent, group in pairs(groups) do
+      local unknownRows = {}
+      local knownKilled = 0
+      for _, row in ipairs(group.rows) do
+        local state = resolved[row.CatalogueId]
+        if state == nil then
+          unknownRows[#unknownRows + 1] = row
+        elseif state == true then
+          knownKilled = knownKilled + 1
+        end
+      end
+
+      if #unknownRows > 0 then
+        if regionSummaryBonusParents[parent] == true then
+          nativeNotice("NATIVE_AUTHORITY_PARTIAL_REFUSED",
+              "reason=bonus_parent parent=" .. tostring(parent) ..
+              " unknown=" .. tostring(#unknownRows),
+              "partial_bonus_parent:" .. tostring(parent))
+          return false, "partial_bonus_parent"
+        end
+
+        local completed, shape = readRegionSummaryCompleted(parent, group.count)
+        if completed == nil then
+          nativeNotice("NATIVE_AUTHORITY_PARTIAL_REFUSED",
+              "reason=region_summary_ambiguous parent=" .. tostring(parent) ..
+              " accessorShape=" .. tostring(shape),
+              "partial_region_summary:" .. tostring(parent))
+          return false, "partial_region_summary"
+        end
+
+        local remainingKilled = completed - knownKilled
+        if remainingKilled < 0 or remainingKilled > #unknownRows then
+          nativeNotice("NATIVE_AUTHORITY_PARTIAL_REFUSED",
+              "reason=constraint_conflict parent=" .. tostring(parent) ..
+              " completed=" .. tostring(completed) ..
+              " knownKilled=" .. tostring(knownKilled) ..
+              " unknown=" .. tostring(#unknownRows),
+              "partial_constraint_conflict:" .. tostring(parent))
+          return false, "partial_constraint_conflict"
+        end
+
+        local resolvedKilled = nil
+        if remainingKilled == 0 then
+          resolvedKilled = false
+        elseif remainingKilled == #unknownRows then
+          resolvedKilled = true
+        else
+          nativeNotice("NATIVE_AUTHORITY_PARTIAL_REFUSED",
+              "reason=constraint_not_unique parent=" .. tostring(parent) ..
+              " remainingKilled=" .. tostring(remainingKilled) ..
+              " unknown=" .. tostring(#unknownRows),
+              "partial_constraint_not_unique:" .. tostring(parent))
+          return false, "partial_constraint_not_unique"
+        end
+
+        for _, row in ipairs(unknownRows) do
+          resolved[row.CatalogueId] = resolvedKilled
+          solvedUnknown = solvedUnknown + 1
+        end
+      end
+    end
+
+    if solvedUnknown ~= snapshot.unknownCount then
+      nativeNotice("NATIVE_AUTHORITY_PARTIAL_REFUSED",
+          "reason=unmapped_unknown solved=" .. tostring(solvedUnknown) ..
+          " expected=" .. tostring(snapshot.unknownCount),
+          "partial_unmapped_unknown")
+      return false, "partial_unmapped_unknown"
+    end
+
+    local killedIds = {}
+    local aliveCount = 0
+    for catalogueId, _ in pairs(byCatalogueId) do
+      local value = resolved[catalogueId]
+      if type(value) ~= "boolean" then
+        return false, "partial_incomplete_states"
+      end
+      if value then
+        killedIds[#killedIds + 1] = catalogueId
+      else
+        aliveCount = aliveCount + 1
+      end
+    end
+    if #killedIds < snapshot.killedCount or
+        #killedIds + aliveCount ~= #rows then
+      return false, "partial_resolved_counts"
+    end
+
+    local apply = _G.CompletionistMapV105ApplyPersistedRavenKills
+    if type(apply) ~= "function" then
+      return false, "apply_api_unavailable"
+    end
+    local applied, accepted = apply(
+        killedIds,
+        "native_partial_region_summary:" .. tostring(source) ..
+        (boundaryApply and ":boundaryEpoch:" ..
+            tostring(requestedBoundaryEpoch) or ""),
+        boundaryApply)
+    if applied ~= true or accepted ~= #killedIds then
+      return false, "partial_apply_refused"
+    end
+
+    if boundaryApply then
+      lastNativeRestoreEpoch = requestedBoundaryEpoch
+      _G.CompletionistMapV105LastNativeRestoreEpoch = requestedBoundaryEpoch
+      nativeBoundaryPending = false
+      nativeBoundaryCaptureReady = false
+      nativeBoundarySource = nil
+      nativeResetRecheckFrames = 0
+      nativeResetRecheckBucket = -1
+    elseif snapshot.restoreEpoch ~= nil then
+      lastNativeRestoreEpoch = snapshot.restoreEpoch
+      _G.CompletionistMapV105LastNativeRestoreEpoch = snapshot.restoreEpoch
+    end
+
+    lastNativeNotice = nil
+    log("NATIVE_AUTHORITY_DERIVED",
+        "knownKilled=" .. tostring(snapshot.killedCount) ..
+        " knownAlive=" .. tostring(snapshot.aliveCount) ..
+        " resolvedUnknown=" .. tostring(snapshot.unknownCount) ..
+        " finalKilled=" .. tostring(#killedIds) ..
+        " finalAlive=" .. tostring(aliveCount) ..
+        " postBoundary=" .. tostring(boundaryApply) ..
+        " boundaryEpoch=" ..
+        tostring(boundaryApply and requestedBoundaryEpoch or 0) ..
+        " restoreEpoch=" ..
+        tostring(boundaryApply and requestedBoundaryEpoch or
+            snapshot.restoreEpoch or 0) ..
+        " authority=native_partial_plus_region_summary" ..
+        " readOnly=true progressionWrites=false")
+    return true, nil
+  end
+
   local function refreshNativeAuthority(source)
     local namespace = rawget(_G, "CompletionistMapNative")
     if type(namespace) ~= "table" then
@@ -499,6 +649,17 @@ do
         beginAuthorityBoundary("native_restore_epoch", true, restoreEpoch)
         return refreshNativeAuthority(tostring(source) .. ":restore_epoch")
       end
+    end
+
+    if snapshot.partial == true then
+      local resolved, partialReason = resolvePartialNativeAuthority(
+          snapshot, source, boundaryApply, requestedBoundaryEpoch)
+      if not resolved then
+        nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+            "reason=" .. tostring(partialReason),
+            "partial_unavailable:" .. tostring(partialReason))
+      end
+      return resolved, partialReason
     end
 
     local generation = tonumber(snapshot.generation)
