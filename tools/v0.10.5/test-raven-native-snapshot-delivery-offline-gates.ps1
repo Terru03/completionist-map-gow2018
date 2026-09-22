@@ -36,7 +36,7 @@ function Invoke-PythonTest([string]$Path, [bool]$RequireLua) {
 
 Write-Host 'RAVEN NATIVE SNAPSHOT DELIVERY OFFLINE GATES'
 Write-Host '1/8 native MSVC / CTest / schema-3 rollback gates'
-& (Join-Path $repo 'tools\v0.10.5\test-raven-authority-bridge-offline-gates.ps1') -GameRootFixture $GameRootFixture
+& (Join-Path $repo 'tools\v0.10.5\test-raven-authority-bridge-offline-gates.ps1') -GameRootFixture $GameRootFixture -ExpectedBranch $ExpectedBranch
 if ($LASTEXITCODE -ne 0) { throw 'Native offline gate failed.' }
 
 Write-Host '2/8 Lua 5.1 integration tests'
