@@ -18,12 +18,12 @@
       "sha256": "2cebb4bfc0a4cf76c0d4145b7408be10ad7c6ad2350d571263c5050c7ab6480a"
     },
     "mods/lua/gameart/scripts/levels/gameplaymodules/progression/precisionchallenge.lua": {
-      "bytes": 27230,
-      "sha256": "07cbe9d3b901d6b67e5170f9fdf69dfa7e98a0e19fdb279b15cee662d231cee0"
+      "bytes": 30505,
+      "sha256": "b7039c3c558e82dd9cbd4053b2bf9baddfd34b9ad65f34d631556ad9a7378054"
     },
     "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": {
-      "bytes": 234429,
-      "sha256": "4f61a56ce4c91663e54ebbc886c21d8b1b921ebf2426d43aa078643d661221a3"
+      "bytes": 238094,
+      "sha256": "2f61ba35befa3a213054f1470711d192ff853a5f34066dd474338244056f4a7a"
     }
   },
   "game_files_written": false,
@@ -66,7 +66,7 @@
     "currMarkerID_alone_infers_raven": false,
     "data_driven_entries": 53,
     "exact_collision_object_required_before_uid": true,
-    "native_boundary_authority": "matching echoed boundaryEpoch from synchronous V2 capture requested after load completion",
+    "native_boundary_authority": "bridge-owned restoreEpoch observed through V1 then matching echoed boundaryEpoch from synchronous V2 capture before state replacement",
     "native_boundary_snapshot_schema": 2,
     "native_generation_is_capture_freshness": false,
     "native_generation_monotonic": true,
@@ -93,22 +93,24 @@
     "mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua": "16e13b342f3bbe98ac9b87eb34bf0115e6b04340d6e41270f38a557f2ed51493"
   },
   "state": {
-    "boundary_epoch_policy": "Lua-generated monotonic epoch must be echoed by synchronous V2 capture before state replacement",
+    "boundary_epoch_policy": "bridge-owned monotonic restoreEpoch must be echoed as boundaryEpoch by synchronous V2 capture before state replacement",
     "event_false_policy": "defer alive state to atomic 53-Raven authority",
-    "event_kill_overlay": "persists across all periodic V1 snapshots until explicit load boundary authority",
-    "event_overlay_clear_policy": "matching V2 boundary capture only",
-    "immediate_kill_path": "loaded Raven ravenKilled=true event",
-    "load_boundary_authority": "EVT_LoadSaveData disarms capture; EVT_LoadSaveFile_Done and post-return OnRestoreCheckpoint arm a new boundary epoch",
+    "event_kill_overlay": "bridge process-local positive kills are unioned with decoded saved kills only inside the current restoreEpoch",
+    "event_overlay_clear_policy": "restoreEpoch advance makes previous session-only kill notes ineligible; matching V2 supplies restored saved truth",
+    "immediate_kill_path": "loaded Raven ravenKilled=true event -> loopback RAVEN_KILLED note -> current restoreEpoch overlay",
+    "load_boundary_authority": "native loopback bridge coalesces gameplay OnRestoreCheckpoint notes into restoreEpoch; map V1 observes epoch changes and requires matching V2 capture",
     "load_boundary_sources": [
-      "EVT_LoadSaveData",
-      "EVT_LoadSaveFile_Done",
-      "OnRestoreCheckpoint"
+      "native_bridge_restoreEpoch",
+      "OnRestoreCheckpoint_bridge_note",
+      "EVT_LoadSaveData_fallback",
+      "EVT_LoadSaveFile_Done_fallback"
     ],
     "loaded_instance_match": "exact parent quest plus unique native world position",
     "lua_application_point": "CompletionistMapV105ApplyPersistedRavenKills",
-    "map_open_refresh": "V1 strictly newer generation only when no load boundary is pending",
+    "map_open_refresh": "V1 requires valid restoreEpoch; any new nonzero bridge epoch is reconciled through matching V2 before state replacement",
     "native_field": "ravenKilled",
     "native_unavailable_policy": "preserve last-good state and positive event-derived kills",
+    "session_kill_merge": "authoritative decoded saved kills union bridge kill notes from current restoreEpoch",
     "unknown_state_policy": "catalogue default visible only before any authoritative kill evidence",
     "unloaded_instance_query": "atomic 53-state native Raven snapshot",
     "writes_progression": false
