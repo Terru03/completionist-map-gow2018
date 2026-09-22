@@ -6403,3 +6403,174 @@ Next action: run the synthetic proof-refresh wrapper test locally, then rerun
 the proof refresh and native live proof. The Raven boundary-cache fix itself has
 not yet had its Windows native CTest/live validation because the wrapper stopped
 the previous command before those stages.
+
+
+
+## Addendum 2026-09-22 17:25 - current-checkpoint Raven authority must reconcile WAD absence with RegionSummary
+
+Field artifact:
+
+- capture commit: `5a114dbf`
+- capture:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-live-proof-20260922-080642`
+- user-visible result: zero Raven markers on the advanced save; runner was rejected
+  and rolled back.
+
+### Superseding conclusion
+
+The prior 11:15 addendum treated the earlier 27-killed V2 image as complete
+authority for the current loaded checkpoint. The new capture proves that is not
+safe. For the current checkpoint, the native staged table never produced a full
+snapshot. Its stable partial evidence was:
+
+```text
+explicit=41
+absentWadFalse=11
+unknown=1
+knownKilled=25
+unknownId=raven_95b9c6444d479ac68207b1829d02909b
+```
+
+The one unknown Raven is in `RegionSummary_ALF_Raven_Parent`. The other
+Alfheim child is explicitly alive. The live RegionSummary accessor reports
+completed count 0 for the Alfheim parent.
+
+The archived 27-killed replay fixture differs from this live 25-killed set on
+exactly two IDs, both Alfheim Ravens:
+
+```text
+raven_95b9c6444d479ac68207b1829d02909b
+raven_63f2a1a74274de6df3962490fb6552e9
+```
+
+Both are killed in the archived replay, while the current checkpoint has one
+explicitly alive, one unresolved, and RegionSummary completed=0. Therefore that
+27-killed image is stale for the current checkpoint and must not be accepted
+merely because it decoded to all 53 physical catalogue rows.
+
+This also explains the older "killed Ravens return in unloaded regions"
+regression: the 11 WAD-absence defaults were being treated as authoritative
+alive states. WAD absence only proves that the corresponding WAD is not staged;
+it does not prove Raven alive/dead state.
+
+### Current recovery contract
+
+The RC now applies these rules:
+
+1. Fresh loopback requests attempt a fresh native capture before consulting any
+   previously published process-local snapshot. A stale prior save image cannot
+   win simply because the new save is still partially staged.
+
+2. Any nonzero native image containing `absentWadFalse > 0` is quarantined as
+   **partial evidence**, not published as complete authority.
+
+3. Partial wire responses carry:
+   - exact known killed IDs,
+   - exact native-unknown IDs,
+   - exact WAD-absence IDs,
+   - restore/boundary epoch,
+   - explicit / absence / known counts.
+
+4. Lua treats both native unknowns and WAD-absence rows as unresolved. It reads
+   live RegionSummary completed counts and solves each parent only when the
+   solution is unique.
+
+5. For the 20 one-to-one parents, native explicit kills must equal the live
+   completed count after all unresolved rows are solved.
+
+6. The two exceptional parents remain fail-closed whenever any of their
+   physical rows are unresolved:
+   - `RegionSummary_RP_Raven_Parent`: target 6, physical 7;
+   - `RegionSummary_CALS_Raven_Parent`: target 1, physical 2.
+   Fully explicit native state is still accepted when its killed count equals
+   the official completed count or completed+1 for the single bonus physical
+   Raven. No bonus child identity is guessed.
+
+7. A fully explicit nonzero 53-row native snapshot is cross-checked against all
+   live RegionSummary counts before it may become map authority. This rejects a
+   stale explicit image such as the archived Alfheim 2-killed state when the
+   current parent reports completed=0.
+
+8. Exact fresh/new-game `0 killed / 53 alive / explicit=0 /
+   absentWadFalse=53` remains a special case. The native publication gate must
+   first observe it stably for at least 750 ms; once confirmed, it does not
+   depend on RegionSummary quests already being initialised.
+
+9. Session kill notes can resolve an otherwise unresolved physical row to
+   killed for the current restore epoch only. Boundary changes still invalidate
+   prior session overlays and boundary caches.
+
+10. No game-process writes, save writes, progression writes, debugger writes, or
+    static descriptor writes were added.
+
+### Runner/proof corrections
+
+The live runner had two independent harness issues:
+
+- dot-sourcing the old v0.10.4 transaction engine overwrote
+  `$ExpectedBranch` with `codex/v104-raven-production`; the RC runner now
+  restores `codex/all-ravens-release-candidate` immediately after dot-source;
+- manual acceptance tokens are now case-insensitive, so `regression` is
+  treated the same as `REGRESSION`.
+
+The proof parser is no longer hard-coded to `27 -> 28`. It now records the
+validated advanced-save count and requires:
+
+```text
+advanced authority:            K killed / 53-K alive
+after one live Raven kill:     K+1 killed / 52-K alive
+post-checkpoint V2 authority:  same K+1 / 52-K
+fresh-save V2 authority:       0 killed / 53 alive
+```
+
+It accepts either `NATIVE_AUTHORITY_APPLIED` or the new
+`NATIVE_AUTHORITY_DERIVED` line and still requires matching restore/boundary
+epochs and ordered bridge kill/boundary evidence.
+
+### RC implementation series
+
+From `5a114dbf` through current head, the important changes are:
+
+- `a68f1e82` / `1ecf0658` - preserve safe partial native decode state;
+- `8d8831ea` - deliver partial snapshots over read-only loopback;
+- `33fc7fc6` / `7a3697fc` - RegionSummary model and deterministic solver;
+- `414860b8` - keep live proof on the RC branch and accept case-insensitive
+  manual result tokens;
+- `237f58c7` - quarantine nonzero WAD-absence defaults;
+- `a5bfa9d4` - prefer current fresh capture over stale publication store;
+- `43ce6c31` / `f1add080` - carry and parse exact WAD-absence identities;
+- `a2b443a9` - reconcile complete and partial native state against live
+  RegionSummary counts;
+- `c4af301e` / `e2d43ce1` - count-relative live proof plus derived-authority
+  proof coverage;
+- `70ce8029` / `ebb7d6ca` - preserve confirmed fresh 0/53 bootstrap without
+  requiring RegionSummary availability.
+
+Current head at this handoff update: `e2d43ce154319c8297a3f10c04b4106302a8bde6`.
+
+Validation state:
+
+- repository-side regression coverage has been updated for partial snapshots,
+  WAD-absence identities, stale RegionSummary conflicts, fresh-zero bootstrap,
+  and derived proof parsing;
+- direct GitHub commits still have no attached Windows Actions run;
+- **local Windows Lua/Python/PowerShell/native compile + CTest gates are pending**;
+- **live game validation is pending**.
+
+Expected first successful advanced-save signature on the current checkpoint is
+now approximately:
+
+```text
+RAVEN_NATIVE_BRIDGE_PARTIAL_SNAPSHOT ... unknown=1 knownKilled=25 ...
+NATIVE_AUTHORITY_DERIVED ... finalKilled=25 finalAlive=28 ...
+```
+
+The exact final count is intentionally not hard-coded by the implementation. It
+must be derived from the current checkpoint's native evidence plus live
+RegionSummary counts. After one live Raven kill, the proof requires exactly one
+additional killed Raven.
+
+Next action: run all local offline/native gates on Windows. Only if they pass,
+run the live proof on the same advanced save, then one kill/checkpoint reload,
+then a true fresh save. Do not claim release readiness before that sequence is
+green.
