@@ -1002,24 +1002,12 @@ do
     return true, accepted
   end
 
-  local function currentNativeGeneration()
-    local namespace = rawget(_G, "CompletionistMapNative")
-    local accessor = type(namespace) == "table" and namespace.GetRavenSnapshot or nil
-    if type(accessor) ~= "function" then return nil, false end
-    local ok, snapshot = pcall(accessor)
-    if not ok or type(snapshot) ~= "table" then return nil, false end
-    local generation = tonumber(snapshot.generation)
-    if generation == nil or generation < 1 or generation ~= math.floor(generation) then
-      return nil, false
-    end
-    return generation, true
-  end
-
-  local function beginAuthorityBoundary(source)
+  local function beginAuthorityBoundary(source, captureReady)
+    nativeBoundaryEpoch = nativeBoundaryEpoch + 1
+    _G.CompletionistMapV105NativeBoundaryEpoch = nativeBoundaryEpoch
     nativeBoundaryPending = true
-    local boundaryGeneration, boundaryKnown = currentNativeGeneration()
-    nativeBoundaryGeneration = boundaryGeneration
-    nativeBoundaryBaselineKnown = boundaryKnown
+    nativeBoundaryCaptureReady = captureReady ~= false
+    nativeBoundarySource = tostring(source)
     nativeResetRecheckFrames = nativeResetRecheckLimit
     nativeResetRecheckBucket = -1
     customCompassOwnsTarget = false
@@ -1032,10 +1020,10 @@ do
       clearSelection(lastMapOnSelf, "authority_boundary")
       lastMapOnSelf.currShownMarkerID = nil
     end
-    log("AUTHORITY_BOUNDARY", "source=" .. tostring(source) ..
-        " baselineGeneration=" ..
-        (nativeBoundaryBaselineKnown and tostring(nativeBoundaryGeneration) or "unavailable") ..
-        " baselineKnown=" .. tostring(nativeBoundaryBaselineKnown) ..
+    log("AUTHORITY_BOUNDARY",
+        "source=" .. tostring(source) ..
+        " boundaryEpoch=" .. tostring(nativeBoundaryEpoch) ..
+        " captureReady=" .. tostring(nativeBoundaryCaptureReady) ..
         " staleStateRetained=true atomicAuthorityRequired=true" ..
         " postBoundaryRecheckFrames=" .. tostring(nativeResetRecheckLimit) ..
         " progressionWrites=false")
@@ -1048,22 +1036,32 @@ do
   local pendingBoundary = rawget(_G, "CompletionistMapV105PendingAuthorityBoundary")
   if pendingBoundary ~= nil then
     _G.CompletionistMapV105PendingAuthorityBoundary = nil
-    beginAuthorityBoundary(pendingBoundary)
+    if type(pendingBoundary) == "table" then
+      beginAuthorityBoundary(
+          pendingBoundary.source or "pending",
+          pendingBoundary.captureReady ~= false)
+    else
+      beginAuthorityBoundary(pendingBoundary, true)
+    end
   end
 
   if not _G.CompletionistMapV105LoadBoundaryHooksInstalled then
     _G.CompletionistMapV105LoadBoundaryHooksInstalled = true
     local thunkOK, thunk = pcall(require, "core.thunk")
     if thunkOK and type(thunk) == "table" and type(thunk.Install) == "function" then
-      for _, eventName in ipairs({"EVT_LoadSaveData", "EVT_LoadSaveFile_Done"}) do
-        local name = eventName
-        local hookOK, hookErr = pcall(thunk.Install, name, function(...)
-          beginAuthorityBoundary(name)
-        end)
-        log("LOAD_BOUNDARY_HOOK", "event=" .. name ..
-            " installed=" .. tostring(hookOK) ..
-            (hookOK and "" or " error=" .. tostring(hookErr)))
-      end
+      local dataOK, dataErr = pcall(thunk.Install, "EVT_LoadSaveData", function(...)
+        beginAuthorityBoundary("EVT_LoadSaveData", false)
+      end)
+      log("LOAD_BOUNDARY_HOOK", "event=EVT_LoadSaveData" ..
+          " installed=" .. tostring(dataOK) ..
+          (dataOK and "" or " error=" .. tostring(dataErr)))
+
+      local doneOK, doneErr = pcall(thunk.Install, "EVT_LoadSaveFile_Done", function(...)
+        beginAuthorityBoundary("EVT_LoadSaveFile_Done", true)
+      end)
+      log("LOAD_BOUNDARY_HOOK", "event=EVT_LoadSaveFile_Done" ..
+          " installed=" .. tostring(doneOK) ..
+          (doneOK and "" or " error=" .. tostring(doneErr)))
     else
       log("LOAD_BOUNDARY_HOOK", "installed=false reason=core_thunk_unavailable")
     end
@@ -1079,8 +1077,8 @@ do
       " permanentPolling=false postLoadBoundedRefresh=true progressionWrites=false catalogueDefaultVisible=true" ..
       " positiveEventEvidenceOnly=true atomicAuthorityClearsState=true" ..
       " sessionKillOverlay=true loadBoundaryClearsOverlay=true" ..
-      " unknownBoundaryBaselineConsumesOneCapture=true" ..
-      " persistedKillBootstrap=true nativeAuthority=loopback_freshness_generation" ..
+      " boundaryEpochCapture=true loadDataCaptureReady=false loadDoneCaptureReady=true" ..
+      " persistedKillBootstrap=true nativeAuthority=loopback_v2_boundary_capture" ..
       " nativePort=" .. tostring(nativePort) .. " staticDescriptorWrites=false")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVENS
