@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 #include "authority_runtime.h"
 
@@ -10,7 +11,7 @@ namespace completionist {
 inline constexpr std::uint16_t kSnapshotDeliveryPort = 43753;
 
 std::string BuildRavenSnapshotWireResponse(
-    const NativeRavenSnapshot& snapshot);
+    const NativeRavenSnapshot& snapshot, std::uint64_t restore_epoch);
 std::string BuildRavenBoundarySnapshotWireResponse(
     const NativeRavenSnapshot& snapshot, std::uint64_t boundary_epoch);
 
@@ -31,6 +32,16 @@ std::uintptr_t OpenLoopbackListener(std::uint16_t port,
                                     std::uint16_t* bound_port,
                                     int* error);
 void CloseLoopbackListener(std::uintptr_t listener);
+
+// Deterministic session-authority helpers used by native tests. These mutate
+// only the bridge's own process-local overlay, never game/save/progression
+// state.
+void ResetSessionAuthority();
+std::uint64_t NoteRestoreBoundary(std::uint64_t now_ms);
+bool NoteKilled(std::string_view catalogue_id);
+std::uint64_t CurrentRestoreEpoch();
+NativeRavenSnapshot MergeCurrentEpochKills(
+    const NativeRavenSnapshot& snapshot);
 
 }  // namespace delivery_test
 }  // namespace completionist
