@@ -664,6 +664,40 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.lua.execute("self.currMarkerID='stock'; MapOn.ShowOnCompass(self,{})")
         self.assertEqual(self.probe.stockCount(), 1)
 
+    def test_prompt_owner_mismatch_logs_stock_delegation_boundary(self):
+        self.probe.publish(self.a["catalogue_id"], False)
+        self.probe.open()
+        self.lua.globals().hoverName = self.a["marker"]["name"]
+        self.lua.execute(
+            "MapOn.MapCollisionChangeHandler(self,{}, {probe.icon(hoverName)},self.currRealmName); "
+            "self.currMarkerID='transient-stock-owner'; "
+            "local show,text=MapOn.GetShowOnCompassPrompt(self,nil); "
+            "if show then MapOn.ShowOnCompass(self,{}) end"
+        )
+
+        log = self.probe.logs()
+        self.assertIn("PROMPT_OWNER_MISMATCH", log)
+        self.assertIn("currMarkerID=transient-stock-owner", log)
+        self.assertIn("SHOWONCOMPASS_DELEGATE_BEFORE", log)
+        self.assertIn("SHOWONCOMPASS_DELEGATE_AFTER", log)
+        self.assertIn("stockTargets=stock", log)
+        self.assertEqual(self.probe.stockCount(), 1)
+
+    def test_post_action_base_prompt_delegate_with_intent_is_logged(self):
+        self.probe.publish(self.a["catalogue_id"], False)
+        self.probe.open()
+        self.probe.click(self.a["marker"]["name"])
+
+        # Model a later game/footer query after the collision selection has
+        # already been consumed. Instrumentation must expose that the base
+        # prompt can be queried while the committed Raven intent still exists.
+        self.lua.execute("MapOn.GetShowOnCompassPrompt(self,nil)")
+
+        log = self.probe.logs()
+        self.assertIn("PROMPT_BASE_DELEGATE_WITH_INTENT", log)
+        self.assertIn("baseText=base", log)
+        self.assertIn("intentState=tracked", log)
+
     def test_first_add_refreshes_footer_without_sticking_cursor_text(self):
         self.probe.publish(self.a["catalogue_id"], False)
         self.probe.open()
