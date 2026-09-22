@@ -6584,3 +6584,42 @@ green.
 - Implementation/test head before this documentation commit:
   `19c42a3dd2d37bd9cba8a303f010b39cd71524c5`.
 - Windows offline/native/live validation remains pending.
+
+
+### Follow-up 2026-09-22 17:45 - offline Lua failure was synthetic-fixture contamination
+
+Windows offline validation reached the Lua integration suite after all native
+bridge CTests and DXGI rollback/recovery gates passed.
+
+Observed single failure:
+
+```text
+test_partial_native_snapshot_resolves_single_alfheim_unknown_killed ... FAIL
+AssertionError: None is not true
+```
+
+This was not a solver failure. The test first set
+`RegionSummary_ALF_Raven_Parent=1`, then called
+`partial_response(self.a)`. The helper itself called
+`_set_region_counts([])`, silently resetting all synthetic RegionSummary
+parents back to 0 before Lua ran. The paired "unknown alive" test passed only
+because 0 was exactly its intended count.
+
+Fix:
+
+- `3c213b5c6d277b9d4be4a420a5276958c70596b5`
+- `partial_response()` no longer mutates RegionSummary state while building a
+  native wire response.
+- Partial native evidence and live RegionSummary are now independent synthetic
+  inputs, matching the production architecture.
+
+Native validation from the failed run was green before this Lua fixture failure:
+
+- runner regressions passed;
+- native bridge clean build succeeded;
+- CTest 5/5 passed;
+- DXGI install/rollback/recovery passed;
+- interrupted-operation recovery passed.
+
+Lua suite reached 38 tests with exactly one fixture-caused failure. Re-run the
+offline gates from this commit before any live game validation.
