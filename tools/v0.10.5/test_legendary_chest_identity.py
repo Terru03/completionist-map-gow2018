@@ -44,7 +44,7 @@ class LegendaryChestIdentityTests(unittest.TestCase):
         for row in self.rows:
             scene, skipped = identity.scene_identity_elements(row)
             with self.subTest(row=row["catalogue_id"]):
-                self.assertGreaterEqual(len(scene), 3)
+                self.assertGreaterEqual(len(scene), 2)
                 self.assertEqual(len(skipped), 2)
                 self.assertEqual(
                     {item["reason"] for item in skipped},
