@@ -305,7 +305,24 @@ class AllRavensMapLuaTests(unittest.TestCase):
         # Individual authority tests override this response explicitly.
         self.probe.setNativeResponse(self.response(1))
 
+    def _set_region_counts(self, killed_rows=()):
+        counts = {}
+        for row in CATALOGUE["ravens"]:
+            parent = row["progression"]["parent_quest"]
+            counts.setdefault(parent, 0)
+        for row in killed_rows:
+            parent = row["progression"]["parent_quest"]
+            counts[parent] = counts.get(parent, 0) + 1
+        target_overrides = {
+            "RegionSummary_CALS_Raven_Parent": 1,
+            "RegionSummary_RP_Raven_Parent": 6,
+        }
+        for parent, count in counts.items():
+            completed = min(count, target_overrides.get(parent, count))
+            self.probe.setRegionSummaryCompleted(parent, completed)
+
     def response(self, generation: int, killed_rows=(), restore_epoch: int = 0):
+        self._set_region_counts(killed_rows)
         killed_ids = [row["catalogue_id"] for row in killed_rows]
         killed = len(killed_ids)
         encoded = ",".join(killed_ids) if killed_ids else "-"
@@ -318,6 +335,7 @@ class AllRavensMapLuaTests(unittest.TestCase):
         )
 
     def boundary_response(self, epoch: int, generation: int, killed_rows=()):
+        self._set_region_counts(killed_rows)
         killed_ids = [row["catalogue_id"] for row in killed_rows]
         killed = len(killed_ids)
         encoded = ",".join(killed_ids) if killed_ids else "-"
@@ -330,11 +348,25 @@ class AllRavensMapLuaTests(unittest.TestCase):
         )
 
     def partial_response(
-        self, unknown_row, killed_rows=(), restore_epoch: int = 0, boundary_epoch=None
+        self,
+        unknown_row,
+        killed_rows=(),
+        absence_rows=(),
+        restore_epoch: int = 0,
+        boundary_epoch=None,
     ):
+        self._set_region_counts(killed_rows)
         killed_ids = [row["catalogue_id"] for row in killed_rows]
+        absence_ids = [row["catalogue_id"] for row in absence_rows]
+        unknown_ids = [] if unknown_row is None else [unknown_row["catalogue_id"]]
         killed = len(killed_ids)
+        unknown = len(unknown_ids)
+        absent = len(absence_ids)
+        known = 53 - unknown
+        explicit = known - absent
         encoded = ",".join(killed_ids) if killed_ids else "-"
+        unknown_encoded = ",".join(unknown_ids) if unknown_ids else "-"
+        absence_encoded = ",".join(absence_ids) if absence_ids else "-"
         header = (
             "RAVEN_SNAPSHOT_V1 PARTIAL schema=1 "
             f"restoreEpoch={restore_epoch} "
@@ -344,10 +376,21 @@ class AllRavensMapLuaTests(unittest.TestCase):
         )
         return (
             header
-            + f"capturedTickMs=3000 count=53 unknown=1 alive={52 - killed} "
-            + f"killed={killed} explicit=41 absentWadFalse=11 "
-            + f"killedIds={encoded} unknownIds={unknown_row['catalogue_id']}\n"
+            + f"capturedTickMs=3000 count=53 unknown={unknown} "
+            + f"alive={known - killed} killed={killed} explicit={explicit} "
+            + f"absentWadFalse={absent} killedIds={encoded} "
+            + f"unknownIds={unknown_encoded} absenceIds={absence_encoded}\n"
         )
+
+    def test_full_native_snapshot_conflicting_with_region_summary_is_refused(self):
+        stale = self.response(9, [self.a, self.b])
+        parent = self.a["progression"]["parent_quest"]
+        self.probe.setRegionSummaryCompleted(parent, 0)
+        self.probe.setNativeResponse(stale)
+        self.probe.open()
+        self.assertFalse(self.probe.hasAuthority())
+        self.assertEqual(self.probe.iconCount(), 0)
+        self.assertIn("NATIVE_AUTHORITY_REGION_REFUSED", self.probe.logs())
 
     def test_partial_native_snapshot_resolves_single_alfheim_unknown_alive(self):
         parent = self.a["progression"]["parent_quest"]
