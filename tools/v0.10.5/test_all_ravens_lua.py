@@ -355,7 +355,10 @@ class AllRavensMapLuaTests(unittest.TestCase):
         restore_epoch: int = 0,
         boundary_epoch=None,
     ):
-        self._set_region_counts(killed_rows)
+        # Partial native evidence and live RegionSummary are deliberately
+        # independent inputs. Do not mutate the synthetic quest counters while
+        # constructing the wire response; individual tests set the live parent
+        # completed counts they intend to exercise.
         killed_ids = [row["catalogue_id"] for row in killed_rows]
         absence_ids = [row["catalogue_id"] for row in absence_rows]
         unknown_ids = [] if unknown_row is None else [unknown_row["catalogue_id"]]
