@@ -25,6 +25,10 @@ class RavenRuntimeTests(unittest.TestCase):
         return RavenRuntimeModel(self.catalogue)
 
     def arm(self, model, row):
+        # Compass/collision routing tests operate only after an atomic map
+        # authority has made Raven markers eligible for interaction.
+        if not model.has_authority:
+            model.apply_persisted_kills([])
         self.assertEqual(model.collide(f"object:{row['catalogue_id']}"), row["catalogue_id"])
 
     def test_realm_filtering(self):
