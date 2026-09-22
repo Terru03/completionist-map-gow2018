@@ -44,6 +44,10 @@ std::uint64_t ObserveAuthoritativeBase(
     const NativeRavenSnapshot& snapshot, std::uint64_t now_ms);
 NativeRavenSnapshot MergeCurrentEpochKills(
     const NativeRavenSnapshot& snapshot);
+void CacheBoundarySnapshot(
+    const NativeRavenSnapshot& snapshot, std::uint64_t boundary_epoch);
+bool ReadBoundarySnapshot(
+    std::uint64_t boundary_epoch, NativeRavenSnapshot* snapshot);
 
 }  // namespace delivery_test
 }  // namespace completionist
