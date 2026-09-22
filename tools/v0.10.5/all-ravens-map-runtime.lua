@@ -462,6 +462,16 @@ do
     if type(snapshot) ~= "table" or type(snapshot.states) ~= "table" then
       return false, "full_invalid"
     end
+
+    -- The native publication gate already requires this all-false image to
+    -- remain stable for 750 ms. It is the fresh/new-game bootstrap and must
+    -- not depend on RegionSummary quests being initialised yet.
+    if snapshot.killedCount == 0 and snapshot.aliveCount == #rows and
+        snapshot.explicitCount == 0 and
+        snapshot.absenceDefaultFalseCount == #rows then
+      return true, nil
+    end
+
     local groups = buildRegionSummaryGroups()
     for parent, group in pairs(groups) do
       local targetCount = regionSummaryTargetCount(parent, group.count)
