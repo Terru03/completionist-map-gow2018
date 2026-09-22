@@ -17,6 +17,7 @@ EXPECTED_TRACKED = 33
 EXPECTED_RAW = 64
 EXPECTED_TRIAL_EXCLUDED = 27
 EXPECTED_UNRESOLVED = 4
+CHEST_OWN_IDENTITY_ELEMENT = bytes.fromhex("947a7c50b25f004ea3365dd8dc232ee1")
 
 
 def adjusted_record_id(hex_id: str) -> bytes:
@@ -68,44 +69,42 @@ def tracked_rows(catalogue: dict) -> list[dict]:
 
 
 def scene_identity_elements(row: dict) -> tuple[list[bytes], list[dict]]:
-    """Return the physical-placement scene portion of a chest identity.
+    """Return the runtime-proven scene portion of a Legendary chest identity.
 
-    The audited Legendary transform chain starts inside the reusable state
-    subobject:
+    Live staged/runtime intersection evidence from xpl250_funeralinterior proves
+    the native vector is:
 
-      [0] gochestscript
-      [1] gochest_legendary_parent
-      [2] physical authored chest placement
-      [3..] scene owners out to the WAD root
+      root owners -> physical placement -> gochestscript -> own identity
 
-    A GameObject identity for the physical chest is therefore formed from the
-    authored placement and its scene owners, not from the two nested reusable
-    descendants.  Each retained record uses the same proven native identity
-    transform as Ravens: decrement byte 12 and reverse root -> object.
+    The reusable gochest_legendary_parent at transform-chain index 1 is omitted
+    because its adjusted record identity equals native.parent_prototype_id.
+    gochestscript at index 0 is retained.
+
+    Every retained authored record uses the same native transform already proven
+    for Ravens: decrement byte 12 and order root -> object.
     """
     chain = row["source"]["transform_chain"]
     if len(chain) < 3:
         raise ValueError(f"{row['catalogue_id']}: Legendary chain is too short")
-    skipped: list[dict] = []
-    for original_index in (0, 1):
-        item = chain[original_index]
-        skipped.append(
-            {
-                "source_record_name": item["name"],
-                "source_record_id": item["record_id"],
-                "adjusted_identity_hex": adjusted_record_id(
-                    item["record_id"]
-                ).hex(),
-                "reason": (
-                    "nested_reusable_state_subobject"
-                    if original_index == 0
-                    else "nested_reusable_legendary_parent"
-                ),
-            }
+
+    adjusted = [adjusted_record_id(item["record_id"]) for item in chain]
+    parent_proto = str(row["native"]["parent_prototype_id"]).lower()
+    if adjusted[1].hex() != parent_proto:
+        raise ValueError(
+            f"{row['catalogue_id']}: adjusted Legendary parent no longer equals "
+            "native.parent_prototype_id"
         )
+
+    skipped = [{
+        "source_record_name": chain[1]["name"],
+        "source_record_id": chain[1]["record_id"],
+        "adjusted_identity_hex": adjusted[1].hex(),
+        "reason": "immediate_parent_adjusted_id_equals_parent_prototype_id",
+    }]
     kept = [
-        adjusted_record_id(item["record_id"])
-        for item in reversed(chain[2:])
+        adjusted[index]
+        for index in range(len(adjusted) - 1, -1, -1)
+        if index != 1
     ]
     return kept, skipped
 
@@ -186,4 +185,5 @@ def static_contract(catalogue: dict) -> dict:
         "unresolved": len(unresolved),
         "unique_scene_identities": len(set(scenes)),
         "self_prototype_parents_skipped": skipped_count,
+        "runtime_proven_own_identity_element_hex": CHEST_OWN_IDENTITY_ELEMENT.hex(),
     }
