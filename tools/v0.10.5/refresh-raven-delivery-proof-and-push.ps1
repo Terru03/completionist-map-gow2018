@@ -271,6 +271,15 @@ catch {
         }
         catch {
             Write-Host "FAILURE_EVIDENCE_PUSH_FAILED: $($_.Exception.Message)"
+            try {
+                & git reset --quiet HEAD -- $relativeDir
+                if ($LASTEXITCODE -ne 0) {
+                    Write-Host 'WARNING: could not unstage failed evidence publication.'
+                }
+            }
+            catch {
+                Write-Host "WARNING: evidence index cleanup failed: $($_.Exception.Message)"
+            }
         }
     }
     else {
