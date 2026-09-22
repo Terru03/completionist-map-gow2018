@@ -334,6 +334,76 @@ int wmain() {
     return Fail("Lua boundary wire snapshot differs");
   }
 
+  // Field regression 2026-09-22: a complete post-boundary snapshot was
+  // captured, then a later WAD unload made one Raven undecodable. The proven
+  // boundary image must remain usable for the same restore epoch only.
+  completionist::delivery_test::ResetSessionAuthority();
+  if (completionist::delivery_test::NoteRestoreBoundary(5000) != 1) {
+    return Fail("boundary-cache setup did not advance to epoch 1");
+  }
+  completionist::delivery_test::CacheBoundarySnapshot(wire, 1);
+  completionist::NativeRavenSnapshot cached_boundary;
+  if (!completionist::delivery_test::ReadBoundarySnapshot(
+          1, &cached_boundary) ||
+      cached_boundary.generation != wire.generation ||
+      cached_boundary.killed != wire.killed ||
+      cached_boundary.killed_count != 27) {
+    return Fail("same-epoch proven boundary snapshot was not retained");
+  }
+  if (!completionist::delivery_test::NoteKilled(
+          "raven_642d0d164af0a5d4076e77933c549a5d")) {
+    return Fail("boundary-cache session kill note rejected");
+  }
+  completionist::NativeRavenSnapshot cached_raw;
+  if (!completionist::delivery_test::ReadBoundarySnapshot(1, &cached_raw) ||
+      cached_raw.killed_count != 27 ||
+      completionist::delivery_test::MergeCurrentEpochKills(cached_raw)
+              .killed_count != 28) {
+    return Fail("boundary cache did not keep raw authority separate from overlay");
+  }
+  if (completionist::delivery_test::NoteRestoreBoundary(8000) != 2) {
+    return Fail("later restore did not advance cached-boundary epoch");
+  }
+  if (completionist::delivery_test::ReadBoundarySnapshot(
+          1, &cached_boundary) ||
+      completionist::delivery_test::ReadBoundarySnapshot(
+          2, &cached_boundary)) {
+    return Fail("restore boundary did not invalidate proven snapshot cache");
+  }
+  completionist::delivery_test::CacheBoundarySnapshot(wire, 1);
+  if (completionist::delivery_test::ReadBoundarySnapshot(
+          1, &cached_boundary) ||
+      completionist::delivery_test::ReadBoundarySnapshot(
+          2, &cached_boundary)) {
+    return Fail("stale restore epoch was allowed to repopulate boundary cache");
+  }
+  completionist::delivery_test::CacheBoundarySnapshot(fresh, 2);
+  if (!completionist::delivery_test::ReadBoundarySnapshot(
+          2, &cached_boundary) ||
+      cached_boundary.killed_count != 0) {
+    return Fail("current restore epoch could not establish new boundary cache");
+  }
+
+  // The same invalidation is mandatory for a restore inferred from a
+  // killed-to-alive authoritative transition, not only explicit checkpoint
+  // notes.
+  completionist::delivery_test::ResetSessionAuthority();
+  if (completionist::delivery_test::ObserveAuthoritativeBase(wire, 1000) != 0) {
+    return Fail("inferred-boundary cache setup changed epoch");
+  }
+  completionist::delivery_test::CacheBoundarySnapshot(wire, 0);
+  if (!completionist::delivery_test::ReadBoundarySnapshot(
+          0, &cached_boundary)) {
+    return Fail("epoch-0 boundary cache setup failed");
+  }
+  if (completionist::delivery_test::ObserveAuthoritativeBase(fresh, 5000) != 1 ||
+      completionist::delivery_test::ReadBoundarySnapshot(
+          0, &cached_boundary) ||
+      completionist::delivery_test::ReadBoundarySnapshot(
+          1, &cached_boundary)) {
+    return Fail("inferred restore did not invalidate proven snapshot cache");
+  }
+
   std::uint16_t bound_port = 0;
   int listener_error = 0;
   const std::uintptr_t first_listener =
@@ -355,6 +425,6 @@ int wmain() {
 
   std::cout << "RAVEN_BRIDGE_AUTHORITY_TESTS_PASSED states=53 explicit=42 "
                "absentWadFalse=11 killed=27 alive=26 delivery=loopback "
-               "collision_refused=true freshness_generation=true boundary_epoch_wire=true session_epoch_overlay=true inferred_restore_epoch=true\n";
+               "collision_refused=true freshness_generation=true boundary_epoch_wire=true session_epoch_overlay=true inferred_restore_epoch=true boundary_snapshot_cache=true\n";
   return 0;
 }
