@@ -28,6 +28,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Template tests failed' }
           python .\tools\v0.10.5\test_raven_delivery_prepare_transaction.py
           if ($LASTEXITCODE -ne 0) { throw 'Candidate/proof transaction tests failed' }
+          .\tools\v0.10.5\test-raven-delivery-proof-refresh-wrapper.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'Proof refresh wrapper integration tests failed' }
           .\tools\v0.10.5\test-raven-authority-bridge-runner.ps1
           if ($LASTEXITCODE -ne 0) { throw 'Runner tests failed' }
           .\tools\v0.10.5\test-raven-transaction-resume-synthetic.ps1
@@ -41,7 +43,8 @@ jobs:
             '.\tools\v0.10.5\rollback-raven-authority-bridge.ps1',
             '.\tools\v0.10.5\recover-raven-authority-bridge-startup.ps1',
             '.\tools\v0.10.5\test-raven-authority-bridge-operation-synthetic.ps1',
-            '.\tools\v0.10.5\refresh-raven-delivery-proof-and-push.ps1'
+            '.\tools\v0.10.5\refresh-raven-delivery-proof-and-push.ps1',
+            '.\tools\v0.10.5\test-raven-delivery-proof-refresh-wrapper.ps1'
           )
           foreach($parseFile in $parseFiles) {
             $tokens=$null
