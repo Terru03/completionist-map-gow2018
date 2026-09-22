@@ -354,6 +354,8 @@ def find_registry(k, process, base):
 def sweep(k, process, base, registry, rows):
     expected = {}
     static_rows = {}
+    adjusted_placement_anchors = {}
+    raw_placement_anchors = {}
     for row in rows:
         scene, skipped = identity.scene_identity_elements(row)
         key = tuple(scene)
@@ -361,6 +363,17 @@ def sweep(k, process, base, registry, rows):
             raise RuntimeError("duplicate tracked Legendary scene identity")
         expected[key] = row["catalogue_id"]
         static_rows[row["catalogue_id"]] = (row, scene, skipped)
+        placement = row["source"]["transform_chain"][2]
+        adjusted_anchor = identity.adjusted_record_id(
+            placement["record_id"]
+        ).hex()
+        raw_anchor = placement["record_id"].lower()
+        if adjusted_anchor in adjusted_placement_anchors:
+            raise RuntimeError("duplicate adjusted Legendary placement anchor")
+        if raw_anchor in raw_placement_anchors:
+            raise RuntimeError("duplicate raw Legendary placement anchor")
+        adjusted_placement_anchors[adjusted_anchor] = row["catalogue_id"]
+        raw_placement_anchors[raw_anchor] = row["catalogue_id"]
 
     count = registry["count"]
     array = registry["array_ptr"]
@@ -375,6 +388,9 @@ def sweep(k, process, base, registry, rows):
     }
     matches = []
     ambiguous = []
+    prefix_matches = {row["catalogue_id"]: [] for row in rows}
+    anchor_hits = {row["catalogue_id"]: [] for row in rows}
+    suffix_signature_counts = {}
 
     for slot, obj in enumerate(objects):
         if not obj:
@@ -399,9 +415,73 @@ def sweep(k, process, base, registry, rows):
             stats["failures"] += 1
             continue
 
+        element_hex = [item.hex() for item in elements]
+        base_row = {
+            "runtime_registry": REGISTRY_ID,
+            "slot": slot,
+            "runtime_token_hex": (
+                f"0x{(1 | (REGISTRY_ID << 1) | (slot << 18)):016X}"
+            ),
+            "object_ptr": f"0x{obj:X}",
+            "object_hash_hex": f"0x{identity.identity_hash(elements):016X}",
+            "identity_elements_hex": element_hex,
+            "prototype_identity_element_hex": (
+                None if build["special_flag_bit19"] else elements[-1].hex()
+            ),
+            "builder": build,
+            "read_process_memory_calls": reader.read_count,
+        }
+
+        # Diagnostic 1: exact placement-anchor hits anywhere in the runtime
+        # identity vector.  This is intentionally weaker than acceptance and
+        # is archived only to explain a failed exact grammar.
+        for position, element in enumerate(element_hex):
+            for mode, table in (
+                ("adjusted_placement", adjusted_placement_anchors),
+                ("raw_placement", raw_placement_anchors),
+            ):
+                catalogue_id = table.get(element)
+                if catalogue_id is None:
+                    continue
+                bucket = anchor_hits[catalogue_id]
+                if len(bucket) < 8:
+                    bucket.append(
+                        {
+                            **base_row,
+                            "anchor_mode": mode,
+                            "anchor_position": position,
+                        }
+                    )
+
         candidates = []
         for scene_key, catalogue_id in expected.items():
             scene = list(scene_key)
+
+            # Strong diagnostic: the exact physical scene path is a prefix,
+            # while one or more descendant/subobject identity elements may
+            # follow it.  This lets us discover chest-specific suffix grammar
+            # without accepting it prematurely.
+            if len(elements) >= len(scene) and elements[:len(scene)] == scene:
+                suffix = elements[len(scene):]
+                suffix_hex = [item.hex() for item in suffix]
+                bucket = prefix_matches[catalogue_id]
+                if len(bucket) < 16:
+                    bucket.append(
+                        {
+                            **base_row,
+                            "scene_prefix_length": len(scene),
+                            "suffix_elements_hex": suffix_hex,
+                            "suffix_count": len(suffix),
+                        }
+                    )
+                signature = "|".join(suffix_hex) if suffix_hex else "<empty>"
+                suffix_signature_counts[signature] = (
+                    suffix_signature_counts.get(signature, 0) + 1
+                )
+
+            # Acceptance remains conservative: one exact physical scene plus
+            # exactly one native own/prototype element, matching the already
+            # proven Raven GameObject identity shape.
             special = build["special_flag_bit19"]
             exact = (
                 elements == scene
@@ -414,22 +494,6 @@ def sweep(k, process, base, registry, rows):
 
         if not candidates:
             continue
-
-        base_row = {
-            "runtime_registry": REGISTRY_ID,
-            "slot": slot,
-            "runtime_token_hex": (
-                f"0x{(1 | (REGISTRY_ID << 1) | (slot << 18)):016X}"
-            ),
-            "object_ptr": f"0x{obj:X}",
-            "object_hash_hex": f"0x{identity.identity_hash(elements):016X}",
-            "identity_elements_hex": [item.hex() for item in elements],
-            "prototype_identity_element_hex": (
-                None if build["special_flag_bit19"] else elements[-1].hex()
-            ),
-            "builder": build,
-            "read_process_memory_calls": reader.read_count,
-        }
         if len(candidates) != 1:
             ambiguous.append(
                 {**base_row, "catalogue_ids": sorted(candidates)}
@@ -451,7 +515,7 @@ def sweep(k, process, base, registry, rows):
                 "scene_identity_elements_hex": [
                     item.hex() for item in scene
                 ],
-                "skipped_self_prototype_parents": skipped,
+                "skipped_nested_records": skipped,
                 "serialized_registry_hash_hex": (
                     f"0x{registry_hash:016X}"
                 ),
@@ -461,7 +525,34 @@ def sweep(k, process, base, registry, rows):
                 ).hex(),
             }
         )
-    return stats, matches, ambiguous
+
+    diagnostics = {
+        "prefix_match_rows": sum(
+            1 for values in prefix_matches.values() if values
+        ),
+        "prefix_match_objects": sum(len(values) for values in prefix_matches.values()),
+        "prefix_matches": {
+            key: values
+            for key, values in prefix_matches.items()
+            if values
+        },
+        "anchor_hit_rows": sum(
+            1 for values in anchor_hits.values() if values
+        ),
+        "anchor_hit_objects": sum(len(values) for values in anchor_hits.values()),
+        "anchor_hits": {
+            key: values
+            for key, values in anchor_hits.items()
+            if values
+        },
+        "suffix_signature_counts": dict(
+            sorted(
+                suffix_signature_counts.items(),
+                key=lambda item: (-item[1], item[0]),
+            )
+        ),
+    }
+    return stats, matches, ambiguous, diagnostics
 
 
 def main():
@@ -497,7 +588,7 @@ def main():
         raise winerr("OpenProcess read-only failed")
     try:
         registry = find_registry(k, process, base)
-        stats, raw_matches, ambiguous = sweep(
+        stats, raw_matches, ambiguous, diagnostics = sweep(
             k, process, base, registry, rows
         )
     finally:
@@ -576,6 +667,7 @@ def main():
         "missing_catalogue_ids": missing,
         "duplicate_catalogue_matches": duplicates,
         "ambiguous_scene_matches": ambiguous,
+        "identity_diagnostics": diagnostics,
         "safety": {
             "open_process_access": (
                 "PROCESS_VM_READ|PROCESS_QUERY_INFORMATION"
@@ -614,6 +706,12 @@ def main():
                 if prototype_elements
                 else "-"
             )
+        ),
+        (
+            "diagnostic_prefix_rows="
+            f"{diagnostics['prefix_match_rows']} "
+            "diagnostic_anchor_rows="
+            f"{diagnostics['anchor_hit_rows']}"
         ),
         "",
         "RESOLVED",
