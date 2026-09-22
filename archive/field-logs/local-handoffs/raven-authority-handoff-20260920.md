@@ -6961,3 +6961,68 @@ CTest still reports 100% pass.
 Next step is the corrected live sequence:
 advanced save -> manual kill -> post-kill manual save reload (dead) ->
 different pre-kill save (alive again) -> true fresh save (0/53).
+
+
+### Follow-up 2026-09-22 20:35 - all live Raven behavior passes except fresh bootstrap; exact stale-overlay cause fixed
+
+Live evidence commit:
+
+- `6a5904a34d71b0ee82b92b83ac2e936f94fccc68`
+- capture:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-live-proof-20260922-102157`
+
+User-reported result:
+
+- advanced-save Raven set correct;
+- custom captions / artwork / realm behavior correct;
+- same-Raven Add -> Remove -> Add correct, no stock boat marker;
+- immediate kill disappearance correct;
+- post-kill manual-save reload kept the Raven dead;
+- loading another pre-kill save correctly brought that Raven back;
+- only remaining defect: true fresh save displayed no Raven markers.
+
+The pushed logs isolate the fresh defect:
+
+- native bridge confirmed a stable raw fresh image:
+  `RAVEN_NATIVE_BRIDGE_SNAPSHOT_ACCEPTED ... alive=53 killed=0 explicit=0 absentWadFalse=53`;
+- later V2 boundary capture also had raw 53 alive / 0 killed;
+- Lua rejected the response with
+  `NATIVE_AUTHORITY_UNAVAILABLE reason=response_counts`;
+- all live RegionSummary parents reported completed=0.
+
+Root cause:
+
+Two positive session kill notes from the previously loaded save remained in the
+same bridge restore epoch. When merged into the raw fresh 0/53 snapshot they
+replaced two absence-default rows, producing the recognizable wire shape:
+
+- alive=51;
+- killed=2;
+- explicit=0;
+- absentWadFalse=51.
+
+The old full-snapshot parser required
+`explicit + absentWadFalse == 53`, so this safe-to-diagnose fresh-zero base
+never reached the already-existing RegionSummary fresh-zero veto.
+
+Fix:
+
+- `c07acea9a2d532693cbf6948dce7483bd6a13609`
+  - full parser recognizes only the exact zero-base-overlay shape where
+    `explicit == 0`,
+    `alive + killed == 53`, and
+    `absentWadFalse + killed == 53`;
+  - full authority validation independently checks RegionSummary;
+  - if any live parent completed count is nonzero, normalization is refused;
+  - otherwise overlay-only kills are discarded and the authority applied as
+    raw fresh 0/53;
+  - normal/non-fresh full snapshots keep the strict existing rules.
+
+- `37f7152dfddc941881455fe578c98c8a2905f71c`
+  - regression: V2 fresh boundary carrying two stale previous-save overlay
+    kills must normalize to zero collected and reveal all catalogue rows;
+  - regression: the identical wire shape must fail closed when a live
+    RegionSummary parent reports a nonzero completed count.
+
+This changes delivered `mapmenu.lua`, so the pinned delivery proof must be
+refreshed before the next full offline gate run.
