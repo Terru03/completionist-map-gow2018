@@ -147,7 +147,8 @@ $restoreNoiseBridge = @(
     'RAVEN_NATIVE_BRIDGE_KILL_NOTED catalogueId=raven_old_b restoreEpoch=1 save_writes=false progression_writes=false',
     'RAVEN_NATIVE_BRIDGE_KILL_NOTED catalogueId=raven_manual restoreEpoch=1 save_writes=false progression_writes=false',
     'RAVEN_NATIVE_BRIDGE_BOUNDARY_NOTED restoreEpoch=2 advanced=true source=checkpoint save_writes=false progression_writes=false',
-    'RAVEN_NATIVE_BRIDGE_BOUNDARY_NOTED restoreEpoch=3 advanced=true source=checkpoint save_writes=false progression_writes=false'
+    'RAVEN_NATIVE_BRIDGE_BOUNDARY_NOTED restoreEpoch=3 advanced=true source=checkpoint save_writes=false progression_writes=false',
+    'RAVEN_NATIVE_BRIDGE_BOUNDARY_NOTED restoreEpoch=4 advanced=true source=checkpoint save_writes=false progression_writes=false'
 )
 $restoreNoiseLoader = @(
     '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_DERIVED knownKilled=25 knownAlive=27 nativeUnknown=1 absenceUnresolved=11 resolvedUnresolved=12 finalKilled=25 finalAlive=28 postBoundary=false boundaryEpoch=0 restoreEpoch=0 authority=native_partial_plus_region_summary readOnly=true progressionWrites=false',
@@ -158,7 +159,9 @@ $restoreNoiseLoader = @(
     '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=native_restore_epoch boundaryEpoch=2 captureReady=true staleStateRetained=true atomicAuthorityRequired=true postBoundaryRecheckFrames=360 progressionWrites=false',
     '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_DERIVED knownKilled=28 knownAlive=25 nativeUnknown=0 absenceUnresolved=11 resolvedUnresolved=11 finalKilled=28 finalAlive=25 postBoundary=true boundaryEpoch=2 restoreEpoch=2 authority=native_partial_plus_region_summary readOnly=true progressionWrites=false',
     '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=native_restore_epoch boundaryEpoch=3 captureReady=true staleStateRetained=true atomicAuthorityRequired=true postBoundaryRecheckFrames=360 progressionWrites=false',
-    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=9 killed=0 alive=53 explicit=0 absentWadFalse=53 postBoundary=true boundaryEpoch=3 restoreEpoch=3 authority=capture_v2'
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_DERIVED knownKilled=27 knownAlive=26 nativeUnknown=0 absenceUnresolved=11 resolvedUnresolved=11 finalKilled=27 finalAlive=26 postBoundary=true boundaryEpoch=3 restoreEpoch=3 authority=native_partial_plus_region_summary readOnly=true progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=native_restore_epoch boundaryEpoch=4 captureReady=true staleStateRetained=true atomicAuthorityRequired=true postBoundaryRecheckFrames=360 progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=9 killed=0 alive=53 explicit=0 absentWadFalse=53 postBoundary=true boundaryEpoch=4 restoreEpoch=4 authority=capture_v2'
 )
 $restoreNoise = Test-RavenSnapshotDeliveryProofLines -BridgeLines $restoreNoiseBridge -LoaderLines $restoreNoiseLoader
 if (-not $restoreNoise.ImmediateEvent -or
@@ -172,6 +175,8 @@ if (-not $restoreNoise.ImmediateEvent -or
     -not $restoreNoise.CheckpointBoundaryEpochMatched -or
     $restoreNoise.CheckpointBoundaryEpoch -ne 2 -or
     -not $restoreNoise.FreshApplied -or
+    -not $restoreNoise.FreshBoundaryEpochMatched -or
+    $restoreNoise.FreshBoundaryEpoch -ne 4 -or
     -not $restoreNoise.Ordered) {
     throw 'Restore-noise gameplay-kill proof regression failed.'
 }
