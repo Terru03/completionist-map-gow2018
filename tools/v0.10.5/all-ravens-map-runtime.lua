@@ -53,6 +53,10 @@ do
       tonumber(_G.CompletionistMapV105LastNativeRestoreEpoch)
   local lastNativeNotice = nil
   local lastRegionSummaryDiagnosticKey = nil
+  local regionSummaryBonusParents = {
+    RegionSummary_CALS_Raven_Parent = true,
+    RegionSummary_RP_Raven_Parent = true,
+  }
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
@@ -73,29 +77,69 @@ do
     log(category, fields)
   end
 
-  local function logRegionSummaryDiagnostics(source)
-    if hasAuthoritativeRavenState then return end
-    if type(game) ~= "table" or type(game.QuestManager) ~= "table" or
-        type(game.QuestManager.GetQuestProgressAndGoal) ~= "function" then
-      nativeNotice("REGION_SUMMARY_DIAGNOSTIC",
-          "source=" .. tostring(source) .. " available=false",
-          "region_summary_unavailable")
-      return
-    end
-
+  local function buildRegionSummaryGroups()
     local groups = {}
     for _, row in ipairs(rows) do
       if type(row.ParentQuest) == "string" and row.ParentQuest ~= "" then
         local group = groups[row.ParentQuest]
         if group == nil then
-          group = {count=0, realms={}}
+          group = {count=0, realms={}, rows={}}
           groups[row.ParentQuest] = group
         end
         group.count = group.count + 1
         group.realms[row.Realm] = true
+        group.rows[#group.rows + 1] = row
+      end
+    end
+    return groups
+  end
+
+  local function readRegionSummaryCompleted(parent, physicalCount)
+    if type(game) ~= "table" or type(game.QuestManager) ~= "table" or
+        type(game.QuestManager.GetQuestProgressAndGoal) ~= "function" then
+      return nil, "unavailable", nil, nil
+    end
+    local ok, progress, goal = pcall(
+        game.QuestManager.GetQuestProgressAndGoal, parent)
+    if not ok then return nil, "query_failed", nil, nil end
+
+    local progressNumber = tonumber(progress)
+    local goalNumber = tonumber(goal)
+    local completed = nil
+    local shape = "ambiguous"
+
+    -- The PC runtime observed in field captures returns (nil, completed).
+    -- Keep support for the conventional (progress, goal) shape when the goal
+    -- exactly matches this one-to-one physical group.
+    if progressNumber == nil and goalNumber ~= nil then
+      completed = goalNumber
+      shape = "second_only_completed"
+    elseif progressNumber ~= nil and goalNumber == nil then
+      completed = progressNumber
+      shape = "first_only_completed"
+    elseif progressNumber ~= nil and goalNumber ~= nil then
+      if goalNumber == physicalCount and progressNumber >= 0 and
+          progressNumber <= goalNumber then
+        completed = progressNumber
+        shape = "progress_goal"
+      elseif progressNumber == physicalCount and goalNumber >= 0 and
+          goalNumber <= progressNumber then
+        completed = goalNumber
+        shape = "goal_progress_reversed"
       end
     end
 
+    if completed == nil or completed < 0 or completed > physicalCount or
+        completed ~= math.floor(completed) then
+      return nil, shape, progressNumber, goalNumber
+    end
+    return completed, shape, progressNumber, goalNumber
+  end
+
+  local function logRegionSummaryDiagnostics(source)
+    if hasAuthoritativeRavenState then return end
+
+    local groups = buildRegionSummaryGroups()
     local parents = {}
     for parent, _ in pairs(groups) do parents[#parents + 1] = parent end
     table.sort(parents)
@@ -104,23 +148,23 @@ do
     local keyParts = {}
     for _, parent in ipairs(parents) do
       local group = groups[parent]
-      local ok, progress, goal = pcall(
-          game.QuestManager.GetQuestProgressAndGoal, parent)
-      local progressNumber = ok and tonumber(progress) or nil
-      local goalNumber = ok and tonumber(goal) or nil
+      local completed, shape, progressNumber, goalNumber =
+          readRegionSummaryCompleted(parent, group.count)
       local realmNames = {}
       for realm, _ in pairs(group.realms) do realmNames[#realmNames + 1] = realm end
       table.sort(realmNames)
       local realmText = table.concat(realmNames, ",")
-      local safeCountMatch =
-          progressNumber ~= nil and goalNumber ~= nil and
-          goalNumber == group.count
+      local constraintSafe =
+          regionSummaryBonusParents[parent] ~= true and completed ~= nil
       local record =
           "parent=" .. parent ..
           " progress=" .. tostring(progressNumber) ..
           " goal=" .. tostring(goalNumber) ..
+          " completed=" .. tostring(completed) ..
+          " accessorShape=" .. tostring(shape) ..
           " catalogueCount=" .. tostring(group.count) ..
-          " safeCountMatch=" .. tostring(safeCountMatch) ..
+          " constraintSafe=" .. tostring(constraintSafe) ..
+          " bonusParent=" .. tostring(regionSummaryBonusParents[parent] == true) ..
           " realms=" .. realmText
       records[#records + 1] = record
       keyParts[#keyParts + 1] = record
