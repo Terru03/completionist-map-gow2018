@@ -19,6 +19,7 @@ import argparse
 from collections import defaultdict
 import importlib.util
 import json
+import re
 from pathlib import Path
 import sys
 
@@ -67,11 +68,34 @@ def record_for_offset(records: list[dict], at: int):
     return None, None, None
 
 
-def refs_in_record(rec: dict, ids: dict[bytes, list[dict]]) -> list[dict]:
+def compile_record_id_matcher(ids: dict[bytes, list[dict]]):
+    """Compile one C-level multi-pattern matcher for all 16-byte WAD record IDs.
+
+    The previous resolver sliced and dictionary-looked-up every byte position in
+    every traversed record. On the shipped WADs that turned the two-hop graph
+    walk into minutes of Python CPU time. A bytes-regex lookahead keeps the same
+    byte-exact, overlap-preserving semantics while moving the scan into the C
+    regex engine.
+    """
+    values = sorted(ids)
+    if not values:
+        return None
+    pattern = b"(?=(" + b"|".join(re.escape(value) for value in values) + b"))"
+    return re.compile(pattern)
+
+
+def refs_in_record(
+    rec: dict,
+    ids: dict[bytes, list[dict]],
+    matcher,
+) -> list[dict]:
     data = rec["data"]
     hits = []
-    for off in range(0, max(0, len(data) - 15)):
-        value = data[off:off + 16]
+    if matcher is None:
+        return hits
+    for match in matcher.finditer(data):
+        value = match.group(1)
+        off = match.start(1)
         targets = ids.get(value)
         if not targets:
             continue
@@ -92,7 +116,6 @@ def refs_in_record(rec: dict, ids: dict[bytes, list[dict]]) -> list[dict]:
             ],
         })
     return hits
-
 
 def scene_variants(row: dict) -> dict[str, list[bytes]]:
     chain = row["source"]["transform_chain"]
@@ -190,7 +213,11 @@ def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
     occurrences = []
     parsed_wads = {}
 
-    for wad_name in wad_names:
+    for wad_index, wad_name in enumerate(wad_names, start=1):
+        print(
+            f"STATIC_IDENTITY_SCAN wad={wad_index}/{len(wad_names)} name={wad_name}",
+            flush=True,
+        )
         path = wad_root / wad_name
         if not path.is_file():
             raise RuntimeError(f"missing tracked Legendary WAD: {path}")
@@ -199,6 +226,7 @@ def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
         ids: dict[bytes, list[dict]] = defaultdict(list)
         for rec in records:
             ids[rec["id"]].append(rec)
+        matcher = compile_record_id_matcher(ids)
         parsed_wads[wad_name] = {
             "raw": raw,
             "records": records,
@@ -231,7 +259,7 @@ def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
         for depth in (1, 2):
             next_frontier = []
             for rec in frontier:
-                for hit in refs_in_record(rec, ids):
+                for hit in refs_in_record(rec, ids, matcher):
                     value_hex = hit["value_hex"]
                     item = support.setdefault(value_hex, {
                         "value_hex": value_hex,
@@ -268,6 +296,11 @@ def discover_prototype_candidates(game_root: Path, rows: list[dict]) -> dict:
                                 seen_records.add(id(target_rec))
                                 next_frontier.append(target_rec)
             frontier = next_frontier
+        print(
+            f"STATIC_IDENTITY_SCAN_DONE wad={wad_index}/{len(wad_names)} "
+            f"name={wad_name} candidates_so_far={len(support)}",
+            flush=True,
+        )
 
     # Include the loader ID itself as a negative/control candidate.
     support.setdefault(EXPECTED_PROTOTYPE, {
