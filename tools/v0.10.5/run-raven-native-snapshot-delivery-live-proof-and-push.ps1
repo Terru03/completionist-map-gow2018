@@ -253,7 +253,10 @@ function Publish-Proof([string]$Result, [string]$Reason, [object]$Delivery) {
         "branch=$ExpectedBranch"
         "game_launched=$($script:launched.ToString().ToLowerInvariant())"
         "native_delivery_ready=$($Delivery.DeliveryReady.ToString().ToLowerInvariant())"
-        "advanced_27_killed_applied=$($Delivery.AdvancedApplied.ToString().ToLowerInvariant())"
+        "advanced_authority_applied=$($Delivery.AdvancedApplied.ToString().ToLowerInvariant())"
+        "advanced_killed=$($Delivery.AdvancedKilled)"
+        "advanced_alive=$($Delivery.AdvancedAlive)"
+        "advanced_derived=$($Delivery.AdvancedDerived.ToString().ToLowerInvariant())"
         "immediate_raven_kill_event=$($Delivery.ImmediateEvent.ToString().ToLowerInvariant())"
         "bridge_kill_note_observed=$($Delivery.ImmediateEvent.ToString().ToLowerInvariant())"
         "bridge_kill_restore_epoch=$($Delivery.ImmediateKillEpoch)"
@@ -329,7 +332,7 @@ try {
     $sameMapReaddAccepted = $true
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
-    if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied) { throw 'Advanced 27-killed Lua apply evidence missing.' }
+    if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied) { throw 'Advanced-save Lua authority evidence missing.' }
 
     $answer = Read-Host 'Kill one loaded live Raven. Verify exact marker vanishes at once. Close/reopen map and verify it stays absent. Then reload the checkpoint created after that kill, reopen the map, and verify the same Raven is still absent. Type IMMEDIATE_OK, or REGRESSION if anything is wrong'
     if ($answer -eq 'REGRESSION') { throw 'Immediate-kill or checkpoint-reload manual regression reported.' }
@@ -340,7 +343,7 @@ try {
     if (-not $delivery.ImmediateEvent -or -not $delivery.MapReopenObserved -or
         -not $delivery.CheckpointBoundaryObserved -or -not $delivery.PostBoundaryApplied -or
         -not $delivery.CheckpointBoundaryEpochMatched) {
-        throw 'Bridge kill note, 28-kill map reconstruction, or matching V2 checkpoint authority evidence missing.'
+        throw 'Bridge kill note, +1 Raven map reconstruction, or matching V2 checkpoint authority evidence missing.'
     }
 
     $answer = Read-Host 'Load true fresh save. Open map. Verify all 53 Ravens, captions, realm filter, and compass behavior. Type FRESH_OK, or REGRESSION if anything is wrong'
