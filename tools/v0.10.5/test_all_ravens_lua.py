@@ -146,7 +146,12 @@ CompletionistMapV100_CreateMapPin=function(s,state) return "base" end
 Map={}
 function Map.FindRegionFromMarker(id) return true,"region" end
 function Map.CreateMarkerIcon(id,region,label)
-  return {id=id,shown=false,Show=function(self) self.shown=true end}
+  return {
+    id=id,
+    shown=false,
+    Show=function(self) self.shown=true end,
+    Hide=function(self) self.shown=false end,
+  }
 end
 function Map.RecycleIcon(go) calls.recycled=calls.recycled+1; go.recycled=true end
 regionSummaryCompleted={}
@@ -210,6 +215,7 @@ function menu:UpdateFooterButtonText()
   end
 end
 self={currRealmName="Alfheim",currMarkerID=nil,currShownMarkerID=nil,
+  isOpenedForFastTravel=false,filterButtonMapping={1},filterIndex=1,
   completionistMapV100Selected=false,completionistMapV100NornirSelected=nil,
   completionistMapV100NornirChestSelected=nil,mapIconCollision=nil,menu=menu}
 menu.owner=self
@@ -221,6 +227,15 @@ probe={}
 function probe.publish(id,value) return CompletionistMapV105PublishRavenState(id,value,"test") end
 function probe.open() return CompletionistMapV100_CreateMapPin(self,{}) end
 function probe.icon(name) return self.completionistMapV105RavenIcons[name] end
+function probe.iconShown(name)
+  local go=probe.icon(name)
+  return go~=nil and go.shown==true
+end
+function probe.setFastTravel(value) self.isOpenedForFastTravel=value==true end
+function probe.setFilter(logical)
+  self.filterButtonMapping={logical}
+  self.filterIndex=1
+end
 function probe.click(name)
   local go=probe.icon(name)
   MapOn.MapCollisionChangeHandler(self,{},go and {go} or {},self.currRealmName)
@@ -559,6 +574,57 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.probe.open()
         self.assertTrue(self.probe.hasAuthority())
         self.assertEqual(self.probe.iconCount(), 2)
+
+    def test_fast_travel_map_hides_ravens_and_normal_map_restores_them(self):
+        self.probe.setFastTravel(True)
+        self.probe.open()
+
+        self.assertTrue(self.probe.hasAuthority())
+        self.assertEqual(self.probe.iconCount(), 0)
+        self.assertIn("fastTravel=true", self.probe.logs())
+        self.assertIn("ravensVisible=false", self.probe.logs())
+
+        self.probe.setFastTravel(False)
+        self.probe.update()
+
+        self.assertEqual(self.probe.iconCount(), 2)
+        self.assertTrue(self.probe.iconShown(self.a["marker"]["name"]))
+        self.assertTrue(self.probe.iconShown(self.b["marker"]["name"]))
+        self.assertIn("fastTravel=false", self.probe.logs())
+        self.assertIn("ravensVisible=true", self.probe.logs())
+
+    def test_ravens_follow_show_all_completionist_and_raven_filters(self):
+        self.probe.open()
+        name = self.a["marker"]["name"]
+        self.assertTrue(self.probe.iconShown(name))
+
+        for hidden_filter in (2, -103, -104):
+            self.probe.setFilter(hidden_filter)
+            self.probe.update()
+            self.assertFalse(self.probe.iconShown(name), hidden_filter)
+
+        for visible_filter in (1, -101, -102):
+            self.probe.setFilter(visible_filter)
+            self.probe.update()
+            self.assertTrue(self.probe.iconShown(name), visible_filter)
+
+        self.assertIn("filter=-102", self.probe.logs())
+        self.assertIn("ravensVisible=true", self.probe.logs())
+
+    def test_filter_restore_does_not_revive_killed_raven(self):
+        self.probe.setNativeResponse(self.response(2, [self.a]))
+        self.probe.open()
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+        self.assertIsNotNone(self.probe.icon(self.b["marker"]["name"]))
+
+        self.probe.setFilter(-103)
+        self.probe.update()
+        self.assertFalse(self.probe.iconShown(self.b["marker"]["name"]))
+
+        self.probe.setFilter(-102)
+        self.probe.update()
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+        self.assertTrue(self.probe.iconShown(self.b["marker"]["name"]))
 
     def test_a_b_same_click_stock_and_kill_lifecycle(self):
         self.probe.publish(self.a["catalogue_id"], False)
