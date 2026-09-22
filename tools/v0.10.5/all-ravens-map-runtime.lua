@@ -28,6 +28,7 @@ do
   local lastMapOnSelf = nil
   local selectionGeneration = 0
   local promptIntent = nil
+  local promptOverride = nil
   local promptSettleFrames = 0
   local promptSettleBucket = -1
   local customCompassOwnsTarget = false
@@ -653,7 +654,7 @@ do
       return actionText(lamsConsts.RemoveFromCompass)
     end
     local stock = stockIds()
-    if #ids > 0 or hasOther(stock, selected.IdString) then
+    if #ids > 0 or #stock > 0 then
       return actionText(lamsConsts.ReplaceInCompass)
     end
     return actionText(lamsConsts.AddToCompass)
@@ -663,7 +664,16 @@ do
     if self == nil or self.menu == nil or selected == nil then return end
     selected = currentSelection(self) or selected
     if not promptOwned(self, true, selected) then return end
-    local text = promptText(selected)
+
+    -- v0.10.4's proven footer path temporarily routes the menu's own prompt
+    -- query through the exact Raven selection. Without this, the subsequent
+    -- UpdateFooterButtonText() redraw can re-query the base map after the
+    -- action selection has been consumed and overwrite Remove with Add.
+    promptOverride = selected
+    local show, text = self:GetShowOnCompassPrompt(self.menu)
+    promptOverride = nil
+    if show ~= true then return end
+
     local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
     if goMapCursorText ~= nil then
       goMapCursorText:Show()
@@ -711,6 +721,9 @@ do
   function MapOn:GetShowOnCompassPrompt(currMenu)
     lastMapOnSelf = self
     local show, text = previousPrompt(self, currMenu)
+    if promptOverride ~= nil then
+      return true, promptText(promptOverride)
+    end
     local selected = currentSelection(self)
     if selected == nil then return show, text end
     if not promptOwned(self, show, selected) then
@@ -768,7 +781,7 @@ do
       return
     end
     local customOK, customCount = hideCustom(selected.IdString, "raven_replace")
-    local stockOK, stockCount = hideStockExcept(selected.IdString, "raven_replace")
+    local stockOK, stockCount = hideStock("raven_replace")
     if not customOK or not stockOK then return end
     suppressLegacyRavenHud()
     local showOK, showErr = pcall(function()
@@ -780,7 +793,7 @@ do
     end
     customCompassOwnsTarget = true
     suppressLegacyRavenHud()
-    hideStockExcept(selected.IdString, "raven_post_show_guard")
+    hideStock("raven_post_show_guard")
     _G.CompletionistMapV105TrackedCatalogueId = selected.CatalogueId
     self.currShownMarkerID = selected.Id
     promptIntent = {
@@ -808,8 +821,8 @@ do
         if trackedInfo ~= nil then exceptIdString = tostring(trackedInfo.Id) end
       end
       local stock, stockOK = stockIds()
-      if stockOK and hasOther(stock, exceptIdString) then
-        hideStockExcept(exceptIdString, "custom_raven_owner_guard")
+      if stockOK and #stock > 0 then
+        hideStock("custom_raven_owner_guard")
       end
     end
 
@@ -867,12 +880,12 @@ do
         custom, customOK = customIds()
         stock, stockOK = stockIds()
       end
-      if stockOK and hasOther(stock, intent.IdString) then
-        hideStockExcept(intent.IdString, "raven_replace_async_retry")
+      if stockOK and #stock > 0 then
+        hideStock("raven_replace_async_retry")
         stock = stockIds()
       end
       if customOK and contains(custom, intent.IdString) and
-          not hasOther(stock, intent.IdString) then
+          stockOK and #stock == 0 then
         promptSettleFrames = 0
         promptSettleBucket = -1
         refreshPrompt(self, selected)
@@ -894,14 +907,14 @@ do
         promptSettleBucket = bucket
         pcall(function() game.Compass.HideMarker(row.Name) end)
       end
-      if stockOK and hasOther(stock, intent.IdString) then
-        hideStockExcept(intent.IdString, "raven_remove_async_retry")
+      if stockOK and #stock > 0 then
+        hideStock("raven_remove_async_retry")
       end
       local customAfter, customAfterOK = customIds()
       local stockAfter, stockAfterOK = stockIds()
       if promptSettleFrames >= 3 and customAfterOK and stockAfterOK and
           not contains(customAfter, intent.IdString) and
-          not hasOther(stockAfter, intent.IdString) then
+          #stockAfter == 0 then
         intent.Settled = true
         promptSettleFrames = 0
         promptSettleBucket = -1
