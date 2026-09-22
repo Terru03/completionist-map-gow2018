@@ -708,8 +708,10 @@ do
     -- action selection has been consumed and overwrite Remove with Add.
     promptOverride = selected
     local show, text = self:GetShowOnCompassPrompt(self.menu)
-    promptOverride = nil
-    if show ~= true then return end
+    if show ~= true then
+      promptOverride = nil
+      return
+    end
 
     local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
     if goMapCursorText ~= nil then
@@ -726,6 +728,7 @@ do
     end
     self.menu:UpdateFooterButton("ShowOnCompass", true, text)
     self.menu:UpdateFooterButtonText()
+    promptOverride = nil
     log("PROMPT_REFRESH", "name=" .. selected.Name ..
         " state=" .. tostring(promptIntent and promptIntent.State or "observed") ..
         " text=" .. tostring(text))
