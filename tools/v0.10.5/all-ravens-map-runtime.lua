@@ -1334,6 +1334,18 @@ do
 
   local function refreshCommittedActionUi(self, selected)
     if self == nil or selected == nil then return end
+
+    -- If the user has already moved to another Raven, that newer exact
+    -- selection owns both cursor and footer. Refresh it normally and stop the
+    -- older committed intent from writing anything.
+    local current = currentSelection(self)
+    if current ~= nil and current.IdString ~= selected.IdString then
+      if promptOwned(self, true, current) then
+        refreshPrompt(self, current)
+      end
+      return
+    end
+
     if promptOwned(self, true, selected) then
       refreshPrompt(self, selected)
     else
