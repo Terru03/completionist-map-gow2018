@@ -210,6 +210,7 @@ bool CaptureAcceptedSnapshot(std::uintptr_t module_base,
                              std::string* reason) {
   if (output == nullptr || reason == nullptr || module_base == 0) return false;
   std::lock_guard<std::mutex> lock(g_capture_mutex);
+  *output = NativeRavenSnapshot{};
 
   std::vector<StagedRecordInput> records;
   if (!CaptureRecords(module_base, &records, reason)) {
@@ -220,6 +221,24 @@ bool CaptureAcceptedSnapshot(std::uintptr_t module_base,
   const DecodedRavenSnapshot decoded = DecodeRavenSnapshot(records);
   if (!decoded.accepted) {
     g_publication_gate.Reject();
+
+    const bool safe_partial =
+        decoded.unknown_count > 0 &&
+        decoded.unknown_count < kRavenCatalogue.size() &&
+        decoded.reason.rfind("present_wad_without_exact_state:", 0) == 0;
+    if (safe_partial) {
+      output->killed = decoded.killed;
+      output->known = decoded.known;
+      output->explicit_state = decoded.explicit_state;
+      output->captured_tick_ms = GetTickCount64();
+      output->alive_count = decoded.alive_count;
+      output->killed_count = decoded.killed_count;
+      output->explicit_count = decoded.explicit_count;
+      output->absence_default_false_count =
+          decoded.absence_default_false_count;
+      output->unknown_count = decoded.unknown_count;
+      output->partial_usable = true;
+    }
 
     std::string diagnostic = decoded.reason +
         " explicit=" + std::to_string(decoded.explicit_count) +
@@ -270,12 +289,16 @@ bool CaptureAcceptedSnapshot(std::uintptr_t module_base,
 
   NativeRavenSnapshot snapshot;
   snapshot.killed = decoded.killed;
+  snapshot.known.fill(true);
+  snapshot.explicit_state = decoded.explicit_state;
   snapshot.captured_tick_ms = GetTickCount64();
   snapshot.alive_count = decoded.alive_count;
   snapshot.killed_count = decoded.killed_count;
   snapshot.explicit_count = decoded.explicit_count;
   snapshot.absence_default_false_count =
       decoded.absence_default_false_count;
+  snapshot.unknown_count = 0;
+  snapshot.partial_usable = false;
 
   if (!g_publication_gate.Observe(snapshot, snapshot.captured_tick_ms)) {
     *reason = "all_false_authority_unconfirmed";
