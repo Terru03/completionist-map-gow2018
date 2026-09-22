@@ -340,7 +340,7 @@ try {
     }
 
     if ($CosmeticOnly) {
-        $answer = Read-Host 'COSMETIC CHECK ONLY: Load any save with at least one living Raven and open the map. On the FIRST Raven you select after map open, Add it to the compass and verify the bottom-row action changes to Remove immediately without moving off that Raven. Then on that SAME Raven do Remove -> Add and verify the custom Raven artwork remains active immediately (no boat-dock artwork takeover). Type COSMETIC_OK, or REGRESSION if either issue remains'
+        $answer = Read-Host 'COSMETIC CHECK ONLY: Load any save with at least one living Raven and open the map. (1) On the FIRST Raven selected after map open, Add it and verify the bottom footer changes to Remove immediately on that click. Move away and verify no action text sticks to the floating map cursor. (2) On one Raven, deliberately stress Add -> Remove -> Add as fast as possible (three clicks in about one second); verify the custom Raven artwork wins and NO boat-dock artwork appears. (3) Repeat Remove -> Add with normal pauses and verify it also stays correct. Type COSMETIC_OK only if all three pass, or REGRESSION if anything is wrong'
         if ($answer -eq 'REGRESSION') { throw 'Raven cosmetic regression reported.' }
         if ($answer -ne 'COSMETIC_OK') { throw 'Raven cosmetic acceptance not confirmed.' }
         $cosmeticAccepted = $true
