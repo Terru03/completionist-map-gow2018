@@ -5,7 +5,6 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-$ExpectedBranch = 'codex/all-ravens-release-candidate'
 $repo = (& git rev-parse --show-toplevel 2>$null).Trim()
 if ([string]::IsNullOrWhiteSpace($repo)) { throw 'Not inside repository.' }
 Set-Location $repo
