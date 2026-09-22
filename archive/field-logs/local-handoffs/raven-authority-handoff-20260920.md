@@ -7551,3 +7551,50 @@ Live-proof prompt update:
 The functional Raven RC remains untouched. Generated `mapmenu.lua` changed,
 so delivery proof refresh + full offline gates are required before the next
 field check.
+
+
+### Cosmetic polish follow-up 2026-09-22 - queued re-add offline mismatch corrected
+
+Delivery proof refresh succeeded at:
+
+- `bf67c1d7601a2297db20a608470743b401528d70`.
+
+Offline evidence failed at:
+
+- `583e0833e1e884d4b5324e351aaa2125d4644249`;
+- evidence directory:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-offline-20260922-120836`.
+
+Native bridge remained fully green (CTest 5/5). Lua had exactly two failures:
+
+1. `test_rapid_readd_wins_delayed_native_remove`
+   - queued rapid re-add delayed physical ShowMarker correctly, but the logical
+     tracked catalogue owner had been cleared by Remove and was not reclaimed
+     until the later physical re-add;
+   - existing delayed-remove regression requires the new Add intent to own the
+     Raven immediately so a late native/base remove cannot win.
+
+2. `test_raven_reticle_and_compass_prompt_refresh_immediately`
+   - the previous change forced every action through footer-only refresh, so a
+     normally still-selected Raven no longer got its expected floating
+     selection-owned Remove prompt.
+
+Correction:
+
+- `afa7bba29921b0fffbca1c3cd6b4aebb5c27d865`
+  - queued rapid re-add now immediately restores
+    `CompletionistMapV105TrackedCatalogueId`, sets custom ownership, and keeps
+    `currShownMarkerID=nil`;
+  - only the physical `ShowMarker` remains deferred until removal is clean;
+  - queued physical re-add may execute on the first frame where custom and
+    stock state are clean instead of waiting for the normal three-frame remove
+    settle threshold;
+  - normal selected Add/Remove first runs the selection-owned cursor+footer
+    refresh, then performs one committed footer-only write as the final footer
+    writer;
+  - consumed-selection cases still remain footer-only, preserving the sticky
+    cursor fix.
+
+No authority/save/native state logic changed. Generated `mapmenu.lua` changed
+again, so delivery proof refresh + full offline gates are required before the
+next live cosmetic stress test.
