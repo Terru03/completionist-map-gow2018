@@ -6810,3 +6810,37 @@ Validator-only fixes:
 
 No Raven runtime/native state behavior was changed by these commits. Re-run the
 evidence-publishing offline gates before another live game proof.
+
+
+### Follow-up 2026-09-22 19:20 - gameplay-kill proof parser fix is offline green
+
+Evidence-publishing offline run after the live-proof validator fixes:
+
+- evidence commit:
+  `ccd5f634fb84abf43e8cbdaa9c6bda54f5bae446`
+- tested head:
+  `e5b53be10c326c4cb93fa295d98a5ddd86753366`
+- evidence directory:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-offline-20260922-095542`
+
+Verified from the pushed child transcript:
+
+- Raven bridge runner regressions passed, including the new restore-noise /
+  exact `OnHitByWeapon` gameplay-kill proof case;
+- native bridge CTest 5/5 passed;
+- Lua integration 40/40 passed;
+- Raven state-model 25/25 passed;
+- candidate/template suite passed for all applicable tests;
+- pinned five-file delivery candidate preparation passed;
+- five-file transaction rollback self-test passed;
+- PowerShell syntax gate passed;
+- security gate passed with
+  `process_writes=false save_writes=false progression_writes=false static_descriptor_writes=false loopback_only=true`.
+
+No delivered game file changed in the validator-only fix series, so the existing
+pinned delivery proof remains valid and does not require another proof refresh.
+
+Next step: rerun the evidence-publishing live GoW proof. Its authority counts are
+intentionally dynamic; the advanced save may now contain the Raven killed during
+the previous test, and the validator anchors +1 to the latest authority
+immediately before the new exact `OnHitByWeapon` event.
