@@ -463,16 +463,31 @@ do
       return false, "full_invalid"
     end
 
+    local groups = buildRegionSummaryGroups()
+
     -- The native publication gate already requires this all-false image to
     -- remain stable for 750 ms. It is the fresh/new-game bootstrap and must
-    -- not depend on RegionSummary quests being initialised yet.
+    -- still work before RegionSummary quests are initialised. However, if any
+    -- live parent count is already available and non-zero, that is a direct
+    -- contradiction and the zero image must fail closed.
     if snapshot.killedCount == 0 and snapshot.aliveCount == #rows and
         snapshot.explicitCount == 0 and
         snapshot.absenceDefaultFalseCount == #rows then
+      for parent, group in pairs(groups) do
+        local targetCount = regionSummaryTargetCount(parent, group.count)
+        local completed = readRegionSummaryCompleted(parent, targetCount)
+        if completed ~= nil and completed > 0 then
+          nativeNotice("NATIVE_AUTHORITY_REGION_REFUSED",
+              "reason=fresh_zero_conflict parent=" .. tostring(parent) ..
+              " completed=" .. tostring(completed) ..
+              " source=" .. tostring(source),
+              "fresh_zero_conflict:" .. tostring(parent) .. ":" ..
+              tostring(completed))
+          return false, "fresh_zero_region_summary_conflict"
+        end
+      end
       return true, nil
     end
-
-    local groups = buildRegionSummaryGroups()
     for parent, group in pairs(groups) do
       local targetCount = regionSummaryTargetCount(parent, group.count)
       local completed, shape =
