@@ -69,10 +69,17 @@ function Stop-LocalTranscript {
 function Invoke-PythonLogged([string[]]$Arguments) {
     $pythonExe = 'python.exe'
     $prefix = @()
-    & py.exe -3.14 -c 'import sys' 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        $pythonExe = 'py.exe'
-        $prefix = @('-3.14')
+    $py = Get-Command py.exe -ErrorAction SilentlyContinue
+    if ($null -ne $py) {
+        & $py.Source -3.14 -c 'import sys' 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            $pythonExe = $py.Source
+            $prefix = @('-3.14')
+        }
+    }
+    if ($pythonExe -eq 'python.exe' -and
+        $null -eq (Get-Command python.exe -ErrorAction SilentlyContinue)) {
+        throw 'No usable Python interpreter found.'
     }
 
     $lines = @(& $pythonExe @prefix @Arguments 2>&1)
