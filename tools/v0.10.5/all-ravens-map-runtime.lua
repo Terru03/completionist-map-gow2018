@@ -1324,6 +1324,15 @@ do
         " text=" .. tostring(text))
   end
 
+  local function refreshCommittedActionUi(self, selected)
+    if self == nil or selected == nil then return end
+    if promptOwned(self, true, selected) then
+      refreshPrompt(self, selected)
+    else
+      refreshCommittedFooter(self, selected)
+    end
+  end
+
   local function showRavenReticle(self, currState, selected)
     if self == nil or currState == nil or selected == nil then return end
     local ok, err = pcall(function()
@@ -1405,7 +1414,7 @@ do
         suppressLegacyRavenHud()
         hideStock("raven_remove_guard")
         Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
-        refreshCommittedFooter(self, selected)
+        refreshCommittedActionUi(self, selected)
         log("REMOVE", "name=" .. selected.Name .. " uid=" .. selected.IdString)
       end
       return
@@ -1437,7 +1446,7 @@ do
     promptSettleFrames = 0
     promptSettleBucket = -1
     Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
-    refreshCommittedFooter(self, selected)
+    refreshCommittedActionUi(self, selected)
     log("SHOW", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
         " replacedCustomCount=" .. tostring(customCount) ..
         " replacedStockCount=" .. tostring(stockCount))
@@ -1522,16 +1531,16 @@ do
           not hasOther(stock, intent.IdString) then
         promptSettleFrames = 0
         promptSettleBucket = -1
-        refreshCommittedFooter(self, selected)
+        refreshCommittedActionUi(self, selected)
         if not intent.Settled then log("PROMPT_SETTLED", "state=tracked name=" .. row.Name) end
         intent.Settled = true
       else
         promptSettleFrames = promptSettleFrames + 1
-        refreshCommittedFooter(self, selected)
+        refreshCommittedActionUi(self, selected)
       end
     elseif intent.State == "untracked" then
       if intent.Settled then
-        refreshCommittedFooter(self, selected)
+        refreshCommittedActionUi(self, selected)
         return result
       end
       promptSettleFrames = promptSettleFrames + 1
@@ -1553,10 +1562,10 @@ do
         promptSettleFrames = 0
         promptSettleBucket = -1
         customCompassOwnsTarget = false
-        refreshCommittedFooter(self, selected)
+        refreshCommittedActionUi(self, selected)
         log("PROMPT_SETTLED", "state=untracked name=" .. row.Name)
       else
-        refreshCommittedFooter(self, selected)
+        refreshCommittedActionUi(self, selected)
       end
     else
       promptIntent = nil
