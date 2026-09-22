@@ -41,9 +41,22 @@ struct StagedHeader {
 };
 
 SnapshotStore g_snapshot_store;
+SnapshotPublicationGate g_publication_gate;
 std::atomic<bool> g_proxy_forward_ready{false};
 std::atomic<std::uintptr_t> g_module_base{0};
 std::mutex g_capture_mutex;
+
+constexpr std::uint64_t kZeroAuthorityStabilityMs = 750;
+
+bool IsAllFalseBootstrap(const NativeRavenSnapshot& snapshot) {
+  if (snapshot.alive_count != 53 || snapshot.killed_count != 0 ||
+      snapshot.explicit_count != 0 ||
+      snapshot.absence_default_false_count != 53) {
+    return false;
+  }
+  return std::all_of(snapshot.killed.begin(), snapshot.killed.end(),
+                     [](bool killed) { return !killed; });
+}
 
 bool SafeCopy(const void* source, void* destination, std::size_t length) {
   if (source == nullptr || destination == nullptr || length == 0) return false;
@@ -210,10 +223,14 @@ bool CaptureAcceptedSnapshot(std::uintptr_t module_base,
   std::lock_guard<std::mutex> lock(g_capture_mutex);
 
   std::vector<StagedRecordInput> records;
-  if (!CaptureRecords(module_base, &records, reason)) return false;
+  if (!CaptureRecords(module_base, &records, reason)) {
+    g_publication_gate.Reject();
+    return false;
+  }
 
   const DecodedRavenSnapshot decoded = DecodeRavenSnapshot(records);
   if (!decoded.accepted) {
+    g_publication_gate.Reject();
     *reason = decoded.reason;
     return false;
   }
@@ -227,6 +244,11 @@ bool CaptureAcceptedSnapshot(std::uintptr_t module_base,
   snapshot.absence_default_false_count =
       decoded.absence_default_false_count;
 
+  if (!g_publication_gate.Observe(snapshot, snapshot.captured_tick_ms)) {
+    *reason = "all_false_authority_unconfirmed";
+    return false;
+  }
+
   g_snapshot_store.Publish(snapshot);
   if (!g_snapshot_store.Read(output)) {
     *reason = "snapshot_store_unavailable";
@@ -237,6 +259,38 @@ bool CaptureAcceptedSnapshot(std::uintptr_t module_base,
 }
 
 }  // namespace
+
+bool SnapshotPublicationGate::Observe(const NativeRavenSnapshot& snapshot,
+                                      std::uint64_t now_ms) {
+  if (!IsAllFalseBootstrap(snapshot)) {
+    zero_pending_ = false;
+    zero_confirmed_ = false;
+    zero_first_tick_ms_ = 0;
+    return true;
+  }
+
+  if (zero_confirmed_) return true;
+
+  if (!zero_pending_) {
+    zero_pending_ = true;
+    zero_first_tick_ms_ = now_ms;
+    return false;
+  }
+
+  if (now_ms < zero_first_tick_ms_ ||
+      now_ms - zero_first_tick_ms_ < kZeroAuthorityStabilityMs) {
+    return false;
+  }
+
+  zero_confirmed_ = true;
+  return true;
+}
+
+void SnapshotPublicationGate::Reject() {
+  zero_pending_ = false;
+  zero_confirmed_ = false;
+  zero_first_tick_ms_ = 0;
+}
 
 void RunAuthorityWorker() {
   AppendBridgeLog(
