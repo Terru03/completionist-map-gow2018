@@ -382,6 +382,17 @@ class AllRavensMapLuaTests(unittest.TestCase):
             + f"unknownIds={unknown_encoded} absenceIds={absence_encoded}\n"
         )
 
+    def test_confirmed_fresh_zero_does_not_require_region_summary(self):
+        self.lua.execute("regionSummaryCompleted={}")
+        self.probe.setNativeResponse(
+            "RAVEN_SNAPSHOT_V1 schema=1 restoreEpoch=0 generation=8 "
+            "capturedTickMs=1008 count=53 unknown=0 alive=53 killed=0 "
+            "explicit=0 absentWadFalse=53 killedIds=-\n"
+        )
+        self.probe.open()
+        self.assertTrue(self.probe.hasAuthority())
+        self.assertEqual(self.probe.iconCount(), 2)
+
     def test_full_native_snapshot_conflicting_with_region_summary_is_refused(self):
         stale = self.response(9, [self.a, self.b])
         parent = self.a["progression"]["parent_quest"]
