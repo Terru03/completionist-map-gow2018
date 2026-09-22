@@ -1,0 +1,559 @@
+{
+  "schema": 2,
+  "captured_utc": "2026-09-22T15:10:59.168358+00:00",
+  "analysis": "legendary_staged_runtime_identity_intersection_live_registries",
+  "result": "STAGED_RUNTIME_IDENTITY_INTERSECTION_FOUND",
+  "process": {
+    "pid": 4352,
+    "exe_name": "GoW.exe",
+    "module_base": "0x7FF6189C0000",
+    "module_size": 85839872,
+    "exe_sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452"
+  },
+  "staged_oracle": {
+    "dominant_parent_count": 206,
+    "represented_wad_count": 26,
+    "class_key_hex": "0x75E050AB149B4062",
+    "tracked_rows": 33
+  },
+  "live_context_count": 10,
+  "tracked_live_context_count": 1,
+  "tracked_live_wad_registry_pairs": [
+    {
+      "wad": "xpl250_funeralinterior.wad",
+      "registry_id": 241,
+      "context_index": 9,
+      "catalogue_ids": [
+        "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb"
+      ]
+    }
+  ],
+  "registry_reports": [
+    {
+      "wad": "xpl250_funeralinterior.wad",
+      "registry_id": 241,
+      "context_index": 9,
+      "catalogue_ids": [
+        "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb"
+      ],
+      "registry_count": 49152,
+      "staged_oracle_hash_count": 6,
+      "non_null": 5429,
+      "identity_method": 5429,
+      "built": 5429,
+      "build_failures": 0,
+      "staged_hash_hits": 6,
+      "hit_count": 6
+    }
+  ],
+  "hit_count": 6,
+  "unique_runtime_hash_count": 6,
+  "represented_wads": [
+    "xpl250_funeralinterior.wad"
+  ],
+  "catalogue_overlap_hit_count": 6,
+  "hits": [
+    {
+      "live_wad": "xpl250_funeralinterior.wad",
+      "runtime_registry": 241,
+      "slot": 422,
+      "runtime_token_hex": "0x00000000069801E3",
+      "object_ptr": "0x7FF334D2A870",
+      "object_hash_hex": "0x20AE2C7123C9DB2E",
+      "identity_elements_hex": [
+        "d507eb21a5b18f45bc5265b60f30fd1c",
+        "8e825d9cee977f42b76892e6e4509f4d",
+        "d679f28cd1420c41a0b2c325da0bcbfe",
+        "da585309ba5a754abe9241bf8ac83461",
+        "6db92cb8f1d4164a8587c7e741513c02"
+      ],
+      "identity_element_count": 5,
+      "builder": {
+        "metadata_ptr": "0x7FF33155B920",
+        "metadata_type_byte": 2,
+        "metadata_flags_68_hex": "0x00000205",
+        "special_flag_bit19": false,
+        "object_plus_40_hex": "6db92cb8f1d4164a8587c7e741513c02",
+        "events": [
+          {
+            "kind": "external_vector",
+            "object_ptr": "0x7FF334D2A870",
+            "depth": 0,
+            "source": "object+0x240 depth=0",
+            "ptr": "0x7FF334D305C0",
+            "count": 4,
+            "elements_hex": [
+              "d507eb21a5b18f45bc5265b60f30fd1c",
+              "8e825d9cee977f42b76892e6e4509f4d",
+              "d679f28cd1420c41a0b2c325da0bcbfe",
+              "da585309ba5a754abe9241bf8ac83461"
+            ]
+          }
+        ]
+      },
+      "read_process_memory_calls": 7,
+      "staged_matches": [
+        {
+          "wad": "xpl250_funeralinterior.wad",
+          "staged_name": "Xpl250_FuneralInterior",
+          "staged_index": 223,
+          "registry_hash_hex": "0x7E70D534C7B07AA1",
+          "object_hash_hex": "0x20AE2C7123C9DB2E",
+          "state_raw_hex": "0100004040",
+          "state_u32": 1077936128,
+          "state_row": 6,
+          "subobj_table_row": 1
+        }
+      ],
+      "catalogue_element_overlaps": [
+        {
+          "position": 0,
+          "element_hex": "d507eb21a5b18f45bc5265b60f30fd1c",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 4,
+          "record_name": "goxpl250_ents",
+          "mode": "adjusted_identity"
+        },
+        {
+          "position": 1,
+          "element_hex": "8e825d9cee977f42b76892e6e4509f4d",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 3,
+          "record_name": "goxpl250_ents_nooffset",
+          "mode": "adjusted_identity"
+        }
+      ],
+      "ranked_catalogue_overlap": [
+        {
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "overlap_count": 2
+        }
+      ]
+    },
+    {
+      "live_wad": "xpl250_funeralinterior.wad",
+      "runtime_registry": 241,
+      "slot": 863,
+      "runtime_token_hex": "0x000000000D7C01E3",
+      "object_ptr": "0x7FF334E6D3B0",
+      "object_hash_hex": "0x6369F356ED2FD792",
+      "identity_elements_hex": [
+        "d507eb21a5b18f45bc5265b60f30fd1c",
+        "8e825d9cee977f42b76892e6e4509f4d",
+        "79501dc1cfd61444a204c4e5ac42bb4e",
+        "736b35bae2ac85449b1efcc0fff49988",
+        "947a7c50b25f004ea3365dd8dc232ee1"
+      ],
+      "identity_element_count": 5,
+      "builder": {
+        "metadata_ptr": "0x7FF3312EDE30",
+        "metadata_type_byte": 2,
+        "metadata_flags_68_hex": "0x0000000D",
+        "special_flag_bit19": false,
+        "object_plus_40_hex": "947a7c50b25f004ea3365dd8dc232ee1",
+        "events": [
+          {
+            "kind": "external_vector",
+            "object_ptr": "0x7FF334E6D3B0",
+            "depth": 0,
+            "source": "object+0x240 depth=0",
+            "ptr": "0x7FF334E76310",
+            "count": 4,
+            "elements_hex": [
+              "d507eb21a5b18f45bc5265b60f30fd1c",
+              "8e825d9cee977f42b76892e6e4509f4d",
+              "79501dc1cfd61444a204c4e5ac42bb4e",
+              "736b35bae2ac85449b1efcc0fff49988"
+            ]
+          }
+        ]
+      },
+      "read_process_memory_calls": 7,
+      "staged_matches": [
+        {
+          "wad": "xpl250_funeralinterior.wad",
+          "staged_name": "Xpl250_FuneralInterior",
+          "staged_index": 223,
+          "registry_hash_hex": "0x7E70D534C7B07AA1",
+          "object_hash_hex": "0x6369F356ED2FD792",
+          "state_raw_hex": "0100008040",
+          "state_u32": 1082130432,
+          "state_row": 32,
+          "subobj_table_row": 1
+        }
+      ],
+      "catalogue_element_overlaps": [
+        {
+          "position": 0,
+          "element_hex": "d507eb21a5b18f45bc5265b60f30fd1c",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 4,
+          "record_name": "goxpl250_ents",
+          "mode": "adjusted_identity"
+        },
+        {
+          "position": 1,
+          "element_hex": "8e825d9cee977f42b76892e6e4509f4d",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 3,
+          "record_name": "goxpl250_ents_nooffset",
+          "mode": "adjusted_identity"
+        }
+      ],
+      "ranked_catalogue_overlap": [
+        {
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "overlap_count": 2
+        }
+      ]
+    },
+    {
+      "live_wad": "xpl250_funeralinterior.wad",
+      "runtime_registry": 241,
+      "slot": 880,
+      "runtime_token_hex": "0x000000000DC001E3",
+      "object_ptr": "0x7FF334E70050",
+      "object_hash_hex": "0x748BE60F37BAB846",
+      "identity_elements_hex": [
+        "d507eb21a5b18f45bc5265b60f30fd1c",
+        "8e825d9cee977f42b76892e6e4509f4d",
+        "feacd6d6d12a4f44a2ce490beba185ba",
+        "30c16eb3812d4240b49d3a1254d63108",
+        "947a7c50b25f004ea3365dd8dc232ee1"
+      ],
+      "identity_element_count": 5,
+      "builder": {
+        "metadata_ptr": "0x7FF3312EDE30",
+        "metadata_type_byte": 2,
+        "metadata_flags_68_hex": "0x0000000D",
+        "special_flag_bit19": false,
+        "object_plus_40_hex": "947a7c50b25f004ea3365dd8dc232ee1",
+        "events": [
+          {
+            "kind": "external_vector",
+            "object_ptr": "0x7FF334E70050",
+            "depth": 0,
+            "source": "object+0x240 depth=0",
+            "ptr": "0x7FF334E7EA90",
+            "count": 4,
+            "elements_hex": [
+              "d507eb21a5b18f45bc5265b60f30fd1c",
+              "8e825d9cee977f42b76892e6e4509f4d",
+              "feacd6d6d12a4f44a2ce490beba185ba",
+              "30c16eb3812d4240b49d3a1254d63108"
+            ]
+          }
+        ]
+      },
+      "read_process_memory_calls": 7,
+      "staged_matches": [
+        {
+          "wad": "xpl250_funeralinterior.wad",
+          "staged_name": "Xpl250_FuneralInterior",
+          "staged_index": 223,
+          "registry_hash_hex": "0x7E70D534C7B07AA1",
+          "object_hash_hex": "0x748BE60F37BAB846",
+          "state_raw_hex": "0100008040",
+          "state_u32": 1082130432,
+          "state_row": 15,
+          "subobj_table_row": 1
+        }
+      ],
+      "catalogue_element_overlaps": [
+        {
+          "position": 0,
+          "element_hex": "d507eb21a5b18f45bc5265b60f30fd1c",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 4,
+          "record_name": "goxpl250_ents",
+          "mode": "adjusted_identity"
+        },
+        {
+          "position": 1,
+          "element_hex": "8e825d9cee977f42b76892e6e4509f4d",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 3,
+          "record_name": "goxpl250_ents_nooffset",
+          "mode": "adjusted_identity"
+        },
+        {
+          "position": 2,
+          "element_hex": "feacd6d6d12a4f44a2ce490beba185ba",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 2,
+          "record_name": "gochest_legendary_tier2_xpl250_1",
+          "mode": "adjusted_identity"
+        },
+        {
+          "position": 3,
+          "element_hex": "30c16eb3812d4240b49d3a1254d63108",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 0,
+          "record_name": "gochestscript",
+          "mode": "adjusted_identity"
+        }
+      ],
+      "ranked_catalogue_overlap": [
+        {
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "overlap_count": 4
+        }
+      ]
+    },
+    {
+      "live_wad": "xpl250_funeralinterior.wad",
+      "runtime_registry": 241,
+      "slot": 957,
+      "runtime_token_hex": "0x000000000EF401E3",
+      "object_ptr": "0x7FF334F10240",
+      "object_hash_hex": "0x71E2E1A1BD815C76",
+      "identity_elements_hex": [
+        "d507eb21a5b18f45bc5265b60f30fd1c",
+        "8e825d9cee977f42b76892e6e4509f4d",
+        "4813767722fa414b9a3d4972db8774e7",
+        "50243b048a84fc4f8c7a6542a7239484",
+        "bdff29c1ed8dba4aa015b7b27261f0f0"
+      ],
+      "identity_element_count": 5,
+      "builder": {
+        "metadata_ptr": "0x7FF331221BC0",
+        "metadata_type_byte": 2,
+        "metadata_flags_68_hex": "0x00000205",
+        "special_flag_bit19": false,
+        "object_plus_40_hex": "bdff29c1ed8dba4aa015b7b27261f0f0",
+        "events": [
+          {
+            "kind": "external_vector",
+            "object_ptr": "0x7FF334F10240",
+            "depth": 0,
+            "source": "object+0x240 depth=0",
+            "ptr": "0x7FF334F14FD0",
+            "count": 4,
+            "elements_hex": [
+              "d507eb21a5b18f45bc5265b60f30fd1c",
+              "8e825d9cee977f42b76892e6e4509f4d",
+              "4813767722fa414b9a3d4972db8774e7",
+              "50243b048a84fc4f8c7a6542a7239484"
+            ]
+          }
+        ]
+      },
+      "read_process_memory_calls": 7,
+      "staged_matches": [
+        {
+          "wad": "xpl250_funeralinterior.wad",
+          "staged_name": "Xpl250_FuneralInterior",
+          "staged_index": 223,
+          "registry_hash_hex": "0x7E70D534C7B07AA1",
+          "object_hash_hex": "0x71E2E1A1BD815C76",
+          "state_raw_hex": "0100004040",
+          "state_u32": 1077936128,
+          "state_row": 30,
+          "subobj_table_row": 1
+        }
+      ],
+      "catalogue_element_overlaps": [
+        {
+          "position": 0,
+          "element_hex": "d507eb21a5b18f45bc5265b60f30fd1c",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 4,
+          "record_name": "goxpl250_ents",
+          "mode": "adjusted_identity"
+        },
+        {
+          "position": 1,
+          "element_hex": "8e825d9cee977f42b76892e6e4509f4d",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 3,
+          "record_name": "goxpl250_ents_nooffset",
+          "mode": "adjusted_identity"
+        }
+      ],
+      "ranked_catalogue_overlap": [
+        {
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "overlap_count": 2
+        }
+      ]
+    },
+    {
+      "live_wad": "xpl250_funeralinterior.wad",
+      "runtime_registry": 241,
+      "slot": 977,
+      "runtime_token_hex": "0x000000000F4401E3",
+      "object_ptr": "0x7FF334F136C0",
+      "object_hash_hex": "0xF7D047AD2E8AD2CE",
+      "identity_elements_hex": [
+        "d507eb21a5b18f45bc5265b60f30fd1c",
+        "8e825d9cee977f42b76892e6e4509f4d",
+        "3f176e49e0a0cd4f8cf59ada5ee8c2d8",
+        "e8ac58c5806336458c07fd9fcc2f6b20",
+        "bdff29c1ed8dba4aa015b7b27261f0f0"
+      ],
+      "identity_element_count": 5,
+      "builder": {
+        "metadata_ptr": "0x7FF331221BC0",
+        "metadata_type_byte": 2,
+        "metadata_flags_68_hex": "0x00000205",
+        "special_flag_bit19": false,
+        "object_plus_40_hex": "bdff29c1ed8dba4aa015b7b27261f0f0",
+        "events": [
+          {
+            "kind": "external_vector",
+            "object_ptr": "0x7FF334F136C0",
+            "depth": 0,
+            "source": "object+0x240 depth=0",
+            "ptr": "0x7FF334F1A260",
+            "count": 4,
+            "elements_hex": [
+              "d507eb21a5b18f45bc5265b60f30fd1c",
+              "8e825d9cee977f42b76892e6e4509f4d",
+              "3f176e49e0a0cd4f8cf59ada5ee8c2d8",
+              "e8ac58c5806336458c07fd9fcc2f6b20"
+            ]
+          }
+        ]
+      },
+      "read_process_memory_calls": 7,
+      "staged_matches": [
+        {
+          "wad": "xpl250_funeralinterior.wad",
+          "staged_name": "Xpl250_FuneralInterior",
+          "staged_index": 223,
+          "registry_hash_hex": "0x7E70D534C7B07AA1",
+          "object_hash_hex": "0xF7D047AD2E8AD2CE",
+          "state_raw_hex": "0100004040",
+          "state_u32": 1077936128,
+          "state_row": 24,
+          "subobj_table_row": 1
+        }
+      ],
+      "catalogue_element_overlaps": [
+        {
+          "position": 0,
+          "element_hex": "d507eb21a5b18f45bc5265b60f30fd1c",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 4,
+          "record_name": "goxpl250_ents",
+          "mode": "adjusted_identity"
+        },
+        {
+          "position": 1,
+          "element_hex": "8e825d9cee977f42b76892e6e4509f4d",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 3,
+          "record_name": "goxpl250_ents_nooffset",
+          "mode": "adjusted_identity"
+        }
+      ],
+      "ranked_catalogue_overlap": [
+        {
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "overlap_count": 2
+        }
+      ]
+    },
+    {
+      "live_wad": "xpl250_funeralinterior.wad",
+      "runtime_registry": 241,
+      "slot": 1004,
+      "runtime_token_hex": "0x000000000FB001E3",
+      "object_ptr": "0x7FF334F203D0",
+      "object_hash_hex": "0xB49D5E093E2EB766",
+      "identity_elements_hex": [
+        "d507eb21a5b18f45bc5265b60f30fd1c",
+        "8e825d9cee977f42b76892e6e4509f4d",
+        "6f0c5dd91670e2428326e12d98ddbb85",
+        "41a9ee287550484499673cd6e3444d0a",
+        "947a7c50b25f004ea3365dd8dc232ee1"
+      ],
+      "identity_element_count": 5,
+      "builder": {
+        "metadata_ptr": "0x7FF3312EDE30",
+        "metadata_type_byte": 2,
+        "metadata_flags_68_hex": "0x0000000D",
+        "special_flag_bit19": false,
+        "object_plus_40_hex": "947a7c50b25f004ea3365dd8dc232ee1",
+        "events": [
+          {
+            "kind": "external_vector",
+            "object_ptr": "0x7FF334F203D0",
+            "depth": 0,
+            "source": "object+0x240 depth=0",
+            "ptr": "0x7FF334F3B040",
+            "count": 4,
+            "elements_hex": [
+              "d507eb21a5b18f45bc5265b60f30fd1c",
+              "8e825d9cee977f42b76892e6e4509f4d",
+              "6f0c5dd91670e2428326e12d98ddbb85",
+              "41a9ee287550484499673cd6e3444d0a"
+            ]
+          }
+        ]
+      },
+      "read_process_memory_calls": 7,
+      "staged_matches": [
+        {
+          "wad": "xpl250_funeralinterior.wad",
+          "staged_name": "Xpl250_FuneralInterior",
+          "staged_index": 223,
+          "registry_hash_hex": "0x7E70D534C7B07AA1",
+          "object_hash_hex": "0xB49D5E093E2EB766",
+          "state_raw_hex": "0100008040",
+          "state_u32": 1082130432,
+          "state_row": 23,
+          "subobj_table_row": 1
+        }
+      ],
+      "catalogue_element_overlaps": [
+        {
+          "position": 0,
+          "element_hex": "d507eb21a5b18f45bc5265b60f30fd1c",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 4,
+          "record_name": "goxpl250_ents",
+          "mode": "adjusted_identity"
+        },
+        {
+          "position": 1,
+          "element_hex": "8e825d9cee977f42b76892e6e4509f4d",
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "wad": "xpl250_funeralinterior.wad",
+          "chain_index": 3,
+          "record_name": "goxpl250_ents_nooffset",
+          "mode": "adjusted_identity"
+        }
+      ],
+      "ranked_catalogue_overlap": [
+        {
+          "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+          "overlap_count": 2
+        }
+      ]
+    }
+  ],
+  "safety": {
+    "open_process_access": "PROCESS_VM_READ|PROCESS_QUERY_INFORMATION",
+    "debugger_attached": false,
+    "remote_game_code_called": false,
+    "process_memory_written": false,
+    "active_save_opened": false,
+    "save_or_progression_written": false,
+    "game_files_written": false,
+    "raven_runtime_modified": false
+  }
+}
