@@ -52,6 +52,7 @@ do
   local lastNativeRestoreEpoch =
       tonumber(_G.CompletionistMapV105LastNativeRestoreEpoch)
   local lastNativeNotice = nil
+  local lastRegionSummaryDiagnosticKey = nil
 
   local function log(category, fields)
     print(prefix .. category .. " " .. fields)
@@ -70,6 +71,69 @@ do
     if key == lastNativeNotice then return end
     lastNativeNotice = key
     log(category, fields)
+  end
+
+  local function logRegionSummaryDiagnostics(source)
+    if hasAuthoritativeRavenState then return end
+    if type(game) ~= "table" or type(game.QuestManager) ~= "table" or
+        type(game.QuestManager.GetQuestProgressAndGoal) ~= "function" then
+      nativeNotice("REGION_SUMMARY_DIAGNOSTIC",
+          "source=" .. tostring(source) .. " available=false",
+          "region_summary_unavailable")
+      return
+    end
+
+    local groups = {}
+    for _, row in ipairs(rows) do
+      if type(row.ParentQuest) == "string" and row.ParentQuest ~= "" then
+        local group = groups[row.ParentQuest]
+        if group == nil then
+          group = {count=0, realms={}}
+          groups[row.ParentQuest] = group
+        end
+        group.count = group.count + 1
+        group.realms[row.Realm] = true
+      end
+    end
+
+    local parents = {}
+    for parent, _ in pairs(groups) do parents[#parents + 1] = parent end
+    table.sort(parents)
+
+    local records = {}
+    local keyParts = {}
+    for _, parent in ipairs(parents) do
+      local group = groups[parent]
+      local ok, progress, goal = pcall(
+          game.QuestManager.GetQuestProgressAndGoal, parent)
+      local progressNumber = ok and tonumber(progress) or nil
+      local goalNumber = ok and tonumber(goal) or nil
+      local realmNames = {}
+      for realm, _ in pairs(group.realms) do realmNames[#realmNames + 1] = realm end
+      table.sort(realmNames)
+      local realmText = table.concat(realmNames, ",")
+      local safeCountMatch =
+          progressNumber ~= nil and goalNumber ~= nil and
+          goalNumber == group.count
+      local record =
+          "parent=" .. parent ..
+          " progress=" .. tostring(progressNumber) ..
+          " goal=" .. tostring(goalNumber) ..
+          " catalogueCount=" .. tostring(group.count) ..
+          " safeCountMatch=" .. tostring(safeCountMatch) ..
+          " realms=" .. realmText
+      records[#records + 1] = record
+      keyParts[#keyParts + 1] = record
+    end
+
+    local key = table.concat(keyParts, "|")
+    if key == lastRegionSummaryDiagnosticKey then return end
+    lastRegionSummaryDiagnosticKey = key
+    for _, record in ipairs(records) do
+      log("REGION_SUMMARY_DIAGNOSTIC",
+          "source=" .. tostring(source) .. " " .. record ..
+          " readOnly=true progressionWrites=false")
+    end
   end
 
   local function closeSocket(client)
@@ -525,6 +589,9 @@ do
     log("NATIVE_AUTHORITY_REFRESH", "source=map_create result=" ..
         (refreshed and "applied" or tostring(refreshReason)) ..
         " lastGeneration=" .. tostring(lastNativeGeneration))
+    if not refreshed and not hasAuthoritativeRavenState then
+      logRegionSummaryDiagnostics("map_create")
+    end
     local result = createPins(self, currState)
     syncIcons(self, "map_create")
     return result
