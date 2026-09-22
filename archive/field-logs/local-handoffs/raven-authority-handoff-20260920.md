@@ -7306,3 +7306,65 @@ Short live-proof support:
 No delivered game file changed after proof refresh
 `f50bfdc7ea88ce55e2bceb8ad0bfa1c79cd8e3d5`, so another delivery-proof refresh
 is not required before this cosmetic-only live run.
+
+
+### Cosmetic polish field regression 2026-09-22 - first attempt rejected; safer UI ownership fix
+
+Failed cosmetic-only live evidence:
+
+- evidence commit:
+  `1855eea85482343c904a9e4f74d272ae2c215fb7`;
+- capture:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-live-proof-20260922-112900`;
+- result:
+  `RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_FAILED`;
+- reason:
+  `Raven cosmetic regression reported.`;
+- rollback remained exact and all write-safety flags remained false.
+
+User field observations:
+
+1. the intended cosmetic issues were not fixed;
+2. a new regression appeared: after adding the custom Raven, the
+   `Remove from Compass` action text became stuck to the floating map cursor.
+
+Cause of the new regression:
+
+The first cosmetic patch allowed the committed `promptIntent` to bypass the
+normal cursor-selection ownership check inside `refreshPrompt()`.
+`refreshPrompt()` writes both the bottom footer and
+`MapCursorInfo/CursorAction_Text`, so a consumed selection could keep forcing
+floating cursor text.
+
+The first same-UID artwork reassert approach also did not solve the real
+boat-dock presentation takeover.
+
+Replacement implementation:
+
+- `fe1baf25d615328f82a529f8971edc4772ce440b`
+  - restored the map UI runtime to the accepted functional Raven baseline
+    before applying the new cosmetic fix;
+  - added a committed-action footer-only refresh path that never writes
+    `MapCursorInfo`;
+  - custom Raven tracking now keeps `currShownMarkerID=nil`, because that
+    field belongs to the stock map-compass presentation path and can let the
+    stock/boat artwork reclaim the same UID.
+
+- `952f9762a73c1906bbb0f25b14cc79bbdd2af27c`
+  - preserves normal floating cursor updates while the Raven is genuinely
+    selected;
+  - once base selection ownership is consumed, only the footer-only path may
+    refresh.
+
+Regression coverage:
+
+- `1cd3335ad4797f6a033f16e3cb11f02fea33c122`
+  - first Add with base `currMarkerID` consumed must update the footer to
+    Remove immediately while leaving seeded floating cursor text untouched;
+  - same Raven Add -> Remove -> Add must keep `currShownMarkerID=nil` and
+    resolve the synthetic artwork owner as custom even when a same-UID stock
+    entry exists.
+
+Functional Raven authority/save/native logic remains identical to the accepted
+RC baseline. The delivery proof must be refreshed again because generated
+`mapmenu.lua` changed.
