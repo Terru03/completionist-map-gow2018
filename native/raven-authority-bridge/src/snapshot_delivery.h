@@ -40,6 +40,8 @@ void ResetSessionAuthority();
 std::uint64_t NoteRestoreBoundary(std::uint64_t now_ms);
 bool NoteKilled(std::string_view catalogue_id);
 std::uint64_t CurrentRestoreEpoch();
+std::uint64_t ObserveAuthoritativeBase(
+    const NativeRavenSnapshot& snapshot, std::uint64_t now_ms);
 NativeRavenSnapshot MergeCurrentEpochKills(
     const NativeRavenSnapshot& snapshot);
 
