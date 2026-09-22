@@ -173,7 +173,16 @@ try {
 
     $changed = @(& git diff --name-only)
     if ($LASTEXITCODE -ne 0) { throw 'Could not inspect proof-refresh diff.' }
-    if ($changed.Count -ne 1 -or $changed[0].Replace('\','/') -ne $proofRelative) {
+
+    $proofChanged = $false
+    if ($changed.Count -eq 0) {
+        Write-Host 'Proof refresh produced no tracked diff; pinned proof already matches rendered candidate.'
+    }
+    elseif ($changed.Count -eq 1 -and
+            $changed[0].Replace('\','/') -eq $proofRelative) {
+        $proofChanged = $true
+    }
+    else {
         Write-Host 'Unexpected tracked changes:'
         $changed | ForEach-Object { Write-Host $_ }
         throw 'Proof refresh changed an unexpected tracked path.'
@@ -209,14 +218,20 @@ try {
         'source_game_rebuild=false'
         'non_generated_binary_pins_unchanged=true'
         'transactional_candidate_refresh=true'
+        "proof_changed=$($proofChanged.ToString().ToLowerInvariant())"
     ) | Set-Content -LiteralPath $resultFile -Encoding UTF8
 
     Write-Host (
         "RAVEN_DELIVERY_PROOF_REFRESH_PASSED mapmenu_sha256=$mapSha " +
         "map_bytes=$mapBytes precisionchallenge_sha256=$eventSha event_bytes=$eventBytes")
 
-    $successCommitSha = Commit-Evidence (
-        'build(v0.10.5): refresh final Raven delivery proof') $true
+    $successMessage = if ($proofChanged) {
+        'build(v0.10.5): refresh final Raven delivery proof'
+    }
+    else {
+        'test(v0.10.5): verify final Raven delivery proof unchanged'
+    }
+    $successCommitSha = Commit-Evidence $successMessage $proofChanged
     $successCommitCreated = $true
     Push-Commit $successCommitSha
 
