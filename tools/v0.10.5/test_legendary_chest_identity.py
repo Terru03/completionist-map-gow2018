@@ -198,6 +198,16 @@ class LegendaryChestIdentityTests(unittest.TestCase):
             "947a7c50b25f004ea3365dd8dc232ee1",
         )
 
+    def test_proven_opened_state_semantics_are_pinned(self):
+        self.assertEqual(identity.OPENED_STATE_NUMERIC, 4)
+        self.assertEqual(identity.OPENED_STATE_FLOAT32, 4.0)
+        self.assertEqual(identity.OPENED_STATE_RAW_HEX, "0100008040")
+        contract = identity.static_contract(self.catalogue)
+        self.assertTrue(contract["state_semantics_proven"])
+        self.assertEqual(contract["opened_state_numeric"], 4)
+        self.assertEqual(contract["opened_state_float32"], 4.0)
+        self.assertEqual(contract["opened_state_raw_hex"], "0100008040")
+
     def test_native_wad_name_hash_matches_known_algorithm(self):
         self.assertEqual(
             identity.registry_hash_for_wad("alf600_templeint.wad"),
