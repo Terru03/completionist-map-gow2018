@@ -7137,3 +7137,90 @@ Offline release baseline remains:
 ALL-RAVENS RC is field-accepted. Further collectible implementation should
 remain on the separate all-collectibles branch; do not contaminate this Raven
 RC branch with broad collectible work.
+
+
+### Raven map visibility / filter branch 2026-09-22
+
+The accepted functional Raven RC remains frozen:
+
+- branch: `codex/all-ravens-release-candidate`;
+- accepted baseline: `056f30a01baf938423ac1f738efb540795600d53`.
+
+New work is isolated on:
+
+- branch: `codex/all-ravens-map-filter-visibility`;
+- branched from the accepted RC only.
+
+Field defect reported:
+
+- all-Ravens map icons remained visible while stock map filters selected unrelated marker families;
+- Raven icons also remained visible on the Mystic Gateway fast-travel destination map.
+
+Root cause:
+
+- the v0.10.5 all-Ravens layer created and force-showed its own icon GameObjects based only on realm + alive authority;
+- it bypassed the existing map's `filterButtonMapping/filterIndex` custom filter contract;
+- it also ignored the stock `self.isOpenedForFastTravel` mode flag.
+
+Implementation:
+
+- `81501891c73951b1d0f51574136a480e09d79c2d`
+  - introduces `ravenMapVisible(self)`;
+  - Ravens are map-visible only for logical filters:
+    - `1` Show All;
+    - `-101` Completionist;
+    - `-102` Ravens;
+  - any `self.isOpenedForFastTravel == true` hides all Raven map icons and prevents new Raven icon creation;
+  - existing valid icons are hidden, not destroyed, for ordinary filter changes;
+  - exact Raven selection is disarmed while the Raven family is filtered out;
+  - an inexpensive visibility key applies mode/filter changes from `MapOn.Update`.
+- `96f50f74276f7e920ee1a5e2095d4e71f4cf3ec0`
+  - wraps the existing filter-change path so Raven visibility updates immediately on the filter action rather than waiting for the next map frame;
+  - extends the already-existing `RAVENS` logical filter (`-102`) to every realm represented by the 53-Raven catalogue, instead of Midgard only;
+  - does not extend unrelated Completionist/Nornir filters to other realms.
+
+Regression coverage:
+
+- `84e1e8a6a707d8830ef01235b6e4aa4af894e4d0`
+  - Mystic Gateway / fast-travel map creates no Raven icons;
+  - returning to the normal map restores living Ravens;
+  - Show All, Completionist and Ravens filters show Ravens;
+  - unrelated stock/custom filters hide Ravens;
+  - restoring the Raven filter cannot revive a killed Raven.
+- `478e5ce6aaa2a34b2dbb33ef16e8e7dcd14850e8`
+  - filter changes update Raven visibility immediately without an extra `MapOn.Update`;
+  - Alfheim receives the existing logical RAVENS filter through the wrapped filter mapping.
+- `c3ea079904fe13c3f2ce71fdfd7f4c455463f0d5`, `fdce69b5650df5684da2b0b3e4dd532f51b57dbd`, `38f431bf5518452d0bfb59cec9acef4a6a3a3116`, `92712af69fad5b4953e53de400f119513bcf4f93`
+  - pin the map visibility and cross-realm Raven-filter contract in build metadata/template tests.
+
+Feature-branch gate support:
+
+- proof refresh and native/offline gate wrappers now accept an explicit `-ExpectedBranch`;
+- targeted live proof was added to the existing transactional live runner with `-MapVisibilityOnly`;
+- targeted field acceptance checks:
+  1. Show All shows living Ravens;
+  2. RAVENS shows living Ravens;
+  3. at least two unrelated filters hide Ravens immediately;
+  4. returning to Show All/RAVENS restores only living Ravens;
+  5. Mystic Gateway fast-travel destination map shows no Raven icons in any realm;
+- the live runner still performs exact transactional rollback and pushes the evidence capture.
+
+Safety / scope:
+
+- no save writes;
+- no progression writes;
+- no marker-state writes;
+- no native bridge authority changes;
+- no Raven kill/persistence logic changes;
+- no compass routing changes;
+- release-candidate branch remains at the accepted baseline.
+
+Next gate sequence on the feature branch:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File ".\tools\v0.10.5\refresh-raven-delivery-proof-and-push.ps1" -ExpectedBranch codex/all-ravens-map-filter-visibility
+pwsh -NoProfile -ExecutionPolicy Bypass -File ".\tools\v0.10.5\test-raven-native-snapshot-delivery-offline-gates-and-push.ps1" -ExpectedBranch codex/all-ravens-map-filter-visibility
+pwsh -NoProfile -ExecutionPolicy Bypass -File ".\tools\v0.10.5\run-raven-native-snapshot-delivery-live-proof-and-push.ps1" -ExpectedBranch codex/all-ravens-map-filter-visibility -MapVisibilityOnly
+```
+
+Do not merge back to `codex/all-ravens-release-candidate` until all offline gates and the targeted Mystic Gateway/filter field proof pass.
