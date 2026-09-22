@@ -96,8 +96,14 @@ def main() -> int:
 
     out_dir = args.output_dir.resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
-    if any(out_dir.iterdir()):
-        raise RuntimeError("output folder must be empty")
+    # The PowerShell runners start their transcript inside this directory before
+    # invoking the capture. Refuse only files/directories owned by this capture,
+    # not the runner's console log.
+    for owned in ("report.json", "report.txt", "tracked-channel-a"):
+        if (out_dir / owned).exists():
+            raise RuntimeError(
+                f"capture-owned output already exists: {out_dir / owned}"
+            )
 
     catalogue = json.loads(args.catalogue.read_text(encoding="utf-8"))
     identities, identity_map = derived_identities(catalogue)
