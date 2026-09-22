@@ -75,6 +75,7 @@ $parseFiles = @(
     'tools\v0.10.5\test-raven-authority-bridge-runner.ps1',
     'tools\v0.10.5\test-all-ravens-transaction.ps1',
     'tools\v0.10.5\test-raven-native-snapshot-delivery-offline-gates.ps1',
+    'tools\v0.10.5\test-raven-native-snapshot-delivery-offline-gates-and-push.ps1',
     'tools\v0.10.5\run-raven-native-snapshot-delivery-live-proof-and-push.ps1'
 )
 foreach ($relative in $parseFiles) {
