@@ -46,7 +46,11 @@ def normalize_wad_name(value: str | None) -> str | None:
         marker = name.lower().find(".wad")
         if marker >= 0:
             name = name[:marker + 4]
-    return name if name.endswith(".wad") else None
+        else:
+            # The proved live WAD context commonly stores only the WAD stem,
+            # e.g. "Xpl250_FuneralInterior". Shipped catalogue paths add .wad.
+            name = name + ".wad"
+    return name
 
 
 def tracked_rows(catalogue: dict) -> list[dict]:
