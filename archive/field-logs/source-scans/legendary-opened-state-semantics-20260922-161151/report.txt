@@ -1,0 +1,39 @@
+Completionist Map - Legendary OPENED state semantics
+status=LEGENDARY_OPENED_STATE_SEMANTICS_PROVEN
+
+STOCK STANDARD CHEST SCRIPT
+script=gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua
+states=ENABLED:1,DISABLED:2,LOCKED:3,OPENED:4
+opening_assignment=state = states.OPENED
+opened_restore_branch=true
+legendary_region_summary_update=true
+
+PERSISTED CHECKPOINT CARRIER
+field=state
+value_tag=1
+opened_raw_hex=0100008040
+opened_u32=1082130432
+opened_float32=4.0
+accepted_exact_staged_bindings=32/32
+
+LIVE MOUNTAIN CONFIRMATION
+catalogue_id=legendary_chest_d63295f244f330219b003c913c0dab69
+wad=peak720_summitascenthub.wad
+registry=221
+slot=1189
+runtime_token=0x00000000129401BB
+object_hash=0x3978566FB35C5EAD
+full_identity_vector_exact=true
+persisted_state_float32=4.0
+
+CONCLUSION
+state_semantics_proven=true
+OPENED=4
+persisted_OPENED=4.0
+production_rule=hide marker iff exact persisted state == 4.0
+missing_or_ambiguous_state=do not mark completed
+
+SAFETY
+static_evidence_only=true
+save_or_progression_written=false
+raven_runtime_modified=false
