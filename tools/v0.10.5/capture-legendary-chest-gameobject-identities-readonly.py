@@ -368,12 +368,12 @@ def sweep(k, process, base, registry, rows):
             placement["record_id"]
         ).hex()
         raw_anchor = placement["record_id"].lower()
-        if adjusted_anchor in adjusted_placement_anchors:
-            raise RuntimeError("duplicate adjusted Legendary placement anchor")
-        if raw_anchor in raw_placement_anchors:
-            raise RuntimeError("duplicate raw Legendary placement anchor")
-        adjusted_placement_anchors[adjusted_anchor] = row["catalogue_id"]
-        raw_placement_anchors[raw_anchor] = row["catalogue_id"]
+        adjusted_placement_anchors.setdefault(adjusted_anchor, []).append(
+            row["catalogue_id"]
+        )
+        raw_placement_anchors.setdefault(raw_anchor, []).append(
+            row["catalogue_id"]
+        )
 
     count = registry["count"]
     array = registry["array_ptr"]
@@ -440,18 +440,22 @@ def sweep(k, process, base, registry, rows):
                 ("adjusted_placement", adjusted_placement_anchors),
                 ("raw_placement", raw_placement_anchors),
             ):
-                catalogue_id = table.get(element)
-                if catalogue_id is None:
+                catalogue_ids = table.get(element)
+                if not catalogue_ids:
                     continue
-                bucket = anchor_hits[catalogue_id]
-                if len(bucket) < 8:
-                    bucket.append(
-                        {
-                            **base_row,
-                            "anchor_mode": mode,
-                            "anchor_position": position,
-                        }
-                    )
+                for catalogue_id in catalogue_ids:
+                    bucket = anchor_hits[catalogue_id]
+                    if len(bucket) < 8:
+                        bucket.append(
+                            {
+                                **base_row,
+                                "anchor_mode": mode,
+                                "anchor_position": position,
+                                "anchor_catalogue_candidates": sorted(
+                                    catalogue_ids
+                                ),
+                            }
+                        )
 
         candidates = []
         for scene_key, catalogue_id in expected.items():
@@ -526,7 +530,25 @@ def sweep(k, process, base, registry, rows):
             }
         )
 
+    duplicate_adjusted_anchors = {
+        key: sorted(values)
+        for key, values in adjusted_placement_anchors.items()
+        if len(values) > 1
+    }
+    duplicate_raw_anchors = {
+        key: sorted(values)
+        for key, values in raw_placement_anchors.items()
+        if len(values) > 1
+    }
     diagnostics = {
+        "placement_anchor_contract": {
+            "adjusted_unique_values": len(adjusted_placement_anchors),
+            "raw_unique_values": len(raw_placement_anchors),
+            "duplicate_adjusted_anchors": duplicate_adjusted_anchors,
+            "duplicate_raw_anchors": duplicate_raw_anchors,
+            "anchors_are_diagnostic_only": True,
+            "full_scene_path_remains_acceptance_identity": True,
+        },
         "prefix_match_rows": sum(
             1 for values in prefix_matches.values() if values
         ),
