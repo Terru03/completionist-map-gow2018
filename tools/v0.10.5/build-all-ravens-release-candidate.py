@@ -296,9 +296,9 @@ def state_contract() -> dict:
         "event_false_policy": "defer alive state to atomic 53-Raven authority",
         "event_kill_overlay": "bridge process-local positive kills are unioned with decoded saved kills only inside the current restoreEpoch",
         "event_overlay_clear_policy": "restoreEpoch advance makes previous session-only kill notes ineligible; matching V2 supplies restored saved truth",
-        "load_boundary_authority": "native loopback bridge coalesces gameplay OnRestoreCheckpoint notes into restoreEpoch; map V1 observes epoch changes and requires matching V2 capture",
+        "load_boundary_authority": "native loopback bridge coalesces gameplay OnRestoreCheckpoint notes into restoreEpoch and infers a new epoch when raw authoritative killed state revives; map V1 observes epoch changes and requires matching V2 capture",
         "boundary_epoch_policy": "bridge-owned monotonic restoreEpoch must be echoed as boundaryEpoch by synchronous V2 capture before state replacement",
-        "load_boundary_sources": ["native_bridge_restoreEpoch", "OnRestoreCheckpoint_bridge_note", "EVT_LoadSaveData_fallback", "EVT_LoadSaveFile_Done_fallback"],
+        "load_boundary_sources": ["native_bridge_restoreEpoch", "OnRestoreCheckpoint_bridge_note", "authoritative_killed_to_alive_inference", "EVT_LoadSaveData_fallback", "EVT_LoadSaveFile_Done_fallback"],
     }
 
 
