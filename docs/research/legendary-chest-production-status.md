@@ -881,3 +881,38 @@ The installer:
 
 The restore runner reinstates the exact backed-up bytes and verifies all three
 pre-test hashes before removing the local diagnostic backup.
+
+
+### Mountain test pivot: capture live chest GameObject IDs directly
+
+Manual routing to `peak500_chimneytop` is no longer the preferred diagnostic.
+
+Because the user is already loaded inside The Mountain, the stronger next step is
+to interrogate the resident runtime state directly and capture the exact live
+GameObject IDs for any tracked Legendary Chests currently loaded.
+
+New tooling:
+
+- `capture-live-legendary-chest-gameobjects-readonly.py`;
+- `run-live-legendary-chest-gameobjects-readonly-and-push.ps1`.
+
+The capture:
+
+1. derives all 33 accepted Legendary object hashes from the solved structural
+   identity rule;
+2. resolves the live WAD-context table to the actual registry ID for every
+   currently resident tracked Legendary WAD;
+3. scans only those live registries;
+4. reconstructs each native GameObject identity vector;
+5. requires exact full-vector equality, not hash-only equality;
+6. records the matched chest's live registry ID, slot, packed runtime token,
+   object pointer, identity vector, and native builder metadata;
+7. highlights Mountain/Peakspass matches separately.
+
+This is strictly read-only:
+`PROCESS_VM_READ|PROCESS_QUERY_INFORMATION`, with no game-code calls, process
+writes, save/progression writes, game-file writes, or Raven runtime changes.
+
+The temporary endpoint route marker may remain installed during this capture;
+it modifies only map UI/static map-coordinate resources and does not affect the
+Legendary chest WAD GameObjects being identified.
