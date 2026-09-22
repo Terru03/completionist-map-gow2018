@@ -57,6 +57,13 @@ class AllRavensTemplateTests(unittest.TestCase):
         self.assertEqual(
             router["initial_marker_policy"], "hidden_until_atomic_authority"
         )
+        self.assertEqual(
+            router["map_visibility_policy"],
+            "Show All, Completionist, or Ravens filter only",
+        )
+        self.assertFalse(router["fast_travel_map_visibility"])
+        self.assertIn("isOpenedForFastTravel", router["map_visibility_source"])
+        self.assertIn("disarm", router["hidden_map_selection_policy"])
         self.assertIn("ordering only", router["native_generation_role"])
         self.assertIn("boundaryEpoch", router["native_boundary_authority"])
         self.assertEqual(
@@ -90,6 +97,8 @@ class AllRavensTemplateTests(unittest.TestCase):
             "CaptureRavenBoundarySnapshot", "RAVEN_SNAPSHOT_V2",
             "restoreEpoch", "boundaryEpoch", "CompletionistMapV105ApplyPersistedRavenKills",
             'refreshNativeAuthority("map_create")', "staticDescriptorWrites=false",
+            "ravenMapVisible", "ravenFilterKind", "isOpenedForFastTravel",
+            'filter == -101', 'filter == -102', "MAP_VISIBILITY",
         ):
             self.assertIn(token, self.map_hook)
 
