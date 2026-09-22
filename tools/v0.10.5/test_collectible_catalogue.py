@@ -155,14 +155,17 @@ class CollectibleCatalogueTests(unittest.TestCase):
         self.assertEqual(collections.Counter(row["native_classification"] for row in rows), {
             "tracked_legendary": 33,
             "trial_reward": 27,
-            "unresolved_nontracked": 4,
+            "non_map_counted_physical": 2,
+            "unresolved_nontracked": 2,
         })
         self.assertEqual(collections.Counter(row["production_eligibility"] for row in rows), {
             "tracked_collectible": 33,
             "exclude_trial_reward": 27,
-            "unresolved": 4,
+            "exclude_non_map_counted": 2,
+            "unresolved": 2,
         })
-        tracked = [row for row in rows if row["progression"].get("parent_quest")]
+        tracked = [row for row in rows
+                   if row["production_eligibility"] == "tracked_collectible"]
         self.assertEqual(len(tracked), 33)
         self.assertTrue(all(row["native_classification"] == "tracked_legendary"
                             and row["production_eligibility"] == "tracked_collectible"
@@ -211,7 +214,7 @@ class CollectibleCatalogueTests(unittest.TestCase):
         evidence = self.audit["legendary_classification_evidence"]
         unresolved = [item for item in evidence
                       if item["classification"] == "unresolved_nontracked"]
-        self.assertEqual(len(unresolved), 4)
+        self.assertEqual(len(unresolved), 2)
         self.assertTrue(all(item["production_eligibility"] == "unresolved"
                             and item["final_status"] == "BLOCKED_EXACT_REASON_UNKNOWN"
                             for item in unresolved))
