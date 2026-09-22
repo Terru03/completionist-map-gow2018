@@ -99,6 +99,22 @@ if (-not $delivery.DeliveryReady -or -not $delivery.AdvancedApplied -or
     throw 'Native bridge-epoch snapshot delivery proof-line regression failed.'
 }
 
+$derivedLoader = @(
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_DERIVED knownKilled=25 knownAlive=27 nativeUnknown=1 absenceUnresolved=11 resolvedUnresolved=12 finalKilled=25 finalAlive=28 postBoundary=true boundaryEpoch=7 restoreEpoch=7 authority=native_partial_plus_region_summary readOnly=true progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_DERIVED knownKilled=26 knownAlive=27 nativeUnknown=0 absenceUnresolved=11 resolvedUnresolved=11 finalKilled=26 finalAlive=27 postBoundary=false boundaryEpoch=0 restoreEpoch=7 authority=native_partial_plus_region_summary readOnly=true progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=native_restore_epoch boundaryEpoch=8 captureReady=true staleStateRetained=true atomicAuthorityRequired=true postBoundaryRecheckFrames=360 progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_DERIVED knownKilled=26 knownAlive=27 nativeUnknown=0 absenceUnresolved=11 resolvedUnresolved=11 finalKilled=26 finalAlive=27 postBoundary=true boundaryEpoch=8 restoreEpoch=8 authority=native_partial_plus_region_summary readOnly=true progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] AUTHORITY_BOUNDARY source=native_restore_epoch boundaryEpoch=9 captureReady=true staleStateRetained=true atomicAuthorityRequired=true postBoundaryRecheckFrames=360 progressionWrites=false',
+    '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=5 killed=0 alive=53 explicit=0 absentWadFalse=53 postBoundary=true boundaryEpoch=9 restoreEpoch=9 authority=capture_v2'
+)
+$derivedDelivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines $bridgeReady -LoaderLines $derivedLoader
+if (-not $derivedDelivery.AdvancedApplied -or -not $derivedDelivery.AdvancedDerived -or
+    $derivedDelivery.AdvancedKilled -ne 25 -or $derivedDelivery.AdvancedAlive -ne 28 -or
+    -not $derivedDelivery.MapReopenObserved -or -not $derivedDelivery.PostBoundaryApplied -or
+    -not $derivedDelivery.FreshApplied -or -not $derivedDelivery.Ordered) {
+    throw 'Derived RegionSummary Raven proof-line regression failed.'
+}
+
 $mismatchedEpochLines = @($validLoader)
 $mismatchedEpochLines[3] = '[CompletionistMap v0.10.5-all-ravens] NATIVE_AUTHORITY_APPLIED generation=4 killed=28 alive=25 explicit=42 absentWadFalse=11 postBoundary=true boundaryEpoch=99 restoreEpoch=99 authority=capture_v2'
 $mismatched = Test-RavenSnapshotDeliveryProofLines -BridgeLines $bridgeReady -LoaderLines $mismatchedEpochLines
