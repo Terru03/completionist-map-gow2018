@@ -6,6 +6,8 @@ do
   local retryLimit = 20
   local restoreRetryLimit = 20
   local generation = 0
+  local nativePort = 43753
+  local noteMaxResponseBytes = 256
   local rows = {
 -- @@RAVEN_STATE_ROWS@@
   }
@@ -33,12 +35,87 @@ do
     return hit, nil
   end
 
+  local function sendBridgeNote(request)
+    local socketOK, socket = pcall(require, "socket.core")
+    if not socketOK or type(socket) ~= "table" or type(socket.tcp) ~= "function" then
+      return false, "socket_core_unavailable"
+    end
+    local createOK, client = pcall(socket.tcp)
+    if not createOK or client == nil then return false, "socket_create" end
+    local function close()
+      pcall(function() client:close() end)
+    end
+    pcall(function() client:settimeout(0.25) end)
+    pcall(function() client:settimeout(0.25, "t") end)
+    local connectOK, connected, connectError = pcall(function()
+      return client:connect("127.0.0.1", nativePort)
+    end)
+    if not connectOK or connected == nil then
+      close()
+      return false, "connect:" .. tostring(connectOK and connectError or connected)
+    end
+    local sendOK, sent, sendError = pcall(function() return client:send(request) end)
+    if not sendOK or sent ~= string.len(request) then
+      close()
+      return false, "send:" .. tostring(sendOK and sendError or sent)
+    end
+
+    local bytes = {}
+    for _ = 1, noteMaxResponseBytes do
+      local receiveOK, value, receiveError = pcall(function()
+        return client:receive(1)
+      end)
+      if not receiveOK or value == nil then
+        close()
+        return false, "receive:" .. tostring(receiveOK and receiveError or value)
+      end
+      if value == "\n" then
+        local response = table.concat(bytes)
+        close()
+        if string.sub(response, 1, string.len("RAVEN_NOTE_V1 OK ")) ==
+            "RAVEN_NOTE_V1 OK " then
+          return true, response
+        end
+        return false, "response:" .. response
+      end
+      bytes[#bytes + 1] = value
+    end
+    close()
+    return false, "response_too_large"
+  end
+
+  local function noteKilled(row, source)
+    if row == nil then return false end
+    local ok, detail = sendBridgeNote(
+        "NOTE RAVEN_KILLED_V1 catalogueId=" .. row.CatalogueId .. "\n")
+    log("BRIDGE_KILL_NOTE",
+        "source=" .. tostring(source) ..
+        " catalogueId=" .. row.CatalogueId ..
+        " delivered=" .. tostring(ok) ..
+        " detail=" .. tostring(detail) ..
+        " progressionWrites=false")
+    return ok
+  end
+
+  local function noteBoundary(source)
+    local ok, detail = sendBridgeNote(
+        "NOTE RAVEN_BOUNDARY_V1 source=checkpoint\n")
+    log("BRIDGE_BOUNDARY_NOTE",
+        "source=" .. tostring(source) ..
+        " delivered=" .. tostring(ok) ..
+        " detail=" .. tostring(detail) ..
+        " progressionWrites=false")
+    return ok
+  end
+
   local function notifyAuthorityBoundary(source)
+    local bridgeDelivered = noteBoundary(source)
     local fn = _G.CompletionistMapV105NotifyAuthorityBoundary
     if type(fn) == "function" then
       local ok, result = pcall(fn, source, true)
       log("AUTHORITY_BOUNDARY_NOTIFY", "source=" .. tostring(source) ..
-          " captureReady=true delivered=" .. tostring(ok and result == true))
+          " captureReady=true delivered=" .. tostring(ok and result == true) ..
+          " bridgeDelivered=" .. tostring(bridgeDelivered))
       return
     end
     _G.CompletionistMapV105PendingAuthorityBoundary = {
@@ -46,7 +123,8 @@ do
       captureReady = true,
     }
     log("AUTHORITY_BOUNDARY_NOTIFY", "source=" .. tostring(source) ..
-        " captureReady=true delivered=false pending=true")
+        " captureReady=true delivered=false pending=true" ..
+        " bridgeDelivered=" .. tostring(bridgeDelivered))
   end
 
   local function publish(source)
@@ -61,13 +139,20 @@ do
           " reason=alive_requires_atomic_authority")
       return row
     end
+    local bridgeDelivered = noteKilled(row, source)
     local fn = _G.CompletionistMapV105PublishRavenState
     if type(fn) == "function" then
       fn(row.CatalogueId, true, source)
+      log("STATE_DELIVERY", "source=" .. tostring(source) ..
+          " catalogueId=" .. row.CatalogueId ..
+          " direct=true bridge=" .. tostring(bridgeDelivered))
       return row
     end
     _G.CompletionistMapV105PendingRavenState = _G.CompletionistMapV105PendingRavenState or {}
     _G.CompletionistMapV105PendingRavenState[row.CatalogueId] = true
+    log("STATE_DELIVERY", "source=" .. tostring(source) ..
+        " catalogueId=" .. row.CatalogueId ..
+        " direct=false pendingLocal=true bridge=" .. tostring(bridgeDelivered))
     return row
   end
 
@@ -149,6 +234,7 @@ do
       " restoreBoundedRetry=" .. tostring(restoreRetryLimit) ..
       " positiveEvidenceOnly=true restoreAuthorityBoundary=true" ..
       " restoreBoundaryCaptureReadyAfterReturn=true" ..
+      " crossContextBridge=true nativePort=" .. tostring(nativePort) ..
       " permanentPolling=false progressionWrites=false")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVEN EVENTS
