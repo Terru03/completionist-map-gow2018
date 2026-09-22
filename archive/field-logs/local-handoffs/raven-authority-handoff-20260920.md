@@ -6928,3 +6928,36 @@ Implementation:
 The runtime behavior from capture
 `3278a1237a028fec6d6f7ae73ca540446be5bd25` must NOT be described as a
 persistence failure. It demonstrated correct revival from a different save.
+
+
+### Follow-up 2026-09-22 20:05 - dual save-load live-proof tooling is offline green
+
+Evidence-publishing offline run:
+
+- evidence commit:
+  `9d45a0561cac38740002a55277ddfb0f203a1290`
+- tested head:
+  `fba82dc8bafad6941edbcbaa87ada068e05b44d0`
+- evidence directory:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-offline-20260922-101616`
+
+Verified from pushed child console:
+
+- Raven runner regressions passed, including restore-noise, exact
+  `OnHitByWeapon`, cross-save intermediate-boundary, and fresh-V2 ordering;
+- native CTest 5/5 passed;
+- Lua integration 40/40 passed;
+- state model 25/25 passed;
+- candidate/template applicable tests passed;
+- five-file candidate preparation passed;
+- transaction rollback self-test passed;
+- PowerShell syntax gate passed;
+- security gate passed with
+  `process_writes=false save_writes=false progression_writes=false static_descriptor_writes=false loopback_only=true`.
+
+The CMake `Check size of off64_t - failed` line is only a capability probe;
+CTest still reports 100% pass.
+
+Next step is the corrected live sequence:
+advanced save -> manual kill -> post-kill manual save reload (dead) ->
+different pre-kill save (alive again) -> true fresh save (0/53).
