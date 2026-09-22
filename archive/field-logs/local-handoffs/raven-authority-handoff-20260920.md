@@ -7026,3 +7026,42 @@ Fix:
 
 This changes delivered `mapmenu.lua`, so the pinned delivery proof must be
 refreshed before the next full offline gate run.
+
+
+### Follow-up 2026-09-22 20:50 - fresh-overlay fix proof refreshed and offline green
+
+Delivery proof refresh:
+
+- commit:
+  `137078e13a6be45ed9dad60260972070f8f72406`
+- result:
+  `RAVEN_DELIVERY_PROOF_REFRESH_PASSED`
+- refreshed delivered map SHA-256:
+  `e3f8cbe209e52f2ec96815c9700b0d7574eeba0a98658b765f67c71a4f710db8`
+- source-game rebuild remained false and non-generated binary pins unchanged.
+
+Full evidence-publishing offline run:
+
+- evidence commit:
+  `906b75b1f77e0f1f5785a59c99ad5c1e7a0490f5`
+- tested head:
+  `137078e13a6be45ed9dad60260972070f8f72406`
+- evidence directory:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-offline-20260922-103804`
+
+Verified from pushed child console:
+
+- native CTest 5/5 passed;
+- Lua integration 42/42 passed;
+- both fresh stale-overlay regressions passed:
+  - fresh V2 overlay shape normalizes when RegionSummary is zero;
+  - identical shape is vetoed when any live parent completed count is nonzero;
+- Raven state-model 25/25 passed;
+- candidate/template applicable tests passed;
+- candidate preparation and transaction rollback passed;
+- PowerShell syntax gate passed;
+- security gate passed with
+  `process_writes=false save_writes=false progression_writes=false static_descriptor_writes=false loopback_only=true`.
+
+The only remaining required field confirmation is that a true fresh save now
+receives and renders the 0/53 authority instead of showing no Raven markers.
