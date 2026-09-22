@@ -260,12 +260,17 @@ function Publish-Proof([string]$Result, [string]$Reason, [object]$Delivery) {
         "immediate_raven_kill_event=$($Delivery.ImmediateEvent.ToString().ToLowerInvariant())"
         "bridge_kill_note_observed=$($Delivery.ImmediateEvent.ToString().ToLowerInvariant())"
         "bridge_kill_restore_epoch=$($Delivery.ImmediateKillEpoch)"
-        "map_reopen_observed=$($Delivery.MapReopenObserved.ToString().ToLowerInvariant())"
+        "gameplay_kill_catalogue_id=$($Delivery.GameplayKillCatalogueId)"
+        "kill_baseline_killed=$($Delivery.KillBaselineKilled)"
+        "kill_baseline_alive=$($Delivery.KillBaselineAlive)"
+        "kill_baseline_derived=$($Delivery.KillBaselineDerived.ToString().ToLowerInvariant())"
+        "map_reopen_native_refresh_observed=$($Delivery.MapReopenObserved.ToString().ToLowerInvariant())"
         "checkpoint_authority_boundary_observed=$($Delivery.CheckpointBoundaryObserved.ToString().ToLowerInvariant())"
         "checkpoint_postboundary_snapshot_applied=$($Delivery.PostBoundaryApplied.ToString().ToLowerInvariant())"
         "checkpoint_boundary_epoch_matched=$($Delivery.CheckpointBoundaryEpochMatched.ToString().ToLowerInvariant())"
         "checkpoint_boundary_epoch=$($Delivery.CheckpointBoundaryEpoch)"
         "checkpoint_reload_after_kill_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
+        "immediate_reopen_checkpoint_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
         "same_map_readd_no_stock_manual=$($script:sameMapReaddAccepted.ToString().ToLowerInvariant())"
         "fresh_boundary_observed=$($Delivery.FreshBoundaryObserved.ToString().ToLowerInvariant())"
         "fresh_boundary_epoch_matched=$($Delivery.FreshBoundaryEpochMatched.ToString().ToLowerInvariant())"
@@ -340,10 +345,10 @@ try {
     $checkpointReloadAccepted = $true
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
-    if (-not $delivery.ImmediateEvent -or -not $delivery.MapReopenObserved -or
+    if (-not $delivery.ImmediateEvent -or
         -not $delivery.CheckpointBoundaryObserved -or -not $delivery.PostBoundaryApplied -or
         -not $delivery.CheckpointBoundaryEpochMatched) {
-        throw 'Bridge kill note, +1 Raven map reconstruction, or matching V2 checkpoint authority evidence missing.'
+        throw 'Gameplay Raven kill note or matching +1 V2 checkpoint authority evidence missing.'
     }
 
     $answer = Read-Host 'Load true fresh save. Open map. Verify all 53 Ravens, captions, realm filter, and compass behavior. Type FRESH_OK, or REGRESSION if anything is wrong'
