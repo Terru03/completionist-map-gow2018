@@ -34,6 +34,8 @@ do
   local customCompassOwnsTarget = false
   local nativeBoundaryPending = false
   local beginAuthorityBoundary = nil
+  local hideStockExcept = nil
+  local suppressLegacyRavenHud = nil
   local nativeBoundaryEpoch =
       tonumber(_G.CompletionistMapV105NativeBoundaryEpoch) or 0
   local nativeBoundaryCaptureReady = false
@@ -649,7 +651,7 @@ do
     return true, hidden, nil
   end
 
-  local function hideStockExcept(exceptIdString, reason)
+  hideStockExcept = function(exceptIdString, reason)
     local ids, ok, err = stockIds()
     if not ok then return false, 0, err end
     local hidden = 0
@@ -679,7 +681,7 @@ do
     return "[AdvanceButton] " .. util.GetLAMSMsg(lamsId)
   end
 
-  local function suppressLegacyRavenHud()
+  suppressLegacyRavenHud = function()
     local target = _G.CompletionistMapV100Target
     if target ~= nil and target.type == "Raven" and target.active == true then
       target.active = false
