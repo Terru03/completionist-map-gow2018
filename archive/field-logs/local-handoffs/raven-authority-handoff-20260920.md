@@ -7261,3 +7261,48 @@ to be repeated.
 
 Next step: pull the cosmetic branch and rerun only the evidence-publishing
 offline wrapper.
+
+
+### Cosmetic polish follow-up 2026-09-22 - offline green; cosmetic-only live proof added
+
+Successful evidence-publishing offline run:
+
+- evidence commit:
+  `6e0e592e6c9453ed95dd64630f3929e25aea39ad`
+- tested head:
+  `8c36843aa5b4871cba253f3aa62754e142d3bcfb`
+- evidence directory:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-offline-20260922-112536`.
+
+Verified from pushed child console:
+
+- Raven bridge runner regressions passed;
+- native CTest 5/5 passed;
+- Lua integration 43/43 passed;
+- `test_first_add_refreshes_footer_even_if_base_clears_marker_owner` passed;
+- `test_same_raven_add_remove_keeps_compass_empty_and_prompt_settled` passed;
+- Raven state model 25/25 passed;
+- applicable candidate/template tests passed;
+- transaction rollback passed;
+- PowerShell parse passed;
+- security gate passed with
+  `process_writes=false save_writes=false progression_writes=false static_descriptor_writes=false loopback_only=true`.
+
+Short live-proof support:
+
+- `073918ba2734992b3bc5b6aeb2aaf11c36934ef6`
+- existing transactional live runner now accepts:
+  - `-ExpectedBranch`;
+  - `-CosmeticOnly`.
+- cosmetic-only mode keeps the same candidate/bridge install, startup readiness,
+  log capture, exact rollback, and Git evidence publication, but asks only for:
+  1. first selected Raven after map open: Add -> bottom-row text must change to
+     Remove immediately without moving selection;
+  2. same Raven: Remove -> Add -> custom Raven artwork must remain final owner,
+     with no boat-dock artwork takeover.
+- full Raven state/persistence/fresh-save prompts are skipped because they are
+  already field-accepted on the frozen functional RC.
+
+No delivered game file changed after proof refresh
+`f50bfdc7ea88ce55e2bceb8ad0bfa1c79cd8e3d5`, so another delivery-proof refresh
+is not required before this cosmetic-only live run.
