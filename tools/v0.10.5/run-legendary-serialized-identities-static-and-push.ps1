@@ -84,9 +84,13 @@ try {
         '--output-json', $outJson,
         '--output-text', $outText
     )
-    $resolverLines = @(& $python.Source @resolverArgs 2>&1)
+    $resolverLines = [System.Collections.Generic.List[string]]::new()
+    & $python.Source @resolverArgs 2>&1 | ForEach-Object {
+        $line = "$_"
+        $resolverLines.Add($line)
+        Write-Host $line
+    }
     $resolverExit = $LASTEXITCODE
-    $resolverLines | ForEach-Object { Write-Host "$_" }
     $resolverLines | Set-Content -LiteralPath $resolverLog -Encoding UTF8
     if ($resolverExit -ne 0) {
         throw "Legendary serialized identity resolver failed with exit code $resolverExit."
