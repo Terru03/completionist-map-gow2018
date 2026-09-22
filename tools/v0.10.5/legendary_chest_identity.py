@@ -16,7 +16,8 @@ PRODUCTION_ELIGIBILITY = "tracked_collectible"
 EXPECTED_TRACKED = 33
 EXPECTED_RAW = 64
 EXPECTED_TRIAL_EXCLUDED = 27
-EXPECTED_UNRESOLVED = 4
+EXPECTED_NON_MAP_COUNTED = 2
+EXPECTED_UNRESOLVED = 2
 CHEST_OWN_IDENTITY_ELEMENT = bytes.fromhex("947a7c50b25f004ea3365dd8dc232ee1")
 OPENED_STATE_NUMERIC = 4
 OPENED_STATE_FLOAT32 = 4.0
@@ -189,6 +190,10 @@ def static_contract(catalogue: dict) -> dict:
         row for row in raw
         if row.get("production_eligibility") == "exclude_trial_reward"
     ]
+    non_map_counted = [
+        row for row in raw
+        if row.get("production_eligibility") == "exclude_non_map_counted"
+    ]
     unresolved = [
         row for row in raw
         if row.get("production_eligibility") == "unresolved"
@@ -229,6 +234,11 @@ def static_contract(catalogue: dict) -> dict:
             "Legendary trial exclusion count changed: "
             f"{len(trials)} != {EXPECTED_TRIAL_EXCLUDED}"
         )
+    if len(non_map_counted) != EXPECTED_NON_MAP_COUNTED:
+        raise ValueError(
+            "Legendary non-map-counted exclusion count changed: "
+            f"{len(non_map_counted)} != {EXPECTED_NON_MAP_COUNTED}"
+        )
     if len(unresolved) != EXPECTED_UNRESOLVED:
         raise ValueError(
             "Legendary unresolved count changed: "
@@ -241,6 +251,7 @@ def static_contract(catalogue: dict) -> dict:
         "raw": len(raw),
         "tracked": len(tracked),
         "trial_excluded": len(trials),
+        "non_map_counted": len(non_map_counted),
         "unresolved": len(unresolved),
         "unique_scene_identities": len(set(scenes)),
         "self_prototype_parents_skipped": skipped_count,
