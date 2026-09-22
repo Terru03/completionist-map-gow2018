@@ -38,6 +38,21 @@ LEGENDARY_TRIAL_PLACEMENT_RE = re.compile(
 LEGENDARY_TRIAL_OWNER_RE = re.compile(
     r"^(?:goarena[0-9]{2}_chestelevator_[lr]|go(?:bronze|silver|gold)reward)$", re.I)
 
+LEGENDARY_NON_MAP_COUNTED_IDS = {
+    "legendary_chest_3c05899e46a619015d4cfb995fb61be0",
+    "legendary_chest_8266c175474b43a4d44938a75e21329d",
+}
+LEGENDARY_RECOVERED_MAP_TARGETS = {
+    "legendary_chest_d0b93e274754785e08235285bd6b78f2":
+        "RegionSummary_LegendaryChest_Parent_TyrsVault",
+    "legendary_chest_f714d2d845a3dd9e28808db4655e757f":
+        "RegionSummary_LegendaryChest_Parent_TheHallofTyr",
+}
+LEGENDARY_SCOPE_PROOF_REL = Path(
+    "archive/field-logs/source-scans/"
+    "legendary-map-counted-scope-20260922-165204/report.json"
+)
+
 # Old claims only. Not join proof.
 # Physical GUID is key. WAD name alone cannot join.
 # Row stays BLOCKED until native ref chain proves full binding edge.
@@ -977,8 +992,34 @@ def extract_nornir_children(parent: dict, wad: Path, raw: bytes,
     return result
 
 
+def apply_legendary_map_scope_correction(
+        rows: list[dict], summaries: dict[str, dict]) -> None:
+    """Apply the accepted 33-marker Legendary map-count scope proof."""
+    by_id = {row["catalogue_id"]: row for row in rows}
+    required = LEGENDARY_NON_MAP_COUNTED_IDS | set(LEGENDARY_RECOVERED_MAP_TARGETS)
+    check(required <= set(by_id), "Legendary scope correction rows missing")
+
+    for catalogue_id, quest in LEGENDARY_RECOVERED_MAP_TARGETS.items():
+        check(quest in summaries, f"missing recovered Legendary summary: {quest}")
+        row = by_id[catalogue_id]
+        row["progression"]["parent_quest"] = quest
+        row["progression"]["parent_quest_source"] = "corrected_map_count_scope_proof"
+        summary = summaries[quest]
+        row["realm"] = summary["realm"]
+        row["realm_id"] = summary["realm_id"]
+        row["region"] = summary["region"]
+        row["region_id"] = summary["region_id"]
+        row["region_source"] = "corrected_map_count_scope_proof"
+
+
 def classify_legendary_row(row: dict) -> dict:
     """Classify one raw Legendary row from explicit native identity fields."""
+    if row["catalogue_id"] in LEGENDARY_NON_MAP_COUNTED_IDS:
+        return {
+            "classification": "non_map_counted_physical",
+            "production_eligibility": "exclude_non_map_counted",
+            "final_status": "PASS_EXACT",
+        }
     quest = row["progression"].get("parent_quest")
     if quest:
         check(quest.startswith("RegionSummary_LegendaryChest_Parent_"),
@@ -1034,7 +1075,23 @@ def build_legendary_classification_evidence(
         "guid": native["instance_guid"],
     }]
     rationale: str
-    if result["classification"] == "tracked_legendary":
+    if result["classification"] == "non_map_counted_physical":
+        proof = REPO / LEGENDARY_SCOPE_PROOF_REL
+        check(proof.is_file(), f"missing Legendary scope proof: {proof}")
+        evidence_sources.append({
+            "source_file": str(LEGENDARY_SCOPE_PROOF_REL).replace("\\", "/"),
+            "sha256": hashlib.sha256(proof.read_bytes()).hexdigest(),
+            "evidence_role": "accepted_map_count_scope_proof",
+            "positive_classification_edge": True,
+            "record_id": native["placement_override_record_id"],
+            "guid": native["instance_guid"],
+        })
+        rationale = (
+            "Exact physical/state-resolved Legendary object retained as research "
+            "identity but excluded from map production by the accepted 33-target "
+            "scope reconciliation."
+        )
+    elif result["classification"] == "tracked_legendary":
         summary = summaries[quest]
         target = target_records[quest]
         evidence_sources.extend([{
@@ -1133,6 +1190,7 @@ def validate_legendary_classification_evidence(evidence: dict) -> None:
         "quest_reward": "exclude_quest_reward",
         "scripted_reward": "exclude_scripted_reward",
         "other_native_chest": "exclude_other_native",
+        "non_map_counted_physical": "exclude_non_map_counted",
         "unresolved_nontracked": "unresolved",
     }
     classification = evidence.get("classification")
@@ -1289,6 +1347,7 @@ def scan_native(game_root: Path = GAME) -> tuple[dict, dict]:
             row["region_id"] = summary["region_id"]
             row["region_source"] = "exact_native_reference_chain"
     legendary_rows = [row for row in entries if row["family"] == "legendary_chest"]
+    apply_legendary_map_scope_correction(legendary_rows, summaries)
     legendary_classification_evidence = []
     for row in legendary_rows:
         classification = classify_legendary_row(row)
