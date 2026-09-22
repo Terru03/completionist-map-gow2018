@@ -44,6 +44,8 @@ do
   local nativeRequest = "GET RAVEN_SNAPSHOT_V1\n"
   local nativeMaxResponseBytes = 4096
   local lastNativeGeneration = tonumber(_G.CompletionistMapV105LastNativeRavenGeneration)
+  local lastNativeRestoreEpoch =
+      tonumber(_G.CompletionistMapV105LastNativeRestoreEpoch)
   local lastNativeNotice = nil
 
   local function log(category, fields)
@@ -120,13 +122,15 @@ do
     local killed = integer("killed")
     local explicit = integer("explicit")
     local absentWadFalse = integer("absentWadFalse")
+    local restoreEpoch = expectedSchema == 1 and integer("restoreEpoch") or nil
     local boundaryEpoch = expectedSchema == 2 and integer("boundaryEpoch") or nil
 
     if schema ~= expectedSchema or generation == nil or generation < 1 or
         capturedTickMs == nil or count ~= #rows or unknown ~= 0 or
         alive == nil or killed == nil or alive + killed ~= #rows or
         explicit == nil or absentWadFalse == nil or
-        explicit + absentWadFalse ~= #rows or fields.killedIds == nil then
+        explicit + absentWadFalse ~= #rows or fields.killedIds == nil or
+        (expectedSchema == 1 and restoreEpoch == nil) then
       return nil, "response_counts"
     end
     if expectedSchema == 2 and
@@ -154,7 +158,7 @@ do
 
     return {
       schema = schema, generation = generation, capturedTickMs = capturedTickMs,
-      boundaryEpoch = boundaryEpoch,
+      restoreEpoch = restoreEpoch, boundaryEpoch = boundaryEpoch,
       count = count, aliveCount = alive, killedCount = killed,
       explicitCount = explicit,
       absenceDefaultFalseCount = absentWadFalse,
@@ -276,6 +280,49 @@ do
       return false, unavailable
     end
 
+    if not boundaryApply then
+      local restoreEpoch = tonumber(snapshot.restoreEpoch)
+      if restoreEpoch == nil or restoreEpoch < 0 or
+          restoreEpoch ~= math.floor(restoreEpoch) then
+        nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+            "reason=invalid_restore_epoch", "invalid_restore_epoch")
+        return false, "invalid_restore_epoch"
+      end
+      if lastNativeRestoreEpoch ~= nil and restoreEpoch < lastNativeRestoreEpoch then
+        nativeNotice("NATIVE_AUTHORITY_STALE",
+            "restoreEpoch=" .. tostring(restoreEpoch) ..
+            " lastRestoreEpoch=" .. tostring(lastNativeRestoreEpoch),
+            "stale_restore_epoch:" .. tostring(restoreEpoch))
+        return false, "stale_restore_epoch"
+      end
+      if lastNativeRestoreEpoch ~= nil and restoreEpoch > lastNativeRestoreEpoch then
+        nativeBoundaryPending = true
+        nativeBoundaryEpoch = restoreEpoch
+        _G.CompletionistMapV105NativeBoundaryEpoch = restoreEpoch
+        nativeBoundaryCaptureReady = true
+        nativeBoundarySource = "native_restore_epoch"
+        nativeResetRecheckFrames = nativeResetRecheckLimit
+        nativeResetRecheckBucket = -1
+        customCompassOwnsTarget = false
+        promptIntent = nil
+        promptSettleFrames = 0
+        promptSettleBucket = -1
+        _G.CompletionistMapV105TrackedCatalogueId = nil
+        hideCustom(nil, "native_restore_epoch")
+        if lastMapOnSelf ~= nil then
+          clearSelection(lastMapOnSelf, "native_restore_epoch")
+          lastMapOnSelf.currShownMarkerID = nil
+        end
+        log("AUTHORITY_BOUNDARY",
+            "source=native_restore_epoch boundaryEpoch=" ..
+            tostring(restoreEpoch) ..
+            " previousEpoch=" .. tostring(lastNativeRestoreEpoch) ..
+            " captureReady=true staleStateRetained=true" ..
+            " atomicAuthorityRequired=true progressionWrites=false")
+        return refreshNativeAuthority(tostring(source) .. ":restore_epoch")
+      end
+    end
+
     local generation = tonumber(snapshot.generation)
     if generation == nil or generation < 1 or generation ~= math.floor(generation) then
       nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
@@ -354,11 +401,16 @@ do
     lastNativeGeneration = generation
     _G.CompletionistMapV105LastNativeRavenGeneration = generation
     if boundaryApply then
+      lastNativeRestoreEpoch = requestedBoundaryEpoch
+      _G.CompletionistMapV105LastNativeRestoreEpoch = requestedBoundaryEpoch
       nativeBoundaryPending = false
       nativeBoundaryCaptureReady = false
       nativeBoundarySource = nil
       nativeResetRecheckFrames = 0
       nativeResetRecheckBucket = -1
+    elseif snapshot.restoreEpoch ~= nil then
+      lastNativeRestoreEpoch = snapshot.restoreEpoch
+      _G.CompletionistMapV105LastNativeRestoreEpoch = snapshot.restoreEpoch
     end
 
     lastNativeNotice = nil
@@ -371,6 +423,8 @@ do
         " postBoundary=" .. tostring(boundaryApply) ..
         " boundaryEpoch=" ..
         tostring(boundaryApply and requestedBoundaryEpoch or 0) ..
+        " restoreEpoch=" ..
+        tostring(boundaryApply and requestedBoundaryEpoch or snapshot.restoreEpoch or 0) ..
         " authority=" .. (boundaryApply and "capture_v2" or "latest_v1"))
     return true, nil
   end
