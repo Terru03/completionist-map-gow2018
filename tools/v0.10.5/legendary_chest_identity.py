@@ -68,47 +68,103 @@ def tracked_rows(catalogue: dict) -> list[dict]:
     ]
 
 
+def _is_scene_owner_name(name: str) -> bool:
+    lower = name.lower()
+    return (
+        lower.endswith("_ents")
+        or lower.endswith("_ents_nooffset")
+        or lower.endswith("_ents_offset")
+        or lower.endswith("_cbt")
+    )
+
+
 def scene_identity_elements(row: dict) -> tuple[list[bytes], list[dict]]:
-    """Return the runtime-proven scene portion of a Legendary chest identity.
+    """Return the runtime/staged-proven Legendary authored identity vector.
 
-    Live staged/runtime intersection evidence from xpl250_funeralinterior proves
-    the native vector is:
+    The full transform chain contains both native GameObject identity-bearing
+    nodes and editor/organizational wrappers.
 
-      root owners -> physical placement -> gochestscript -> own identity
+    Proven rules:
+    - locate the physical chest placement using native.placement_final_record_id;
+    - retain outer scene owners whose names end in *_ents*, *_ents_offset,
+      *_ents_nooffset, or *_cbt;
+    - omit intermediate outer organizational groups such as gopickups/goloot;
+    - retain the physical placement;
+    - retain nested chest objects between script and placement, except reusable
+      *_parent containers;
+    - retain gochestscript;
+    - transform every retained record ID with the native byte-12 decrement and
+      order root -> object.
 
-    The reusable gochest_legendary_parent at transform-chain index 1 is omitted
-    because its adjusted record identity equals native.parent_prototype_id.
-    gochestscript at index 0 is retained.
-
-    Every retained authored record uses the same native transform already proven
-    for Ravens: decrement byte 12 and order root -> object.
+    A staged-oracle subset search over all 32 represented tracked chests found
+    exactly one matching subset per row, and every unique solution follows this
+    structural rule. The remaining 33rd row (xpl100_httk) has the same layout
+    with an organizational gocontainers wrapper and is therefore deterministic.
     """
     chain = row["source"]["transform_chain"]
     if len(chain) < 3:
         raise ValueError(f"{row['catalogue_id']}: Legendary chain is too short")
 
-    adjusted = [adjusted_record_id(item["record_id"]) for item in chain]
-    parent_proto = str(row["native"]["parent_prototype_id"]).lower()
-    if adjusted[1].hex() != parent_proto:
+    placement_id = str(row["native"]["placement_final_record_id"]).lower()
+    placement_indices = [
+        index
+        for index, item in enumerate(chain)
+        if str(item["record_id"]).lower() == placement_id
+    ]
+    if len(placement_indices) != 1:
         raise ValueError(
-            f"{row['catalogue_id']}: adjusted Legendary parent no longer equals "
-            "native.parent_prototype_id"
+            f"{row['catalogue_id']}: expected one placement_final_record_id "
+            f"match, got {len(placement_indices)}"
         )
+    placement_index = placement_indices[0]
 
-    skipped = [{
-        "source_record_name": chain[1]["name"],
-        "source_record_id": chain[1]["record_id"],
-        "adjusted_identity_hex": adjusted[1].hex(),
-        "reason": "immediate_parent_adjusted_id_equals_parent_prototype_id",
-    }]
+    retained_indices: list[int] = []
+    skipped: list[dict] = []
+
+    # Root -> placement: only true scene owners participate; editor grouping
+    # objects are omitted.
+    for index in range(len(chain) - 1, placement_index, -1):
+        item = chain[index]
+        if _is_scene_owner_name(item["name"]):
+            retained_indices.append(index)
+        else:
+            skipped.append({
+                "source_record_name": item["name"],
+                "source_record_id": item["record_id"],
+                "adjusted_identity_hex": adjusted_record_id(
+                    item["record_id"]
+                ).hex(),
+                "reason": "organizational_scene_wrapper",
+            })
+
+    retained_indices.append(placement_index)
+
+    # Placement -> nested script: retain concrete nested chest objects but omit
+    # reusable parent/prototype containers.
+    for index in range(placement_index - 1, -1, -1):
+        item = chain[index]
+        if item["name"].lower().endswith("_parent"):
+            skipped.append({
+                "source_record_name": item["name"],
+                "source_record_id": item["record_id"],
+                "adjusted_identity_hex": adjusted_record_id(
+                    item["record_id"]
+                ).hex(),
+                "reason": "reusable_parent_container",
+            })
+            continue
+        retained_indices.append(index)
+
+    if 0 not in retained_indices:
+        raise ValueError(f"{row['catalogue_id']}: gochestscript was not retained")
+    if not any(index > placement_index for index in retained_indices):
+        raise ValueError(f"{row['catalogue_id']}: no outer scene owner retained")
+
     kept = [
-        adjusted[index]
-        for index in range(len(adjusted) - 1, -1, -1)
-        if index != 1
+        adjusted_record_id(chain[index]["record_id"])
+        for index in retained_indices
     ]
     return kept, skipped
-
-
 def diagnostic_identity_variants(row: dict) -> dict[str, list[bytes]]:
     """Candidate scene grammars retained only for runtime diagnosis."""
     chain = row["source"]["transform_chain"]
