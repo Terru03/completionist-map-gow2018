@@ -150,9 +150,11 @@ int wmain() {
   wire.explicit_count = decoded.explicit_count;
   wire.absence_default_false_count = decoded.absence_default_false_count;
   wire.killed = decoded.killed;
+  completionist::delivery_test::ResetSessionAuthority();
   const std::string response =
-      completionist::BuildRavenSnapshotWireResponse(wire);
-  if (!response.starts_with("RAVEN_SNAPSHOT_V1 schema=1 generation=7 ") ||
+      completionist::BuildRavenSnapshotWireResponse(wire, 0);
+  if (!response.starts_with(
+          "RAVEN_SNAPSHOT_V1 schema=1 restoreEpoch=0 generation=7 ") ||
       response.find(" count=53 unknown=0 alive=26 killed=27 explicit=42 ") ==
           std::string::npos ||
       response.find("raven_c945cb53465b58decfcbd4a221cb5326") ==
@@ -161,6 +163,65 @@ int wmain() {
           std::string::npos ||
       response.back() != '\n') {
     return Fail("Lua wire snapshot differs");
+  }
+
+  // Session-only kill evidence augments, but never replaces, the decoded
+  // authoritative saved set. A later restore epoch makes prior session notes
+  // ineligible so an older checkpoint can legitimately revive that Raven.
+  if (!completionist::delivery_test::NoteKilled(
+          "raven_642d0d164af0a5d4076e77933c549a5d")) {
+    return Fail("session kill note rejected known Raven");
+  }
+  const auto merged_epoch0 =
+      completionist::delivery_test::MergeCurrentEpochKills(wire);
+  if (merged_epoch0.killed_count != 28 ||
+      !merged_epoch0.killed[0] &&
+          false) {
+    return Fail("session kill overlay count differs");
+  }
+  bool newly_killed_found = false;
+  for (std::size_t index = 0; index < completionist::kRavenCatalogue.size();
+       ++index) {
+    if (completionist::kRavenCatalogue[index].catalogue_id ==
+        "raven_642d0d164af0a5d4076e77933c549a5d") {
+      newly_killed_found = merged_epoch0.killed[index];
+      break;
+    }
+  }
+  if (!newly_killed_found) return Fail("session kill overlay missing Raven");
+  if (!state_for("raven_c945cb53465b58decfcbd4a221cb5326") ||
+      !state_for("raven_e32f7bab42fd7298890f6aa56a734562")) {
+    return Fail("fixture saved kills unexpectedly changed");
+  }
+
+  const std::uint64_t epoch1 =
+      completionist::delivery_test::NoteRestoreBoundary(10000);
+  const std::uint64_t epoch1_repeat =
+      completionist::delivery_test::NoteRestoreBoundary(10100);
+  if (epoch1 != 1 || epoch1_repeat != 1 ||
+      completionist::delivery_test::CurrentRestoreEpoch() != 1) {
+    return Fail("restore boundary coalescing differs");
+  }
+  const auto merged_epoch1 =
+      completionist::delivery_test::MergeCurrentEpochKills(wire);
+  if (merged_epoch1.killed_count != 27) {
+    return Fail("prior-epoch session kill leaked across restore");
+  }
+  if (!completionist::delivery_test::NoteKilled(
+          "raven_642d0d164af0a5d4076e77933c549a5d")) {
+    return Fail("current-epoch session kill note rejected");
+  }
+  const auto merged_epoch1_kill =
+      completionist::delivery_test::MergeCurrentEpochKills(wire);
+  if (merged_epoch1_kill.killed_count != 28) {
+    return Fail("current-epoch session kill not merged");
+  }
+  const std::uint64_t epoch2 =
+      completionist::delivery_test::NoteRestoreBoundary(12000);
+  if (epoch2 != 2 ||
+      completionist::delivery_test::MergeCurrentEpochKills(wire).killed_count !=
+          27) {
+    return Fail("later restore did not drop session-only kill");
   }
 
   const std::string boundary_response =
@@ -198,6 +259,6 @@ int wmain() {
 
   std::cout << "RAVEN_BRIDGE_AUTHORITY_TESTS_PASSED states=53 explicit=42 "
                "absentWadFalse=11 killed=27 alive=26 delivery=loopback "
-               "collision_refused=true freshness_generation=true boundary_epoch_wire=true\n";
+               "collision_refused=true freshness_generation=true boundary_epoch_wire=true session_epoch_overlay=true\n";
   return 0;
 }
