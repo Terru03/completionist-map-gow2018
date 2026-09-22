@@ -62,65 +62,107 @@ function Test-RavenBridgeStartupObservation {
     return [pscustomobject]@{ Ready = $false; Reason = 'expected_fresh_bridge_log_missing' }
 }
 
-function Test-RavenSnapshotDeliveryProofLines {
-    param(
-        [AllowEmptyCollection()][string[]]$BridgeLines = @(),
-        [AllowEmptyCollection()][string[]]$LoaderLines = @()
-    )
-    $safeBridge = @($BridgeLines)
-    $safeLoader = @($LoaderLines)
+function Test-RavenSnapshotDeliveryProofLines(
+    [string[]]$BridgeLines,
+    [string[]]$LoaderLines
+) {
+    $safeBridge = @($BridgeLines | Where-Object {
+        $_ -notmatch 'WriteProcessMemory|NtWriteVirtualMemory|VirtualAllocEx|VirtualProtectEx|CreateRemoteThread|QueueUserAPC|SetThreadContext|DebugActiveProcess'
+    })
     $deliveryReady = @($safeBridge | Select-String -Pattern (
-        'RAVEN_NATIVE_BRIDGE_DELIVERY_READY mechanism=loopback_socket ' +
-        'address=127\.0\.0\.1 port=43753 static_descriptor_writes=false'))
+        'RAVEN_NATIVE_BRIDGE_DELIVERY_READY mechanism=loopback_socket .*' +
+        'static_descriptor_writes=false save_writes=false progression_writes=false'))
+
     $advancedIndex = -1
     $eventIndex = -1
     $reopenIndex = -1
-    $boundaryIndex = -1
-    $postBoundaryIndex = -1
+    $checkpointBoundaryIndex = -1
+    $checkpointApplyIndex = -1
+    $freshBoundaryIndex = -1
     $freshIndex = -1
-    for ($index = 0; $index -lt $safeLoader.Count; $index++) {
-        $line = [string]$safeLoader[$index]
+    $checkpointEpoch = $null
+    $freshEpoch = $null
+    $checkpointEpochMatched = $false
+    $freshEpochMatched = $false
+
+    $Lines = @($LoaderLines)
+    for ($index = 0; $index -lt $Lines.Count; $index++) {
+        $line = [string]$Lines[$index]
+
         if ($advancedIndex -lt 0 -and
             $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*killed=27 alive=26') {
             $advancedIndex = $index
             continue
         }
+
         if ($advancedIndex -ge 0 -and $eventIndex -lt 0 -and
-            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] STATE .*collected=true source=OnHitByWeapon(?:\s|$)') {
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] STATE .*collected=true source=OnHitByWeapon') {
             $eventIndex = $index
             continue
         }
+
         if ($eventIndex -ge 0 -and $reopenIndex -lt 0 -and
             $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_REFRESH source=map_create ') {
             $reopenIndex = $index
             continue
         }
-        if ($reopenIndex -ge 0 -and $boundaryIndex -lt 0 -and
-            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] AUTHORITY_BOUNDARY source=(?:OnRestoreCheckpoint|EVT_LoadSaveData|EVT_LoadSaveFile_Done) ') {
-            $boundaryIndex = $index
+
+        if ($reopenIndex -ge 0 -and $checkpointBoundaryIndex -lt 0 -and
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] AUTHORITY_BOUNDARY source=(?:OnRestoreCheckpoint|EVT_LoadSaveFile_Done) boundaryEpoch=([0-9]+) captureReady=true ') {
+            $checkpointBoundaryIndex = $index
+            $checkpointEpoch = [uint64]$Matches[1]
             continue
         }
-        if ($boundaryIndex -ge 0 -and $postBoundaryIndex -lt 0 -and
-            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*postBoundary=true') {
-            $postBoundaryIndex = $index
+
+        if ($checkpointBoundaryIndex -ge 0 -and $checkpointApplyIndex -lt 0 -and
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*killed=28 alive=25 .*postBoundary=true boundaryEpoch=([0-9]+) authority=capture_v2') {
+            $observedEpoch = [uint64]$Matches[1]
+            if ($null -ne $checkpointEpoch -and $observedEpoch -eq $checkpointEpoch) {
+                $checkpointApplyIndex = $index
+                $checkpointEpochMatched = $true
+            }
             continue
         }
-        if ($postBoundaryIndex -ge 0 -and $freshIndex -lt 0 -and
-            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*killed=0 alive=53') {
-            $freshIndex = $index
+
+        if ($checkpointApplyIndex -ge 0 -and $freshIndex -lt 0 -and
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] AUTHORITY_BOUNDARY source=(?:OnRestoreCheckpoint|EVT_LoadSaveFile_Done) boundaryEpoch=([0-9]+) captureReady=true ') {
+            $candidateEpoch = [uint64]$Matches[1]
+            if ($null -eq $checkpointEpoch -or $candidateEpoch -ne $checkpointEpoch) {
+                $freshBoundaryIndex = $index
+                $freshEpoch = $candidateEpoch
+            }
+            continue
+        }
+
+        if ($freshBoundaryIndex -ge 0 -and $freshIndex -lt 0 -and
+            $line -match '\[CompletionistMap v0\.10\.5-all-ravens\] NATIVE_AUTHORITY_APPLIED .*killed=0 alive=53 .*postBoundary=true boundaryEpoch=([0-9]+) authority=capture_v2') {
+            $observedEpoch = [uint64]$Matches[1]
+            if ($null -ne $freshEpoch -and $observedEpoch -eq $freshEpoch) {
+                $freshIndex = $index
+                $freshEpochMatched = $true
+            }
         }
     }
+
     return [pscustomobject]@{
         DeliveryReady = @($deliveryReady).Count -gt 0
         AdvancedApplied = $advancedIndex -ge 0
         ImmediateEvent = $eventIndex -ge 0
         MapReopenObserved = $reopenIndex -ge 0
-        CheckpointBoundaryObserved = $boundaryIndex -ge 0
-        PostBoundaryApplied = $postBoundaryIndex -ge 0
+        CheckpointBoundaryObserved = $checkpointBoundaryIndex -ge 0
+        PostBoundaryApplied = $checkpointApplyIndex -ge 0
+        CheckpointBoundaryEpochMatched = $checkpointEpochMatched
+        CheckpointBoundaryEpoch = $checkpointEpoch
+        FreshBoundaryObserved = $freshBoundaryIndex -ge 0
         FreshApplied = $freshIndex -ge 0
+        FreshBoundaryEpochMatched = $freshEpochMatched
+        FreshBoundaryEpoch = $freshEpoch
         Ordered = $advancedIndex -ge 0 -and $eventIndex -gt $advancedIndex -and
-            $reopenIndex -gt $eventIndex -and $boundaryIndex -gt $reopenIndex -and
-            $postBoundaryIndex -gt $boundaryIndex -and $freshIndex -gt $postBoundaryIndex
+            $reopenIndex -gt $eventIndex -and
+            $checkpointBoundaryIndex -gt $reopenIndex -and
+            $checkpointApplyIndex -gt $checkpointBoundaryIndex -and
+            $freshBoundaryIndex -gt $checkpointApplyIndex -and
+            $freshIndex -gt $freshBoundaryIndex
     }
 }
 

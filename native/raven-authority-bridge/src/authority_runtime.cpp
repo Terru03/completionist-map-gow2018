@@ -12,6 +12,7 @@
 #include <span>
 #include <string>
 #include <vector>
+#include <mutex>
 
 #include "authority_decoder.h"
 #include "hash.h"
@@ -41,6 +42,8 @@ struct StagedHeader {
 
 SnapshotStore g_snapshot_store;
 std::atomic<bool> g_proxy_forward_ready{false};
+std::atomic<std::uintptr_t> g_module_base{0};
+std::mutex g_capture_mutex;
 
 bool SafeCopy(const void* source, void* destination, std::size_t length) {
   if (source == nullptr || destination == nullptr || length == 0) return false;
@@ -200,6 +203,39 @@ bool SameState(const NativeRavenSnapshot& left,
              right.absence_default_false_count;
 }
 
+bool CaptureAcceptedSnapshot(std::uintptr_t module_base,
+                             NativeRavenSnapshot* output,
+                             std::string* reason) {
+  if (output == nullptr || reason == nullptr || module_base == 0) return false;
+  std::lock_guard<std::mutex> lock(g_capture_mutex);
+
+  std::vector<StagedRecordInput> records;
+  if (!CaptureRecords(module_base, &records, reason)) return false;
+
+  const DecodedRavenSnapshot decoded = DecodeRavenSnapshot(records);
+  if (!decoded.accepted) {
+    *reason = decoded.reason;
+    return false;
+  }
+
+  NativeRavenSnapshot snapshot;
+  snapshot.killed = decoded.killed;
+  snapshot.captured_tick_ms = GetTickCount64();
+  snapshot.alive_count = decoded.alive_count;
+  snapshot.killed_count = decoded.killed_count;
+  snapshot.explicit_count = decoded.explicit_count;
+  snapshot.absence_default_false_count =
+      decoded.absence_default_false_count;
+
+  g_snapshot_store.Publish(snapshot);
+  if (!g_snapshot_store.Read(output)) {
+    *reason = "snapshot_store_unavailable";
+    return false;
+  }
+  reason->clear();
+  return true;
+}
+
 }  // namespace
 
 void RunAuthorityWorker() {
@@ -229,20 +265,21 @@ void RunAuthorityWorker() {
     return;
   }
   AppendBridgeLog("RAVEN_NATIVE_BRIDGE_EXE_ACCEPTED sha256=" + hash);
-  StartSnapshotDeliveryServer(ReadPublishedSnapshot);
   const std::uintptr_t module_base = reinterpret_cast<std::uintptr_t>(
       GetModuleHandleW(nullptr));
   if (module_base == 0) {
     AppendBridgeLog("RAVEN_NATIVE_BRIDGE_REJECTED reason=module_base_missing");
     return;
   }
+  g_module_base.store(module_base);
+  StartSnapshotDeliveryServer(ReadPublishedSnapshot, CaptureFreshSnapshot);
   std::string last_reason;
   NativeRavenSnapshot last_snapshot;
   bool have_last_snapshot = false;
   for (;;) {
-    std::vector<StagedRecordInput> records;
     std::string reason;
-    if (!CaptureRecords(module_base, &records, &reason)) {
+    NativeRavenSnapshot snapshot;
+    if (!CaptureAcceptedSnapshot(module_base, &snapshot, &reason)) {
       if (reason != last_reason) {
         AppendBridgeLog("RAVEN_NATIVE_BRIDGE_WAIT reason=" + reason);
         last_reason = reason;
@@ -250,34 +287,9 @@ void RunAuthorityWorker() {
       Sleep(1000);
       continue;
     }
-    const DecodedRavenSnapshot decoded = DecodeRavenSnapshot(records);
-    if (!decoded.accepted) {
-      if (decoded.reason != last_reason) {
-        AppendBridgeLog("RAVEN_NATIVE_BRIDGE_SNAPSHOT_REJECTED reason=" +
-                        decoded.reason);
-        last_reason = decoded.reason;
-      }
-      Sleep(1000);
-      continue;
-    }
-    NativeRavenSnapshot snapshot;
-    snapshot.killed = decoded.killed;
-    snapshot.captured_tick_ms = GetTickCount64();
-    snapshot.alive_count = decoded.alive_count;
-    snapshot.killed_count = decoded.killed_count;
-    snapshot.explicit_count = decoded.explicit_count;
-    snapshot.absence_default_false_count =
-        decoded.absence_default_false_count;
+
     const bool state_changed =
         !have_last_snapshot || !SameState(snapshot, last_snapshot);
-
-    // Publish every accepted capture, even when the 53-Raven state is
-    // unchanged. Generation is therefore a freshness token as well as a
-    // state-change token. This lets Lua distinguish a post-load/checkpoint
-    // capture from a pre-boundary snapshot without any save/progression write.
-    g_snapshot_store.Publish(snapshot);
-    g_snapshot_store.Read(&snapshot);
-
     if (state_changed) {
       AppendBridgeLog(
           "RAVEN_NATIVE_BRIDGE_SNAPSHOT_ACCEPTED generation=" +
@@ -303,6 +315,27 @@ void SetProxyForwardReady(bool ready) {
 
 bool ReadPublishedSnapshot(NativeRavenSnapshot* snapshot) {
   return g_snapshot_store.Read(snapshot);
+}
+
+bool CaptureFreshSnapshot(NativeRavenSnapshot* snapshot) {
+  const std::uintptr_t module_base = g_module_base.load();
+  if (module_base == 0 || snapshot == nullptr) return false;
+
+  std::string reason;
+  if (!CaptureAcceptedSnapshot(module_base, snapshot, &reason)) {
+    AppendBridgeLog(
+        "RAVEN_NATIVE_BRIDGE_BOUNDARY_CAPTURE_REJECTED reason=" + reason +
+        " save_writes=false progression_writes=false");
+    return false;
+  }
+
+  AppendBridgeLog(
+      "RAVEN_NATIVE_BRIDGE_BOUNDARY_CAPTURED generation=" +
+      std::to_string(snapshot->generation) + " count=53 alive=" +
+      std::to_string(snapshot->alive_count) + " killed=" +
+      std::to_string(snapshot->killed_count) +
+      " save_writes=false progression_writes=false");
+  return true;
 }
 
 }  // namespace completionist

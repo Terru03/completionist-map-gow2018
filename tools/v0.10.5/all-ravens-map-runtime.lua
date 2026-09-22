@@ -32,7 +32,10 @@ do
   local promptSettleBucket = -1
   local customCompassOwnsTarget = false
   local nativeBoundaryPending = false
-  local nativeBoundaryGeneration = nil
+  local nativeBoundaryEpoch =
+      tonumber(_G.CompletionistMapV105NativeBoundaryEpoch) or 0
+  local nativeBoundaryCaptureReady = false
+  local nativeBoundarySource = nil
   local nativeResetRecheckFrames = 0
   local nativeResetRecheckBucket = -1
   local nativeResetRecheckLimit = 360
@@ -78,19 +81,27 @@ do
     return nil, "response_too_large"
   end
 
-  local function parseNativeSnapshot(line)
-    if line == "RAVEN_SNAPSHOT_V1 UNAVAILABLE" then
+  local function parseNativeSnapshot(line, expectedSchema, expectedBoundaryEpoch)
+    local header = expectedSchema == 2 and "RAVEN_SNAPSHOT_V2 " or "RAVEN_SNAPSHOT_V1 "
+    if expectedSchema == 1 and line == "RAVEN_SNAPSHOT_V1 UNAVAILABLE" then
       return nil, "snapshot_not_ready"
     end
+    if expectedSchema == 2 and type(line) == "string" and
+        string.sub(line, 1, string.len("RAVEN_SNAPSHOT_V2 UNAVAILABLE")) ==
+            "RAVEN_SNAPSHOT_V2 UNAVAILABLE" then
+      return nil, "boundary_snapshot_not_ready"
+    end
     if type(line) ~= "string" or
-        string.sub(line, 1, string.len("RAVEN_SNAPSHOT_V1 ")) ~= "RAVEN_SNAPSHOT_V1 " then
+        string.sub(line, 1, string.len(header)) ~= header then
       return nil, "response_header"
     end
+
     local fields = {}
     for key, value in string.gmatch(line, "([%a][%w]*)=([^%s]+)") do
       if fields[key] ~= nil then return nil, "duplicate_field:" .. key end
       fields[key] = value
     end
+
     local function integer(name)
       local value = tonumber(fields[name])
       if value == nil or value < 0 or value ~= math.floor(value) then
@@ -98,6 +109,7 @@ do
       end
       return value
     end
+
     local schema = integer("schema")
     local generation = integer("generation")
     local capturedTickMs = integer("capturedTickMs")
@@ -107,13 +119,21 @@ do
     local killed = integer("killed")
     local explicit = integer("explicit")
     local absentWadFalse = integer("absentWadFalse")
-    if schema ~= 1 or generation == nil or generation < 1 or
+    local boundaryEpoch = expectedSchema == 2 and integer("boundaryEpoch") or nil
+
+    if schema ~= expectedSchema or generation == nil or generation < 1 or
         capturedTickMs == nil or count ~= #rows or unknown ~= 0 or
         alive == nil or killed == nil or alive + killed ~= #rows or
         explicit == nil or absentWadFalse == nil or
         explicit + absentWadFalse ~= #rows or fields.killedIds == nil then
       return nil, "response_counts"
     end
+    if expectedSchema == 2 and
+        (boundaryEpoch == nil or boundaryEpoch < 1 or
+         boundaryEpoch ~= expectedBoundaryEpoch) then
+      return nil, "boundary_epoch_mismatch"
+    end
+
     local states = {}
     for catalogueId, _ in pairs(byCatalogueId) do states[catalogueId] = false end
     local killedCatalogueIds = {}
@@ -130,8 +150,10 @@ do
       end
     end
     if #killedCatalogueIds ~= killed then return nil, "killed_count" end
+
     return {
       schema = schema, generation = generation, capturedTickMs = capturedTickMs,
+      boundaryEpoch = boundaryEpoch,
       count = count, aliveCount = alive, killedCount = killed,
       explicitCount = explicit,
       absenceDefaultFalseCount = absentWadFalse,
@@ -139,7 +161,7 @@ do
     }, nil
   end
 
-  local function getRavenSnapshot()
+  local function requestNativeSnapshot(request, schema, boundaryEpoch)
     local socketOK, socket = pcall(require, "socket.core")
     if not socketOK or type(socket) ~= "table" or type(socket.tcp) ~= "function" then
       return nil, "socket_core_unavailable"
@@ -156,16 +178,30 @@ do
       return nil, "connect:" .. tostring(connectOK and connectError or connected)
     end
     local sendOK, sent, sendError = pcall(function()
-      return client:send(nativeRequest)
+      return client:send(request)
     end)
-    if not sendOK or sent ~= string.len(nativeRequest) then
+    if not sendOK or sent ~= string.len(request) then
       closeSocket(client)
       return nil, "send:" .. tostring(sendOK and sendError or sent)
     end
     local line, receiveError = receiveNativeLine(client)
     closeSocket(client)
     if line == nil then return nil, receiveError end
-    return parseNativeSnapshot(line)
+    return parseNativeSnapshot(line, schema, boundaryEpoch)
+  end
+
+  local function getRavenSnapshot()
+    return requestNativeSnapshot(nativeRequest, 1, nil)
+  end
+
+  local function captureRavenBoundarySnapshot(boundaryEpoch)
+    if type(boundaryEpoch) ~= "number" or boundaryEpoch < 1 or
+        boundaryEpoch ~= math.floor(boundaryEpoch) then
+      return nil, "invalid_boundary_epoch"
+    end
+    local request = "CAPTURE RAVEN_SNAPSHOT_V2 boundaryEpoch=" ..
+        tostring(boundaryEpoch) .. "\n"
+    return requestNativeSnapshot(request, 2, boundaryEpoch)
   end
 
   local nativeNamespace = rawget(_G, "CompletionistMapNative")
@@ -177,47 +213,85 @@ do
     if rawget(nativeNamespace, "GetRavenSnapshot") == nil then
       nativeNamespace.GetRavenSnapshot = getRavenSnapshot
     elseif type(nativeNamespace.GetRavenSnapshot) ~= "function" then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=api_collision", "api_collision")
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=api_collision:get", "api_collision:get")
+    end
+
+    if rawget(nativeNamespace, "CaptureRavenBoundarySnapshot") == nil then
+      nativeNamespace.CaptureRavenBoundarySnapshot = captureRavenBoundarySnapshot
+    elseif type(nativeNamespace.CaptureRavenBoundarySnapshot) ~= "function" then
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=api_collision:capture", "api_collision:capture")
     end
   else
-    nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=namespace_collision", "namespace_collision")
+    nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+        "reason=namespace_collision", "namespace_collision")
   end
 
   local function refreshNativeAuthority(source)
     local namespace = rawget(_G, "CompletionistMapNative")
-    local accessor = type(namespace) == "table" and namespace.GetRavenSnapshot or nil
-    if type(accessor) ~= "function" then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=api_unavailable", "api_unavailable")
-      return false, "api_unavailable"
+    if type(namespace) ~= "table" then
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=namespace_unavailable", "namespace_unavailable")
+      return false, "namespace_unavailable"
     end
-    local ok, snapshot, reason = pcall(accessor)
+
+    local boundaryApply = nativeBoundaryPending
+    local requestedBoundaryEpoch = nil
+    local accessor = nil
+    if boundaryApply then
+      if not nativeBoundaryCaptureReady then
+        nativeNotice("NATIVE_AUTHORITY_BOUNDARY_WAIT",
+            "epoch=" .. tostring(nativeBoundaryEpoch) ..
+            " source=" .. tostring(nativeBoundarySource) ..
+            " reason=load_not_complete",
+            "boundary_not_ready:" .. tostring(nativeBoundaryEpoch))
+        return false, "boundary_not_ready"
+      end
+      accessor = namespace.CaptureRavenBoundarySnapshot
+      requestedBoundaryEpoch = nativeBoundaryEpoch
+    else
+      accessor = namespace.GetRavenSnapshot
+    end
+
+    if type(accessor) ~= "function" then
+      local apiName = boundaryApply and "capture_api_unavailable" or "api_unavailable"
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=" .. apiName, apiName)
+      return false, apiName
+    end
+
+    local ok, snapshot, reason
+    if boundaryApply then
+      ok, snapshot, reason = pcall(accessor, requestedBoundaryEpoch)
+    else
+      ok, snapshot, reason = pcall(accessor)
+    end
     if not ok or type(snapshot) ~= "table" then
       local unavailable = ok and tostring(reason) or "call_failed:" .. tostring(snapshot)
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=" .. unavailable,
-          "unavailable:" .. unavailable)
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=" .. unavailable,
+          "unavailable:" .. tostring(boundaryApply) .. ":" .. unavailable)
       return false, unavailable
     end
+
     local generation = tonumber(snapshot.generation)
     if generation == nil or generation < 1 or generation ~= math.floor(generation) then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=invalid_generation", "invalid_generation")
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=invalid_generation", "invalid_generation")
       return false, "invalid_generation"
     end
-    if nativeBoundaryPending and nativeBoundaryGeneration ~= nil and
-        generation <= nativeBoundaryGeneration then
-      nativeNotice("NATIVE_AUTHORITY_BOUNDARY_WAIT",
-          "generation=" .. tostring(generation) ..
-          " baseline=" .. tostring(nativeBoundaryGeneration),
-          "boundary:" .. tostring(generation) .. ":" .. tostring(nativeBoundaryGeneration))
-      return false, "boundary_wait"
-    end
     if lastNativeGeneration ~= nil and generation <= lastNativeGeneration then
-      nativeNotice("NATIVE_AUTHORITY_STALE", "generation=" .. tostring(generation) ..
-          " last=" .. tostring(lastNativeGeneration),
+      nativeNotice("NATIVE_AUTHORITY_STALE",
+          "generation=" .. tostring(generation) ..
+          " last=" .. tostring(lastNativeGeneration) ..
+          " postBoundary=" .. tostring(boundaryApply),
           "stale:" .. tostring(generation) .. ":" .. tostring(lastNativeGeneration))
       return false, "stale"
     end
-    local boundaryApply = nativeBoundaryPending
-    if type(snapshot.states) ~= "table" or snapshot.schema ~= 1 or
+
+    local expectedSchema = boundaryApply and 2 or 1
+    if type(snapshot.states) ~= "table" or snapshot.schema ~= expectedSchema or
         type(snapshot.count) ~= "number" or snapshot.count ~= #rows or
         type(snapshot.aliveCount) ~= "number" or
         type(snapshot.killedCount) ~= "number" or
@@ -225,50 +299,78 @@ do
         type(snapshot.explicitCount) ~= "number" or
         type(snapshot.absenceDefaultFalseCount) ~= "number" or
         snapshot.explicitCount + snapshot.absenceDefaultFalseCount ~= #rows then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=invalid_snapshot", "invalid_snapshot")
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=invalid_snapshot", "invalid_snapshot")
       return false, "invalid_snapshot"
     end
+
+    if boundaryApply and snapshot.boundaryEpoch ~= requestedBoundaryEpoch then
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=boundary_epoch_mismatch expected=" ..
+          tostring(requestedBoundaryEpoch) .. " actual=" ..
+          tostring(snapshot.boundaryEpoch),
+          "boundary_epoch_mismatch:" .. tostring(requestedBoundaryEpoch) ..
+          ":" .. tostring(snapshot.boundaryEpoch))
+      return false, "boundary_epoch_mismatch"
+    end
+
     local killedIds = {}
     for catalogueId, _ in pairs(byCatalogueId) do
       local value = snapshot.states[catalogueId]
       if type(value) ~= "boolean" then
-        nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=incomplete_states", "incomplete_states")
+        nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+            "reason=incomplete_states", "incomplete_states")
         return false, "incomplete_states"
       end
       if value then killedIds[#killedIds + 1] = catalogueId end
     end
     if #killedIds ~= snapshot.killedCount then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=state_count_mismatch", "state_count_mismatch")
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=state_count_mismatch", "state_count_mismatch")
       return false, "state_count_mismatch"
     end
+
     local apply = _G.CompletionistMapV105ApplyPersistedRavenKills
     if type(apply) ~= "function" then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=apply_api_unavailable", "apply_api_unavailable")
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=apply_api_unavailable", "apply_api_unavailable")
       return false, "apply_api_unavailable"
     end
+
     local applied, accepted = apply(
         killedIds,
-        "native:" .. tostring(source) .. ":generation:" .. tostring(generation),
+        "native:" .. tostring(source) ..
+        ":generation:" .. tostring(generation) ..
+        (boundaryApply and ":boundaryEpoch:" ..
+            tostring(requestedBoundaryEpoch) or ""),
         boundaryApply)
     if applied ~= true or accepted ~= #killedIds then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=apply_refused", "apply_refused")
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=apply_refused", "apply_refused")
       return false, "apply_refused"
     end
+
     lastNativeGeneration = generation
     _G.CompletionistMapV105LastNativeRavenGeneration = generation
     if boundaryApply then
       nativeBoundaryPending = false
-      nativeBoundaryGeneration = nil
+      nativeBoundaryCaptureReady = false
+      nativeBoundarySource = nil
       nativeResetRecheckFrames = 0
       nativeResetRecheckBucket = -1
     end
+
     lastNativeNotice = nil
-    log("NATIVE_AUTHORITY_APPLIED", "generation=" .. tostring(generation) ..
+    log("NATIVE_AUTHORITY_APPLIED",
+        "generation=" .. tostring(generation) ..
         " killed=" .. tostring(snapshot.killedCount) ..
         " alive=" .. tostring(snapshot.aliveCount) ..
         " explicit=" .. tostring(snapshot.explicitCount) ..
         " absentWadFalse=" .. tostring(snapshot.absenceDefaultFalseCount) ..
-        " postBoundary=" .. tostring(boundaryApply))
+        " postBoundary=" .. tostring(boundaryApply) ..
+        " boundaryEpoch=" ..
+        tostring(boundaryApply and requestedBoundaryEpoch or 0) ..
+        " authority=" .. (boundaryApply and "capture_v2" or "latest_v1"))
     return true, nil
   end
 
@@ -559,6 +661,8 @@ do
 
   local function refreshPrompt(self, selected)
     if self == nil or self.menu == nil or selected == nil then return end
+    selected = currentSelection(self) or selected
+    if not promptOwned(self, true, selected) then return end
     local text = promptText(selected)
     local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
     if goMapCursorText ~= nil then
@@ -637,7 +741,11 @@ do
     if not shouldShow(selected.CatalogueId) then return end
     local ids, queryOK = customIds()
     if not queryOK then return end
-    if contains(ids, selected.IdString) then
+    local wantsRemove = contains(ids, selected.IdString)
+    if promptIntent ~= nil and promptIntent.IdString == selected.IdString then
+      wantsRemove = promptIntent.State == "tracked"
+    end
+    if wantsRemove then
       customCompassOwnsTarget = true
       local ok = pcall(function() game.Compass.HideMarker(selected.Name) end)
       if ok then
@@ -753,22 +861,32 @@ do
     suppressLegacyRavenHud()
 
     if intent.State == "tracked" then
+      if customOK and not contains(custom, intent.IdString) and shouldShow(row.CatalogueId) then
+        pcall(function() game.Compass.ShowMarker(row.Name, ravenClass) end)
+        suppressLegacyRavenHud()
+        custom, customOK = customIds()
+        stock, stockOK = stockIds()
+      end
       if stockOK and hasOther(stock, intent.IdString) then
         hideStockExcept(intent.IdString, "raven_replace_async_retry")
         stock = stockIds()
       end
       if customOK and contains(custom, intent.IdString) and
           not hasOther(stock, intent.IdString) then
-        promptIntent = nil
         promptSettleFrames = 0
         promptSettleBucket = -1
         refreshPrompt(self, selected)
-        log("PROMPT_SETTLED", "state=tracked name=" .. row.Name)
+        if not intent.Settled then log("PROMPT_SETTLED", "state=tracked name=" .. row.Name) end
+        intent.Settled = true
       else
         promptSettleFrames = promptSettleFrames + 1
         refreshPrompt(self, selected)
       end
     elseif intent.State == "untracked" then
+      if intent.Settled then
+        refreshPrompt(self, selected)
+        return result
+      end
       promptSettleFrames = promptSettleFrames + 1
       local bucket = math.floor(promptSettleFrames / 30)
       if customOK and contains(custom, intent.IdString) and
@@ -784,7 +902,7 @@ do
       if promptSettleFrames >= 3 and customAfterOK and stockAfterOK and
           not contains(customAfter, intent.IdString) and
           not hasOther(stockAfter, intent.IdString) then
-        promptIntent = nil
+        intent.Settled = true
         promptSettleFrames = 0
         promptSettleBucket = -1
         customCompassOwnsTarget = false
@@ -815,6 +933,11 @@ do
       hideStock("tracked_raven_collected")
     end
     _G.CompletionistMapV105TrackedCatalogueId = nil
+    customCompassOwnsTarget = false
+    promptIntent = nil
+    promptSettleFrames = 0
+    promptSettleBucket = -1
+    if lastMapOnSelf ~= nil then lastMapOnSelf.currShownMarkerID = nil end
   end
 
   _G.CompletionistMapV105PublishRavenState = function(catalogueId, collected, source)
@@ -879,22 +1002,12 @@ do
     return true, accepted
   end
 
-  local function currentNativeGeneration()
-    local namespace = rawget(_G, "CompletionistMapNative")
-    local accessor = type(namespace) == "table" and namespace.GetRavenSnapshot or nil
-    if type(accessor) ~= "function" then return lastNativeGeneration end
-    local ok, snapshot = pcall(accessor)
-    if not ok or type(snapshot) ~= "table" then return lastNativeGeneration end
-    local generation = tonumber(snapshot.generation)
-    if generation == nil or generation < 1 or generation ~= math.floor(generation) then
-      return lastNativeGeneration
-    end
-    return generation
-  end
-
-  local function beginAuthorityBoundary(source)
+  local function beginAuthorityBoundary(source, captureReady)
+    nativeBoundaryEpoch = nativeBoundaryEpoch + 1
+    _G.CompletionistMapV105NativeBoundaryEpoch = nativeBoundaryEpoch
     nativeBoundaryPending = true
-    nativeBoundaryGeneration = currentNativeGeneration()
+    nativeBoundaryCaptureReady = captureReady ~= false
+    nativeBoundarySource = tostring(source)
     nativeResetRecheckFrames = nativeResetRecheckLimit
     nativeResetRecheckBucket = -1
     customCompassOwnsTarget = false
@@ -903,8 +1016,14 @@ do
     promptSettleBucket = -1
     _G.CompletionistMapV105TrackedCatalogueId = nil
     hideCustom(nil, "authority_boundary")
-    log("AUTHORITY_BOUNDARY", "source=" .. tostring(source) ..
-        " baselineGeneration=" .. tostring(nativeBoundaryGeneration) ..
+    if lastMapOnSelf ~= nil then
+      clearSelection(lastMapOnSelf, "authority_boundary")
+      lastMapOnSelf.currShownMarkerID = nil
+    end
+    log("AUTHORITY_BOUNDARY",
+        "source=" .. tostring(source) ..
+        " boundaryEpoch=" .. tostring(nativeBoundaryEpoch) ..
+        " captureReady=" .. tostring(nativeBoundaryCaptureReady) ..
         " staleStateRetained=true atomicAuthorityRequired=true" ..
         " postBoundaryRecheckFrames=" .. tostring(nativeResetRecheckLimit) ..
         " progressionWrites=false")
@@ -917,22 +1036,32 @@ do
   local pendingBoundary = rawget(_G, "CompletionistMapV105PendingAuthorityBoundary")
   if pendingBoundary ~= nil then
     _G.CompletionistMapV105PendingAuthorityBoundary = nil
-    beginAuthorityBoundary(pendingBoundary)
+    if type(pendingBoundary) == "table" then
+      beginAuthorityBoundary(
+          pendingBoundary.source or "pending",
+          pendingBoundary.captureReady ~= false)
+    else
+      beginAuthorityBoundary(pendingBoundary, true)
+    end
   end
 
   if not _G.CompletionistMapV105LoadBoundaryHooksInstalled then
     _G.CompletionistMapV105LoadBoundaryHooksInstalled = true
     local thunkOK, thunk = pcall(require, "core.thunk")
     if thunkOK and type(thunk) == "table" and type(thunk.Install) == "function" then
-      for _, eventName in ipairs({"EVT_LoadSaveData", "EVT_LoadSaveFile_Done"}) do
-        local name = eventName
-        local hookOK, hookErr = pcall(thunk.Install, name, function(...)
-          beginAuthorityBoundary(name)
-        end)
-        log("LOAD_BOUNDARY_HOOK", "event=" .. name ..
-            " installed=" .. tostring(hookOK) ..
-            (hookOK and "" or " error=" .. tostring(hookErr)))
-      end
+      local dataOK, dataErr = pcall(thunk.Install, "EVT_LoadSaveData", function(...)
+        beginAuthorityBoundary("EVT_LoadSaveData", false)
+      end)
+      log("LOAD_BOUNDARY_HOOK", "event=EVT_LoadSaveData" ..
+          " installed=" .. tostring(dataOK) ..
+          (dataOK and "" or " error=" .. tostring(dataErr)))
+
+      local doneOK, doneErr = pcall(thunk.Install, "EVT_LoadSaveFile_Done", function(...)
+        beginAuthorityBoundary("EVT_LoadSaveFile_Done", true)
+      end)
+      log("LOAD_BOUNDARY_HOOK", "event=EVT_LoadSaveFile_Done" ..
+          " installed=" .. tostring(doneOK) ..
+          (doneOK and "" or " error=" .. tostring(doneErr)))
     else
       log("LOAD_BOUNDARY_HOOK", "installed=false reason=core_thunk_unavailable")
     end
@@ -948,7 +1077,8 @@ do
       " permanentPolling=false postLoadBoundedRefresh=true progressionWrites=false catalogueDefaultVisible=true" ..
       " positiveEventEvidenceOnly=true atomicAuthorityClearsState=true" ..
       " sessionKillOverlay=true loadBoundaryClearsOverlay=true" ..
-      " persistedKillBootstrap=true nativeAuthority=loopback_freshness_generation" ..
+      " boundaryEpochCapture=true loadDataCaptureReady=false loadDoneCaptureReady=true" ..
+      " persistedKillBootstrap=true nativeAuthority=loopback_v2_boundary_capture" ..
       " nativePort=" .. tostring(nativePort) .. " staticDescriptorWrites=false")
 end
 -- END COMPLETIONIST V0.10.5 ALL RAVENS

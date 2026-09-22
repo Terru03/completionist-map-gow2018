@@ -51,19 +51,24 @@ class AllRavensTemplateTests(unittest.TestCase):
     def test_authority_metadata_helpers_match_final_contract(self):
         router = build.router_contract()
         state = build.state_contract()
-        self.assertTrue(router["native_generation_is_capture_freshness"])
+        self.assertFalse(router["native_generation_is_capture_freshness"])
+        self.assertEqual(router["native_boundary_snapshot_schema"], 2)
+        self.assertIn("ordering only", router["native_generation_role"])
+        self.assertIn("boundaryEpoch", router["native_boundary_authority"])
         self.assertEqual(
             state["event_false_policy"],
             "defer alive state to atomic 53-Raven authority",
         )
         self.assertEqual(
             state["event_kill_overlay"],
-            "persists across normal newer snapshots until explicit load boundary",
+            "persists across all periodic V1 snapshots until explicit load boundary authority",
         )
         self.assertEqual(
             state["event_overlay_clear_policy"],
-            "first strictly newer post-boundary atomic snapshot",
+            "matching V2 boundary capture only",
         )
+        self.assertIn("EVT_LoadSaveData disarms", state["load_boundary_authority"])
+        self.assertIn("echoed", state["boundary_epoch_policy"])
         self.assertEqual(
             state["load_boundary_sources"],
             ["EVT_LoadSaveData", "EVT_LoadSaveFile_Done", "OnRestoreCheckpoint"],
@@ -74,7 +79,8 @@ class AllRavensTemplateTests(unittest.TestCase):
         for token in (
             'require, "socket.core"', 'connect("127.0.0.1", nativePort)',
             "CompletionistMapNative", "GetRavenSnapshot",
-            "CompletionistMapV105ApplyPersistedRavenKills",
+            "CaptureRavenBoundarySnapshot", "RAVEN_SNAPSHOT_V2",
+            "boundaryEpoch", "CompletionistMapV105ApplyPersistedRavenKills",
             'refreshNativeAuthority("map_create")', "staticDescriptorWrites=false",
         ):
             self.assertIn(token, self.map_hook)
@@ -99,9 +105,13 @@ class AllRavensTemplateTests(unittest.TestCase):
         self.assertIn("atomicAuthorityClearsState=true", self.map_hook)
         self.assertIn("sessionKillOverlay=true", self.map_hook)
         self.assertIn("loadBoundaryClearsOverlay=true", self.map_hook)
+        self.assertIn("boundaryEpochCapture=true", self.map_hook)
+        self.assertIn("loadDataCaptureReady=false", self.map_hook)
+        self.assertIn("loadDoneCaptureReady=true", self.map_hook)
         self.assertIn("restoreBoundedRetry=", self.event_hook)
         self.assertIn("positiveEvidenceOnly=true", self.event_hook)
         self.assertIn("restoreAuthorityBoundary=true", self.event_hook)
+        self.assertIn("restoreBoundaryCaptureReadyAfterReturn=true", self.event_hook)
 
 
 @unittest.skipUnless(exact_source_fixture_available(), "exact runtime-proven v3.3 source fixture not installed")
@@ -196,7 +206,9 @@ class AllRavensBuildTests(unittest.TestCase):
             "atomic 53-state native Raven snapshot",
         )
         self.assertTrue(self.proof["router"]["native_refresh_before_icon_sync"])
-        self.assertTrue(self.proof["router"]["native_generation_is_capture_freshness"])
+        self.assertFalse(self.proof["router"]["native_generation_is_capture_freshness"])
+        self.assertEqual(self.proof["router"]["native_boundary_snapshot_schema"], 2)
+        self.assertIn("boundaryEpoch", self.proof["router"]["native_boundary_authority"])
         self.assertEqual(
             self.proof["state"]["event_false_policy"],
             "defer alive state to atomic 53-Raven authority",

@@ -23,26 +23,31 @@ if (@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName 
 $runnerTest = Join-Path $repo 'tools\v0.10.5\test-raven-authority-bridge-runner.ps1'
 $buildScript = Join-Path $repo 'tools\v0.10.5\build-raven-authority-bridge.ps1'
 $installTest = Join-Path $repo 'tools\v0.10.5\test-raven-authority-bridge-install.ps1'
+$operationTest = Join-Path $repo 'tools\v0.10.5\test-raven-authority-bridge-operation-synthetic.ps1'
 $fixtureExe = Join-Path $GameRootFixture 'GoW.exe'
 $fixtureVersion = Join-Path $GameRootFixture 'version.dll'
 
-foreach ($required in @($runnerTest,$buildScript,$installTest,$fixtureExe,$fixtureVersion)) {
+foreach ($required in @($runnerTest,$buildScript,$installTest,$operationTest,$fixtureExe,$fixtureVersion)) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {
         throw "Need offline-gate file: $required"
     }
 }
 
 Write-Host 'RAVEN DXGI OFFLINE GATES'
-Write-Host '1/3 runner regressions'
+Write-Host '1/4 runner regressions'
 & $runnerTest
 if ($LASTEXITCODE -ne 0) { throw 'Runner regression gate failed.' }
 
-Write-Host '2/3 clean native build + five CTest targets'
+Write-Host '2/4 clean native build + five CTest targets'
 & $buildScript -Clean
 if ($LASTEXITCODE -ne 0) { throw 'Native build/test gate failed.' }
 
-Write-Host '3/3 temp-root schema-3 DXGI install/rollback/recovery suite'
+Write-Host '3/4 temp-root schema-3 DXGI install/rollback/recovery suite'
 & $installTest -GameRootFixture $GameRootFixture
 if ($LASTEXITCODE -ne 0) { throw 'Install/rollback/recovery gate failed.' }
 
-Write-Host 'RAVEN_DXGI_OFFLINE_GATES_PASSED native_tests=5 runner=true install_rollback_recovery=true real_game_install=false version_dll_writes=false save_writes=false progression_writes=false'
+Write-Host '4/4 fixture-free interrupted bridge operation recovery'
+& $operationTest
+if ($LASTEXITCODE -ne 0) { throw 'Bridge operation journal recovery gate failed.' }
+
+Write-Host 'RAVEN_DXGI_OFFLINE_GATES_PASSED native_tests=5 runner=true install_rollback_recovery=true operation_journal_recovery=true real_game_install=false version_dll_writes=false save_writes=false progression_writes=false'

@@ -24,6 +24,11 @@ $repo = (& git rev-parse --show-toplevel 2>$null).Trim()
 if ([string]::IsNullOrWhiteSpace($repo)) { throw 'Not inside repository.' }
 
 $rollback = Join-Path $repo 'tools\v0.10.5\rollback-raven-authority-bridge.ps1'
+$operationLibrary = Join-Path $repo 'tools\v0.10.5\raven-authority-bridge-operation.ps1'
+if (-not (Test-Path -LiteralPath $operationLibrary -PathType Leaf)) {
+    throw "Required bridge operation library missing: $operationLibrary"
+}
+. $operationLibrary
 $game = [IO.Path]::GetFullPath($GameRoot)
 $exe = Join-Path $game 'GoW.exe'
 $version = Join-Path $game 'version.dll'
@@ -37,6 +42,12 @@ foreach ($path in @($exe, $version, $rollback)) {
 $versionBefore = Get-LowerHash $version
 $removedLegacyBadDxgi = $false
 $ownedRollbacks = 0
+$operationRecoveries = 0
+
+$operationResult = Complete-RavenBridgeInterruptedOperation -GameRoot $game
+if ($operationResult.Recovered) {
+    $operationRecoveries++
+}
 
 for ($depth = 0; $depth -lt 16 -and (Test-Path -LiteralPath $manifest -PathType Leaf); $depth++) {
     $owned = Get-Content -Raw -LiteralPath $manifest | ConvertFrom-Json
@@ -86,7 +97,7 @@ if ((Get-LowerHash $version) -ne $versionBefore) {
     throw 'version.dll changed during recovery.'
 }
 
-Write-Host "RAVEN_NATIVE_BRIDGE_STARTUP_RECOVERED owned_dxgi_absent=true manifest_absent=true version_untouched=true removed_legacy_bad_dxgi=$($removedLegacyBadDxgi.ToString().ToLowerInvariant()) dxgi_rollbacks=$ownedRollbacks"
+Write-Host "RAVEN_NATIVE_BRIDGE_STARTUP_RECOVERED owned_dxgi_absent=true manifest_absent=true version_untouched=true removed_legacy_bad_dxgi=$($removedLegacyBadDxgi.ToString().ToLowerInvariant()) dxgi_rollbacks=$ownedRollbacks operation_recoveries=$operationRecoveries"
 
 if ($Launch) {
     Write-Host 'Launching GoW without a Completionist Map native bridge...'

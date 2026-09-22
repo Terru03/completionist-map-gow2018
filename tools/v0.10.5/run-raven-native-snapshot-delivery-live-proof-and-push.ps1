@@ -22,6 +22,7 @@ $exe = Join-Path $game 'GoW.exe'
 $version = Join-Path $game 'version.dll'
 $proxy = Join-Path $game 'dxgi.dll'
 $bridgeManifest = Join-Path $game 'mods\completionist-map\native\raven-native-bridge-manifest.json'
+$bridgeOperation = Join-Path $game 'mods\completionist-map\native\raven-native-bridge-operation.json'
 $bridgeLog = Join-Path $game 'mods\completionist-map\native\raven-native-bridge.log'
 $loaderLog = Join-Path $game 'mods\loader_log.txt'
 $offlineGate = Join-Path $repo 'tools\v0.10.5\test-raven-native-snapshot-delivery-offline-gates.ps1'
@@ -160,6 +161,9 @@ function Test-GameFileSnapshot([System.Collections.IDictionary]$Expected) {
     return $true
 }
 
+if (Test-Path -LiteralPath $bridgeOperation -PathType Leaf) {
+    throw 'Unfinished Raven bridge operation journal exists before live proof. Run startup recovery first.'
+}
 $mapBefore = Get-GameFileSnapshot
 $proxyBeforeExists = Test-Path -LiteralPath $proxy -PathType Leaf
 $manifestBeforeExists = Test-Path -LiteralPath $bridgeManifest -PathType Leaf
@@ -204,6 +208,7 @@ function Test-BridgeRollbackState {
     if ($proxyAfterExists -ne $proxyBeforeExists -or $manifestAfterExists -ne $manifestBeforeExists) { return $false }
     if ($proxyAfterExists -and (Get-LowerHash $proxy) -ne $proxyBeforeHash) { return $false }
     if ($manifestAfterExists -and (Get-LowerHash $bridgeManifest) -ne $manifestBeforeHash) { return $false }
+    if (Test-Path -LiteralPath $bridgeOperation -PathType Leaf) { return $false }
     return (Get-LowerHash $version) -eq $versionBefore
 }
 
@@ -249,12 +254,18 @@ function Publish-Proof([string]$Result, [string]$Reason, [object]$Delivery) {
         "map_reopen_observed=$($Delivery.MapReopenObserved.ToString().ToLowerInvariant())"
         "checkpoint_authority_boundary_observed=$($Delivery.CheckpointBoundaryObserved.ToString().ToLowerInvariant())"
         "checkpoint_postboundary_snapshot_applied=$($Delivery.PostBoundaryApplied.ToString().ToLowerInvariant())"
+        "checkpoint_boundary_epoch_matched=$($Delivery.CheckpointBoundaryEpochMatched.ToString().ToLowerInvariant())"
+        "checkpoint_boundary_epoch=$($Delivery.CheckpointBoundaryEpoch)"
         "checkpoint_reload_after_kill_manual=$($script:checkpointReloadAccepted.ToString().ToLowerInvariant())"
         "same_map_readd_no_stock_manual=$($script:sameMapReaddAccepted.ToString().ToLowerInvariant())"
+        "fresh_boundary_observed=$($Delivery.FreshBoundaryObserved.ToString().ToLowerInvariant())"
+        "fresh_boundary_epoch_matched=$($Delivery.FreshBoundaryEpochMatched.ToString().ToLowerInvariant())"
+        "fresh_boundary_epoch=$($Delivery.FreshBoundaryEpoch)"
         "fresh_0_killed_applied=$($Delivery.FreshApplied.ToString().ToLowerInvariant())"
         "ordered_acceptance=$($Delivery.Ordered.ToString().ToLowerInvariant())"
         "map_candidate_rollback_exact=$($mapExact.ToString().ToLowerInvariant())"
         "dxgi_manifest_rollback_exact=$($bridgeExact.ToString().ToLowerInvariant())"
+        "dxgi_operation_journal_absent=$(((-not (Test-Path -LiteralPath $bridgeOperation -PathType Leaf))).ToString().ToLowerInvariant())"
         "version_dll_untouched=$(((Get-LowerHash $version) -eq $versionBefore).ToString().ToLowerInvariant())"
         'static_descriptor_writes=false'
         'bridge_process_memory_writes=false'
@@ -321,8 +332,9 @@ try {
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
     if (-not $delivery.ImmediateEvent -or -not $delivery.MapReopenObserved -or
-        -not $delivery.CheckpointBoundaryObserved -or -not $delivery.PostBoundaryApplied) {
-        throw 'Immediate event, map-reopen, or post-checkpoint authority evidence missing.'
+        -not $delivery.CheckpointBoundaryObserved -or -not $delivery.PostBoundaryApplied -or
+        -not $delivery.CheckpointBoundaryEpochMatched) {
+        throw 'Immediate event, map-reopen, or matching V2 checkpoint authority evidence missing.'
     }
 
     $answer = Read-Host 'Load true fresh save. Open map. Verify all 53 Ravens, captions, realm filter, and compass behavior. Type FRESH_OK, or REGRESSION if anything is wrong'
@@ -330,7 +342,12 @@ try {
     if ($answer -cne 'FRESH_OK') { throw 'Fresh-save manual acceptance not confirmed.' }
     $logs = Get-FreshLogs
     $delivery = Test-RavenSnapshotDeliveryProofLines -BridgeLines @($logs.Bridge) -LoaderLines @($logs.Loader)
-    if (-not $delivery.FreshApplied -or -not $delivery.Ordered) { throw 'Fresh 0-killed ordered Lua apply evidence missing.' }
+    if (-not $delivery.FreshBoundaryObserved -or
+        -not $delivery.FreshApplied -or
+        -not $delivery.FreshBoundaryEpochMatched -or
+        -not $delivery.Ordered) {
+        throw 'Fresh 0-killed matching V2 boundary authority evidence missing.'
+    }
 
     while ($true) {
         $answer = Read-Host 'Quit GoW fully, then type FINALIZE'

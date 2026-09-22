@@ -30,6 +30,7 @@ calls={logs={},previousShow=0,previousUpdate=0,recycled=0,nativeConnects=0,nativ
 customIds={}
 stockIds={}
 nativeResponse=nil
+nativeBoundaryResponse=nil
 local nativeSocket={}
 function nativeSocket.tcp()
   local client={}
@@ -38,17 +39,24 @@ function nativeSocket.tcp()
     calls.nativeConnects=calls.nativeConnects+1
     calls.nativeHost=host
     calls.nativePort=port
-    if nativeResponse==nil then return nil,"connection refused" end
+    if nativeResponse==nil and nativeBoundaryResponse==nil then return nil,"connection refused" end
     self.receiveIndex=1
+    self.response=nil
     return 1
   end
   function client:send(request)
     calls.nativeRequests[#calls.nativeRequests+1]=request
+    if string.sub(request,1,string.len("CAPTURE RAVEN_SNAPSHOT_V2 "))=="CAPTURE RAVEN_SNAPSHOT_V2 " then
+      self.response=nativeBoundaryResponse
+    else
+      self.response=nativeResponse
+    end
+    if self.response==nil then return nil,"no response" end
     return string.len(request)
   end
   function client:receive(size)
     if size~=1 then error("unexpected receive size:" .. tostring(size)) end
-    local value=string.sub(nativeResponse,self.receiveIndex,self.receiveIndex)
+    local value=string.sub(self.response,self.receiveIndex,self.receiveIndex)
     if value=="" then return nil,"closed" end
     self.receiveIndex=self.receiveIndex+1
     return value
@@ -244,8 +252,12 @@ function probe.fireLoad(name)
   return true
 end
 function probe.setNativeResponse(value) nativeResponse=value end
+function probe.setNativeBoundaryResponse(value) nativeBoundaryResponse=value end
 function probe.nativeConnects() return calls.nativeConnects end
+function probe.nativeRequest(i) return calls.nativeRequests[i] end
+function probe.nativeRequestCount() return #calls.nativeRequests end
 function probe.lastNativeGeneration() return CompletionistMapV105LastNativeRavenGeneration end
+function probe.boundaryEpoch() return CompletionistMapV105NativeBoundaryEpoch end
 function probe.collectedCount()
   local n=0
   for _,value in pairs(CompletionistMapV105RavenState or {}) do if value==true then n=n+1 end end
@@ -277,6 +289,18 @@ class AllRavensMapLuaTests(unittest.TestCase):
             f"explicit={53 - killed} absentWadFalse={killed} killedIds={encoded}\n"
         )
 
+    def boundary_response(self, epoch: int, generation: int, killed_rows=()):
+        killed_ids = [row["catalogue_id"] for row in killed_rows]
+        killed = len(killed_ids)
+        encoded = ",".join(killed_ids) if killed_ids else "-"
+        return (
+            "RAVEN_SNAPSHOT_V2 schema=2 "
+            f"boundaryEpoch={epoch} generation={generation} "
+            f"capturedTickMs={2000 + generation} "
+            f"count=53 unknown=0 alive={53 - killed} killed={killed} "
+            f"explicit={53 - killed} absentWadFalse={killed} killedIds={encoded}\n"
+        )
+
     def test_a_b_same_click_stock_and_kill_lifecycle(self):
         self.probe.publish(self.a["catalogue_id"], False)
         self.probe.publish(self.b["catalogue_id"], False)
@@ -301,6 +325,66 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.customCount(), 0)
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
         self.assertIsNotNone(self.probe.icon(self.b["marker"]["name"]))
+
+    def test_rapid_readd_wins_delayed_native_remove(self):
+        self.probe.open()
+        name = self.a["marker"]["name"]
+        self.probe.click(name)
+        self.lua.execute("savedHide=game.Compass.HideMarker; game.Compass.HideMarker=function() end")
+        self.probe.click(name)
+        self.probe.click(name)
+        self.assertEqual(self.probe.tracked(), self.a["catalogue_id"])
+        self.lua.execute("game.Compass.HideMarker=savedHide; customIds={}")
+        self.probe.update()
+        self.assertEqual(self.probe.customAt(1), self.probe.markerId(name))
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+
+    def test_late_base_update_cannot_revert_settled_prompt(self):
+        self.probe.open()
+        self.probe.click(self.a["marker"]["name"])
+        self.probe.update()
+        self.lua.execute("calls.baseOverwriteOnce=true")
+        self.probe.update()
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+
+    def test_pending_action_does_not_overwrite_other_raven_prompt(self):
+        self.probe.open()
+        self.probe.click(self.a["marker"]["name"])
+        self.lua.globals().hoverName = self.b["marker"]["name"]
+        self.lua.execute("MapOn.MapCollisionChangeHandler(self,{}, {probe.icon(hoverName)},self.currRealmName)")
+        self.probe.update()
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] replace")
+
+    def test_settled_remove_keeps_prompt_without_owning_new_stock(self):
+        self.probe.open()
+        self.probe.click(self.a["marker"]["name"])
+        self.probe.click(self.a["marker"]["name"])
+        for _ in range(4):
+            self.probe.update()
+        self.lua.execute("calls.baseOverwriteOnce=true")
+        self.probe.update()
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] add")
+        self.probe.injectStock("stock-after-settled-remove")
+        self.probe.update()
+        self.assertEqual(self.probe.stockCount(), 1)
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] replace")
+
+    def test_kill_releases_owner_and_stale_prompt(self):
+        self.probe.open()
+        self.probe.click(self.a["marker"]["name"])
+        self.probe.publish(self.a["catalogue_id"], True)
+        self.probe.injectStock("legitimate-stock-after-kill")
+        self.probe.update()
+        self.assertEqual(self.probe.stockCount(), 1)
+        self.assertEqual(self.probe.customCount(), 0)
+
+    def test_boundary_disarms_pending_selection(self):
+        self.probe.open()
+        self.lua.globals().hoverName = self.a["marker"]["name"]
+        self.lua.execute("MapOn.MapCollisionChangeHandler(self,{}, {probe.icon(hoverName)},self.currRealmName); MapOn.GetShowOnCompassPrompt(self,nil)")
+        self.probe.boundary()
+        self.lua.execute("self.currMarkerID='stock'; MapOn.ShowOnCompass(self,{})")
+        self.assertEqual(self.probe.stockCount(), 1)
 
     def test_raven_reticle_and_compass_prompt_refresh_immediately(self):
         self.probe.publish(self.a["catalogue_id"], False)
@@ -409,7 +493,8 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
 
         self.probe.boundary()
-        self.probe.setNativeResponse(self.response(2))
+        epoch = int(self.probe.boundaryEpoch())
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 2))
         for _ in range(35):
             self.probe.update()
         self.assertEqual(self.probe.iconCount(), 2)
@@ -418,24 +503,76 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.probe.teardown()
         self.assertEqual(self.probe.iconCount(), 0)
 
-    def test_load_boundary_preserves_last_good_state_until_fresh_snapshot(self):
+    def test_boundary_accepts_only_matching_postload_capture_not_newer_periodic_state(self):
+        self.probe.setNativeResponse(self.response(10, [self.a]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+        # A load boundary is now active. The background V1 stream can continue
+        # producing newer generations that still describe the old save. Those
+        # generations must never settle the boundary.
+        self.probe.setNativeResponse(self.response(11))
+        self.probe.boundary()
+        for _ in range(35):
+            self.probe.update()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+        # The authoritative post-load capture is requested explicitly after
+        # the boundary and carries the boundary epoch echoed by the bridge.
+        epoch = int(self.probe.boundaryEpoch())
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 12))
+        for _ in range(35):
+            self.probe.update()
+        self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
+        self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
+        requests = [
+            self.probe.nativeRequest(i)
+            for i in range(1, self.probe.nativeRequestCount() + 1)
+        ]
+        self.assertTrue(any(
+            request == f"CAPTURE RAVEN_SNAPSHOT_V2 boundaryEpoch={epoch}\n"
+            for request in requests
+        ))
+
+    def test_load_boundary_preserves_last_good_state_until_matching_capture(self):
         self.probe.setNativeResponse(self.response(4, [self.a]))
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
 
-        # Boundary captures generation 4 as its baseline. A same-generation
-        # response is pre-boundary and must not revive the Raven.
         self.probe.boundary()
-        self.probe.setNativeResponse(self.response(4))
-        self.probe.open()
+        epoch = int(self.probe.boundaryEpoch())
+
+        # Periodic V1 state is irrelevant while the boundary is pending.
+        self.probe.setNativeResponse(self.response(50))
+        for _ in range(35):
+            self.probe.update()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
         self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
 
-        # The first strictly newer capture is the atomic authority for the
-        # restored checkpoint and may legitimately make the Raven alive.
-        self.probe.setNativeResponse(self.response(5))
-        self.probe.update()
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 51))
+        for _ in range(35):
+            self.probe.update()
+        self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
+        self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
+
+    def test_unavailable_boundary_capture_preserves_state_until_capture_succeeds(self):
+        self.probe.setNativeResponse(self.response(4, [self.a]))
+        self.probe.open()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+
+        self.probe.boundary()
+        epoch = int(self.probe.boundaryEpoch())
+        self.probe.setNativeBoundaryResponse(None)
+        for _ in range(35):
+            self.probe.update()
+        self.assertTrue(self.probe.state(self.a["catalogue_id"]))
+        self.assertIsNone(self.probe.icon(self.a["marker"]["name"]))
+
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 6))
+        for _ in range(35):
+            self.probe.update()
         self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
         self.assertIsNotNone(self.probe.icon(self.a["marker"]["name"]))
 
@@ -444,12 +581,14 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
         self.assertTrue(self.probe.fireLoad("EVT_LoadSaveFile_Done"))
+        epoch = int(self.probe.boundaryEpoch())
 
-        self.probe.setNativeResponse(self.response(8))
-        self.probe.update()
+        self.probe.setNativeResponse(self.response(99))
+        for _ in range(35):
+            self.probe.update()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
 
-        self.probe.setNativeResponse(self.response(9))
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 100))
         for _ in range(35):
             self.probe.update()
         self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
@@ -474,7 +613,8 @@ class AllRavensMapLuaTests(unittest.TestCase):
         # of prior session event evidence.
         self.probe.setNativeResponse(self.response(1))
         self.probe.boundary()
-        self.probe.setNativeResponse(self.response(2))
+        epoch = int(self.probe.boundaryEpoch())
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 2))
         self.probe.open()
         for _ in range(35):
             self.probe.update()
@@ -513,16 +653,17 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
 
         self.probe.reset()
-        self.probe.setNativeResponse(self.response(7, [self.b]))
+        epoch = int(self.probe.boundaryEpoch())
+        self.probe.setNativeResponse(self.response(70, [self.b]))
         self.probe.open()
         self.assertTrue(self.probe.state(self.a["catalogue_id"]))
         self.assertIsNot(self.probe.state(self.b["catalogue_id"]), True)
 
-        self.probe.setNativeResponse(self.response(8, [self.b]))
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 71, [self.b]))
         self.probe.update()
         self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)
         self.assertTrue(self.probe.state(self.b["catalogue_id"]))
-        self.assertEqual(self.probe.lastNativeGeneration(), 8)
+        self.assertEqual(self.probe.lastNativeGeneration(), 71)
 
     def test_native_unavailable_preserves_immediate_event_state(self):
         self.probe.publish(self.a["catalogue_id"], True)
@@ -548,7 +689,8 @@ class AllRavensMapLuaTests(unittest.TestCase):
         # After an explicit load boundary, a strictly newer atomic snapshot is
         # allowed to clear the session event overlay.
         self.probe.boundary()
-        self.probe.setNativeResponse(self.response(3))
+        epoch = int(self.probe.boundaryEpoch())
+        self.probe.setNativeBoundaryResponse(self.boundary_response(epoch, 3))
         for _ in range(35):
             self.probe.update()
         self.assertIsNot(self.probe.state(self.a["catalogue_id"]), True)

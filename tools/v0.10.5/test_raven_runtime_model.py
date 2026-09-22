@@ -92,7 +92,7 @@ class RavenRuntimeTests(unittest.TestCase):
         )
         self.assertEqual(model.state[self.a["catalogue_id"]], "collected")
 
-    def test_immediate_event_survives_periodic_snapshot_until_load_boundary(self):
+    def test_immediate_event_survives_periodic_snapshot_until_epoch_capture(self):
         model = self.model()
         model.open_map(self.a["realm"])
         self.assertEqual(model.apply_native_snapshot(1, []), "applied")
@@ -104,10 +104,12 @@ class RavenRuntimeTests(unittest.TestCase):
         self.assertEqual(model.apply_native_snapshot(2, []), "applied")
         self.assertNotIn(self.a["catalogue_id"], model.map_icons)
 
-        model.notify_load_boundary()
-        self.assertEqual(model.apply_native_snapshot(2, []), "boundary_wait")
+        epoch = model.notify_load_boundary()
+        self.assertEqual(model.apply_native_snapshot(200, []), "boundary_wait")
         self.assertNotIn(self.a["catalogue_id"], model.map_icons)
-        self.assertEqual(model.apply_native_snapshot(3, []), "applied")
+        self.assertEqual(
+            model.apply_boundary_snapshot(epoch, 201, []), "applied"
+        )
         self.assertIn(self.a["catalogue_id"], model.map_icons)
 
     def test_a_b_and_b_a_replacement(self):
@@ -227,6 +229,39 @@ class RavenRuntimeTests(unittest.TestCase):
             model.observe(self.a["catalogue_id"], True)
             self.assertEqual(model.active_target, target)
 
+    def test_boundary_rejects_periodic_and_wrong_epoch_even_when_newer(self):
+        model = self.model()
+        self.assertEqual(
+            model.apply_native_snapshot(4, [self.a["catalogue_id"]]), "applied"
+        )
+        model.open_map(self.a["realm"])
+        epoch = model.notify_load_boundary()
+
+        self.assertEqual(model.apply_native_snapshot(500, []), "boundary_wait")
+        self.assertEqual(
+            model.apply_boundary_snapshot(epoch + 1, 501, []),
+            "boundary_epoch_mismatch",
+        )
+        self.assertEqual(model.state[self.a["catalogue_id"]], "collected")
+        self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+
+        self.assertEqual(
+            model.apply_boundary_snapshot(epoch, 502, []), "applied"
+        )
+        self.assertNotEqual(model.state[self.a["catalogue_id"]], "collected")
+        self.assertIn(self.a["catalogue_id"], model.map_icons)
+
+    def test_boundary_not_ready_refuses_even_matching_epoch(self):
+        model = self.model()
+        self.assertEqual(
+            model.apply_native_snapshot(4, [self.a["catalogue_id"]]), "applied"
+        )
+        epoch = model.notify_load_boundary(capture_ready=False)
+        self.assertEqual(
+            model.apply_boundary_snapshot(epoch, 5, []), "boundary_not_ready"
+        )
+        self.assertEqual(model.state[self.a["catalogue_id"]], "collected")
+
     def test_restore_false_waits_for_fresh_atomic_authority(self):
         model = self.model()
         self.assertEqual(
@@ -237,10 +272,13 @@ class RavenRuntimeTests(unittest.TestCase):
 
         self.assertEqual(model.restore(self.a["catalogue_id"], False), "deferred")
         self.assertNotIn(self.a["catalogue_id"], model.map_icons)
-        self.assertEqual(model.apply_native_snapshot(4, []), "boundary_wait")
+        epoch = model.authority_boundary_epoch
+        self.assertEqual(model.apply_native_snapshot(50, []), "boundary_wait")
         self.assertNotIn(self.a["catalogue_id"], model.map_icons)
 
-        self.assertEqual(model.apply_native_snapshot(5, []), "applied")
+        self.assertEqual(
+            model.apply_boundary_snapshot(epoch, 51, []), "applied"
+        )
         self.assertIn(self.a["catalogue_id"], model.map_icons)
 
     def test_restore_true_may_hide_immediately_while_boundary_reconciles(self):
@@ -250,8 +288,12 @@ class RavenRuntimeTests(unittest.TestCase):
         self.assertIn(self.a["catalogue_id"], model.map_icons)
         self.assertEqual(model.restore(self.a["catalogue_id"], True), "applied")
         self.assertNotIn(self.a["catalogue_id"], model.map_icons)
+        epoch = model.authority_boundary_epoch
         self.assertEqual(
-            model.apply_native_snapshot(3, [self.a["catalogue_id"]]), "applied"
+            model.apply_boundary_snapshot(
+                epoch, 3, [self.a["catalogue_id"]]
+            ),
+            "applied",
         )
         self.assertNotIn(self.a["catalogue_id"], model.map_icons)
 
@@ -279,9 +321,12 @@ class RavenRuntimeTests(unittest.TestCase):
 
         model.open_map(self.a["realm"])
         self.assertNotIn(self.a["catalogue_id"], model.map_icons)
-        self.assertEqual(model.apply_native_snapshot(10, []), "boundary_wait")
+        epoch = model.authority_boundary_epoch
+        self.assertEqual(model.apply_native_snapshot(100, []), "boundary_wait")
         self.assertNotIn(self.a["catalogue_id"], model.map_icons)
-        self.assertEqual(model.apply_native_snapshot(11, []), "applied")
+        self.assertEqual(
+            model.apply_boundary_snapshot(epoch, 101, []), "applied"
+        )
         self.assertIn(self.a["catalogue_id"], model.map_icons)
 
 

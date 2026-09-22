@@ -33,6 +33,15 @@ if (@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName 
 
 $repo = (& git rev-parse --show-toplevel 2>$null).Trim()
 if ([string]::IsNullOrWhiteSpace($repo)) { throw 'Not inside repository.' }
+$operationLibrary = Join-Path $repo 'tools\v0.10.5\raven-authority-bridge-operation.ps1'
+if (-not (Test-Path -LiteralPath $operationLibrary -PathType Leaf)) {
+    throw "Need bridge operation library: $operationLibrary"
+}
+. $operationLibrary
+$recoveredOperation = Complete-RavenBridgeInterruptedOperation -GameRoot $GameRoot
+if ($recoveredOperation.Recovered) {
+    Write-Host "Recovered interrupted Raven bridge operation before install: $($recoveredOperation.Operation)"
+}
 if ([string]::IsNullOrWhiteSpace($BridgeDll)) {
     $BridgeDll = Join-Path $repo 'build\raven-authority-bridge\Release\dxgi.dll'
 }
@@ -73,6 +82,7 @@ if ($targetExists -ne $manifestExists) {
 }
 
 $oldManifest = $null
+$oldHash = $null
 $backupRelative = $null
 $backupManifestRelative = $null
 if ($targetExists) {
@@ -95,7 +105,7 @@ if ($targetExists) {
 $nativeDir = Assert-ChildPath $game (Split-Path -Parent $manifestPath)
 New-Item -ItemType Directory -Force -Path $nativeDir | Out-Null
 $tempTarget = Assert-ChildPath $game (Join-Path $game "dxgi.dll.completionist-$PID.tmp")
-$installed = $false
+$operation = $null
 
 try {
     Copy-Item -LiteralPath $BridgeDll -Destination $tempTarget -Force
@@ -112,8 +122,20 @@ try {
         }
     }
 
+    $operationArgs = @{
+        GameRoot = $game
+        Operation = 'install'
+        OperationSha256 = $bridgeHash
+        RestoreExists = $targetExists
+        RestoreSha256 = if ($targetExists) { $oldHash } else { '' }
+        RestoreDllRelative = if ($targetExists) { $backupRelative } else { '' }
+        RestoreManifestRelative = if ($targetExists) { $backupManifestRelative } else { '' }
+    }
+    $operation = New-RavenBridgeOperation @operationArgs
+
     if ($targetExists) { Remove-Item -LiteralPath $target -Force }
     Move-Item -LiteralPath $tempTarget -Destination $target
+    Set-RavenBridgeOperationPhase -OperationPath $operation.Path -Journal $operation.Journal -Phase 'target-written'
 
     $installManifest = [ordered]@{
         schema = $Schema
@@ -134,33 +156,32 @@ try {
     $tempManifest = Assert-ChildPath $game ($manifestPath + ".tmp-$PID")
     $installManifest | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $tempManifest -Encoding UTF8
     Move-Item -LiteralPath $tempManifest -Destination $manifestPath -Force
+    Set-RavenBridgeOperationPhase -OperationPath $operation.Path -Journal $operation.Journal -Phase 'manifest-written'
 
     if ((Get-LowerHash $target) -ne $bridgeHash) { throw 'Installed bridge hash changed.' }
     if ((Get-LowerHash $version) -ne $versionBefore) { throw 'version.dll changed during install.' }
-    $installed = $true
+    Remove-Item -LiteralPath $operation.Path -Force
+    $operation = $null
 }
 catch {
+    $installError = $_.Exception.Message
     if (Test-Path -LiteralPath $tempTarget) { Remove-Item -LiteralPath $tempTarget -Force }
-    if (-not $installed) {
-        if ($targetExists -and $null -ne $backupRelative) {
-            $backup = Assert-ChildPath $game (Join-Path $game $backupRelative)
-            $backupManifest = Assert-ChildPath $game (Join-Path $game $backupManifestRelative)
-            if (Test-Path -LiteralPath $backup -PathType Leaf) {
-                Copy-Item -LiteralPath $backup -Destination $target -Force
-            }
-            if (Test-Path -LiteralPath $backupManifest -PathType Leaf) {
-                Copy-Item -LiteralPath $backupManifest -Destination $manifestPath -Force
-            }
-        } elseif (-not $targetExists) {
-            if (Test-Path -LiteralPath $target -PathType Leaf) {
-                Remove-Item -LiteralPath $target -Force
-            }
-            if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
-                Remove-Item -LiteralPath $manifestPath -Force
-            }
+    $journalPath = Get-RavenBridgeOperationPath $game
+    if ($null -ne $operation -or (Test-Path -LiteralPath $journalPath -PathType Leaf)) {
+        try {
+            [void](Complete-RavenBridgeInterruptedOperation -GameRoot $game)
+        }
+        catch {
+            $recoveryError = $_.Exception.Message
+            $message = "Raven bridge install failed: $installError" +
+                [Environment]::NewLine +
+                "Operation recovery also failed: $recoveryError" +
+                [Environment]::NewLine +
+                'Do not launch God of War until reviewed.'
+            throw $message
         }
     }
-    throw
+    throw $installError
 }
 
 Write-Host "RAVEN_NATIVE_BRIDGE_INSTALLED target=dxgi.dll proxy_sha256=$bridgeHash contract=$ProxyContract version_untouched=true manifest=$manifestPath"

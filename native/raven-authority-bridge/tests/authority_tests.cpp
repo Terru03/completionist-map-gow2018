@@ -163,6 +163,20 @@ int wmain() {
     return Fail("Lua wire snapshot differs");
   }
 
+  const std::string boundary_response =
+      completionist::BuildRavenBoundarySnapshotWireResponse(wire, 42);
+  if (!boundary_response.starts_with(
+          "RAVEN_SNAPSHOT_V2 schema=2 boundaryEpoch=42 generation=7 ") ||
+      boundary_response.find(
+          " count=53 unknown=0 alive=26 killed=27 explicit=42 ") ==
+          std::string::npos ||
+      boundary_response.find(
+          "raven_c945cb53465b58decfcbd4a221cb5326") ==
+          std::string::npos ||
+      boundary_response.back() != '\n') {
+    return Fail("Lua boundary wire snapshot differs");
+  }
+
   std::uint16_t bound_port = 0;
   int listener_error = 0;
   const std::uintptr_t first_listener =
@@ -184,6 +198,6 @@ int wmain() {
 
   std::cout << "RAVEN_BRIDGE_AUTHORITY_TESTS_PASSED states=53 explicit=42 "
                "absentWadFalse=11 killed=27 alive=26 delivery=loopback "
-               "collision_refused=true freshness_generation=true\n";
+               "collision_refused=true freshness_generation=true boundary_epoch_wire=true\n";
   return 0;
 }
