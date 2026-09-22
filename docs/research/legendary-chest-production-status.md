@@ -738,3 +738,28 @@ Implementation updates:
   unstaged xpl100 cases.
 
 State-value semantics are still deliberately separate and remain unproven.
+
+
+### Structural proof rerun blocked only by obsolete tests
+
+Evidence commit:
+
+`a3b09f7fc1c237c267c5c627591eac3a93ff9fc9`
+
+The deterministic structural resolver itself was not reached. The runner stopped
+during the identity-test gate because two tests still referenced symbols from the
+deleted 407k-candidate implementation:
+
+- `resolver.continue_identity_hash`;
+- `resolver.EXPECTED_PROTOTYPE`.
+
+All new structural-rule tests passed, including:
+
+- live xpl250 vector/hash;
+- organizational-wrapper omission;
+- locked-root chest-object retention;
+- deterministic unstaged xpl100 derivation;
+- unique scene identities.
+
+The obsolete candidate-scan assertions were removed and replaced with a pinned
+structural-resolver contract test. No identity rule or runtime evidence changed.
