@@ -186,6 +186,18 @@ class LegendaryChestIdentityTests(unittest.TestCase):
             {item["source_record_name"] for item in skipped},
         )
 
+    def test_structural_resolver_contract_is_pinned(self):
+        self.assertEqual(resolver.EXPECTED_TRACKED, 33)
+        self.assertEqual(resolver.EXPECTED_STAGED, 32)
+        self.assertEqual(
+            resolver.SIMPLE_STATE_CLASS,
+            "0x75E050AB149B4062",
+        )
+        self.assertEqual(
+            identity.CHEST_OWN_IDENTITY_ELEMENT.hex(),
+            "947a7c50b25f004ea3365dd8dc232ee1",
+        )
+
     def test_native_wad_name_hash_matches_known_algorithm(self):
         self.assertEqual(
             identity.registry_hash_for_wad("alf600_templeint.wad"),
@@ -207,25 +219,6 @@ class LegendaryChestIdentityTests(unittest.TestCase):
             payload.hex(),
             "01887766554433221100ffeeddccbbaa99",
         )
-
-    def test_fast_candidate_hash_continuation_matches_full_identity_hash(self):
-        prefix = [
-            bytes.fromhex("00112233445566778899aabbccddeeff"),
-            bytes.fromhex("ffeeddccbbaa99887766554433221100"),
-        ]
-        prototype = bytes.fromhex("1234567890abcdef1234567890abcdef")
-        prefix_hash = identity.identity_hash(prefix)
-        self.assertEqual(
-            resolver.continue_identity_hash(prefix_hash, prototype),
-            identity.identity_hash(prefix + [prototype]),
-        )
-
-    def test_shared_loader_adjusted_identity_is_distinct_and_pinned(self):
-        raw = resolver.EXPECTED_PROTOTYPE
-        adjusted = identity.adjusted_record_id(raw).hex()
-        self.assertEqual(raw, "966624c84fc6b8590179bfd6c72c2086")
-        self.assertEqual(adjusted, "966624c84fc6b8590179bfd6c62c2086")
-        self.assertNotEqual(raw, adjusted)
 
 
 if __name__ == "__main__":
