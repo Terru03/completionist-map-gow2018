@@ -213,3 +213,75 @@ Repair:
 This failure therefore does not weaken the exact-identity strategy; it confirms
 that a single placement record is insufficient and the full scene path is the
 correct discriminator.
+
+
+### Fourth attempt 2026-09-22 — live registry diagnostic completed, residency/identity assumption rejected
+
+Evidence commit:
+
+`0eaf9b386f666ae2011641597d34570fde96097e`
+
+This was the first corrected attempt to complete the enhanced live registry scan.
+
+Result:
+
+- registry 238 count: 49152;
+- non-null objects: 18519;
+- objects using the proven identity method: 18519;
+- identity vectors reconstructed: 18519;
+- reconstruction failures: 0;
+- exact tracked Legendary resolutions: 0/33;
+- physical-scene prefix matches: 0;
+- adjusted physical-placement anchor hits: 0;
+- raw physical-placement anchor hits: 0;
+- process-memory writes: false;
+- save/progression writes: false;
+- game-file writes: false.
+
+Interpretation:
+
+The physical placement record chain is not present in the currently resident
+registry identity vectors, so it must not be treated as a universal all-33
+GameObject identity oracle. Unlike the Raven family, Legendary Chest physical
+instances are stream/residency dependent and the one-process global-registry
+sweep is the wrong production gate.
+
+The exact authored WAD catalogue remains valid. This result only rejects the
+assumption that every tracked chest can be identified from one currently
+resident registry image.
+
+### Staged checkpoint pivot
+
+The already-proven Raven staged-WAD capture contains 425 staged records.
+
+Cross-checking its records against the 33 tracked Legendary Chest rows proves:
+
+- 32/33 tracked Legendary catalogue rows have their source WAD represented;
+- every one of those 32 represented rows maps to a staged WAD carrier whose
+  parsed string table contains the field `state`;
+- only `xpl100_httk.wad`
+  (`legendary_chest_890a24d24d2864a1567af691c615870f`)
+  is absent from that particular capture.
+
+This is the correct next authority layer because the checkpoint carrier can
+preserve unloaded object state independent of physical GameObject residency.
+
+New tooling:
+
+- `tools/v0.10.5/analyze-legendary-staged-state.py`
+- `tools/v0.10.5/run-legendary-staged-state-inventory-and-push.ps1`
+
+The offline analyzer does not modify the Raven decoder. It reuses the proven
+bounded staged-WAD framing/token rules and inventories, for each tracked WAD:
+
+- exact `__subobjs` parent keys;
+- parsed serialized GameObject registry/object hashes where present;
+- every child state row containing a field named `state`;
+- raw state token tag/payload/width;
+- all sibling fields;
+- exact field-name/value-tag schema signatures.
+
+This inventory is deliberately non-authoritative: it does not yet claim which
+state-bearing subobject is the Legendary Chest or what numeric/string state
+means OPENED. The purpose is to identify the recurring standard chest schema
+and exact serialized parent keys before any binding is accepted.
