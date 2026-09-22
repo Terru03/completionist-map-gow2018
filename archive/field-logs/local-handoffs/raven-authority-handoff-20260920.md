@@ -7224,3 +7224,34 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File ".\tools\v0.10.5\run-raven-native-
 ```
 
 Do not merge back to `codex/all-ravens-release-candidate` until all offline gates and the targeted Mystic Gateway/filter field proof pass.
+
+
+#### Proof-refresh failure 2026-09-22 16:14 EEST and repair
+
+First feature-branch proof refresh failed and archived evidence in commit
+`46266f81b3ccd7f044e3339716493b900fa78fd1`.
+
+Exact failure:
+
+```
+ValueError: existing generated candidate matches neither pinned proof nor current rendered runtime:
+mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua
+```
+
+This was not a Raven visibility/runtime failure. The local ignored `build\v0.10.5-all-ravens-release-candidate\...` tree contained a stale generated map hook left by earlier branch work. The preparer refused before running the offline/runtime gates.
+
+Repair:
+
+- `899209d04493145e07979d78f8544a21700f91c4`
+  - explicit `--refresh-proof` may now replace a stale generated Raven hook;
+  - this is allowed only after `rendered_candidate()` proves:
+    - exactly one expected Completionist hook marker;
+    - the hook boundary is structurally valid;
+    - every byte before the hook hashes exactly to the runtime-proven source Lua;
+  - frozen DCB binaries remain pinned to the accepted proof and cannot be refreshed;
+  - a tampered/unproven Lua base is still rejected.
+- `52c4f02dcd1d5aa93cd9ec5a2f8a9d45493a5e48`
+  - adds fixture-free regressions proving a stale generated hook refreshes successfully;
+  - proves the same path still refuses a generated hook whose base Lua bytes are not runtime-proven.
+
+The failed refresh restored its pre-refresh tracked/generated state exactly before publishing failure evidence, so no contaminated candidate was left installed or accepted.
