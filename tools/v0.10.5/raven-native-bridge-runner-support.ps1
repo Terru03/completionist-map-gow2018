@@ -62,8 +62,11 @@ function Test-RavenBridgeStartupObservation {
     return [pscustomobject]@{ Ready = $false; Reason = 'expected_fresh_bridge_log_missing' }
 }
 
-function Test-RavenSnapshotDeliveryProofLines([string[]]$Lines) {
-    $safeBridge = @($Lines | Where-Object {
+function Test-RavenSnapshotDeliveryProofLines(
+    [string[]]$BridgeLines,
+    [string[]]$LoaderLines
+) {
+    $safeBridge = @($BridgeLines | Where-Object {
         $_ -notmatch 'WriteProcessMemory|NtWriteVirtualMemory|VirtualAllocEx|VirtualProtectEx|CreateRemoteThread|QueueUserAPC|SetThreadContext|DebugActiveProcess'
     })
     $deliveryReady = @($safeBridge | Select-String -Pattern (
@@ -82,6 +85,7 @@ function Test-RavenSnapshotDeliveryProofLines([string[]]$Lines) {
     $checkpointEpochMatched = $false
     $freshEpochMatched = $false
 
+    $Lines = @($LoaderLines)
     for ($index = 0; $index -lt $Lines.Count; $index++) {
         $line = [string]$Lines[$index]
 
