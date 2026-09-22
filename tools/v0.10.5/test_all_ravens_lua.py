@@ -403,6 +403,23 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.iconCount(), 0)
         self.assertIn("NATIVE_AUTHORITY_REGION_REFUSED", self.probe.logs())
 
+    def test_partial_wad_absence_is_resolved_by_region_summary_not_default_alive(self):
+        absence = next(
+            row
+            for row in CATALOGUE["ravens"]
+            if row["progression"]["parent_quest"] == "RegionSummary_FOR_Raven_Parent"
+        )
+        parent = absence["progression"]["parent_quest"]
+
+        # Same native partial bytes can resolve differently only when the live
+        # parent completed count differs. WAD absence itself is never authority.
+        wire = self.partial_response(None, absence_rows=[absence])
+        self.probe.setRegionSummaryCompleted(parent, 1)
+        self.probe.setNativeResponse(wire)
+        self.probe.open()
+        self.assertTrue(self.probe.hasAuthority())
+        self.assertTrue(self.probe.state(absence["catalogue_id"]))
+
     def test_partial_native_snapshot_resolves_single_alfheim_unknown_alive(self):
         parent = self.a["progression"]["parent_quest"]
         self.probe.setRegionSummaryCompleted(parent, 0)
