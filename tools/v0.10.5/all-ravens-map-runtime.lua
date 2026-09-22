@@ -259,10 +259,11 @@ do
     end
 
     if isPartial then
-      if generation ~= nil or unknown < 1 or
+      if generation ~= nil or
+          (unknown < 1 and absentWadFalse < 1) or
           alive + killed + unknown ~= #rows or
           explicit + absentWadFalse > alive + killed or
-          fields.unknownIds == nil then
+          fields.unknownIds == nil or fields.absenceIds == nil then
         return nil, "partial_counts"
       end
 
@@ -288,6 +289,24 @@ do
         return nil, "partial_unknown_count"
       end
 
+      local absenceCatalogueIds = {}
+      local absenceSeen = {}
+      if fields.absenceIds ~= "-" then
+        for catalogueId in string.gmatch(fields.absenceIds, "([^,]+)") do
+          if byCatalogueId[catalogueId] == nil then
+            return nil, "unknown_catalogue_id"
+          end
+          if unknownSeen[catalogueId] or absenceSeen[catalogueId] then
+            return nil, "partial_absence_overlap"
+          end
+          absenceSeen[catalogueId] = true
+          absenceCatalogueIds[#absenceCatalogueIds + 1] = catalogueId
+        end
+      end
+      if #absenceCatalogueIds ~= absentWadFalse then
+        return nil, "partial_absence_count"
+      end
+
       local killedCatalogueIds = {}
       local killedSeen = {}
       if fields.killedIds ~= "-" then
@@ -295,7 +314,7 @@ do
           if byCatalogueId[catalogueId] == nil then
             return nil, "unknown_catalogue_id"
           end
-          if unknownSeen[catalogueId] then
+          if unknownSeen[catalogueId] or absenceSeen[catalogueId] then
             return nil, "partial_overlap"
           end
           if killedSeen[catalogueId] then
@@ -325,6 +344,7 @@ do
         states = states,
         killedCatalogueIds = killedCatalogueIds,
         unknownCatalogueIds = unknownCatalogueIds,
+        absenceCatalogueIds = absenceCatalogueIds,
       }, nil
     end
 
