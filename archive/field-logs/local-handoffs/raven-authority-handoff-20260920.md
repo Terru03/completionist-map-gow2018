@@ -6846,7 +6846,7 @@ the previous test, and the validator anchors +1 to the latest authority
 immediately before the new exact `OnHitByWeapon` event.
 
 
-### Follow-up 2026-09-22 19:35 - second live run proved checkpoint was pre-kill; switch persistence test to explicit manual save
+### Follow-up 2026-09-22 19:35 - correction: second live run proved cross-save revival, not persistence failure
 
 Live evidence commit:
 
@@ -6854,38 +6854,40 @@ Live evidence commit:
 - capture:
   `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-live-proof-20260922-095935`
 
-This run reached the real gameplay kill but correctly failed the +1 persistence
-gate.
+Important user clarification: after killing
+`raven_642d0d164af0a5d4076e77933c549a5d`, the user intentionally loaded a
+different save in which that Raven was still alive.
+
+Therefore the observed 27 / 26 authority and the Raven being rendered alive
+again were CORRECT cross-save behavior, not evidence that the kill failed to
+persist.
 
 Observed sequence:
 
-- advanced authority epoch 1: 28 killed / 25 alive;
-- another loaded checkpoint/save epoch 2: 27 / 26;
 - exact gameplay kill:
   `source=OnHitByWeapon catalogueId=raven_642d0d164af0a5d4076e77933c549a5d restoreEpoch=2`;
-- later restore boundary epoch 3 reconstructed 27 / 26 again, not 28 / 25.
+- later restore boundary epoch 3 reconstructed the newly loaded save as
+  27 killed / 26 alive;
+- map-side evidence then showed the Raven alive again:
+  `STATE_DEFERRED ... reason=alive_requires_atomic_authority`,
+  followed by `NATIVE_AUTHORITY_DERIVED ... finalKilled=27 finalAlive=26`,
+  `ART_PREFLIGHT ... collected=false`, and
+  `ART_RESULT active=true ... collectedAtRender=false`.
 
-Map-side evidence after epoch-3 authority explicitly shows the killed Raven was
-alive again:
+That is positive evidence that restore-boundary authority can clear a kill from
+the previous save and reconstruct the state of another save without leaking the
+old session kill overlay.
 
-- `STATE_DEFERRED ... catalogueId=raven_642d... reason=alive_requires_atomic_authority`;
-- `NATIVE_AUTHORITY_DERIVED ... finalKilled=27 finalAlive=26 postBoundary=true boundaryEpoch=3 restoreEpoch=3`;
-- `ART_PREFLIGHT candidate=Completionist_V103_Veithurgard_Raven_01 ... collected=false`;
-- `ART_RESULT active=true ... collectedAtRender=false`.
+The runner failure was caused by the scripted proof expecting the next restore
+to be a post-kill persistence reload, while the user deliberately exercised the
+opposite cross-save-revival case.
 
-Therefore the loaded checkpoint did not contain the gameplay kill. The previous
-prompt incorrectly assumed a new checkpoint/autosave existed after killing a
-Raven.
+The explicit post-kill manual-save step added in
+`c906c3d68ae5256b91bd98f2c72c567d0c35c20f` remains useful, but the live
+proof must now distinguish BOTH required behaviors:
 
-Validation fix only:
+1. reload a post-kill save -> Raven remains dead;
+2. load a pre-kill/other save where that Raven is alive -> Raven reappears.
 
-- `c906c3d68ae5256b91bd98f2c72c567d0c35c20f`
-- live proof now requires the user to create a NEW MANUAL SAVE after the Raven
-  kill, then load that exact post-kill save;
-- the user must only enter `IMMEDIATE_OK` after verifying the Raven is absent
-  on the reloaded post-kill manual save;
-- result metadata now records `postkill_save_reload_manual`.
-
-No Raven runtime state logic was weakened or bypassed. The +1 post-boundary
-authority gate remains mandatory. Re-run pushed offline gates before the next
-live test because the PowerShell runner changed.
+Do not interpret the 27 / 26 epoch-3 authority in this capture as a runtime
+failure.
