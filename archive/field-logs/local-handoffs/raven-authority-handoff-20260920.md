@@ -6574,3 +6574,13 @@ Next action: run all local offline/native gates on Windows. Only if they pass,
 run the live proof on the same advanced save, then one kill/checkpoint reload,
 then a true fresh save. Do not claim release readiness before that sequence is
 green.
+
+
+### Follow-up 2026-09-22 17:35
+
+- `19c42a3d` adds a direct Lua regression for the WAD-absence rule: the same
+  partial native bytes are not treated as alive by default; the physical Raven
+  is resolved from its live RegionSummary parent count.
+- Implementation/test head before this documentation commit:
+  `19c42a3dd2d37bd9cba8a303f010b39cd71524c5`.
+- Windows offline/native/live validation remains pending.
