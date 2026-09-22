@@ -25,6 +25,7 @@ $python = Get-Command python -ErrorAction SilentlyContinue
 if (-not $python) { throw 'python.exe was not found in PATH.' }
 
 $Resolver = Join-Path $RepoRoot 'tools\v0.10.5\resolve-legendary-map-counted-scope-offline.py'
+$StaticResolver = Join-Path $RepoRoot 'tools\v0.10.5\resolve-legendary-serialized-identities-static.py'
 $IdentityHelper = Join-Path $RepoRoot 'tools\v0.10.5\legendary_chest_identity.py'
 $IdentityTests = Join-Path $RepoRoot 'tools\v0.10.5\test_legendary_chest_identity.py'
 $RavenGuard = Join-Path $RepoRoot 'tools\v0.10.5\test-raven-frozen-baseline.ps1'
@@ -33,7 +34,7 @@ $Audit = Join-Path $RepoRoot 'docs\research\all-collectibles-native-audit.json'
 $Capture = Join-Path $RepoRoot 'archive\field-logs\runtime-captures\staged-wad-bitstream-raven-20260921-060345-c2c9bcc1'
 
 foreach ($required in @(
-    $Resolver, $IdentityHelper, $IdentityTests, $RavenGuard, $Catalogue, $Audit,
+    $Resolver, $StaticResolver, $IdentityHelper, $IdentityTests, $RavenGuard, $Catalogue, $Audit,
     (Join-Path $Capture 'report.json')
 )) {
     if (-not (Test-Path -LiteralPath $required)) {
@@ -47,9 +48,11 @@ if (@(Get-Process -ErrorAction SilentlyContinue | Where-Object {
     throw 'Close God of War. This proof is fully offline and does not need the game running.'
 }
 
-& $python.Source -m py_compile $Resolver $IdentityHelper $IdentityTests
-if ($LASTEXITCODE -ne 0) {
-    throw 'Legendary scope Python syntax validation failed.'
+foreach ($pythonFile in @($Resolver, $StaticResolver, $IdentityHelper, $IdentityTests)) {
+    & $python.Source -c "import py_compile,sys; py_compile.compile(sys.argv[1], doraise=True)" $pythonFile
+    if ($LASTEXITCODE -ne 0) {
+        throw "Legendary Python syntax validation failed: $pythonFile"
+    }
 }
 
 & $python.Source $IdentityTests
