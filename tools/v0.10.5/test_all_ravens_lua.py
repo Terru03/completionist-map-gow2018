@@ -690,13 +690,22 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.probe.click(name)
         self.probe.update()
         self.probe.click(name)
+        # Only one update: removal has not reached the three-frame settle gate.
         self.probe.update()
-        self.probe.click(name)
+
+        show, text = self.probe.click(name)
+        self.assertTrue(show)
+        self.assertEqual(text, "[AdvanceButton] add")
+        # Rapid third click is queued instead of overlapping the old target.
+        self.assertEqual(self.probe.customCount(), 0)
+        self.assertIn("READD_QUEUED", self.probe.logs())
+        self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+
+        for _ in range(4):
+            self.probe.update()
 
         self.assertEqual(self.probe.customCount(), 1)
-        # The synthetic legacy race leaves a same-UID stock entry behind.
-        # Custom artwork must still win because custom tracking never exposes
-        # that UID through the stock currShownMarkerID presentation field.
+        self.assertIn("READD_APPLIED", self.probe.logs())
         self.assertIsNone(self.probe.currShownMarkerId())
         self.assertEqual(self.probe.artworkOwner(name), "custom")
         self.assertFalse(self.probe.legacyRavenHudActive())
@@ -713,6 +722,7 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(self.probe.reticleDescription(), "Completionist Map")
         self.assertEqual(self.probe.cursorPrompt(), "[AdvanceButton] remove")
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+        self.assertIn("FOOTER_REFRESH_COMMITTED", self.probe.logs())
         self.assertFalse(self.probe.legacyRavenHudActive())
 
         # The stock/base update may overwrite the footer/cursor one frame after
@@ -763,7 +773,8 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertEqual(text, "[AdvanceButton] remove")
         self.assertEqual(self.probe.customCount(), 0)
         self.assertFalse(self.probe.legacyRavenHudActive())
-        self.probe.update()
+        for _ in range(4):
+            self.probe.update()
 
         self.assertEqual(self.probe.customCount(), 0)
         self.assertEqual(self.probe.stockCount(), 0)
