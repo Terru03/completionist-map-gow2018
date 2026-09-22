@@ -55,13 +55,10 @@ class LegendaryChestIdentityTests(unittest.TestCase):
             scene, skipped = identity.scene_identity_elements(row)
             with self.subTest(row=row["catalogue_id"]):
                 self.assertGreaterEqual(len(scene), 2)
-                self.assertEqual(len(skipped), 2)
+                self.assertEqual(len(skipped), 1)
                 self.assertEqual(
-                    {item["reason"] for item in skipped},
-                    {
-                        "nested_reusable_state_subobject",
-                        "nested_reusable_legendary_parent",
-                    },
+                    skipped[0]["reason"],
+                    "immediate_parent_adjusted_id_equals_parent_prototype_id",
                 )
                 self.assertNotIn(tuple(scene), seen)
                 seen.add(tuple(scene))
@@ -95,6 +92,32 @@ class LegendaryChestIdentityTests(unittest.TestCase):
         )
         self.assertEqual(len(scenes), 33)
         self.assertTrue(all(len(value) == 1 for value in scenes.values()))
+
+
+    def test_runtime_proven_xpl250_identity_vector_and_hash(self):
+        row = next(
+            item for item in self.rows
+            if item["catalogue_id"] == "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb"
+        )
+        scene, skipped = identity.scene_identity_elements(row)
+        self.assertEqual(
+            [item.hex() for item in scene],
+            [
+                "d507eb21a5b18f45bc5265b60f30fd1c",
+                "8e825d9cee977f42b76892e6e4509f4d",
+                "feacd6d6d12a4f44a2ce490beba185ba",
+                "30c16eb3812d4240b49d3a1254d63108",
+            ],
+        )
+        self.assertEqual(len(skipped), 1)
+        self.assertEqual(
+            identity.CHEST_OWN_IDENTITY_ELEMENT.hex(),
+            "947a7c50b25f004ea3365dd8dc232ee1",
+        )
+        self.assertEqual(
+            identity.identity_hash(scene + [identity.CHEST_OWN_IDENTITY_ELEMENT]),
+            0x748BE60F37BAB846,
+        )
 
     def test_native_wad_name_hash_matches_known_algorithm(self):
         self.assertEqual(
