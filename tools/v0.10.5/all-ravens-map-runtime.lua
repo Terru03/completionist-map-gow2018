@@ -81,19 +81,27 @@ do
     return nil, "response_too_large"
   end
 
-  local function parseNativeSnapshot(line)
-    if line == "RAVEN_SNAPSHOT_V1 UNAVAILABLE" then
+  local function parseNativeSnapshot(line, expectedSchema, expectedBoundaryEpoch)
+    local header = expectedSchema == 2 and "RAVEN_SNAPSHOT_V2 " or "RAVEN_SNAPSHOT_V1 "
+    if expectedSchema == 1 and line == "RAVEN_SNAPSHOT_V1 UNAVAILABLE" then
       return nil, "snapshot_not_ready"
     end
+    if expectedSchema == 2 and type(line) == "string" and
+        string.sub(line, 1, string.len("RAVEN_SNAPSHOT_V2 UNAVAILABLE")) ==
+            "RAVEN_SNAPSHOT_V2 UNAVAILABLE" then
+      return nil, "boundary_snapshot_not_ready"
+    end
     if type(line) ~= "string" or
-        string.sub(line, 1, string.len("RAVEN_SNAPSHOT_V1 ")) ~= "RAVEN_SNAPSHOT_V1 " then
+        string.sub(line, 1, string.len(header)) ~= header then
       return nil, "response_header"
     end
+
     local fields = {}
     for key, value in string.gmatch(line, "([%a][%w]*)=([^%s]+)") do
       if fields[key] ~= nil then return nil, "duplicate_field:" .. key end
       fields[key] = value
     end
+
     local function integer(name)
       local value = tonumber(fields[name])
       if value == nil or value < 0 or value ~= math.floor(value) then
@@ -101,6 +109,7 @@ do
       end
       return value
     end
+
     local schema = integer("schema")
     local generation = integer("generation")
     local capturedTickMs = integer("capturedTickMs")
@@ -110,13 +119,21 @@ do
     local killed = integer("killed")
     local explicit = integer("explicit")
     local absentWadFalse = integer("absentWadFalse")
-    if schema ~= 1 or generation == nil or generation < 1 or
+    local boundaryEpoch = expectedSchema == 2 and integer("boundaryEpoch") or nil
+
+    if schema ~= expectedSchema or generation == nil or generation < 1 or
         capturedTickMs == nil or count ~= #rows or unknown ~= 0 or
         alive == nil or killed == nil or alive + killed ~= #rows or
         explicit == nil or absentWadFalse == nil or
         explicit + absentWadFalse ~= #rows or fields.killedIds == nil then
       return nil, "response_counts"
     end
+    if expectedSchema == 2 and
+        (boundaryEpoch == nil or boundaryEpoch < 1 or
+         boundaryEpoch ~= expectedBoundaryEpoch) then
+      return nil, "boundary_epoch_mismatch"
+    end
+
     local states = {}
     for catalogueId, _ in pairs(byCatalogueId) do states[catalogueId] = false end
     local killedCatalogueIds = {}
@@ -133,8 +150,10 @@ do
       end
     end
     if #killedCatalogueIds ~= killed then return nil, "killed_count" end
+
     return {
       schema = schema, generation = generation, capturedTickMs = capturedTickMs,
+      boundaryEpoch = boundaryEpoch,
       count = count, aliveCount = alive, killedCount = killed,
       explicitCount = explicit,
       absenceDefaultFalseCount = absentWadFalse,
@@ -142,7 +161,7 @@ do
     }, nil
   end
 
-  local function getRavenSnapshot()
+  local function requestNativeSnapshot(request, schema, boundaryEpoch)
     local socketOK, socket = pcall(require, "socket.core")
     if not socketOK or type(socket) ~= "table" or type(socket.tcp) ~= "function" then
       return nil, "socket_core_unavailable"
@@ -159,16 +178,30 @@ do
       return nil, "connect:" .. tostring(connectOK and connectError or connected)
     end
     local sendOK, sent, sendError = pcall(function()
-      return client:send(nativeRequest)
+      return client:send(request)
     end)
-    if not sendOK or sent ~= string.len(nativeRequest) then
+    if not sendOK or sent ~= string.len(request) then
       closeSocket(client)
       return nil, "send:" .. tostring(sendOK and sendError or sent)
     end
     local line, receiveError = receiveNativeLine(client)
     closeSocket(client)
     if line == nil then return nil, receiveError end
-    return parseNativeSnapshot(line)
+    return parseNativeSnapshot(line, schema, boundaryEpoch)
+  end
+
+  local function getRavenSnapshot()
+    return requestNativeSnapshot(nativeRequest, 1, nil)
+  end
+
+  local function captureRavenBoundarySnapshot(boundaryEpoch)
+    if type(boundaryEpoch) ~= "number" or boundaryEpoch < 1 or
+        boundaryEpoch ~= math.floor(boundaryEpoch) then
+      return nil, "invalid_boundary_epoch"
+    end
+    local request = "CAPTURE RAVEN_SNAPSHOT_V2 boundaryEpoch=" ..
+        tostring(boundaryEpoch) .. "\n"
+    return requestNativeSnapshot(request, 2, boundaryEpoch)
   end
 
   local nativeNamespace = rawget(_G, "CompletionistMapNative")
@@ -180,10 +213,19 @@ do
     if rawget(nativeNamespace, "GetRavenSnapshot") == nil then
       nativeNamespace.GetRavenSnapshot = getRavenSnapshot
     elseif type(nativeNamespace.GetRavenSnapshot) ~= "function" then
-      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=api_collision", "api_collision")
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=api_collision:get", "api_collision:get")
+    end
+
+    if rawget(nativeNamespace, "CaptureRavenBoundarySnapshot") == nil then
+      nativeNamespace.CaptureRavenBoundarySnapshot = captureRavenBoundarySnapshot
+    elseif type(nativeNamespace.CaptureRavenBoundarySnapshot) ~= "function" then
+      nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+          "reason=api_collision:capture", "api_collision:capture")
     end
   else
-    nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE", "reason=namespace_collision", "namespace_collision")
+    nativeNotice("NATIVE_AUTHORITY_UNAVAILABLE",
+        "reason=namespace_collision", "namespace_collision")
   end
 
   local function refreshNativeAuthority(source)
