@@ -6742,3 +6742,71 @@ Verified from the pushed transcript:
 
 This is the current offline-green baseline. Next meaningful step is the live GoW
 Raven snapshot-delivery proof using the evidence-publishing live runner.
+
+
+### Follow-up 2026-09-22 19:05 - live proof exposed validator false negative, runtime checkpoint persistence succeeded
+
+Live evidence commit:
+
+- `320353125e73db94da9a6a06b336b2bc31d47b8b`
+- capture:
+  `archive/field-logs/runtime-captures/raven-native-snapshot-delivery-live-proof-20260922-093836`
+
+The runner reported failure:
+
+`Bridge kill note, +1 Raven map reconstruction, or matching V2 checkpoint authority evidence missing.`
+
+Inspection shows the runtime itself progressed correctly through the real gameplay
+kill:
+
+- initial advanced authority: 25 killed / 28 alive;
+- a pre-kill `OnRestoreCheckpoint` cycle then established 27 / 26;
+- this restore cycle emitted positive kill notes for already-killed Ravens and
+  must not be mistaken for the user's manual Raven kill;
+- real gameplay kill:
+  `source=OnHitByWeapon catalogueId=raven_642d0d164af0a5d4076e77933c549a5d restoreEpoch=1`;
+- later checkpoint reload advanced bridge epoch to 2;
+- matching V2 post-boundary authority reconstructed exactly 28 killed / 25 alive.
+
+Thus the exact latest pre-hit authority was 27 / 26 and the post-checkpoint
+authority was the required +1 = 28 / 25.
+
+The false negative came from the proof parser:
+
+1. it selected the first generic bridge kill note, which could be an
+   `OnRestoreCheckpoint` / `OnStart` positive note for an already-dead
+   Raven;
+2. it anchored +1 to the first authority image (25 / 28), rather than the
+   latest complete authority immediately before the actual `OnHitByWeapon`;
+3. it required a separate non-boundary native authority refresh after manual
+   map reopen, although map reopen did not necessarily request a new native
+   snapshot and the runner already obtains explicit manual acceptance for the
+   immediate/reopen/checkpoint sequence.
+
+Validator-only fixes:
+
+- `7719f84e038ffe057caf6ffe72bc56372ef1bbf0`
+  - identify the tested kill from loader evidence with exact
+    `source=OnHitByWeapon`;
+  - require a matching native bridge kill note for the same catalogue ID and
+    restore epoch;
+  - compute +1 from the latest 53-state authority before that gameplay kill;
+  - keep any post-kill V1/map reopen authority as an optional diagnostic;
+  - require checkpoint V2 +1 and fresh-save V2 ordering for final automated
+    proof.
+
+- `e3e047e435c6ebb72961258002cd5168a2717108`
+  - regression fixture reproduces restore/start kill-note noise before the
+    real gameplay kill;
+  - verifies 25 -> 27 pre-hit drift, gameplay baseline 27 / 26, no native
+    map-reopen refresh, checkpoint 28 / 25, then fresh 0 / 53.
+
+- `434113af99d546ce5817353c53b2961b90bccf07`
+  - intermediate live gate now requires the real gameplay bridge kill and
+    matching +1 checkpoint V2 authority;
+  - manual `IMMEDIATE_OK` remains the explicit evidence for immediate marker
+    disappearance + map close/reopen + checkpoint-reload visual behavior;
+  - result metadata now records gameplay kill ID and pre-kill baseline.
+
+No Raven runtime/native state behavior was changed by these commits. Re-run the
+evidence-publishing offline gates before another live game proof.
