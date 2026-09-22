@@ -840,3 +840,44 @@ candidate incomplete regions in the frozen staged snapshot are:
 
 This shortlist is for selecting a controlled test chest only; it does not promote
 numeric state semantics.
+
+
+### Temporary exact route marker for controlled OPENED-state test
+
+To avoid manual navigation uncertainty, a reversible diagnostic marker is now
+available for the candidate remaining Mountain chest:
+
+- catalogue ID:
+  `legendary_chest_ff46dfab43efcfc6f0f382a33e2b571d`;
+- source WAD: `peak500_chimneytop.wad`;
+- marker name:
+  `Completionist_V105_LegendaryChest_ff46dfab43efcfc6`;
+- native marker UID: `82300B1E715EF436`;
+- world XYZ:
+  `[-454.8589782714844, 1172.625, 858.6287841796875]`;
+- realm/region: Midgard / Peakspass.
+
+Diagnostic implementation deliberately reuses the already-proven Raven
+map-resource and compass class only as a navigation renderer. It does not claim
+the chest is unopened, does not infer completion semantics, and does not modify
+Raven progression.
+
+Files:
+
+- `build-legendary-test-route-marker.py`;
+- `install-legendary-test-route-marker-and-push.ps1`;
+- `restore-legendary-test-route-marker-and-push.ps1`.
+
+The installer:
+
+1. requires GoW to be closed;
+2. builds from the exact currently installed Completionist Map files;
+3. adds one native mapmaster marker and one exact mapcoords entry;
+4. appends a diagnostic map hook that displays the pin and routes it directly on
+   the HUD compass when the Midgard map is opened;
+5. backs up the three exact pre-test installed files before changing them;
+6. records SHA-256 evidence;
+7. does not read or write save/progression state.
+
+The restore runner reinstates the exact backed-up bytes and verifies all three
+pre-test hashes before removing the local diagnostic backup.
