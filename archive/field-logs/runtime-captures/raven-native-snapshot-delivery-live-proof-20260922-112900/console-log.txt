@@ -1,0 +1,186 @@
+**********************
+PowerShell transcript start
+Start time: 20260922142900
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\run-raven-native-snapshot-delivery-live-proof-and-push.ps1 -ExpectedBranch codex/all-ravens-cosmetic-polish -CosmeticOnly
+Process ID: 45120
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+RAVEN SNAPSHOT DELIVERY LIVE PROOF - OFFLINE GATES FIRST
+RAVEN NATIVE SNAPSHOT DELIVERY OFFLINE GATES
+1/8 native MSVC / CTest / schema-3 rollback gates
+RAVEN DXGI OFFLINE GATES
+1/4 runner regressions
+RAVEN_NATIVE_BRIDGE_RUNNER_TESTS_PASSED target=dxgi.dll zero=true one=true multiple=true steam_handoff=true proxy_before_successor=true missing_log=true dxgi_forwarding=true script_loader=true delivery_sequence=true bridge_kill_note=true restore_epoch_match=true fresh_v2_only=true rollback=true
+2/4 clean native build + five CTest targets
+
+
+
+RAVEN_NATIVE_BRIDGE_BUILD_OK dll=C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\build\raven-authority-bridge\Release\dxgi.dll sha256=2d003fa94794b6fcc4d4d34e66b463ea17e95a054a5799501122c670bc20286c
+3/4 temp-root schema-3 DXGI install/rollback/recovery suite
+RAVEN_NATIVE_BRIDGE_INSTALLED target=dxgi.dll proxy_sha256=2d003fa94794b6fcc4d4d34e66b463ea17e95a054a5799501122c670bc20286c contract=system32-dxgi-v1 version_untouched=true manifest=C:\Users\david\AppData\Local\Temp\completionist-raven-dxgi-bridge-test-5d0ab91530554c959aeefa2dc5e43987\mods\completionist-map\native\raven-native-bridge-manifest.json
+RAVEN_NATIVE_BRIDGE_INSTALLED target=dxgi.dll proxy_sha256=2d003fa94794b6fcc4d4d34e66b463ea17e95a054a5799501122c670bc20286c contract=system32-dxgi-v1 version_untouched=true manifest=C:\Users\david\AppData\Local\Temp\completionist-raven-dxgi-bridge-test-5d0ab91530554c959aeefa2dc5e43987\mods\completionist-map\native\raven-native-bridge-manifest.json
+RAVEN_NATIVE_BRIDGE_ROLLED_BACK target=dxgi.dll removed_sha256=2d003fa94794b6fcc4d4d34e66b463ea17e95a054a5799501122c670bc20286c restored_previous=true version_untouched=true
+RAVEN_NATIVE_BRIDGE_ROLLED_BACK target=dxgi.dll removed_sha256=2d003fa94794b6fcc4d4d34e66b463ea17e95a054a5799501122c670bc20286c restored_previous=false version_untouched=true
+PS>TerminatingError(): "Existing dxgi.dll or bridge manifest has no matching pair. Refuse overwrite."
+RAVEN_NATIVE_BRIDGE_INSTALLED target=dxgi.dll proxy_sha256=2d003fa94794b6fcc4d4d34e66b463ea17e95a054a5799501122c670bc20286c contract=system32-dxgi-v1 version_untouched=true manifest=C:\Users\david\AppData\Local\Temp\completionist-raven-dxgi-bridge-test-5d0ab91530554c959aeefa2dc5e43987\mods\completionist-map\native\raven-native-bridge-manifest.json
+PS>TerminatingError(): "Installed dxgi.dll hash changed. Refuse delete."
+RAVEN_NATIVE_BRIDGE_ROLLED_BACK target=dxgi.dll removed_sha256=2d003fa94794b6fcc4d4d34e66b463ea17e95a054a5799501122c670bc20286c restored_previous=false version_untouched=true
+RAVEN_NATIVE_BRIDGE_INSTALLED target=dxgi.dll proxy_sha256=2d003fa94794b6fcc4d4d34e66b463ea17e95a054a5799501122c670bc20286c contract=system32-dxgi-v1 version_untouched=true manifest=C:\Users\david\AppData\Local\Temp\completionist-raven-dxgi-bridge-test-5d0ab91530554c959aeefa2dc5e43987\mods\completionist-map\native\raven-native-bridge-manifest.json
+RAVEN_NATIVE_BRIDGE_ROLLED_BACK target=dxgi.dll removed_sha256=2d003fa94794b6fcc4d4d34e66b463ea17e95a054a5799501122c670bc20286c restored_previous=false version_untouched=true
+RAVEN_NATIVE_BRIDGE_STARTUP_RECOVERED owned_dxgi_absent=true manifest_absent=true version_untouched=true removed_legacy_bad_dxgi=false dxgi_rollbacks=1 operation_recoveries=0
+RAVEN_NATIVE_BRIDGE_INSTALL_TESTS_PASSED target=dxgi.dll schema=3 clean=true upgrade=true rollback_chain=true unknown_refused=true tamper_refused=true recovery=true journal_clean=true version_untouched=true
+4/4 fixture-free interrupted bridge operation recovery
+RAVEN_NATIVE_BRIDGE_OPERATION_RECOVERED operation=rollback restore_previous=true
+RAVEN_NATIVE_BRIDGE_OPERATION_RECOVERED operation=rollback restore_previous=true
+RAVEN_NATIVE_BRIDGE_OPERATION_RECOVERED operation=rollback restore_previous=false
+PS>TerminatingError(): "Bridge operation recovery found unknown dxgi.dll SHA: 6d970874d0db767a7058798973f22cf6589601edab57996312f2ef7b56e5584d"
+PS>TerminatingError(): "Bridge operation recovery found unknown active manifest."
+PS>TerminatingError(): "Bridge restore DLL path is outside the owned backup directory."
+>> TerminatingError(): "Bridge restore DLL path is outside the owned backup directory."
+RAVEN_BRIDGE_OPERATION_SYNTHETIC_PASSED mixed_pair=true missing_target=true absent_pair=true unknown_dll_refused=true unknown_manifest_refused=true backup_scope_refused=true
+RAVEN_DXGI_OFFLINE_GATES_PASSED native_tests=5 runner=true install_rollback_recovery=true operation_journal_recovery=true real_game_install=false version_dll_writes=false save_writes=false progression_writes=false
+2/8 Lua 5.1 integration tests
+test_cross_context_kill_and_restore_use_native_bridge (__main__.AllRavensEventLuaTests.test_cross_context_kill_and_restore_use_native_bridge) ... ok
+test_exact_loaded_instance_publishes_native_bool_and_rearms (__main__.AllRavensEventLuaTests.test_exact_loaded_instance_publishes_native_bool_and_rearms) ... ok
+test_a_b_same_click_stock_and_kill_lifecycle (__main__.AllRavensMapLuaTests.test_a_b_same_click_stock_and_kill_lifecycle) ... ok
+test_advanced_native_snapshot_applies_27_killed_before_icon_sync (__main__.AllRavensMapLuaTests.test_advanced_native_snapshot_applies_27_killed_before_icon_sync) ... ok
+test_boundary_accepts_only_matching_postload_capture_not_newer_periodic_state (__main__.AllRavensMapLuaTests.test_boundary_accepts_only_matching_postload_capture_not_newer_periodic_state) ... ok
+test_boundary_disarms_pending_selection (__main__.AllRavensMapLuaTests.test_boundary_disarms_pending_selection) ... ok
+test_colliding_native_accessor_with_incomplete_table_fails_closed (__main__.AllRavensMapLuaTests.test_colliding_native_accessor_with_incomplete_table_fails_closed) ... ok
+test_confirmed_fresh_zero_accepts_available_zero_region_counts (__main__.AllRavensMapLuaTests.test_confirmed_fresh_zero_accepts_available_zero_region_counts) ... ok
+test_confirmed_fresh_zero_does_not_require_region_summary (__main__.AllRavensMapLuaTests.test_confirmed_fresh_zero_does_not_require_region_summary) ... ok
+test_confirmed_fresh_zero_is_refused_when_live_region_count_is_nonzero (__main__.AllRavensMapLuaTests.test_confirmed_fresh_zero_is_refused_when_live_region_count_is_nonzero) ... ok
+test_false_event_cannot_revive_and_postboundary_snapshot_can (__main__.AllRavensMapLuaTests.test_false_event_cannot_revive_and_postboundary_snapshot_can) ... ok
+test_first_add_refreshes_footer_even_if_base_clears_marker_owner (__main__.AllRavensMapLuaTests.test_first_add_refreshes_footer_even_if_base_clears_marker_owner) ... ok
+test_first_nonzero_restore_epoch_requires_v2_capture (__main__.AllRavensMapLuaTests.test_first_nonzero_restore_epoch_requires_v2_capture) ... ok
+test_fresh_boundary_normalizes_stale_previous_save_kill_overlay (__main__.AllRavensMapLuaTests.test_fresh_boundary_normalizes_stale_previous_save_kill_overlay) ... ok
+test_fresh_boundary_overlay_normalization_is_vetoed_by_live_count (__main__.AllRavensMapLuaTests.test_fresh_boundary_overlay_normalization_is_vetoed_by_live_count) ... ok
+test_fresh_native_snapshot_applies_zero_killed_after_load_boundary (__main__.AllRavensMapLuaTests.test_fresh_native_snapshot_applies_zero_killed_after_load_boundary) ... ok
+test_full_native_snapshot_conflicting_with_region_summary_is_refused (__main__.AllRavensMapLuaTests.test_full_native_snapshot_conflicting_with_region_summary_is_refused) ... ok
+test_global_load_event_arms_authority_boundary (__main__.AllRavensMapLuaTests.test_global_load_event_arms_authority_boundary) ... ok
+test_immediate_event_kill_survives_newer_preboundary_snapshot (__main__.AllRavensMapLuaTests.test_immediate_event_kill_survives_newer_preboundary_snapshot) ... ok
+test_kill_releases_owner_and_stale_prompt (__main__.AllRavensMapLuaTests.test_kill_releases_owner_and_stale_prompt) ... ok
+test_late_base_update_cannot_revert_settled_prompt (__main__.AllRavensMapLuaTests.test_late_base_update_cannot_revert_settled_prompt) ... ok
+test_load_boundary_preserves_last_good_state_until_matching_capture (__main__.AllRavensMapLuaTests.test_load_boundary_preserves_last_good_state_until_matching_capture) ... ok
+test_malformed_native_snapshot_falls_back_without_state_clear (__main__.AllRavensMapLuaTests.test_malformed_native_snapshot_falls_back_without_state_clear) ... ok
+test_map_exit_reasserts_custom_raven_after_base_boat_reclaim (__main__.AllRavensMapLuaTests.test_map_exit_reasserts_custom_raven_after_base_boat_reclaim) ... ok
+test_native_restore_epoch_forces_matching_v2_before_state_replacement (__main__.AllRavensMapLuaTests.test_native_restore_epoch_forces_matching_v2_before_state_replacement) ... ok
+test_native_unavailable_preserves_immediate_event_state (__main__.AllRavensMapLuaTests.test_native_unavailable_preserves_immediate_event_state) ... ok
+test_new_native_generation_is_only_alive_clear_path (__main__.AllRavensMapLuaTests.test_new_native_generation_is_only_alive_clear_path) ... ok
+test_no_authority_bootstrap_hides_all_ravens (__main__.AllRavensMapLuaTests.test_no_authority_bootstrap_hides_all_ravens) ... ok
+test_oversized_native_response_fails_closed (__main__.AllRavensMapLuaTests.test_oversized_native_response_fails_closed) ... ok
+test_partial_boundary_snapshot_reestablishes_authority (__main__.AllRavensMapLuaTests.test_partial_boundary_snapshot_reestablishes_authority) ... ok
+test_partial_native_snapshot_refuses_bonus_parent (__main__.AllRavensMapLuaTests.test_partial_native_snapshot_refuses_bonus_parent) ... ok
+test_partial_native_snapshot_resolves_single_alfheim_unknown_alive (__main__.AllRavensMapLuaTests.test_partial_native_snapshot_resolves_single_alfheim_unknown_alive) ... ok
+test_partial_native_snapshot_resolves_single_alfheim_unknown_killed (__main__.AllRavensMapLuaTests.test_partial_native_snapshot_resolves_single_alfheim_unknown_killed) ... ok
+test_partial_wad_absence_is_resolved_by_region_summary_not_default_alive (__main__.AllRavensMapLuaTests.test_partial_wad_absence_is_resolved_by_region_summary_not_default_alive) ... ok
+test_pending_action_does_not_overwrite_other_raven_prompt (__main__.AllRavensMapLuaTests.test_pending_action_does_not_overwrite_other_raven_prompt) ... ok
+test_post_reset_bounded_recheck_accepts_new_generation (__main__.AllRavensMapLuaTests.test_post_reset_bounded_recheck_accepts_new_generation) ... ok
+test_rapid_readd_wins_delayed_native_remove (__main__.AllRavensMapLuaTests.test_rapid_readd_wins_delayed_native_remove) ... ok
+test_raven_reticle_and_compass_prompt_refresh_immediately (__main__.AllRavensMapLuaTests.test_raven_reticle_and_compass_prompt_refresh_immediately) ... ok
+test_reset_releases_raven_compass_ownership (__main__.AllRavensMapLuaTests.test_reset_releases_raven_compass_ownership) ... ok
+test_same_and_older_native_generations_do_not_churn (__main__.AllRavensMapLuaTests.test_same_and_older_native_generations_do_not_churn) ... ok
+test_same_raven_add_remove_keeps_compass_empty_and_prompt_settled (__main__.AllRavensMapLuaTests.test_same_raven_add_remove_keeps_compass_empty_and_prompt_settled) ... ok
+test_settled_remove_keeps_prompt_without_owning_new_stock (__main__.AllRavensMapLuaTests.test_settled_remove_keeps_prompt_without_owning_new_stock) ... ok
+test_unavailable_boundary_capture_preserves_state_until_capture_succeeds (__main__.AllRavensMapLuaTests.test_unavailable_boundary_capture_preserves_state_until_capture_succeeds) ... ok
+
+----------------------------------------------------------------------
+Ran 43 tests in 0.110s
+
+OK
+3/8 state-model tests
+test_a_b_and_b_a_replacement (__main__.RavenRuntimeTests.test_a_b_and_b_a_replacement) ... ok
+test_boundary_not_ready_refuses_even_matching_epoch (__main__.RavenRuntimeTests.test_boundary_not_ready_refuses_even_matching_epoch) ... ok
+test_boundary_rejects_periodic_and_wrong_epoch_even_when_newer (__main__.RavenRuntimeTests.test_boundary_rejects_periodic_and_wrong_epoch_even_when_newer) ... ok
+test_collected_hidden_uncollected_shown_and_mixed_save (__main__.RavenRuntimeTests.test_collected_hidden_uncollected_shown_and_mixed_save) ... ok
+test_exact_uid_required_after_exact_collision (__main__.RavenRuntimeTests.test_exact_uid_required_after_exact_collision) ... ok
+test_false_gameplay_event_never_clears_confirmed_kill (__main__.RavenRuntimeTests.test_false_gameplay_event_never_clears_confirmed_kill) ... ok
+test_fully_collected_and_fresh_simulation (__main__.RavenRuntimeTests.test_fully_collected_and_fresh_simulation) ... ok
+test_immediate_event_survives_periodic_snapshot_until_epoch_capture (__main__.RavenRuntimeTests.test_immediate_event_survives_periodic_snapshot_until_epoch_capture) ... ok
+test_incidental_collision_noise_preserves_exact_candidate_until_uid_resolution (__main__.RavenRuntimeTests.test_incidental_collision_noise_preserves_exact_candidate_until_uid_resolution) ... ok
+test_kill_tracked_a_removes_a_only (__main__.RavenRuntimeTests.test_kill_tracked_a_removes_a_only) ... ok
+test_killing_a_does_not_remove_b_or_stock (__main__.RavenRuntimeTests.test_killing_a_does_not_remove_b_or_stock) ... ok
+test_legacy_proven_bridge_is_only_nil_uid_exception (__main__.RavenRuntimeTests.test_legacy_proven_bridge_is_only_nil_uid_exception) ... ok
+test_loading_other_save_preserves_last_good_state_until_fresh_snapshot (__main__.RavenRuntimeTests.test_loading_other_save_preserves_last_good_state_until_fresh_snapshot) ... ok
+test_marker_id_alone_never_infers_raven (__main__.RavenRuntimeTests.test_marker_id_alone_never_infers_raven) ... ok
+test_native_generation_is_monotonic_and_same_generation_does_not_churn (__main__.RavenRuntimeTests.test_native_generation_is_monotonic_and_same_generation_does_not_churn) ... ok
+test_persisted_kill_bootstrap_hides_only_confirmed_ids (__main__.RavenRuntimeTests.test_persisted_kill_bootstrap_hides_only_confirmed_ids) ... ok
+test_persisted_kill_bootstrap_ignores_unknown_ids (__main__.RavenRuntimeTests.test_persisted_kill_bootstrap_ignores_unknown_ids) ... ok
+test_realm_filtering (__main__.RavenRuntimeTests.test_realm_filtering) ... ok
+test_restore_false_waits_for_fresh_atomic_authority (__main__.RavenRuntimeTests.test_restore_false_waits_for_fresh_atomic_authority) ... ok
+test_restore_true_may_hide_immediately_while_boundary_reconciles (__main__.RavenRuntimeTests.test_restore_true_may_hide_immediately_while_boundary_reconciles) ... ok
+test_same_raven_second_click_removes (__main__.RavenRuntimeTests.test_same_raven_second_click_removes) ... ok
+test_stale_selection_cannot_hijack_other_raven_or_stock (__main__.RavenRuntimeTests.test_stale_selection_cannot_hijack_other_raven_or_stock) ... ok
+test_stock_and_nornir_replacement_both_directions (__main__.RavenRuntimeTests.test_stock_and_nornir_replacement_both_directions) ... ok
+test_teardown_cleans_ui_and_no_permanent_polling (__main__.RavenRuntimeTests.test_teardown_cleans_ui_and_no_permanent_polling) ... ok
+test_unknown_state_defaults_hidden_until_authority (__main__.RavenRuntimeTests.test_unknown_state_defaults_hidden_until_authority) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 0.002s
+
+OK
+4/8 offline candidate/template tests
+test_candidate_has_53_real_ravens_and_no_twin (__main__.AllRavensBuildTests.test_candidate_has_53_real_ravens_and_no_twin) ... skipped 'exact runtime-proven v3.3 source fixture not installed'
+test_candidate_has_only_five_scoped_files (__main__.AllRavensBuildTests.test_candidate_has_only_five_scoped_files) ... skipped 'exact runtime-proven v3.3 source fixture not installed'
+test_deterministic_generate (__main__.AllRavensBuildTests.test_deterministic_generate) ... skipped 'exact runtime-proven v3.3 source fixture not installed'
+test_every_marker_uses_one_shared_raven_resource (__main__.AllRavensBuildTests.test_every_marker_uses_one_shared_raven_resource) ... skipped 'exact runtime-proven v3.3 source fixture not installed'
+test_gameplay_hook_has_53_exact_state_rows (__main__.AllRavensBuildTests.test_gameplay_hook_has_53_exact_state_rows) ... skipped 'exact runtime-proven v3.3 source fixture not installed'
+test_hooks_add_no_progression_write (__main__.AllRavensBuildTests.test_hooks_add_no_progression_write) ... skipped 'exact runtime-proven v3.3 source fixture not installed'
+test_lf_and_crlf_templates_render_same (__main__.AllRavensBuildTests.test_lf_and_crlf_templates_render_same) ... skipped 'exact runtime-proven v3.3 source fixture not installed'
+test_lua_has_53_data_rows_and_exact_router_contract (__main__.AllRavensBuildTests.test_lua_has_53_data_rows_and_exact_router_contract) ... skipped 'exact runtime-proven v3.3 source fixture not installed'
+test_pool_capacity_matches_largest_realm (__main__.AllRavensBuildTests.test_pool_capacity_matches_largest_realm) ... skipped 'exact runtime-proven v3.3 source fixture not installed'
+test_release_gate_open_for_native_snapshot_delivery (__main__.AllRavensBuildTests.test_release_gate_open_for_native_snapshot_delivery) ... skipped 'exact runtime-proven v3.3 source fixture not installed'
+test_source_game_files_stay_unchanged (__main__.AllRavensBuildTests.test_source_game_files_stay_unchanged) ... skipped 'exact runtime-proven v3.3 source fixture not installed'
+test_authority_metadata_helpers_match_final_contract (__main__.AllRavensTemplateTests.test_authority_metadata_helpers_match_final_contract) ... ok
+test_hooks_have_no_progression_write_or_polling_loop (__main__.AllRavensTemplateTests.test_hooks_have_no_progression_write_or_polling_loop) ... ok
+test_rendered_event_hook_keeps_immediate_kill_path (__main__.AllRavensTemplateTests.test_rendered_event_hook_keeps_immediate_kill_path) ... ok
+test_rendered_lua_has_53_rows_and_native_delivery_contract (__main__.AllRavensTemplateTests.test_rendered_lua_has_53_rows_and_native_delivery_contract) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.002s
+
+OK (skipped=11)
+5/8 prepare pinned five-file delivery candidate
+ALL_RAVENS_NATIVE_DELIVERY_CANDIDATE_PREPARED files=5 map_sha256=09699476a007250ed28e307347054147a8619c8f38a648bc167c46a703eaa01b events_sha256=b7039c3c558e82dd9cbd4053b2bf9baddfd34b9ad65f34d631556ad9a7378054
+ALL_RAVENS_NATIVE_DELIVERY_CANDIDATE_ROOT=C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-ravens-release-candidate\build\v0.10.5-all-ravens-release-candidate\offline\candidate\game-root
+6/8 five-file transaction rollback tests
+PS>TerminatingError(): "SELF_TEST_INJECTED_FAILURE_AFTER_1"
+PS>TerminatingError(): "Candidate 3 install failed and was automatically rolled back. Original error: SELF_TEST_INJECTED_FAILURE_AFTER_1"
+PS>TerminatingError(): "SELF_TEST_INJECTED_FAILURE_AFTER_2"
+PS>TerminatingError(): "Candidate 3 install failed and was automatically rolled back. Original error: SELF_TEST_INJECTED_FAILURE_AFTER_2"
+PS>TerminatingError(): "SELF_TEST_INJECTED_FAILURE_AFTER_3"
+PS>TerminatingError(): "Candidate 3 install failed and was automatically rolled back. Original error: SELF_TEST_INJECTED_FAILURE_AFTER_3"
+PS>TerminatingError(): "SELF_TEST_INJECTED_FAILURE_AFTER_4"
+PS>TerminatingError(): "Candidate 3 install failed and was automatically rolled back. Original error: SELF_TEST_INJECTED_FAILURE_AFTER_4"
+PS>TerminatingError(): "SELF_TEST_INJECTED_FAILURE_AFTER_5"
+PS>TerminatingError(): "Candidate 3 install failed and was automatically rolled back. Original error: SELF_TEST_INJECTED_FAILURE_AFTER_5"
+PS>TerminatingError(): "SELF_TEST_INJECTED_ROLLBACK_INTERRUPTION"
+>> TerminatingError(): "SELF_TEST_INJECTED_ROLLBACK_INTERRUPTION"
+PS>TerminatingError(): "Installed file changed since Candidate 3 install: mapmaster. Use -ForceRollback only after reviewing it."
+ALL_RAVENS_TRANSACTION_SELF_TEST_PASSED
+7/8 PowerShell syntax gate
+RAVEN_SNAPSHOT_DELIVERY_POWERSHELL_PARSE_PASSED files=6
+8/8 scoped security write-API gate
+RAVEN_SNAPSHOT_DELIVERY_SECURITY_GATE_PASSED process_writes=false save_writes=false progression_writes=false static_descriptor_writes=false loopback_only=true
+RAVEN_NATIVE_SNAPSHOT_DELIVERY_OFFLINE_GATES_PASSED native_tests=5 lua_tests=13 model_tests=21 transaction=true powershell=true security=true
+RAVEN_NATIVE_BRIDGE_INSTALLED target=dxgi.dll proxy_sha256=2d003fa94794b6fcc4d4d34e66b463ea17e95a054a5799501122c670bc20286c contract=system32-dxgi-v1 version_untouched=true manifest=G:\SteamLibrary\steamapps\common\GodOfWar\mods\completionist-map\native\raven-native-bridge-manifest.json
+Candidate and owned DXGI bridge installed. Launching GoW.
+Native delivery ready. Waiting 40 seconds for main menu.
+RAVEN_NATIVE_SNAPSHOT_DELIVERY_LIVE_PROOF_FAILED: Raven cosmetic regression reported.
+RAVEN_NATIVE_BRIDGE_ROLLED_BACK target=dxgi.dll removed_sha256=2d003fa94794b6fcc4d4d34e66b463ea17e95a054a5799501122c670bc20286c restored_previous=false version_untouched=true
+**********************
+PowerShell transcript end
+End time: 20260922143153
+**********************
