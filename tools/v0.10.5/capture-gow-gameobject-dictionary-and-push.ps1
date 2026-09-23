@@ -14,20 +14,6 @@ try {
         throw "Wrong branch: '$branch'. Expected '$ExpectedBranch'."
     }
 
-    $python = Get-Command python -ErrorAction SilentlyContinue
-    if (-not $python) { throw 'python.exe was not found in PATH.' }
-
-    & $python.Source $Capture --self-test
-    if ($LASTEXITCODE -ne 0) { throw 'GameObject dictionary capture self-test failed.' }
-
-    Write-Host ''
-    Write-Host 'FULL GAMEOBJECT DICTIONARY CAPTURE'
-    Write-Host 'Start GoW and leave it at the title/main menu BEFORE loading the save you want to scan.'
-    Write-Host 'This is intentionally NOT Raven-only: it records every successful hash-backed GameObject decode.'
-    Write-Host 'After the hook says ARMED, load/reload your most complete saves and visit/reload relevant areas.'
-    Write-Host 'When done, Alt-Tab back here and press ENTER. The hook will be removed before anything is pushed.'
-    Write-Host ''
-
     $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
     $relativeDir = "archive/field-logs/runtime/gameobject-dictionary-capture-$stamp"
     $relativeJson = "$relativeDir/gameobject-dictionary.json"
@@ -40,30 +26,54 @@ try {
     New-Item -ItemType Directory -Path $absoluteDir -Force | Out-Null
 
     $captureCode = 1
+    $status = 'FAIL preflight'
+    $commitMessage = 'research: archive failed full GameObject dictionary capture'
+    $caught = $null
+
     Start-Transcript -Path $absoluteTranscript -Force | Out-Null
     try {
+        $python = Get-Command python -ErrorAction SilentlyContinue
+        if (-not $python) { throw 'python.exe was not found in PATH.' }
+
+        & $python.Source $Capture --self-test
+        if ($LASTEXITCODE -ne 0) { throw 'GameObject dictionary capture self-test failed.' }
+
+        Write-Host ''
+        Write-Host 'FULL GAMEOBJECT DICTIONARY CAPTURE'
+        Write-Host 'God of War may already be open with the target save loaded.'
+        Write-Host 'This is intentionally NOT Raven-only: it records every successful hash-backed GameObject decode.'
+        Write-Host 'After the hook says ARMED, load/reload or visit only the areas you intentionally want represented.'
+        Write-Host 'When done, Alt-Tab back here and press ENTER. The hook will be removed before anything is pushed.'
+        Write-Host ''
+
         & $python.Source $Capture --output-json $absoluteJson --output-tsv $absoluteTsv
         $captureCode = $LASTEXITCODE
+        if ($captureCode -eq 0) {
+            $commitMessage = 'research: capture full GameObject decode dictionary'
+            $status = 'PASS'
+        }
+        else {
+            $status = "FAIL exit=$captureCode"
+        }
+    }
+    catch {
+        $caught = $_
+        $captureCode = 1
+        $status = "FAIL exception=$($_.Exception.Message)"
     }
     finally {
         Stop-Transcript | Out-Null
     }
 
-    if ($captureCode -eq 0) {
-        $commitMessage = 'research: capture full GameObject decode dictionary'
-        $status = 'PASS'
-    }
-    else {
-        $commitMessage = 'research: archive failed full GameObject dictionary capture'
-        $status = "FAIL exit=$captureCode"
+    if ($captureCode -ne 0) {
         Set-Content -LiteralPath (Join-Path $absoluteDir 'capture-failure.txt') -Encoding UTF8 -Value @(
             "status=$status"
             "captured_local=$(Get-Date -Format o)"
+            "branch=$branch"
             'See capture-transcript.txt for the console transcript.'
         )
     }
 
-    # Runtime evidence is ignored by default; force-add only this capture directory.
     & git add -f -- $relativeDir
     if ($LASTEXITCODE -ne 0) { throw 'git add of GameObject dictionary capture failed.' }
 
@@ -82,6 +92,7 @@ try {
     Write-Host "Capture: $relativeDir"
 
     if ($captureCode -ne 0) {
+        if ($caught) { throw "GameObject dictionary capture failed, but failure evidence WAS committed and pushed: $($caught.Exception.Message)" }
         throw "GameObject dictionary capture failed with exit code $captureCode, but the failure evidence WAS committed and pushed."
     }
 }
