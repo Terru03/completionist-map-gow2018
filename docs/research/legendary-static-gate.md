@@ -41,17 +41,17 @@ at RVA `0x1EC5D0`. It does not take a chest WAD name or authored chest GUID.
 That context string at each chest point has not been established by static
 zone/trigger data.
 
-Further disassembly of the same pinned executable narrows the string source.
-The constructor at RVA `0x73C400` clears object offset `+0x4AD0` at
-`0x73C441`. Its path at `0x73C713` reads a pointer from source offset
-`+0x470` and writes that pointer (or a static fallback) to a related object's
-`+0xC50` at `0x73C728`. RVA `0x730E20` has the same `+0x470` to `+0xC50`
-copy at `0x730EC1`–`0x730ECF`. RVA `0x733FF0` can set `+0x4AD0` at
-`0x7341A5`; RVA `0x738F70` clears that pointer at `0x738FCE` when its
-selected object is removed. These are code-level source and lifecycle edges,
-not a per-chest edge. The WAD zone object that supplies `+0x470`, its active
-geometry at each interaction point, and the resulting `+0xC50` string remain
-unproved. The gate therefore records zero direct bindings.
+Further disassembly of the same pinned executable shows context-pointer
+lifecycle, but does not yet show the region-string writer. The constructor at
+RVA `0x73C400` clears object offset `+0x4AD0` at `0x73C441`. RVA `0x733FF0`
+can set `+0x4AD0` at `0x7341A5`; RVA `0x738F70` clears it at `0x738FCE`
+when its selected object is removed. Separate instructions at `0x73C728`
+and `0x730ECF` write a **pointer value** at a `+0xC50` offset on a related
+object. They cannot be equated with the wrapper's `+0xC50`, which it reads
+as **inline bytes**. The object-type match and actual string writer are
+unproved. No `+0x470` to region-name source claim follows from those writes.
+The active object, its authored region/zone record, and its geometry at each
+chest point remain unproved. The gate records zero direct bindings.
 
 Another `+0x4AD0` writer at RVA `0x73B7C0` narrows the selection path.
 At `0x73B7F0`–`0x73B80D` it scans up to `0x40` global slots with stride
