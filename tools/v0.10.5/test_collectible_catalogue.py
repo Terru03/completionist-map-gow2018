@@ -139,7 +139,7 @@ class CollectibleCatalogueTests(unittest.TestCase):
             "nornir_chest": 21,
         })
         self.assertEqual(self.audit["tracked_physical_counts"]["legendary_chest"], 33)
-        self.assertEqual(self.audit["tracked_physical_counts"]["lore_marker"], 43)
+        self.assertEqual(self.audit["tracked_physical_counts"]["lore_marker"], 40)
         self.assertNotIn("nornir_chest", self.audit["tracked_physical_counts"])
         self.assertEqual(self.audit["tracked_physical_counts"]["artefact"], 9)
         self.assertEqual(self.audit["ship_head_accounting"]["physical_placements"], 9)
@@ -157,6 +157,19 @@ class CollectibleCatalogueTests(unittest.TestCase):
             if row["subtype"] != "Ship Head":
                 self.assertIsNone(row["progression"]["parent_quest"], row["catalogue_id"])
                 self.assertIsNone(row["progression"]["parent_quest_source"], row["catalogue_id"])
+
+    def test_level_script_lore_context_does_not_claim_exact_object_parent(self):
+        lore = [row for row in self.rows if row["family"] == "lore_marker"]
+        self.assertEqual(len(lore), 43)
+        self.assertEqual(sum(row["subtype"] == "native_lore_marker" for row in lore), 40)
+        for row in lore:
+            progress = row["progression"]
+            if row["subtype"] == "native_lore_marker":
+                self.assertEqual(progress["parent_quest_source"],
+                                 "exact_native_object_attribute")
+            else:
+                self.assertIsNone(progress["parent_quest"], row["catalogue_id"])
+                self.assertIsNone(progress["parent_quest_source"], row["catalogue_id"])
 
     def test_legendary_raw_membership_and_production_eligibility_are_separate(self):
         rows = [row for row in self.rows if row["family"] == "legendary_chest"]

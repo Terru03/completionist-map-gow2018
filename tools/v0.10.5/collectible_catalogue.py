@@ -865,12 +865,13 @@ def extract_lore_markers(wad: Path, raw: bytes, records: list[dict], summaries: 
             entry = base_entry(
                 family="lore_marker", subtype="level_script_lore_marker", wad=wad, raw=raw,
                 records=records, override=override, final=final, state_instance_guid=None,
-                script_guid=script_guid, attribute_values=[journal_id, quest], summaries=summaries,
+                script_guid=script_guid, attribute_values=strings(override["data"]), summaries=summaries,
                 family_hint="LoreMarker", state_adapter="level_script_checkpoint_boolean",
                 state_field=state_field, map_resource="goMapIconCompletionistLoreMarker",
                 compass_class="CompletionistLoreMarker", matrix=matrix, world=world,
                 chain=chain, raw_chain=raw_chain,
-                physical_instance_guid=override["id"].hex())
+                physical_instance_guid=override["id"].hex(),
+                allow_region_quest_inference=False)
             entry["native"]["journal_ids"] = [journal_id]
             entry["progression"]["identity_status"] = "no_explicit_component_guid_in_object_override"
             result.append(entry)
