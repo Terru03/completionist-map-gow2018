@@ -1,0 +1,38 @@
+**********************
+PowerShell transcript start
+Start time: 20260923084735
+Username: DESKTOP-DAVID\david
+RunAs User: DESKTOP-DAVID\david
+Configuration Name: 
+Machine: DESKTOP-DAVID (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -File .\tools\v0.10.5\capture-staged-wad-bitstream-ship-head-state-readonly-and-push.ps1
+Process ID: 11356
+PSVersion: 7.6.6
+PSEdition: Core
+GitCommitId: 7.6.6
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+=== GLOBAL STAGED WAD SHIP HEAD STATE CAPTURE ===
+Scope: every WAD record in the native staged table, not only the currently streamed zone.
+Access: PROCESS_VM_READ | PROCESS_QUERY_INFORMATION only. No hook and no process-memory write.
+Keep the loaded game PAUSED while the two equal snapshots are taken.
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-ship-heads\tools\v0.10.5\capture-staged-wad-bitstream-ship-head-state-readonly.py", line 298, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-ship-heads\tools\v0.10.5\capture-staged-wad-bitstream-ship-head-state-readonly.py", line 122, in main
+    require(not any(out.iterdir()), "output folder must be empty")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-ship-heads\tools\v0.10.5\capture-staged-wad-bitstream-ship-head-state-readonly.py", line 47, in require
+    raise RuntimeError(reason)
+RuntimeError: output folder must be empty
+SHIP_HEAD_STAGED_CAPTURE_FAILED: Ship Head staged reader exited with code 1
+**********************
+PowerShell transcript end
+End time: 20260923084736
+**********************
