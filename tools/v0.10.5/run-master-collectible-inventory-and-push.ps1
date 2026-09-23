@@ -12,10 +12,10 @@ Set-Location $repo
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $relative = "archive/field-logs/master-inventory/master-collectible-inventory-$stamp"
 $out = Join-Path $repo $relative
-$tmp = Join-Path $env:TEMP "gow-master-inventory-$stamp"
 $transcript = Join-Path $out 'console-log.txt'
 $transcriptStarted = $false
 $published = $false
+$prechecksPassed = $false
 $result = 'FAIL_PRECHECK'
 
 function Stop-LocalTranscript {
@@ -58,41 +58,22 @@ try {
     $branch = (& git branch --show-current).Trim()
     if ($branch -ne $ExpectedBranch) { throw "Wrong branch '$branch'; expected '$ExpectedBranch'." }
     if (@(& git status --porcelain).Count -gt 0) { throw 'Working tree must be clean before master inventory run.' }
+    $prechecksPassed = $true
 
     New-Item -ItemType Directory -Force -Path $out | Out-Null
-    New-Item -ItemType Directory -Force -Path $tmp | Out-Null
     Start-Transcript -LiteralPath $transcript -Force | Out-Null
     $transcriptStarted = $true
 
     & git fetch origin $ExpectedBranch $SeedBranch 'codex/all-ravens-release-candidate' 'codex/collectible-legendary-chests' 'codex/collectible-nornir-chests'
     if ($LASTEXITCODE -ne 0) { throw 'git fetch of inventory/family branches failed.' }
 
+    & python '.\tools\v0.10.5\export-master-collectible-sources.py' --output-dir $out --seed-branch $SeedBranch
+    if ($LASTEXITCODE -ne 0) { throw 'pinned family source export failed.' }
+    $env:MASTER_SOURCE_MANIFEST = Join-Path $out 'source-manifest.json'
     & python '.\tools\v0.10.5\test_master_collectible_inventory.py'
     if ($LASTEXITCODE -ne 0) { throw 'master inventory unit tests failed.' }
 
-    $seedPath = Join-Path $tmp 'seed-all-collectibles.json'
-    $seedSpec = "origin/${SeedBranch}:config/collectibles/v0.10.5/all-collectibles.json"
-    $seedText = (& git show $seedSpec | Out-String)
-    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($seedText)) { throw "Unable to export seed catalogue from $seedSpec" }
-    [IO.File]::WriteAllText($seedPath, $seedText, (New-Object Text.UTF8Encoding($false)))
-
-    $seedHead = (& git rev-parse "origin/$SeedBranch").Trim()
-    $ravenHead = (& git rev-parse 'origin/codex/all-ravens-release-candidate').Trim()
-    $legendaryHead = (& git rev-parse 'origin/codex/collectible-legendary-chests').Trim()
-    $nornirHead = (& git rev-parse 'origin/codex/collectible-nornir-chests').Trim()
-    @(
-        "seed_branch=$SeedBranch"
-        "seed_head=$seedHead"
-        "raven_branch=codex/all-ravens-release-candidate"
-        "raven_head=$ravenHead"
-        "legendary_branch=codex/collectible-legendary-chests"
-        "legendary_head=$legendaryHead"
-        "nornir_branch=codex/collectible-nornir-chests"
-        "nornir_head=$nornirHead"
-        'note=Seed catalogue is broad static inventory input; family branch heads are pinned for subsequent evidence imports.'
-    ) | Set-Content -LiteralPath (Join-Path $out 'source-branches.txt') -Encoding UTF8
-
-    & python '.\tools\v0.10.5\build-master-collectible-inventory.py' --catalogue $seedPath --output-dir $out
+    & python '.\tools\v0.10.5\build-master-collectible-inventory.py' --source-manifest $env:MASTER_SOURCE_MANIFEST --output-dir $out
     if ($LASTEXITCODE -ne 0) { throw 'master collectible inventory builder failed.' }
 
     Copy-Item '.\config\collectibles\v0.10.5\master-collectible-policy.json' (Join-Path $out 'master-collectible-policy.json') -Force
@@ -101,6 +82,7 @@ try {
     Write-Host "MASTER_COLLECTIBLE_INVENTORY_PUSHED $relative"
 }
 catch {
+    if (-not $prechecksPassed) { throw }
     try {
         New-Item -ItemType Directory -Force -Path $out | Out-Null
         $_.Exception.ToString() | Set-Content -LiteralPath (Join-Path $out 'error.txt') -Encoding UTF8
@@ -112,5 +94,5 @@ catch {
 }
 finally {
     Stop-LocalTranscript
-    Remove-Item -LiteralPath $tmp -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item Env:MASTER_SOURCE_MANIFEST -ErrorAction SilentlyContinue
 }

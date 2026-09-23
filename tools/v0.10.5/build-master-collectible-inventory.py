@@ -110,7 +110,7 @@ def load_catalogue(path: Path) -> list[dict]:
     if isinstance(data, list):
         return [x for x in data if isinstance(x, dict)]
     if isinstance(data, dict):
-        for key in ("collectibles", "rows", "items"):
+        for key in ("collectibles", "ravens", "rows", "items"):
             if isinstance(data.get(key), list):
                 return [x for x in data[key] if isinstance(x, dict)]
     raise ValueError(f"unsupported catalogue shape: {path}")
@@ -155,6 +155,12 @@ def normalize(row: dict, source: Path, policy: dict) -> dict:
         "mod_marker_policy_source": mp_source,
         "mod_marker_allowed": False,
         "marker_block_reason": "Inventory evidence alone never authorizes runtime marker generation.",
+        "physical": True,
+        "tracking_classification": "unclassified",
+        "production_eligibility": "blocked_unclassified",
+        "production_ready": False,
+        "marker_generation_ready": False,
+        "classification_evidence": [],
         "source_catalogue": str(source).replace("\\", "/"),
         "source_row_sha256": hashlib.sha256(canonical_json(row).encode()).hexdigest(),
     }
@@ -162,51 +168,227 @@ def normalize(row: dict, source: Path, policy: dict) -> dict:
 
 def dedupe(rows: list[dict]) -> list[dict]:
     by_key: dict[str, dict] = {}
-    conflicts: list[str] = []
+    by_physical: dict[str, str] = {}
     for row in rows:
         key = row.get("catalogue_id") or (f"physical:{row['physical_id']}" if row.get("physical_id") else None)
         if key is None:
-            key = "anonymous:" + row["source_row_sha256"]
-        old = by_key.get(key)
-        if old is None:
-            by_key[key] = row
-        elif old["source_row_sha256"] != row["source_row_sha256"]:
-            conflicts.append(key)
-    if conflicts:
-        raise ValueError("conflicting duplicate collectible rows: " + ", ".join(sorted(conflicts)[:20]))
+            raise ValueError("physical collectible lacks catalogue and physical identity")
+        if key in by_key:
+            raise ValueError(f"conflicting duplicate collectible rows: catalogue_id {key}")
+        physical = row.get("physical_id")
+        if physical:
+            # Instance identifiers can recur in separate WAD placements.
+            physical_key = (str(row.get("wad") or "").lower(), str(physical).lower())
+            if physical_key in by_physical:
+                raise ValueError(f"conflicting duplicate physical identity: {physical} ({by_physical[physical_key]}, {key})")
+            by_physical[physical_key] = key
+        by_key[key] = row
     return sorted(by_key.values(), key=lambda r: (r["family"], str(r.get("realm_id")), str(r.get("region_id")), str(r.get("catalogue_id"))))
 
 
-def discrepancy(policy: dict, rows: list[dict]) -> list[dict]:
+def reject_marker_authority(value: Any) -> None:
+    """An imported evidence file cannot grant runtime marker permission."""
+    if isinstance(value, dict):
+        if value.get("mod_marker_allowed") is True or value.get("runtime_generation_allowed") is True:
+            raise ValueError("evidence overlay attempts to authorize runtime marker generation")
+        for child in value.values():
+            reject_marker_authority(child)
+    elif isinstance(value, list):
+        for child in value:
+            reject_marker_authority(child)
+
+
+def source_record(entry: dict) -> dict:
+    path = Path(entry["file"]).resolve()
+    if not path.is_file() or sha(path) != entry["sha256"]:
+        raise ValueError(f"missing or hash-mismatched pinned source: {path}")
+    for key in ("role", "source_branch", "source_commit", "source_path"):
+        if not entry.get(key):
+            raise ValueError(f"pinned source lacks {key}: {path}")
+    if len(entry["source_commit"]) != 40:
+        raise ValueError(f"source commit is not a full SHA: {path}")
+    return {"role": entry["role"], "family": entry.get("family"),
+            "source_branch": entry["source_branch"], "source_commit": entry["source_commit"],
+            "source_path": entry["source_path"], "source_sha256": entry["sha256"],
+            "bytes": path.stat().st_size, "local_file": str(path)}
+
+
+def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], dict, list[dict]]:
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    entries = manifest["sources"]
+    for entry in entries:
+        entry["file"] = str((manifest_path.resolve().parent / entry["file"]).resolve())
+    roles = Counter((e["role"], e.get("family")) for e in entries)
+    if roles[("seed_catalogue", None)] != 1:
+        raise ValueError("exactly one seed catalogue is required")
+    family_sources = {e["family"]: e for e in entries if e["role"] == "family_catalogue"}
+    gate_sources = {e["family"]: e for e in entries if e["role"] == "family_gate"}
+    for family in ("odin_raven", "nornir_chest", "legendary_chest"):
+        if roles[("family_catalogue", family)] != 1:
+            raise ValueError(f"exactly one authoritative catalogue required for {family}")
+    for family in ("nornir_chest", "legendary_chest"):
+        if roles[("family_gate", family)] != 1:
+            raise ValueError(f"exactly one static gate required for {family}")
+    provenance = [source_record(e) for e in entries]
+    by_entry = {id(e): p for e, p in zip(entries, provenance)}
+    seed = next(e for e in entries if e["role"] == "seed_catalogue")
+    overridden = set(family_sources)
+    inputs: list[tuple[dict, dict]] = []
+    for row in load_catalogue(Path(seed["file"])):
+        if family_key(row) not in overridden:
+            inputs.append((row, by_entry[id(seed)]))
+    catalogue_data = {}
+    for family, entry in family_sources.items():
+        path = Path(entry["file"])
+        data = json.loads(path.read_text(encoding="utf-8"))
+        reject_marker_authority(data)
+        family_rows = [row for row in load_catalogue(path) if family_key(row) == family]
+        if not family_rows:
+            raise ValueError(f"family catalogue has no rows: {family}")
+        catalogue_data[family] = data
+        inputs.extend((row, by_entry[id(entry)]) for row in family_rows)
+    rows = dedupe([normalize(raw, Path(src["source_path"]), policy) |
+                   {"catalogue_provenance": src} for raw, src in inputs])
+    by_id = {row["catalogue_id"]: row for row in rows}
+    summary = {}
+    raven = catalogue_data["odin_raven"]
+    raven_rows = [r for r in rows if r["family"] == "odin_raven"]
+    if len(raven_rows) != raven["expected_native_object_count"] or raven["native_labor_target_count"] > len(raven_rows):
+        raise ValueError("Raven catalogue count conflicts with native census")
+    raven_src = by_entry[id(family_sources["odin_raven"])]
+    for row in raven_rows:
+        row["tracking_classification"] = "accounting_membership_unresolved"
+        row["production_eligibility"] = "blocked_accounting_membership_and_state"
+        row["classification_evidence"].append({"source": raven_src, "field": "native_labor_target_count; per-object membership unproved"})
+    summary["odin_raven"] = {"native_accounting_target": raven["native_labor_target_count"],
+                              "tracked_candidates": None, "explained_untracked": 0,
+                              "unresolved": len(raven_rows) - raven["native_labor_target_count"],
+                              "unresolved_scope": "aggregate_count; exact two identities unknown"}
+
+    for family, entry in gate_sources.items():
+        gate = json.loads(Path(entry["file"]).read_text(encoding="utf-8"))
+        reject_marker_authority(gate)
+        cat_src = by_entry[id(family_sources[family])]
+        expected_hash = gate.get("source_sha256", {}).get("config/collectibles/v0.10.5/all-collectibles.json")
+        if not expected_hash:
+            raise ValueError(f"{family} gate lacks source catalogue hash")
+        gate_hash_note = {"gate_catalogue_sha256_at_generation": expected_hash,
+                          "current_family_catalogue_sha256": cat_src["source_sha256"],
+                          "catalogue_hash_changed_since_gate": expected_hash != cat_src["source_sha256"]}
+        gate_src = by_entry[id(entry)]
+        family_rows = {r["catalogue_id"]: r for r in rows if r["family"] == family}
+        if family == "nornir_chest":
+            gate_rows = gate["rows"]
+            if len(gate_rows) != gate["physical_count"] or set(r["catalogue_id"] for r in gate_rows) != set(family_rows):
+                raise ValueError("Nornir gate and physical catalogue identities conflict")
+            classes = Counter()
+            for evidence in gate_rows:
+                row = family_rows[evidence["catalogue_id"]]
+                if row["physical_id"].lower() != evidence["physical_guid"].lower():
+                    raise ValueError("Nornir gate physical identity conflict")
+                classification = evidence["tracking_classification"]
+                if classification == "unresolved_tracked_candidate":
+                    row["tracking_classification"] = "tracked_candidate"
+                    row["production_eligibility"] = "blocked_direct_binding_and_state"
+                elif classification == "level_scripted_untracked_triple_chest_reward":
+                    row["tracking_classification"] = "explained_untracked"
+                    row["production_eligibility"] = "excluded_from_map_accounting"
+                else:
+                    raise ValueError(f"unknown Nornir classification: {classification}")
+                row["classification_evidence"].append({"source": gate_src, "field": "rows.tracking_classification", "value": classification})
+                classes[row["tracking_classification"]] += 1
+            if classes["tracked_candidate"] != gate["tracked_candidate_count"] or classes["explained_untracked"] != gate["explained_untracked_count"] or gate["linked_child_count"] != 66:
+                raise ValueError("Nornir gate census conflicts with row classification")
+            summary[family] = {"native_accounting_target": None, "tracked_candidates": classes["tracked_candidate"],
+                               "explained_untracked": classes["explained_untracked"], "unresolved": 0,
+                               "linked_child_objects": gate["linked_child_count"], "static_gate_status": gate["status"],
+                               **gate_hash_note}
+        elif family == "legendary_chest":
+            if len(family_rows) != gate["raw_count"]:
+                raise ValueError("Legendary gate raw count conflicts with catalogue")
+            candidates = {r["catalogue_id"] for r in gate["candidate_rows"]}
+            unresolved = set(gate["unresolved_catalogue_ids"])
+            classes = Counter()
+            raw_by_id = {r["catalogue_id"]: r for r in load_catalogue(Path(family_sources[family]["file"]))}
+            for row in family_rows.values():
+                # This family catalogue is pinned to the Legendary branch; its classes
+                # come from its native audit, while the gate validates candidate IDs.
+                raw = raw_by_id[row["catalogue_id"]]
+                cls = raw["native_classification"]
+                classes[cls] += 1
+                if cls == "tracked_legendary":
+                    row["tracking_classification"] = "tracked_candidate"
+                    row["production_eligibility"] = "blocked_direct_binding_and_marker_path"
+                elif cls in ("trial_reward", "non_map_counted_physical"):
+                    row["tracking_classification"] = "explained_untracked"
+                    row["production_eligibility"] = "excluded_from_map_accounting"
+                elif cls == "unresolved_nontracked":
+                    row["tracking_classification"] = "unresolved"
+                    row["production_eligibility"] = "blocked_unresolved_classification"
+                else:
+                    raise ValueError(f"unknown Legendary classification: {cls}")
+                row["classification_evidence"].append({"source": cat_src, "field": "native_classification", "value": cls})
+            if classes != Counter({"tracked_legendary": 33, "trial_reward": 27, "non_map_counted_physical": 2, "unresolved_nontracked": 2}) or candidates != {r["catalogue_id"] for r in family_rows.values() if r["tracking_classification"] == "tracked_candidate"} or unresolved != {r["catalogue_id"] for r in family_rows.values() if r["tracking_classification"] == "unresolved"} or len(candidates) != gate["candidate_count"]:
+                raise ValueError("Legendary gate and catalogue classifications conflict")
+            for cid in candidates | unresolved:
+                family_rows[cid]["classification_evidence"].append({"source": gate_src, "field": "candidate_rows or unresolved_catalogue_ids"})
+            summary[family] = {"native_accounting_target": None, "tracked_candidates": len(candidates),
+                               "explained_untracked": classes["trial_reward"] + classes["non_map_counted_physical"],
+                               "unresolved": len(unresolved), "classification_counts": dict(sorted(classes.items())),
+                               "static_gate_status": gate["status"], **gate_hash_note}
+    return rows, summary, provenance
+
+
+def discrepancy(policy: dict, rows: list[dict], summary: dict | None = None) -> list[dict]:
+    summary = summary or {}
     counts = Counter(row["family"] for row in rows)
     out = []
     for fam in policy["families"]:
         actual = counts.get(fam["key"], 0)
         expected = fam.get("guide_expected")
-        if expected is None:
+        detail = summary.get(fam["key"], {})
+        target = detail.get("native_accounting_target")
+        tracked = detail.get("tracked_candidates")
+        if not actual:
+            status = "NO_PHYSICAL_EVIDENCE"
+        elif target is not None and expected == target:
+            status = "GUIDE_MATCHES_NATIVE_ACCOUNTING_TARGET_MEMBERSHIP_UNRESOLVED" if detail.get("unresolved") else "GUIDE_MATCHES_NATIVE_ACCOUNTING_TARGET"
+        elif tracked is not None and expected == tracked:
+            status = "GUIDE_MATCHES_TRACKED_CANDIDATES"
+        elif tracked is not None and expected != tracked:
+            status = "GUIDE_TRACKED_CANDIDATE_DISAGREEMENT"
+        elif expected is None:
             status = "NO_GUIDE_EXPECTATION"
-        elif actual == expected:
-            status = "MATCH"
-        elif actual < expected:
-            status = "NATIVE_INVENTORY_UNDER_GUIDE"
         else:
-            status = "NATIVE_INVENTORY_OVER_GUIDE"
+            status = "ACCOUNTING_EVIDENCE_MISSING"
         out.append({
             "family": fam["key"], "display": fam["display"],
-            "guide_expected": expected, "inventory_rows": actual,
-            "delta": None if expected is None else actual - expected,
-            "status": status, "marker_policy": fam["marker_policy"],
+            "external_guide_expected": expected, "physical_rows": actual,
+            "native_accounting_target": target, "tracked_candidates": tracked,
+            "explained_untracked": detail.get("explained_untracked", 0),
+            "unresolved": detail.get("unresolved", 0),
+            "unresolved_scope": detail.get("unresolved_scope"),
+            "production_ready": sum(r["production_ready"] for r in rows if r["family"] == fam["key"]),
+            "marker_generation_ready": sum(r["marker_generation_ready"] for r in rows if r["family"] == fam["key"]),
+            "audit_status": status, "marker_policy": fam["marker_policy"],
+            "classification_counts": detail.get("classification_counts"),
+            "linked_child_objects": detail.get("linked_child_objects"),
+            "gate_catalogue_sha256_at_generation": detail.get("gate_catalogue_sha256_at_generation"),
+            "current_family_catalogue_sha256": detail.get("current_family_catalogue_sha256"),
+            "catalogue_hash_changed_since_gate": detail.get("catalogue_hash_changed_since_gate"),
         })
     unknown = sorted(set(counts) - set(policy_index(policy)))
     for fam in unknown:
-        out.append({"family": fam, "display": fam, "guide_expected": None,
-                    "inventory_rows": counts[fam], "delta": None,
-                    "status": "UNPOLICIED_NATIVE_FAMILY", "marker_policy": policy["default_marker_policy"]})
+        out.append({"family": fam, "display": fam, "external_guide_expected": None,
+                    "physical_rows": counts[fam], "native_accounting_target": None,
+                    "tracked_candidates": None, "explained_untracked": 0, "unresolved": 0,
+                    "production_ready": 0, "marker_generation_ready": 0,
+                    "audit_status": "UNPOLICIED_NATIVE_FAMILY", "marker_policy": policy["default_marker_policy"]})
     return out
 
 
 def write_csv(path: Path, rows: list[dict]) -> None:
-    fields = ["catalogue_id","family","subtype","display_name","realm_id","region_id","wad","physical_id","world_xyz","parent_summary","object_hash_hex","serialized_flag1_hex","unloaded_query","native_marker_present","mod_marker_policy","mod_marker_allowed","source_catalogue"]
+    fields = ["catalogue_id","family","subtype","display_name","realm_id","region_id","wad","physical_id","world_xyz","parent_summary","object_hash_hex","serialized_flag1_hex","unloaded_query","tracking_classification","production_eligibility","production_ready","marker_generation_ready","native_marker_present","mod_marker_policy","mod_marker_allowed","source_catalogue","source_branch","source_commit","source_sha256"]
     with path.open("w", newline="", encoding="utf-8-sig") as fh:
         writer = csv.DictWriter(fh, fieldnames=fields)
         writer.writeheader()
@@ -218,20 +400,32 @@ def write_csv(path: Path, rows: list[dict]) -> None:
                 "object_hash_hex": state.get("object_hash_hex"),
                 "serialized_flag1_hex": state.get("serialized_flag1_hex"),
                 "unloaded_query": state.get("unloaded_query"),
+                "source_branch": row.get("catalogue_provenance", {}).get("source_branch"),
+                "source_commit": row.get("catalogue_provenance", {}).get("source_commit"),
+                "source_sha256": row.get("catalogue_provenance", {}).get("source_sha256"),
             })
 
 
 def write_md(path: Path, report: dict) -> None:
     lines = ["# Master collectible inventory", "", f"Generated: `{report['generated_utc']}`", "",
              "Native game/repository evidence is authoritative. Guide counts are audit-only. Runtime marker generation is disabled by this report.", "",
-             "## Family audit", "", "| Family | Guide | Inventory | Delta | Status | Marker policy |", "|---|---:|---:|---:|---|---|"]
+             "## Family audit", "", "| Family | External guide | Physical | Native target | Tracked candidates | Explained untracked | Unresolved | Production ready | Audit status |", "|---|---:|---:|---:|---:|---:|---:|---:|---|"]
     for row in report["family_audit"]:
-        lines.append(f"| {row['display']} | {row['guide_expected'] if row['guide_expected'] is not None else ''} | {row['inventory_rows']} | {row['delta'] if row['delta'] is not None else ''} | {row['status']} | {row['marker_policy']} |")
+        def shown(value: Any) -> str:
+            return "" if value is None else str(value)
+        lines.append(f"| {row['display']} | {shown(row['external_guide_expected'])} | {row['physical_rows']} | {shown(row['native_accounting_target'])} | {shown(row['tracked_candidates'])} | {row['explained_untracked']} | {row['unresolved']} | {row['production_ready']} | {row['audit_status']} |")
+    lines += ["", "Raven unresolved count is an aggregate physical/Labor gap. Current evidence does not name the two specific objects outside Labor accounting.", "", "Legendary tracked candidates are not a production allowlist. The external guide expects 34; native candidates remain 33.", ""]
+    for row in report["family_audit"]:
+        if row.get("catalogue_hash_changed_since_gate"):
+            lines.append(f"- {row['display']} static gate names older catalogue SHA-256 `{row['gate_catalogue_sha256_at_generation']}`; current pinned catalogue is `{row['current_family_catalogue_sha256']}`. Row identities and classes were checked against current evidence; gate remains blocked.")
     lines += ["", "## Hard marker rules", ""]
     lines += [f"- {rule}" for rule in report["policy_hard_rules"]]
-    lines += ["", "## Inventory rows", "", "| Family | Subtype | Realm | Region | WAD | Physical ID | Marker policy |", "|---|---|---|---|---|---|---|"]
+    lines += ["", "## Pinned evidence", ""]
+    for source in report["source_catalogues"]:
+        lines.append(f"- `{source['source_branch']}@{source['source_commit']}` `{source['source_path']}` SHA-256 `{source['source_sha256']}` ({source['role']})")
+    lines += ["", "## Inventory rows", "", "| Family | Subtype | Realm | Region | WAD | Physical ID | Tracking class | Production |", "|---|---|---|---|---|---|---|---|"]
     for row in report["rows"]:
-        lines.append(f"| {row['family']} | {row.get('subtype') or ''} | {row.get('realm_id') or ''} | {row.get('region_id') or ''} | {row.get('wad') or ''} | {row.get('physical_id') or ''} | {row['mod_marker_policy']} |")
+        lines.append(f"| {row['family']} | {row.get('subtype') or ''} | {row.get('realm_id') or ''} | {row.get('region_id') or ''} | {row.get('wad') or ''} | {row.get('physical_id') or ''} | {row['tracking_classification']} | {row['production_eligibility']} |")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -239,21 +433,28 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--policy", type=Path, default=DEFAULT_POLICY)
     ap.add_argument("--catalogue", type=Path, action="append")
+    ap.add_argument("--source-manifest", type=Path)
     ap.add_argument("--output-dir", type=Path, required=True)
     args = ap.parse_args()
     policy = json.loads(args.policy.read_text(encoding="utf-8"))
-    catalogues = args.catalogue or [DEFAULT_CATALOGUE]
-    normalized = []
-    sources = []
-    for path in catalogues:
-        path = path.resolve()
-        if path.exists():
-            sources.append({"path": str(path), "sha256": sha(path), "bytes": path.stat().st_size})
-        for row in load_catalogue(path):
-            normalized.append(normalize(row, path, policy))
-    rows = dedupe(normalized)
+    if args.source_manifest:
+        if args.catalogue:
+            raise ValueError("source manifest and loose catalogues cannot be mixed")
+        rows, summary, sources = load_pinned_sources(args.source_manifest, policy)
+    else:
+        catalogues = args.catalogue or [DEFAULT_CATALOGUE]
+        normalized = []
+        sources = []
+        for path in catalogues:
+            path = path.resolve()
+            if path.exists():
+                sources.append({"source_path": str(path), "source_sha256": sha(path), "bytes": path.stat().st_size,
+                                "source_branch": "unversioned", "source_commit": "unversioned", "role": "loose_catalogue"})
+            for row in load_catalogue(path):
+                normalized.append(normalize(row, path, policy))
+        rows, summary = dedupe(normalized), {}
     report = {
-        "schema": 1,
+        "schema": 2,
         "analysis": "master_collectible_inventory",
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "source_of_truth": policy["source_of_truth"],
@@ -263,7 +464,7 @@ def main() -> int:
         "policy_sha256": sha(args.policy),
         "policy_hard_rules": policy["hard_rules"],
         "row_count": len(rows),
-        "family_audit": discrepancy(policy, rows),
+        "family_audit": discrepancy(policy, rows, summary),
         "rows": rows,
     }
     out = args.output_dir.resolve()
@@ -271,8 +472,8 @@ def main() -> int:
     (out / "master-collectible-inventory.json").write_text(canonical_json(report), encoding="utf-8")
     write_csv(out / "master-collectible-inventory.csv", rows)
     write_md(out / "master-collectible-inventory.md", report)
-    mismatches = [r for r in report["family_audit"] if r["status"] not in ("MATCH", "NO_GUIDE_EXPECTATION")]
-    print(f"MASTER_COLLECTIBLE_INVENTORY rows={len(rows)} mismatched_families={len(mismatches)} runtime_generation_allowed=false")
+    disagreements = [r for r in report["family_audit"] if r["audit_status"] == "GUIDE_TRACKED_CANDIDATE_DISAGREEMENT"]
+    print(f"MASTER_COLLECTIBLE_INVENTORY rows={len(rows)} guide_candidate_disagreements={len(disagreements)} runtime_generation_allowed=false")
     return 0
 
 

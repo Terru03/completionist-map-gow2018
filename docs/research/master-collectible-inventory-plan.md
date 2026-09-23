@@ -43,7 +43,11 @@ These numbers are expectations, not native proof. Known examples of why this mat
 
 Each normalized row can carry family/subtype, realm/region, WAD, physical GUID, world XYZ, parent summary, serialized identity evidence, unloaded-query status, native-marker evidence, marker policy, and source digest.
 
-The first runner uses the broad current all-collectibles catalogue from `codex/collectible-ship-heads` as a seed and pins the current Raven, Legendary, and Nornir branch heads for subsequent evidence imports. It does not switch branches and does not touch game files or the game process.
+The runner exports six files by exact fetched commit SHA: the broad Ship Head seed, the Raven catalogue, the Nornir catalogue and static gate, and the Legendary catalogue and static gate. It archives their bytes, relative-path manifest, branch heads, and SHA-256 hashes. The builder replaces seed rows for these three families with their authoritative family rows, then applies gate classifications by catalogue identity. It does not switch branches or touch game files or the game process.
+
+The audit keeps separate fields for physical rows, native accounting target, tracked candidates, explained untracked rows, unresolved classification, and production readiness. Raven has 53 physical objects and a Labor target of 51. Existing evidence does not identify the two individual objects outside Labor accounting, so per-row accounting membership stays unresolved. Nornir has 22 physical chests, 21 tracked candidates, one explained untracked Helheim reward, and 66 linked children. Legendary has 64 physical chests: 33 tracked candidates, 27 trial rewards, two non-map-counted physical chests, and two unresolved rows. Its external guide count of 34 remains a visible disagreement with the 33 native candidates.
+
+Both current static gates were generated against older all-collectibles file hashes than their current branch heads. The builder records this drift and validates every gate row identity and class against the current pinned family catalogue. Neither gate grants production or marker permission.
 
 ## Gate
 
