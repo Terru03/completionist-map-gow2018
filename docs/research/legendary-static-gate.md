@@ -53,6 +53,14 @@ unproved. No `+0x470` to region-name source claim follows from those writes.
 The active object, its authored region/zone record, and its geometry at each
 chest point remain unproved. The gate records zero direct bindings.
 
+Other static callers treat the same `+0x4AD0` pointer's inline `+0xC50`
+bytes as a level/area name: RVA `0x48F750` compares them with
+`Stn200_LakeExt`, `0x48D2B4` with `Xpl300_Stronghold`, and `0x48D261`
+with `Cal500_RuneVault`. RVA `0x487689` compares them with the shorter
+`for200` code. These are literal comparisons in the pinned executable.
+They help identify the field's meaning, but do not tell which context object
+is selected when any chest opens. They are not chest-to-region bindings.
+
 Another `+0x4AD0` writer at RVA `0x73B7C0` narrows the selection path.
 At `0x73B7F0`–`0x73B80D` it scans up to `0x40` global slots with stride
 `0xEE28`, compares the caller's integer to a slot object's `+0xC3C`, then
