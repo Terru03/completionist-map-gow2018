@@ -42,14 +42,14 @@ That context string at each chest point has not been established by static
 zone/trigger data.
 
 Further disassembly of the same pinned executable shows context-pointer
-lifecycle, but does not yet show the region-string writer. The constructor at
+lifecycle, but does not yet identify the active context at a chest point. The constructor at
 RVA `0x73C400` clears object offset `+0x4AD0` at `0x73C441`. RVA `0x733FF0`
 can set `+0x4AD0` at `0x7341A5`; RVA `0x738F70` clears it at `0x738FCE`
 when its selected object is removed. Separate instructions at `0x73C728`
 and `0x730ECF` write a **pointer value** at a `+0xC50` offset on a related
 object. They cannot be equated with the wrapper's `+0xC50`, which it reads
-as **inline bytes**. The object-type match and actual string writer are
-unproved. No `+0x470` to region-name source claim follows from those writes.
+as **inline bytes**. Those pointer writes do not identify its string source.
+No `+0x470` to region-name source claim follows from those writes.
 The active object, its authored region/zone record, and its geometry at each
 chest point remain unproved. The gate records zero direct bindings.
 
