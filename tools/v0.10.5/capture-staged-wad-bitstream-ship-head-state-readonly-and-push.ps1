@@ -13,6 +13,7 @@ $stamp = (Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss')
 $suffix = [Guid]::NewGuid().ToString('N').Substring(0, 8)
 $relative = "archive/field-logs/runtime-captures/staged-wad-bitstream-ship-head-$stamp-$suffix"
 $out = Join-Path $RepoRoot $relative
+$dataOut = Join-Path $out 'capture-data'
 New-Item -ItemType Directory -Path $out -Force | Out-Null
 $consoleLog = Join-Path $out 'console-log.txt'
 $published = $false
@@ -101,11 +102,11 @@ try {
     }
 
     Write-Host 'Keep the loaded game PAUSED while the two equal snapshots are taken.' -ForegroundColor Cyan
-    & $python.Source $PythonProbe --output-dir $out 2>&1 | Tee-Object -FilePath (Join-Path $out 'python-output.txt')
+    & $python.Source $PythonProbe --output-dir $dataOut 2>&1 | Tee-Object -FilePath (Join-Path $out 'python-output.txt')
     $captureCode = $LASTEXITCODE
     if ($captureCode -ne 0) { throw "Ship Head staged reader exited with code $captureCode" }
-    if (-not (Test-Path -LiteralPath (Join-Path $out 'report.json') -PathType Leaf)) {
-        throw 'Probe returned without report.json.'
+    if (-not (Test-Path -LiteralPath (Join-Path $dataOut 'report.json') -PathType Leaf)) {
+        throw 'Probe returned without capture-data/report.json.'
     }
 
     Publish-Evidence 'CAPTURE_PASSED'
