@@ -136,6 +136,10 @@ def main() -> int:
     args = parser.parse_args()
     paths = (CATALOGUE, AUDIT, BINDINGS)
     report = assess(*(json.loads(path.read_text(encoding="utf-8")) for path in paths))
+    report["source_sha256"] = {
+        str(path.relative_to(REPO)).replace("\\", "/"):
+            hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in paths}
     report["source_lf_sha256"] = {
         str(path.relative_to(REPO)).replace("\\", "/"):
             hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
