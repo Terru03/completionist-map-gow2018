@@ -1,5 +1,23 @@
 # Legendary Chests Production Status
 
+## Native identity and progression audit, 2026-09-23
+
+`docs/research/legendary-progression-identity-audit.md` records current 33-row
+proof. The pristine chest script stores chest-local `state` and separately
+increments an aggregate RegionSummary quest for the player's current region
+(with fixed Tyr branches). A native GameObject serialized key binds 30/33
+current physical rows to exact states in the frozen staged checkpoint. Three
+current rows lack frozen state observations. None has proved per-chest quest
+membership. Two catalogue `physical.state` keys omit a GUID present in their
+native WAD placement paths; the catalogue was left unchanged. The older
+serialized-identity snapshot contains two rows now classified as
+`non_map_counted_physical` and omits current Tyr rows in
+`cal500_runevault.wad` and `cal740_leftwing.wad`. Read JSON and CSV for exact GUIDs,
+record offsets, and reasons. The runtime gate stays closed.
+
+The older 32/33 static-gate count below describes that older identity
+snapshot. It does not establish 32 frozen matches for the current 33 rows.
+
 ## RegionSummary link audit, 2026-09-23
 
 `docs/research/legendary-region-link-audit.md` records the next static step.
