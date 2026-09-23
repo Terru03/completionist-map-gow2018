@@ -2,7 +2,7 @@
 param()
 
 $ErrorActionPreference = 'Stop'
-$ExpectedBranch = 'codex/all-collectibles-production-research'
+$ExpectedBranch = 'codex/collectible-ship-heads'
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $Capture = Join-Path $PSScriptRoot 'capture-gow-gameobject-dictionary.py'
 
