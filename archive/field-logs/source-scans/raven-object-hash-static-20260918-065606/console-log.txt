@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\analyze-raven-object-hash-static.py", line 260, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\analyze-raven-object-hash-static.py", line 207, in main
+    elements, evidence = element_map(row, records)
+                         ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\analyze-raven-object-hash-static.py", line 81, in element_map
+    final_index, final = one_record(records, row["native"]["final_record_id"])
+                         ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david\Documents\GitHub\completionist-map-gow2018-all-collectibles-production-research\tools\v0.10.5\analyze-raven-object-hash-static.py", line 66, in one_record
+    raise ValueError(f"record {record_id_hex} expected once, found {len(hits)}")
+ValueError: record 160d2d64d4a5f04a93776e075e9a543c expected once, found 2
