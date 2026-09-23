@@ -1,5 +1,17 @@
 # Legendary Chests Production Status
 
+## Current static decision, 2026-09-23
+
+`docs/research/legendary-static-gate.md` and its generated JSON are the
+current authority. The 33 rows below are **candidates**, not cleared
+production rows. `BLOCKED_FAIL_CLOSED`: 33/33 derived serialized keys,
+32/33 exact frozen staged states, and 0/33 direct chest-to-RegionSummary
+bindings. `stn200_lakeext` and `xpl300_stronghold` remain unresolved;
+`cal500_runevault` and `cal740_leftwing` remain candidate Tyr rows without
+direct bindings. Legendary marker/suppression and custom asset IDs are also
+unproved. No Legendary runtime generation is enabled. The older gate and
+runtime history below is kept as history only.
+
 ## Branch
 
 `codex/collectible-legendary-chests`
@@ -23,16 +35,16 @@ Legendary-path chests here.
 The existing audited catalogue is retained unchanged:
 
 - raw Legendary-path physical rows: 64;
-- tracked production Legendary Chests: 33;
+- tracked-candidate Legendary Chests: 33;
 - exact Muspelheim trial-reward exclusions: 27;
-- unresolved nontracked rows: 4.
+- unresolved rows: 2, plus 2 provisional scope exclusions.
 
 Only the 33 rows with:
 
 - `native_classification=tracked_legendary`;
 - `production_eligibility=tracked_collectible`;
 
-are eligible for this family branch.
+are candidates for this family branch, subject to the current static gate.
 
 Their completion contract is:
 
