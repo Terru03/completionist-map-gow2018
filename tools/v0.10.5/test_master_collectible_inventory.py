@@ -112,19 +112,31 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
                           artefact["shiphead_native_target"], artefact["unresolved"]),
                          (45, 9, 10, 36))
         self.assertEqual(artefact["audit_status"], "ACCOUNTING_EVIDENCE_MISSING")
+        lore = audit["lore_marker"]
+        self.assertEqual((lore["physical_rows"], lore["native_accounting_target"],
+                          lore["direct_object_parent_count"], lore["unresolved"]),
+                         (43, 43, 40, 3))
+        self.assertEqual(lore["external_guide_expected"], 39)
+        self.assertEqual(lore["audit_status"], "GUIDE_NATIVE_TARGET_DISAGREEMENT")
         self.assertEqual(legendary["gate_catalogue_hash_basis"], "windows_crlf_checkout_bytes")
         self.assertFalse(legendary["catalogue_content_changed_since_gate"])
-        self.assertEqual(len(sources), 9)
+        self.assertEqual(len(sources), 11)
         self.assertEqual(sum(row["tracking_classification"] == "accounting_membership_unresolved_surplus_group"
                              for row in rows), 9)
         self.assertTrue(all(x["source_commit"] and x["source_sha256"] for x in sources))
         self.assertTrue(all(not row["mod_marker_allowed"] and not row["marker_generation_ready"] for row in rows))
-        self.assertTrue(all(row["classification_evidence"] for row in rows if row["family"] in ("odin_raven", "nornir_chest", "legendary_chest", "artefact")))
+        self.assertTrue(all(row["classification_evidence"] for row in rows if row["family"] in ("odin_raven", "nornir_chest", "legendary_chest", "artefact", "lore_marker")))
         for cid in ("artefact_989065ff4bde64f5ec957da2759037cb",
                     "artefact_c9b7e23040c21e2da5fe8ba4be8ad415"):
             row = next(item for item in rows if item["catalogue_id"] == cid)
             self.assertIsNone(row["parent_summary"])
             self.assertEqual(row["tracking_classification"], "accounting_unresolved")
+        level_lore = [row for row in rows if row["family"] == "lore_marker" and
+                      row["subtype"] == "level_script_lore_marker"]
+        self.assertEqual(len(level_lore), 3)
+        self.assertTrue(all(row["parent_summary"] is None and
+                            row["tracking_classification"] == "accounting_object_link_unresolved"
+                            for row in level_lore))
 
     def test_generated_report_retains_evidence_provenance(self):
         manifest = os.environ.get("MASTER_SOURCE_MANIFEST")
@@ -134,7 +146,7 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
             subprocess.run(["python", str(HERE / "build-master-collectible-inventory.py"),
                             "--source-manifest", manifest, "--output-dir", td], check=True, capture_output=True)
             report = json.loads((Path(td) / "master-collectible-inventory.json").read_text(encoding="utf-8"))
-            self.assertEqual(len(report["source_catalogues"]), 9)
+            self.assertEqual(len(report["source_catalogues"]), 11)
             raven = next(row for row in report["rows"] if row["family"] == "odin_raven")
             self.assertEqual(raven["catalogue_provenance"]["source_branch"], "codex/all-ravens-release-candidate")
             self.assertTrue(raven["classification_evidence"][0]["source"]["source_sha256"])
@@ -238,6 +250,27 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
             pinned = Path(td) / "manifest.json"
             pinned.write_text(json.dumps(data), encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "Artefact row evidence conflicts"):
+                inv.load_pinned_sources(pinned, self.policy)
+
+    def test_lore_gate_cannot_promote_script_context_to_direct_parent(self):
+        manifest = os.environ.get("MASTER_SOURCE_MANIFEST")
+        if not manifest:
+            self.skipTest("wrapper supplies pinned family source manifest")
+        data = json.loads(Path(manifest).read_text(encoding="utf-8"))
+        for entry in data["sources"]:
+            entry["file"] = str((Path(manifest).resolve().parent / entry["file"]).resolve())
+        source = next(x for x in data["sources"] if x["role"] == "family_gate" and x["family"] == "lore_marker")
+        with tempfile.TemporaryDirectory() as td:
+            changed = Path(td) / "lore-gate.json"
+            original = json.loads(Path(source["file"]).read_text(encoding="utf-8"))
+            script_row = next(x for x in original["rows"] if x["subtype"] == "level_script_lore_marker")
+            script_row["region_binding"] = "direct_object_attribute"
+            changed.write_text(json.dumps(original), encoding="utf-8")
+            source["file"] = str(changed)
+            source["sha256"] = inv.sha(changed)
+            pinned = Path(td) / "manifest.json"
+            pinned.write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "Lore subtype classification conflicts"):
                 inv.load_pinned_sources(pinned, self.policy)
 
     def test_empty_catalogue_is_valid_incomplete_input(self):

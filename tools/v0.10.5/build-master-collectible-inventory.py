@@ -226,10 +226,10 @@ def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], 
     raven_audits = [e for e in entries if e["role"] == "family_audit" and e.get("family") == "odin_raven"]
     if len(raven_audits) != 1:
         raise ValueError("exactly one Raven native audit is required")
-    for family in ("odin_raven", "nornir_chest", "legendary_chest", "artefact"):
+    for family in ("odin_raven", "nornir_chest", "legendary_chest", "artefact", "lore_marker"):
         if roles[("family_catalogue", family)] != 1:
             raise ValueError(f"exactly one authoritative catalogue required for {family}")
-    for family in ("nornir_chest", "legendary_chest", "artefact"):
+    for family in ("nornir_chest", "legendary_chest", "artefact", "lore_marker"):
         if roles[("family_gate", family)] != 1:
             raise ValueError(f"exactly one static gate required for {family}")
     provenance = [source_record(e) for e in entries]
@@ -412,6 +412,51 @@ def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], 
                                "direct_shiphead_parent_count": 9, "shiphead_native_target": 10,
                                "classification_counts": dict(sorted(classes.items())),
                                "static_gate_status": gate["status"], **gate_hash_note}
+        elif family == "lore_marker":
+            gate_rows = {item["catalogue_id"]: item for item in gate["rows"]}
+            if len(family_rows) != gate["physical_count"] or set(gate_rows) != set(family_rows):
+                raise ValueError("Lore gate and physical catalogue identities conflict")
+            if (gate["status"] != "BLOCKED_FAIL_CLOSED" or
+                    gate["runtime_generation_allowed"] is not False or
+                    gate["physical_count"] != 43 or
+                    gate["direct_object_parent_count"] != 40 or
+                    gate["level_script_context_count"] != 3 or
+                    gate["native_summary_target"] != 43 or
+                    gate["persistent_unloaded_state_count"] != 0):
+                raise ValueError("Lore gate census or readiness conflicts")
+            classes = Counter()
+            for cid, row in family_rows.items():
+                proof = gate_rows[cid]
+                if (proof["physical_id"].lower() != row["physical_id"].lower() or
+                        proof["wad"].lower() != str(row["wad"]).lower() or
+                        proof["parent_quest"] != row["parent_summary"] or
+                        proof["world_position"] != row["world_xyz"] or
+                        proof["production_ready"] is not False or
+                        proof["marker_generation_ready"] is not False or
+                        proof["persistent_unloaded_state_proven"] is not False):
+                    raise ValueError(f"Lore row evidence conflicts: {cid}")
+                cls = proof["region_binding"]
+                if cls == "direct_object_attribute" and row["subtype"] == "native_lore_marker" and row["parent_summary"]:
+                    row["tracking_classification"] = "direct_parent_state_blocked"
+                    row["production_eligibility"] = "blocked_persistent_state_and_marker_path"
+                elif (cls == "level_script_callback_object_link_unproved" and
+                      row["subtype"] == "level_script_lore_marker" and
+                      row["parent_summary"] is None and proof["proposed_script_parent"]):
+                    row["tracking_classification"] = "accounting_object_link_unresolved"
+                    row["production_eligibility"] = "blocked_exact_object_link_and_state"
+                else:
+                    raise ValueError(f"Lore subtype classification conflicts: {cid}")
+                row["classification_evidence"].append({"source": gate_src, "field": "rows.region_binding", "value": cls})
+                classes[row["tracking_classification"]] += 1
+            if classes != Counter({"direct_parent_state_blocked": 40,
+                                   "accounting_object_link_unresolved": 3}):
+                raise ValueError("Lore subtype census conflicts")
+            summary[family] = {"native_accounting_target": 43, "tracked_candidates": None,
+                               "explained_untracked": 0, "unresolved": 3,
+                               "unresolved_scope": "three level script callback-to-object links",
+                               "direct_object_parent_count": 40,
+                               "classification_counts": dict(sorted(classes.items())),
+                               "static_gate_status": gate["status"], **gate_hash_note}
     return rows, summary, provenance
 
 
@@ -429,6 +474,8 @@ def discrepancy(policy: dict, rows: list[dict], summary: dict | None = None) -> 
             status = "NO_PHYSICAL_EVIDENCE"
         elif target is not None and expected == target:
             status = "GUIDE_MATCHES_NATIVE_ACCOUNTING_TARGET_MEMBERSHIP_UNRESOLVED" if detail.get("unresolved") else "GUIDE_MATCHES_NATIVE_ACCOUNTING_TARGET"
+        elif target is not None and expected is not None and expected != target:
+            status = "GUIDE_NATIVE_TARGET_DISAGREEMENT"
         elif tracked is not None and expected == tracked:
             status = "GUIDE_MATCHES_TRACKED_CANDIDATES"
         elif tracked is not None and expected != tracked:
@@ -453,6 +500,7 @@ def discrepancy(policy: dict, rows: list[dict], summary: dict | None = None) -> 
             "linked_child_objects": detail.get("linked_child_objects"),
             "direct_shiphead_parent_count": detail.get("direct_shiphead_parent_count"),
             "shiphead_native_target": detail.get("shiphead_native_target"),
+            "direct_object_parent_count": detail.get("direct_object_parent_count"),
             "gate_catalogue_sha256_at_generation": detail.get("gate_catalogue_sha256_at_generation"),
             "current_family_catalogue_sha256": detail.get("current_family_catalogue_sha256"),
             "gate_catalogue_hash_basis": detail.get("gate_catalogue_hash_basis"),
@@ -495,7 +543,7 @@ def write_md(path: Path, report: dict) -> None:
         def shown(value: Any) -> str:
             return "" if value is None else str(value)
         lines.append(f"| {row['display']} | {shown(row['external_guide_expected'])} | {row['physical_rows']} | {shown(row['native_accounting_target'])} | {shown(row['tracked_candidates'])} | {row['explained_untracked']} | {row['unresolved']} | {row['production_ready']} | {row['audit_status']} |")
-    lines += ["", "Raven native audit narrows two surplus objects to CalderaShores (2 physical / 1 target) and Riverpass (7 / 6). It does not name the two specific objects outside Labor accounting.", "", "Legendary tracked candidates are not a production allowlist. The external guide expects 34; native candidates remain 33.", "", "Artefacts have 45 physical objects. Nine Ship Heads have direct parent attributes against a target of ten. The other 36 lack proved RegionSummary ownership; guide count 45 does not settle accounting.", ""]
+    lines += ["", "Raven native audit narrows two surplus objects to CalderaShores (2 physical / 1 target) and Riverpass (7 / 6). It does not name the two specific objects outside Labor accounting.", "", "Legendary tracked candidates are not a production allowlist. The external guide expects 34; native candidates remain 33.", "", "Artefacts have 45 physical objects. Nine Ship Heads have direct parent attributes against a target of ten. The other 36 lack proved RegionSummary ownership; guide count 45 does not settle accounting.", "", "Lore has 43 physical objects and a native Summary target of 43, versus external guide count 39. Forty object overrides hold direct parent names. Three level Lua callback clues lack exact callback-to-object links. No row was dropped to match a guide count.", ""]
     for row in report["family_audit"]:
         if row.get("gate_catalogue_hash_basis") == "windows_crlf_checkout_bytes":
             lines.append(f"- {row['display']} gate catalogue hash `{row['gate_catalogue_sha256_at_generation']}` is for Windows CRLF checkout bytes. Pinned Git blob hash is `{row['current_family_catalogue_sha256']}`; normalized contents match.")

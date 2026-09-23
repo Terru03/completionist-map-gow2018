@@ -30,6 +30,8 @@ def main() -> None:
         ("family_gate", "legendary_chest", "codex/collectible-legendary-chests", "docs/research/legendary-static-gate.json", "legendary-static-gate.json"),
         ("family_catalogue", "artefact", "codex/collectible-artefacts", "config/collectibles/v0.10.5/all-collectibles.json", "artefact-all-collectibles.json"),
         ("family_gate", "artefact", "codex/collectible-artefacts", "docs/research/artefact-static-gate.json", "artefact-static-gate.json"),
+        ("family_catalogue", "lore_marker", "codex/collectible-lore-markers", "config/collectibles/v0.10.5/all-collectibles.json", "lore-all-collectibles.json"),
+        ("family_gate", "lore_marker", "codex/collectible-lore-markers", "docs/research/lore-static-gate.json", "lore-static-gate.json"),
     ]
     sources = []
     for role, family, branch, source_path, name in specs:
