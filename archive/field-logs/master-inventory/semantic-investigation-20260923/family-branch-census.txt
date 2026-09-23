@@ -1,0 +1,87 @@
+﻿
+============================================================
+BRANCH=origin/codex/collectible-ship-heads
+HEAD=36bf3438b5453b556ddcbb45637a6c6b939d3252
+TOTAL_ROWS=240
+FAMILY=legendary_chest COUNT=64
+FAMILY=artefact COUNT=45
+FAMILY=lore_marker COUNT=43
+FAMILY=nornir_seal COUNT=30
+FAMILY=nornir_bell COUNT=24
+FAMILY=nornir_chest COUNT=22
+FAMILY=nornir_mechanism COUNT=12
+
+TARGET=legendary_chest COUNT=64
+PROPERTIES=catalogue_id,display_name,family,marker,native,native_classification,production_eligibility,progression,realm,realm_id,region,region_id,region_source,source,subtype
+
+TARGET=nornir_chest COUNT=22
+PROPERTIES=catalogue_id,display_name,family,marker,native,progression,realm,realm_id,region,region_id,region_source,source,subtype
+
+============================================================
+BRANCH=origin/codex/all-ravens-release-candidate
+HEAD=f665f61935e1723c2b68d1e162cbde228e7de89b
+TOTAL_ROWS=240
+FAMILY=legendary_chest COUNT=64
+FAMILY=artefact COUNT=45
+FAMILY=lore_marker COUNT=43
+FAMILY=nornir_seal COUNT=30
+FAMILY=nornir_bell COUNT=24
+FAMILY=nornir_chest COUNT=22
+FAMILY=nornir_mechanism COUNT=12
+
+TARGET=legendary_chest COUNT=64
+PROPERTIES=catalogue_id,display_name,family,marker,native,native_classification,production_eligibility,progression,realm,realm_id,region,region_id,region_source,source,subtype
+
+TARGET=nornir_chest COUNT=22
+PROPERTIES=catalogue_id,display_name,family,marker,native,progression,realm,realm_id,region,region_id,region_source,source,subtype
+
+============================================================
+BRANCH=origin/codex/collectible-legendary-chests
+HEAD=a3390bc6832ee257183766efb92928495b8e3397
+TOTAL_ROWS=240
+FAMILY=legendary_chest COUNT=64
+FAMILY=artefact COUNT=45
+FAMILY=lore_marker COUNT=43
+FAMILY=nornir_seal COUNT=30
+FAMILY=nornir_bell COUNT=24
+FAMILY=nornir_chest COUNT=22
+FAMILY=nornir_mechanism COUNT=12
+
+TARGET=legendary_chest COUNT=64
+PROPERTIES=catalogue_id,display_name,family,marker,native,native_classification,production_eligibility,progression,realm,realm_id,region,region_id,region_source,source,subtype
+
+TARGET=nornir_chest COUNT=22
+PROPERTIES=catalogue_id,display_name,family,marker,native,progression,realm,realm_id,region,region_id,region_source,source,subtype
+
+============================================================
+BRANCH=origin/codex/collectible-nornir-chests
+HEAD=b01ca4ac7883a0a13d1bcc12489b601ae555a938
+TOTAL_ROWS=240
+FAMILY=legendary_chest COUNT=64
+FAMILY=artefact COUNT=45
+FAMILY=lore_marker COUNT=43
+FAMILY=nornir_seal COUNT=30
+FAMILY=nornir_bell COUNT=24
+FAMILY=nornir_chest COUNT=22
+FAMILY=nornir_mechanism COUNT=12
+
+TARGET=legendary_chest COUNT=64
+PROPERTIES=catalogue_id,display_name,family,marker,native,native_classification,production_eligibility,progression,realm,realm_id,region,region_id,region_source,source,subtype
+
+TARGET=nornir_chest COUNT=22
+PROPERTIES=catalogue_id,display_name,family,marker,native,progression,realm,realm_id,region,region_id,region_source,source,subtype
+
+============================================================
+NORNIR STATIC GATE SUMMARY
+The base catalogue has **22 physical Nornir Chests** and **66 child objects**:
+21 tracked candidates against a native target of 21, plus one Helheim
+that edge. The Helheim exception has a source callback and lacks a Helheim
+`BLOCKED_FAIL_CLOSED`, 22 physical, 21 tracked candidates, 66 linked children,
+
+LEGENDARY STATIC GATE SUMMARY
+## Production candidates
+The 33 current candidate rows have 33 distinct derived serialized GameObject
+is null for all 35 because none has a direct chest-to-active-region edge;
+`aec578e773898a1e60d5ccedd0df08e35b12ab54e4d26f4cd90740948430c2a0`.
+Current result: `BLOCKED_FAIL_CLOSED`, 33/33 unique keys, 32/33 observed
+staged states, 0/33 direct native bindings, two unresolved rows. No Legendary
