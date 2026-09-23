@@ -32,6 +32,7 @@ def main() -> None:
         ("family_gate", "artefact", "codex/collectible-artefacts", "docs/research/artefact-static-gate.json", "artefact-static-gate.json"),
         ("family_catalogue", "lore_marker", "codex/collectible-lore-markers", "config/collectibles/v0.10.5/all-collectibles.json", "lore-all-collectibles.json"),
         ("family_gate", "lore_marker", "codex/collectible-lore-markers", "docs/research/lore-static-gate.json", "lore-static-gate.json"),
+        ("research_gate", "realm_tear", "codex/collectible-realm-tears", "docs/research/realm-tear-static-gate.json", "realm-tear-static-gate.json"),
     ]
     sources = []
     for role, family, branch, source_path, name in specs:

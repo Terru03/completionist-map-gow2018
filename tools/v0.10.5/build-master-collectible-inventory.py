@@ -223,6 +223,7 @@ def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], 
         raise ValueError("exactly one seed catalogue is required")
     family_sources = {e["family"]: e for e in entries if e["role"] == "family_catalogue"}
     gate_sources = {e["family"]: e for e in entries if e["role"] == "family_gate"}
+    research_gates = {e["family"]: e for e in entries if e["role"] == "research_gate"}
     raven_audits = [e for e in entries if e["role"] == "family_audit" and e.get("family") == "odin_raven"]
     if len(raven_audits) != 1:
         raise ValueError("exactly one Raven native audit is required")
@@ -232,6 +233,8 @@ def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], 
     for family in ("nornir_chest", "legendary_chest", "artefact", "lore_marker"):
         if roles[("family_gate", family)] != 1:
             raise ValueError(f"exactly one static gate required for {family}")
+    if roles[("research_gate", "realm_tear")] != 1:
+        raise ValueError("exactly one Realm Tear research gate required")
     provenance = [source_record(e) for e in entries]
     by_entry = {id(e): p for e, p in zip(entries, provenance)}
     seed = next(e for e in entries if e["role"] == "seed_catalogue")
@@ -457,6 +460,24 @@ def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], 
                                "direct_object_parent_count": 40,
                                "classification_counts": dict(sorted(classes.items())),
                                "static_gate_status": gate["status"], **gate_hash_note}
+    realm_entry = research_gates["realm_tear"]
+    realm_gate = json.loads(Path(realm_entry["file"]).read_text(encoding="utf-8"))
+    reject_marker_authority(realm_gate)
+    if (realm_gate["status"] != "BLOCKED_FAIL_CLOSED" or
+            realm_gate["runtime_generation_allowed"] is not False or
+            realm_gate["physical_encounter_census_proven"] is not False or
+            realm_gate["physical_encounter_rows"] != [] or
+            realm_gate["native_summary_target_sum"] != 19 or
+            realm_gate["direct_parent_callback_carrier_count"] != 14 or
+            realm_gate["native_marker_coverage_proven"] is not False or
+            any(row["family"] == "realm_tear" for row in rows)):
+        raise ValueError("Realm Tear research gate conflicts with physical inventory")
+    summary["realm_tear"] = {"native_accounting_target": 19,
+                             "tracked_candidates": None, "explained_untracked": 0,
+                             "unresolved": 0,
+                             "unresolved_scope": "physical encounter census not proved",
+                             "direct_parent_callback_carrier_count": 14,
+                             "static_gate_status": realm_gate["status"]}
     return rows, summary, provenance
 
 
@@ -501,6 +522,7 @@ def discrepancy(policy: dict, rows: list[dict], summary: dict | None = None) -> 
             "direct_shiphead_parent_count": detail.get("direct_shiphead_parent_count"),
             "shiphead_native_target": detail.get("shiphead_native_target"),
             "direct_object_parent_count": detail.get("direct_object_parent_count"),
+            "direct_parent_callback_carrier_count": detail.get("direct_parent_callback_carrier_count"),
             "gate_catalogue_sha256_at_generation": detail.get("gate_catalogue_sha256_at_generation"),
             "current_family_catalogue_sha256": detail.get("current_family_catalogue_sha256"),
             "gate_catalogue_hash_basis": detail.get("gate_catalogue_hash_basis"),
@@ -543,7 +565,7 @@ def write_md(path: Path, report: dict) -> None:
         def shown(value: Any) -> str:
             return "" if value is None else str(value)
         lines.append(f"| {row['display']} | {shown(row['external_guide_expected'])} | {row['physical_rows']} | {shown(row['native_accounting_target'])} | {shown(row['tracked_candidates'])} | {row['explained_untracked']} | {row['unresolved']} | {row['production_ready']} | {row['audit_status']} |")
-    lines += ["", "Raven native audit narrows two surplus objects to CalderaShores (2 physical / 1 target) and Riverpass (7 / 6). It does not name the two specific objects outside Labor accounting.", "", "Legendary tracked candidates are not a production allowlist. The external guide expects 34; native candidates remain 33.", "", "Artefacts have 45 physical objects. Nine Ship Heads have direct parent attributes against a target of ten. The other 36 lack proved RegionSummary ownership; guide count 45 does not settle accounting.", "", "Lore has 43 physical objects and a native Summary target of 43, versus external guide count 39. Forty object overrides hold direct parent names. Three level Lua callback clues lack exact callback-to-object links. No row was dropped to match a guide count.", ""]
+    lines += ["", "Raven native audit narrows two surplus objects to CalderaShores (2 physical / 1 target) and Riverpass (7 / 6). It does not name the two specific objects outside Labor accounting.", "", "Legendary tracked candidates are not a production allowlist. The external guide expects 34; native candidates remain 33.", "", "Artefacts have 45 physical objects. Nine Ship Heads have direct parent attributes against a target of ten. The other 36 lack proved RegionSummary ownership; guide count 45 does not settle accounting.", "", "Lore has 43 physical objects and a native Summary target of 43, versus external guide count 39. Forty object overrides hold direct parent names. Three level Lua callback clues lack exact callback-to-object links. No row was dropped to match a guide count.", "", "Realm Tear research gate pins 19 native PocketRift Summary targets and 14 direct callback carriers. Physical encounter census is unproved, so master has no Realm Tear row yet.", ""]
     for row in report["family_audit"]:
         if row.get("gate_catalogue_hash_basis") == "windows_crlf_checkout_bytes":
             lines.append(f"- {row['display']} gate catalogue hash `{row['gate_catalogue_sha256_at_generation']}` is for Windows CRLF checkout bytes. Pinned Git blob hash is `{row['current_family_catalogue_sha256']}`; normalized contents match.")

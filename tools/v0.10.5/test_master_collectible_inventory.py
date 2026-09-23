@@ -118,9 +118,13 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
                          (43, 43, 40, 3))
         self.assertEqual(lore["external_guide_expected"], 39)
         self.assertEqual(lore["audit_status"], "GUIDE_NATIVE_TARGET_DISAGREEMENT")
+        realm = audit["realm_tear"]
+        self.assertEqual((realm["physical_rows"], realm["native_accounting_target"],
+                          realm["direct_parent_callback_carrier_count"]), (0, 19, 14))
+        self.assertEqual(realm["audit_status"], "NO_PHYSICAL_EVIDENCE")
         self.assertEqual(legendary["gate_catalogue_hash_basis"], "windows_crlf_checkout_bytes")
         self.assertFalse(legendary["catalogue_content_changed_since_gate"])
-        self.assertEqual(len(sources), 11)
+        self.assertEqual(len(sources), 12)
         self.assertEqual(sum(row["tracking_classification"] == "accounting_membership_unresolved_surplus_group"
                              for row in rows), 9)
         self.assertTrue(all(x["source_commit"] and x["source_sha256"] for x in sources))
@@ -146,7 +150,7 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
             subprocess.run(["python", str(HERE / "build-master-collectible-inventory.py"),
                             "--source-manifest", manifest, "--output-dir", td], check=True, capture_output=True)
             report = json.loads((Path(td) / "master-collectible-inventory.json").read_text(encoding="utf-8"))
-            self.assertEqual(len(report["source_catalogues"]), 11)
+            self.assertEqual(len(report["source_catalogues"]), 12)
             raven = next(row for row in report["rows"] if row["family"] == "odin_raven")
             self.assertEqual(raven["catalogue_provenance"]["source_branch"], "codex/all-ravens-release-candidate")
             self.assertTrue(raven["classification_evidence"][0]["source"]["source_sha256"])
@@ -271,6 +275,26 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
             pinned = Path(td) / "manifest.json"
             pinned.write_text(json.dumps(data), encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "Lore subtype classification conflicts"):
+                inv.load_pinned_sources(pinned, self.policy)
+
+    def test_realm_research_gate_cannot_create_physical_row(self):
+        manifest = os.environ.get("MASTER_SOURCE_MANIFEST")
+        if not manifest:
+            self.skipTest("wrapper supplies pinned family source manifest")
+        data = json.loads(Path(manifest).read_text(encoding="utf-8"))
+        for entry in data["sources"]:
+            entry["file"] = str((Path(manifest).resolve().parent / entry["file"]).resolve())
+        source = next(x for x in data["sources"] if x["role"] == "research_gate" and x["family"] == "realm_tear")
+        with tempfile.TemporaryDirectory() as td:
+            changed = Path(td) / "realm-gate.json"
+            original = json.loads(Path(source["file"]).read_text(encoding="utf-8"))
+            original["physical_encounter_rows"] = [{"catalogue_id": "invented_realm_tear"}]
+            changed.write_text(json.dumps(original), encoding="utf-8")
+            source["file"] = str(changed)
+            source["sha256"] = inv.sha(changed)
+            pinned = Path(td) / "manifest.json"
+            pinned.write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "Realm Tear research gate conflicts"):
                 inv.load_pinned_sources(pinned, self.policy)
 
     def test_empty_catalogue_is_valid_incomplete_input(self):

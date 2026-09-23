@@ -64,7 +64,7 @@ try {
     Start-Transcript -LiteralPath $transcript -Force | Out-Null
     $transcriptStarted = $true
 
-    & git fetch origin $ExpectedBranch $SeedBranch 'codex/all-ravens-release-candidate' 'codex/collectible-legendary-chests' 'codex/collectible-nornir-chests' 'codex/collectible-artefacts' 'codex/collectible-lore-markers'
+    & git fetch origin $ExpectedBranch $SeedBranch 'codex/all-ravens-release-candidate' 'codex/collectible-legendary-chests' 'codex/collectible-nornir-chests' 'codex/collectible-artefacts' 'codex/collectible-lore-markers' 'codex/collectible-realm-tears'
     if ($LASTEXITCODE -ne 0) { throw 'git fetch of inventory/family branches failed.' }
 
     & python '.\tools\v0.10.5\export-master-collectible-sources.py' --output-dir $out --seed-branch $SeedBranch
