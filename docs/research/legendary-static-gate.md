@@ -72,6 +72,14 @@ buffer's relation to authored zone geometry, and the exact type relation to
 `FindPlayerRegion`'s selected object, remain unproved. No chest binding
 follows from these copies.
 
+The `0x421040` buffer writer has static callers that pass resource names:
+RVA `0x404C2D` passes literal `R_System`, and `0x67C94B` passes literal
+`R_Perm`. Another caller at `0x676932` passes a name at its object's
+`+0x84`. Thus this shared buffer is used for resource/WAD names, which fits
+the literal level-name comparisons above. It does not identify the selected
+resource at a Legendary Chest's point, or prove that resource name equals a
+RegionSummary owner. The context selection and spatial join are still open.
+
 Another `+0x4AD0` writer at RVA `0x73B7C0` narrows the selection path.
 At `0x73B7F0`–`0x73B80D` it scans up to `0x40` global slots with stride
 `0xEE28`, compares the caller's integer to a slot object's `+0xC3C`, then
