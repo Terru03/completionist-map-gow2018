@@ -1,5 +1,13 @@
 # Next Steps
 
+Ship Head branch `codex/collectible-ship-heads` starts from the accepted Raven
+base `f665f61`. Its static gate is `BLOCKED_FAIL_CLOSED`: 9 physical rows and
+13 transform paths have direct parent object attributes, but the target total
+is 10, per-object unloaded state lookup is unproved, and stock marker paths
+and Ship Head-specific resources are unproved. See
+`docs/research/ship-head-static-gate.md`. Do not generate Ship Head runtime
+markers.
+
 Static native catalogue now has all 9 proved Ship Heads. Do not build or install
 runtime markers yet.
 
