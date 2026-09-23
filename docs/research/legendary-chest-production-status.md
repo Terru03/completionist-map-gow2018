@@ -1,5 +1,16 @@
 # Legendary Chests Production Status
 
+## Placement audit, 2026-09-23
+
+`docs/research/legendary-placement-audit.md` is the placement summary.
+`legendary-placement-audit.json` and `legendary-placement-table.csv` hold the
+full deterministic table. Read-only native WAD checks verified the physical
+GUID, shared state carrier, WAD, rooted transform chain, and world position
+for all 33 rows classified exactly as `tracked_legendary`. No placement row
+is unresolved. The missing 34th identity is still a separate open problem.
+This result does not clear the production gate below: chest-to-RegionSummary
+bindings, marker assets, and runtime behavior remain unproved.
+
 ## Current static decision, 2026-09-23
 
 `docs/research/legendary-static-gate.md` and its generated JSON are the
