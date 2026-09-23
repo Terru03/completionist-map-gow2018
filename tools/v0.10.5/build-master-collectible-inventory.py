@@ -233,7 +233,7 @@ def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], 
     for family in ("nornir_chest", "legendary_chest", "artefact", "lore_marker"):
         if roles[("family_gate", family)] != 1:
             raise ValueError(f"exactly one static gate required for {family}")
-    for family in ("realm_tear", "jotnar_shrine"):
+    for family in ("realm_tear", "jotnar_shrine", "cipher_chest"):
         if roles[("research_gate", family)] != 1:
             raise ValueError(f"exactly one {family} research gate required")
     provenance = [source_record(e) for e in entries]
@@ -500,6 +500,25 @@ def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], 
                                 "unresolved_scope": "13 named placements; exhaustive physical census and per-object accounting open",
                                 "named_distinct_placement_count": 13,
                                 "static_gate_status": jotnar_gate["status"]}
+    cipher_entry = research_gates["cipher_chest"]
+    cipher_gate = json.loads(Path(cipher_entry["file"]).read_text(encoding="utf-8"))
+    reject_marker_authority(cipher_gate)
+    if (cipher_gate["status"] != "BLOCKED_FAIL_CLOSED" or
+            cipher_gate["runtime_generation_allowed"] is not False or
+            cipher_gate["native_language_piece_target_sum"] != 8 or
+            {item["target"] for item in cipher_gate["native_language_quest_targets"].values()} != {4} or
+            cipher_gate["shared_script_only_literal_evidence"] is not True or
+            cipher_gate["non_script_cipher_literal_records"] != [] or
+            cipher_gate["physical_cipher_chest_census_proven"] is not False or
+            cipher_gate["physical_cipher_chest_rows"] != [] or
+            cipher_gate["per_object_cipher_reward_identity_proven"] is not False or
+            any(row["family"] == "cipher_chest" for row in rows)):
+        raise ValueError("Cipher Chest research gate conflicts with physical inventory")
+    summary["cipher_chest"] = {"native_accounting_target": 8,
+                                "tracked_candidates": None, "explained_untracked": 0,
+                                "unresolved": 0,
+                                "unresolved_scope": "two four-piece language quests; physical chest census unknown",
+                                "static_gate_status": cipher_gate["status"]}
     return rows, summary, provenance
 
 
@@ -588,7 +607,7 @@ def write_md(path: Path, report: dict) -> None:
         def shown(value: Any) -> str:
             return "" if value is None else str(value)
         lines.append(f"| {row['display']} | {shown(row['external_guide_expected'])} | {row['physical_rows']} | {shown(row['native_accounting_target'])} | {shown(row['tracked_candidates'])} | {row['explained_untracked']} | {row['unresolved']} | {row['production_ready']} | {row['audit_status']} |")
-    lines += ["", "Raven native audit narrows two surplus objects to CalderaShores (2 physical / 1 target) and Riverpass (7 / 6). It does not name the two specific objects outside Labor accounting.", "", "Legendary tracked candidates are not a production allowlist. The external guide expects 34; native candidates remain 33.", "", "Artefacts have 45 physical objects. Nine Ship Heads have direct parent attributes against a target of ten. The other 36 lack proved RegionSummary ownership; guide count 45 does not settle accounting.", "", "Lore has 43 physical objects and a native Summary target of 43, versus external guide count 39. Forty object overrides hold direct parent names. Three level Lua callback clues lack exact callback-to-object links. No row was dropped to match a guide count.", "", "Realm Tear research gate pins 19 native PocketRift Summary targets and 14 direct callback carriers. Physical encounter census is unproved, so master has no Realm Tear row yet.", "", "Jotnar Shrine research gate pins native Triptych objective 11 and 13 distinct named placements. Exact per-object membership and exhaustive physical census remain open, so master has no Jotnar Shrine row yet.", ""]
+    lines += ["", "Raven native audit narrows two surplus objects to CalderaShores (2 physical / 1 target) and Riverpass (7 / 6). It does not name the two specific objects outside Labor accounting.", "", "Legendary tracked candidates are not a production allowlist. The external guide expects 34; native candidates remain 33.", "", "Artefacts have 45 physical objects. Nine Ship Heads have direct parent attributes against a target of ten. The other 36 lack proved RegionSummary ownership; guide count 45 does not settle accounting.", "", "Lore has 43 physical objects and a native Summary target of 43, versus external guide count 39. Forty object overrides hold direct parent names. Three level Lua callback clues lack exact callback-to-object links. No row was dropped to match a guide count.", "", "Realm Tear research gate pins 19 native PocketRift Summary targets and 14 direct callback carriers. Physical encounter census is unproved, so master has no Realm Tear row yet.", "", "Jotnar Shrine research gate pins native Triptych objective 11 and 13 distinct named placements. Exact per-object membership and exhaustive physical census remain open, so master has no Jotnar Shrine row yet.", "", "Cipher Chest research gate pins two native four-piece language quests and no direct per-chest cipher item record. Physical chest census is unproved, so master has no Cipher Chest row yet.", ""]
     for row in report["family_audit"]:
         if row.get("gate_catalogue_hash_basis") == "windows_crlf_checkout_bytes":
             lines.append(f"- {row['display']} gate catalogue hash `{row['gate_catalogue_sha256_at_generation']}` is for Windows CRLF checkout bytes. Pinned Git blob hash is `{row['current_family_catalogue_sha256']}`; normalized contents match.")
