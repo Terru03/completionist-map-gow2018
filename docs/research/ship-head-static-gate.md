@@ -14,8 +14,10 @@ The base catalogue has 9 distinct Ship Head placements, 9 script state
 carriers, and 13 exact transform paths. Numbered native object names cover
 01–09. The `goartifactscript` source attribute names each row's
 `RegionSummary_*_Shiphead_Parent` directly; the gate checks that this text is
-in that object's extracted attributes and that the named target exists in the
-native summary audit. This is stronger than a WAD-name or map-count join.
+in that object's exact script override bytes in the seven shipped source WADs,
+pins each WAD digest and override record/offset, and checks that the named
+target exists in the native summary audit. This is stronger than a WAD-name
+or map-count join.
 
 | No. | WAD | Physical GUID | Direct parent attribute | Paths |
 | ---: | --- | --- | --- | ---: |
@@ -70,7 +72,8 @@ unnecessary.
 Run `python tools/v0.10.5/ship_head_static_gate.py --output
 docs/research/ship-head-static-gate.json`. Current result:
 `BLOCKED_FAIL_CLOSED`, 9/9 physical rows, 13/13 paths, 0/9 proved unloaded
-save lookups. Seven offline tests guard the row census, parent attribute,
-identity paths, target gap, state claim, and marker point. Source hashes in
-the JSON pin the catalogue and audit used by this check. The gate does not
-reparse game WADs; the source extraction remains the earlier repository audit.
+save lookups. Nine offline tests guard the row census, parent attribute,
+identity paths, target gap, state claim, marker point, and shipped WAD check.
+Source hashes in the JSON pin the catalogue and audit used by this check.
+The gate reparses the seven known source WADs to verify each parent attribute
+at its exact recorded script override.

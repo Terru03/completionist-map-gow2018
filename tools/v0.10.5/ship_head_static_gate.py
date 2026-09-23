@@ -9,10 +9,13 @@ import json
 from pathlib import Path
 import re
 
+import raven_catalogue as raven
+
 
 REPO = Path(__file__).resolve().parents[2]
 CATALOGUE = REPO / "config/collectibles/v0.10.5/all-collectibles.json"
 AUDIT = REPO / "docs/research/all-collectibles-native-audit.json"
+GAME = Path("G:/SteamLibrary/steamapps/common/GodOfWar")
 GUID = re.compile(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\Z")
 
 
@@ -109,7 +112,7 @@ def assess(catalogue: dict, audit: dict) -> dict:
             "parent_quest": parent,
             "world_position": row["marker"]["position_world"],
             "transform_paths": len(paths),
-            "native_parent_attribute_proven": True,
+            "native_parent_attribute_proven": False,
             "serialized_save_lookup_proven": False,
             "native_marker_suppression_proven": False,
             "ship_specific_art_proven": False,
@@ -136,6 +139,36 @@ def assess(catalogue: dict, audit: dict) -> dict:
     }
 
 
+def verify_native_parent_attributes(catalogue: dict, report: dict,
+                                    game_root: Path = GAME) -> None:
+    """Recheck each parent literal in its own pinned script override record."""
+    source_rows = {row["catalogue_id"]: row for row in catalogue["collectibles"]
+                   if row["family"] == "artefact" and row.get("subtype") == "Ship Head"}
+    by_wad: dict[str, list[dict]] = {}
+    for row in report["rows"]:
+        by_wad.setdefault(row["wad"], []).append(row)
+    for wad_name, proof_rows in sorted(by_wad.items()):
+        path = game_root / "exec/wad/pc_le" / wad_name
+        raw = path.read_bytes()
+        records = {record["id"].hex(): record for record in raven.parse_wad(raw)}
+        for proof in proof_rows:
+            source = source_rows[proof["catalogue_id"]]
+            require(hashlib.sha256(raw).hexdigest() == source["source"]["wad_sha256"],
+                    f"{wad_name}: shipped WAD digest differs")
+            override = records.get(source["native"]["override_record_id"])
+            require(override is not None and
+                    override["offset"] == int(source["source"]["override_offset"], 16)
+                    and override["name"].lower() == "goartifactscript_overrideinst",
+                    f"{wad_name}: exact script override record differs")
+            data = override["data"]
+            require(proof["parent_quest"].encode() + b"\0" in data and
+                    b"Ship Head\0" in data,
+                    f"{wad_name}: parent quest not on own script override")
+            proof["native_parent_attribute_proven"] = True
+    report["native_parent_attribute_count"] = sum(
+        row["native_parent_attribute_proven"] for row in report["rows"])
+
+
 def require_generation_ready(report: dict) -> None:
     if not report["runtime_generation_allowed"]:
         raise ValueError("Ship Head generation blocked: " + "; ".join(report["blockers"]))
@@ -144,10 +177,12 @@ def require_generation_ready(report: dict) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--game-root", type=Path, default=GAME)
     args = parser.parse_args()
     catalogue = json.loads(CATALOGUE.read_text(encoding="utf-8"))
     audit = json.loads(AUDIT.read_text(encoding="utf-8"))
     report = assess(catalogue, audit)
+    verify_native_parent_attributes(catalogue, report, args.game_root)
     report["source_sha256"] = {
         str(path.relative_to(REPO)).replace("\\", "/"):
             hashlib.sha256(path.read_bytes()).hexdigest()

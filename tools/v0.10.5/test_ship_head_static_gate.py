@@ -35,6 +35,17 @@ class ShipHeadStaticGateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Ship Head generation blocked"):
             gate.require_generation_ready(report)
 
+    def test_parent_literals_in_exact_shipped_wad_overrides(self):
+        report = gate.assess(self.catalogue, self.audit)
+        gate.verify_native_parent_attributes(self.catalogue, report)
+        self.assertEqual(report["native_parent_attribute_count"], 9)
+
+    def test_wad_check_rejects_invented_parent_literal(self):
+        report = gate.assess(self.catalogue, self.audit)
+        report["rows"][0]["parent_quest"] = "RegionSummary_Fake_Shiphead_Parent"
+        with self.assertRaisesRegex(ValueError, "parent quest not on own script override"):
+            gate.verify_native_parent_attributes(self.catalogue, report)
+
     def test_audit_digest_tamper_rejected(self):
         catalogue = copy.deepcopy(self.catalogue)
         catalogue["collectibles"][0]["display_name"] = "changed"
