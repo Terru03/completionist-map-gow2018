@@ -47,7 +47,7 @@ The runner exports six files by exact fetched commit SHA: the broad Ship Head se
 
 The audit keeps separate fields for physical rows, native accounting target, tracked candidates, explained untracked rows, unresolved classification, and production readiness. Raven has 53 physical objects and a Labor target of 51. Existing evidence does not identify the two individual objects outside Labor accounting, so per-row accounting membership stays unresolved. Nornir has 22 physical chests, 21 tracked candidates, one explained untracked Helheim reward, and 66 linked children. Legendary has 64 physical chests: 33 tracked candidates, 27 trial rewards, two non-map-counted physical chests, and two unresolved rows. Its external guide count of 34 remains a visible disagreement with the 33 native candidates.
 
-Both current static gates were generated against older all-collectibles file hashes than their current branch heads. The builder records this drift and validates every gate row identity and class against the current pinned family catalogue. Neither gate grants production or marker permission.
+Both current static gates hash their Windows CRLF checkout of `all-collectibles.json`; `git show` exports LF Git blobs. The builder checks both byte forms and rejects any content mismatch. It also validates gate row identities and classes against the pinned family catalogues. Neither gate grants production or marker permission.
 
 ## Gate
 

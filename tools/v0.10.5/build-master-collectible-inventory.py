@@ -272,9 +272,18 @@ def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], 
         expected_hash = gate.get("source_sha256", {}).get("config/collectibles/v0.10.5/all-collectibles.json")
         if not expected_hash:
             raise ValueError(f"{family} gate lacks source catalogue hash")
+        catalogue_bytes = Path(family_sources[family]["file"]).read_bytes()
+        crlf_hash = hashlib.sha256(catalogue_bytes.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")).hexdigest()
+        if expected_hash == cat_src["source_sha256"]:
+            hash_basis = "git_blob_bytes"
+        elif expected_hash == crlf_hash:
+            hash_basis = "windows_crlf_checkout_bytes"
+        else:
+            raise ValueError(f"{family} gate and family catalogue content conflict")
         gate_hash_note = {"gate_catalogue_sha256_at_generation": expected_hash,
                           "current_family_catalogue_sha256": cat_src["source_sha256"],
-                          "catalogue_hash_changed_since_gate": expected_hash != cat_src["source_sha256"]}
+                          "gate_catalogue_hash_basis": hash_basis,
+                          "catalogue_content_changed_since_gate": False}
         gate_src = by_entry[id(entry)]
         family_rows = {r["catalogue_id"]: r for r in rows if r["family"] == family}
         if family == "nornir_chest":
@@ -375,7 +384,8 @@ def discrepancy(policy: dict, rows: list[dict], summary: dict | None = None) -> 
             "linked_child_objects": detail.get("linked_child_objects"),
             "gate_catalogue_sha256_at_generation": detail.get("gate_catalogue_sha256_at_generation"),
             "current_family_catalogue_sha256": detail.get("current_family_catalogue_sha256"),
-            "catalogue_hash_changed_since_gate": detail.get("catalogue_hash_changed_since_gate"),
+            "gate_catalogue_hash_basis": detail.get("gate_catalogue_hash_basis"),
+            "catalogue_content_changed_since_gate": detail.get("catalogue_content_changed_since_gate"),
         })
     unknown = sorted(set(counts) - set(policy_index(policy)))
     for fam in unknown:
@@ -416,8 +426,8 @@ def write_md(path: Path, report: dict) -> None:
         lines.append(f"| {row['display']} | {shown(row['external_guide_expected'])} | {row['physical_rows']} | {shown(row['native_accounting_target'])} | {shown(row['tracked_candidates'])} | {row['explained_untracked']} | {row['unresolved']} | {row['production_ready']} | {row['audit_status']} |")
     lines += ["", "Raven unresolved count is an aggregate physical/Labor gap. Current evidence does not name the two specific objects outside Labor accounting.", "", "Legendary tracked candidates are not a production allowlist. The external guide expects 34; native candidates remain 33.", ""]
     for row in report["family_audit"]:
-        if row.get("catalogue_hash_changed_since_gate"):
-            lines.append(f"- {row['display']} static gate names older catalogue SHA-256 `{row['gate_catalogue_sha256_at_generation']}`; current pinned catalogue is `{row['current_family_catalogue_sha256']}`. Row identities and classes were checked against current evidence; gate remains blocked.")
+        if row.get("gate_catalogue_hash_basis") == "windows_crlf_checkout_bytes":
+            lines.append(f"- {row['display']} gate catalogue hash `{row['gate_catalogue_sha256_at_generation']}` is for Windows CRLF checkout bytes. Pinned Git blob hash is `{row['current_family_catalogue_sha256']}`; normalized contents match.")
     lines += ["", "## Hard marker rules", ""]
     lines += [f"- {rule}" for rule in report["policy_hard_rules"]]
     lines += ["", "## Pinned evidence", ""]

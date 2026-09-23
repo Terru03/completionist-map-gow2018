@@ -104,6 +104,8 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
         self.assertEqual((legendary["physical_rows"], legendary["tracked_candidates"], legendary["explained_untracked"], legendary["unresolved"]), (64, 33, 29, 2))
         self.assertEqual(legendary["classification_counts"], {"tracked_legendary": 33, "trial_reward": 27, "non_map_counted_physical": 2, "unresolved_nontracked": 2})
         self.assertEqual(legendary["audit_status"], "GUIDE_TRACKED_CANDIDATE_DISAGREEMENT")
+        self.assertEqual(legendary["gate_catalogue_hash_basis"], "windows_crlf_checkout_bytes")
+        self.assertFalse(legendary["catalogue_content_changed_since_gate"])
         self.assertEqual(len(sources), 6)
         self.assertTrue(all(x["source_commit"] and x["source_sha256"] for x in sources))
         self.assertTrue(all(not row["mod_marker_allowed"] and not row["marker_generation_ready"] for row in rows))
@@ -141,6 +143,26 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
             pinned = Path(td) / "manifest.json"
             pinned.write_text(json.dumps(data), encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "identities conflict"):
+                inv.load_pinned_sources(pinned, self.policy)
+
+    def test_conflicting_gate_catalogue_hash_fails_closed(self):
+        manifest = os.environ.get("MASTER_SOURCE_MANIFEST")
+        if not manifest:
+            self.skipTest("wrapper supplies pinned family source manifest")
+        data = json.loads(Path(manifest).read_text(encoding="utf-8"))
+        for entry in data["sources"]:
+            entry["file"] = str((Path(manifest).resolve().parent / entry["file"]).resolve())
+        gate = next(x for x in data["sources"] if x["role"] == "family_gate")
+        with tempfile.TemporaryDirectory() as td:
+            changed = Path(td) / "gate.json"
+            original = json.loads(Path(gate["file"]).read_text(encoding="utf-8"))
+            original["source_sha256"]["config/collectibles/v0.10.5/all-collectibles.json"] = "0" * 64
+            changed.write_text(json.dumps(original), encoding="utf-8")
+            gate["file"] = str(changed)
+            gate["sha256"] = inv.sha(changed)
+            pinned = Path(td) / "manifest.json"
+            pinned.write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "content conflict"):
                 inv.load_pinned_sources(pinned, self.policy)
 
     def test_empty_catalogue_is_valid_incomplete_input(self):
