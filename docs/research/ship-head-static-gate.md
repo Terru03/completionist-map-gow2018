@@ -59,9 +59,11 @@ The shipped `mapmaster.dcb` (SHA-256
 contains six Shiphead summary-name strings and 382 `goMapIcon*` strings across
 13 names, with no Artifact/Shiphead icon name. The shipped `r_ui.wad` (SHA-256
 `92294d218855ee4fbd06f66a2071f61c6b831240aaf41a59a3b7b8168c0f4b04`)
-has no literal `goMapIconArtifact` or `goMapIconShip`. These are narrow
-negative string checks. They do not rule out a dynamic marker path or prove
-that suppression is unnecessary.
+has 53,777 parsed records and 119 distinct record names containing
+`mapicon`; none names a Ship Head. It has no literal
+`goMapIconArtifact` or `goMapIconShip`. These are narrow negative checks.
+They do not rule out a dynamic marker path or prove that suppression is
+unnecessary.
 
 ## Gate
 
