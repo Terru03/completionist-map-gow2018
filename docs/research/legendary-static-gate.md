@@ -142,6 +142,12 @@ Asset SHA-256: `r_ui.wad` =
 Parsing shipped `r_ui.wad` yields 53,777 records and 119 distinct record
 names containing `mapicon`; none names a Legendary Chest. This is still
 negative class-name evidence, not proof that no dynamic marker exists.
+The extracted `interact_chest_standard.lua` (SHA-256
+`943021f321c708561e62d4c9b6926c01b3c131c2057fbed7e4c136dbed707bdc`)
+has no `marker`, `icon`, or `compass` API text. Its Legendary open path calls
+`FindPlayerRegion` and increments the resulting RegionSummary, with explicit
+branches for `TyrsVault` and `TheHallofTyr`. This is a negative check of one
+interaction script, not proof that no other native presentation path exists.
 Legendary-specific custom map resource, material, texture, compass class,
 pool/config ID, and native suppression target still need asset-level proof.
 No Raven ID is promoted into a Legendary manifest.
