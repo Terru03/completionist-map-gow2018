@@ -1,5 +1,11 @@
 # Legendary static gate, 2026-09-23
 
+The follow-up `legendary-region-link-audit.md` checked all 33 tracked rows
+against native level DCBs, the pinned mapmaster, quests, 561 DCB identity
+scans, and the standard Legendary open script. It proved 0 direct per-chest
+RegionSummary links. All 33 remain unresolved for map ownership; the stock
+script selects the active player region at open. This gate remains closed.
+
 This pass reads shipped game assets and frozen captures only. It does not open
 the game, read a live process, install hooks, or write game/save files.
 

@@ -1,5 +1,19 @@
 # Legendary Chests Production Status
 
+## RegionSummary link audit, 2026-09-23
+
+`docs/research/legendary-region-link-audit.md` records the next static step.
+All 33 tracked placement rows remain valid, but **0/33** have a unique native
+chest-to-RegionSummary link. All 33 are unresolved for map ownership. The
+stock Legendary open path asks `game.Map.FindPlayerRegion()` for the player's
+current region, then updates a shared RegionSummary target. Target names and
+counts in `mapmaster.dcb` and `quests.dcb` do not bind a chest GUID to that
+region. An exact scan of 561 native DCB files found no physical GUID or
+placement-record ID reference for these 33 chests. No map-side per-chest point
+could be compared with the proven physical point. The JSON and CSV beside the
+report keep each row's exact native source offsets and unresolved reason.
+Runtime generation stays off.
+
 ## Placement audit, 2026-09-23
 
 `docs/research/legendary-placement-audit.md` is the placement summary.
