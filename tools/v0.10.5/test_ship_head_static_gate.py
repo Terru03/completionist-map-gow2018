@@ -40,6 +40,21 @@ class ShipHeadStaticGateTests(unittest.TestCase):
         gate.verify_native_parent_attributes(self.catalogue, report)
         self.assertEqual(report["native_parent_attribute_count"], 9)
 
+    def test_authored_identifier_selects_one_carrier_path_per_head(self):
+        report = gate.assess(self.catalogue, self.audit)
+        gate.verify_authored_carrier_bindings(self.catalogue, report)
+        self.assertEqual(report["authored_carrier_binding_count"], 9)
+        self.assertEqual(report["rows"][3]["authored_identifier_text"],
+                         report["rows"][3]["physical_guid"])
+        self.assertEqual(report["rows"][7]["authored_carrier_guid"],
+                         "ffa95828-42dd-e146-75e3-a39ff3385d8c")
+
+    def test_authored_identifier_rejects_wrong_physical_identity(self):
+        report = gate.assess(self.catalogue, self.audit)
+        report["rows"][7]["physical_guid"] = "00000000-0000-0000-0000-000000000000"
+        with self.assertRaisesRegex(ValueError, "authored carrier ambiguous or absent"):
+            gate.verify_authored_carrier_bindings(self.catalogue, report)
+
     def test_wad_check_rejects_invented_parent_literal(self):
         report = gate.assess(self.catalogue, self.audit)
         report["rows"][0]["parent_quest"] = "RegionSummary_Fake_Shiphead_Parent"
@@ -66,9 +81,14 @@ class ShipHeadStaticGateTests(unittest.TestCase):
 
     def test_frozen_staged_keys_match_eight_and_leave_row_eight_blocked(self):
         report = gate.assess(self.catalogue, self.audit)
+        gate.verify_authored_carrier_bindings(self.catalogue, report)
         gate.verify_frozen_staged_identity(self.catalogue, report)
         self.assertEqual(report["frozen_staged_identity_count"], 8)
         self.assertEqual(report["frozen_unresolved_numbers"], [8])
+        self.assertEqual(report["rows"][7]["static_derived_object_hash_hex"],
+                         "0x53A77B9EFA8D13CB")
+        self.assertTrue(report["rows"][7]["static_derived_identity_is_unobserved"])
+        self.assertIsNone(report["rows"][7]["frozen_serialized_flag1_hex"])
         self.assertEqual(sum(row["frozen_staged_identity_proven"]
                              for row in report["rows"]), 8)
         self.assertTrue(all(not row["serialized_save_lookup_proven"]
@@ -81,6 +101,7 @@ class ShipHeadStaticGateTests(unittest.TestCase):
                    if row.get("subtype") == "Ship Head")
         row["source"]["wad_sha256"] = "0" * 64
         report = gate.assess(self.catalogue, self.audit)
+        gate.verify_authored_carrier_bindings(self.catalogue, report)
         with self.assertRaisesRegex(ValueError, "catalogue WAD digest differs"):
             gate.verify_frozen_staged_identity(catalogue, report)
 

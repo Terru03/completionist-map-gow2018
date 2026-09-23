@@ -118,6 +118,7 @@ def assess(catalogue: dict, audit: dict) -> dict:
             "world_position": row["marker"]["position_world"],
             "transform_paths": len(paths),
             "native_parent_attribute_proven": False,
+            "authored_carrier_binding_proven": False,
             "serialized_save_lookup_proven": False,
             "frozen_staged_identity_proven": False,
             "native_marker_suppression_proven": False,
@@ -134,6 +135,7 @@ def assess(catalogue: dict, audit: dict) -> dict:
         "physical_count": len(result),
         "transform_path_count": path_count,
         "proposed_instance_key_count": len(instance_keys),
+        "authored_carrier_binding_count": 0,
         "native_target": 10,
         "scripted_cals_fixup_path_proven": False,
         "acquired_state_numeric_proven": False,
@@ -176,6 +178,49 @@ def verify_native_parent_attributes(catalogue: dict, report: dict,
             proof["native_parent_attribute_proven"] = True
     report["native_parent_attribute_count"] = sum(
         row["native_parent_attribute_proven"] for row in report["rows"])
+
+
+def verify_authored_carrier_bindings(catalogue: dict, report: dict,
+                                     game_root: Path = GAME) -> None:
+    """Match authored identity text to one candidate script carrier path."""
+    source_rows = {row["catalogue_id"]: row for row in catalogue["collectibles"]
+                   if row["family"] == "artefact" and row.get("subtype") == "Ship Head"}
+    by_wad: dict[str, list[dict]] = {}
+    for proof in report["rows"]:
+        by_wad.setdefault(proof["wad"], []).append(proof)
+    for wad_name, proof_rows in sorted(by_wad.items()):
+        raw = (game_root / "exec/wad/pc_le" / wad_name).read_bytes()
+        records = raven.parse_wad(raw)
+        for proof in proof_rows:
+            source = source_rows[proof["catalogue_id"]]
+            require(hashlib.sha256(raw).hexdigest() == source["source"]["wad_sha256"],
+                    f"{wad_name}: shipped WAD digest differs")
+            found = [record for record in records if
+                     record["id"].hex() == source["native"]["placement_override_record_id"] and
+                     record["name"] == source["native"]["placement_override_name"]]
+            require(len(found) == 1,
+                    f"{wad_name}: placement override differs")
+            overrides = found + [record for record in records if
+                         record["id"].hex() == source["native"]["override_record_id"] and
+                         record["name"] == source["native"]["override_name"] and
+                         record not in found]
+            matches = []
+            for record in overrides:
+                for path in source["native"]["carrier_transform_paths"]:
+                    carrier = path["state_carrier_guid"]
+                    authored = (proof["physical_guid"] if carrier == proof["physical_guid"]
+                                else f"{proof['physical_guid']}.{carrier}")
+                    if authored.encode("ascii") + b"\0" in record["data"]:
+                        matches.append((carrier, authored, record))
+            require(len(matches) == 1,
+                    f"Ship Head {proof['number']}: authored carrier ambiguous or absent")
+            proof["authored_carrier_binding_proven"] = True
+            proof["authored_carrier_guid"] = matches[0][0]
+            proof["authored_identifier_text"] = matches[0][1]
+            proof["authored_binding_record_offset"] = hex(matches[0][2]["offset"])
+            proof["authored_binding_record_id"] = matches[0][2]["id"].hex()
+    report["authored_carrier_binding_count"] = sum(
+        row["authored_carrier_binding_proven"] for row in report["rows"])
 
 
 def verify_artifact_script(audit: dict, report: dict,
@@ -248,7 +293,18 @@ def verify_frozen_staged_identity(catalogue: dict, report: dict,
         require(found["catalogue_id"] == row["catalogue_id"] and
                 found["wad"] == row["wad"],
                 "Ship Head frozen identity row differs")
+        matched_carriers = [path["state_carrier_guid"]
+                            for path in found["path_results"] if path["matches"]]
+        require(not matched_carriers or matched_carriers == [row["authored_carrier_guid"]],
+                "Ship Head frozen key disagrees with authored carrier")
         row["frozen_staged_identity_proven"] = found["frozen_identity_match"]
+        selected_path = [path for path in found["path_results"] if
+                         path["state_carrier_guid"] == row["authored_carrier_guid"]]
+        require(len(selected_path) == 1,
+                "Ship Head authored carrier path absent from identity proof")
+        row["static_derived_object_hash_hex"] = selected_path[0]["canonical_object_hash_hex"]
+        row["static_derived_serialized_flag1_hex"] = selected_path[0]["canonical_serialized_flag1_hex"]
+        row["static_derived_identity_is_unobserved"] = not found["frozen_identity_match"]
         row["frozen_serialized_flag1_hex"] = (
             found["frozen_state"]["serialized_flag1_hex"]
             if found["frozen_state"] else None)
@@ -281,6 +337,7 @@ def main() -> int:
     audit = json.loads(AUDIT.read_text(encoding="utf-8"))
     report = assess(catalogue, audit)
     verify_native_parent_attributes(catalogue, report, args.game_root)
+    verify_authored_carrier_bindings(catalogue, report, args.game_root)
     verify_artifact_script(audit, report, args.game_root)
     verify_frozen_staged_identity(catalogue, report,
                                   game_root=args.game_root)
@@ -297,6 +354,7 @@ def main() -> int:
         target.write_text(canonical_json(report), encoding="utf-8")
     print(f"SHIP_HEAD_STATIC_GATE {report['status']} "
           f"physical={report['physical_count']}/9 paths={report['transform_path_count']}/13 "
+          f"authored={report['authored_carrier_binding_count']}/9 "
           f"frozen_identity={report['frozen_staged_identity_count']}/9 "
           f"save_lookup=0/9")
     return 0

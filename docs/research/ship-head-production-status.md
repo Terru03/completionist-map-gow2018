@@ -12,8 +12,10 @@ regional target mismatch remain unproved. No tenth object is proved.
 
 The shipped script defines `ACQUIRED = 3`, stores checkpoint state, and calls
 `SoftSave()` after acquisition. Exact serialized GameObject keys match frozen
-staged state for heads 01–07 and 09. Head 08 has no frozen match in either
-path. Unloaded state lookup remains unproved for all nine. The earlier frozen save scan at
+staged state for heads 01–07 and 09. Authored per-object identifiers pick one
+carrier path for all nine. Head 08's picked path has a static derived key,
+but no frozen hit. Unloaded state lookup remains unproved for all nine.
+The earlier frozen save scan at
 `archive/field-logs/source-scans/collectible-save-oracle-20260914-095525`
 found no identity hits in its older 238-row catalogue; its catalogue hash
 differs from this branch's current catalogue, so it is negative background

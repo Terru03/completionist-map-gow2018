@@ -72,6 +72,29 @@ def candidate_subsets(path: dict):
             yield chosen
 
 
+def canonical_subset(path: dict) -> list[dict]:
+    """Rule reproduced by all eight exact frozen Ship Head identity hits."""
+    chain = path["transform_chain"]
+    physical_is_script = (native_guid(chain[0]["record_id"]) ==
+                          path["physical_instance_guid"])
+    outer_shiphead = next((item for item in reversed(chain[1:]) if
+                           item["name"].lower().startswith("goartifactshiphead")), None)
+    require(not physical_is_script or outer_shiphead is not None,
+            "Ship Head script placement lacks outer object")
+    chosen = [item for item in reversed(chain) if
+              item["name"].lower().endswith(("_ents", "_ents_nooffset")) or
+              native_guid(item["record_id"]) == path["physical_instance_guid"] or
+              item is chain[0] or (physical_is_script and item is outer_shiphead)]
+    require(len(chosen) >= 3 and chosen[-1] is chain[0],
+            "Ship Head canonical identity chain differs")
+    return chosen
+
+
+def hash_path_records(chosen: list[dict]) -> int:
+    return rolling_hash([adjusted(item["record_id"]) for item in chosen] +
+                        [bytes.fromhex(ROOT_ID)])
+
+
 def normalize(name: str) -> str:
     return "".join(c for c in name.lower().removesuffix(".wad") if c.isalnum())
 
@@ -137,10 +160,11 @@ def assess(catalogue: dict, by_wad: dict, roots: dict) -> dict:
         paths = []
         hits = []
         for path in row["native"]["carrier_transform_paths"]:
+            canonical = canonical_subset(path)
+            canonical_hash = hash_path_records(canonical)
             matches = []
             for chosen in candidate_subsets(path):
-                parts = [adjusted(item["record_id"]) for item in chosen]
-                object_hash = rolling_hash(parts + [bytes.fromhex(ROOT_ID)])
+                object_hash = hash_path_records(chosen)
                 entry = by_wad[wad]["states"].get((registry, object_hash))
                 if entry is not None:
                     matches.append({"object_hash_hex": f"0x{object_hash:016X}",
@@ -156,10 +180,17 @@ def assess(catalogue: dict, by_wad: dict, roots: dict) -> dict:
             require(not matches or matches[0]["object_hash_hex"] not in seen,
                     "Ship Head frozen state key repeats")
             if matches:
+                require(matches[0]["object_hash_hex"] == f"0x{canonical_hash:016X}",
+                        "frozen Ship Head key disagrees with canonical owner chain")
                 seen.add(matches[0]["object_hash_hex"])
                 hits += matches
             paths.append({"state_carrier_guid": path["state_carrier_guid"],
                           "candidate_subset_count": sum(1 for _ in candidate_subsets(path)),
+                          "canonical_object_hash_hex": f"0x{canonical_hash:016X}",
+                          "canonical_serialized_flag1_hex": (
+                              b"\x01" + registry.to_bytes(8, "little") +
+                              canonical_hash.to_bytes(8, "little")).hex(),
+                          "canonical_identity_record_ids": [item["record_id"] for item in canonical],
                           "matches": matches})
         require(len(hits) <= 1, "Ship Head physical row has two frozen keys")
         proof.append({"number": row["native"]["numbered_object_evidence"][0],

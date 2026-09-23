@@ -47,12 +47,20 @@ after acquisition. The source Lua digest and matching compiled record in
 `xpl940_beachcave.wad` are pinned by the gate. Each row has a physical GUID
 and one or two script carrier GUIDs.
 The 13 concatenated `physical.carrier` strings are old **proposed** keys.
-An offline replay of the frozen staged WAD capture now matches exact serialized
+Each physical object's own shipped override carries one authored identifier
+matching one candidate script carrier path. Eight are `physical.carrier`
+strings; head 04 carries its physical GUID alone. The gate checks all nine at
+exact record IDs and offsets. These values identify authored paths; they are
+not serialized GameObject keys.
+
+An offline replay of the frozen staged WAD capture matches exact serialized
 GameObject/state keys for eight physical heads (01–07 and 09). Row 08 has no
 match in either candidate path. The replay checks the Ship Head prototype root
 in seven shipped WADs and tries all owner-chain subsets while holding each
-script and physical placement. It found one match per resolved head, none on
-alternate carrier paths. See `ship-head-staged-identity.json` and
+script and physical placement. One owner-chain rule reproduces all eight
+frozen matches. For head 08's authored path, it yields candidate object hash
+`0x53A77B9EFA8D13CB`; that hash has no frozen hit. The replay found no hits
+on alternate carrier paths. See `ship-head-staged-identity.json` and
 `ship-head-staged-identity.md`. A frozen staged hit does not prove an unloaded
 save query. Shared script carriers in rows 03/07 and 05/08 still make that
 proof important. The gate requires
@@ -85,8 +93,8 @@ unnecessary.
 Run `python tools/v0.10.5/ship_head_static_gate.py --output
 docs/research/ship-head-static-gate.json`. Current result:
 `BLOCKED_FAIL_CLOSED`, 9/9 physical rows, 13/13 paths, 0/9 proved unloaded
-save lookups. Thirteen offline tests guard the row census, parent attribute,
-identity paths, frozen staged keys, target gap, script semantics, state claim,
+save lookups. Fifteen offline tests guard the row census, parent attribute,
+authored path, identity paths, frozen staged keys, target gap, script semantics, state claim,
 marker point, and shipped WAD check.
 Source hashes in the JSON pin the catalogue and audit used by this check.
 The gate reparses the seven known source WADs to verify each parent attribute

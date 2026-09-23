@@ -5,7 +5,13 @@ frozen staged WAD capture, the catalogue, and seven shipped WADs. It checks
 the Ship Head `goProtoArtifactScript_Root` record ID in each WAD. For every
 catalogue transform path it hashes each owner-chain subset that contains the
 script carrier and the exact physical placement. Eight physical heads match
-one state-only GameObject key each. Head 08 matches none of its two paths.
+one state-only GameObject key each. One owner-chain rule reproduces all eight:
+keep scene `*_ents` owners, the physical Ship Head object, and its script;
+when script and physical GUID coincide, keep the outer Ship Head node too.
+Head 08 matches none of its two paths. Its own authored override picks carrier
+`ffa95828-42dd-e146-75e3-a39ff3385d8c`. The rule yields candidate hash
+`0x53A77B9EFA8D13CB` and serialized flag-1 bytes
+`01a9a2fddcaa4e8793cb138dfa9e7ba753`. That key is **unobserved**.
 The full path, subset, hash, raw state, WAD digests, and capture digests are
 in `ship-head-staged-identity.json`.
 
@@ -18,7 +24,7 @@ in `ship-head-staged-identity.json`.
 | 05 | `0x5BF0302BD002420F` | `0100004040` | 1/2 |
 | 06 | `0x1A5E4B6BD56B6B18` | `0100004040` | 1/1 |
 | 07 | `0xC3373DF5E687D64B` | `0100004040` | 1/2 |
-| 08 | none | none | 0/2 |
+| 08 | no frozen hit; derived candidate `0x53A77B9EFA8D13CB` | none | 0/2 |
 | 09 | `0xE82841BEC7B6D5A9` | `0100004040` | 1/1 |
 
 The scalar bytes encode 3.0 in seven matched rows and 1.0 in head 04. The
