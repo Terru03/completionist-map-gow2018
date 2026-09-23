@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "source_of_truth": "native_game_data",
+  "external_guides_are_audit_only": true,
+  "default_marker_policy": "RESEARCH_REQUIRED",
+  "marker_policies": {
+    "CUSTOM_MARKER_CANDIDATE": "Eligible for a Completionist Map marker only after native physical identity, stable world position and completion-state suppression are proved.",
+    "NATIVE_MARKER_NO_DUPLICATE": "Catalogue for completeness/audit, but do not add a Completionist Map marker because the game already provides an adequate native marker.",
+    "RESEARCH_REQUIRED": "Do not generate a marker until native marker coverage and persistent completion semantics are resolved.",
+    "EXCLUDE_PROCEDURAL_OR_REPEATABLE": "Catalogue/audit only; never emit a fixed world marker for a procedural, repeatable or reward-template object."
+  },
+  "families": [
+    {"key":"odin_raven","display":"Odin's Raven","guide_expected":51,"marker_policy":"CUSTOM_MARKER_CANDIDATE","guide_tracked":true},
+    {"key":"artefact","display":"Artefact","guide_expected":45,"marker_policy":"CUSTOM_MARKER_CANDIDATE","guide_tracked":true},
+    {"key":"nornir_chest","display":"Nornir Chest","guide_expected":21,"marker_policy":"CUSTOM_MARKER_CANDIDATE","guide_tracked":true},
+    {"key":"legendary_chest","display":"Legendary Chest","guide_expected":34,"marker_policy":"CUSTOM_MARKER_CANDIDATE","guide_tracked":true},
+    {"key":"lore_marker","display":"Lore Marker","guide_expected":39,"marker_policy":"CUSTOM_MARKER_CANDIDATE","guide_tracked":true},
+    {"key":"realm_tear","display":"Realm Tear Encounter","guide_expected":18,"marker_policy":"RESEARCH_REQUIRED","guide_tracked":true,"notes":"Guide states only 11 count toward normal 100% completion; preserve per-object distinction."},
+    {"key":"jotnar_shrine","display":"Jotnar Shrine","guide_expected":11,"marker_policy":"CUSTOM_MARKER_CANDIDATE","guide_tracked":false},
+    {"key":"cipher_chest","display":"Purple Language Cipher Chest","guide_expected":13,"marker_policy":"CUSTOM_MARKER_CANDIDATE","guide_tracked":false},
+    {"key":"treasure_map","display":"Treasure Map","guide_expected":12,"marker_policy":"CUSTOM_MARKER_CANDIDATE","guide_tracked":false},
+    {"key":"treasure_dig","display":"Treasure Dig Spot","guide_expected":12,"marker_policy":"CUSTOM_MARKER_CANDIDATE","guide_tracked":false,"notes":"One dig site per documented treasure map; keep as a separate physical marker family."},
+    {"key":"hidden_chamber","display":"Hidden Chamber","guide_expected":7,"marker_policy":"RESEARCH_REQUIRED","guide_tracked":false},
+    {"key":"valkyrie","display":"Valkyrie","guide_expected":8,"marker_policy":"NATIVE_MARKER_NO_DUPLICATE","guide_tracked":true},
+    {"key":"valkyrie_queen","display":"Valkyrie Queen","guide_expected":1,"marker_policy":"NATIVE_MARKER_NO_DUPLICATE","guide_tracked":true},
+    {"key":"mystic_gateway","display":"Mystic Gateway","guide_expected":38,"marker_policy":"NATIVE_MARKER_NO_DUPLICATE","guide_tracked":true},
+    {"key":"shop","display":"Shop","guide_expected":16,"marker_policy":"NATIVE_MARKER_NO_DUPLICATE","guide_tracked":true},
+    {"key":"dragon","display":"Dragon","guide_expected":3,"marker_policy":"RESEARCH_REQUIRED","guide_tracked":true},
+    {"key":"favor","display":"Favor","guide_expected":15,"marker_policy":"RESEARCH_REQUIRED","guide_tracked":true}
+  ],
+  "subtype_overrides": [
+    {"family":"artefact","subtype":"Ship Head","guide_expected":9,"marker_policy":"CUSTOM_MARKER_CANDIDATE"}
+  ],
+  "external_sources": [
+    {
+      "id":"powerpyx_2018_collectibles",
+      "url":"https://www.powerpyx.com/god-of-war-2018-collectibles-guide/",
+      "role":"family_and_region_count_audit",
+      "authority":"external_guide_not_native"
+    },
+    {
+      "id":"powerpyx_treasure_maps",
+      "url":"https://www.powerpyx.com/god-of-war-all-treasure-map-locations-dig-spots/",
+      "role":"treasure_map_and_dig_pair_audit",
+      "authority":"external_guide_not_native"
+    }
+  ],
+  "hard_rules": [
+    "Never generate a marker from guide data alone.",
+    "Never duplicate an adequate native in-game marker.",
+    "Never turn procedural/repeatable/template placements into fixed markers.",
+    "A guide/native count disagreement remains fail-closed until explained by positive native evidence.",
+    "A physical row and a quest/accounting target are separate concepts; do not invent physical rows to satisfy counters."
+  ]
+}
