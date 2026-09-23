@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "status": "BLOCKED_FAIL_CLOSED",
+  "purpose": "Non-runtime staging descriptor for the Legendary Chest native marker family. This file is intentionally not a data/native-markers schema instance until all native IDs, hashes, routing and lifecycle bindings are proven.",
+  "reference_contract": "data/native-markers/raven.json",
+  "production_contract_target": "data/native-markers/legendary-chest.json",
+  "artwork": {
+    "family": "legendary_chest",
+    "source_svg": "assets/icons/source/legendary_chest.svg",
+    "map_required": true,
+    "hud_required": true,
+    "inworld_required": true
+  },
+  "reserved_resource_names": {
+    "compass_class": "CompletionistLegendaryChest",
+    "map_visual": "goMapIconCompletionistLegendaryChest",
+    "hud_visual": "goCompletionistLegendaryChestHUD",
+    "inworld_carrier": "COMPASS_INWORLD_COMPLETIONIST_LEGENDARY_CHEST"
+  },
+  "raven_architecture_requirements": {
+    "dedicated_compass_class": true,
+    "dedicated_map_visual": true,
+    "dedicated_hud_visual": true,
+    "hud_gopool_minimum_capacity": 2,
+    "dedicated_inworld_carrier": true,
+    "inworld_carrier_type_id": "0x129",
+    "inworld_clone_donor": "COMPASS_INWORLD_DOCK",
+    "native_mapcoords_routing": true,
+    "native_compassgraph_routing": true,
+    "single_active_target": true,
+    "stock_replace_semantics": true,
+    "remove_semantics": true,
+    "completion_suppresses_marker": true,
+    "synthetic_progression_writes": false,
+    "permanent_polling": false
+  },
+  "unresolved_native_values": {
+    "compass_class_uid": null,
+    "compass_class_type_id": null,
+    "map_visual_hash": null,
+    "hud_visual_hash": null,
+    "inworld_carrier_uid": null,
+    "resource_chain_root_id": null,
+    "resource_chain_prototype_id": null,
+    "resource_chain_model_id": null,
+    "resource_chain_material_name": null,
+    "mapcoords_sha256": null,
+    "compassgraph_sha256": null
+  },
+  "current_research_gate": {
+    "source": "docs/research/legendary-static-gate.json",
+    "exact_identity_count": 33,
+    "observed_exact_staged_state_count": 32,
+    "direct_native_binding_count": 0,
+    "runtime_generation_allowed": false
+  },
+  "promotion_requirements": [
+    "Resolve the remaining Legendary Chest identity gap and prove the complete catalogue.",
+    "Prove native collectible-to-marker/state bindings rather than infer them.",
+    "Generate and verify dedicated Legendary Chest native resource IDs and hashes.",
+    "Verify map, HUD and in-world resource resolution and GOPool capacity without modifying Raven resources.",
+    "Prove native mapcoords and compassgraph routing for the authored Legendary markers.",
+    "Prove authoritative collected-state suppression across reloads and realm changes.",
+    "Create a schema-valid data/native-markers/legendary-chest.json only after every required value is real and verified.",
+    "Keep runtime generation disabled until the fail-closed Legendary static gate explicitly allows it."
+  ],
+  "runtime": {
+    "enabled": false,
+    "marker_generation_enabled": false,
+    "resource_injection_enabled": false,
+    "mapmaster_modification_enabled": false
+  }
+}
