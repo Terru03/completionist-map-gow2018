@@ -1,5 +1,11 @@
 # Next Steps
 
+Nornir branch `codex/collectible-nornir-chests` starts from Raven base
+`f665f61`. The isolated static gate is `BLOCKED_FAIL_CLOSED`: 22 physical
+chests, 21 tracked candidates, 66 linked children, zero direct
+chest-to-RegionSummary edges, and zero proved unloaded state lookups. See
+`docs/research/nornir-static-gate.md`. Keep Nornir runtime generation off.
+
 Static native catalogue now has all 9 proved Ship Heads. Do not build or install
 runtime markers yet.
 
