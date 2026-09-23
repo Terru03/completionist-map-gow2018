@@ -1,5 +1,13 @@
 # Next Steps
 
+On `codex/collectible-legendary-chests`, use
+`docs/research/legendary-static-gate.md` as current Legendary gate. The raw
+64 rows now split into 33 map-counted candidates, 27 exact trial rewards,
+two provisional scope exclusions, and two unresolved rows. All 33 candidate
+parent joins still lack a direct per-chest native edge. The static gate keeps Legendary
+runtime generation off. Do not use the old 33-row count reconciliation as
+per-chest ownership proof.
+
 Static native catalogue now has all 9 proved Ship Heads. Do not build or install
 runtime markers yet.
 
@@ -31,8 +39,9 @@ Current blockers:
 - Ship target mismatch: `BLOCKED_EXACT_REASON_UNKNOWN`.
 - All 21 tracked-candidate Nornir bindings: `BLOCKED_EXACT_REASON_UNKNOWN`.
 - cal500 Tyr's Vault binding: `BLOCKED_EXACT_REASON_UNKNOWN`.
-- Legendary production eligibility: 33 tracked, 27 exact trial exclusions,
-  4 unresolved (`stn200`, `xpl300`, `cal500`, `cal740`).
+- Legendary production eligibility: 33 candidates, 27 exact trial exclusions,
+  2 provisional scope exclusions, 2 unresolved (`stn200`, `xpl300`); direct
+  native binding remains unproved for all 33 candidates.
 - Exact unloaded per-instance state: `BLOCKED`.
 - Runtime generation: `BLOCKED_FAIL_CLOSED`.
 

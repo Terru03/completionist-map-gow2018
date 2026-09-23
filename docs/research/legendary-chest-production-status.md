@@ -1015,3 +1015,22 @@ Repairs:
 
 The failed attempts never reached the map-counted scope resolver and made no
 game/save/progression changes.
+
+### 2026-09-23 production eligibility audit
+
+The accepted structural identity and `OPENED = 4.0` findings still hold.
+An additional source review found that all 33 current map-counted rows are
+*candidates* for production, since their chest-to-RegionSummary joins are
+inferred: 31 by unique region/family, two by corrected target accounting.
+The two Tyr assignments need a direct per-chest ownership edge before they
+can count as proven production instances. `stn200` and `xpl300` still have no
+positive native exclusion or tracked edge, though each now has an exact frozen
+GameObject state match at `4.0`.
+
+The read-only gate and evidence are in
+`tools/v0.10.5/legendary_static_gate.py` and
+`docs/research/legendary-static-gate.md`. It reports
+`BLOCKED_FAIL_CLOSED`: 33 unique keys, 32 observed persisted states, zero
+direct native parent bindings. No Legendary runtime output is authorized by
+this static evidence. The earlier `EXACT_33_MAP_COUNTED_SCOPE_RESOLVED` report
+remains a count reconciliation, not per-instance map membership proof.
