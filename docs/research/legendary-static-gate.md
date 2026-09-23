@@ -53,6 +53,15 @@ not a per-chest edge. The WAD zone object that supplies `+0x470`, its active
 geometry at each interaction point, and the resulting `+0xC50` string remain
 unproved. The gate therefore records zero direct bindings.
 
+Another `+0x4AD0` writer at RVA `0x73B7C0` narrows the selection path.
+At `0x73B7F0`–`0x73B80D` it scans up to `0x40` global slots with stride
+`0xEE28`, compares the caller's integer to a slot object's `+0xC3C`, then
+copies that slot's `+0xEE20` pointer into the context's `+0x4AD0` at
+`0x73B82D`. The global slot bases resolve to RVAs `0x282B030` and
+`0x281C210`. This proves a runtime slot-selection step. It does not yet
+identify the authored zone record, the selected slot for a chest point, or
+the slot's spatial bounds. Those remain the next static trace targets.
+
 The embedded `xpl300_stronghold` level Lua has
 `UI_Event_DiscoverLocation("HuldraStronghold")`; the embedded
 `cal500_runevault` Lua has the same call for `TyrsVault`. These are level
@@ -103,6 +112,9 @@ Asset SHA-256: `r_ui.wad` =
 `92294d218855ee4fbd06f66a2071f61c6b831240aaf41a59a3b7b8168c0f4b04`;
 `build/native-source-cache/mapmaster.dcb` =
 `aec578e773898a1e60d5ccedd0df08e35b12ab54e4d26f4cd90740948430c2a0`.
+Parsing shipped `r_ui.wad` yields 53,777 records and 119 distinct record
+names containing `mapicon`; none names a Legendary Chest. This is still
+negative class-name evidence, not proof that no dynamic marker exists.
 Legendary-specific custom map resource, material, texture, compass class,
 pool/config ID, and native suppression target still need asset-level proof.
 No Raven ID is promoted into a Legendary manifest.
