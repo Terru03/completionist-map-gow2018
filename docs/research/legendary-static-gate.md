@@ -161,3 +161,8 @@ staged states, 0/33 direct native bindings, two unresolved rows. No Legendary
 runtime candidate should be generated. The next static work is to prove
 per-chest region ownership or another direct quest/callback edge, then trace
 the actual native icon/marker path and derive separate Legendary assets.
+
+The gate records both checkout-byte `source_sha256` and LF-normalized
+`source_lf_sha256`. Windows CRLF checkout hashes differ from pinned Git blob
+hashes even when evidence content is identical. This second digest permits
+exact comparison with exported branch files without weakening any gate.

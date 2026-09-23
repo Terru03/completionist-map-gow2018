@@ -222,6 +222,13 @@ def main() -> int:
             hashlib.sha256(path.read_bytes()).hexdigest()
         for path in sources + [FROZEN_CAPTURE / "report.json"]
     }
+    # Working-tree JSON is CRLF on Windows, while Git stores LF blobs.
+    # Keep both hashes so pinned branch exports can verify the same evidence.
+    report["source_lf_sha256"] = {
+        str(path.relative_to(REPO)).replace("\\", "/"):
+            hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+        for path in sources + [FROZEN_CAPTURE / "report.json"]
+    }
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

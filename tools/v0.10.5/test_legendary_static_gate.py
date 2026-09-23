@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
+import subprocess
 import unittest
 
 import legendary_static_gate as gate
@@ -82,6 +84,12 @@ class LegendaryStaticGateTests(unittest.TestCase):
         row["staged_state"]["state_raw_hex"] = "00"
         with self.assertRaisesRegex(ValueError, "malformed staged state token"):
             gate.assess(*inputs)
+
+    def test_catalogue_checkout_and_git_blob_have_same_content(self) -> None:
+        path = gate.CATALOGUE
+        blob = subprocess.check_output(["git", "show", "HEAD:config/collectibles/v0.10.5/all-collectibles.json"], cwd=gate.REPO)
+        self.assertEqual(hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
+                         hashlib.sha256(blob).hexdigest())
 
 
 if __name__ == "__main__":
