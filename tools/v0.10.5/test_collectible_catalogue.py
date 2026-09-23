@@ -141,13 +141,22 @@ class CollectibleCatalogueTests(unittest.TestCase):
         self.assertEqual(self.audit["tracked_physical_counts"]["legendary_chest"], 33)
         self.assertEqual(self.audit["tracked_physical_counts"]["lore_marker"], 43)
         self.assertNotIn("nornir_chest", self.audit["tracked_physical_counts"])
-        self.assertEqual(self.audit["tracked_physical_counts"]["artefact"], 11)
+        self.assertEqual(self.audit["tracked_physical_counts"]["artefact"], 9)
         self.assertEqual(self.audit["ship_head_accounting"]["physical_placements"], 9)
         self.assertEqual(self.audit["ship_head_accounting"]["state_carriers"], 9)
         self.assertEqual(self.audit["ship_head_accounting"]["tracked_target"], 10)
         self.assertEqual(
             self.audit["ship_head_accounting"]["target_discrepancy_result"],
             "BLOCKED_EXACT_REASON_UNKNOWN")
+
+    def test_shiphead_summary_does_not_attach_to_other_artefact_subtypes(self):
+        artefacts = [row for row in self.rows if row["family"] == "artefact"]
+        self.assertEqual(len(artefacts), 45)
+        self.assertEqual(sum(row["subtype"] == "Ship Head" for row in artefacts), 9)
+        for row in artefacts:
+            if row["subtype"] != "Ship Head":
+                self.assertIsNone(row["progression"]["parent_quest"], row["catalogue_id"])
+                self.assertIsNone(row["progression"]["parent_quest_source"], row["catalogue_id"])
 
     def test_legendary_raw_membership_and_production_eligibility_are_separate(self):
         rows = [row for row in self.rows if row["family"] == "legendary_chest"]

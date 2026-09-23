@@ -763,7 +763,8 @@ def extract_artifacts(wad: Path, raw: bytes, records: list[dict], summaries: dic
                 family_hint="Shiphead", state_adapter="interact_loot_artifact_checkpoint_state",
                 state_field="state == ACQUIRED", map_resource="goMapIconCompletionistArtefact",
                 compass_class="CompletionistArtefact", matrix=matrix, world=world, chain=chain,
-                raw_chain=raw_chain, physical_instance_guid=physical_identity))
+                raw_chain=raw_chain, physical_instance_guid=physical_identity,
+                allow_region_quest_inference=False))
     return result
 
 
