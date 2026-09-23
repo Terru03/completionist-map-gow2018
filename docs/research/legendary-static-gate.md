@@ -61,6 +61,17 @@ with `Cal500_RuneVault`. RVA `0x487689` compares them with the shorter
 They help identify the field's meaning, but do not tell which context object
 is selected when any chest opens. They are not chest-to-region bindings.
 
+RVA `0x4B7A76` in the constructor at `0x4B7400` addresses its inline
+`+0xC50` buffer. At `0x4B7A83`–`0x4B7A93`, it copies 32 bytes from shared
+buffer RVA `0x1239120` with imported `strncpy`, then writes a terminator at
+`+0xC6F`. The shared buffer has static write sites: `0x41F510` clears its
+first byte, `0x42108C` copies from a caller-supplied pointer, and
+`0x6751AE`, `0x675829`, `0x675E43`, `0x676343` also copy into it. This
+identifies an initialization data path for a `+0xC50` field, but the source
+buffer's relation to authored zone geometry, and the exact type relation to
+`FindPlayerRegion`'s selected object, remain unproved. No chest binding
+follows from these copies.
+
 Another `+0x4AD0` writer at RVA `0x73B7C0` narrows the selection path.
 At `0x73B7F0`–`0x73B80D` it scans up to `0x40` global slots with stride
 `0xEE28`, compares the caller's integer to a slot object's `+0xC3C`, then
