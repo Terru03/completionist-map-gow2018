@@ -223,6 +223,9 @@ def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], 
         raise ValueError("exactly one seed catalogue is required")
     family_sources = {e["family"]: e for e in entries if e["role"] == "family_catalogue"}
     gate_sources = {e["family"]: e for e in entries if e["role"] == "family_gate"}
+    raven_audits = [e for e in entries if e["role"] == "family_audit" and e.get("family") == "odin_raven"]
+    if len(raven_audits) != 1:
+        raise ValueError("exactly one Raven native audit is required")
     for family in ("odin_raven", "nornir_chest", "legendary_chest"):
         if roles[("family_catalogue", family)] != 1:
             raise ValueError(f"exactly one authoritative catalogue required for {family}")
@@ -256,14 +259,41 @@ def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], 
     if len(raven_rows) != raven["expected_native_object_count"] or raven["native_labor_target_count"] > len(raven_rows):
         raise ValueError("Raven catalogue count conflicts with native census")
     raven_src = by_entry[id(family_sources["odin_raven"])]
+    raven_audit_src = by_entry[id(raven_audits[0])]
+    raven_audit = json.loads(Path(raven_audits[0]["file"]).read_text(encoding="utf-8"))
+    reject_marker_authority(raven_audit)
+    parent_counts = Counter(row["parent_summary"] for row in raven_rows)
+    targets = raven_audit["parent_target_counts"]
+    surplus = {parent: parent_counts[parent] - targets[parent] for parent in targets
+               if parent_counts[parent] != targets[parent]}
+    if (dict(parent_counts) != raven_audit["parent_object_counts"] or
+            surplus != raven_audit["parent_surplus"] or
+            sum(targets.values()) != raven["native_labor_target_count"] or
+            sum(surplus.values()) != raven_audit["native_hidden_surplus_count"]):
+        raise ValueError("Raven native parent audit conflicts with catalogue")
+    special_by_id = {raw["catalogue_id"]: raw.get("special_handling", []) for raw in raven["ravens"]}
     for row in raven_rows:
-        row["tracking_classification"] = "accounting_membership_unresolved"
+        in_surplus_group = row["parent_summary"] in surplus
+        flagged = "parent_contains_one_bonus_untracked_raven" in special_by_id[row["catalogue_id"]]
+        if flagged != in_surplus_group:
+            raise ValueError("Raven special handling conflicts with parent surplus audit")
+        row["tracking_classification"] = ("accounting_membership_unresolved_surplus_group" if in_surplus_group
+                                           else "accounting_group_matches_target")
         row["production_eligibility"] = "blocked_accounting_membership_and_state"
-        row["classification_evidence"].append({"source": raven_src, "field": "native_labor_target_count; per-object membership unproved"})
+        row["classification_evidence"].extend([
+            {"source": raven_src, "field": "progression.parent_quest; special_handling"},
+            {"source": raven_audit_src, "field": "parent_object_counts; parent_target_counts; parent_surplus",
+             "parent": row["parent_summary"], "group_surplus": surplus.get(row["parent_summary"], 0)},
+        ])
     summary["odin_raven"] = {"native_accounting_target": raven["native_labor_target_count"],
                               "tracked_candidates": None, "explained_untracked": 0,
                               "unresolved": len(raven_rows) - raven["native_labor_target_count"],
-                              "unresolved_scope": "aggregate_count; exact two identities unknown"}
+                              "unresolved_scope": "two surplus parent groups; exact two identities unknown",
+                              "unresolved_group_candidates": {parent: {"physical": parent_counts[parent],
+                                                                        "native_target": targets[parent],
+                                                                        "surplus": extra}
+                                                              for parent, extra in sorted(surplus.items())},
+                              "unresolved_candidate_objects": sum(parent_counts[parent] for parent in surplus)}
 
     for family, entry in gate_sources.items():
         gate = json.loads(Path(entry["file"]).read_text(encoding="utf-8"))
@@ -273,6 +303,9 @@ def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], 
         if not expected_hash:
             raise ValueError(f"{family} gate lacks source catalogue hash")
         catalogue_bytes = Path(family_sources[family]["file"]).read_bytes()
+        declared_lf_hash = gate.get("source_lf_sha256", {}).get("config/collectibles/v0.10.5/all-collectibles.json")
+        if declared_lf_hash is not None and declared_lf_hash != cat_src["source_sha256"]:
+            raise ValueError(f"{family} gate LF content hash conflicts with pinned catalogue")
         crlf_hash = hashlib.sha256(catalogue_bytes.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")).hexdigest()
         if expected_hash == cat_src["source_sha256"]:
             hash_basis = "git_blob_bytes"
@@ -377,6 +410,8 @@ def discrepancy(policy: dict, rows: list[dict], summary: dict | None = None) -> 
             "explained_untracked": detail.get("explained_untracked", 0),
             "unresolved": detail.get("unresolved", 0),
             "unresolved_scope": detail.get("unresolved_scope"),
+            "unresolved_group_candidates": detail.get("unresolved_group_candidates"),
+            "unresolved_candidate_objects": detail.get("unresolved_candidate_objects"),
             "production_ready": sum(r["production_ready"] for r in rows if r["family"] == fam["key"]),
             "marker_generation_ready": sum(r["marker_generation_ready"] for r in rows if r["family"] == fam["key"]),
             "audit_status": status, "marker_policy": fam["marker_policy"],
@@ -424,7 +459,7 @@ def write_md(path: Path, report: dict) -> None:
         def shown(value: Any) -> str:
             return "" if value is None else str(value)
         lines.append(f"| {row['display']} | {shown(row['external_guide_expected'])} | {row['physical_rows']} | {shown(row['native_accounting_target'])} | {shown(row['tracked_candidates'])} | {row['explained_untracked']} | {row['unresolved']} | {row['production_ready']} | {row['audit_status']} |")
-    lines += ["", "Raven unresolved count is an aggregate physical/Labor gap. Current evidence does not name the two specific objects outside Labor accounting.", "", "Legendary tracked candidates are not a production allowlist. The external guide expects 34; native candidates remain 33.", ""]
+    lines += ["", "Raven native audit narrows two surplus objects to CalderaShores (2 physical / 1 target) and Riverpass (7 / 6). It does not name the two specific objects outside Labor accounting.", "", "Legendary tracked candidates are not a production allowlist. The external guide expects 34; native candidates remain 33.", ""]
     for row in report["family_audit"]:
         if row.get("gate_catalogue_hash_basis") == "windows_crlf_checkout_bytes":
             lines.append(f"- {row['display']} gate catalogue hash `{row['gate_catalogue_sha256_at_generation']}` is for Windows CRLF checkout bytes. Pinned Git blob hash is `{row['current_family_catalogue_sha256']}`; normalized contents match.")

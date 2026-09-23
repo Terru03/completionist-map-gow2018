@@ -99,6 +99,9 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
         rows, summary, sources = inv.load_pinned_sources(Path(manifest), self.policy)
         audit = {x["family"]: x for x in inv.discrepancy(self.policy, rows, summary)}
         self.assertEqual((audit["odin_raven"]["physical_rows"], audit["odin_raven"]["native_accounting_target"]), (53, 51))
+        self.assertEqual(audit["odin_raven"]["unresolved_candidate_objects"], 9)
+        self.assertEqual({x["surplus"] for x in audit["odin_raven"]["unresolved_group_candidates"].values()}, {1})
+        self.assertEqual(sorted(x["physical"] for x in audit["odin_raven"]["unresolved_group_candidates"].values()), [2, 7])
         self.assertEqual((audit["nornir_chest"]["physical_rows"], audit["nornir_chest"]["tracked_candidates"], audit["nornir_chest"]["explained_untracked"]), (22, 21, 1))
         legendary = audit["legendary_chest"]
         self.assertEqual((legendary["physical_rows"], legendary["tracked_candidates"], legendary["explained_untracked"], legendary["unresolved"]), (64, 33, 29, 2))
@@ -106,7 +109,9 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
         self.assertEqual(legendary["audit_status"], "GUIDE_TRACKED_CANDIDATE_DISAGREEMENT")
         self.assertEqual(legendary["gate_catalogue_hash_basis"], "windows_crlf_checkout_bytes")
         self.assertFalse(legendary["catalogue_content_changed_since_gate"])
-        self.assertEqual(len(sources), 6)
+        self.assertEqual(len(sources), 7)
+        self.assertEqual(sum(row["tracking_classification"] == "accounting_membership_unresolved_surplus_group"
+                             for row in rows), 9)
         self.assertTrue(all(x["source_commit"] and x["source_sha256"] for x in sources))
         self.assertTrue(all(not row["mod_marker_allowed"] and not row["marker_generation_ready"] for row in rows))
         self.assertTrue(all(row["classification_evidence"] for row in rows if row["family"] in ("odin_raven", "nornir_chest", "legendary_chest")))
@@ -119,7 +124,7 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
             subprocess.run(["python", str(HERE / "build-master-collectible-inventory.py"),
                             "--source-manifest", manifest, "--output-dir", td], check=True, capture_output=True)
             report = json.loads((Path(td) / "master-collectible-inventory.json").read_text(encoding="utf-8"))
-            self.assertEqual(len(report["source_catalogues"]), 6)
+            self.assertEqual(len(report["source_catalogues"]), 7)
             raven = next(row for row in report["rows"] if row["family"] == "odin_raven")
             self.assertEqual(raven["catalogue_provenance"]["source_branch"], "codex/all-ravens-release-candidate")
             self.assertTrue(raven["classification_evidence"][0]["source"]["source_sha256"])
@@ -163,6 +168,46 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
             pinned = Path(td) / "manifest.json"
             pinned.write_text(json.dumps(data), encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "content conflict"):
+                inv.load_pinned_sources(pinned, self.policy)
+
+    def test_conflicting_raven_parent_audit_fails_closed(self):
+        manifest = os.environ.get("MASTER_SOURCE_MANIFEST")
+        if not manifest:
+            self.skipTest("wrapper supplies pinned family source manifest")
+        data = json.loads(Path(manifest).read_text(encoding="utf-8"))
+        for entry in data["sources"]:
+            entry["file"] = str((Path(manifest).resolve().parent / entry["file"]).resolve())
+        source = next(x for x in data["sources"] if x["role"] == "family_audit")
+        with tempfile.TemporaryDirectory() as td:
+            changed = Path(td) / "raven-audit.json"
+            original = json.loads(Path(source["file"]).read_text(encoding="utf-8"))
+            original["parent_surplus"]["RegionSummary_RP_Raven_Parent"] = 0
+            changed.write_text(json.dumps(original), encoding="utf-8")
+            source["file"] = str(changed)
+            source["sha256"] = inv.sha(changed)
+            pinned = Path(td) / "manifest.json"
+            pinned.write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "Raven native parent audit conflicts"):
+                inv.load_pinned_sources(pinned, self.policy)
+
+    def test_conflicting_gate_lf_hash_fails_closed(self):
+        manifest = os.environ.get("MASTER_SOURCE_MANIFEST")
+        if not manifest:
+            self.skipTest("wrapper supplies pinned family source manifest")
+        data = json.loads(Path(manifest).read_text(encoding="utf-8"))
+        for entry in data["sources"]:
+            entry["file"] = str((Path(manifest).resolve().parent / entry["file"]).resolve())
+        source = next(x for x in data["sources"] if x["role"] == "family_gate" and x["family"] == "legendary_chest")
+        with tempfile.TemporaryDirectory() as td:
+            changed = Path(td) / "legendary-gate.json"
+            original = json.loads(Path(source["file"]).read_text(encoding="utf-8"))
+            original["source_lf_sha256"]["config/collectibles/v0.10.5/all-collectibles.json"] = "0" * 64
+            changed.write_text(json.dumps(original), encoding="utf-8")
+            source["file"] = str(changed)
+            source["sha256"] = inv.sha(changed)
+            pinned = Path(td) / "manifest.json"
+            pinned.write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "LF content hash conflicts"):
                 inv.load_pinned_sources(pinned, self.policy)
 
     def test_empty_catalogue_is_valid_incomplete_input(self):

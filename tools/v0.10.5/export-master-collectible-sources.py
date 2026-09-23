@@ -23,6 +23,7 @@ def main() -> None:
     specs = [
         ("seed_catalogue", None, args.seed_branch, "config/collectibles/v0.10.5/all-collectibles.json", "seed-all-collectibles.json"),
         ("family_catalogue", "odin_raven", "codex/all-ravens-release-candidate", "catalogue/odins-ravens.json", "ravens-catalogue.json"),
+        ("family_audit", "odin_raven", "codex/all-ravens-release-candidate", "archive/all-ravens/native-raven-catalogue-audit.json", "ravens-native-audit.json"),
         ("family_catalogue", "nornir_chest", "codex/collectible-nornir-chests", "config/collectibles/v0.10.5/all-collectibles.json", "nornir-all-collectibles.json"),
         ("family_gate", "nornir_chest", "codex/collectible-nornir-chests", "docs/research/nornir-static-gate.json", "nornir-static-gate.json"),
         ("family_catalogue", "legendary_chest", "codex/collectible-legendary-chests", "config/collectibles/v0.10.5/all-collectibles.json", "legendary-all-collectibles.json"),
