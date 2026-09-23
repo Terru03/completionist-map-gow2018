@@ -14,7 +14,8 @@ class LegendaryStaticGateTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.inputs = tuple(json.loads(path.read_text(encoding="utf-8")) for path in (
-            gate.CATALOGUE, gate.AUDIT, gate.IDENTITIES, gate.SCOPE, gate.SEMANTICS
+            gate.CATALOGUE, gate.AUDIT, gate.IDENTITIES, gate.SCOPE, gate.SEMANTICS,
+            gate.MARKER_ASSETS
         ))
 
     def test_real_evidence_stays_fail_closed(self) -> None:
@@ -90,6 +91,12 @@ class LegendaryStaticGateTests(unittest.TestCase):
         blob = subprocess.check_output(["git", "show", "HEAD:config/collectibles/v0.10.5/all-collectibles.json"], cwd=gate.REPO)
         self.assertEqual(hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
                          hashlib.sha256(blob).hexdigest())
+
+    def test_marker_asset_audit_cannot_promote_generation(self) -> None:
+        inputs = copy.deepcopy(self.inputs)
+        inputs[5]["custom_marker_resource_ready"] = True
+        with self.assertRaisesRegex(ValueError, "asset audit differs or attempts promotion"):
+            gate.assess(*inputs)
 
 
 if __name__ == "__main__":

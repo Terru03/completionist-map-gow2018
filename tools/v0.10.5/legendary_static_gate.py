@@ -23,6 +23,7 @@ AUDIT = REPO / "docs/research/all-collectibles-native-audit.json"
 IDENTITIES = REPO / "archive/field-logs/source-scans/legendary-serialized-identities-static-20260922-152212/report.json"
 SCOPE = REPO / "archive/field-logs/source-scans/legendary-map-counted-scope-20260922-165204/report.json"
 SEMANTICS = REPO / "archive/field-logs/source-scans/legendary-opened-state-semantics-20260922-161151/report.json"
+MARKER_ASSETS = REPO / "docs/research/legendary-native-marker-assets.json"
 FROZEN_CAPTURE = REPO / "archive/field-logs/runtime-captures/staged-wad-bitstream-raven-20260921-060345-c2c9bcc1"
 
 
@@ -40,7 +41,20 @@ def derived_key(row: dict) -> tuple[str, str]:
 
 
 def assess(catalogue: dict, audit: dict, identities: dict,
-           scope: dict, semantics: dict) -> dict:
+           scope: dict, semantics: dict, marker_assets: dict) -> dict:
+    check(marker_assets.get("status") == "NEGATIVE_CLASS_NAME_EVIDENCE_ONLY" and
+          marker_assets.get("runtime_generation_allowed") is False and
+          marker_assets.get("native_marker_coverage_proven") is False and
+          marker_assets.get("custom_marker_resource_ready") is False and
+          marker_assets.get("mapmaster", {}).get("sha256") ==
+              "aec578e773898a1e60d5ccedd0df08e35b12ab54e4d26f4cd90740948430c2a0" and
+          marker_assets.get("mapmaster", {}).get("marker_rows") == 382 and
+          marker_assets.get("r_ui_wad", {}).get("sha256") ==
+              "92294d218855ee4fbd06f66a2071f61c6b831240aaf41a59a3b7b8168c0f4b04" and
+          len(marker_assets.get("r_ui_wad", {}).get("distinct_mapicon_names", [])) == 119 and
+          not marker_assets["mapmaster"]["legendary_or_chest_class_hits"] and
+          not marker_assets["r_ui_wad"]["legendary_or_chest_name_hits"],
+          "Legendary native marker asset audit differs or attempts promotion")
     rows = [r for r in catalogue["collectibles"] if r.get("family") == "legendary_chest"]
     by_id = {r["catalogue_id"]: r for r in rows}
     check(len(rows) == len(by_id) == 64, "Legendary raw census changed")
@@ -168,6 +182,13 @@ def assess(catalogue: dict, audit: dict, identities: dict,
         "candidate_rows": results,
         "ownership_proof_rows": ownership_rows,
         "blockers": blockers,
+        "native_marker_asset_audit": {
+            "status": marker_assets["status"],
+            "mapmaster_sha256": marker_assets["mapmaster"]["sha256"],
+            "r_ui_wad_sha256": marker_assets["r_ui_wad"]["sha256"],
+            "native_marker_coverage_proven": False,
+            "custom_marker_resource_ready": False,
+        },
     }
 
 
@@ -213,7 +234,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    sources = [CATALOGUE, AUDIT, IDENTITIES, SCOPE, SEMANTICS]
+    sources = [CATALOGUE, AUDIT, IDENTITIES, SCOPE, SEMANTICS, MARKER_ASSETS]
     loaded = [json.loads(p.read_text(encoding="utf-8")) for p in sources]
     report = assess(*loaded)
     report["unresolved_state_diagnostics"] = diagnose_unresolved(loaded[0])

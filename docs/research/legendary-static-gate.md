@@ -152,6 +152,16 @@ Legendary-specific custom map resource, material, texture, compass class,
 pool/config ID, and native suppression target still need asset-level proof.
 No Raven ID is promoted into a Legendary manifest.
 
+`tools/v0.10.5/audit-legendary-marker-assets.py` now repeats the two pinned
+asset scans and archives all 13 authored map icon class counts and 119 UI
+`mapicon` record names in `legendary-native-marker-assets.json`. It verifies
+Steam build 11168363's 74,128-byte mapmaster hash before parsing. No
+`Legendary` or `Chest` class name appears in either asset. The static gate
+consumes this report, keeps native marker coverage and custom resource
+readiness false, and rejects any report that claims runtime permission. The
+result remains a class-name negative check, not proof of full native marker
+absence or a usable custom asset path.
+
 ## Gate result
 
 `python tools/v0.10.5/legendary_static_gate.py --output docs/research/legendary-static-gate.json`
