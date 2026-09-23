@@ -1,0 +1,13 @@
+﻿diff --git a/tools/v0.10.5/run-generic-native-namespace-inventory-with-log.ps1 b/tools/v0.10.5/run-generic-native-namespace-inventory-with-log.ps1
+index a94ba69..05e8c1a 100644
+--- a/tools/v0.10.5/run-generic-native-namespace-inventory-with-log.ps1
++++ b/tools/v0.10.5/run-generic-native-namespace-inventory-with-log.ps1
+@@ -5,7 +5,7 @@ param(
+ $ErrorActionPreference = 'Stop'
+ Set-StrictMode -Version Latest
+ 
+-$expectedBranch = 'codex/all-collectibles-production-research'
++$expectedBranch = 'codex/master-collectible-inventory'
+ $repo = (& git rev-parse --show-toplevel 2>$null).Trim()
+ if ([string]::IsNullOrWhiteSpace($repo)) { throw 'Not inside the Completionist Map repository.' }
+ Set-Location $repo
