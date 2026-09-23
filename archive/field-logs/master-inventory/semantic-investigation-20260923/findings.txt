@@ -1,0 +1,100 @@
+﻿MASTER COLLECTIBLE INVENTORY - SEMANTIC INVESTIGATION CHECKPOINT
+Date: 2026-09-23
+Branch: codex/master-collectible-inventory
+Game opened: NO
+Game files written: NO
+
+=== GENERATED MASTER INVENTORY ===
+rows=240
+mismatched_families=19
+runtime_generation_allowed=false
+
+Guide/native counts:
+Odin's Raven:      guide=51 native=0   delta=-51
+Nornir Chest:      guide=21 native=22  delta=+1
+Legendary Chest:   guide=34 native=64  delta=+30
+Lore Marker:       guide=39 native=43  delta=+4
+
+Unpolicied Nornir helper families:
+nornir_bell=24
+nornir_mechanism=12
+nornir_seal=30
+
+=== SOURCE CATALOGUES ===
+64 legendary_chest <- seed-all-collectibles.json
+22 nornir_chest    <- seed-all-collectibles.json
+0 raven rows present in generated master inventory
+
+Seed path during generation:
+C:/Users/david/AppData/Local/Temp/gow-master-inventory-20260923-100939/seed-all-collectibles.json
+
+=== LEGENDARY CHESTS BY WAD ===
+27 msp100_base.wad
+3  riv925_freyacave.wad
+2  xpl900_islandarch.wad
+2  xpl910_islandshipwreck.wad
+2  hel100_calderaheldressing.wad
+2  xpl980_beachwaterfall.wad
+1  xpl250_funeralinterior.wad
+1  xpl850_dungeonforest.wad
+1  cal100_hub.wad
+1  stn200_lakeext.wad
+1  xpl960_beachship.wad
+1  peak720_summitascenthub.wad
+1  peak500_chimneytop.wad
+1  helr100_docks.wad
+1  peak200_chimneylow.wad
+1  cal500_runevault.wad
+1  hel300_mainbridge.wad
+1  cal740_leftwing.wad
+1  xpl300_stronghold.wad
+1  alfdgn210_main.wad
+1  alf340_trenchbdark.wad
+1  xpl100_httk.wad
+1  alf600_templeint.wad
+1  alfdgn110_main.wad
+1  alf370_moatscripting.wad
+1  xpl950_beachmaze.wad
+1  foot400_arena.wad
+1  foot200_mid.wad
+1  xpl920_islandclimb.wad
+1  xpl400_huldramines.wad
+1  riv475_freyahouseext.wad
+1  riv100_dangersentrance.wad
+
+Important: msp100_base.wad accounts for 27 of the +30 Legendary discrepancy.
+It must NOT yet be filtered wholesale because legitimacy has not been classified.
+
+=== NORNIR CHEST CANDIDATES ===
+22 total candidate rows.
+Guide expects 21.
+No candidate has yet been classified as the extra row.
+Helper families (bells/mechanisms/seals) are separate and are not being counted as chest rows.
+
+=== OBJECT HASH OBSERVATION ===
+All 64 Legendary rows currently have blank object_hash_hex in the master CSV.
+Therefore object_hash_hex cannot currently distinguish the false positives.
+
+=== GENERATOR ===
+tools/v0.10.5/build-master-collectible-inventory.py
+  line 158: source_catalogue assignment
+  line 209: CSV fields
+  line 262: source catalogues
+  lines 271-273: JSON/CSV/Markdown output
+
+tools/v0.10.5/run-master-collectible-inventory-and-push.ps1
+  line 95 invokes build-master-collectible-inventory.py with seed-all-collectibles.json
+
+=== CURRENT THREE SEMANTIC GAPS ===
+1. Ravens: 51 expected, 0 imported.
+   Likely ingestion/source-selection failure.
+
+2. Nornir: 21 expected, 22 imported.
+   Need compare the 22 chest candidates against canonical Nornir research.
+
+3. Legendary: 34 expected, 64 imported.
+   Need classify raw candidate population.
+   27 rows originate from msp100_base.wad, leaving at least 3 additional excess rows
+   unless some msp100_base rows are legitimate.
+
+No speculative filters have been applied.
