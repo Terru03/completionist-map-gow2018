@@ -46,6 +46,44 @@ class ShipHeadStaticGateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "parent quest not on own script override"):
             gate.verify_native_parent_attributes(self.catalogue, report)
 
+    def test_script_proves_acquired_three_and_cals_fixup_path(self):
+        report = gate.assess(self.catalogue, self.audit)
+        gate.verify_artifact_script(self.audit, report)
+        self.assertEqual(report["acquired_state_numeric"], 3)
+        self.assertTrue(report["scripted_cals_fixup_path_proven"])
+        self.assertEqual(report["regional_target_delta"][
+            "RegionSummary_BSW_Shiphead_Parent"], 1)
+        self.assertEqual(report["regional_target_delta"][
+            "RegionSummary_BW_Shiphead_Parent"], -1)
+        self.assertFalse(report["runtime_generation_allowed"])
+
+    def test_script_accounting_rejects_changed_region_target(self):
+        audit = copy.deepcopy(self.audit)
+        audit["tracked_summary_targets"]["RegionSummary_BW_Shiphead_Parent"]["target"] = 2
+        report = gate.assess(self.catalogue, self.audit)
+        with self.assertRaisesRegex(ValueError, "physical/target totals changed"):
+            gate.verify_artifact_script(audit, report)
+
+    def test_frozen_staged_keys_match_eight_and_leave_row_eight_blocked(self):
+        report = gate.assess(self.catalogue, self.audit)
+        gate.verify_frozen_staged_identity(self.catalogue, report)
+        self.assertEqual(report["frozen_staged_identity_count"], 8)
+        self.assertEqual(report["frozen_unresolved_numbers"], [8])
+        self.assertEqual(sum(row["frozen_staged_identity_proven"]
+                             for row in report["rows"]), 8)
+        self.assertTrue(all(not row["serialized_save_lookup_proven"]
+                            for row in report["rows"]))
+        self.assertFalse(report["runtime_generation_allowed"])
+
+    def test_frozen_identity_rejects_catalogue_wad_digest_change(self):
+        catalogue = copy.deepcopy(self.catalogue)
+        row = next(row for row in catalogue["collectibles"]
+                   if row.get("subtype") == "Ship Head")
+        row["source"]["wad_sha256"] = "0" * 64
+        report = gate.assess(self.catalogue, self.audit)
+        with self.assertRaisesRegex(ValueError, "catalogue WAD digest differs"):
+            gate.verify_frozen_staged_identity(catalogue, report)
+
     def test_audit_digest_tamper_rejected(self):
         catalogue = copy.deepcopy(self.catalogue)
         catalogue["collectibles"][0]["display_name"] = "changed"

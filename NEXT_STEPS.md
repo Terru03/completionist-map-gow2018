@@ -3,7 +3,8 @@
 Ship Head branch `codex/collectible-ship-heads` starts from the accepted Raven
 base `f665f61`. Its static gate is `BLOCKED_FAIL_CLOSED`: 9 physical rows and
 13 transform paths have direct parent object attributes, but the target total
-is 10, per-object unloaded state lookup is unproved, and stock marker paths
+is 10 with a conditional CALS script fixup, per-object unloaded state lookup
+is unproved, head 08 lacks frozen identity, and stock marker paths
 and Ship Head-specific resources are unproved. See
 `docs/research/ship-head-static-gate.md`. Do not generate Ship Head runtime
 markers.
@@ -11,10 +12,12 @@ markers.
 Static native catalogue now has all 9 proved Ship Heads. Do not build or install
 runtime markers yet.
 
-1. Prove read-only unloaded per-object state lookup with exact catalogue keys.
+1. Resolve head 08's serialized GameObject identity, then prove read-only
+   unloaded per-object state lookup with exact catalogue keys.
    Test known complete and fresh states. Unknown or bad reply must stay hidden.
-2. Find exact reason `quests.dcb` says Ship Head 10 while native data proves 9
-   carriers and 9 physical objects. Do not make fake tenth row.
+2. Resolve exact Ship Head regional accounting. Static script proves a
+   conditional CALS summary increment after quest completion; its firing
+   count and BW/BSW target mismatch remain unproved. Do not make fake tenth row.
 3. Prove exact native binding edges for any of the 21 non-Helheim Nornir
    candidates. All old 20 joins are now downgraded because source WAD identity
    plus target existence does not prove object/level-to-target ownership. Also
@@ -36,7 +39,8 @@ runtime markers yet.
 
 Current blockers:
 
-- Ship target mismatch: `BLOCKED_EXACT_REASON_UNKNOWN`.
+- Ship target accounting: CALS script fixup path proved; firing count and
+  BW/BSW mismatch still `BLOCKED_EXACT_REASON_UNKNOWN`.
 - All 21 tracked-candidate Nornir bindings: `BLOCKED_EXACT_REASON_UNKNOWN`.
 - cal500 Tyr's Vault binding: `BLOCKED_EXACT_REASON_UNKNOWN`.
 - Legendary production eligibility: 33 tracked, 27 exact trial exclusions,

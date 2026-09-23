@@ -31,18 +31,31 @@ or map-count join.
 | 08 | `cal100_hub.wad` | `f7fbfc3f-4499-1b3d-a378-71879e6de737` | `RegionSummary_CALS_Shiphead_Parent` | 2 |
 | 09 | `xpl960_beachship.wad` | `bd9a46a3-4b8f-d466-0be2-129e27fa4004` | `RegionSummary_CALS_Shiphead_Parent` | 1 |
 
-The `quests.dcb` tracked total is 10. The source audit found no exact tenth
-carrier or placement, and no exact reason for the extra count. The gate keeps
-9 physical hypotheses and does not invent a tenth row.
+The `quests.dcb` tracked total is 10. The shipped `interact_loot_artifact`
+script has a `FixupShipHeadRegion()` path that increments
+`RegionSummary_CALS_Shiphead_Parent` when `Quest_Artifacts_ShipHeads` is
+complete. This gives a concrete scripted source for CALS progress, but its
+exact firing count is unproved. Direct object counts versus regional targets
+leave BSW +1, BW -1, and CALS +1. No tenth physical carrier is proved. The
+gate keeps 9 physical hypotheses and does not invent a tenth row.
 
 ## State and delivery gaps
 
-The stock `interact_loot_artifact` path uses `state == ACQUIRED` and stores a
-checkpoint. Each row has a physical GUID and one or two script carrier GUIDs.
-The 13 concatenated `physical.carrier` strings are **proposed** per-instance
-keys. The base evidence does not prove their serialized save lookup or an
-unloaded query that returns the state for each object. Shared script carriers
-in rows 03/07 and 05/08 make that proof important. The gate requires
+The stock `interact_loot_artifact` path defines `ACQUIRED = 3`, saves and
+restores `state`, increments its `regionSummaryQuest`, and calls `SoftSave()`
+after acquisition. The source Lua digest and matching compiled record in
+`xpl940_beachcave.wad` are pinned by the gate. Each row has a physical GUID
+and one or two script carrier GUIDs.
+The 13 concatenated `physical.carrier` strings are old **proposed** keys.
+An offline replay of the frozen staged WAD capture now matches exact serialized
+GameObject/state keys for eight physical heads (01–07 and 09). Row 08 has no
+match in either candidate path. The replay checks the Ship Head prototype root
+in seven shipped WADs and tries all owner-chain subsets while holding each
+script and physical placement. It found one match per resolved head, none on
+alternate carrier paths. See `ship-head-staged-identity.json` and
+`ship-head-staged-identity.md`. A frozen staged hit does not prove an unloaded
+save query. Shared script carriers in rows 03/07 and 05/08 still make that
+proof important. The gate requires
 `unloaded_query=unresolved` for all 9 and will reject a catalogue-only claim
 that it is proven.
 
@@ -72,8 +85,9 @@ unnecessary.
 Run `python tools/v0.10.5/ship_head_static_gate.py --output
 docs/research/ship-head-static-gate.json`. Current result:
 `BLOCKED_FAIL_CLOSED`, 9/9 physical rows, 13/13 paths, 0/9 proved unloaded
-save lookups. Nine offline tests guard the row census, parent attribute,
-identity paths, target gap, state claim, marker point, and shipped WAD check.
+save lookups. Thirteen offline tests guard the row census, parent attribute,
+identity paths, frozen staged keys, target gap, script semantics, state claim,
+marker point, and shipped WAD check.
 Source hashes in the JSON pin the catalogue and audit used by this check.
 The gate reparses the seven known source WADs to verify each parent attribute
 at its exact recorded script override.
