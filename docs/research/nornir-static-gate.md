@@ -30,3 +30,6 @@ docs/research/nornir-static-gate.json`. Current result:
 0 direct native bindings, 0 proved unloaded state lookups. The gate checks
 catalogue/audit digest, evidence coverage, child links, and weak join rules.
 It uses the earlier source audit; it does not reparse WADs on each run.
+The JSON now records checkout-byte `source_sha256` and LF-normalized
+`source_lf_sha256`. This lets a pinned Git blob match the same evidence on
+Windows, where checked-out JSON has CRLF line endings. Gate status stays blocked.

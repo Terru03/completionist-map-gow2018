@@ -138,6 +138,11 @@ def main() -> int:
             hashlib.sha256(path.read_bytes()).hexdigest()
         for path in (CATALOGUE, AUDIT)
     }
+    report["source_lf_sha256"] = {
+        str(path.relative_to(REPO)).replace("\\", "/"):
+            hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+        for path in (CATALOGUE, AUDIT)
+    }
     if args.output:
         target = args.output.resolve()
         require(target != REPO and REPO in target.parents,

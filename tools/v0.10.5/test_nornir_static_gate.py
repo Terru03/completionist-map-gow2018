@@ -4,6 +4,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import subprocess
 import unittest
 
 import nornir_static_gate as gate
@@ -58,6 +59,14 @@ class NornirStaticGateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Helheim exception evidence differs"):
             self.changed(lambda _cat, audit:
                          audit["helheim_unjoined_nornir"].update(result="UNPROVED"))
+
+    def test_catalogue_checkout_and_git_blob_have_same_content(self):
+        blob = subprocess.check_output(
+            ["git", "show", "HEAD:config/collectibles/v0.10.5/all-collectibles.json"],
+            cwd=gate.REPO)
+        self.assertEqual(
+            hashlib.sha256(gate.CATALOGUE.read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
+            hashlib.sha256(blob).hexdigest())
 
 
 if __name__ == "__main__":
