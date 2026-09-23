@@ -233,8 +233,9 @@ def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], 
     for family in ("nornir_chest", "legendary_chest", "artefact", "lore_marker"):
         if roles[("family_gate", family)] != 1:
             raise ValueError(f"exactly one static gate required for {family}")
-    if roles[("research_gate", "realm_tear")] != 1:
-        raise ValueError("exactly one Realm Tear research gate required")
+    for family in ("realm_tear", "jotnar_shrine"):
+        if roles[("research_gate", family)] != 1:
+            raise ValueError(f"exactly one {family} research gate required")
     provenance = [source_record(e) for e in entries]
     by_entry = {id(e): p for e, p in zip(entries, provenance)}
     seed = next(e for e in entries if e["role"] == "seed_catalogue")
@@ -478,6 +479,27 @@ def load_pinned_sources(manifest_path: Path, policy: dict) -> tuple[list[dict], 
                              "unresolved_scope": "physical encounter census not proved",
                              "direct_parent_callback_carrier_count": 14,
                              "static_gate_status": realm_gate["status"]}
+    jotnar_entry = research_gates["jotnar_shrine"]
+    jotnar_gate = json.loads(Path(jotnar_entry["file"]).read_text(encoding="utf-8"))
+    reject_marker_authority(jotnar_gate)
+    if (jotnar_gate["status"] != "BLOCKED_FAIL_CLOSED" or
+            jotnar_gate["runtime_generation_allowed"] is not False or
+            jotnar_gate["native_objective"]["target"] != 11 or
+            jotnar_gate["named_raw_placement_count"] != 14 or
+            jotnar_gate["exact_duplicate_raw_placement_count"] != 1 or
+            jotnar_gate["named_distinct_placement_count"] != 13 or
+            jotnar_gate["quest_script_wad_placement_count"] != 11 or
+            jotnar_gate["exhaustive_physical_census_proven"] is not False or
+            jotnar_gate["exact_per_object_objective_membership_proven"] is not False or
+            jotnar_gate["persistent_unloaded_completion_proven"] is not False or
+            any(row["family"] == "jotnar_shrine" for row in rows)):
+        raise ValueError("Jotnar research gate conflicts with physical inventory")
+    summary["jotnar_shrine"] = {"native_accounting_target": 11,
+                                "tracked_candidates": None, "explained_untracked": 0,
+                                "unresolved": 0,
+                                "unresolved_scope": "13 named placements; exhaustive physical census and per-object accounting open",
+                                "named_distinct_placement_count": 13,
+                                "static_gate_status": jotnar_gate["status"]}
     return rows, summary, provenance
 
 
@@ -523,6 +545,7 @@ def discrepancy(policy: dict, rows: list[dict], summary: dict | None = None) -> 
             "shiphead_native_target": detail.get("shiphead_native_target"),
             "direct_object_parent_count": detail.get("direct_object_parent_count"),
             "direct_parent_callback_carrier_count": detail.get("direct_parent_callback_carrier_count"),
+            "named_distinct_placement_count": detail.get("named_distinct_placement_count"),
             "gate_catalogue_sha256_at_generation": detail.get("gate_catalogue_sha256_at_generation"),
             "current_family_catalogue_sha256": detail.get("current_family_catalogue_sha256"),
             "gate_catalogue_hash_basis": detail.get("gate_catalogue_hash_basis"),
@@ -565,7 +588,7 @@ def write_md(path: Path, report: dict) -> None:
         def shown(value: Any) -> str:
             return "" if value is None else str(value)
         lines.append(f"| {row['display']} | {shown(row['external_guide_expected'])} | {row['physical_rows']} | {shown(row['native_accounting_target'])} | {shown(row['tracked_candidates'])} | {row['explained_untracked']} | {row['unresolved']} | {row['production_ready']} | {row['audit_status']} |")
-    lines += ["", "Raven native audit narrows two surplus objects to CalderaShores (2 physical / 1 target) and Riverpass (7 / 6). It does not name the two specific objects outside Labor accounting.", "", "Legendary tracked candidates are not a production allowlist. The external guide expects 34; native candidates remain 33.", "", "Artefacts have 45 physical objects. Nine Ship Heads have direct parent attributes against a target of ten. The other 36 lack proved RegionSummary ownership; guide count 45 does not settle accounting.", "", "Lore has 43 physical objects and a native Summary target of 43, versus external guide count 39. Forty object overrides hold direct parent names. Three level Lua callback clues lack exact callback-to-object links. No row was dropped to match a guide count.", "", "Realm Tear research gate pins 19 native PocketRift Summary targets and 14 direct callback carriers. Physical encounter census is unproved, so master has no Realm Tear row yet.", ""]
+    lines += ["", "Raven native audit narrows two surplus objects to CalderaShores (2 physical / 1 target) and Riverpass (7 / 6). It does not name the two specific objects outside Labor accounting.", "", "Legendary tracked candidates are not a production allowlist. The external guide expects 34; native candidates remain 33.", "", "Artefacts have 45 physical objects. Nine Ship Heads have direct parent attributes against a target of ten. The other 36 lack proved RegionSummary ownership; guide count 45 does not settle accounting.", "", "Lore has 43 physical objects and a native Summary target of 43, versus external guide count 39. Forty object overrides hold direct parent names. Three level Lua callback clues lack exact callback-to-object links. No row was dropped to match a guide count.", "", "Realm Tear research gate pins 19 native PocketRift Summary targets and 14 direct callback carriers. Physical encounter census is unproved, so master has no Realm Tear row yet.", "", "Jotnar Shrine research gate pins native Triptych objective 11 and 13 distinct named placements. Exact per-object membership and exhaustive physical census remain open, so master has no Jotnar Shrine row yet.", ""]
     for row in report["family_audit"]:
         if row.get("gate_catalogue_hash_basis") == "windows_crlf_checkout_bytes":
             lines.append(f"- {row['display']} gate catalogue hash `{row['gate_catalogue_sha256_at_generation']}` is for Windows CRLF checkout bytes. Pinned Git blob hash is `{row['current_family_catalogue_sha256']}`; normalized contents match.")

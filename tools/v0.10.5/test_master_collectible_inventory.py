@@ -122,9 +122,13 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
         self.assertEqual((realm["physical_rows"], realm["native_accounting_target"],
                           realm["direct_parent_callback_carrier_count"]), (0, 19, 14))
         self.assertEqual(realm["audit_status"], "NO_PHYSICAL_EVIDENCE")
+        jotnar = audit["jotnar_shrine"]
+        self.assertEqual((jotnar["physical_rows"], jotnar["native_accounting_target"],
+                          jotnar["named_distinct_placement_count"]), (0, 11, 13))
+        self.assertEqual(jotnar["audit_status"], "NO_PHYSICAL_EVIDENCE")
         self.assertEqual(legendary["gate_catalogue_hash_basis"], "windows_crlf_checkout_bytes")
         self.assertFalse(legendary["catalogue_content_changed_since_gate"])
-        self.assertEqual(len(sources), 12)
+        self.assertEqual(len(sources), 13)
         self.assertEqual(sum(row["tracking_classification"] == "accounting_membership_unresolved_surplus_group"
                              for row in rows), 9)
         self.assertTrue(all(x["source_commit"] and x["source_sha256"] for x in sources))
@@ -150,7 +154,7 @@ class MasterCollectibleInventoryTests(unittest.TestCase):
             subprocess.run(["python", str(HERE / "build-master-collectible-inventory.py"),
                             "--source-manifest", manifest, "--output-dir", td], check=True, capture_output=True)
             report = json.loads((Path(td) / "master-collectible-inventory.json").read_text(encoding="utf-8"))
-            self.assertEqual(len(report["source_catalogues"]), 12)
+            self.assertEqual(len(report["source_catalogues"]), 13)
             raven = next(row for row in report["rows"] if row["family"] == "odin_raven")
             self.assertEqual(raven["catalogue_provenance"]["source_branch"], "codex/all-ravens-release-candidate")
             self.assertTrue(raven["classification_evidence"][0]["source"]["source_sha256"])
