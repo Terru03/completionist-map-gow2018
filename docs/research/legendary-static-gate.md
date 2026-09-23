@@ -41,6 +41,18 @@ at RVA `0x1EC5D0`. It does not take a chest WAD name or authored chest GUID.
 That context string at each chest point has not been established by static
 zone/trigger data.
 
+Further disassembly of the same pinned executable narrows the string source.
+The constructor at RVA `0x73C400` clears object offset `+0x4AD0` at
+`0x73C441`. Its path at `0x73C713` reads a pointer from source offset
+`+0x470` and writes that pointer (or a static fallback) to a related object's
+`+0xC50` at `0x73C728`. RVA `0x730E20` has the same `+0x470` to `+0xC50`
+copy at `0x730EC1`–`0x730ECF`. RVA `0x733FF0` can set `+0x4AD0` at
+`0x7341A5`; RVA `0x738F70` clears that pointer at `0x738FCE` when its
+selected object is removed. These are code-level source and lifecycle edges,
+not a per-chest edge. The WAD zone object that supplies `+0x470`, its active
+geometry at each interaction point, and the resulting `+0xC50` string remain
+unproved. The gate therefore records zero direct bindings.
+
 The embedded `xpl300_stronghold` level Lua has
 `UI_Event_DiscoverLocation("HuldraStronghold")`; the embedded
 `cal500_runevault` Lua has the same call for `TyrsVault`. These are level
