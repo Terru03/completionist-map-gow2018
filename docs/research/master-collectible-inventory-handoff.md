@@ -1,29 +1,17 @@
 # Master inventory handoff — 2026-09-23
 
-Branch: `codex/master-collectible-inventory`.
-Latest full run: `archive/field-logs/master-inventory/master-collectible-inventory-20260923-122418` (commit `5ff9841`). The run pins seven source files by branch commit and SHA-256. Its archived files match all seven hashes. Game stayed closed. No game or save file was written.
+Branch: `codex/master-collectible-inventory`. Latest full archived run: `archive/field-logs/master-inventory/master-collectible-inventory-20260923-125425` (commit `665429d`). The run pins 11 source files by branch commit and SHA-256, runs 19 master tests, and builds 293 physical rows. God of War stayed closed. All 293 rows have `mod_marker_allowed=false` and `marker_generation_ready=false`.
 
-## Verified result
+| Family | Physical | Native target | Direct/tracked evidence | Open |
+| --- | ---: | ---: | ---: | ---: |
+| Odin's Raven | 53 | 51 Labor | exact two surplus IDs unknown | 9 objects in two groups |
+| Nornir Chest | 22 | 21 candidate | 21 tracked candidate, 1 Helheim explained untracked | ownership/state |
+| Legendary Chest | 64 | 33 candidates | 33 candidate, 27 trial, 2 non-map | 2 class unknown; ownership/state |
+| Artefact | 45 | 10 Ship Head target only | 9 Ship Head direct parents | 36 other accounting; Ship Head 9/10 |
+| Lore Marker | 43 | 43 Summary | 40 direct object parents | 3 level script object links |
 
-| Family | Physical | Native target | Tracked candidates | Explained untracked | Unresolved |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Odin's Raven | 53 | 51 | unknown per object | 0 | 2 aggregate surplus |
-| Nornir Chest | 22 | unknown | 21 | 1 | 0 |
-| Legendary Chest | 64 | unknown | 33 | 29 (27 trial, 2 non-map) | 2 |
+Raven surplus groups stay CalderaShores 2 physical / 1 target and Riverpass 7 / 6. Legendary guide 34 remains distinct from native candidate 33. Lore guide 39 remains distinct from native target 43. No row was removed to fit either guide count.
 
-Raven native audit narrows surplus to two parent groups: CalderaShores has 2 physical / 1 target; Riverpass has 7 / 6. It does not name the bonus object in either group. All nine rows in those groups carry that open membership status. All 53 physical rows stay in inventory.
+Artefact gate on `codex/collectible-artefacts` removed two false cross-subtype Ship Head parent assignments from a Toy and Mask. Lore gate on `codex/collectible-lore-markers` proved 40 direct object parent attributes. Three compiled level Lua blobs have journal and Summary callback clues, but no exact callback-to-object link; their catalogue parent fields stay null. Neither family has proved unloaded persistent state or marker delivery.
 
-Legendary guide count is 34; native tracked candidates are 33. Keep gap visible. The 33 candidates are not a production allowlist. All 293 inventory rows keep `mod_marker_allowed=false` and `marker_generation_ready=false`.
-
-## Tests and sources
-
-Master wrapper ran 17 unit tests and built report from pinned files. Source manifest pins Raven `f665f61`, Legendary `e14bef3`, Nornir `37f19b1`, and Ship Head seed `36bf343`. Legendary gate ran 10 tests plus 12 identity tests. Nornir gate ran 7 tests. Both gates still say `BLOCKED_FAIL_CLOSED`.
-
-## Open work
-
-- Raven: find exact bonus object in each surplus group from native evidence. Do not assign by count alone.
-- Legendary: prove direct chest-to-RegionSummary ownership for 33 candidates, settle two unresolved physical rows, and prove custom marker/map/world path. Pinned asset scan found no Legendary/Chest-named class in 382 mapmaster rows or 119 `r_ui.wad` mapicon names. This is a class-name negative check only.
-- Nornir: prove direct ownership and persistent unloaded OPENED state for 21 candidates. Keep Helheim triple-chest reward as physical explained untracked row.
-- Other families: build branch-local gates for Artefact and Lore rows. Master seed rows stay unclassified until native family evidence exists.
-
-Next safe step: trace an exact Legendary chest-to-region edge from shipped data, or add an Artefact/Lore static gate on its own branch. Keep game closed and gate blocked until proof is exact.
+Open static work: exact Raven surplus IDs; Legendary/Nornir ownership and persistent states; three Lore level-script object links; non-Ship-Head Artefact accounting; native marker/resource audits. Start branch-local gates for remaining families. Keep all runtime generation blocked until exact evidence closes each gate.
