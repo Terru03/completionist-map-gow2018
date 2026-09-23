@@ -99,7 +99,7 @@ Assert-Repo
 Assert-Source
 $head = (& git -C $repoRoot rev-parse HEAD).Trim()
 if ($LASTEXITCODE -ne 0 -or $head -notmatch '^[0-9a-f]{40}$') { throw 'Bad Git HEAD.' }
-$loaderLog = Join-Path $GameRoot 'loader_log.txt'
+$loaderLog = Join-Path $GameRoot 'mods/loader_log.txt'
 $logStart = [ordered]@{ path = $loaderLog; exists = (Test-Path -LiteralPath $loaderLog -PathType Leaf); bytes = $null; sha256 = $null }
 if ($logStart.exists) {
     $logStart.bytes = (Get-Item -LiteralPath $loaderLog).Length

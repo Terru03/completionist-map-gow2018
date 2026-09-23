@@ -70,6 +70,17 @@ class LegendaryLiveTestProof(unittest.TestCase):
         self.assertEqual(BUILDER.sha((base / "Release/dxgi.dll").read_bytes()), manifest["dll_sha256"])
         self.assertEqual(manifest["supported_exe_sha256"], BUILDER.SUPPORTED_EXE_SHA)
 
+    def test_runner_uses_real_loader_log_and_outer_failure_recorder(self):
+        inner = (HERE / "install-legendary-live-test-marker.ps1").read_text()
+        outer = (HERE / "run-legendary-live-test-marker.ps1").read_text()
+        self.assertIn("Join-Path $GameRoot 'mods/loader_log.txt'", inner)
+        self.assertIn("Start-Transcript", outer)
+        self.assertIn("git pull --ff-only", outer)
+        self.assertIn("catch {", outer)
+        self.assertIn("finally {", outer)
+        self.assertIn("git -C $repoRoot push origin $branchWanted", outer)
+        self.assertNotIn("param(", outer.split("try {", 1)[0])
+
 
 if __name__ == "__main__":
     unittest.main()
