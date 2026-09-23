@@ -83,6 +83,16 @@ labels in the generated audit attest that target records exist. They should
 not be read as proof of chest-to-target ownership. The static gate records
 `direct_native_binding_count=0` and keeps Legendary generation off.
 
+The gate JSON now includes `ownership_proof_rows`: one audit row for each of
+the 33 candidates plus `stn200_lakeext` and `xpl300_stronghold`. Each row has
+WAD, physical GUID, placement record, world point, derived serialized key,
+proposed RegionSummary target, source offset, and proof strength. `region_name`
+is null for all 35 because none has a direct chest-to-active-region edge;
+`proposed_region_name` preserves the earlier catalogue guess separately.
+This table is a work list, not a production allowlist. It covers all four
+mystery WADs because `cal500_runevault` and `cal740_leftwing` are among the
+33 candidates.
+
 ## Marker assets
 
 The stock `r_ui.wad` map-icon finals contain no Legendary Chest map class.

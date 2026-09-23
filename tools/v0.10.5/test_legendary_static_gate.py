@@ -32,6 +32,21 @@ class LegendaryStaticGateTests(unittest.TestCase):
         self.assertEqual({r["state_float32"] for r in rows}, {4.0})
         self.assertEqual(len({r["serialized_flag1_hex"] for r in rows}), 2)
 
+    def test_ownership_table_keeps_proposed_regions_unproved(self) -> None:
+        rows = gate.assess(*self.inputs)["ownership_proof_rows"]
+        self.assertEqual(len(rows), 35)
+        self.assertTrue(all(row["region_name"] is None for row in rows))
+        self.assertTrue(all(row["proof_strength"] ==
+                            "placement_and_identity_only_no_direct_region_binding"
+                            for row in rows))
+        self.assertEqual(sum(row["production_eligibility"] == "tracked_collectible"
+                             for row in rows), 33)
+        self.assertEqual({row["wad"] for row in rows if row["wad"] in {
+            "stn200_lakeext.wad", "xpl300_stronghold.wad",
+            "cal500_runevault.wad", "cal740_leftwing.wad"}}, {
+            "stn200_lakeext.wad", "xpl300_stronghold.wad",
+            "cal500_runevault.wad", "cal740_leftwing.wad"})
+
     def test_invented_binding_flag_cannot_promote_inferred_row(self) -> None:
         inputs = copy.deepcopy(self.inputs)
         row = next(r for r in inputs[0]["collectibles"]

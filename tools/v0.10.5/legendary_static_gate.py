@@ -131,6 +131,29 @@ def assess(catalogue: dict, audit: dict, identities: dict,
     if any(not r["staged_state_observed"] for r in results):
         blockers.append("one candidate lacks an observed exact staged state in the frozen capture")
     blockers.append("Legendary-specific map and world asset IDs and native suppression targets remain unproved")
+    # Keep source placement and proposed region separate. The region_name field
+    # stays null until an exact context/quest edge proves the active region.
+    ownership_rows = []
+    for cid, row in sorted(by_id.items()):
+        if cid not in candidates and cid not in unresolved:
+            continue
+        object_hash, _payload = derived_key(row)
+        ownership_rows.append({
+            "catalogue_id": cid,
+            "wad": row["source"]["wad"],
+            "physical_guid": row["native"]["instance_guid"],
+            "placement_record": row["native"]["placement_override_record_id"],
+            "world_position": row["marker"]["position_world"],
+            "serialized_state_key": object_hash,
+            "region_name": None,
+            "proposed_region_name": row.get("region"),
+            "region_summary_target": row["progression"].get("parent_quest"),
+            "proof_source": row["source"]["wad"],
+            "proof_record_or_offset": row["source"]["override_offset"],
+            "proof_strength": "placement_and_identity_only_no_direct_region_binding",
+            "production_eligibility": row["production_eligibility"],
+        })
+    check(len(ownership_rows) == 35, "Legendary ownership table census changed")
     return {
         "schema": 1,
         "status": "BLOCKED_FAIL_CLOSED" if blockers else "READY_FOR_OFFLINE_BUILD",
@@ -143,6 +166,7 @@ def assess(catalogue: dict, audit: dict, identities: dict,
         "binding_source_counts": dict(sorted(binding_sources.items())),
         "unresolved_catalogue_ids": unresolved,
         "candidate_rows": results,
+        "ownership_proof_rows": ownership_rows,
         "blockers": blockers,
     }
 
