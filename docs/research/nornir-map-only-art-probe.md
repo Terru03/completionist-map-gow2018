@@ -1,6 +1,6 @@
 # Nornir map-only chest art, 2026-09-25
 
-Status: staged offline; live artwork isolation remains unproved.
+Status: installed for live art check; live artwork isolation remains unproved.
 
 The 22:46:27 screenshot shows the selected Nornir chest as a blue quest icon
 and visible Raven pins retaining their Raven silhouettes. The installed files
@@ -30,16 +30,19 @@ the children and compass retain their stock fallback symbols.
 Five checks passed: artifact reproduction, rejection of the old HUD-bearing
 candidate, fake install/rollback, failed-copy rollback, and refusing pack
 rollback while the game is running. Installation reuses the tested six-file
-transaction. Its optional pack-operation argument restores V4 before adding
-the new map-art probe.
+transaction. Its optional pack-operation argument restored V4 before adding
+the new map-art probe. The pack-only operation is now `rolled_back`; the
+map-only art operation
+`build/nornir-map-only-art-probe/backups/83d3624cdb2c446b9f20dd085d89d470/operation.json`
+has status `installed`. Live chest and Raven art checks are pending.
 
-After closing God of War, from the repository root:
+Install command used after God of War closed, from the repository root:
 
 ```powershell
 py -3.14 -B tools/v0.10.5/install-nornir-map-only-art-probe.py install --prior-operation build/nornir-stock-saved-state-v4-test/backups/b17350f551164edc968b28cba5b7fbca/operation.json --pack-operation build/nornir-pack-only-probe/backups/3102efb8ff59477cbc7683f3480dc692/operation.json
 ```
 
-The next screenshot should show the custom chest map icon and nearby Raven
-icon together. The selected chest must be labelled Nornir Chest, and selecting
-the Raven must still show Raven art. Do not infer restart/save persistence from
+The live check must show the custom chest map icon and nearby Raven icon
+together. The selected chest must be labelled Nornir Chest, and selecting the
+Raven must still show Raven art. Do not infer restart/save persistence from
 this art test.

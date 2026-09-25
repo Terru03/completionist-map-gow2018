@@ -1,5 +1,15 @@
 # Next Steps
 
+## 2026-09-25 current live art probe
+
+The 22:46 pack-only test kept Raven art correct and showed the stock chest
+symbol. Its operation was rolled back. The map-only chest art probe operation
+`build/nornir-map-only-art-probe/backups/83d3624cdb2c446b9f20dd085d89d470/operation.json`
+now has status `installed`. It changes six art/resource files above checkpoint
+v4. Its live chest and Raven art result is pending. Do not treat structural
+verification as a live art pass. See
+`docs/research/nornir-map-only-art-probe.md`.
+
 ## 2026-09-25 saved chest attempt replay built offline
 
 Checkpoint v5 reads the saved `completionistPuzzleAttempted` flag from the
@@ -8,7 +18,7 @@ keeps that event through the late Raven boundary. Two focused Lua 5.1 tests
 pass: a saved attempt reveals children after the boundary, and a false flag
 hides them on another save. The two-file candidate builds and compiles offline.
 It is **not installed or checked live**. Checkpoint v4 remains the active
-map/runic script layer; the chest texture-pack-only diagnostic sits above it.
+map/runic script layer; the map-only art probe sits above it.
 See `docs/research/nornir-stock-saved-state-test.md`.
 
 ## 2026-09-25 current composed-package verifier added
@@ -35,7 +45,7 @@ Reports: `build/nornir-composed-verifier/current-v4.json`,
 `build/nornir-composed-verifier/four-family-art.json`, and
 `build/nornir-composed-verifier/one-family-failed-live.json`.
 
-## 2026-09-25 chest texture-pack-only diagnostic installed for live test
+## 2026-09-25 chest texture-pack-only diagnostic checked and rolled back
 
 The failed one-family art probe was rolled back and checkpoint v4 verified.
 To distinguish texture-pack registration from WAD resource cloning, a
@@ -47,12 +57,14 @@ rolled back before a live Raven art check. The 22:37-22:38 screenshots show
 V4 stock art with no Nornir pack installed: Raven art is correct, the chest
 uses the quest symbol, and the seal uses the Valkyrie symbol. After the game
 closed, V4 verified and a new pack-only operation was installed. Installed
-hashes and the composed structural verifier passed. The live Raven art result
-for this new operation is pending. Nornir chest art remains stock `SIDE`.
+hashes and the composed structural verifier passed. The 22:46 live screenshot
+showed Raven art intact and the chest still using stock `SIDE` art. The
+pack-only operation was rolled back before the map-only art probe install.
 
-Current operation:
+Pack-only operation:
 `build/nornir-pack-only-probe/backups/3102efb8ff59477cbc7683f3480dc692/operation.json`
-(status `installed`). The old operation ending `71234a...` is `rolled_back`.
+(status `rolled_back`). The old operation ending `71234a...` is also
+`rolled_back`.
 
 ## 2026-09-25 chest-only custom art failed and rolled back
 
@@ -164,11 +176,12 @@ including exact locked-attempt child reveal, Raven compass handoff, and fake
 install rollback. Chest and seal compass art passed the live check. Custom
 Nornir art and unloaded completion state remain blocked.
 
-After the game is closed, roll back the current pack-only diagnostic, v4, v3, the map-open overlay, then the first
-checkpoint overlay, then the stock base to restore the Raven baseline:
+After the game is closed, roll back the current map-only art probe, v4, v3,
+the map-open overlay, the first checkpoint overlay, then the stock base to
+restore the Raven baseline. The pack-only operation is already rolled back:
 
 ```powershell
-py -3.14 -B tools/v0.10.5/install-nornir-pack-only-probe.py rollback --operation build/nornir-pack-only-probe/backups/3102efb8ff59477cbc7683f3480dc692/operation.json
+py -3.14 -B tools/v0.10.5/install-nornir-map-only-art-probe.py rollback --operation build/nornir-map-only-art-probe/backups/83d3624cdb2c446b9f20dd085d89d470/operation.json
 py -3.14 -B tools/v0.10.5/install-nornir-stock-saved-state-v4-test.py rollback --operation build/nornir-stock-saved-state-v4-test/backups/b17350f551164edc968b28cba5b7fbca/operation.json
 py -3.14 -B tools/v0.10.5/install-nornir-stock-saved-state-v3-test.py rollback --operation build/nornir-stock-saved-state-v3-test/backups/7770eff037324a53a757e5971f07b877/operation.json
 py -3.14 -B tools/v0.10.5/install-nornir-stock-saved-state-v2-test.py rollback --operation build/nornir-stock-saved-state-v2-test/backups/9ad8d89035ab4dfdb9c24412e82ed2ea/operation.json

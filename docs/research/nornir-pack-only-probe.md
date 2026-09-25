@@ -1,7 +1,6 @@
 # Chest texture-pack-only diagnostic, 2026-09-25
 
-Status: a new pack-only operation is installed over checkpoint v4; live Raven
-artwork check is pending.
+Status: pack-only operation rolled back after live Raven art check.
 
 The chest-only custom WAD probe failed: the 21:52 screenshot selected an
 "Odin's Raven" marker that drew chest-style art. That probe changed both the
@@ -24,15 +23,16 @@ offline-only direction; V4 verified again. The 22:37-22:38 screenshots show
 the V4 fallback with no Nornir pack: Raven art is correct, the chest uses the
 blue quest symbol, and the seal uses the purple Valkyrie symbol. After the
 game closed, V4 verified, and a new pack-only operation was installed. Its
-installed hashes and composed structural verification passed. There is not
-yet a live result for the new operation.
+installed hashes and composed structural verification passed. The 22:46
+screenshot showed Raven silhouettes still correct and the Nornir chest using
+the stock quest symbol. The operation was then rolled back before the
+map-only chest art probe was installed.
 
-Current operation:
+Pack-only operation:
 `build/nornir-pack-only-probe/backups/3102efb8ff59477cbc7683f3480dc692/operation.json`
-(status `installed`). The older operation ending `71234a...` is
+(status `rolled_back`). The older operation ending `71234a...` is
 `rolled_back`.
 
-If Raven artwork changes, pack registration is sufficient to trigger the
-collision. If it stays correct, the result narrows the cause but does not
-prove the WAD alone caused it; pack payloads may load lazily only when WAD
-resources refer to them.
+Pack registration alone did not visibly change Raven art in the checked map
+view. This does not prove the WAD alone caused the prior collision: pack
+payloads may load lazily only when WAD resources refer to them.
