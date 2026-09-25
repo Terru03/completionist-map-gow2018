@@ -8,6 +8,7 @@ import subprocess
 import unittest
 
 import nornir_static_gate as gate
+import nornir_marker_namespace as namespace
 
 
 class NornirStaticGateTests(unittest.TestCase):
@@ -15,6 +16,8 @@ class NornirStaticGateTests(unittest.TestCase):
     def setUpClass(cls):
         cls.catalogue = json.loads(gate.CATALOGUE.read_text(encoding="utf-8"))
         cls.audit = json.loads(gate.AUDIT.read_text(encoding="utf-8"))
+        cls.ravens = json.loads(gate.RAVENS.read_text(encoding="utf-8"))
+        cls.marker_manifest = json.loads(gate.MARKER_NAMESPACE.read_text(encoding="utf-8"))
 
     def changed(self, mutate):
         catalogue = copy.deepcopy(self.catalogue)
@@ -32,6 +35,54 @@ class NornirStaticGateTests(unittest.TestCase):
         self.assertFalse(report["runtime_generation_allowed"])
         with self.assertRaisesRegex(ValueError, "Nornir generation blocked"):
             gate.require_generation_ready(report)
+
+    def test_parent_and_child_markers_have_separate_reserved_identities(self):
+        report = gate.assess(self.catalogue, self.audit)
+        manifest = self.marker_manifest
+        self.assertEqual(manifest, namespace.build_manifest(self.catalogue, self.ravens))
+        self.assertEqual((report["reserved_parent_marker_count"],
+                          report["reserved_child_marker_count"]), (22, 66))
+        self.assertFalse(manifest["native_registration_allowed"])
+        raven_uids = {row["marker"]["uid"] for row in self.ravens["ravens"]}
+        raven_uids.add("E15E6BC82AE2773E")  # frozen v0.10.4 Raven
+        all_nornir_uids = [record["uid"] for group in manifest["groups"]
+                           for record in [group["parent"], *group["children"]]]
+        self.assertEqual(len(all_nornir_uids), len(set(all_nornir_uids)))
+        self.assertFalse(set(all_nornir_uids) & raven_uids)
+        self.assertNotIn(manifest["namespace"]["uid"], raven_uids | set(all_nornir_uids))
+        self.assertTrue(all(len(group["children"]) == 3 for group in manifest["groups"]))
+
+    def test_installed_id_audit_is_bound_to_exact_manifest(self):
+        manifest_bytes = gate.MARKER_NAMESPACE.read_bytes()
+        audit_path = gate.REPO / "docs/research/nornir-installed-marker-id-audit.json"
+        audit = json.loads(audit_path.read_text(encoding="utf-8"))
+        self.assertEqual(audit["result"], "NORNIR_INSTALLED_MARKER_IDS_CLEAR_READ_ONLY")
+        self.assertEqual(audit["collision_count"], 0)
+        self.assertEqual(audit["namespace_manifest_sha256"],
+                         hashlib.sha256(manifest_bytes).hexdigest())
+
+    def test_raven_marker_uid_cannot_be_assigned_to_nornir(self):
+        def collide(cat, _audit):
+            chest = next(row for row in cat["collectibles"]
+                         if row["family"] == "nornir_chest")
+            chest["marker"]["uid"] = self.ravens["ravens"][0]["marker"]["uid"]
+        with self.assertRaisesRegex(ValueError, "reuses reserved Raven/other identity"):
+            self.changed(collide)
+
+    def test_raven_visual_cannot_be_assigned_to_nornir(self):
+        def reuse_raven_visual(cat, _audit):
+            chest = next(row for row in cat["collectibles"]
+                         if row["family"] == "nornir_chest")
+            chest["marker"]["map_resource"] = "goMapIconCompletionistRaven"
+        with self.assertRaisesRegex(ValueError, "uses another family's visual/class"):
+            self.changed(reuse_raven_visual)
+
+    def test_manifest_cannot_reassign_child_to_another_chest(self):
+        manifest = copy.deepcopy(self.marker_manifest)
+        child = manifest["groups"][0]["children"].pop()
+        manifest["groups"][1]["children"].append(child)
+        with self.assertRaisesRegex(ValueError, "marker ownership manifest differs"):
+            gate.assess(self.catalogue, self.audit, self.ravens, manifest)
 
     def test_weak_count_join_rejected(self):
         with self.assertRaisesRegex(ValueError, "weak Nornir join authority"):

@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "classification": "FIELD_OBSERVED_TWO_SAVE_CHECKPOINT_EVIDENCE",
+  "capture_session": "nornir-captures/20260925-064923",
+  "game_executable_sha256": "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452",
+  "analysis_tool": "tools/v0.10.5/analyze-nornir-checkpoint-carriers.py",
+  "live_seal_analysis_tool": "tools/v0.10.5/analyze-nornir-live-seal-transitions.py",
+  "capture_stage_count": 6,
+  "game_or_save_writes_by_capture": false,
+  "observations": [
+    {
+      "save_label": "A",
+      "location_note": "veithurgard",
+      "process_id": 50420,
+      "wad": "Xpl200_Funeral",
+      "chest_catalogue_id": "nornir_chest_c190d59340706bb79925cb9f2d5867cf",
+      "registry_hash_hex": "0x4EC230253427B2B0",
+      "numeric_wad_registry": 238,
+      "chest_object_hash_hex": "0xC0FF99FB89416EC1",
+      "chest_loaded_registry_slot": 1477,
+      "runic_parent_object_hash_hex": "0xF99036D21E9E96A4",
+      "runic_parent_loaded_registry_slot": 1402,
+      "physical_identity_chain_matches_catalogue": true,
+      "before_carrier_sha256": "380e07da1d12205203c6a6dfa1b3e8f0de105b61fe9a710f692f73660d7655ed",
+      "after_first_rune_carrier_sha256": "380e07da1d12205203c6a6dfa1b3e8f0de105b61fe9a710f692f73660d7655ed",
+      "after_second_rune_carrier_sha256": "380e07da1d12205203c6a6dfa1b3e8f0de105b61fe9a710f692f73660d7655ed",
+      "after_chest_carrier_sha256": "7ab1ed1a946de518ec2ecfd489590678d1d52b9c0da9bf5f764c21bdda3407d6",
+      "after_chest_fields": {
+        "chest_state_float": 4.0,
+        "runic_parent_state_float": 1.0,
+        "runic_parent_challengeComplete": true,
+        "runic_parent_interactAvailable": true,
+        "runic_parent_keysUsed_float": 3.0
+      },
+      "after_chest_carrier_exact_save_matches": 0,
+      "save_sha256_all_four_stages": "0ab3bdd677766415a1eed1cab38fee08d58dac0ce9d5b834342cd1b531237fd9",
+      "loaded_seal_candidate_byte_by_stage": {
+        "goruniclock01": [0, 1, 1, 1],
+        "goruniclock02": [1, 1, 1, 1],
+        "goruniclock03": [0, 0, 1, 1]
+      }
+    },
+    {
+      "save_label": "B",
+      "location_note": "mountain",
+      "process_id": 49876,
+      "wad": "Peak720_SummitAscentHUB",
+      "chest_catalogue_id": "nornir_chest_c0cf411940bad7d00042afa7a46f5514",
+      "registry_hash_hex": "0x63E06E045427145F",
+      "numeric_wad_registry": 221,
+      "chest_object_hash_hex": "0x895FDE6574116698",
+      "chest_loaded_registry_slot": 1076,
+      "runic_parent_object_hash_hex": "0xA76B9908BD4D60AC",
+      "runic_parent_loaded_registry_slot": 1001,
+      "physical_identity_chain_matches_catalogue": true,
+      "before_carrier_sha256": "08c5a68578709e2fb8982006157a4ed0c1ab86347974b7dd021e56ce20892662",
+      "after_chest_carrier_sha256": "b0090d75b487bb8ab1bf2f0720d92a201022bddce77e9202f69221d870a8df03",
+      "after_chest_fields": {
+        "chest_state_float": 4.0,
+        "runic_parent_state_float": 1.0,
+        "runic_parent_challengeComplete": true,
+        "runic_parent_interactAvailable": true,
+        "runic_parent_keysUsed_float": 3.0
+      },
+      "changed_save_slot": 3,
+      "after_chest_carrier_exact_save_matches": [
+        {"slot": 3, "slot_offset": 37344}
+      ],
+      "before_save_sha256": "f9f5bb6d607b7029f5e01908e935c8c03ad18693d9c74b144a6e48204e43120b",
+      "after_save_sha256": "bb1f0c2cb3ea9c2f9f0ce808a5ebedbb5a3decabb5b84e84d68f3667c9f16ed4",
+      "loaded_seal_candidate_byte_by_stage": {
+        "gorunic_breakable_01": [1, 1],
+        "gorunic_breakable_02": [1, 1],
+        "gorunic_breakable_03": [1, 1]
+      }
+    }
+  ],
+  "remaining_unknowns": [
+    "Native IsDestroyed binding for observed live per-seal component byte and durable unloaded seal lookup",
+    "Cold per-object lookup in the active game without scanning a save file",
+    "Exact object-to-RegionSummary_RunicChest binding for all 21 tracked candidates",
+    "Native Nornir map and HUD resources and suppression route"
+  ]
+}

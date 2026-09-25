@@ -8,10 +8,14 @@ import hashlib
 import json
 from pathlib import Path
 
+import nornir_marker_namespace as marker_namespace
+
 
 REPO = Path(__file__).resolve().parents[2]
 CATALOGUE = REPO / "config/collectibles/v0.10.5/all-collectibles.json"
 AUDIT = REPO / "docs/research/all-collectibles-native-audit.json"
+RAVENS = REPO / "catalogue/odins-ravens.json"
+MARKER_NAMESPACE = REPO / "config/collectibles/v0.10.5/nornir-marker-namespace.json"
 
 
 def require(ok: bool, reason: str) -> None:
@@ -23,7 +27,8 @@ def canonical_json(value: dict) -> str:
     return json.dumps(value, indent=2, sort_keys=True, ensure_ascii=True) + "\n"
 
 
-def assess(catalogue: dict, audit: dict) -> dict:
+def assess(catalogue: dict, audit: dict, ravens: dict | None = None,
+           marker_manifest: dict | None = None) -> dict:
     require(hashlib.sha256(canonical_json(catalogue).encode()).hexdigest()
             == audit["catalogue_sha256"], "catalogue/audit digest differs")
     rows = catalogue["collectibles"]
@@ -102,6 +107,13 @@ def assess(catalogue: dict, audit: dict) -> dict:
                 row["physical_guid"] for row in result if
                 row["tracking_classification"] == "level_scripted_untracked_triple_chest_reward"),
             "Helheim exception evidence differs")
+    if ravens is None:
+        ravens = json.loads(RAVENS.read_text(encoding="utf-8"))
+    if marker_manifest is None:
+        marker_manifest = json.loads(MARKER_NAMESPACE.read_text(encoding="utf-8"))
+    expected_markers = marker_namespace.build_manifest(catalogue, ravens)
+    require(marker_manifest == expected_markers,
+            "Nornir marker ownership manifest differs from catalogue/Raven reservation")
     return {
         "schema": 1,
         "status": "BLOCKED_FAIL_CLOSED",
@@ -112,6 +124,10 @@ def assess(catalogue: dict, audit: dict) -> dict:
         "linked_child_count": 66,
         "direct_native_binding_count": 0,
         "unloaded_state_count": 0,
+        "marker_namespace": expected_markers["namespace"],
+        "reserved_parent_marker_count": expected_markers["parent_count"],
+        "reserved_child_marker_count": expected_markers["child_count"],
+        "reserved_raven_marker_count": expected_markers["reserved_raven_marker_count"],
         "rows": result,
         "blockers": [
             "21 tracked candidates lack exact chest-to-RegionSummary binding",
@@ -136,12 +152,12 @@ def main() -> int:
     report["source_sha256"] = {
         str(path.relative_to(REPO)).replace("\\", "/"):
             hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in (CATALOGUE, AUDIT)
+        for path in (CATALOGUE, AUDIT, RAVENS, MARKER_NAMESPACE)
     }
     report["source_lf_sha256"] = {
         str(path.relative_to(REPO)).replace("\\", "/"):
             hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
-        for path in (CATALOGUE, AUDIT)
+        for path in (CATALOGUE, AUDIT, RAVENS, MARKER_NAMESPACE)
     }
     if args.output:
         target = args.output.resolve()
