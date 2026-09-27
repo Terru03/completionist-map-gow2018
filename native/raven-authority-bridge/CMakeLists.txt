@@ -20,7 +20,8 @@ FetchContent_MakeAvailable(zlib)
 
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 set(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../..")
-set(CAPTURE_ROOT "${REPO_ROOT}/archive/field-logs/runtime-captures/staged-wad-bitstream-raven-20260921-060345-c2c9bcc1")
+set(CAPTURE_ROOT "${REPO_ROOT}/archive/field-logs/runtime-captures/staged-wad-bitstream-raven-20260921-060345-c2c9bcc1"
+    CACHE PATH "Staged checkpoint fixture root for native tests")
 set(GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set(GENERATED_CATALOGUE "${GENERATED_DIR}/raven_catalogue.generated.h")
 set(GENERATED_FIXTURE "${GENERATED_DIR}/raven_fixture.generated.h")
@@ -61,8 +62,32 @@ add_custom_target(raven_bridge_generated_proxy
   DEPENDS "${GENERATED_DXGI_DEF}" "${GENERATED_DXGI_ASM}" "${GENERATED_DXGI_HEADER}"
 )
 
+set(GENERATED_NORNIR "${GENERATED_DIR}/nornir_catalogue.generated.h")
+add_custom_command(
+  OUTPUT "${GENERATED_NORNIR}"
+  COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_nornir_data.py"
+          --output "${GENERATED_NORNIR}"
+  DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_nornir_data.py"
+          "${REPO_ROOT}/tools/v0.10.5/nornir_saved_state.py"
+          "${REPO_ROOT}/tools/v0.10.5/nornir_catalogue.py"
+          "${REPO_ROOT}/config/collectibles/v0.10.5/all-collectibles.json"
+  VERBATIM)
+
+set(GENERATED_COLLECTIBLES "${GENERATED_DIR}/collectible_catalogue.generated.h")
+add_custom_command(
+  OUTPUT "${GENERATED_COLLECTIBLES}"
+  COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_collectible_data.py"
+          --bindings "${REPO_ROOT}/config/collectibles/v0.10.5/completion-bindings.json"
+          --output "${GENERATED_COLLECTIBLES}"
+  DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_collectible_data.py"
+          "${REPO_ROOT}/config/collectibles/v0.10.5/completion-bindings.json"
+  VERBATIM)
+
 add_library(raven_authority_bridge SHARED
+  src/collectible_authority.cpp "${GENERATED_COLLECTIBLES}"
+  src/nornir_authority.cpp "${GENERATED_NORNIR}"
   src/authority_decoder.cpp
+  src/chest_authority.cpp
   src/authority_runtime.cpp
   src/hash.cpp
   src/snapshot_store.cpp
@@ -100,6 +125,65 @@ set_target_properties(raven_authority_bridge PROPERTIES
 
 include(CTest)
 if(BUILD_TESTING)
+  add_executable(collectible_authority_tests tests/collectible_authority_tests.cpp
+    src/collectible_authority.cpp src/authority_decoder.cpp "${GENERATED_COLLECTIBLES}")
+  add_dependencies(collectible_authority_tests raven_bridge_generated_data)
+  target_compile_features(collectible_authority_tests PRIVATE cxx_std_20)
+  target_include_directories(collectible_authority_tests PRIVATE src "${GENERATED_DIR}"
+    "${zlib_SOURCE_DIR}" "${zlib_BINARY_DIR}")
+  target_link_libraries(collectible_authority_tests PRIVATE zlibstatic)
+  target_compile_definitions(collectible_authority_tests PRIVATE COMPLETIONIST_FIXTURE_ROOT=L"${CAPTURE_ROOT}")
+  target_compile_options(collectible_authority_tests PRIVATE /W4 /WX /permissive- /EHsc)
+  add_test(NAME collectible_authority_tests COMMAND collectible_authority_tests)
+  add_executable(nornir_delivery_tests tests/nornir_delivery_tests.cpp
+    src/snapshot_delivery.cpp src/platform.cpp)
+  add_dependencies(nornir_delivery_tests raven_bridge_generated_data)
+  target_compile_features(nornir_delivery_tests PRIVATE cxx_std_20)
+  target_include_directories(nornir_delivery_tests PRIVATE src "${GENERATED_DIR}")
+  target_compile_definitions(nornir_delivery_tests PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX UNICODE _UNICODE)
+  target_link_libraries(nornir_delivery_tests PRIVATE ws2_32)
+  target_compile_options(nornir_delivery_tests PRIVATE /W4 /WX /permissive- /EHsc)
+  add_test(NAME nornir_delivery_tests COMMAND nornir_delivery_tests)
+  add_executable(nornir_authority_tests tests/nornir_authority_tests.cpp
+    src/nornir_authority.cpp src/authority_decoder.cpp "${GENERATED_NORNIR}")
+  add_dependencies(nornir_authority_tests raven_bridge_generated_data)
+  target_compile_features(nornir_authority_tests PRIVATE cxx_std_20)
+  target_include_directories(nornir_authority_tests PRIVATE src "${GENERATED_DIR}"
+    "${zlib_SOURCE_DIR}" "${zlib_BINARY_DIR}")
+  target_link_libraries(nornir_authority_tests PRIVATE zlibstatic)
+  target_compile_definitions(nornir_authority_tests PRIVATE COMPLETIONIST_FIXTURE_ROOT=L"${CAPTURE_ROOT}")
+  target_compile_options(nornir_authority_tests PRIVATE /W4 /WX /permissive- /EHsc)
+  add_test(NAME nornir_authority_tests COMMAND nornir_authority_tests)
+  set(GENERATED_CHESTS "${GENERATED_DIR}/legendary_catalogue.generated.h")
+  add_custom_command(
+    OUTPUT "${GENERATED_CHESTS}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${GENERATED_DIR}"
+    COMMAND ${Python3_EXECUTABLE}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_chest_data.py"
+            --catalogue "${REPO_ROOT}/catalogue/legendary-chest-authority.json"
+            --output "${GENERATED_CHESTS}"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_chest_data.py"
+            "${REPO_ROOT}/catalogue/legendary-chest-authority.json"
+    VERBATIM
+  )
+  add_executable(legendary_authority_tests
+    tests/chest_authority_tests.cpp src/chest_authority.cpp
+    src/authority_decoder.cpp "${GENERATED_CHESTS}")
+  add_dependencies(legendary_authority_tests raven_bridge_generated_data)
+  target_compile_features(legendary_authority_tests PRIVATE cxx_std_20)
+  target_include_directories(legendary_authority_tests PRIVATE src
+    "${GENERATED_DIR}" "${zlib_SOURCE_DIR}" "${zlib_BINARY_DIR}")
+  target_link_libraries(legendary_authority_tests PRIVATE zlibstatic)
+  target_compile_definitions(legendary_authority_tests PRIVATE
+    COMPLETIONIST_FIXTURE_ROOT=L"${CAPTURE_ROOT}")
+  if(MSVC)
+    target_compile_options(legendary_authority_tests PRIVATE /W4 /WX /permissive- /EHsc)
+  endif()
+  add_test(NAME legendary_authority_tests COMMAND legendary_authority_tests)
+  add_test(NAME legendary_python_replay
+    COMMAND ${Python3_EXECUTABLE}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tools/verify_legendary_replay.py")
+
   add_executable(raven_bridge_platform_tests
     tests/platform_tests.cpp
     src/hash.cpp

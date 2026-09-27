@@ -87,13 +87,14 @@ def parsed(raw: bytes, label: str) -> Dcb:
 
 
 def build_map(source: Dcb, definitions: list[dict], coordinates: bool,
-              resource_for=None) -> tuple[bytes, dict]:
+              resource_for=None, expected_count: int = 88) -> tuple[bytes, dict]:
     snapshot = stage.coordinate_snapshot if coordinates else stage.marker_snapshot
     before = snapshot(source)
     before_uid = {row["uid"] for row in before}
     wanted = {row["marker"]["uid"]: row for row in definitions}
-    need(len(wanted) == 88 and not before_uid.intersection(wanted),
-         "Nornir UID collision with installed map data")
+    need(len(wanted) == len(definitions) == expected_count and
+         expected_count > 0 and not before_uid.intersection(wanted),
+         "collectible count or UID collision with installed map data")
     donor = next(row["offset"] for row in before
                  if row["uid"] == f"{raven.PROVEN_UID:016X}")
     blob = bytearray(source.blob)
@@ -142,7 +143,7 @@ def build_map(source: Dcb, definitions: list[dict], coordinates: bool,
     candidate = stage.rebuild_dcb_bytes(source, blob, relocations)
     after_dcb = parsed(candidate, "mapcoords.dcb" if coordinates else "mapmaster.dcb")
     after = snapshot(after_dcb)
-    need(len(after) == len(before) + 88, "new marker count differs")
+    need(len(after) == len(before) + expected_count, "new marker count differs")
     survivors = [row for row in after if row["uid"] not in wanted]
     need([{k: v for k, v in row.items() if k != "offset"} for row in survivors] ==
          [{k: v for k, v in row.items() if k != "offset"} for row in before],
@@ -170,7 +171,7 @@ def build_map(source: Dcb, definitions: list[dict], coordinates: bool,
         normalized[field:field + 16] = source.blob[field:field + 16]
     need(stage.rebuild_dcb_bytes(source, normalized, set(source.relocations)) == source.raw,
          "map inverse is not exact Raven baseline")
-    return candidate, {"added": 88, "existing_rows_preserved": True,
+    return candidate, {"added": expected_count, "existing_rows_preserved": True,
                        "exact_inverse": True, "changed_arrays": len(changed_fields)}
 
 

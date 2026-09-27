@@ -1,13 +1,116 @@
 # Next Steps
 
-## 2026-09-25 current live art probe
+## 2026-09-27 hide-collected direct engine state upgrade installed (Digs, Maps, Shrines, Scrolls, Markers)
+
+The completion upgrade package v2 is installed under operation
+`70e1fb51f4f94eacba15a0041a413625`. It adds direct engine quest and wallet observation
+for 85 non-chest collectibles:
+- 12 Treasure Digs via `game.QuestManager` (`Complete` quest state)
+- 12 Treasure Maps via `game.QuestManager` (parent quest activated)
+- 13 Jötnar Shrines via `game.Wallets` (`HERO` and `HERO_SAVEONLY` resources)
+- 5 Lore Scrolls via `game.Wallets` (`HERO` and `HERO_SAVEONLY` resources)
+- 43 Lore Markers via `game.Wallets` (`HERO` and `HERO_SAVEONLY` resources)
+
+Direct observation synchronizes on map open and poll, hiding collected/finished pins
+even when their levels are unloaded. Together with the 78 native proved identities
+(33 Legendary chests + 45 Artefacts), 163 collectibles now have persistent completion
+coverage.
+
+All 162 collectible tests pass, and 11 native CTests pass. Rollback of this operation
+restores the chests + artefacts package `643dd4f93eb84fcbbd8d8ebf31607fa6`.
+
+```powershell
+py -3.14 -B tools/v0.10.5/install-collectible-completion.py rollback --operation build/collectible-completion-upgrade-v2/backups/70e1fb51f4f94eacba15a0041a413625/operation.json --output build/collectible-completion-upgrade-v2
+```
+
+## 2026-09-27 hide-collected upgrade installed (Chests + Artefacts)
+
+The completion upgrade package is installed under operation
+`643dd4f93eb84fcbbd8d8ebf31607fa6`. It incorporates all 45 Artefacts (`state == 3`)
+alongside the 33 Legendary chests (`state == 4`), bringing saved-state authority to
+78 identities. Live object observation is active for all 7 adapters across all 410 pins.
+
+All 161 collectible tests pass, 18 package installer/proof tests pass, and 11 native
+CTests pass. Rollback of this operation restores the verified Legendary package
+`7d93a92c6f474c4aa72bacd95d9ff94b`.
+
+## 2026-09-27 hide-collected runtime installed
+
+The completion package is installed under operation
+`7d93a92c6f474c4aa72bacd95d9ff94b`. Its state store, save boundaries, background
+polling, compass/selection cleanup and seven loaded-object adapters are connected.
+The `getfenv` startup crash and float32 timestamp timeout are fixed. Live Lua
+now receives 31 collected and two remaining Legendary chests from the current
+save. Map opening and category changes work with the capacity fixes retained.
+
+160 collectible checks and 50 Raven/Nornir checks pass, plus eleven native CTests.
+The current package's isolated install/verify/rollback restores all 11 target
+files and preserves ten other files. Use the completion operation for rollback;
+the old recovery rollback restores the pre-recovery package that crashed.
+
+Saved-state coverage is still 33 of 410 IDs. The other 377 have loaded-object
+paths, but remain visible when their exact state is unknown. Complete their
+saved bindings and paired live proofs before claiming full unloaded coverage.
+
+See [build and rollback instructions](docs/builds/v0.10.5-hide-collected.md),
+[implementation status](docs/superpowers/plans/2026-09-26-hide-collected-markers.md),
+and [coverage](docs/research/collectible-state-coverage.md).
+
+## 2026-09-26 map collision pool fix verified live
+
+The recovery retains all 410 blue quest-marker locations and eleven category
+filters, plus the existing 53 Raven and 88 Nornir definitions. Startup previously
+filled the engine's 732-entry marker-radius dictionary; the package needs 922
+entries. The new bounded native shim supplies 2,048 entries while forwarding to
+an exact copy of the original Raven/Nornir bridge. The executable is unchanged
+on disk. No assertions or unrelated allocation routines are bypassed.
+
+The later user-modified package crashed on map open with a null Dock icon. It
+requested 340 Dock markers from a pool with only 40 instances. The recovery
+restores the matching Raven/Nornir resources, uses blue quest icons for the
+added locations, and adds 410 instances while preserving all 389 base pool rows.
+All eleven replaced files are backed up, including the user's modified bridge.
+
+The 20:38 crash dump identifies another independent limit: UI physics world 7
+exhausted its 500-body pool at `GoW.exe+0x184C48` (`!m_poolId.empty()`). The new
+shim sets its body and shape counts to 2,048 before the engine calculates and
+allocates their backing storage. The other physics worlds are unchanged.
+
+Thirteen location tests, six recovery tests, and the native capacity test pass.
+The native test executes the generated trampoline and checks all world indices.
+All eleven installed targets and four preserved-file hashes verified. Only the
+DLL and ownership manifest changed from the user's 20:36 installation. Their
+current enlarged icon pool and all map/category edits are preserved. The map
+opened with 667 UI collision bodies and 653 query entities; the pool has 2,048
+slots. All 21 filters were exercised, and another map open returned to the same
+667 bodies. The user confirmed: "filters are working, map is working". Evidence
+and read-only live counts are in `build/map-open-pool-crash/verification.json`.
+
+Active recovery operation:
+`build/collectible-recovery/backups/36c89608e5554c628fa5a9b5ae7695e2/operation.json`.
+Both earlier location operations (`18ec8719464d459da62eec716ea17564` and
+`a41b4c2bdad8482a90d22b9d303d0708`) as well as intermediate capacity operation
+`5cfb3a85946b4d05b7aa479ce724bb25` are rolled back.
+
+```powershell
+py -3.14 -B tools/v0.10.5/recover-collectible-locations.py verify --operation build/collectible-recovery/backups/36c89608e5554c628fa5a9b5ae7695e2/operation.json
+```
+
+Use the recovery tool for rollback before changing older Nornir/bridge layers.
+Its backups restore the user's pre-recovery package, which had map-open crashes.
+Coverage and build/rollback commands are in
+`docs/builds/v0.10.5-collectible-locations.md`. New locations can include already
+collected items; procedural and repeatable rewards remain excluded.
+
+## 2026-09-25 map-only art probe failed and rolled back
 
 The 22:46 pack-only test kept Raven art correct and showed the stock chest
 symbol. Its operation was rolled back. The map-only chest art probe operation
 `build/nornir-map-only-art-probe/backups/83d3624cdb2c446b9f20dd085d89d470/operation.json`
-now has status `installed`. It changes six art/resource files above checkpoint
-v4. Its live chest and Raven art result is pending. Do not treat structural
-verification as a live art pass. See
+now has status `rolled_back`. The live test showed Raven pins drawing chest
+art again. The six art/resource files were restored; the installed files match
+the Raven-safe stock Nornir checkpoint-v4 hashes. Custom artwork is deferred
+at the user's request. See
 `docs/research/nornir-map-only-art-probe.md`.
 
 ## 2026-09-25 saved chest attempt replay built offline
@@ -18,7 +121,7 @@ keeps that event through the late Raven boundary. Two focused Lua 5.1 tests
 pass: a saved attempt reveals children after the boundary, and a false flag
 hides them on another save. The two-file candidate builds and compiles offline.
 It is **not installed or checked live**. Checkpoint v4 remains the active
-map/runic script layer; the map-only art probe sits above it.
+map/runic script layer; the map-only art probe has been rolled back.
 See `docs/research/nornir-stock-saved-state-test.md`.
 
 ## 2026-09-25 current composed-package verifier added
