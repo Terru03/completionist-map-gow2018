@@ -1,5 +1,214 @@
 # Next Steps
 
+## 2026-09-28 Dedicated Compass HUD Art Pipeline for All 15 Families (Completion Upgrade v12 & Full Art Package)
+
+Dedicated Compass HUD artwork has been fully implemented across all 15 collectible families, matching the in-world 3D map icon artwork directly on Kratos's navigation compass HUD bar.
+
+### 1. Implementation Architecture & Deliverables
+1. **Engine Compass Class Registration (`wad_r_perm.dcb`)**:
+   - `build_perm` appends 15 contiguous `0x20`-byte type-`0x11E` (`CompassIconClass`) export records before `COMPASS_GLOBALS` (`root = 0x4E2D08`).
+   - Each record binds its respective `hud_resource` (`goCompletionist<Title>HUD`) hash as the compass icon, sets `Radius = 0`, preserves `InWorldUID = 0x0E24CF72E968ACF0` (stock side quest in-world carrier), and sets unit scale `1.0f`.
+   - Data and export relocations cleanly shifted by `+15 * 0x20` (`+0x1E0`) bytes.
+   - Exact-inverse byte-for-byte verification confirmed in tests and builder.
+2. **UI Asset Chains (`r_ui.wad`)**:
+   - `build_wad` links each family's HUD model (`MDL_cmf_<family>_hud`) to its existing family material (`MAT_cmf_<family>`) and 2D quad mesh (`MG_boatdock_0`).
+   - Header type table accounting updated (`0x10001` +2, `0x20001` +2, `0x10005` +1, `0x2000C` +1, `0x10015` +2; total payloads `(typed + 3) * 15`).
+   - Full exact-inverse recovery maintained.
+3. **UI GameObject Pool (`wad_r_ui.dcb`)**:
+   - Reassigned 15 spare stock quest pool rows (capacity 1) for the HUD Go instances (`goCompletionist<Title>HUD`), bringing reassigned pool entries to `498 + 15 = 513`.
+   - Preserves capacity invariance across all 2,549 pool rows with `0` added UI physics objects.
+4. **Lua Wiring & Prompt Synchronization (`collectible-location-map.lua`)**:
+   - Added deterministic `familyClasses` mapping in `MapOn.ShowOnCompass` (`CompletionistArtefact`, `CompletionistCipherChest`, `CompletionistCoffin`, `CompletionistJotnarShrine`, `CompletionistLegendaryChest`, `CompletionistLoreMarker`, `CompletionistLoreScroll`, `CompletionistNornirBell`, `CompletionistNornirChest`, `CompletionistNornirMechanism`, `CompletionistNornirSeal`, `CompletionistRealmTear`, `CompletionistTreasureDig`, `CompletionistTreasureMap`, `CompletionistWoodenChest`).
+   - Graceful fallback to `"SIDE"` if compass class show fails.
+   - Retains strict mutual exclusion (tracking custom clears stock and native markers; tracking stock clears custom and hides pulsing rings).
+   - Instant HUD prompt text updates (`CursorInfo_Top` / `CursorAction_Text` and `UpdateFooterButton`).
+5. **Frozen Packages & Verified Installation**:
+   - **Completion Upgrade v12**: Built in `build/collectible-completion-upgrade-v12`, installed into game under operation `5460fd4cd3d5462cac0c1241ac50588c`.
+   - **15-Family Art Package**: Built in `build/collectible-family-art/all-types` (package `6fa29704cdbf35c45d0a9ef419ec26b758448af94e23ac67932f7156c35da4af`), installed into game under operation `245f4cb7675448ab89ae94f9fb677616` (`ARTWORK_VERIFY_OK`).
+
+### Active Operations & Rollback Journals
+- **Completion Upgrade v12**: `build/collectible-completion-upgrade-v12/backups/5460fd4cd3d5462cac0c1241ac50588c/operation.json`
+- **Family Art with Compass HUD**: `build/collectible-family-art/all-types/backups/245f4cb7675448ab89ae94f9fb677616/operation.json`
+
+Rollback commands:
+```powershell
+# Roll back family art package:
+py -3.14 -B tools/v0.10.5/install-collectible-family-art.py rollback --operation build/collectible-family-art/all-types/backups/245f4cb7675448ab89ae94f9fb677616/operation.json --output build/collectible-family-art/all-types
+
+# Roll back completion upgrade v12:
+py -3.14 -B tools/v0.10.5/install-collectible-completion.py rollback --operation build/collectible-completion-upgrade-v12/backups/5460fd4cd3d5462cac0c1241ac50588c/operation.json --output build/collectible-completion-upgrade-v12
+```
+
+### Verification Summary
+- **208/208** collectible tests passed (`test_collectible_*.py`).
+- **64/64** raven tests passed (`test_all_ravens_*.py`).
+- **3/3** dedicated compass HUD unit tests passed (`test_collectible_hud_art.py`).
+- **11/11** native CTests passed (10 in `collectible-completion-bridge`, 1 in `collectible-completion-capacity`).
+- Exactly 498 map bindings + 15 compass HUD classes verified with full exact-inverse byte preservation.
+
+---
+
+## 2026-09-28 Mutual Compass Tracking Exclusion and Raven Rapid Toggle Fix (Completion Upgrade v11)
+
+
+All three user requests for map navigation and marker visibility have been implemented, tested, and installed in the game:
+
+1. **Empty Space Click-Drag & Zoom Fix**:
+   - **Prior issue**: When clicking empty space to drag the map while zoomed in, `MapOn.MouseClickHandler` in `tools/v0.10.5/collectible-location-map.lua` queried `UI.GetEventSenderGameObject()` which held a stale GameObject from prior icon clicks. This caused the camera to jump to a marker from the opposite side of the map and reset the zoom level via `Camera.PointAtGO(icon)`.
+   - **Fix**: In `MapOn.MouseClickHandler`, if `not self.isOpenedForFastTravel`, we verify collision using `hasCollision = (self.mapIconCollision ~= nil or self.completionistMapV105LocationSelected ~= nil or self.currMarkerID ~= nil or self.currMarkerPlayerIcon)`. If clicked on empty space (`not hasCollision`), click handling returns immediately without moving or refocusing the camera. When an icon is legitimately clicked, `pcall(Camera.PointAtGO, icon)` was removed so the current zoom level is preserved without resetting.
+
+2. **On-Screen Button Prompt for Show/Hide Completionist Markers**:
+   - Added `MapOn.UpdateFooterButtonPrompt` hook in `collectible-location-map.lua` leveraging the existing `"ActiveMarkers"` footer button slot.
+   - When viewing Filter 1 ("All") or Filter -101 ("Completionist") / custom categories, the footer bar displays `[DownButton] Hide Markers` or `[DownButton] Show Markers` (using the native Santa Monica controller glyph system, exactly matching `[SquareButton] Hide Kratos`).
+   - Toggling markers via D-Pad Down (`_G.CompletionistMapV105ToggleMarkers` / `MapOn.EVT_Down_Release`) dynamically refreshes the footer prompt immediately.
+
+3. **Persistent Show/Hide Setting Across Map Sessions**:
+   - Replaced temporary local visibility flags with global persistent variables `_G.CompletionistMapV105PersistentShowAll` (default `true`) and `_G.CompletionistMapV105PersistentShowCategories` (default `true`).
+   - Removed forced resets (`completionistShowAll = false`) from `MapOn.SubmenuExit` and `MapOn.Exit`.
+   - The user's marker visibility choice persists across closing and reopening the in-world map and transitions between submenus.
+
+Active operations:
+- Completion Upgrade v9: operation `5e099639243441008acbdede12cc051b` in `build/collectible-completion-upgrade-v9` (`VERIFY_OK`).
+- 15-Family Custom Art: operation `e988c15ba4b147a0a77b7b671ab0eb00` in `build/collectible-family-art/all-types` (`ARTWORK_VERIFY_OK`).
+
+Verification summary:
+- 11/11 native CTests pass (10 in `collectible-completion-bridge`, 1 in `collectible-completion-capacity`).
+- 120/120 targeted Python tests pass across all completion, bindings, and art suites.
+
+Rollback commands:
+```powershell
+# Roll back family art:
+py -3.14 -B tools/v0.10.5/install-collectible-family-art.py rollback --operation build/collectible-family-art/all-types/backups/e988c15ba4b147a0a77b7b671ab0eb00/operation.json --output build/collectible-family-art/all-types
+
+# Roll back completion v9:
+py -3.14 -B tools/v0.10.5/install-collectible-completion.py rollback --operation build/collectible-completion-upgrade-v9/backups/5e099639243441008acbdede12cc051b/operation.json --output build/collectible-completion-upgrade-v9
+```
+
+## 2026-09-28 100% saved chest authority coverage (259/259 chests) installed (Completion Upgrade v8)
+
+All 259 chests in the 410 collectible locations (99 wooden chests, 109 red coffins, 14 cipher chests, 37 legendary chests) now have persistent saved-state authority directly decoded from the active save's checkpoints by `dxgi.dll`.
+
+1. **Chest Non-Respawn Reality in God of War (2018)**:
+   - In God of War (2018), exploration and story chests (Midgard, Alfheim, Helheim, etc.) **never respawn**. Once opened, their state in the save file is permanently `OPENED` (`state == 4`).
+   - The only respawning chests in the engine are the procedural maze chests in Niflheim's Ivaldi Workshop and Muspelheim repeatable trials; all 27 of those trial rewards were already excluded from the 410 locations.
+
+2. **Resolution of the Remaining 26 Regional Chests**:
+   - **Prior limitation**: In v7, exactly 233 chests were in `standard-chest-authority.json` + `legendary-chest-authority.json`. Exactly 26 chests (13 wooden chests and 13 coffins across Landsuther Mines / `xpl450`/`xpl475`, Konùnsgard / `xpl100`/`xpl150`/`xpl160`, Riverpass Chisel Dungeon / `for260`, Foothills / `foot250`, Peakspass / `peak205`, and Stonemason / `stn110`) remained unproved. When opened, they were hidden by the loaded object reader during the session, but upon restarting the game with those levels unloaded, their state reset to `unknown` and reappeared as unopened pins on the map.
+   - **Fix**:
+     - Derived all 26 exact native checkpoint identities (`registry_hash`, `object_hash`, `serialized_key`) from their WAD entity transform chains.
+     - Verified `wooden_chest_844dbdd31fe6dc2fb08087399b65f67b` (`xpl475_huldramineslh.wad`) byte-for-byte in the user's active `game.sav` (`01ce3dc906612420bbdc2ed53cca93c5f3`, matching `[5, 4, 2, 0]`).
+     - Added all 26 chests to `catalogue/standard-chest-authority.json` (increasing from 200 to 226 standard chests, bringing total chest authority to 259/259 chests = 100%).
+     - Expanded `completion-bindings.json` to 304 proved saved identities (259 chests + 45 artefacts), contract hash `962f42eaf8730a3c56e14b4af6154eb0c091bd3fca6e09ab07642f230a7004c5`.
+     - Recompiled native bridge companion DLL (`d0bdd5242970fafa4029cef86f6798555f9f1a995059fe4539891408f7aefea3`) and capacity shim (`18c42a84b045b672cfd82ad9cecabbd19a33380e5957f4ada6db0bfabf32b1d6`).
+     - Rebuilt and installed Completion Upgrade v8 under operation `dcc735df81f848678d3373c7cce3281e`.
+     - Rebuilt and installed 15-Family Custom Artwork package under operation `ac829c28d3d4428aa348f00f387ff254`.
+
+Active operations:
+- Completion Upgrade v8: operation `dcc735df81f848678d3373c7cce3281e` in `build/collectible-completion-upgrade-v8` (`VERIFY_OK`).
+- 15-Family Custom Art: operation `ac829c28d3d4428aa348f00f387ff254` in `build/collectible-family-art/all-types` (`ARTWORK_VERIFY_OK`).
+
+Verification summary:
+- 11/11 native CTests pass (10 in `collectible-completion-bridge`, 1 in `collectible-completion-capacity`).
+- 117/117 targeted Python completion, bindings, and art tests pass.
+- All 15 dedicated marker families, 498 marker bindings, and 2,549 UI object pool rows verified.
+
+Rollback commands:
+```powershell
+# Roll back family art:
+py -3.14 -B tools/v0.10.5/install-collectible-family-art.py rollback --operation build/collectible-family-art/all-types/backups/ac829c28d3d4428aa348f00f387ff254/operation.json --output build/collectible-family-art/all-types
+
+# Roll back completion v8:
+py -3.14 -B tools/v0.10.5/install-collectible-completion.py rollback --operation build/collectible-completion-upgrade-v8/backups/dcc735df81f848678d3373c7cce3281e/operation.json --output build/collectible-completion-upgrade-v8
+```
+
+## 2026-09-28 marker hiding sync (Bug 1) and 278 proved chest saved identities (Bug 2) installed
+
+Both reported issues have been fully resolved and verified in the live game installation:
+
+1. **Marker hiding toggle clean on new saves (Bug 1)**:
+   - **Root cause**: When toggling completionist markers off in Filter 1 ("All") or Filter -101 ("Completionist") via D-Pad Down (`_G.CompletionistMapV105ToggleMarkers` / `MapOn.EVT_Down_Release`), location pins hid, but Odin's Ravens and Nornir Chests ignored the `CompletionistMapV105ShowAll` / `CompletionistMapV105ShowCategories` flags and had no resync hook. On a brand-new save, exactly 2 markers remained: the Wildwoods Odin's Raven and Wildwoods Nornir Chest.
+   - **Fix**:
+     - Updated Raven visibility (`ravenMapVisible`, `ravenVisibilityKey`) to check `_G.CompletionistMapV105ShowAll()` in Filter 1 and `_G.CompletionistMapV105ShowCategories()` in Filters -101/-102.
+     - Exposed `_G.CompletionistMapV105ResyncRavens(target)` to trigger `syncIcons(map, "toggle_markers")`.
+     - Updated Nornir visibility (`visible`) to check `_G.CompletionistMapV105ShowAll()` in Filter 1 and `_G.CompletionistMapV105ShowCategories()` in category filters.
+     - Exposed `_G.CompletionistMapV105ResyncNornir(target)` to trigger `sync(map)`.
+     - Updated `_G.CompletionistMapV105ToggleMarkers` and `MapOn.EVT_Down_Release` to call both `_G.CompletionistMapV105ResyncRavens` and `_G.CompletionistMapV105ResyncNornir`.
+     - Added `wire_toggle()` and `unwire_toggle()` to `build-collectible-completion.py` so the runtime compositions wire these hooks deterministically and reversibly.
+
+2. **Opened chests hidden across all levels on endgame saves (Bug 2)**:
+   - **Root cause**: Non-legendary chests (wooden chests, red coffins, cipher chests) defaulted to unproved bindings, which evaluated to `unknown` and remained visible unless the player loaded into their exact levels for live object observation. On an endgame save with levels unloaded, opened chests remained visible on the map.
+   - **Fix**:
+     - Extracted 200 proved chest identities from `identity-audit.json` into canonical `catalogue/standard-chest-authority.json` (4 legendary, 14 cipher, 96 coffin, 86 wooden chests with exact fixture states).
+     - Expanded `completion-bindings.json` and `build-collectible-completion-bindings.py` to 278 proved identities (233 chests + 45 artefacts), contract hash `72d37d3cbe82eaace15cfdb35d0e5fb46897098757df8f8d2c02bbe10b91223a`.
+     - Updated native bridge data generator (`generate_collectible_data.py`) to classify all 233 chests under `kCollectibleChests` (`state == 4`).
+     - Rebuilt native bridge companion DLL (`59dc899bae6c1857edbf9437b76ae4f43f607cffea9e5c2e60b973841f887cd6`) and capacity shim (`38b758f503cd57612ebb685b8166e87378f698aed2d736215076835530423326`).
+     - Native checkpoint decoder in `dxgi.dll` now decodes all 233 opened chests from saved checkpoints into `'collected'`, cleanly suppressing them across all levels.
+
+Active operations:
+- Completion Upgrade v7: operation `a52c3269204545d4a889791ed7348fd3` in `build/collectible-completion-upgrade-v7` (`VERIFY_OK`).
+- 15-Family Custom Art: operation `79fe9812606c462eb5ae1f03b5f8449a` in `build/collectible-family-art/all-types` (`ARTWORK_VERIFY_OK`).
+
+Verification summary:
+- 11/11 native CTests pass (10 in `collectible-completion-bridge`, 1 in `collectible-completion-capacity`).
+- 249 Python tests pass across all suites.
+- All 15 dedicated marker families, 498 marker bindings, and 2,549 UI object pool rows verified.
+
+Rollback commands:
+```powershell
+# Roll back family art:
+py -3.14 -B tools/v0.10.5/install-collectible-family-art.py rollback --operation build/collectible-family-art/all-types/backups/79fe9812606c462eb5ae1f03b5f8449a/operation.json --output build/collectible-family-art/all-types
+
+# Roll back completion v7:
+py -3.14 -B tools/v0.10.5/install-collectible-completion.py rollback --operation build/collectible-completion-upgrade-v7/backups/a52c3269204545d4a889791ed7348fd3/operation.json --output build/collectible-completion-upgrade-v7
+```
+
+## 2026-09-28 clean alpha transparency pipeline and dedicated Red Chest artwork installed
+
+Both visual issues identified in live map testing have been resolved:
+
+1. **Dark contour and black details preserved (no stripped outlines)**:
+   - **Root cause**: `tools/v0.10.5/collectible_art_textures.py` previously executed `texconv`
+     with `-c 000000` (1-bit colorkey). Because source PNGs had black backgrounds,
+     `texconv` set `alpha = 0` for all black and near-black pixels across the entire image.
+     The game's pixel shader (`0c599dc8dc7e2170_ps_10000207.txt`) executes
+     `discard_nz (alpha <= 0.0001)`, discarding all dark outlines, drop shadows, iron straps
+     (e.g., Wooden Chest bands), and inner carved crevices. On snow or bright terrain, icons
+     appeared washed out and bleached.
+   - **Fix**: Implemented `make_clean_alpha_png()` using perimeter-seeded flood-fill to turn
+     only the true external background into `alpha = 0`, keeping all interior dark details and
+     the dark outer silhouette contour at `alpha = 255`. Removed `-c 000000` from `texconv`.
+     Both BC7 diffuse and BC1 emissive textures now retain full contrast outlines and shading.
+
+2. **Dedicated Red Chest artwork (replaced upright burial coffin)**:
+   - **Root cause**: In the game engine data and completion bindings, the family is named
+     `"coffin"` (`gocoffin_parent`, filter `-110`, label `"RED CHESTS"`, title `"Red Chest"`,
+     109 placements). The initial asset was created as a literal vertical standing sarcophagus.
+   - **Fix**: Replaced `assets/icons/families/coffin.png` with a dedicated horizontal Norse stone
+     chest featuring heavy stone lid and pillars, intricate geometric knotwork carvings, and
+     crimson red runic accents, matching the in-game Red Chests and the God of War UI style.
+
+The complete 15-family package is built and installed under operation
+`2dd57643652b47debae920d9d8b27177`, package
+`4822b38058fef2f523ace81fa82f05e15ce24fab9512dd47e6f15e54570d4ac1`.
+
+Coverage and verification:
+- 15 dedicated marker families: 45 Artefacts, 14 Cipher Chests, 109 Red Chests (coffins),
+  13 Jötnar Shrines, 37 Legendary Chests, 43 Lore Markers, 5 Lore Scrolls,
+  24 Nornir Bells, 22 Nornir Chests, 12 Nornir Mechanisms, 30 Nornir Seals,
+  21 Realm Tears, 12 Treasure Digs, 12 Treasure Maps, 99 Wooden Chests.
+- All 498 custom marker bindings verified in `mapmaster.dcb`.
+- UI object pool remains at exactly 2,549 rows in `wad_r_ui.dcb`.
+- Verified 15 unique custom diffuse texture buffers and 15 unique custom emissive buffers.
+- Raven diffuse and emissive textures verified byte-for-byte identical to baseline.
+- Dark contour preservation assertion verified across all 15 families (`dark_fg > 50`).
+- All 17 completion v6 preserved files verified unchanged (`ARTWORK_VERIFY_OK`).
+- 200 Python collectible tests, 9 art tests with dark contour checks, 3 texture order tests, and 11 native CTests pass.
+
+Rollback command to restore pre-art completion v6 baseline:
+```powershell
+py -3.14 -B tools/v0.10.5/install-collectible-family-art.py rollback --operation build/collectible-family-art/all-types/backups/2dd57643652b47debae920d9d8b27177/operation.json --output build/collectible-family-art/all-types
+```
+
 ## 2026-09-27 hide-collected direct engine state upgrade installed (Digs, Maps, Shrines, Scrolls, Markers)
 
 The completion upgrade package v2 is installed under operation

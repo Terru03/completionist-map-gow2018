@@ -9,8 +9,25 @@ import shutil
 import struct
 import subprocess
 
+from PIL import Image, ImageDraw
+
 import collectible_family_art as art
 import collectible_completion_adapters as adapters
+
+
+def make_clean_alpha_png(source_path: Path, target_path: Path) -> Path:
+    im = Image.open(source_path).convert('RGBA')
+    w, h = im.size
+    seeds = [(0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1),
+             (w // 2, 0), (w // 2, h - 1), (0, h // 2), (w - 1, h // 2)]
+    for pt in seeds:
+        pix = im.getpixel(pt)
+        if pix[3] != 0 and max(pix[:3]) <= 10:
+            ImageDraw.floodfill(im, pt, (0, 0, 0, 0), thresh=10)
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    im.save(target_path, format='PNG')
+    return target_path
+
 
 ASSETS = art.ROOT / 'assets/icons/families'
 FAMILY_PNG = {name: name + '.png' for name in (
@@ -20,13 +37,13 @@ FAMILY_PNG = {name: name + '.png' for name in (
 FAMILY_PNG['treasure_dig'] = 'buried_treasure.png'
 PACK = 'completionist_v105_family_art'
 PACK_FILES = {'exec/patch/pc_le/' + PACK + suffix for suffix in ('.texpack', '.texpack.toc')}
-PRESERVED = {'exec/dc/pc_le/wad_r_perm.dcb', 'exec/dc/pc_le/mapcoords.dcb',
+PRESERVED = {'exec/dc/pc_le/mapcoords.dcb',
     'exec/dc/pc_le/compassgraph.dcb', 'mods/lua/gameart/ui/scripts/inworldmenu/mapmenu.lua',
     'dxgi.dll', 'mods/completionist-map/native/collectible-base-dxgi.dll',
     'mods/completionist-map/native/raven-native-bridge-manifest.json', 'GoW.exe', 'version.dll',
     'mods/lua/gameart/scripts/levels/gameplaymodules/progression/interact_chest_runic.lua'}
 PRESERVED.update('mods/lua/' + adapters.PREFIX + row[0] for row in adapters.SCRIPTS.values())
-BASE_FILES = {art.WAD, art.MASTER, art.POOL, art.BOOT}
+BASE_FILES = {art.WAD, art.MASTER, art.POOL, art.BOOT, art.PERM}
 TOOL_ROOT = Path(os.environ['LOCALAPPDATA']) / 'CompletionistMap/tools'
 TOOLS = {
     'texconv': (TOOL_ROOT / 'DirectXTex-may2026/texconv.exe',
@@ -92,8 +109,11 @@ def run(command, cwd=None):
     return result.stdout
 
 
-def source_inputs():
-    sources = [ASSETS / name for name in FAMILY_PNG.values()]
+def source_inputs(families=None):
+    families = sorted(FAMILY_PNG if families is None else families)
+    art.need(families and len(set(families)) == len(families) and set(families) <= set(FAMILY_PNG),
+             'unknown or duplicate artwork family')
+    sources = [ASSETS / FAMILY_PNG[name] for name in families]
     sources += [Path(__file__), art.HERE / 'collectible_family_art.py',
                 art.HERE / 'install-collectible-family-art.py',
                 art.HERE / 'build-collectible-locations.py',
@@ -148,29 +168,37 @@ def bind_user_hashes(pack, toc, desired):
     return bytes(patched), bytes(patched_toc)
 
 
-def compile_textures(output, inputs):
-    cache_id = art.sha(json.dumps(inputs, sort_keys=True).encode())
+def compile_textures(output, inputs, families=None):
+    selected = sorted(FAMILY_PNG if families is None else families)
+    art.need(selected and len(set(selected)) == len(selected) and set(selected) <= set(FAMILY_PNG),
+             'unknown or duplicate artwork family')
+    cache_key = inputs if families is None else {'inputs': inputs, 'families': selected}
+    cache_id = art.sha(json.dumps(cache_key, sort_keys=True).encode())
     # GOWTool needs short paths for each DDS file.
     work = io.safe(art.ROOT / 'build/art-textures' / cache_id[:16])
     manifest = work / 'textures.json'
     if manifest.exists():
         data = read_json(manifest)
         art.need(data.get('source_inputs') == inputs, 'texture cache inputs differ')
+        art.need(set(data.get('families', {})) == set(selected), 'texture cache families differ')
         for name, value in data['files'].items():
             art.need(io.sha(work / name) == value, 'texture cache drift: ' + name)
         return work, data
     pack_dir = work / PACK
     pack_dir.mkdir(parents=True, exist_ok=True)
     definitions = {}
-    for family, png in sorted(FAMILY_PNG.items()):
+    for family in selected:
+        png = FAMILY_PNG[family]
         source = ASSETS / png
         source_sha = io.sha(source)
         row = {'source': source.relative_to(art.ROOT).as_posix(), 'source_sha256': source_sha}
+        alpha_png = work / 'rgba' / png
+        make_clean_alpha_png(source, alpha_png)
         for role, fmt in (('diffuse', 'BC7_UNORM_SRGB'), ('emissive', 'BC1_UNORM')):
             target = work / 'dds' / role
             target.mkdir(parents=True, exist_ok=True)
             run([TOOLS['texconv'][0], '-nologo', '-y', '-w', '148', '-h', '148', '-m', '8',
-                 '-c', '000000', '-f', fmt, '-o', target, source])
+                 '-f', fmt, '-o', target, alpha_png])
             compiled = target / (source.stem + '.dds')
             art.need(compiled.is_file(), 'DDS output missing')
             file_hash = int.from_bytes(art.identity(family, role + ':' + source_sha, 8), 'little')
@@ -189,7 +217,7 @@ def compile_textures(output, inputs):
     pack_path.write_bytes(fixed)
     toc_path.write_bytes(fixed_toc)
     pack = mapping.parse_texpack(work / (PACK + '.texpack'))
-    art.need(pack['tex_count'] == 2 * len(FAMILY_PNG), 'texture pack count differs')
+    art.need(pack['tex_count'] == 2 * len(selected), 'texture pack count differs')
     base = art.logical.parse_wad((output / 'baseline' / art.WAD).read_bytes())
     residents = work / 'resident'
     residents.mkdir(exist_ok=True)
@@ -212,27 +240,30 @@ def compile_textures(output, inputs):
                      'family texture alias: ' + role + ':' + field)
     files = {p.relative_to(work).as_posix(): io.sha(p) for p in work.rglob('*') if p.is_file()}
     data = {'source_inputs': inputs, 'families': definitions, 'files': files,
-            'dimensions': [148, 148], 'mips': 8, 'black_chromakey': True,
+            'dimensions': [148, 148], 'mips': 8, 'clean_alpha': True,
             'diffuse_format': 'BC7_UNORM_SRGB', 'emissive_format': 'BC1_UNORM'}
     io.write_json(manifest, data)
     return work, data
 
 
-def compose(output, work, compiled):
+def compose(output, work, compiled, *, isolate_render_resources=False):
     source = output / 'baseline'
-    specs, resources = [], {}
+    specs, resources, hud_resources = [], {}, {}
     for family, row in sorted(compiled['families'].items()):
         spec = art.spec_for(family)
         resources[family] = spec['resource']
+        hud_resources[family] = spec['hud_resource']
         textures = {role: {k: row[role][k] for k in ('name', 'file_hash', 'user_hash')}
                     for role in ('diffuse', 'emissive')}
         for role, texture in textures.items():
             texture['resident'] = (work / row[role]['resident']).read_bytes()
         specs.append((spec, textures))
     outputs, proof = {}, {'textures': compiled}
-    outputs[art.WAD], proof[art.WAD] = art.build_wad((source / art.WAD).read_bytes(), specs)
+    outputs[art.WAD], proof[art.WAD] = art.build_wad((source / art.WAD).read_bytes(), specs,
+        isolate_render_resources=isolate_render_resources)
     outputs[art.MASTER], proof[art.MASTER] = art.build_master((source / art.MASTER).read_bytes(), resources)
-    outputs[art.POOL], proof[art.POOL] = art.build_pool((source / art.POOL).read_bytes(), resources)
+    outputs[art.POOL], proof[art.POOL] = art.build_pool((source / art.POOL).read_bytes(), resources, hud_resources)
+    outputs[art.PERM], proof[art.PERM] = art.build_perm((source / art.PERM).read_bytes(), [s[0] for s in specs])
     boot = read_json(source / art.BOOT)
     entry = '../../patch/pc_le/' + PACK
     art.need(entry not in boot['patch-texpacks'], 'family art pack already installed')

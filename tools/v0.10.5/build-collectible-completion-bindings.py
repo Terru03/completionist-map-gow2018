@@ -18,6 +18,7 @@ builder = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(builder)
 OUTPUT = ROOT / "config/collectibles/v0.10.5/completion-bindings.json"
 CHESTS = ROOT / "catalogue/legendary-chest-authority.json"
+STANDARD_CHESTS = ROOT / "catalogue/standard-chest-authority.json"
 ARTEFACTS = artefact_saved_state.AUTHORITY
 
 
@@ -54,6 +55,8 @@ def build(include_proved: bool = True) -> dict:
     rows, _, excluded = builder.definitions()
     chest_rows = json.loads(CHESTS.read_text(encoding="utf-8"))["rows"] if include_proved else []
     chests = {r["catalogue_id"]: r for r in chest_rows}
+    std_rows = json.loads(STANDARD_CHESTS.read_text(encoding="utf-8"))["rows"] if include_proved else []
+    standard_chests = {r["catalogue_id"]: r for r in std_rows}
     artefacts = {r['catalogue_id']: r for r in artefact_saved_state.load()} if include_proved else {}
     bindings = []
     for row in sorted(rows, key=lambda r: r["catalogue_id"]):
@@ -99,6 +102,22 @@ def build(include_proved: bool = True) -> dict:
                 "live_validation": "pending",
                 "remaining_proof": "current-save delivery, reload and older-save validation",
             })
+        if row["catalogue_id"] in standard_chests:
+            chest = standard_chests.pop(row["catalogue_id"])
+            bindings[-1].update({
+                "status": "proved", "instance_keys": [chest["serialized_key"]],
+                "predicate": {"field": "state", "type": "number", "equals": 4},
+                "native_identity": {k: chest[k] for k in
+                    ("registry_hash", "object_hash", "serialized_key")},
+            })
+            bindings[-1]["evidence"].update({
+                "kind": "exact_identity_and_archived_decoder",
+                "authority_source": STANDARD_CHESTS.relative_to(ROOT).as_posix(),
+                "fixture_observed": True,
+                "fixture_state": chest["fixture_state"],
+                "live_validation": "pending",
+                "remaining_proof": "current-save delivery, reload and older-save validation",
+            })
         if row['catalogue_id'] in artefacts:
             artefact = artefacts.pop(row['catalogue_id'])
             bindings[-1].update({
@@ -115,9 +134,10 @@ def build(include_proved: bool = True) -> dict:
                 'remaining_proof': 'installed delivery, collection, reload and older-save validation',
             })
     builder.need(not chests, "archived chest has no selected marker")
+    builder.need(not standard_chests, "archived standard chest has no selected marker")
     builder.need(not artefacts, 'archived artefact has no selected marker')
     validate(bindings, rows)
-    inputs = [builder.CATALOGUE, builder.ADDITIONAL, builder.CATEGORIES, CHESTS, ARTEFACTS,
+    inputs = [builder.CATALOGUE, builder.ADDITIONAL, builder.CATEGORIES, CHESTS, STANDARD_CHESTS, ARTEFACTS,
               HERE / 'artefact_saved_state.py',
               HERE / "build-collectible-locations.py", Path(__file__)]
     contract_rows = [{k: b.get(k) for k in

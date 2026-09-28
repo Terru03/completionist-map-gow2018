@@ -233,7 +233,13 @@ do
     return true
   end
 
-  _G.CompletionistMapV105ReleaseLocationCompass = hideTarget
+  _G.CompletionistMapV105ReleaseLocationCompass = function()
+    local ok = hideTarget()
+    if activeMap and type(activeMap.UpdateMapMarkerHighlights) == "function" then
+      pcall(activeMap.UpdateMapMarkerHighlights, activeMap)
+    end
+    return ok
+  end
   _G.CompletionistMapV105HasLocationCompassTarget = function()
     return targetRow ~= nil
   end
@@ -251,17 +257,21 @@ do
     runtime.directObserver = syncDirectObservations
   end
 
-  local completionistShowAll = false
-  local completionistShowCategories = true
+  if _G.CompletionistMapV105PersistentShowAll == nil then
+    _G.CompletionistMapV105PersistentShowAll = true
+  end
+  if _G.CompletionistMapV105PersistentShowCategories == nil then
+    _G.CompletionistMapV105PersistentShowCategories = true
+  end
 
   _G.CompletionistMapV105ShowAll = function(val)
-    if val ~= nil then completionistShowAll = (val == true) end
-    return completionistShowAll
+    if val ~= nil then _G.CompletionistMapV105PersistentShowAll = (val == true) end
+    return _G.CompletionistMapV105PersistentShowAll
   end
 
   _G.CompletionistMapV105ShowCategories = function(val)
-    if val ~= nil then completionistShowCategories = (val == true) end
-    return completionistShowCategories
+    if val ~= nil then _G.CompletionistMapV105PersistentShowCategories = (val == true) end
+    return _G.CompletionistMapV105PersistentShowCategories
   end
 
   local function filter(self)
@@ -274,9 +284,9 @@ do
     if self.isOpenedForFastTravel or self.currRealmName ~= row.Realm then return false end
     local kind = filter(self)
     if kind == 1 then
-      return completionistShowAll
+      return _G.CompletionistMapV105ShowAll()
     elseif kind == -101 or kind == byFamily[row.Family].Filter then
-      return completionistShowCategories
+      return _G.CompletionistMapV105ShowCategories()
     end
     return false
   end
@@ -308,7 +318,7 @@ do
     local rev = State and State:Revision() or 0
     return tostring(self.currRealmName) .. ":" .. tostring(filter(self)) ..
       ":" .. tostring(self.isOpenedForFastTravel == true) .. ":" .. tostring(rev) ..
-      ":" .. tostring(completionistShowAll) .. ":" .. tostring(completionistShowCategories)
+      ":" .. tostring(_G.CompletionistMapV105ShowAll()) .. ":" .. tostring(_G.CompletionistMapV105ShowCategories())
   end
 
   local function sync(self)
@@ -456,8 +466,6 @@ do
   for _, method in ipairs({"SubmenuExit", "Exit"}) do
     local previous = MapOn[method]
     MapOn[method] = function(self, ...)
-      completionistShowAll = false
-      completionistShowCategories = true
       recycle(self)
       if activeMap == self then activeMap = nil; activeSelectionContext = nil end
       return previous(self, ...)
@@ -476,12 +484,22 @@ do
     if target == nil or target.isOpenedForFastTravel then return false end
     local kind = filter(target)
     if kind == 1 then
-      completionistShowAll = not completionistShowAll
+      _G.CompletionistMapV105ShowAll(not _G.CompletionistMapV105ShowAll())
     else
-      completionistShowCategories = not completionistShowCategories
+      _G.CompletionistMapV105ShowCategories(not _G.CompletionistMapV105ShowCategories())
     end
     pcall(function() Audio.PlaySound("SND_UX_Pause_Menu_Map_Region_Hover_Tick") end)
     sync(target)
+    if type(_G.CompletionistMapV105ResyncRavens) == "function" then
+      pcall(_G.CompletionistMapV105ResyncRavens, target)
+    end
+    if type(_G.CompletionistMapV105ResyncNornir) == "function" then
+      pcall(_G.CompletionistMapV105ResyncNornir, target)
+    end
+    local menu = target.menu or (activeSelectionContext and activeSelectionContext.menu)
+    if menu and type(target.UpdateFooterButtonPrompt) == "function" then
+      pcall(target.UpdateFooterButtonPrompt, target, menu, false, false)
+    end
     return true
   end
 
@@ -489,48 +507,77 @@ do
   MapOn.EVT_Down_Release = function(self, ...)
     local target = self or activeMap
     if target and not target.isOpenedForFastTravel then
-      local kind = filter(target)
-      if kind == 1 then
-        completionistShowAll = not completionistShowAll
-      else
-        completionistShowCategories = not completionistShowCategories
-      end
-      pcall(function() Audio.PlaySound("SND_UX_Pause_Menu_Map_Region_Hover_Tick") end)
-      sync(target)
-      return true
+      return _G.CompletionistMapV105ToggleMarkers(target)
     end
     if previousDown then return previousDown(self, ...) end
+  end
+
+  local previousFooterPrompt = MapOn.UpdateFooterButtonPrompt
+  MapOn.UpdateFooterButtonPrompt = function(self, currMenu, showConfirmFastTravel, showGoToJournal)
+    if previousFooterPrompt then
+      previousFooterPrompt(self, currMenu, showConfirmFastTravel, showGoToJournal)
+    end
+    if currMenu and type(currMenu.UpdateFooterButton) == "function" then
+      if self.isOpenedForFastTravel then
+        currMenu:UpdateFooterButton("ActiveMarkers", false)
+      else
+        local kind = filter(self)
+        local shouldShowToggle = (kind == 1 or kind == -101 or kind < -104)
+        if shouldShowToggle then
+          local isShowing
+          if kind == 1 then
+            isShowing = _G.CompletionistMapV105ShowAll()
+          else
+            isShowing = _G.CompletionistMapV105ShowCategories()
+          end
+          local toggleText = isShowing and "[DownButton] Hide Markers" or "[DownButton] Show Markers"
+          currMenu:UpdateFooterButton("ActiveMarkers", true, toggleText)
+        else
+          currMenu:UpdateFooterButton("ActiveMarkers", false)
+        end
+      end
+      if type(currMenu.UpdateFooterButtonText) == "function" then
+        currMenu:UpdateFooterButtonText()
+      end
+    end
   end
 
   local function selection(self)
     local row = self.completionistMapV105LocationSelected
     if row == nil then return nil end
     local icon = (self.completionistMapV105LocationIcons or {})[row.Name]
-    if icon == nil or not visible(self, row) or tostring(self.currMarkerID) ~= row.IdString then
+    if icon == nil or not visible(self, row) or (self.currMarkerID ~= nil and tostring(self.currMarkerID) ~= row.IdString) then
       self.completionistMapV105LocationSelected = nil
       return nil
     end
     return row
   end
 
+  local refreshCompassPromptUI
+
   local collision = MapOn.MapCollisionChangeHandler
   MapOn.MapCollisionChangeHandler = function(self, currState, hits, realmName)
     activeSelectionContext = currState
     self.completionistMapV105LocationSelected = nil
     local result = collision(self, currState, hits, realmName)
-    for name, icon in pairs(self.completionistMapV105LocationIcons or {}) do
-      local row = byName[name]
-      if visible(self, row) and tostring(self.currMarkerID) == row.IdString then
-        for _, hit in ipairs(hits or {}) do
-          if hit == icon then
+    local icons = self.completionistMapV105LocationIcons or {}
+    for _, hit in ipairs(hits or {}) do
+      for name, icon in pairs(icons) do
+        if hit == icon then
+          local row = byName[name]
+          if row and visible(self, row) then
             self.completionistMapV105LocationSelected = row
+            self.currMarkerID = row.IdString
+            self.mapIconCollision = icon
             local caption = "Collectible location"
             if State and row.CatalogueId then
               local s = State:Get(row.CatalogueId)
               if s == "remaining" then caption = "Not collected" end
             end
-            self:SetReticleInfo(currState, byFamily[row.Family].Title, caption)
-            self:UpdateFooterButtonPrompt(currState.menu, false, false)
+            pcall(function() self:SetReticleInfo(currState, byFamily[row.Family].Title, caption) end)
+            if refreshCompassPromptUI then
+              refreshCompassPromptUI(self, currState and currState.menu)
+            end
             return result
           end
         end
@@ -542,34 +589,63 @@ do
   local previousMouseClick = MapOn.MouseClickHandler
   MapOn.MouseClickHandler = function(self, currState, ...)
     local sender = (type(UI) == "table" and type(UI.GetEventSenderGameObject) == "function") and UI.GetEventSenderGameObject() or nil
+
     if sender ~= nil and not self.isOpenedForFastTravel then
-      for name, icon in pairs(self.completionistMapV105LocationIcons or {}) do
-        if sender == icon then
-          local row = byName[name]
-          if row and visible(self, row) then
-            if type(Camera) == "table" and type(Camera.PointAtGO) == "function" then
-              pcall(Camera.PointAtGO, icon)
+      if type(self.goFilterButtons) == "table" then
+        for key, button in ipairs(self.goFilterButtons) do
+          if sender == button then
+            local first = self.completionistMapV100FilterWindowFirst or 1
+            local desired = first + key - 1
+            if desired <= #(self.filterButtonMapping or {}) then
+              self:Menu_Next_Filter(desired - self.filterIndex)
             end
-            self.completionistMapV105LocationSelected = row
-            self.currMarkerID = tonumber(row.IdString) or row.IdString
-            self.mapIconCollision = icon
-            self.clickedMarkerInfo = nil
-            self.clickedPlayer = false
-            local caption = "Collectible location"
-            if State and row.CatalogueId then
-              local s = State:Get(row.CatalogueId)
-              if s == "remaining" then caption = "Not collected" end
-            end
-            pcall(function() self:SetReticleInfo(currState, byFamily[row.Family].Title, caption) end)
-            if currState and currState.menu then
-              pcall(function() self:UpdateFooterButtonPrompt(currState.menu, false, false) end)
-            end
-            pcall(function() Audio.PlaySound("SND_UX_Pause_Menu_Map_Region_Hover_Tick") end)
             return
           end
         end
       end
     end
+
+    if not self.isOpenedForFastTravel then
+      local clickedRow = nil
+      local clickedIcon = nil
+      if sender ~= nil then
+        for name, icon in pairs(self.completionistMapV105LocationIcons or {}) do
+          if sender == icon and self.mapIconCollision == icon then
+            clickedRow = byName[name]
+            clickedIcon = icon
+            break
+          end
+        end
+      end
+
+      if clickedRow ~= nil and clickedIcon ~= nil and visible(self, clickedRow) then
+        self.completionistMapV105LocationSelected = clickedRow
+        self.currMarkerID = clickedRow.IdString
+        self.mapIconCollision = clickedIcon
+        self.clickedMarkerInfo = nil
+        self.clickedPlayer = false
+        local caption = "Collectible location"
+        if State and clickedRow.CatalogueId then
+          local s = State:Get(clickedRow.CatalogueId)
+          if s == "remaining" then caption = "Not collected" end
+        end
+        pcall(function() self:SetReticleInfo(currState, byFamily[clickedRow.Family].Title, caption) end)
+        if refreshCompassPromptUI then
+          refreshCompassPromptUI(self, currState and currState.menu)
+        end
+        pcall(function() Audio.PlaySound("SND_UX_Pause_Menu_Map_Region_Hover_Tick") end)
+        return
+      end
+
+      if sender ~= nil then
+        self.completionistMapV105LocationSelected = nil
+      else
+        if self.mapIconCollision == nil and not self.testEnvironment then
+          return
+        end
+      end
+    end
+
     if previousMouseClick then return previousMouseClick(self, currState, ...) end
   end
 
@@ -584,7 +660,7 @@ do
     local row = selection(self)
     if row == nil then
       local show, label = previousPrompt(self, ...)
-      if show and targetRow ~= nil and
+      if show and (targetRow ~= nil or _G.CompletionistMapV105TrackedCatalogueId ~= nil or _G.CompletionistMapV105HasNornirCompassTarget()) and
           label == "[AdvanceButton] " .. util.GetLAMSMsg(lamsConsts.AddToCompass) then
         label = "[AdvanceButton] " .. util.GetLAMSMsg(lamsConsts.ReplaceInCompass)
       end
@@ -604,12 +680,59 @@ do
     return true, "[AdvanceButton] " .. util.GetLAMSMsg(label)
   end
 
+  refreshCompassPromptUI = function(self, menu)
+    local targetMap = self or activeMap
+    if targetMap == nil then return end
+    local targetMenu = menu or targetMap.menu or (activeSelectionContext and activeSelectionContext.menu)
+    local show, text = targetMap:GetShowOnCompassPrompt(targetMenu)
+    if show and text then
+      if type(util) == "table" and type(util.GetUiObjByName) == "function" then
+        pcall(function()
+          local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
+          if goMapCursorText ~= nil then
+            goMapCursorText:Show()
+            local top = goMapCursorText:FindSingleGOByName("CursorInfo_Top")
+            if top ~= nil then
+              local handle = util.GetTextHandle(top, "CursorAction_Text")
+              if handle ~= nil then
+                if type(UI) == "table" and type(UI.SetTextIsClickable) == "function" then
+                  UI.SetTextIsClickable(handle)
+                end
+                if type(UI) == "table" and type(UI.SetText) == "function" then
+                  UI.SetText(handle, text)
+                end
+              end
+              top:Show()
+            end
+          end
+        end)
+      end
+      if targetMenu and type(targetMenu.UpdateFooterButton) == "function" then
+        pcall(function()
+          targetMenu:UpdateFooterButton("ShowOnCompass", true, text)
+          if type(targetMenu.UpdateFooterButtonText) == "function" then
+            targetMenu:UpdateFooterButtonText()
+          end
+        end)
+      end
+    end
+    if targetMenu and type(targetMap.UpdateFooterButtonPrompt) == "function" then
+      pcall(targetMap.UpdateFooterButtonPrompt, targetMap, targetMenu, false, false)
+    end
+  end
+
   local previousShow = MapOn.ShowOnCompass
   MapOn.ShowOnCompass = function(self, ...)
     local row = selection(self)
     if row == nil then
+      if type(_G.CompletionistMapV105ReleaseRavenCompass) == "function" then
+        pcall(_G.CompletionistMapV105ReleaseRavenCompass)
+      end
+      if type(_G.CompletionistMapV105ReleaseNornirCompass) == "function" then
+        pcall(_G.CompletionistMapV105ReleaseNornirCompass)
+      end
       if not hideTarget() then return false end
-      local res = previousShow(self, ...)
+      local res = previousShow and previousShow(self, ...)
       updateHighlights(self)
       return res
     end
@@ -620,15 +743,49 @@ do
       if not hideTarget() then return false end
       pcall(function() Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass") end)
     else
-      if _G.CompletionistMapV105ReleaseRavenCompass() == false or
-          _G.CompletionistMapV105ReleaseNornirCompass() == false or
-          not hideTarget() then return false end
+      if type(_G.CompletionistMapV105ReleaseRavenCompass) == "function" then
+        if _G.CompletionistMapV105ReleaseRavenCompass() == false then return false end
+      end
+      if type(_G.CompletionistMapV105ReleaseNornirCompass) == "function" then
+        if _G.CompletionistMapV105ReleaseNornirCompass() == false then return false end
+      end
+      if not hideTarget() then return false end
       if self.currShownMarkerID ~= nil then
-        local ok, result = pcall(game.Compass.HideMarker, self.currShownMarkerID)
-        if not ok or result == false then return false end
+        pcall(game.Compass.HideMarker, self.currShownMarkerID)
         self.currShownMarkerID = nil
       end
-      local ok, result = pcall(game.Compass.ShowMarker, row.Name, "SIDE")
+      local stockMarkers = (type(enabledShowOnCompassMarkerFlags) == "table" and
+          type(game.Compass) == "table" and
+          type(game.Compass.FindMarkersByIconClass) == "function") and
+          game.Compass.FindMarkersByIconClass(enabledShowOnCompassMarkerFlags) or nil
+      if type(stockMarkers) == "table" then
+        for _, id in ipairs(stockMarkers) do
+          pcall(game.Compass.HideMarker, id)
+        end
+      end
+      pcall(function() self:UpdateMapMarkerHighlights() end)
+      local familyClasses = {
+        ["artefact"] = "CompletionistArtefact",
+        ["cipher_chest"] = "CompletionistCipherChest",
+        ["coffin"] = "CompletionistCoffin",
+        ["jotnar_shrine"] = "CompletionistJotnarShrine",
+        ["legendary_chest"] = "CompletionistLegendaryChest",
+        ["lore_marker"] = "CompletionistLoreMarker",
+        ["lore_scroll"] = "CompletionistLoreScroll",
+        ["nornir_bell"] = "CompletionistNornirBell",
+        ["nornir_chest"] = "CompletionistNornirChest",
+        ["nornir_mechanism"] = "CompletionistNornirMechanism",
+        ["nornir_seal"] = "CompletionistNornirSeal",
+        ["realm_tear"] = "CompletionistRealmTear",
+        ["treasure_dig"] = "CompletionistTreasureDig",
+        ["treasure_map"] = "CompletionistTreasureMap",
+        ["wooden_chest"] = "CompletionistWoodenChest",
+      }
+      local compassClass = (row.Family and familyClasses[row.Family]) or "SIDE"
+      local ok, result = pcall(game.Compass.ShowMarker, row.Name, compassClass)
+      if not ok or result == false then
+        ok, result = pcall(game.Compass.ShowMarker, row.Name, "SIDE")
+      end
       if not ok or result == false then return false end
       targetRow = row
       if _G.CompletionistMapV100Target then _G.CompletionistMapV100Target.active = false end
@@ -636,8 +793,8 @@ do
     end
     updateHighlights(self)
     local currState = select(1, ...)
-    if currState and currState.menu then
-      pcall(function() self:UpdateFooterButtonPrompt(currState.menu, false, false) end)
+    if refreshCompassPromptUI then
+      refreshCompassPromptUI(self, currState and currState.menu)
     end
     return true
   end

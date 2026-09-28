@@ -32,7 +32,7 @@ int main() {
       chest_remaining += states[index] == '1';
       chest_unknown += states[index] == '0';
     }
-    Check(chest_collected == 23 && chest_remaining == 9 && chest_unknown == 1,
+    Check(chest_collected == 172 && chest_remaining == 60 && chest_unknown == 27,
           "archived chest family counts differ");
     std::size_t artefact_collected = 0, artefact_remaining = 0, artefact_unknown = 0;
     for (std::size_t i = 0; i < kCollectibleArtefactIndices.size(); ++i) {
@@ -45,9 +45,9 @@ int main() {
     }
     Check(artefact_collected == 38 && artefact_remaining == 7 && artefact_unknown == 0,
           "archived artefact family counts differ");
-    Check(std::count(states.begin(), states.end(), '2') == 61 &&
-          std::count(states.begin(), states.end(), '1') == 16 &&
-          std::count(states.begin(), states.end(), '0') == 333,
+    Check(std::count(states.begin(), states.end(), '2') == 210 &&
+          std::count(states.begin(), states.end(), '1') == 67 &&
+          std::count(states.begin(), states.end(), '0') == 133,
           "archived total counts differ");
     for (std::size_t i=0; i<410; ++i) {
       if (std::find(kCollectibleChestIndices.begin(), kCollectibleChestIndices.end(), i) == kCollectibleChestIndices.end() &&
@@ -63,7 +63,7 @@ int main() {
     records.push_back(*duplicate);
     Check(CollectibleSnapshotResponse(records, 9, 13, 5) == "COLLECTIBLE_SNAPSHOT_V1 UNAVAILABLE\n",
           "duplicate WAD accepted");
-    std::cout << "COLLECTIBLE_NATIVE_TESTS_PASS chest=23/9/1 artefact=38/7/0 total=61/16/333\n";
+    std::cout << "COLLECTIBLE_NATIVE_TESTS_PASS chest=172/60/27 artefact=38/7/0 total=210/67/133\n";
     return 0;
   } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

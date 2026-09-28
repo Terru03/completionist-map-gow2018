@@ -281,6 +281,17 @@ _G.GetCalls = function() return calls end
         self.assertEqual(wired.count(b'LocationAuthorityReady(snapshot.restoreEpoch)'), 2)
         self.assertEqual(self.mod.unwire_authority(wired), prefix)
 
+    def test_working_map_hooks_toggle_and_resync_paths(self):
+        original = (self.mod.BUILD / 'baseline' / self.mod.MAP).read_bytes()
+        prefix = original.split(self.mod.START, 1)[0]
+        wired = self.mod.wire_toggle(self.mod.wire_authority(prefix))
+        self.assertIn(b'_G.CompletionistMapV105ResyncRavens = function', wired)
+        self.assertIn(b'_G.CompletionistMapV105ResyncNornir = function', wired)
+        self.assertIn(b'_G.CompletionistMapV105ShowAll', wired)
+        self.assertIn(b'_G.CompletionistMapV105ShowCategories', wired)
+        unwired = self.mod.unwire_authority(self.mod.unwire_toggle(wired))
+        self.assertEqual(unwired, prefix)
+
     def test_recovery_validator_refuses_path_hash_schema_status_and_game_changes(self):
         data = json.loads((self.mod.BUILD / 'baseline.json').read_text())
         self.mod.validate_recovery(data, self.mod.GAME)

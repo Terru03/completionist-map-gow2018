@@ -45,7 +45,7 @@ class CompletionBindingsTest(unittest.TestCase):
     def test_archived_chests_keep_exact_nested_identities(self):
         data = self.module().build()
         proved = [r for r in data["bindings"] if r["status"] == "proved" and r['family'] == 'legendary_chest']
-        self.assertEqual(len(proved), 33)
+        self.assertEqual(len(proved), 37)
         self.assertTrue(all(r["predicate"] == {"field": "state", "type": "number", "equals": 4}
                             for r in proved))
         nested = next(r for r in proved if r["catalogue_id"] ==
@@ -65,7 +65,7 @@ class CompletionBindingsTest(unittest.TestCase):
             self.assertEqual(len(row['instance_keys']), 1)
             self.assertEqual(row['evidence']['fixture_state'], replay[row['catalogue_id']])
         self.assertEqual(sum(state == 3 for state in replay.values()), 38)
-        self.assertEqual(sum(r['status'] == 'proved' for r in data['bindings']), 78)
+        self.assertEqual(sum(r['status'] == 'proved' for r in data['bindings']), 304)
 
     def test_proved_binding_needs_keys_predicate_and_evidence(self):
         mod = self.module()

@@ -25,7 +25,13 @@ def render(data):
              f'inline constexpr std::size_t kCollectibleCount = {len(rows)};',
              f'inline constexpr char kCollectibleContract[] = {json.dumps(data["contract"])};']
     identities = set()
-    supported = {"legendary_chest": 4, "artefact": 3}
+    supported = {
+        "legendary_chest": 4,
+        "coffin": 4,
+        "wooden_chest": 4,
+        "cipher_chest": 4,
+        "artefact": 3,
+    }
     for _, row in active:
         terminal = supported.get(row["family"])
         if terminal is None or row["predicate"] != {"field": "state", "type": "number", "equals": terminal}:
@@ -38,10 +44,12 @@ def render(data):
         if identity in identities:
             raise ValueError("Duplicate native identity")
         identities.add(identity)
-    for family, label in (("legendary_chest", "Chest"), ("artefact", "Artefact")):
-        selected = [(i, r) for i, r in active if r["family"] == family]
+    chest_families = {"legendary_chest", "coffin", "wooden_chest", "cipher_chest"}
+    selected_chests = [(i, r) for i, r in active if r["family"] in chest_families]
+    selected_artefacts = [(i, r) for i, r in active if r["family"] == "artefact"]
+    for selected, label in ((selected_chests, "Chest"), (selected_artefacts, "Artefact")):
         if not selected:
-            raise ValueError("Missing required saved family: " + family)
+            raise ValueError("Missing required saved items for " + label)
         lines.append(f'inline constexpr std::array<NumericStateIdentity, {len(selected)}> kCollectible{label}s{{{{')
         for _, row in selected:
             native = row["native_identity"]
@@ -50,7 +58,7 @@ def render(data):
                           int(native["registry_hash"], 16), int(native["object_hash"], 16)))
         lines += ['}};', f'inline constexpr std::array<std::size_t, {len(selected)}> kCollectible{label}Indices{{{{',
                   ', '.join(str(i) for i, _ in selected), '}};']
-        if family == "artefact":
+        if label == "Artefact":
             fixture_states = [row["evidence"].get("fixture_state") for _, row in selected]
             if any(type(state) is not int or state not in (1, 2, 3) for state in fixture_states):
                 raise ValueError("Artefact fixture state missing or invalid")

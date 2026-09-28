@@ -58,6 +58,10 @@ def build() -> tuple[dict[str, bytes], dict]:
             known_maps.add(sha((root / MAP).read_bytes()))
         if (root / RUNIC).exists():
             known_runics.add(sha((root / RUNIC).read_bytes()))
+    if (GAME / MAP).exists() and b"CompletionistNornir" in (GAME / MAP).read_bytes():
+        known_maps.add(sha((GAME / MAP).read_bytes()))
+    if (GAME / RUNIC).exists() and b"CompletionistNornir" in (GAME / RUNIC).read_bytes():
+        known_runics.add(sha((GAME / RUNIC).read_bytes()))
     v3.v1.need(sha((GAME / MAP).read_bytes()) in known_maps and
                sha((GAME / RUNIC).read_bytes()) in known_runics,
                "installed Nornir scripts differ")

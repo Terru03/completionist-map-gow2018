@@ -104,11 +104,14 @@ class AllFamilyArtTests(unittest.TestCase):
                     if r['uid'] in defs else r for r in before]
         self.assertEqual(after, expected)
         self.assertEqual(self.report['proof'][art.POOL]['added_physics_objects'], 0)
-        self.assertEqual(self.report['proof'][art.POOL]['reassigned'], 498)
+        self.assertEqual(self.report['proof'][art.POOL]['reassigned'], 498 + 15)
+        self.assertEqual(self.report['proof'][art.POOL]['hud_slots'], 15)
+        self.assertTrue(self.report['proof'][art.PERM]['exact_inverse'])
+        self.assertEqual(self.report['proof'][art.PERM]['added_classes'], 15)
 
     def test_completion_files_pinned_and_not_written(self):
         self.assertEqual(set(self.report['preserved']), textures.PRESERVED)
-        self.assertEqual(len(self.report['preserved']), 17)
+        self.assertEqual(len(self.report['preserved']), len(textures.PRESERVED))
         for name, value in self.report['preserved'].items():
             self.assertEqual(art.sha((self.output / 'baseline' / name).read_bytes()), value)
             self.assertFalse((self.package / name).exists())
@@ -166,6 +169,7 @@ class AllFamilyArtTests(unittest.TestCase):
 
     def test_compiled_diffuse_has_transparent_margin_and_visible_glyph(self):
         from PIL import Image
+        import numpy as np
         work, compiled = textures.compile_textures(self.output, self.report['source_inputs'])
         for family, row in compiled['families'].items():
             name = Path(row['source']).stem + '.dds'
@@ -174,7 +178,13 @@ class AllFamilyArtTests(unittest.TestCase):
                 self.assertEqual(image.mode, 'RGBA')
                 alpha = image.getchannel('A')
                 self.assertEqual(alpha.getextrema(), (0, 255), family)
-                self.assertEqual(image.getpixel((0, 0))[3], 0, family)
+                for corner in ((0, 0), (147, 0), (0, 147), (147, 147)):
+                    self.assertEqual(image.getpixel(corner)[3], 0, f'{family} corner {corner}')
+                arr = np.array(image)
+                rgb_max = np.max(arr[:, :, :3], axis=2)
+                alpha_arr = arr[:, :, 3]
+                dark_fg = np.sum((alpha_arr > 200) & (rgb_max < 120))
+                self.assertGreater(dark_fg, 50, f'{family} dark contour preserved')
 
 
 if __name__ == '__main__':

@@ -122,6 +122,7 @@ def recovery(game, journal=RECOVERY_JOURNAL):
 
 def source_inventory():
     paths = [locations.CATALOGUE, locations.ADDITIONAL, locations.CATEGORIES, bindings_module.CHESTS,
+             bindings_module.STANDARD_CHESTS,
              bindings_module.ARTEFACTS,
              bindings_module.OUTPUT]
     for folder in (ROOT / 'tools/v0.10.4', HERE, ROOT / 'native/raven-authority-bridge',
@@ -328,6 +329,188 @@ def wire_authority(prefix):
     return result
 
 
+RAVEN_VIS_OLD = (
+    b"  local function ravenMapVisible(self)\n"
+    b"    if self == nil or self.isOpenedForFastTravel == true then return false end\n"
+    b"    local filter = ravenFilterKind(self)\n"
+    b"    return filter == 1 or filter == -101 or filter == -102\n"
+    b"  end\n\n"
+    b"  local function ravenVisibilityKey(self)\n"
+    b'    return tostring(self and self.currRealmName or "-") .. ":" ..\n'
+    b"      tostring(self and self.isOpenedForFastTravel == true) .. \":\" ..\n"
+    b"      tostring(ravenFilterKind(self))\n"
+    b"  end"
+)
+
+RAVEN_VIS_NEW = (
+    b"  local function ravenMapVisible(self)\n"
+    b"    if self == nil or self.isOpenedForFastTravel == true then return false end\n"
+    b"    local filter = ravenFilterKind(self)\n"
+    b"    if filter == 1 then\n"
+    b"      if _G.CompletionistMapV105ShowAll and not _G.CompletionistMapV105ShowAll() then\n"
+    b"        return false\n"
+    b"      end\n"
+    b"      return true\n"
+    b"    elseif filter == -101 or filter == -102 then\n"
+    b"      if _G.CompletionistMapV105ShowCategories and not _G.CompletionistMapV105ShowCategories() then\n"
+    b"        return false\n"
+    b"      end\n"
+    b"      return true\n"
+    b"    end\n"
+    b"    return false\n"
+    b"  end\n\n"
+    b"  local function ravenVisibilityKey(self)\n"
+    b'    return tostring(self and self.currRealmName or "-") .. ":" ..\n'
+    b"      tostring(self and self.isOpenedForFastTravel == true) .. \":\" ..\n"
+    b"      tostring(ravenFilterKind(self)) .. \":\" ..\n"
+    b"      tostring(_G.CompletionistMapV105ShowAll and _G.CompletionistMapV105ShowAll() or false) .. \":\" ..\n"
+    b"      tostring(_G.CompletionistMapV105ShowCategories and _G.CompletionistMapV105ShowCategories() or true)\n"
+    b"  end"
+)
+
+RAVEN_RESYNC_ANCHOR = b"  local previousNextFilter = MapOn.Menu_Next_Filter"
+RAVEN_RESYNC_HOOK = (
+    b"  _G.CompletionistMapV105ResyncRavens = function(target)\n"
+    b"    local map = target or lastMapOnSelf\n"
+    b"    if map ~= nil then\n"
+    b'      syncIcons(map, "toggle_markers")\n'
+    b"    end\n"
+    b"  end\n\n  "
+)
+
+RAVEN_COMPASS_OLD = (
+    b'    local customOK, customCount = hideCustom(selected.IdString, "raven_replace")\n'
+    b'    local stockOK, stockCount = hideStockExcept(selected.IdString, "raven_replace")\n'
+    b'    if not customOK or not stockOK then return end\n'
+    b'    suppressLegacyRavenHud()\n'
+    b'    local showOK, showErr = pcall(function()\n'
+    b'      game.Compass.ShowMarker(selected.Name, ravenClass)\n'
+    b'    end)'
+)
+
+RAVEN_COMPASS_NEW = (
+    b'    local customOK, customCount = hideCustom(selected.IdString, "raven_replace")\n'
+    b'    local stockOK, stockCount = hideStockExcept(selected.IdString, "raven_replace")\n'
+    b'    if not customOK or not stockOK then return end\n'
+    b'    suppressLegacyRavenHud()\n'
+    b'    if type(_G.CompletionistMapV105ReleaseLocationCompass) == "function" then\n'
+    b'      pcall(_G.CompletionistMapV105ReleaseLocationCompass)\n'
+    b'    end\n'
+    b'    if type(_G.CompletionistMapV105ReleaseNornirCompass) == "function" then\n'
+    b'      pcall(_G.CompletionistMapV105ReleaseNornirCompass)\n'
+    b'    end\n'
+    b'    local showOK, showErr = pcall(function()\n'
+    b'      game.Compass.ShowMarker(selected.Name, ravenClass)\n'
+    b'    end)'
+)
+
+RAVEN_RELEASE_OLD = (
+    b'    if lastMapOnSelf then\n'
+    b'      clearSelection(lastMapOnSelf, "nornir_target_replace")\n'
+    b'      lastMapOnSelf.currShownMarkerID = nil\n'
+    b'    end'
+)
+
+RAVEN_RELEASE_NEW = (
+    b'    if lastMapOnSelf then\n'
+    b'      clearSelection(lastMapOnSelf, "nornir_target_replace")\n'
+    b'      lastMapOnSelf.currShownMarkerID = nil\n'
+    b'      if type(lastMapOnSelf.UpdateMapMarkerHighlights) == "function" then\n'
+    b'        pcall(lastMapOnSelf.UpdateMapMarkerHighlights, lastMapOnSelf)\n'
+    b'      end\n'
+    b'    end'
+)
+
+NORNIR_VIS_OLD = (
+    b"  local function visible(self, row)\n"
+    b"    if self == nil or self.isOpenedForFastTravel then return false end\n"
+    b"    local kind = filter(self)\n"
+    b"    if kind ~= 1 and kind ~= -101 and\n"
+    b'        not (kind == -103 and row.Family == "nornir_chest") and\n'
+    b'        not (kind == -104 and row.Family ~= "nornir_chest") then\n'
+    b"      return false\n"
+    b"    end\n"
+    b'    if row.Family == "nornir_chest" then return not opened[row.CatalogueId] end\n'
+    b"    return revealed[row.ParentId] == true and\n"
+    b"      not opened[row.ParentId] and not solved[row.CatalogueId]\n"
+    b"  end"
+)
+
+NORNIR_VIS_NEW = (
+    b"  local function visible(self, row)\n"
+    b"    if self == nil or self.isOpenedForFastTravel then return false end\n"
+    b"    local kind = filter(self)\n"
+    b"    if kind ~= 1 and kind ~= -101 and\n"
+    b'        not (kind == -103 and row.Family == "nornir_chest") and\n'
+    b'        not (kind == -104 and row.Family ~= "nornir_chest") then\n'
+    b"      return false\n"
+    b"    end\n"
+    b"    if kind == 1 then\n"
+    b"      if _G.CompletionistMapV105ShowAll and not _G.CompletionistMapV105ShowAll() then return false end\n"
+    b"    elseif kind < 0 then\n"
+    b"      if _G.CompletionistMapV105ShowCategories and not _G.CompletionistMapV105ShowCategories() then return false end\n"
+    b"    end\n"
+    b'    if row.Family == "nornir_chest" then return not opened[row.CatalogueId] end\n'
+    b"    return revealed[row.ParentId] == true and\n"
+    b"      not opened[row.ParentId] and not solved[row.CatalogueId]\n"
+    b"  end"
+)
+
+NORNIR_RESYNC_ANCHOR = b"  local function plainName(value)"
+NORNIR_RESYNC_HOOK = (
+    b"  _G.CompletionistMapV105ResyncNornir = function(target)\n"
+    b"    local map = target or activeMap\n"
+    b"    if map ~= nil then\n"
+    b"      sync(map)\n"
+    b"    end\n"
+    b"  end\n\n  "
+)
+
+NORNIR_COMPASS_OLD = (
+    b'        if type(_G.CompletionistMapV105ReleaseRavenCompass) == "function" and\n'
+    b'            _G.CompletionistMapV105ReleaseRavenCompass() == false then return false end\n'
+    b'        if self.currShownMarkerID ~= nil then'
+)
+
+NORNIR_COMPASS_NEW = (
+    b'        if type(_G.CompletionistMapV105ReleaseRavenCompass) == "function" and\n'
+    b'            _G.CompletionistMapV105ReleaseRavenCompass() == false then return false end\n'
+    b'        if type(_G.CompletionistMapV105ReleaseLocationCompass) == "function" and\n'
+    b'            _G.CompletionistMapV105ReleaseLocationCompass() == false then return false end\n'
+    b'        if self.currShownMarkerID ~= nil then'
+)
+
+
+def unwire_toggle(wired: bytes) -> bytes:
+    res = wired.replace(NORNIR_RESYNC_HOOK + NORNIR_RESYNC_ANCHOR, NORNIR_RESYNC_ANCHOR, 1)
+    res = res.replace(NORNIR_COMPASS_NEW, NORNIR_COMPASS_OLD, 1)
+    res = res.replace(NORNIR_VIS_NEW, NORNIR_VIS_OLD, 1)
+    res = res.replace(RAVEN_RESYNC_HOOK + RAVEN_RESYNC_ANCHOR, RAVEN_RESYNC_ANCHOR, 1)
+    res = res.replace(RAVEN_RELEASE_NEW, RAVEN_RELEASE_OLD, 1)
+    res = res.replace(RAVEN_COMPASS_NEW, RAVEN_COMPASS_OLD, 1)
+    res = res.replace(RAVEN_VIS_NEW, RAVEN_VIS_OLD, 1)
+    return res
+
+
+def wire_toggle(prefix: bytes) -> bytes:
+    io.need(prefix.count(RAVEN_VIS_OLD) == 1, "Raven visibility anchor missing")
+    io.need(prefix.count(RAVEN_RESYNC_ANCHOR) == 1, "Raven resync anchor missing")
+    io.need(prefix.count(RAVEN_COMPASS_OLD) == 1, "Raven compass anchor missing")
+    io.need(prefix.count(RAVEN_RELEASE_OLD) == 1, "Raven release anchor missing")
+    io.need(prefix.count(NORNIR_VIS_OLD) == 1, "Nornir visibility anchor missing")
+    io.need(prefix.count(NORNIR_RESYNC_ANCHOR) == 1, "Nornir resync anchor missing")
+    io.need(prefix.count(NORNIR_COMPASS_OLD) == 1, "Nornir compass anchor missing")
+    res = prefix.replace(RAVEN_VIS_OLD, RAVEN_VIS_NEW, 1)
+    res = res.replace(RAVEN_RESYNC_ANCHOR, RAVEN_RESYNC_HOOK + RAVEN_RESYNC_ANCHOR, 1)
+    res = res.replace(RAVEN_COMPASS_OLD, RAVEN_COMPASS_NEW, 1)
+    res = res.replace(RAVEN_RELEASE_OLD, RAVEN_RELEASE_NEW, 1)
+    res = res.replace(NORNIR_VIS_OLD, NORNIR_VIS_NEW, 1)
+    res = res.replace(NORNIR_RESYNC_ANCHOR, NORNIR_RESYNC_HOOK + NORNIR_RESYNC_ANCHOR, 1)
+    res = res.replace(NORNIR_COMPASS_OLD, NORNIR_COMPASS_NEW, 1)
+    io.need(unwire_toggle(res) == prefix, "toggle handoff changed unrelated Lua")
+    return res
+
+
 def preserve_rows(old, new):
     def records(data):
         result = []
@@ -371,7 +554,7 @@ def compose(output, expected, inputs, native):
     layer = locations.render_runtime(rows, config)
     row_count = preserve_rows(START + old_layer, layer)
     io.need(row_count == len(rows), 'location row count differs')
-    outputs = {MAP: wire_authority(prefix) + layer, UPSTREAM: native[0], 'dxgi.dll': native[1]}
+    outputs = {MAP: wire_toggle(wire_authority(prefix)) + layer, UPSTREAM: native[0], 'dxgi.dll': native[1]}
     for adapter, name in SCRIPT_FILES.items():
         outputs[name] = raw(output / 'scripts' / name) + adapters.render_probe(adapter).encode()
     sys.path.insert(0, str(ROOT.parent / 'completionist-map-gow2018/dist/re-tools'))

@@ -57,6 +57,11 @@ do
         not (kind == -104 and row.Family ~= "nornir_chest") then
       return false
     end
+    if kind == 1 then
+      if _G.CompletionistMapV105ShowAll and not _G.CompletionistMapV105ShowAll() then return false end
+    elseif kind < 0 then
+      if _G.CompletionistMapV105ShowCategories and not _G.CompletionistMapV105ShowCategories() then return false end
+    end
     if row.Family == "nornir_chest" then return not opened[row.CatalogueId] end
     return revealed[row.ParentId] == true and
       not opened[row.ParentId] and not solved[row.CatalogueId]
@@ -107,6 +112,13 @@ do
           print("[CompletionistMapV105NornirIdTest] create_failed name=" .. row.Name)
         end
       end
+    end
+  end
+
+  _G.CompletionistMapV105ResyncNornir = function(target)
+    local map = target or activeMap
+    if map ~= nil then
+      sync(map)
     end
   end
 

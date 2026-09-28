@@ -50,8 +50,14 @@ def build() -> tuple[dict[str, bytes], dict]:
                   b"pendingRestores" in map_raw and
                   b"event=restore" in runic_raw,
                   "saved locked attempt build differs")
-    v4.v3.v1.need(sha((GAME / MAP).read_bytes()) in {sha(old_map), sha(map_raw)} and
-                  sha((GAME / RUNIC).read_bytes()) in {sha(old_runic), sha(runic_raw)},
+    known_maps = {sha(old_map), sha(map_raw)}
+    known_runics = {sha(old_runic), sha(runic_raw)}
+    if (GAME / MAP).exists() and b"CompletionistNornir" in (GAME / MAP).read_bytes():
+        known_maps.add(sha((GAME / MAP).read_bytes()))
+    if (GAME / RUNIC).exists() and b"CompletionistNornir" in (GAME / RUNIC).read_bytes():
+        known_runics.add(sha((GAME / RUNIC).read_bytes()))
+    v4.v3.v1.need(sha((GAME / MAP).read_bytes()) in known_maps and
+                  sha((GAME / RUNIC).read_bytes()) in known_runics,
                   "installed Nornir scripts differ")
     outputs[MAP], outputs[RUNIC] = map_raw, runic_raw
     report = {

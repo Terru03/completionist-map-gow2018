@@ -124,8 +124,8 @@ class CompletionIntegrationTest(unittest.TestCase):
           function makeMap(realm, enableShowAll)
             local m = setmetatable({currRealmName=realm,filterIndex=1,
               filterButtonMapping={1,2}}, {__index=MapOn})
-            if enableShowAll ~= false and type(CompletionistMapV105ShowAll) == "function" then
-              CompletionistMapV105ShowAll(true)
+            if type(CompletionistMapV105ShowAll) == "function" then
+              CompletionistMapV105ShowAll(enableShowAll ~= false)
             end
             return m
           end
@@ -243,7 +243,7 @@ class CompletionIntegrationTest(unittest.TestCase):
         g.MapOn.Update(ui)
         self.assertEqual(g.targetCount(), 0)
 
-    def test_mouse_click_centers_and_selects_custom_marker(self):
+    def test_mouse_click_selects_custom_marker_and_preserves_zoom(self):
         lua = self.runtime(production=True)
         g = lua.globals()
         g.CompletionistMapV105LocationAuthorityReady(1)
@@ -253,11 +253,30 @@ class CompletionIntegrationTest(unittest.TestCase):
         row = self.midgard_rows()[0]
         icon = ui.completionistMapV105LocationIcons[row["marker"]["name"]]
         self.assertTrue(icon.clickable)
+        ui.mapIconCollision = icon
         g.UI.sender = icon
         menu_state = lua.table_from({"menu": lua.table()})
         g.MapOn.MouseClickHandler(ui, menu_state)
-        self.assertEqual(g.Camera.pointed.id, icon.id)
+        self.assertIsNone(g.Camera.pointed)
         self.assertEqual(ui.completionistMapV105LocationSelected.Name, row["marker"]["name"])
+
+    def test_mouse_click_empty_space_ignores_stale_sender_and_preserves_zoom(self):
+        lua = self.runtime(production=True)
+        g = lua.globals()
+        g.CompletionistMapV105LocationAuthorityReady(1)
+        ui = g.makeMap("Midgard")
+        g.MapOn.UpdateFilterButtonMapping(ui)
+        g.CompletionistMapV100_CreateMapPin(ui)
+        row = self.midgard_rows()[0]
+        icon = ui.completionistMapV105LocationIcons[row["marker"]["name"]]
+        g.UI.sender = icon
+        ui.mapIconCollision = None
+        ui.completionistMapV105LocationSelected = None
+        ui.currMarkerID = None
+        menu_state = lua.table_from({"menu": lua.table()})
+        g.MapOn.MouseClickHandler(ui, menu_state)
+        self.assertIsNone(g.Camera.pointed)
+        self.assertIsNone(ui.completionistMapV105LocationSelected)
 
     def test_compass_marker_pulses_and_disallows_multiple_custom_markers(self):
         lua = self.runtime(production=True)
@@ -288,6 +307,39 @@ class CompletionIntegrationTest(unittest.TestCase):
         g.MapOn.ShowOnCompass(ui, lua.table_from({"menu": lua.table()}))
         self.assertEqual(g.targetCount(), 0)
         self.assertEqual(icon1.anim.mode, 0)
+
+    def test_compass_mutual_exclusion_between_stock_and_custom_markers(self):
+        lua = self.runtime(production=True)
+        g = lua.globals()
+        g.CompletionistMapV105LocationAuthorityReady(1)
+        ui = g.makeMap("Midgard")
+        g.MapOn.UpdateFilterButtonMapping(ui)
+        g.CompletionistMapV100_CreateMapPin(ui)
+        row0 = self.midgard_rows()[0]
+        icon0 = ui.completionistMapV105LocationIcons[row0["marker"]["name"]]
+
+        # 1. Custom marker added -> tracked on compass, icon0 pulsing
+        g.selectIcon(ui, row0["marker"]["name"])
+        menu_state = lua.table_from({"menu": lua.table()})
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertEqual(g.targetCount(), 1)
+        self.assertEqual(g.activeTargets[row0["marker"]["name"]], "CompletionistArtefact")
+        self.assertEqual(icon0.anim.mode, 10)
+
+        # 2. Stock marker tracked -> custom marker must be released and pulsing stopped
+        g.MapOn.MapCollisionChangeHandler(ui, menu_state, lua.table(), "Midgard")
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertEqual(g.targetCount(), 1)
+        self.assertEqual(g.activeTargets.stock, "SIDE")
+        self.assertEqual(icon0.anim.mode, 0)
+
+        # 3. Custom marker tracked again -> stock marker must be released, custom pulsing
+        g.selectIcon(ui, row0["marker"]["name"])
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertEqual(g.targetCount(), 1)
+        self.assertIsNone(g.activeTargets.stock)
+        self.assertEqual(g.activeTargets[row0["marker"]["name"]], "CompletionistArtefact")
+        self.assertEqual(icon0.anim.mode, 10)
 
     def test_background_tick_restores_authority_without_opening_map(self):
         lua = self.runtime(production=True)
@@ -729,10 +781,83 @@ class CompletionIntegrationTest(unittest.TestCase):
         self.assertEqual(lua.globals().iconCount(ui), total)
         ui.isOpenedForFastTravel = False
 
-        # 8. Closing the map resets toggles to clean defaults
+        # 8. Closing the map preserves persistent toggles across map opens
         lua.globals().MapOn.Exit(ui)
         self.assertFalse(lua.globals().CompletionistMapV105ShowAll())
         self.assertTrue(lua.globals().CompletionistMapV105ShowCategories())
+
+    def test_persistent_show_all_defaults_to_true_and_persists_across_map_opens(self):
+        """Persistent ShowAll defaults to true so user does not have to show markers every time map opens."""
+        lua = self.runtime(with_state=True)
+        g = lua.globals()
+        # Default initialization without enableShowAll=False defaults to true
+        self.assertTrue(g.CompletionistMapV105ShowAll())
+        self.assertTrue(g.CompletionistMapV105ShowCategories())
+
+        ui = g.makeMap("Midgard")
+        g.MapOn.UpdateFilterButtonMapping(ui)
+        g.CompletionistMapV100_CreateMapPin(ui)
+        midgard = self.midgard_rows()
+        # Markers are visible immediately upon opening the map
+        self.assertEqual(g.iconCount(ui), len(midgard))
+
+        # User closes the map
+        g.MapOn.Exit(ui)
+        # Setting remains persistent
+        self.assertTrue(g.CompletionistMapV105ShowAll())
+
+        # Next map open retains the user's setting
+        ui2 = g.makeMap("Midgard")
+        g.MapOn.UpdateFilterButtonMapping(ui2)
+        g.CompletionistMapV100_CreateMapPin(ui2)
+        self.assertEqual(g.iconCount(ui2), len(midgard))
+
+    def test_footer_button_prompt_shows_completionist_toggle(self):
+        """Footer bar displays [DownButton] Show/Hide Markers on screen."""
+        lua = self.runtime(production=True)
+        g = lua.globals()
+        ui = g.makeMap("Midgard")
+        g.MapOn.UpdateFilterButtonMapping(ui)
+        buttons = {}
+        menu = lua.table_from({
+            "buttons": lua.table(),
+        })
+        lua.execute('''
+          testMenu = {buttons = {}, updated = false}
+          function testMenu:UpdateFooterButton(name, show, text)
+            self.buttons[name] = {show = show, text = text}
+          end
+          function testMenu:UpdateFooterButtonText()
+            self.updated = true
+          end
+        ''')
+        test_menu = lua.globals().testMenu
+
+        # Filter 1 (SHOW ALL) with ShowAll=true
+        g.CompletionistMapV105ShowAll(True)
+        g.MapOn.UpdateFooterButtonPrompt(ui, test_menu, False, False)
+        self.assertTrue(test_menu.buttons["ActiveMarkers"]["show"])
+        self.assertEqual(test_menu.buttons["ActiveMarkers"]["text"], "[DownButton] Hide Markers")
+        self.assertTrue(test_menu.updated)
+
+        # Toggle to ShowAll=false
+        g.CompletionistMapV105ShowAll(False)
+        g.MapOn.UpdateFooterButtonPrompt(ui, test_menu, False, False)
+        self.assertTrue(test_menu.buttons["ActiveMarkers"]["show"])
+        self.assertEqual(test_menu.buttons["ActiveMarkers"]["text"], "[DownButton] Show Markers")
+
+        # Category filter (-101) with ShowCategories=true
+        g.selectFilter(ui, -101)
+        g.CompletionistMapV105ShowCategories(True)
+        g.MapOn.UpdateFooterButtonPrompt(ui, test_menu, False, False)
+        self.assertTrue(test_menu.buttons["ActiveMarkers"]["show"])
+        self.assertEqual(test_menu.buttons["ActiveMarkers"]["text"], "[DownButton] Hide Markers")
+
+        # Fast travel hides the toggle prompt
+        ui.isOpenedForFastTravel = True
+        g.MapOn.UpdateFooterButtonPrompt(ui, test_menu, False, False)
+        self.assertFalse(test_menu.buttons["ActiveMarkers"]["show"])
+
 
 
 if __name__ == "__main__":

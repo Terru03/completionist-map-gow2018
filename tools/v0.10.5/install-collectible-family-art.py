@@ -35,14 +35,23 @@ def validate(data):
     art.need(type(data.get('schema')) is int and data['schema'] in (1, 2) and data.get("kind") == "COLLECTIBLE_FAMILY_MAP_ART",
              "unknown artwork package")
     names = set(data["files"])
-    packs = names - BASE_FILES
+    base_files = {art.WAD, art.MASTER, art.POOL, art.BOOT}
+    if art.PERM in names:
+        base_files.add(art.PERM)
+    packs = names - base_files
     pack_sets = [{'exec/patch/pc_le/completionist_v105_family_art' + stem + suffix
                   for suffix in ('.texpack', '.texpack.toc')} for stem in ('', '_probe')]
-    art.need(BASE_FILES <= names and packs in pack_sets, 'artwork path allowlist differs')
-    preserved = PRESERVED
+    art.need(base_files <= names and packs in pack_sets, 'artwork path allowlist differs')
+    preserved = set(PRESERVED)
+    if art.PERM in names:
+        preserved.discard(art.PERM)
     if data['schema'] == 2:
         import collectible_art_textures
-        preserved = collectible_art_textures.PRESERVED
+        preserved = set(collectible_art_textures.PRESERVED)
+        if art.PERM in names:
+            preserved.discard(art.PERM)
+        else:
+            preserved.add(art.PERM)
         art.need(isinstance(data.get('source_inputs'), dict) and data['source_inputs'], 'art source proof missing')
         art.need(data.get('proof', {}).get('two_compositions_equal') is True, 'repeat composition proof missing')
     art.need(set(data["preserved"]) == preserved, "preserved file allowlist differs")

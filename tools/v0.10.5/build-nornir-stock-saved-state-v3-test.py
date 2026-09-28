@@ -92,6 +92,10 @@ def build() -> tuple[dict[str, bytes], dict]:
             known_maps.add(sha((candidate_root / MAP).read_bytes()))
         if (candidate_root / RUNIC).exists():
             known_runics.add(sha((candidate_root / RUNIC).read_bytes()))
+    if (GAME / MAP).exists() and b"CompletionistNornir" in (GAME / MAP).read_bytes():
+        known_maps.add(sha((GAME / MAP).read_bytes()))
+    if (GAME / RUNIC).exists() and b"CompletionistNornir" in (GAME / RUNIC).read_bytes():
+        known_runics.add(sha((GAME / RUNIC).read_bytes()))
     v1.need(runic_raw.startswith(old_runic) and
             b"CompletionistNornirObserveSeals" in runic_raw and
             sha((GAME / MAP).read_bytes()) in known_maps and
