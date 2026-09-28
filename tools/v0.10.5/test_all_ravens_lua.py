@@ -629,6 +629,34 @@ class AllRavensMapLuaTests(unittest.TestCase):
         self.assertIn("filter=-102", self.probe.logs())
         self.assertIn("ravensVisible=true", self.probe.logs())
 
+    def test_ravens_honor_completionist_toggle_and_resync_hook(self):
+        self.probe.open()
+        name = self.a["marker"]["name"]
+        self.assertTrue(self.probe.iconShown(name))
+
+        # Filter 1 (All): when showAll is false, ravens are hidden
+        self.lua.execute('_G.CompletionistMapV105ShowAll = function() return false end')
+        self.lua.execute('_G.CompletionistMapV105ResyncRavens()')
+        self.assertFalse(self.probe.iconShown(name))
+
+        # Restore showAll
+        self.lua.execute('_G.CompletionistMapV105ShowAll = function() return true end')
+        self.lua.execute('_G.CompletionistMapV105ResyncRavens()')
+        self.assertTrue(self.probe.iconShown(name))
+
+        # Filter -102 (Ravens category): when showCategories is false, ravens are hidden
+        self.probe.setFilter(-102)
+        self.probe.update()
+        self.assertTrue(self.probe.iconShown(name))
+
+        self.lua.execute('_G.CompletionistMapV105ShowCategories = function() return false end')
+        self.lua.execute('_G.CompletionistMapV105ResyncRavens()')
+        self.assertFalse(self.probe.iconShown(name))
+
+        self.lua.execute('_G.CompletionistMapV105ShowCategories = function() return true end')
+        self.lua.execute('_G.CompletionistMapV105ResyncRavens()')
+        self.assertTrue(self.probe.iconShown(name))
+
     def test_filter_change_applies_raven_visibility_without_waiting_for_update(self):
         self.probe.open()
         name = self.a["marker"]["name"]
@@ -837,6 +865,29 @@ class AllRavensMapLuaTests(unittest.TestCase):
         )
         self.assertFalse(self.probe.legacyRavenHudActive())
         self.assertEqual(self.probe.footerPrompt(), "[AdvanceButton] remove")
+
+    def test_rapid_toggle_without_reticle_movement_preserves_custom_raven_class(self):
+        self.probe.open()
+        name = self.a["marker"]["name"]
+        self.lua.execute(f'MapOn.MapCollisionChangeHandler(self, {{}}, {{probe.icon("{name}")}}, self.currRealmName)')
+
+        # 1. First Advance: Add to Compass -> custom count 1, shown class CompletionistRaven
+        self.assertEqual(self.lua.execute('local s, t = MapOn.GetShowOnCompassPrompt(self, nil); return t'), '[AdvanceButton] add')
+        self.lua.execute('MapOn.ShowOnCompass(self, {})')
+        self.assertEqual(self.probe.customCount(), 1)
+        self.assertEqual(self.probe.shownClass(), 'CompletionistRaven')
+
+        # 2. Second Advance without reticle move: Remove from Compass -> custom count 0
+        self.assertEqual(self.lua.execute('local s, t = MapOn.GetShowOnCompassPrompt(self, nil); return t'), '[AdvanceButton] remove')
+        self.lua.execute('MapOn.ShowOnCompass(self, {})')
+        self.assertEqual(self.probe.customCount(), 0)
+
+        # 3. Third Advance without reticle move: Add to Compass -> custom count 1, STILL CompletionistRaven
+        self.assertEqual(self.lua.execute('local s, t = MapOn.GetShowOnCompassPrompt(self, nil); return t'), '[AdvanceButton] add')
+        self.lua.execute('MapOn.ShowOnCompass(self, {})')
+        self.assertEqual(self.probe.customCount(), 1)
+        self.assertEqual(self.probe.shownClass(), 'CompletionistRaven')
+        self.assertEqual(self.lua.execute('return calls.previousShow'), 0)
 
     def test_map_exit_reasserts_custom_raven_after_base_boat_reclaim(self):
         self.probe.open()

@@ -6,12 +6,22 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$expectedBranch = 'codex/v104-raven-production'
+$expectedBranch = 'codex/collectible-nornir-chests'
 $branch = (& git -C $repo branch --show-current).Trim()
 if ($LASTEXITCODE -ne 0) { throw 'Could not determine current Git branch.' }
 if ($branch -ne $expectedBranch) { throw "Expected branch '$expectedBranch', got '$branch'." }
 if (Get-Process -Name GoW -ErrorAction SilentlyContinue) { throw 'Close God of War before building the Nornir map/HUD candidate.' }
 if (-not (Test-Path -LiteralPath $GameRoot -PathType Container)) { throw "God of War root not found: $GameRoot" }
+
+# This runner's builder and topology proof are pinned to the historical
+# one-Raven 257-row pool. The current all-Ravens package starts with 301 rows,
+# and the installed stock Nornir fallback has 389. Fail before touching output.
+$legacyUi = Join-Path $GameRoot 'exec\dc\pc_le\wad_r_ui.dcb'
+if (-not (Test-Path -LiteralPath $legacyUi -PathType Leaf) -or
+    (Get-FileHash -LiteralPath $legacyUi -Algorithm SHA256).Hash.ToLowerInvariant() -ne
+    '765ef6c08a3c9d52ed9485c184237bc3fdde103feef01c496a6999fdbea8826d') {
+    throw 'This v0.10.4 builder requires the historical one-Raven 257-row pool. Use tools/v0.10.5/verify-nornir-composed-package.py for the current 53-Raven package; do not run this builder against the installed game.'
+}
 
 $python = Get-Command python -ErrorAction SilentlyContinue
 if ($null -eq $python) { throw 'Python 3 is required.' }

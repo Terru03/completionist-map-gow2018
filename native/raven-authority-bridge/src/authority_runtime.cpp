@@ -1,4 +1,5 @@
 #include "authority_runtime.h"
+#include "collectible_authority.h"
 
 #include <windows.h>
 
@@ -19,6 +20,7 @@
 #include "platform.h"
 #include "raven_catalogue.generated.h"
 #include "snapshot_delivery.h"
+#include "nornir_authority.h"
 
 namespace completionist {
 namespace {
@@ -205,6 +207,48 @@ bool SameState(const NativeRavenSnapshot& left,
              right.absence_default_false_count;
 }
 
+std::string CaptureNornir(std::uint64_t nonce, std::uint64_t restore_epoch) {
+  static std::string last_status;
+  const auto report = [&](const std::string& status) {
+    if (status != last_status) {
+      AppendBridgeLog("NORNIR_NATIVE_CAPTURE " + status +
+                      " save_writes=false progression_writes=false");
+      last_status = status;
+    }
+  };
+  const auto base = g_module_base.load();
+  std::vector<StagedRecordInput> records;
+  std::string reason;
+  bool captured = false;
+  {
+    std::lock_guard<std::mutex> lock(g_capture_mutex);
+    captured = base != 0 && CaptureRecords(base, &records, &reason);
+  }
+  if (!captured) {
+    report("unavailable reason=" + (base == 0 ? std::string("module_base_missing") : reason));
+    return "NORNIR_SNAPSHOT_V1 UNAVAILABLE\n";
+  }
+  const auto decoded = DecodeNornirSnapshot(records);
+  if (!decoded.accepted) report("unavailable reason=" + decoded.reason);
+  else report("accepted opened=" + std::to_string(decoded.opened_count) +
+              " remaining=" + std::to_string(decoded.remaining_count) +
+              " unknown=" + std::to_string(decoded.unknown_count));
+  return NornirSnapshotResponse(decoded, nonce, restore_epoch);
+}
+
+std::string CaptureCollectibles(std::uint64_t nonce, std::uint64_t restore_epoch) {
+  static std::atomic<std::uint64_t> generation{0};
+  const auto base = g_module_base.load();
+  std::vector<StagedRecordInput> records;
+  std::string reason;
+  {
+    std::lock_guard<std::mutex> lock(g_capture_mutex);
+    if (base == 0 || !CaptureRecords(base, &records, &reason))
+      return "COLLECTIBLE_SNAPSHOT_V1 UNAVAILABLE\n";
+  }
+  return CollectibleSnapshotResponse(records, nonce, restore_epoch, ++generation);
+}
+
 bool CaptureAcceptedSnapshot(std::uintptr_t module_base,
                              NativeRavenSnapshot* output,
                              std::string* reason) {
@@ -374,7 +418,7 @@ void RunAuthorityWorker() {
     return;
   }
   g_module_base.store(module_base);
-  StartSnapshotDeliveryServer(ReadPublishedSnapshot, CaptureFreshSnapshot);
+  StartSnapshotDeliveryServer(ReadPublishedSnapshot, CaptureFreshSnapshot, CaptureNornir, CaptureCollectibles);
   std::string last_reason;
   NativeRavenSnapshot last_snapshot;
   bool have_last_snapshot = false;

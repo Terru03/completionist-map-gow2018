@@ -1,4 +1,5 @@
 #include "authority_decoder.h"
+#include "chest_authority.h"
 
 #include <zlib.h>
 
@@ -51,11 +52,13 @@ struct Row {
 
 struct Record {
   std::span<const std::uint8_t> payload;
+  std::uint64_t class_hash = 0;
 };
 
 struct Entry {
   std::size_t raven_index = 0;
   bool killed = false;
+  std::uint32_t scalar_bits = 0;
 
   auto operator<=>(const Entry&) const = default;
 };
@@ -63,6 +66,7 @@ struct Entry {
 struct CarrierParse {
   std::vector<Entry> entries;
   bool duplicate_state_key = false;
+  bool invalid_chest_state = false;
 };
 
 struct RecordDecode {
@@ -213,7 +217,9 @@ std::optional<std::size_t> TableIndex(const Token& token,
 }
 
 std::vector<CarrierParse> ParseCarrier(std::span<const std::uint8_t> raw,
-                                       std::string* reason) {
+                                       std::string* reason,
+                                       std::span<const NumericStateIdentity> chests = {},
+                                       std::uint8_t maximum_state = 4) {
   Header header{};
   if (!ParseHeader(raw, &header) ||
       header.pair_count > kMaxTokenCount ||
@@ -287,7 +293,9 @@ std::vector<CarrierParse> ParseCarrier(std::span<const std::uint8_t> raw,
         records_ok = false;
         break;
       }
-      records.push_back(Record{blob.subspan(offset + 8, size - 8)});
+      std::uint64_t class_hash = 0;
+      if (!ReadLe(blob, offset, &class_hash)) { records_ok = false; break; }
+      records.push_back(Record{blob.subspan(offset + 8, size - 8), class_hash});
     }
     if (!records_ok) continue;
     std::vector<Row> rows;
@@ -327,21 +335,24 @@ std::vector<CarrierParse> ParseCarrier(std::span<const std::uint8_t> raw,
       if (token.tag != 2 || token.payload >= strings.size()) return std::nullopt;
       return strings[token.payload];
     };
+    CarrierParse parsed;
     std::set<std::size_t> subobject_rows;
     for (std::size_t row_index = 0; row_index < rows.size(); ++row_index) {
       const Row& row = rows[row_index];
+      std::size_t subobject_keys = 0;
       for (std::size_t pair = row.first_pair;
            pair < static_cast<std::size_t>(row.first_pair) + row.pair_count;
            ++pair) {
         const auto [key, value] = pair_tokens(pair);
         if (string_value(key) == "__subobjs") {
+          ++subobject_keys;
           const auto table = TableIndex(value, rows.size());
           if (table.has_value()) subobject_rows.insert(*table);
         }
       }
+      if (!chests.empty() && subobject_keys > 1) parsed.duplicate_state_key = true;
     }
 
-    CarrierParse parsed;
     for (const std::size_t subobject_row : subobject_rows) {
       const Row& row = rows[subobject_row];
       for (std::size_t pair = row.first_pair;
@@ -350,6 +361,45 @@ std::vector<CarrierParse> ParseCarrier(std::span<const std::uint8_t> raw,
         const auto [key, value] = pair_tokens(pair);
         const auto state_row = TableIndex(value, rows.size());
         if (!state_row.has_value()) continue;
+        if (!chests.empty()) {
+          if (key.tag != 5 || key.payload >= records.size()) continue;
+          const Record& saved = records[key.payload];
+          std::uint64_t registry = 0, object = 0;
+          if (saved.payload.size() < 17 ||
+              !ReadLe(saved.payload, 1, &registry) ||
+              !ReadLe(saved.payload, 9, &object)) continue;
+          const auto match = std::find_if(chests.begin(), chests.end(),
+              [registry, object](const ChestIdentity& identity) {
+                return identity.registry_hash == registry &&
+                       identity.object_hash == object;
+              });
+          if (match == chests.end()) continue;
+          if (saved.class_hash != UINT64_C(0x75E050AB149B4062) ||
+              saved.payload.size() != 17 || saved.payload[0] != 1) {
+            parsed.invalid_chest_state = true;
+            continue;
+          }
+          std::size_t state_keys = 0;
+          std::optional<std::uint32_t> scalar;
+          const Row& state = rows[*state_row];
+          for (std::size_t p = state.first_pair;
+               p < static_cast<std::size_t>(state.first_pair) + state.pair_count;
+               ++p) {
+            const auto [field, value_token] = pair_tokens(p);
+            if (string_value(field) != "state") continue;
+            ++state_keys;
+            if (value_token.tag == 1 && value_token.width == 5 &&
+                (value_token.payload == 0x3F800000 ||
+                 value_token.payload == 0x40000000 ||
+                 value_token.payload == 0x40400000 ||
+                 (maximum_state == 4 && value_token.payload == 0x40800000))) scalar = value_token.payload;
+            else parsed.invalid_chest_state = true;
+          }
+          if (state_keys > 1) parsed.duplicate_state_key = true;
+          if (scalar.has_value()) parsed.entries.push_back(Entry{
+              static_cast<std::size_t>(match - chests.begin()), false, *scalar});
+          continue;
+        }
         std::optional<bool> killed;
         std::size_t killed_key_count = 0;
         const Row& state = rows[*state_row];
@@ -404,14 +454,23 @@ std::vector<CarrierParse> ParseCarrier(std::span<const std::uint8_t> raw,
                               const CarrierParse& right) {
                              return left.entries == right.entries &&
                                     left.duplicate_state_key ==
-                                        right.duplicate_state_key;
+                                        right.duplicate_state_key &&
+                                    left.invalid_chest_state == right.invalid_chest_state;
                            }),
                parses.end());
   return parses;
 }
 
-RecordDecode DecodeRecord(const StagedRecordInput& record) {
+RecordDecode DecodeRecord(const StagedRecordInput& record,
+                          std::span<const NumericStateIdentity> chests = {},
+                          std::uint8_t maximum_state = 4) {
   RecordDecode result;
+  if (!chests.empty() && record.expected_lua_length != 0 &&
+      (record.envelope.size() < 2 || record.expected_lua_length > kMaxCarrierBytes)) {
+    result.accepted = false;
+    result.reason = "invalid_chest_carrier_length";
+    return result;
+  }
   if (record.envelope.size() < 2 || record.expected_lua_length == 0) {
     return result;
   }
@@ -448,13 +507,18 @@ RecordDecode DecodeRecord(const StagedRecordInput& record) {
       }
       std::string parse_reason;
       std::vector<CarrierParse> parses = ParseCarrier(
-          std::span(aligned).subspan(start, length), &parse_reason);
+          std::span(aligned).subspan(start, length), &parse_reason, chests, maximum_state);
       if (!parse_reason.empty()) {
         result.accepted = false;
         result.reason = parse_reason;
         return result;
       }
       for (CarrierParse& parse : parses) {
+        if (parse.invalid_chest_state) {
+          result.accepted = false;
+          result.reason = "invalid_chest_state";
+          return result;
+        }
         ++candidate_count;
         if (candidate_count > kMaxCandidates || parse.duplicate_state_key) {
           result.accepted = false;
@@ -483,10 +547,90 @@ RecordDecode DecodeRecord(const StagedRecordInput& record) {
     return result;
   }
   if (!candidates.empty()) result.entries = std::move(candidates[0].entries);
+  if (!chests.empty() && candidates.empty()) {
+    result.accepted = false;
+    result.reason = "no_chest_carrier_parse";
+  }
   return result;
 }
 
 }  // namespace
+
+DecodedNumericStateSnapshot DecodeNumericStateSnapshot(
+    std::span<const StagedRecordInput> records,
+    std::span<const NumericStateIdentity> identities,
+    std::uint8_t maximum_state) {
+  DecodedNumericStateSnapshot result;
+  result.states.assign(identities.size(), 0);
+  if ((maximum_state != 3 && maximum_state != 4) || identities.empty() ||
+      identities.size() > 512 || records.size() > 4096) {
+    result.reason = "chest_input_count_invalid";
+    return result;
+  }
+  std::set<std::string_view> ids;
+  std::set<std::pair<std::uint64_t, std::uint64_t>> keys;
+  for (const auto& identity : identities) {
+    if (identity.catalogue_id.empty() || NormalWad(identity.wad).empty() ||
+        !ids.insert(identity.catalogue_id).second ||
+        !keys.emplace(identity.registry_hash, identity.object_hash).second) {
+      result.reason = "chest_identity_invalid";
+      return result;
+    }
+  }
+  std::vector<std::optional<std::uint32_t>> values(identities.size());
+  for (const auto& record : records) {
+    const auto decoded = DecodeRecord(record, identities, maximum_state);
+    if (!decoded.accepted) {
+      result.reason = "record_rejected:" + record.name + ":" + decoded.reason;
+      return result;
+    }
+    for (const auto& entry : decoded.entries) {
+      const auto index = entry.raven_index;
+      if (NormalWad(record.name) != NormalWad(identities[index].wad)) {
+        result.reason = "chest_wad_mismatch";
+        return result;
+      }
+      if (values[index].has_value() && *values[index] != entry.scalar_bits) {
+        result.reason = "conflicting_chest_state";
+        return result;
+      }
+      values[index] = entry.scalar_bits;
+    }
+  }
+  for (std::size_t i = 0; i < identities.size(); ++i) {
+    if (!values[i].has_value()) continue;
+    switch (*values[i]) {
+      case 0x3F800000: result.states[i] = 1; break;
+      case 0x40000000: result.states[i] = 2; break;
+      case 0x40400000: result.states[i] = 3; break;
+      case 0x40800000: result.states[i] = 4; break;
+    }
+  }
+  result.accepted = true;
+  result.reason = std::find(result.states.begin(), result.states.end(), 0) ==
+      result.states.end() ? "accepted" : "accepted_partial";
+  return result;
+}
+
+DecodedChestSnapshot DecodeStandardChestSnapshot(
+    std::span<const StagedRecordInput> records,
+    std::span<const ChestIdentity> identities) {
+  const auto decoded = DecodeNumericStateSnapshot(records, identities, 4);
+  DecodedChestSnapshot result;
+  result.states.assign(identities.size(), ChestState::Unknown);
+  result.unknown_count = identities.size();
+  result.reason = decoded.reason;
+  if (!decoded.accepted) return result;
+  for (std::size_t i = 0; i < decoded.states.size(); ++i) {
+    result.states[i] = static_cast<ChestState>(decoded.states[i]);
+    if (result.states[i] == ChestState::Unknown) continue;
+    --result.unknown_count;
+    if (result.states[i] == ChestState::Opened) ++result.opened_count;
+    else ++result.remaining_count;
+  }
+  result.accepted = true;
+  return result;
+}
 
 DecodedRavenSnapshot DecodeRavenSnapshot(
     std::span<const StagedRecordInput> records) {

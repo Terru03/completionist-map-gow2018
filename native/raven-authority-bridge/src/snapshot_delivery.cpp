@@ -10,6 +10,8 @@
 #include <cstdint>
 #include <limits>
 #include <mutex>
+#include <memory>
+#include <new>
 #include <string>
 #include <string_view>
 
@@ -36,6 +38,8 @@ enum class RequestKind {
   kBoundaryCaptureV2 = 2,
   kNoteKilledV1 = 3,
   kNoteBoundaryV1 = 4,
+  kNornirCaptureV1 = 5,
+  kCollectibleCaptureV1 = 6,
 };
 
 struct SnapshotRequest {
@@ -56,6 +60,9 @@ int g_winsock_error = WSASYSNOTREADY;
 std::atomic<ServerState> g_server_state{ServerState::kNotStarted};
 SnapshotReader g_snapshot_reader = nullptr;
 SnapshotCapturer g_snapshot_capturer = nullptr;
+NornirCapturer g_nornir_capturer = nullptr;
+NornirCapturer g_collectible_capturer = nullptr;
+std::atomic<bool> g_nornir_busy{false};
 
 std::mutex g_session_mutex;
 std::uint64_t g_restore_epoch = 0;
@@ -330,6 +337,22 @@ SnapshotRequest ReceiveRequest(SOCKET client) {
   if (length == 0 || request[length - 1] != '\n') return {};
 
   const std::string_view text(request.data(), length);
+  constexpr std::string_view collectible_prefix = "CAPTURE COLLECTIBLE_SNAPSHOT_V1 nonce=";
+  if (text.starts_with(collectible_prefix)) {
+    SnapshotRequest parsed;
+    if (!ParseBoundaryEpoch(text.substr(collectible_prefix.size(), text.size() - collectible_prefix.size() - 1),
+                            &parsed.boundary_epoch)) return {};
+    parsed.kind = RequestKind::kCollectibleCaptureV1;
+    return parsed;
+  }
+  constexpr std::string_view nornir_prefix = "CAPTURE NORNIR_SNAPSHOT_V1 nonce=";
+  if (text.starts_with(nornir_prefix)) {
+    SnapshotRequest parsed;
+    if (!ParseBoundaryEpoch(text.substr(nornir_prefix.size(), text.size() - nornir_prefix.size() - 1),
+                            &parsed.boundary_epoch)) return {};
+    parsed.kind = RequestKind::kNornirCaptureV1;
+    return parsed;
+  }
   if (text == kRequestV1) {
     SnapshotRequest parsed;
     parsed.kind = RequestKind::kLatestV1;
@@ -377,6 +400,39 @@ void SendAll(SOCKET client, const std::string& response) {
   }
 }
 
+struct NornirClient {
+  SOCKET socket;
+  std::uint64_t nonce;
+  NornirCapturer capturer;
+  const char* unavailable;
+};
+
+unsigned __stdcall ServeNornir(void* raw) {
+  std::unique_ptr<NornirClient> client(static_cast<NornirClient*>(raw));
+  try {
+    const auto epoch = CurrentRestoreEpochInternal();
+    const auto response = client->capturer(client->nonce, epoch);
+    SendAll(client->socket, epoch == CurrentRestoreEpochInternal() && response.size() <= 4096 ?
+                           response : client->unavailable);
+  } catch (...) {
+    SendAll(client->socket, client->unavailable);
+  }
+  shutdown(client->socket, SD_BOTH);
+  closesocket(client->socket);
+  g_nornir_busy.store(false);
+  return 0;
+}
+
+bool DispatchNornir(SOCKET socket, std::uint64_t nonce, NornirCapturer capturer,
+                    const char* unavailable) {
+  if (!capturer || g_nornir_busy.exchange(true)) return false;
+  auto* client = new (std::nothrow) NornirClient{socket, nonce, capturer, unavailable};
+  const auto thread = client ? _beginthreadex(nullptr, 0, ServeNornir, client, 0, nullptr) : 0;
+  if (!thread) { delete client; g_nornir_busy.store(false); return false; }
+  CloseHandle(reinterpret_cast<HANDLE>(thread));
+  return true;
+}
+
 unsigned __stdcall ServeSnapshots(void* raw_listener) {
   const SOCKET listener = static_cast<SOCKET>(
       reinterpret_cast<std::uintptr_t>(raw_listener));
@@ -402,7 +458,16 @@ unsigned __stdcall ServeSnapshots(void* raw_listener) {
     }
 
     NativeRavenSnapshot snapshot;
-    if (request.kind == RequestKind::kLatestV1) {
+    if (request.kind == RequestKind::kCollectibleCaptureV1) {
+      if (DispatchNornir(client, request.boundary_epoch, g_collectible_capturer,
+                        "COLLECTIBLE_SNAPSHOT_V1 UNAVAILABLE\n")) continue;
+      SendAll(client, "COLLECTIBLE_SNAPSHOT_V1 UNAVAILABLE\n");
+    } else if (request.kind == RequestKind::kNornirCaptureV1) {
+      // One bounded worker keeps slow chest decode off Raven's request loop.
+      if (DispatchNornir(client, request.boundary_epoch, g_nornir_capturer,
+                        "NORNIR_SNAPSHOT_V1 UNAVAILABLE\n")) continue;
+      SendAll(client, "NORNIR_SNAPSHOT_V1 UNAVAILABLE\n");
+    } else if (request.kind == RequestKind::kLatestV1) {
       // Never serve the publication store before attempting a fresh capture.
       // A different save can make the previously published image stale while
       // the new staged WAD table is still partial. Fresh partial evidence must
@@ -622,7 +687,9 @@ std::string BuildRavenPartialBoundarySnapshotWireResponse(
 }
 
 bool StartSnapshotDeliveryServer(SnapshotReader reader,
-                                 SnapshotCapturer capturer) {
+                                 SnapshotCapturer capturer,
+                                 NornirCapturer nornir_capturer,
+                                 NornirCapturer collectible_capturer) {
   if (reader == nullptr || capturer == nullptr) return false;
   ServerState expected = ServerState::kNotStarted;
   if (!g_server_state.compare_exchange_strong(expected,
@@ -630,10 +697,13 @@ bool StartSnapshotDeliveryServer(SnapshotReader reader,
     return expected == ServerState::kStarting ||
            (expected == ServerState::kRunning &&
             g_snapshot_reader == reader &&
-            g_snapshot_capturer == capturer);
+            g_snapshot_capturer == capturer && g_nornir_capturer == nornir_capturer &&
+            g_collectible_capturer == collectible_capturer);
   }
   g_snapshot_reader = reader;
   g_snapshot_capturer = capturer;
+  g_nornir_capturer = nornir_capturer;
+  g_collectible_capturer = collectible_capturer;
   int error = 0;
   const SOCKET listener = OpenListener(kSnapshotDeliveryPort, nullptr, &error);
   if (listener == INVALID_SOCKET) {

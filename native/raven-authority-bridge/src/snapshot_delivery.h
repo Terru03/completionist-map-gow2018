@@ -21,11 +21,14 @@ std::string BuildRavenPartialBoundarySnapshotWireResponse(
 
 using SnapshotReader = bool (*)(NativeRavenSnapshot* snapshot);
 using SnapshotCapturer = bool (*)(NativeRavenSnapshot* snapshot);
+using NornirCapturer = std::string (*)(std::uint64_t nonce, std::uint64_t restore_epoch);
 
 // Start one read-only loopback endpoint. Repeated calls are idempotent. A port
 // collision or any listener failure is final and fail-closed for this process.
 bool StartSnapshotDeliveryServer(SnapshotReader reader,
-                                 SnapshotCapturer capturer);
+                                 SnapshotCapturer capturer,
+                                 NornirCapturer nornir_capturer = nullptr,
+                                 NornirCapturer collectible_capturer = nullptr);
 
 namespace delivery_test {
 

@@ -1035,13 +1035,26 @@ do
   local function ravenMapVisible(self)
     if self == nil or self.isOpenedForFastTravel == true then return false end
     local filter = ravenFilterKind(self)
-    return filter == 1 or filter == -101 or filter == -102
+    if filter == 1 then
+      if _G.CompletionistMapV105ShowAll and not _G.CompletionistMapV105ShowAll() then
+        return false
+      end
+      return true
+    elseif filter == -101 or filter == -102 then
+      if _G.CompletionistMapV105ShowCategories and not _G.CompletionistMapV105ShowCategories() then
+        return false
+      end
+      return true
+    end
+    return false
   end
 
   local function ravenVisibilityKey(self)
     return tostring(self and self.currRealmName or "-") .. ":" ..
       tostring(self and self.isOpenedForFastTravel == true) .. ":" ..
-      tostring(ravenFilterKind(self))
+      tostring(ravenFilterKind(self)) .. ":" ..
+      tostring(_G.CompletionistMapV105ShowAll and _G.CompletionistMapV105ShowAll() or false) .. ":" ..
+      tostring(_G.CompletionistMapV105ShowCategories and _G.CompletionistMapV105ShowCategories() or true)
   end
 
   local function syncIcons(self, reason)
@@ -1099,6 +1112,13 @@ do
           log("ICON_CREATE_FAILED", "name=" .. row.Name .. " reason=" .. tostring(reason))
         end
       end
+    end
+  end
+
+  _G.CompletionistMapV105ResyncRavens = function(target)
+    local map = target or lastMapOnSelf
+    if map ~= nil then
+      syncIcons(map, "toggle_markers")
     end
   end
 
@@ -1222,6 +1242,25 @@ do
 
   local function currentSelection(self)
     local selected = self and self.completionistMapV105SelectedRaven or nil
+    if selected ~= nil and self and self.currMarkerID ~= nil and tostring(self.currMarkerID) ~= selected.IdString then
+      clearSelection(self, "curr_marker_id_changed")
+      selected = nil
+    end
+    if selected == nil and self and self.currMarkerID ~= nil then
+      local name = knownNameForId(self.currMarkerID)
+      local row = name and byName[name]
+      local icons = self.completionistMapV105RavenIcons or {}
+      local go = name and icons[name]
+      if row ~= nil and go ~= nil and visible(self, row) and shouldShow(row.CatalogueId) then
+        selected = {
+          Family = "raven", Name = name, CatalogueId = row.CatalogueId,
+          Id = self.currMarkerID, IdString = tostring(self.currMarkerID), ObjectRef = go,
+          State = "armed-custom", Source = "retained_marker_id",
+          Generation = selectionGeneration,
+        }
+        self.completionistMapV105SelectedRaven = selected
+      end
+    end
     if selected == nil then return nil end
     if not ravenMapVisible(self) then
       clearSelection(self, "raven_map_hidden_by_mode_or_filter")
@@ -1449,7 +1488,7 @@ do
       clearSelection(self, "action_not_exact")
       return
     end
-    clearSelection(self, "SELECT_CONSUME")
+    selected.State = "armed-custom"
     if not shouldShow(selected.CatalogueId) then return end
     local ids, queryOK = customIds()
     if not queryOK then return end

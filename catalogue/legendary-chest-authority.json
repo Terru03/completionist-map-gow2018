@@ -1,0 +1,700 @@
+{
+  "schema": 1,
+  "family": "legendary_chest",
+  "source_commit": "f259b1299872c89bc519a8cc9abed3aa3c40d323",
+  "source_path": "docs/research/legendary-progression-identity-audit.json",
+  "source_sha256": "576f6ebe20b0cacecc9611a3c5331a4f84833eba715854df52119be71b6ee6c2",
+  "state_field": "state",
+  "opened_value": 4,
+  "missing_state": "unknown",
+  "marker_generation_ready": false,
+  "live_delivery_ready": false,
+  "stock_script": {
+    "sha256": "943021f321c708561e62d4c9b6926c01b3c131c2057fbed7e4c136dbed707bdc",
+    "source_file": "mods/lua_source/gameart/scripts/levels/gameplaymodules/progression/interact_chest_standard.lua",
+    "symbol_lines": {
+      "LD.ActivateAndIncrementQuest(\"RegionSummary_LegendaryChest_Parent_TheHallofTyr\")": [
+        388
+      ],
+      "LD.ActivateAndIncrementQuest(\"RegionSummary_LegendaryChest_Parent_TyrsVault\")": [
+        386
+      ],
+      "LD.ExecuteCallbacksForEvent(thisLevel, thisObj, onOpenedEvent, \"onOpenedEvent\")": [
+        375
+      ],
+      "LD.RollContainerConditionLoot(reward, rewardTier, WADName, rewardTierIndex)": [
+        454
+      ],
+      "UpdateRegionSummary(currentRegion, \"LegendaryChest\")": [
+        384
+      ],
+      "function OnInteractStart(": [
+        277
+      ],
+      "function OnOpened()": [
+        366
+      ],
+      "function OnRestoreCheckpoint(": [
+        501
+      ],
+      "function OnSaveCheckpoint(": [
+        498
+      ],
+      "game.Map.FindPlayerRegion()": [
+        381,
+        394
+      ],
+      "game.Map.GetRegionSummaryInfo(regionID)": [
+        416
+      ],
+      "game.SubObject.SoftSave(thisObj)": [
+        344,
+        488,
+        698
+      ],
+      "game.World.StoreCheckpoint()": [
+        484
+      ],
+      "return {state = state}": [
+        499
+      ],
+      "state = savedInfo.state": [
+        502
+      ],
+      "state = states.OPENED": [
+        373
+      ]
+    }
+  },
+  "rows": [
+    {
+      "catalogue_id": "legendary_chest_040af4fa440ef7ba52f8e8b317ac3200",
+      "wad": "alf600_templeint.wad",
+      "registry_hash": "0x6EFCEDEEF433D3AF",
+      "object_hash": "0x6CE4491007BAF553",
+      "serialized_key": "01afd333f4eeedfc6e53f5ba071049e46c",
+      "physical_guid": "040af4fa-440e-f7ba-52f8-e8b317ac3200",
+      "state_path": "040af4fa-440e-f7ba-52f8-e8b317ac3200.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        449.326551836818,
+        0.6959366383590435,
+        554.9825271786149
+      ],
+      "source_wad_sha256": "a2880c5ee4cbf7d4ed3820dc07168bc7cd876b8ad45db6c2accf039353bfc26b",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_0a04b4de469f3b030064d6827966b213",
+      "wad": "foot400_arena.wad",
+      "registry_hash": "0xD72DBF5AE7E1858D",
+      "object_hash": "0x09DAEF3A621B6AAF",
+      "serialized_key": "018d85e1e75abf2dd7af6a1b623aefda09",
+      "physical_guid": "0a04b4de-469f-3b03-0064-d6827966b213",
+      "state_path": "0a04b4de-469f-3b03-0064-d6827966b213.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -377.5042724609375,
+        38.04733657836914,
+        374.8517150878906
+      ],
+      "source_wad_sha256": "fe22f80c32a064b3294610d3afe3a22358b8db4a89319a9a271104c09912990d",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_11e085df4bd47deee3a3448bff9efc62",
+      "wad": "riv475_freyahouseext.wad",
+      "registry_hash": "0xDD70AB1094347191",
+      "object_hash": "0x4FA6C82A0DC3A612",
+      "serialized_key": "019171349410ab70dd12a6c30d2ac8a64f",
+      "physical_guid": "11e085df-4bd4-7dee-e3a3-448bff9efc62",
+      "state_path": "11e085df-4bd4-7dee-e3a3-448bff9efc62.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -454.25,
+        59.0,
+        7.0
+      ],
+      "source_wad_sha256": "403ddb9bc42191acc5b60b3117699b5c0c4814f0a7931205beb34c958a27e436",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_23d3213f45e38b632ed8048e876e472d",
+      "wad": "xpl900_islandarch.wad",
+      "registry_hash": "0x0B3F744DB7E8D4D1",
+      "object_hash": "0xD22F80A99F65461B",
+      "serialized_key": "01d1d4e8b74d743f0b1b46659fa9802fd2",
+      "physical_guid": "23d3213f-45e3-8b63-2ed8-048e876e472d",
+      "state_path": "23d3213f-45e3-8b63-2ed8-048e876e472d.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        35.31472457867079,
+        -25.01800036430359,
+        306.75586361372115
+      ],
+      "source_wad_sha256": "829ccaec58da337d7f7ec2e8b04a9414b90823ec2e84830bde17d9a33d215e53",
+      "fixture_raw": "010000803f",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "010000803f"
+    },
+    {
+      "catalogue_id": "legendary_chest_36cb588e41cb27a4668052b4529b98a6",
+      "wad": "riv925_freyacave.wad",
+      "registry_hash": "0x7F66A60A971B6713",
+      "object_hash": "0x7763E1E104028C98",
+      "serialized_key": "0113671b970aa6667f988c0204e1e16377",
+      "physical_guid": "36cb588e-41cb-27a4-6680-52b4529b98a6",
+      "state_path": "36cb588e-41cb-27a4-6680-52b4529b98a6.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -411.79998779296875,
+        42.5,
+        2.25
+      ],
+      "source_wad_sha256": "196ea71b5f2f76b8f0b7b9661312f96c7467c6f30f251e9f82f74d6acdc6c878",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_48f9e1694dc722a549f42893d5b79d9f",
+      "wad": "alfdgn110_main.wad",
+      "registry_hash": "0xF831C120085DF15F",
+      "object_hash": "0x8A8E3909F06B56AF",
+      "serialized_key": "015ff15d0820c131f8af566bf009398e8a",
+      "physical_guid": "48f9e169-4dc7-22a5-49f4-2893d5b79d9f",
+      "state_path": "48f9e169-4dc7-22a5-49f4-2893d5b79d9f.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        62.930845848712806,
+        1.4350001999735804,
+        427.7040412498762
+      ],
+      "source_wad_sha256": "fadc68b9148039b1ee6c32bf70499c7254a0b2e8a15838ae9a8459edf88811e6",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_50480b3a40fe25c4770f81a7261cbcb8",
+      "wad": "xpl980_beachwaterfall.wad",
+      "registry_hash": "0xBDA4FFF9DA4F4124",
+      "object_hash": "0x0E3CB0A0F6B3B0F3",
+      "serialized_key": "0124414fdaf9ffa4bdf3b0b3f6a0b03c0e",
+      "physical_guid": "50480b3a-40fe-25c4-770f-81a7261cbcb8",
+      "state_path": "50480b3a-40fe-25c4-770f-81a7261cbcb8.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        143.12376021628353,
+        -2.6823670864105225,
+        382.3302518460225
+      ],
+      "source_wad_sha256": "76d8ac005fe1602dc8a8adec3ce50e858657a2fcce9af608b56f3e5c24eb943f",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_510bd86441ac6a7b71d4f59321c2a08f",
+      "wad": "foot200_mid.wad",
+      "registry_hash": "0x7D93E8A9967AE871",
+      "object_hash": "0x9A34E829D84ACDB1",
+      "serialized_key": "0171e87a96a9e8937db1cd4ad829e8349a",
+      "physical_guid": "510bd864-41ac-6a7b-71d4-f59321c2a08f",
+      "state_path": "510bd864-41ac-6a7b-71d4-f59321c2a08f.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -394.4670104980469,
+        23.17099952697754,
+        287.92401123046875
+      ],
+      "source_wad_sha256": "72da21fa9208ac704d906f070fd18ffec3f944c70a1d8e4953d4d895520beb26",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_529343984fc313504ac20da874d05c01",
+      "wad": "xpl920_islandclimb.wad",
+      "registry_hash": "0x45F3C030A9EF10EF",
+      "object_hash": "0xFEA864DD25991BFF",
+      "serialized_key": "01ef10efa930c0f345ff1b9925dd64a8fe",
+      "physical_guid": "52934398-4fc3-1350-4ac2-0da874d05c01",
+      "state_path": "52934398-4fc3-1350-4ac2-0da874d05c01.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        237.04469289824766,
+        0.9680004119873047,
+        -30.207650585440433
+      ],
+      "source_wad_sha256": "93260129a84a2ec32452da91efccc2a55653291300e9a717d77b2d2884ee19c8",
+      "fixture_raw": "010000803f",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "010000803f"
+    },
+    {
+      "catalogue_id": "legendary_chest_5618d560426940a02e5b39a340c0c209",
+      "wad": "hel100_calderaheldressing.wad",
+      "registry_hash": "0x140093A4B32510D3",
+      "object_hash": "0xC576B2AC18840F89",
+      "serialized_key": "01d31025b3a4930014890f8418acb276c5",
+      "physical_guid": "5618d560-4269-40a0-2e5b-39a340c0c209",
+      "state_path": "5618d560-4269-40a0-2e5b-39a340c0c209.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        93.84306335449219,
+        6.0301337242126465,
+        43.75320053100586
+      ],
+      "source_wad_sha256": "240cbbc6e4d1ffab9a8bd676003199a41630f2c4da88f65fe5930b7e9d2f0d38",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_5b424870484e691ce32d19be71a03059",
+      "wad": "cal100_hub.wad",
+      "registry_hash": "0x93874EAADCFDA2A9",
+      "object_hash": "0x5E6478FDEAD88E57",
+      "serialized_key": "01a9a2fddcaa4e8793578ed8eafd78645e",
+      "physical_guid": "5b424870-484e-691c-e32d-19be71a03059",
+      "state_path": "5b424870-484e-691c-e32d-19be71a03059.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -49.42741012573242,
+        -20.521053314208984,
+        -40.00397491455078
+      ],
+      "source_wad_sha256": "35aba8c1a40a966ff3f3537fcc5ce0b19ac5d955313fa44ad5c2d7223a563e5c",
+      "fixture_raw": "0100000040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100000040"
+    },
+    {
+      "catalogue_id": "legendary_chest_7a71d104452e16e39a25bb8a14e47343",
+      "wad": "xpl850_dungeonforest.wad",
+      "registry_hash": "0xBAF9C8514445A1D3",
+      "object_hash": "0x0F8060BE56D5493B",
+      "serialized_key": "01d3a1454451c8f9ba3b49d556be60800f",
+      "physical_guid": "7a71d104-452e-16e3-9a25-bb8a14e47343",
+      "state_path": "7a71d104-452e-16e3-9a25-bb8a14e47343.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -58.53902717424626,
+        8.423837184906006,
+        -642.5077364812828
+      ],
+      "source_wad_sha256": "755fe35ac00f161341ce7c522fe4143263f67097ded0a351a7b7140148dae68f",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_8002f429448617523d189cbd93b23d4b",
+      "wad": "hel100_calderaheldressing.wad",
+      "registry_hash": "0x140093A4B32510D3",
+      "object_hash": "0xD6E4A3EBA27DC106",
+      "serialized_key": "01d31025b3a493001406c17da2eba3e4d6",
+      "physical_guid": "8002f429-4486-1752-3d18-9cbd93b23d4b",
+      "state_path": "8002f429-4486-1752-3d18-9cbd93b23d4b.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        47.28330612182617,
+        -2.951263427734375,
+        13.04357624053955
+      ],
+      "source_wad_sha256": "240cbbc6e4d1ffab9a8bd676003199a41630f2c4da88f65fe5930b7e9d2f0d38",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_890a24d24d2864a1567af691c615870f",
+      "wad": "xpl100_httk.wad",
+      "registry_hash": "0x75B8246420FAEB83",
+      "object_hash": "0xF7988EE55AF59F65",
+      "serialized_key": "0183ebfa206424b875659ff55ae58e98f7",
+      "physical_guid": "890a24d2-4d28-64a1-567a-f691c615870f",
+      "state_path": "890a24d2-4d28-64a1-567a-f691c615870f.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        301.87047576904297,
+        -23.513999938964844,
+        -534.9374084472656
+      ],
+      "source_wad_sha256": "b3fe5089424808a84e3a29daf6e8977fd91219530bc7f59f22e810dd15fb9b32",
+      "fixture_raw": null,
+      "fixture_observed": false,
+      "identity_status": "DERIVED_LOCAL_KEY_NO_FROZEN_STATE_OBSERVATION",
+      "source_audit_fixture_raw": null
+    },
+    {
+      "catalogue_id": "legendary_chest_8aabd22a44df8f25a955fe8e04fc0d95",
+      "wad": "riv100_dangersentrance.wad",
+      "registry_hash": "0x1A33A539B8775479",
+      "object_hash": "0x8D89C82FB275D258",
+      "serialized_key": "01795477b839a5331a58d275b22fc8898d",
+      "physical_guid": "8aabd22a-44df-8f25-a955-fe8e04fc0d95",
+      "state_path": "8aabd22a-44df-8f25-a955-fe8e04fc0d95.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -258.3981628417969,
+        90.0,
+        -578.4330444335938
+      ],
+      "source_wad_sha256": "bced2738c3497c53b222b7600ab41b9e15fe3dad0a8a8cbf1dcdfbe241d3329e",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_91a9f92a45d2d3fdb92279b4612ab5d7",
+      "wad": "alf370_moatscripting.wad",
+      "registry_hash": "0x0F12045A255B45B1",
+      "object_hash": "0x3BB9BCF0D356F66C",
+      "serialized_key": "01b1455b255a04120f6cf656d3f0bcb93b",
+      "physical_guid": "91a9f92a-45d2-d3fd-b922-79b4612ab5d7",
+      "state_path": "91a9f92a-45d2-d3fd-b922-79b4612ab5d7.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        403.1204737016655,
+        -14.09075629170195,
+        496.3911277988473
+      ],
+      "source_wad_sha256": "ae310032220c09633edaafaa45b12f35b82ca5953c82fd680f016e51ac8910d3",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_9226bd444f0f0b95dbeb7c927c6b317b",
+      "wad": "xpl900_islandarch.wad",
+      "registry_hash": "0x0B3F744DB7E8D4D1",
+      "object_hash": "0xE4EB2F10110FB462",
+      "serialized_key": "01d1d4e8b74d743f0b62b40f11102febe4",
+      "physical_guid": "9226bd44-4f0f-0b95-dbeb-7c927c6b317b",
+      "state_path": "9226bd44-4f0f-0b95-dbeb-7c927c6b317b.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        69.12615446701687,
+        -20.879000425338745,
+        311.6267362146935
+      ],
+      "source_wad_sha256": "829ccaec58da337d7f7ec2e8b04a9414b90823ec2e84830bde17d9a33d215e53",
+      "fixture_raw": "0100000040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100000040"
+    },
+    {
+      "catalogue_id": "legendary_chest_957a57b3456bd17fd24751a66dbcf01c",
+      "wad": "hel300_mainbridge.wad",
+      "registry_hash": "0x86D134ABFB78D5BC",
+      "object_hash": "0x710FCBA234B03512",
+      "serialized_key": "01bcd578fbab34d1861235b034a2cb0f71",
+      "physical_guid": "957a57b3-456b-d17f-d247-51a66dbcf01c",
+      "state_path": "957a57b3-456b-d17f-d247-51a66dbcf01c.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        333.7644958496094,
+        1.0,
+        50.896034240722656
+      ],
+      "source_wad_sha256": "9cffcc4741b80a9e17a792332a84d284c7c12359b600a60dafaf9bc887bbfbd2",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_9c0dc602456a00fa44bca1a3b599cf67",
+      "wad": "xpl910_islandshipwreck.wad",
+      "registry_hash": "0x92D63D951DE45E15",
+      "object_hash": "0x6C28D78E448029FC",
+      "serialized_key": "01155ee41d953dd692fc2980448ed7286c",
+      "physical_guid": "9c0dc602-456a-00fa-44bc-a1a3b599cf67",
+      "state_path": "9c0dc602-456a-00fa-44bc-a1a3b599cf67.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -194.27186131602303,
+        2.5333447734507217,
+        -246.8355027079403
+      ],
+      "source_wad_sha256": "0dced9e3fc485eaef8ab21538b6ffb9e76e62d0cd53f157330eab5751c9d72ae",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_9d7648ab43bf99f90b0cbd86b0a998f1",
+      "wad": "xpl400_huldramines.wad",
+      "registry_hash": "0xC6F27F0058C1EFE5",
+      "object_hash": "0xE702E71E90D53F13",
+      "serialized_key": "01e5efc158007ff2c6133fd5901ee702e7",
+      "physical_guid": "9d7648ab-43bf-99f9-0b0c-bd86b0a998f1",
+      "state_path": "9d7648ab-43bf-99f9-0b0c-bd86b0a998f1.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -153.41607379913333,
+        -15.803226470947266,
+        657.2417831420898
+      ],
+      "source_wad_sha256": "10221a8447fd200e1ca08f4a631490ce337619620442c3202a9ebcc264f70567",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_9f29650a4a8a5d0eb8bc43af1dbd3d68",
+      "wad": "peak200_chimneylow.wad",
+      "registry_hash": "0xC9CD47B2BF6AB38A",
+      "object_hash": "0x90E718BD51745309",
+      "serialized_key": "018ab36abfb247cdc909537451bd18e790",
+      "physical_guid": "9f29650a-4a8a-5d0e-b8bc-43af1dbd3d68",
+      "state_path": "9f29650a-4a8a-5d0e-b8bc-43af1dbd3d68.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -356.51129150390625,
+        140.68141174316406,
+        793.3782958984375
+      ],
+      "source_wad_sha256": "0f8a64e72d6a328dac2dc009f931b03a237e15b906a8199bc750b4fa0eaf14fc",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_ace99ef5472abcbac29bd2b396a3fdf3",
+      "wad": "xpl980_beachwaterfall.wad",
+      "registry_hash": "0xBDA4FFF9DA4F4124",
+      "object_hash": "0x20A263EB545B65EB",
+      "serialized_key": "0124414fdaf9ffa4bdeb655b54eb63a220",
+      "physical_guid": "ace99ef5-472a-bcba-c29b-d2b396a3fdf3",
+      "state_path": "ace99ef5-472a-bcba-c29b-d2b396a3fdf3.1a10ffb6-4e57-7e17-2604-f4b11ae71140.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        96.0206266997138,
+        -20.694000244140625,
+        365.7096838349609
+      ],
+      "source_wad_sha256": "76d8ac005fe1602dc8a8adec3ce50e858657a2fcce9af608b56f3e5c24eb943f",
+      "fixture_raw": "0100004040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100004040"
+    },
+    {
+      "catalogue_id": "legendary_chest_ae9454d54e9c9a23f21941b41a4038d3",
+      "wad": "riv925_freyacave.wad",
+      "registry_hash": "0x7F66A60A971B6713",
+      "object_hash": "0x099656F362E4C68C",
+      "serialized_key": "0113671b970aa6667f8cc6e462f3569609",
+      "physical_guid": "ae9454d5-4e9c-9a23-f219-41b41a4038d3",
+      "state_path": "ae9454d5-4e9c-9a23-f219-41b41a4038d3.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -399.4270324707031,
+        46.009830474853516,
+        -37.59158706665039
+      ],
+      "source_wad_sha256": "196ea71b5f2f76b8f0b7b9661312f96c7467c6f30f251e9f82f74d6acdc6c878",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_b97f559c471fab8850a2ae8741370020",
+      "wad": "alfdgn210_main.wad",
+      "registry_hash": "0xE1341D9E766FD040",
+      "object_hash": "0xB96563BFDCD376BF",
+      "serialized_key": "0140d06f769e1d34e1bf76d3dcbf6365b9",
+      "physical_guid": "b97f559c-471f-ab88-50a2-ae8741370020",
+      "state_path": "b97f559c-471f-ab88-50a2-ae8741370020.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        368.24355861519416,
+        7.599999690055853,
+        278.0945959401806
+      ],
+      "source_wad_sha256": "77541e06e62c83de9ad36003074b606dcca403e93e98805a7efe27f5640c6855",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_b9e3be9a46c248cc0ddc159643259c52",
+      "wad": "xpl960_beachship.wad",
+      "registry_hash": "0x69A19FA4A41E8012",
+      "object_hash": "0xFE9424CD1136DF1E",
+      "serialized_key": "0112801ea4a49fa1691edf3611cd2494fe",
+      "physical_guid": "b9e3be9a-46c2-48cc-0ddc-159643259c52",
+      "state_path": "b9e3be9a-46c2-48cc-0ddc-159643259c52.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -305.98156696034954,
+        -3.7350006103515625,
+        -313.7171234566855
+      ],
+      "source_wad_sha256": "a160dd4d8d913cf84a7e523fa5898fe34b2a312866938de1987d8a9b0a411f49",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_c14a0f2b4559d859347854bccb307f63",
+      "wad": "alf340_trenchbdark.wad",
+      "registry_hash": "0xAD4FD01E6E1A867B",
+      "object_hash": "0x53BE86560E8CB735",
+      "serialized_key": "017b861a6e1ed04fad35b78c0e5686be53",
+      "physical_guid": "c14a0f2b-4559-d859-3478-54bccb307f63",
+      "state_path": "c14a0f2b-4559-d859-3478-54bccb307f63.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        207.383847970102,
+        -15.509999065995203,
+        351.0991389790312
+      ],
+      "source_wad_sha256": "a6067bee104a84d8c20c99dff45be0bb95eaa0ffcf6f4c41629c484ffd8030cb",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_d0b93e274754785e08235285bd6b78f2",
+      "wad": "cal500_runevault.wad",
+      "registry_hash": "0x83D4E320FC9597F2",
+      "object_hash": "0x3F6E1038E5B9BAEE",
+      "serialized_key": "01f29795fc20e3d483eebab9e538106e3f",
+      "physical_guid": "d0b93e27-4754-785e-0823-5285bd6b78f2",
+      "state_path": "d0b93e27-4754-785e-0823-5285bd6b78f2.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -66.0018539428711,
+        -89.97755432128906,
+        82.39568328857422
+      ],
+      "source_wad_sha256": "709605ca193efde05a5f68308fae3d24e38b922b95172cf43182537c65bc910d",
+      "fixture_raw": "010000803f",
+      "fixture_observed": true,
+      "identity_status": "DERIVED_LOCAL_KEY_NO_FROZEN_STATE_OBSERVATION",
+      "source_audit_fixture_raw": null
+    },
+    {
+      "catalogue_id": "legendary_chest_d63295f244f330219b003c913c0dab69",
+      "wad": "peak720_summitascenthub.wad",
+      "registry_hash": "0x63E06E045427145F",
+      "object_hash": "0x3978566FB35C5EAD",
+      "serialized_key": "015f142754046ee063ad5e5cb36f567839",
+      "physical_guid": "d63295f2-44f3-3021-9b00-3c913c0dab69",
+      "state_path": "d63295f2-44f3-3021-9b00-3c913c0dab69.1a10ffb6-4e57-7e17-2604-f4b11ae71140.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -463.3553771972656,
+        1164.8253173828125,
+        960.8094482421875
+      ],
+      "source_wad_sha256": "286269546627ea2be132a7700b314596f7c5df0315076328aba07383c8682517",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_d6d6acfe444f2ad10b49cea2ba85a1eb",
+      "wad": "xpl250_funeralinterior.wad",
+      "registry_hash": "0x7E70D534C7B07AA1",
+      "object_hash": "0x748BE60F37BAB846",
+      "serialized_key": "01a17ab0c734d5707e46b8ba370fe68b74",
+      "physical_guid": "d6d6acfe-444f-2ad1-0b49-cea2ba85a1eb",
+      "state_path": "d6d6acfe-444f-2ad1-0b49-cea2ba85a1eb.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -152.5,
+        7.5,
+        705.0
+      ],
+      "source_wad_sha256": "2c685c00c04f3b4db119afd6ba9a72341d8b4234e824de4a922e127527432390",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_d6fb0fd64364453cc3e334a2454e0b75",
+      "wad": "xpl910_islandshipwreck.wad",
+      "registry_hash": "0x92D63D951DE45E15",
+      "object_hash": "0x8A46240742F96AD3",
+      "serialized_key": "01155ee41d953dd692d36af9420724468a",
+      "physical_guid": "d6fb0fd6-4364-453c-c3e3-34a2454e0b75",
+      "state_path": "d6fb0fd6-4364-453c-c3e3-34a2454e0b75.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -192.28995898033702,
+        -14.96668517788143,
+        -186.71769804945382
+      ],
+      "source_wad_sha256": "0dced9e3fc485eaef8ab21538b6ffb9e76e62d0cd53f157330eab5751c9d72ae",
+      "fixture_raw": "0100008040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100008040"
+    },
+    {
+      "catalogue_id": "legendary_chest_ede160a54530f55a7667f5a39257843c",
+      "wad": "xpl950_beachmaze.wad",
+      "registry_hash": "0xA25E174E13DB1031",
+      "object_hash": "0xEE28511073BA9E35",
+      "serialized_key": "013110db134e175ea2359eba73105128ee",
+      "physical_guid": "ede160a5-4530-f55a-7667-f5a39257843c",
+      "state_path": "ede160a5-4530-f55a-7667-f5a39257843c.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -185.1200031483653,
+        -20.280537009239197,
+        253.38048333398194
+      ],
+      "source_wad_sha256": "3d5f49ee761219d7273bf69eac0f6a278a10891a19c5c4893fcaf44bbf84d7e8",
+      "fixture_raw": "0100000040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100000040"
+    },
+    {
+      "catalogue_id": "legendary_chest_f714d2d845a3dd9e28808db4655e757f",
+      "wad": "cal740_leftwing.wad",
+      "registry_hash": "0x2C63B79DD31F01F3",
+      "object_hash": "0xEEF1DE0863CC4F32",
+      "serialized_key": "01f3011fd39db7632c324fcc6308def1ee",
+      "physical_guid": "f714d2d8-45a3-dd9e-2880-8db4655e757f",
+      "state_path": "f714d2d8-45a3-dd9e-2880-8db4655e757f.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        8.554201126098633,
+        -41.0285758972168,
+        10.19240951538086
+      ],
+      "source_wad_sha256": "5b127fa091fe48ef4922c27e875606c91674b44ebd971e11c605eff70e8e2973",
+      "fixture_raw": "0100000040",
+      "fixture_observed": true,
+      "identity_status": "DERIVED_LOCAL_KEY_NO_FROZEN_STATE_OBSERVATION",
+      "source_audit_fixture_raw": null
+    },
+    {
+      "catalogue_id": "legendary_chest_ff46dfab43efcfc6f0f382a33e2b571d",
+      "wad": "peak500_chimneytop.wad",
+      "registry_hash": "0x1BE90A0AB22775A5",
+      "object_hash": "0x26391CCE7A69F5F9",
+      "serialized_key": "01a57527b20a0ae91bf9f5697ace1c3926",
+      "physical_guid": "ff46dfab-43ef-cfc6-f0f3-82a33e2b571d",
+      "state_path": "ff46dfab-43ef-cfc6-f0f3-82a33e2b571d.b36ec130-4042-2d81-123a-9db40831d654",
+      "world_position": [
+        -454.8589782714844,
+        1172.625,
+        858.6287841796875
+      ],
+      "source_wad_sha256": "04dff2060cd6e2bbee0a42add166cb9a265a1149336dfb7ac518762c0a3d98fc",
+      "fixture_raw": "0100000040",
+      "fixture_observed": true,
+      "identity_status": "PROVEN_LOCAL_PERSISTED_STATE_BRIDGE",
+      "source_audit_fixture_raw": "0100000040"
+    }
+  ],
+  "replay_evidence_path": "docs/research/legendary-native-authority-replay.json",
+  "audit_scope_note": "Prior audit reused stale tracked WAD set. Replaying current identities proves two additional exact states in Cal500_RuneVault and Cal740_LeftWing."
+}
