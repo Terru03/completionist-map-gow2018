@@ -677,6 +677,51 @@ do
     updateHighlights(self)
   end
 
+  local previousTrackingState = MapOn.GetMapMarkerTrackingState
+  MapOn.GetMapMarkerTrackingState = function(self, markerID, ...)
+    local state = previousTrackingState and previousTrackingState(self, markerID, ...)
+    local trackedVal = (type(questConsts) == "table" and questConsts.TRACKING_STATE_TRACKED) or 1
+    local noneVal = (type(questConsts) == "table" and questConsts.TRACKING_STATE_NONE) or 0
+    if (state == nil or state == noneVal) and
+        self.currShownMarkerID ~= nil and markerID ~= nil and
+        tostring(markerID) == tostring(self.currShownMarkerID) then
+      return trackedVal
+    end
+    return state
+  end
+
+  local previousEnter = MapOn.Enter
+  MapOn.Enter = function(self, ...)
+    local res = previousEnter and previousEnter(self, ...)
+    if self.currShownMarkerID == nil and type(enabledShowOnCompassMarkerFlags) == "table" and
+        type(game.Compass) == "table" and type(game.Compass.FindMarkersByIconClass) == "function" then
+      local ok, stockMarkers = pcall(game.Compass.FindMarkersByIconClass, enabledShowOnCompassMarkerFlags)
+      if ok and type(stockMarkers) == "table" and #stockMarkers > 0 then
+        self.currShownMarkerID = stockMarkers[1]
+      end
+    end
+    if type(self.UpdateMapMarkerHighlights) == "function" then
+      pcall(self.UpdateMapMarkerHighlights, self)
+    end
+    return res
+  end
+
+  local previousSubmenuEnter = MapOn.SubmenuEnter
+  MapOn.SubmenuEnter = function(self, ...)
+    local res = previousSubmenuEnter and previousSubmenuEnter(self, ...)
+    if self.currShownMarkerID == nil and type(enabledShowOnCompassMarkerFlags) == "table" and
+        type(game.Compass) == "table" and type(game.Compass.FindMarkersByIconClass) == "function" then
+      local ok, stockMarkers = pcall(game.Compass.FindMarkersByIconClass, enabledShowOnCompassMarkerFlags)
+      if ok and type(stockMarkers) == "table" and #stockMarkers > 0 then
+        self.currShownMarkerID = stockMarkers[1]
+      end
+    end
+    if type(self.UpdateMapMarkerHighlights) == "function" then
+      pcall(self.UpdateMapMarkerHighlights, self)
+    end
+    return res
+  end
+
   local previousPrompt = MapOn.GetShowOnCompassPrompt
   MapOn.GetShowOnCompassPrompt = function(self, ...)
     local row = selection(self)
@@ -684,12 +729,10 @@ do
       local isNornir = (self.completionistMapV105NornirSelected ~= nil)
       local isRaven = (self.completionistMapV105SelectedRaven ~= nil)
       if not isNornir and not isRaven then
-        if self.currShownMarkerID == nil and type(enabledShowOnCompassMarkerFlags) == "table" and
-            type(game.Compass) == "table" and type(game.Compass.FindMarkersByIconClass) == "function" then
-          local ok, stockMarkers = pcall(game.Compass.FindMarkersByIconClass, enabledShowOnCompassMarkerFlags)
-          if ok and type(stockMarkers) == "table" and #stockMarkers > 0 then
-            self.currShownMarkerID = stockMarkers[1]
-          end
+        if self.currMarkerID ~= nil and self.currShownMarkerID ~= nil and
+            self.currMarkerID ~= self.currShownMarkerID and
+            tostring(self.currMarkerID) == tostring(self.currShownMarkerID) then
+          self.currShownMarkerID = self.currMarkerID
         end
       end
       local show, label = previousPrompt(self, ...)
@@ -766,12 +809,10 @@ do
       local isNornir = (self.completionistMapV105NornirSelected ~= nil)
       local isRaven = (self.completionistMapV105SelectedRaven ~= nil)
       if not isNornir and not isRaven then
-        if self.currShownMarkerID == nil and type(enabledShowOnCompassMarkerFlags) == "table" and
-            type(game.Compass) == "table" and type(game.Compass.FindMarkersByIconClass) == "function" then
-          local ok, stockMarkers = pcall(game.Compass.FindMarkersByIconClass, enabledShowOnCompassMarkerFlags)
-          if ok and type(stockMarkers) == "table" and #stockMarkers > 0 then
-            self.currShownMarkerID = stockMarkers[1]
-          end
+        if self.currMarkerID ~= nil and self.currShownMarkerID ~= nil and
+            self.currMarkerID ~= self.currShownMarkerID and
+            tostring(self.currMarkerID) == tostring(self.currShownMarkerID) then
+          self.currShownMarkerID = self.currMarkerID
         end
         local hasCustomTarget = (targetRow ~= nil) or
             (_G.CompletionistMapV105TrackedCatalogueId ~= nil) or

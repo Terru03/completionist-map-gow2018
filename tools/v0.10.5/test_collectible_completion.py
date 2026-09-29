@@ -69,7 +69,14 @@ class CompletionIntegrationTest(unittest.TestCase):
               HideMarker=function(name)
                 if rejectHide then return false end
                 activeTargets[name]=nil; return true
+              end,
+              FindMarkersByIconClass=function(flags)
+                local res = {}
+                if activeTargets.stock ~= nil then table.insert(res, "stock") end
+                return res
               end}}
+          enabledShowOnCompassMarkerFlags = {"PrimaryGoal", "SecondaryGoal", "Shop", "Dock", "MysticGateway"}
+          questConsts = {TRACKING_STATE_NONE = 0, TRACKING_STATE_TRACKED = 1}
           mapUtil={GetPlayerRealm=function() return playerRealm end}
           tutorialUtil={CurrentlyShowingStep=function() return false end}
           util={GetLAMSMsg=function(value) return value end}
@@ -90,6 +97,8 @@ class CompletionIntegrationTest(unittest.TestCase):
             return true
           end
           MapOn={Update=function() end, SubmenuExit=function() end,
+            Enter=function(self) end, SubmenuEnter=function(self) end,
+            GetMapMarkerTrackingState=function(self, id) return 0 end,
             Exit=function() end, ClearIcons=function() end,
             MouseClickHandler=function() end,
             UpdateMapMarkerHighlights=function() end,
@@ -106,7 +115,7 @@ class CompletionIntegrationTest(unittest.TestCase):
             end,
             GetShowOnCompassPrompt=function(self)
               local marker = self.currMarkerID or "stock"
-              if self.currShownMarkerID == marker then
+              if self.currShownMarkerID == marker or tostring(self.currShownMarkerID) == tostring(marker) then
                 return true, "[AdvanceButton] Remove"
               elseif self.currShownMarkerID ~= nil then
                 return true, "[AdvanceButton] Replace"
@@ -116,7 +125,7 @@ class CompletionIntegrationTest(unittest.TestCase):
             end,
             ShowOnCompass=function(self)
               local marker = self.currMarkerID or "stock"
-              if self.currShownMarkerID == marker then
+              if self.currShownMarkerID == marker or tostring(self.currShownMarkerID) == tostring(marker) then
                 activeTargets.stock = nil
                 self.currShownMarkerID = nil
               else
@@ -407,11 +416,57 @@ class CompletionIntegrationTest(unittest.TestCase):
         self.assertEqual(ui.currShownMarkerID, "stock")
         self.assertIsNone(g.activeTargets[row0["marker"]["name"]])
 
-        # 6. Untrack native marker -> Cleanly removed
+        # 6. Untrack native marker -> Cleanly removed on first press
         g.MapOn.ShowOnCompass(ui, menu_state)
         self.assertIsNone(g.activeTargets.stock)
         self.assertIsNone(ui.currShownMarkerID)
         self.assertEqual(g.targetCount(), 0)
+        show, label = g.MapOn.GetShowOnCompassPrompt(ui, menu_state.menu)
+        self.assertTrue(show)
+        self.assertIn("Add", label)
+
+        # 7. Map reopen persistence: track native marker, close map, reopen
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertEqual(g.activeTargets.stock, "SIDE")
+        self.assertEqual(ui.currShownMarkerID, "stock")
+
+        # Close map
+        g.MapOn.Exit(ui)
+        ui.currShownMarkerID = None
+
+        # Reopen map via MapOn.Enter
+        g.MapOn.Enter(ui)
+        self.assertEqual(ui.currShownMarkerID, "stock")
+        self.assertEqual(g.MapOn.GetMapMarkerTrackingState(ui, "stock"), 1)
+        show, label = g.MapOn.GetShowOnCompassPrompt(ui, menu_state.menu)
+        self.assertTrue(show)
+        self.assertIn("Remove", label)
+
+        # Untrack after reopen -> Cleanly removed on first press
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertIsNone(g.activeTargets.stock)
+        self.assertIsNone(ui.currShownMarkerID)
+        show, label = g.MapOn.GetShowOnCompassPrompt(ui, menu_state.menu)
+        self.assertTrue(show)
+        self.assertIn("Add", label)
+
+        # Reopen map after untrack -> Stays untracked
+        g.MapOn.Exit(ui)
+        g.MapOn.Enter(ui)
+        self.assertIsNone(ui.currShownMarkerID)
+        show, label = g.MapOn.GetShowOnCompassPrompt(ui, menu_state.menu)
+        self.assertTrue(show)
+        self.assertIn("Add", label)
+
+        # 8. Type-safe matching (integer ID vs string ID)
+        ui.currShownMarkerID = 12345
+        ui.currMarkerID = "12345"
+        self.assertEqual(g.MapOn.GetMapMarkerTrackingState(ui, "12345"), 1)
+        self.assertEqual(g.MapOn.GetMapMarkerTrackingState(ui, 12345), 1)
+        show, label = g.MapOn.GetShowOnCompassPrompt(ui, menu_state.menu)
+        self.assertTrue(show)
+        self.assertIn("Remove", label)
+        self.assertEqual(ui.currShownMarkerID, "12345")
 
     def test_show_on_compass_preserves_raven_and_nornir_selection(self):
         lua = self.runtime(production=True)
