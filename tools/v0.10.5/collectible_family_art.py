@@ -13,6 +13,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import struct
 import sys
 import uuid
@@ -291,6 +292,12 @@ def build_master(raw, resources):
                        "families": dict(Counter(r["family"] for r in definitions.values()))}
 
 
+def inworld_name_for(compass_class: str) -> str:
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', compass_class)
+    snake = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).upper()
+    return "COMPASS_INWORLD_" + snake
+
+
 def build_pool(raw, resources, hud_resources=None):
     # Reassign the extra stock quest reserve; do not increase UI physics objects.
     chunk = stage.one_chunk(stage.parse_dcb_chunks(raw), 12)
@@ -310,23 +317,29 @@ def build_pool(raw, resources, hud_resources=None):
             struct.pack_into("<Q", result, at, uid)
             offsets.append(at)
         start += counts[family]
+    hud_indices = set()
     if hud_resources:
         for family in sorted(hud_resources):
             hud_name = hud_resources[family]
             uid = locations.base.name_hash(hud_name)
             need(not any(r["uid"] == uid for r in rows), f"custom HUD pool already present: {hud_name}")
             i = spare[start]
+            hud_indices.add(i)
             at = chunk["start"] + 0x90 + i * 16
-            struct.pack_into("<Q", result, at, uid)
+            struct.pack_into("<QH", result, at, uid, 2)
             offsets.append(at)
             start += 1
     candidate = bytes(result)
     new_count, new_rows, _ = stage.dcb_rows(candidate[chunk["start"]:chunk["end"]])
-    need(new_count == count and all(a["capacity"] == b["capacity"] for a, b in zip(rows, new_rows)),
-         "pool count/capacity changed")
+    need(new_count == count, "pool count changed")
     need([r["raw"] for r in rows[:389]] == [r["raw"] for r in new_rows[:389]], "original pool changed")
+    for i, (orig_r, new_r) in enumerate(zip(rows, new_rows)):
+        if i in hud_indices:
+            need(new_r["capacity"] == 2, f"hud slot {i} capacity not 2")
+        else:
+            need(new_r["capacity"] == orig_r["capacity"], f"slot {i} capacity changed")
     for at in offsets:
-        result[at:at + 8] = raw[at:at + 8]
+        result[at:at + 16] = raw[at:at + 16]
     need(bytes(result) == raw, "pool exact inverse failed")
     return candidate, {"exact_inverse": True, "total_rows": count, "reassigned": start,
                        "family_slots": dict(counts), "hud_slots": hud_count, "added_physics_objects": 0}
@@ -341,64 +354,110 @@ def build_perm(raw, specs):
     by_name = {e["name"]: e for e in exports}
     globals_row = by_name["COMPASS_GLOBALS"]
     raven_row = by_name["CompletionistRaven"]
-    side_row = by_name["SIDE"]
+    side_iw = by_name["COMPASS_INWORLD_SIDE"]
 
-    side_rc = data[side_row["root"]:side_row["root"] + 0x20]
-    _, _, side_inworld, _ = struct.unpack("<QQQI", side_rc[:28])
-
-    raven_root = int(raven_row["root"])
-    orig_raven_inworld = struct.unpack_from("<Q", data, raven_root + 16)[0]
-    struct.pack_into("<Q", data, raven_root + 16, side_inworld)
-
-    insert_class = int(globals_row["root"])
-    need(int(raven_row["root"]) + 0x20 == insert_class, "class block does not end at COMPASS_GLOBALS")
-
+    # 1. In-world insertion position (at end of type-0x129 block)
+    iw_exports = sorted([e for e in exports if int(e["type_id"]) == 0x129 and e["name"].startswith("COMPASS_INWORLD_")], key=lambda e: int(e["root"]))
+    INWORLD_SIZE = 0x98
     CLASS_SIZE = 0x20
-    total_size = len(specs) * CLASS_SIZE
+    insert_iw = int(iw_exports[-1]["root"]) + INWORLD_SIZE
+
+    # 2. Prepare new in-world carrier records
+    side_iw_rec = bytearray(data[side_iw["root"]:side_iw["root"] + INWORLD_SIZE])
+    sorted_specs = sorted(specs, key=lambda s: s["compass_class"])
+
+    new_iw_bytes = bytearray()
+    new_iw_exports = []
+
+    for idx, s in enumerate(sorted_specs):
+        hud_hash = packed.name_hash(s["hud_resource"])
+        iw_name = inworld_name_for(s["compass_class"])
+        iw_uid = packed.name_hash(iw_name)
+
+        rec = bytearray(side_iw_rec)
+        struct.pack_into("<Q", rec, 0, hud_hash)
+        rec_field = 0x10
+        rec_target = 0x90
+        struct.pack_into("<q", rec, rec_field, rec_target - rec_field)
+        new_iw_bytes.extend(rec)
+
+        new_iw_exports.append({
+            "root": insert_iw + idx * INWORLD_SIZE,
+            "type_id": 0x129,
+            "uid": iw_uid,
+            "name": iw_name,
+        })
+
+    total_iw_size = len(new_iw_bytes)
+
+    # Insert in-world bytes at insert_iw
+    data1 = bytearray(data[:insert_iw] + bytes(new_iw_bytes) + data[insert_iw:])
+    relocs1 = []
+    for r in relocs:
+        f = int(r["field"]) + total_iw_size if int(r["field"]) >= insert_iw else int(r["field"])
+        t = int(r["target"]) + total_iw_size if int(r["target"]) >= insert_iw else int(r["target"])
+        struct.pack_into("<q", data1, f, t - f)
+        relocs1.append({"field": f, "target": t, "delta": t - f})
+
+    for idx in range(len(sorted_specs)):
+        f = insert_iw + idx * INWORLD_SIZE + 0x10
+        t = insert_iw + idx * INWORLD_SIZE + 0x90
+        struct.pack_into("<q", data1, f, t - f)
+        relocs1.append({"field": f, "target": t, "delta": t - f})
+
+    # 3. Class insertion position (at end of type-0x11E block, immediately before COMPASS_GLOBALS)
+    orig_insert_class = int(globals_row["root"])
+    insert_class = orig_insert_class + total_iw_size
 
     new_class_bytes = bytearray()
-    new_exports = []
-    strings_tail = bytearray()
-
-    for idx, spec in enumerate(sorted(specs, key=lambda s: s["compass_class"])):
-        compass_class = spec["compass_class"]
-        hud_go = spec["hud_resource"]
-        hud_hash = packed.name_hash(hud_go)
-        class_uid = packed.name_hash(compass_class)
+    new_class_exports = []
+    for idx, s in enumerate(sorted_specs):
+        hud_hash = packed.name_hash(s["hud_resource"])
+        class_name = s["compass_class"]
+        class_uid = packed.name_hash(class_name)
+        carrier_name = inworld_name_for(class_name)
+        carrier_uid = packed.name_hash(carrier_name)
 
         record = bytearray(CLASS_SIZE)
-        struct.pack_into("<QQQI", record, 0, hud_hash, 0, side_inworld, 0x3F800000)
+        struct.pack_into("<QQQI", record, 0, hud_hash, 0, carrier_uid, 0x3F800000)
         new_class_bytes.extend(record)
 
-        new_exports.append({
+        new_class_exports.append({
             "root": insert_class + idx * CLASS_SIZE,
             "type_id": 0x11E,
             "uid": class_uid,
-            "name": compass_class,
+            "name": class_name,
         })
 
-    def shifted(offset: int) -> int:
-        return offset + total_size if offset >= insert_class else offset
-
-    data2 = bytearray(data[:insert_class] + bytes(new_class_bytes) + data[insert_class:])
+    total_class_size = len(new_class_bytes)
+    data2 = bytearray(data1[:insert_class] + bytes(new_class_bytes) + data1[insert_class:])
     relocs2 = []
-    for r in relocs:
-        field = shifted(int(r["field"]))
-        target = shifted(int(r["target"]))
-        struct.pack_into("<q", data2, field, target - field)
-        relocs2.append({"field": field, "target": target, "delta": target - field})
+    for r in relocs1:
+        f = r["field"] + total_class_size if r["field"] >= insert_class else r["field"]
+        t = r["target"] + total_class_size if r["target"] >= insert_class else r["target"]
+        struct.pack_into("<q", data2, f, t - f)
+        relocs2.append({"field": f, "target": t, "delta": t - f})
 
-    table_growth = len(specs) * 24
+    # 4. Exports table
+    all_new_exports = new_iw_exports + new_class_exports
+    table_growth = len(all_new_exports) * 24
+
+    def final_offset(offset: int) -> int:
+        shifted1 = offset + total_iw_size if offset >= insert_iw else offset
+        shifted2 = shifted1 + total_class_size if shifted1 >= insert_class else shifted1
+        return shifted2
+
     final_exports = []
     for e in exports:
         final_exports.append({
             **e,
-            "root": shifted(int(e["root"])),
+            "root": final_offset(int(e["root"])),
             "string_offset": int(e["string_offset"]) + table_growth,
         })
 
-    curr_str_offset = 8 + (len(exports) + len(specs)) * 24 + len(tail)
-    for ne in new_exports:
+    strings_tail = bytearray()
+    curr_str_offset = 8 + (len(exports) + len(all_new_exports)) * 24 + len(tail)
+    for ne in all_new_exports:
         ne["string_offset"] = curr_str_offset
         curr_str_offset += len(ne["name"]) + 1
         strings_tail.extend(ne["name"].encode("ascii") + b"\0")
@@ -428,26 +487,36 @@ def build_perm(raw, specs):
     _, inv_exports, inv_tail = packed.parse_exports(packed.one(inv_chunks, 13)["payload"])
     inv_relocs = packed.parse_relocations(packed.one(inv_chunks, 15)["payload"], bytes(inv_data))
 
-    orig_data = bytearray(inv_data[:insert_class] + inv_data[insert_class + total_size:])
-    struct.pack_into("<Q", orig_data, raven_root + 16, orig_raven_inworld)
+    # Remove class bytes first (higher offset)
+    inv_data_no_class = bytearray(inv_data[:insert_class] + inv_data[insert_class + total_class_size:])
+    # Remove in-world bytes (lower offset)
+    orig_data = bytearray(inv_data_no_class[:insert_iw] + inv_data_no_class[insert_iw + total_iw_size:])
+
+    # Invert relocations: remove new in-world carrier relocations and shift remaining
+    new_carrier_fields = {insert_iw + idx * INWORLD_SIZE + 0x10 for idx in range(len(sorted_specs))}
     orig_relocs = []
     for r in inv_relocs:
-        field = int(r["field"])
-        target = int(r["target"])
-        orig_field = field - total_size if field >= insert_class + total_size else field
-        orig_target = target - total_size if target >= insert_class + total_size else target
-        struct.pack_into("<q", orig_data, orig_field, orig_target - orig_field)
-        orig_relocs.append(orig_field)
+        f = int(r["field"])
+        t = int(r["target"])
+        if f in new_carrier_fields:
+            continue
+        f1 = f - total_class_size if f >= insert_class + total_class_size else f
+        t1 = t - total_class_size if t >= insert_class + total_class_size else t
+        f0 = f1 - total_iw_size if f1 >= insert_iw + total_iw_size else f1
+        t0 = t1 - total_iw_size if t1 >= insert_iw + total_iw_size else t1
+        struct.pack_into("<q", orig_data, f0, t0 - f0)
+        orig_relocs.append(f0)
 
-    new_uids = {ne["uid"] for ne in new_exports}
+    new_uids = {ne["uid"] for ne in all_new_exports}
     orig_exports = []
     for e in inv_exports:
         if e["uid"] not in new_uids:
             root = int(e["root"])
-            orig_root = root - total_size if root >= insert_class + total_size else root
+            r1 = root - total_class_size if root >= insert_class + total_class_size else root
+            r0 = r1 - total_iw_size if r1 >= insert_iw + total_iw_size else r1
             orig_exports.append({
                 **e,
-                "root": orig_root,
+                "root": r0,
                 "string_offset": int(e["string_offset"]) - table_growth,
             })
 
@@ -466,7 +535,12 @@ def build_perm(raw, specs):
     inverted_file = packed.build_file(chunks, {12: bytes(orig_data), 13: bytes(orig_exp_payload), 15: orig_reloc_payload})
     need(inverted_file == raw, "wad_r_perm.dcb exact inverse failed")
 
-    return candidate, {"exact_inverse": True, "added_classes": len(new_exports), "insert_offset": insert_class}
+    return candidate, {
+        "exact_inverse": True,
+        "added_classes": len(new_class_exports),
+        "added_inworld": len(new_iw_exports),
+        "insert_offset": insert_class,
+    }
 
 
 def freeze_package(outputs, proof, output, baseline_root=BUILD, source_inputs=None):

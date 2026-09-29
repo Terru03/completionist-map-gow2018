@@ -52,6 +52,7 @@ class CollectibleHudArtTests(unittest.TestCase):
         candidate, proof = art.build_perm(raw, specs)
         self.assertTrue(proof["exact_inverse"])
         self.assertEqual(proof["added_classes"], 15)
+        self.assertEqual(proof["added_inworld"], 15)
 
         chunks = p.parse_chunks(candidate)
         out_data = bytes(p.one(chunks, 12)["payload"])
@@ -65,19 +66,58 @@ class CollectibleHudArtTests(unittest.TestCase):
             exp = by_name[cname]
             self.assertEqual(exp["type_id"], 0x11E)
             rec = out_data[exp["root"]:exp["root"] + 0x20]
-            icon_hash = struct.unpack_from("<Q", rec, 0)[0]
+            icon_hash, _, inworld_uid, scale_raw = struct.unpack("<QQQI", rec[:28])
             self.assertEqual(icon_hash, p.name_hash(spec["hud_resource"]))
+            self.assertEqual(scale_raw, 0x3F800000)
 
-        # Verify CompletionistRaven has custom HUD and matches side_inworld carrier
+            # Dedicated in-world carrier check
+            iw_name = art.inworld_name_for(cname)
+            expected_iw_uid = p.name_hash(iw_name)
+            self.assertEqual(inworld_uid, expected_iw_uid)
+            self.assertIn(iw_name, by_name)
+            iw_exp = by_name[iw_name]
+            self.assertEqual(iw_exp["type_id"], 0x129)
+            iw_rec = out_data[iw_exp["root"]:iw_exp["root"] + 0x98]
+            iw_icon_hash = struct.unpack_from("<Q", iw_rec, 0)[0]
+            self.assertEqual(iw_icon_hash, p.name_hash(spec["hud_resource"]))
+            iw_reloc_delta = struct.unpack_from("<q", iw_rec, 0x10)[0]
+            self.assertEqual(iw_reloc_delta, 0x80)
+
+        # Verify CompletionistRaven has custom HUD and dedicated in-world carrier (NOT stock side diamond)
         self.assertIn("CompletionistRaven", by_name)
         raven_exp = by_name["CompletionistRaven"]
         raven_rec = out_data[raven_exp["root"]:raven_exp["root"] + 0x20]
         r_hud, _, r_inworld, _ = struct.unpack("<QQQI", raven_rec[:28])
         self.assertEqual(r_hud, p.name_hash("goCompletionistRavenHUD"))
+        self.assertEqual(r_inworld, p.name_hash("COMPASS_INWORLD_COMPLETIONIST_RAVEN"))
         side_exp = by_name["SIDE"]
         side_rec = out_data[side_exp["root"]:side_exp["root"] + 0x20]
         _, _, s_inworld, _ = struct.unpack("<QQQI", side_rec[:28])
-        self.assertEqual(r_inworld, s_inworld)
+        self.assertNotEqual(r_inworld, s_inworld)
+
+    def test_build_pool_sets_capacity_2_for_hud_and_inverses_exactly(self):
+        pool_path = art.BUILD / "all-types/baseline" / art.POOL
+        if not pool_path.exists():
+            pool_path = art.locations.GAME / art.POOL
+        raw = pool_path.read_bytes()
+        res = {f: art.spec_for(f)["resource"] for f in self.families}
+        hres = {f: art.spec_for(f)["hud_resource"] for f in self.families}
+        candidate, proof = art.build_pool(raw, res, hres)
+        self.assertTrue(proof["exact_inverse"])
+        self.assertEqual(proof["hud_slots"], 15)
+
+        chunk = art.stage.one_chunk(art.stage.parse_dcb_chunks(candidate), 12)
+        _, rows, _ = art.stage.dcb_rows(candidate[chunk["start"]:chunk["end"]])
+        rows_by_uid = {r["uid"]: r for r in rows}
+
+        for fam in self.families:
+            spec = art.spec_for(fam)
+            hud_uid = p.name_hash(spec["hud_resource"])
+            self.assertIn(hud_uid, rows_by_uid)
+            self.assertEqual(rows_by_uid[hud_uid]["capacity"], 2)
+            map_uid = p.name_hash(spec["resource"])
+            self.assertIn(map_uid, rows_by_uid)
+            self.assertEqual(rows_by_uid[map_uid]["capacity"], 1)
 
     def test_lua_has_exact_mapping_for_all_15_families(self):
         lua_text = (HERE / "collectible-location-map.lua").read_text(encoding="utf-8")
