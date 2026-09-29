@@ -9,6 +9,7 @@ import shutil
 import struct
 import subprocess
 
+import numpy as np
 from PIL import Image, ImageDraw
 
 import collectible_family_art as art
@@ -27,6 +28,44 @@ def make_clean_alpha_png(source_path: Path, target_path: Path) -> Path:
     target_path.parent.mkdir(parents=True, exist_ok=True)
     im.save(target_path, format='PNG')
     return target_path
+
+
+def prepare_family_role_pngs(source_path: Path, diffuse_path: Path, emissive_path: Path, size: tuple[int, int] = (148, 148)) -> tuple[Path, Path]:
+    im = Image.open(source_path).convert('RGBA')
+    w, h = im.size
+    seeds = [(0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1),
+             (w // 2, 0), (w // 2, h - 1), (0, h // 2), (w - 1, h // 2)]
+    for pt in seeds:
+        pix = im.getpixel(pt)
+        if pix[3] != 0 and max(pix[:3]) <= 10:
+            ImageDraw.floodfill(im, pt, (0, 0, 0, 0), thresh=10)
+
+    arr = np.array(im, dtype=np.float32)
+    r, g, b, a = arr[:, :, 0], arr[:, :, 1], arr[:, :, 2], arr[:, :, 3]
+    lum = 0.299 * r + 0.587 * g + 0.114 * b
+    opaque = a > 128
+
+    # 1. Diffuse: deepen dark contour and detail lines so downscaling / compression retains contrast
+    dark_mask = (lum < 90) & opaque
+    arr_diff = arr.copy()
+    for ch in range(3):
+        arr_diff[:, :, ch] = np.where(dark_mask, arr_diff[:, :, ch] * 0.4, arr_diff[:, :, ch])
+    diff_img = Image.fromarray(np.clip(arr_diff, 0, 255).astype(np.uint8))
+    diff_small = diff_img.resize(size, resample=Image.Resampling.LANCZOS)
+
+    # 2. Emissive: mask out dark contours (lum < 110) so the additive emissive shader does not wash out dark lines
+    arr_emis = arr.copy()
+    emis_mask = (lum < 110)
+    for ch in range(3):
+        arr_emis[:, :, ch] = np.where(emis_mask, 0, arr_emis[:, :, ch])
+    emis_img = Image.fromarray(np.clip(arr_emis, 0, 255).astype(np.uint8))
+    emis_small = emis_img.resize(size, resample=Image.Resampling.LANCZOS)
+
+    diffuse_path.parent.mkdir(parents=True, exist_ok=True)
+    emissive_path.parent.mkdir(parents=True, exist_ok=True)
+    diff_small.save(diffuse_path, format='PNG')
+    emis_small.save(emissive_path, format='PNG')
+    return diffuse_path, emissive_path
 
 
 ASSETS = art.ROOT / 'assets/icons/families'
@@ -192,13 +231,15 @@ def compile_textures(output, inputs, families=None):
         source = ASSETS / png
         source_sha = io.sha(source)
         row = {'source': source.relative_to(art.ROOT).as_posix(), 'source_sha256': source_sha}
-        alpha_png = work / 'rgba' / png
-        make_clean_alpha_png(source, alpha_png)
+        diffuse_png = work / 'rgba' / 'diffuse' / png
+        emissive_png = work / 'rgba' / 'emissive' / png
+        prepare_family_role_pngs(source, diffuse_png, emissive_png)
+        role_pngs = {'diffuse': diffuse_png, 'emissive': emissive_png}
         for role, fmt in (('diffuse', 'BC7_UNORM_SRGB'), ('emissive', 'BC1_UNORM')):
             target = work / 'dds' / role
             target.mkdir(parents=True, exist_ok=True)
             run([TOOLS['texconv'][0], '-nologo', '-y', '-w', '148', '-h', '148', '-m', '8',
-                 '-f', fmt, '-o', target, alpha_png])
+                 '-f', fmt, '-o', target, role_pngs[role]])
             compiled = target / (source.stem + '.dds')
             art.need(compiled.is_file(), 'DDS output missing')
             file_hash = int.from_bytes(art.identity(family, role + ':' + source_sha, 8), 'little')

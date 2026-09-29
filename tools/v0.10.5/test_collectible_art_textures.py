@@ -184,7 +184,17 @@ class AllFamilyArtTests(unittest.TestCase):
                 rgb_max = np.max(arr[:, :, :3], axis=2)
                 alpha_arr = arr[:, :, 3]
                 dark_fg = np.sum((alpha_arr > 200) & (rgb_max < 120))
-                self.assertGreater(dark_fg, 50, f'{family} dark contour preserved')
+                dark_core = np.sum((alpha_arr > 200) & (rgb_max < 60))
+                self.assertGreater(dark_fg, 1000, f'{family} dark contour preserved')
+                self.assertGreater(dark_core, 200, f'{family} deep dark lines preserved')
+
+            with Image.open(work / 'dds/emissive' / name) as emis_image:
+                self.assertEqual(emis_image.size, (148, 148))
+                emis_arr = np.array(emis_image)
+                dark_contour_mask = (alpha_arr > 200) & (rgb_max < 60)
+                if np.any(dark_contour_mask):
+                    emis_on_dark = np.mean(emis_arr[dark_contour_mask, :3])
+                    self.assertLess(emis_on_dark, 15, f'{family} emissive on dark contours too bright: {emis_on_dark}')
 
 
 if __name__ == '__main__':
