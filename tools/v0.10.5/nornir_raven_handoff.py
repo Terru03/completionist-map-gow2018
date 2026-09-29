@@ -18,6 +18,7 @@ HANDOFF=b'''  -- Nornir candidate: release Raven UI ownership without changing a
   _G.CompletionistMapV105ReleaseRavenCompass = function()
     local ok = hideCustom(nil, "nornir_target_replace")
     if not ok then return false end
+    local hadRaven = (_G.CompletionistMapV105TrackedCatalogueId ~= nil)
     customCompassOwnsTarget = false
     promptIntent = nil
     promptSettleFrames = 0
@@ -25,7 +26,9 @@ HANDOFF=b'''  -- Nornir candidate: release Raven UI ownership without changing a
     _G.CompletionistMapV105TrackedCatalogueId = nil
     if lastMapOnSelf then
       clearSelection(lastMapOnSelf, "nornir_target_replace")
-      lastMapOnSelf.currShownMarkerID = nil
+      if hadRaven then
+        lastMapOnSelf.currShownMarkerID = nil
+      end
     end
     suppressLegacyRavenHud()
     return true

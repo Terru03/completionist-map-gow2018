@@ -104,9 +104,26 @@ class CompletionIntegrationTest(unittest.TestCase):
             MapCollisionChangeHandler=function(self,state,hits)
               self.currMarkerID=hits[1] and hits[1].id or nil
             end,
-            GetShowOnCompassPrompt=function() return true,"stock" end,
+            GetShowOnCompassPrompt=function(self)
+              local marker = self.currMarkerID or "stock"
+              if self.currShownMarkerID == marker then
+                return true, "[AdvanceButton] Remove"
+              elseif self.currShownMarkerID ~= nil then
+                return true, "[AdvanceButton] Replace"
+              else
+                return true, "[AdvanceButton] Add"
+              end
+            end,
             ShowOnCompass=function(self)
-              activeTargets.stock="SIDE"; self.currShownMarkerID="stock"; return true
+              local marker = self.currMarkerID or "stock"
+              if self.currShownMarkerID == marker then
+                activeTargets.stock = nil
+                self.currShownMarkerID = nil
+              else
+                activeTargets.stock = "SIDE"
+                self.currShownMarkerID = marker
+              end
+              return true
             end}
           function MapOn:Menu_Next_Filter(direction)
             if self.isOpenedForFastTravel then return end
@@ -340,6 +357,61 @@ class CompletionIntegrationTest(unittest.TestCase):
         self.assertIsNone(g.activeTargets.stock)
         self.assertEqual(g.activeTargets[row0["marker"]["name"]], "CompletionistArtefact")
         self.assertEqual(icon0.anim.mode, 10)
+
+    def test_native_marker_untracking_and_prompt_lifecycle(self):
+        lua = self.runtime(production=True)
+        g = lua.globals()
+        g.CompletionistMapV105LocationAuthorityReady(1)
+        ui = g.makeMap("Midgard")
+        g.MapOn.UpdateFilterButtonMapping(ui)
+        g.CompletionistMapV100_CreateMapPin(ui)
+        menu_state = lua.table_from({"menu": lua.table()})
+
+        # 1. Hover untracked native marker -> Prompt is Add
+        g.MapOn.MapCollisionChangeHandler(ui, menu_state, lua.table(), "Midgard")
+        show, label = g.MapOn.GetShowOnCompassPrompt(ui, menu_state.menu)
+        self.assertTrue(show)
+        self.assertIn("Add", label)
+
+        # 2. Add native marker to compass -> Tracked, prompt switches to Remove
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertEqual(g.activeTargets.stock, "SIDE")
+        self.assertEqual(ui.currShownMarkerID, "stock")
+        show, label = g.MapOn.GetShowOnCompassPrompt(ui, menu_state.menu)
+        self.assertTrue(show)
+        self.assertIn("Remove", label)
+
+        # 3. Press ShowOnCompass again on same native marker -> Must cleanly untrack!
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertIsNone(g.activeTargets.stock)
+        self.assertIsNone(ui.currShownMarkerID)
+        self.assertEqual(g.targetCount(), 0)
+        show, label = g.MapOn.GetShowOnCompassPrompt(ui, menu_state.menu)
+        self.assertTrue(show)
+        self.assertIn("Add", label)
+
+        # 4. Track custom collectible, then hover native marker -> Prompt is Replace
+        row0 = self.midgard_rows()[0]
+        g.selectIcon(ui, row0["marker"]["name"])
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertEqual(g.activeTargets[row0["marker"]["name"]], "CompletionistArtefact")
+
+        g.MapOn.MapCollisionChangeHandler(ui, menu_state, lua.table(), "Midgard")
+        show, label = g.MapOn.GetShowOnCompassPrompt(ui, menu_state.menu)
+        self.assertTrue(show)
+        self.assertIn("Replace", label)
+
+        # 5. Track native marker from Replace -> Custom removed, native tracked
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertEqual(g.activeTargets.stock, "SIDE")
+        self.assertEqual(ui.currShownMarkerID, "stock")
+        self.assertIsNone(g.activeTargets[row0["marker"]["name"]])
+
+        # 6. Untrack native marker -> Cleanly removed
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertIsNone(g.activeTargets.stock)
+        self.assertIsNone(ui.currShownMarkerID)
+        self.assertEqual(g.targetCount(), 0)
 
     def test_show_on_compass_preserves_raven_and_nornir_selection(self):
         lua = self.runtime(production=True)

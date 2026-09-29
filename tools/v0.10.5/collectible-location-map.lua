@@ -681,10 +681,26 @@ do
   MapOn.GetShowOnCompassPrompt = function(self, ...)
     local row = selection(self)
     if row == nil then
+      local isNornir = (self.completionistMapV105NornirSelected ~= nil)
+      local isRaven = (self.completionistMapV105SelectedRaven ~= nil)
+      if not isNornir and not isRaven then
+        if self.currShownMarkerID == nil and type(enabledShowOnCompassMarkerFlags) == "table" and
+            type(game.Compass) == "table" and type(game.Compass.FindMarkersByIconClass) == "function" then
+          local ok, stockMarkers = pcall(game.Compass.FindMarkersByIconClass, enabledShowOnCompassMarkerFlags)
+          if ok and type(stockMarkers) == "table" and #stockMarkers > 0 then
+            self.currShownMarkerID = stockMarkers[1]
+          end
+        end
+      end
       local show, label = previousPrompt(self, ...)
-      if show and (targetRow ~= nil or _G.CompletionistMapV105TrackedCatalogueId ~= nil or _G.CompletionistMapV105HasNornirCompassTarget()) and
-          label == "[AdvanceButton] " .. util.GetLAMSMsg(lamsConsts.AddToCompass) then
-        label = "[AdvanceButton] " .. util.GetLAMSMsg(lamsConsts.ReplaceInCompass)
+      if not isNornir and not isRaven then
+        local hasCustomTarget = (targetRow ~= nil) or
+            (_G.CompletionistMapV105TrackedCatalogueId ~= nil) or
+            (type(_G.CompletionistMapV105HasRavenCompassTarget) == "function" and _G.CompletionistMapV105HasRavenCompassTarget()) or
+            (type(_G.CompletionistMapV105HasNornirCompassTarget) == "function" and _G.CompletionistMapV105HasNornirCompassTarget())
+        if show and hasCustomTarget and label == "[AdvanceButton] " .. util.GetLAMSMsg(lamsConsts.AddToCompass) then
+          label = "[AdvanceButton] " .. util.GetLAMSMsg(lamsConsts.ReplaceInCompass)
+        end
       end
       return show, label
     end
@@ -750,14 +766,29 @@ do
       local isNornir = (self.completionistMapV105NornirSelected ~= nil)
       local isRaven = (self.completionistMapV105SelectedRaven ~= nil)
       if not isNornir and not isRaven then
-        if type(_G.CompletionistMapV105ReleaseRavenCompass) == "function" then
-          pcall(_G.CompletionistMapV105ReleaseRavenCompass)
+        if self.currShownMarkerID == nil and type(enabledShowOnCompassMarkerFlags) == "table" and
+            type(game.Compass) == "table" and type(game.Compass.FindMarkersByIconClass) == "function" then
+          local ok, stockMarkers = pcall(game.Compass.FindMarkersByIconClass, enabledShowOnCompassMarkerFlags)
+          if ok and type(stockMarkers) == "table" and #stockMarkers > 0 then
+            self.currShownMarkerID = stockMarkers[1]
+          end
         end
-        if type(_G.CompletionistMapV105ReleaseNornirCompass) == "function" then
-          pcall(_G.CompletionistMapV105ReleaseNornirCompass)
+        local hasCustomTarget = (targetRow ~= nil) or
+            (_G.CompletionistMapV105TrackedCatalogueId ~= nil) or
+            (type(_G.CompletionistMapV105HasRavenCompassTarget) == "function" and _G.CompletionistMapV105HasRavenCompassTarget()) or
+            (type(_G.CompletionistMapV105HasNornirCompassTarget) == "function" and _G.CompletionistMapV105HasNornirCompassTarget())
+        if hasCustomTarget then
+          if type(_G.CompletionistMapV105ReleaseRavenCompass) == "function" then
+            pcall(_G.CompletionistMapV105ReleaseRavenCompass)
+          end
+          if type(_G.CompletionistMapV105ReleaseNornirCompass) == "function" then
+            pcall(_G.CompletionistMapV105ReleaseNornirCompass)
+          end
+          hideTarget()
         end
+      else
+        if not hideTarget() then return false end
       end
-      if not hideTarget() then return false end
       local res = previousShow and previousShow(self, ...)
       updateHighlights(self)
       local currState = select(1, ...)
