@@ -45,19 +45,40 @@ def prepare_family_role_pngs(source_path: Path, diffuse_path: Path, emissive_pat
     lum = 0.299 * r + 0.587 * g + 0.114 * b
     opaque = a > 128
 
-    # 1. Diffuse: deepen dark contour and detail lines so downscaling / compression retains contrast
-    dark_mask = (lum < 90) & opaque
+    max_c = np.maximum(np.maximum(r, g), b)
+    min_c = np.minimum(np.minimum(r, g), b)
+    sat = max_c - min_c
+    is_neutral = sat < 30
+    is_red = (r > g + 20) & (r > b + 20) & opaque
+
+    # 1. Diffuse: deepen NEUTRAL dark contours and detail lines so downscaling / compression retains contrast
+    # Preserves colored accents (e.g. red runes) without crushing their saturation
+    dark_mask = (lum < 90) & is_neutral & opaque
     arr_diff = arr.copy()
     for ch in range(3):
         arr_diff[:, :, ch] = np.where(dark_mask, arr_diff[:, :, ch] * 0.4, arr_diff[:, :, ch])
+
+    # Enhance red in diffuse so downscaling doesn't blend it with stone
+    arr_diff[:, :, 0] = np.where(is_red, np.minimum(255.0, arr_diff[:, :, 0] * 1.25), arr_diff[:, :, 0])
+    arr_diff[:, :, 1] = np.where(is_red, arr_diff[:, :, 1] * 0.75, arr_diff[:, :, 1])
+    arr_diff[:, :, 2] = np.where(is_red, arr_diff[:, :, 2] * 0.75, arr_diff[:, :, 2])
+
     diff_img = Image.fromarray(np.clip(arr_diff, 0, 255).astype(np.uint8))
     diff_small = diff_img.resize(size, resample=Image.Resampling.LANCZOS)
 
-    # 2. Emissive: mask out dark contours (lum < 110) so the additive emissive shader does not wash out dark lines
+    # 2. Emissive:
+    # Mask out NEUTRAL dark contours (lum < 110) so the additive emissive shader does not wash out dark lines
+    # Saturated colored pixels (like red runes and inlays) EMIT VIBRANT COLOR so they glow in-game!
     arr_emis = arr.copy()
-    emis_mask = (lum < 110)
+    emis_mask = is_neutral & (lum < 110)
     for ch in range(3):
         arr_emis[:, :, ch] = np.where(emis_mask, 0, arr_emis[:, :, ch])
+
+    # Where pixels are red, ensure strong red emissive output so they glow brilliantly
+    arr_emis[:, :, 0] = np.where(is_red, np.maximum(arr_emis[:, :, 0], 220.0), arr_emis[:, :, 0])
+    arr_emis[:, :, 1] = np.where(is_red, 0.0, arr_emis[:, :, 1])
+    arr_emis[:, :, 2] = np.where(is_red, 0.0, arr_emis[:, :, 2])
+
     emis_img = Image.fromarray(np.clip(arr_emis, 0, 255).astype(np.uint8))
     emis_small = emis_img.resize(size, resample=Image.Resampling.LANCZOS)
 

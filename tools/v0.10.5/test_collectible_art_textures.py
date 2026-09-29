@@ -196,6 +196,15 @@ class AllFamilyArtTests(unittest.TestCase):
                     emis_on_dark = np.mean(emis_arr[dark_contour_mask, :3])
                     self.assertLess(emis_on_dark, 15, f'{family} emissive on dark contours too bright: {emis_on_dark}')
 
+                if family == 'coffin':
+                    d_r, d_g, d_b = arr[:, :, 0], arr[:, :, 1], arr[:, :, 2]
+                    red_mask = (d_r > d_g + 20) & (d_r > d_b + 20) & (alpha_arr > 200)
+                    self.assertGreater(np.sum(red_mask), 2000, 'coffin diffuse must have vivid red pixels')
+                    er, eg, eb = emis_arr[:, :, 0], emis_arr[:, :, 1], emis_arr[:, :, 2]
+                    emis_red = (er > eg + 30) & (er > eb + 30)
+                    self.assertGreater(np.sum(emis_red), 2000, 'coffin emissive must glow red')
+                    self.assertGreater(np.mean(er[emis_red]), 180, 'coffin red emissive intensity')
+
 
 if __name__ == '__main__':
     unittest.main()
