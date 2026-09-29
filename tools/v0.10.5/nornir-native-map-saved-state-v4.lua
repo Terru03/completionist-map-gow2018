@@ -42,7 +42,24 @@ do
     if targetRow ~= nil then
       pcall(function() game.Compass.HideMarker(targetRow.Name) end)
       targetRow = nil
+      if activeMap and type(activeMap.UpdateMapMarkerHighlights) == "function" then
+        pcall(activeMap.UpdateMapMarkerHighlights, activeMap)
+      end
     end
+  end
+
+  _G.CompletionistMapV105GetNornirTargetName = function()
+    return targetRow and targetRow.Name or nil
+  end
+  _G.CompletionistMapV105HasNornirCompassTarget = function()
+    return targetRow ~= nil
+  end
+  _G.CompletionistMapV105ReleaseNornirCompass = function()
+    hideTarget()
+    if activeMap and type(activeMap.UpdateMapMarkerHighlights) == "function" then
+      pcall(activeMap.UpdateMapMarkerHighlights, activeMap)
+    end
+    return true
   end
 
   local function filter(self)
@@ -415,7 +432,40 @@ do
               row.Family == "nornir_seal" and "Nornir Seal" or
               row.Family == "nornir_bell" and "Nornir Bell" or "Nornir Rune Mechanism"
             pcall(function() self:SetReticleInfo(currState, title, "Completionist Map") end)
-            pcall(function() self:UpdateFooterButtonPrompt(currState.menu, false, false) end)
+            local menu = currState and currState.menu or self.menu
+            local show, promptStr = self:GetShowOnCompassPrompt(menu)
+            if show and promptStr and type(util) == "table" and type(util.GetUiObjByName) == "function" then
+              pcall(function()
+                local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
+                if goMapCursorText ~= nil then
+                  goMapCursorText:Show()
+                  local top = goMapCursorText:FindSingleGOByName("CursorInfo_Top")
+                  if top ~= nil then
+                    local handle = util.GetTextHandle(top, "CursorAction_Text")
+                    if handle ~= nil then
+                      if type(UI) == "table" and type(UI.SetTextIsClickable) == "function" then
+                        UI.SetTextIsClickable(handle)
+                      end
+                      if type(UI) == "table" and type(UI.SetText) == "function" then
+                        UI.SetText(handle, promptStr)
+                      end
+                    end
+                    top:Show()
+                  end
+                end
+              end)
+            end
+            if menu and type(menu.UpdateFooterButton) == "function" and show and promptStr then
+              pcall(function()
+                menu:UpdateFooterButton("ShowOnCompass", true, promptStr)
+                if type(menu.UpdateFooterButtonText) == "function" then
+                  menu:UpdateFooterButtonText()
+                end
+              end)
+            end
+            if menu and type(self.UpdateFooterButtonPrompt) == "function" then
+              pcall(self.UpdateFooterButtonPrompt, self, menu, false, false)
+            end
             print("[CompletionistMapV105NornirIdTest] selected name=" .. name ..
               " uid=" .. row.UidHex .. " family=" .. row.Family)
             return result
@@ -424,6 +474,22 @@ do
       end
     end
     return result
+  end
+
+  local previousHighlights = MapOn.UpdateMapMarkerHighlights
+  MapOn.UpdateMapMarkerHighlights = function(self, ...)
+    if previousHighlights then previousHighlights(self, ...) end
+    local target = self or activeMap
+    if target and type(UI) == "table" and type(UI.Anim) == "function" then
+      for name, icon in pairs(target.completionistMapV105NornirIdTestIcons or {}) do
+        local row = byName[name]
+        if targetRow ~= nil and targetRow == row then
+          pcall(UI.Anim, icon, 10, "", 1)
+        else
+          pcall(UI.Anim, icon, 0, "", 0, 0)
+        end
+      end
+    end
   end
 
   local previousPrompt = MapOn.GetShowOnCompassPrompt
@@ -479,9 +545,43 @@ do
         if legacy then legacy.active = false end
         pcall(function() Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass") end)
       end
+      pcall(function() self:UpdateMapMarkerHighlights() end)
       local currState = select(1, ...)
-      if currState and currState.menu then
-        pcall(function() self:UpdateFooterButtonPrompt(currState.menu, false, false) end)
+      local menu = currState and currState.menu or self.menu
+      local show, text = self:GetShowOnCompassPrompt(menu)
+      if show and text then
+        if type(util) == "table" and type(util.GetUiObjByName) == "function" then
+          pcall(function()
+            local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
+            if goMapCursorText ~= nil then
+              goMapCursorText:Show()
+              local top = goMapCursorText:FindSingleGOByName("CursorInfo_Top")
+              if top ~= nil then
+                local handle = util.GetTextHandle(top, "CursorAction_Text")
+                if handle ~= nil then
+                  if type(UI) == "table" and type(UI.SetTextIsClickable) == "function" then
+                    UI.SetTextIsClickable(handle)
+                  end
+                  if type(UI) == "table" and type(UI.SetText) == "function" then
+                    UI.SetText(handle, text)
+                  end
+                end
+                top:Show()
+              end
+            end
+          end)
+        end
+        if menu and type(menu.UpdateFooterButton) == "function" then
+          pcall(function()
+            menu:UpdateFooterButton("ShowOnCompass", true, text)
+            if type(menu.UpdateFooterButtonText) == "function" then
+              menu:UpdateFooterButtonText()
+            end
+          end)
+        end
+      end
+      if menu and type(self.UpdateFooterButtonPrompt) == "function" then
+        pcall(self.UpdateFooterButtonPrompt, self, menu, false, false)
       end
       return true
     end

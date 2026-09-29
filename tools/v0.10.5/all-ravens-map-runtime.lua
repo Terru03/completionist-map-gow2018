@@ -38,6 +38,7 @@ do
   local beginAuthorityBoundary = nil
   local hideStockExcept = nil
   local suppressLegacyRavenHud = nil
+  local updateHighlights = nil
   local nativeBoundaryEpoch =
       tonumber(_G.CompletionistMapV105NativeBoundaryEpoch) or 0
   local nativeBoundaryCaptureReady = false
@@ -1210,6 +1211,30 @@ do
     end
   end
 
+  _G.CompletionistMapV105GetRavenTargetName = function()
+    local id = _G.CompletionistMapV105TrackedCatalogueId
+    local row = id and byCatalogueId[id]
+    return row and row.Name or nil
+  end
+  _G.CompletionistMapV105HasRavenCompassTarget = function()
+    return _G.CompletionistMapV105TrackedCatalogueId ~= nil
+  end
+  _G.CompletionistMapV105ReleaseRavenCompass = function()
+    if _G.CompletionistMapV105TrackedCatalogueId ~= nil then
+      local row = byCatalogueId[_G.CompletionistMapV105TrackedCatalogueId]
+      if row ~= nil then
+        pcall(function() game.Compass.HideMarker(row.Name) end)
+      end
+      _G.CompletionistMapV105TrackedCatalogueId = nil
+      promptIntent = nil
+      customCompassOwnsTarget = false
+      if lastMapOnSelf and type(lastMapOnSelf.UpdateMapMarkerHighlights) == "function" then
+        pcall(lastMapOnSelf.UpdateMapMarkerHighlights, lastMapOnSelf)
+      end
+    end
+    return true
+  end
+
   local function collisionSelection(self, collisionTable)
     local icons = self.completionistMapV105RavenIcons or {}
     for _, collision in ipairs(collisionTable or {}) do
@@ -1362,7 +1387,23 @@ do
     end
   end
 
+  updateHighlights = function(targetMap)
+    local target = targetMap or lastMapOnSelf
+    if target == nil or type(UI) ~= "table" or type(UI.Anim) ~= "function" then return end
+    local trackedId = _G.CompletionistMapV105TrackedCatalogueId
+    local trackedRow = trackedId and byCatalogueId[trackedId]
+    local trackedName = trackedRow and trackedRow.Name or nil
+    for name, icon in pairs(target.completionistMapV105RavenIcons or {}) do
+      if trackedName ~= nil and name == trackedName then
+        pcall(UI.Anim, icon, 10, "", 1)
+      else
+        pcall(UI.Anim, icon, 0, "", 0, 0)
+      end
+    end
+  end
+
   local function promptText(selected)
+    if selected == nil then return actionText(lamsConsts.AddToCompass) end
     if promptIntent ~= nil and promptIntent.IdString == selected.IdString then
       if promptIntent.State == "tracked" then
         return actionText(lamsConsts.RemoveFromCompass)
@@ -1378,38 +1419,45 @@ do
           end
         end
         local stock, stockOK = stockIds()
-        if hasOtherCustom or (stockOK and hasOther(stock, selected.IdString)) then
+        if hasOtherCustom or (stockOK and hasOther(stock, selected.IdString)) or
+            (_G.CompletionistMapV105HasLocationCompassTarget and _G.CompletionistMapV105HasLocationCompassTarget()) or
+            (_G.CompletionistMapV105HasNornirCompassTarget and _G.CompletionistMapV105HasNornirCompassTarget()) then
           return actionText(lamsConsts.ReplaceInCompass)
         end
         return actionText(lamsConsts.AddToCompass)
       end
     end
+    if _G.CompletionistMapV105TrackedCatalogueId == selected.CatalogueId then
+      return actionText(lamsConsts.RemoveFromCompass)
+    end
     local ids, ok = customIds()
     if ok and contains(ids, selected.IdString) then
       return actionText(lamsConsts.RemoveFromCompass)
     end
-    local stock = stockIds()
-    if #ids > 0 or #stock > 0 then
+    local hasOther = false
+    if _G.CompletionistMapV105TrackedCatalogueId ~= nil then
+      hasOther = true
+    elseif type(_G.CompletionistMapV105HasLocationCompassTarget) == "function" and _G.CompletionistMapV105HasLocationCompassTarget() then
+      hasOther = true
+    elseif type(_G.CompletionistMapV105HasNornirCompassTarget) == "function" and _G.CompletionistMapV105HasNornirCompassTarget() then
+      hasOther = true
+    elseif lastMapOnSelf and lastMapOnSelf.currShownMarkerID ~= nil then
+      hasOther = true
+    else
+      local stock = stockIds()
+      if (ok and #ids > 0) or #stock > 0 then hasOther = true end
+    end
+    if hasOther then
       return actionText(lamsConsts.ReplaceInCompass)
     end
     return actionText(lamsConsts.AddToCompass)
   end
 
   local function refreshPrompt(self, selected)
-    if self == nil or self.menu == nil or selected == nil then return end
+    if self == nil or selected == nil then return end
     selected = currentSelection(self) or selected
-    if not promptOwned(self, true, selected) then return end
-
-    -- v0.10.4's proven footer path temporarily routes the menu's own prompt
-    -- query through the exact Raven selection. Without this, the subsequent
-    -- UpdateFooterButtonText() redraw can re-query the base map after the
-    -- action selection has been consumed and overwrite Remove with Add.
-    promptOverride = selected
-    local show, text = MapOn.GetShowOnCompassPrompt(self, self.menu)
-    if show ~= true then
-      promptOverride = nil
-      return
-    end
+    local menu = self.menu or (activeMap and activeMap.menu)
+    local text = promptText(selected)
 
     local goMapCursorText = util.GetUiObjByName("MapCursorInfo")
     if goMapCursorText ~= nil then
@@ -1424,9 +1472,15 @@ do
         top:Show()
       end
     end
-    self.menu:UpdateFooterButton("ShowOnCompass", true, text)
-    self.menu:UpdateFooterButtonText()
-    promptOverride = nil
+    if menu ~= nil and type(menu.UpdateFooterButton) == "function" then
+      menu:UpdateFooterButton("ShowOnCompass", true, text)
+      if type(menu.UpdateFooterButtonText) == "function" then
+        menu:UpdateFooterButtonText()
+      end
+    end
+    if menu ~= nil and type(self.UpdateFooterButtonPrompt) == "function" then
+      pcall(self.UpdateFooterButtonPrompt, self, menu, false, false)
+    end
     log("PROMPT_REFRESH", "name=" .. selected.Name ..
         " state=" .. tostring(promptIntent and promptIntent.State or "observed") ..
         " text=" .. tostring(text))
@@ -1443,6 +1497,7 @@ do
     else
       log("RETICLE_FAILED", "name=" .. selected.Name .. " error=" .. tostring(err))
     end
+    refreshPrompt(self, selected)
   end
 
   function MapOn:MapCollisionChangeHandler(currState, collisionTable, realmName)
@@ -1464,10 +1519,6 @@ do
     end
     local selected = currentSelection(self)
     if selected == nil then return show, text end
-    if not promptOwned(self, show, selected) then
-      clearSelection(self, "prompt_owner_mismatch")
-      return show, text
-    end
     selected.State = "armed-custom"
     log("SELECT_ARM", "name=" .. selected.Name .. " uid=" .. selected.IdString)
     return true, promptText(selected)
@@ -1482,17 +1533,13 @@ do
       local customOK = hideCustom(nil, "other_target_replace")
       if not customOK then return end
       _G.CompletionistMapV105TrackedCatalogueId = nil
+      pcall(function() self:UpdateMapMarkerHighlights() end)
       return previousShow(self, currState)
-    end
-    if selected.State ~= "armed-custom" or not promptOwned(self, true, selected) then
-      clearSelection(self, "action_not_exact")
-      return
     end
     selected.State = "armed-custom"
     if not shouldShow(selected.CatalogueId) then return end
     local ids, queryOK = customIds()
-    if not queryOK then return end
-    local wantsRemove = contains(ids, selected.IdString)
+    local wantsRemove = contains(ids, selected.IdString) or (_G.CompletionistMapV105TrackedCatalogueId == selected.CatalogueId)
     if promptIntent ~= nil and promptIntent.IdString == selected.IdString then
       wantsRemove = promptIntent.State == "tracked"
     end
@@ -1513,10 +1560,12 @@ do
         suppressLegacyRavenHud()
         hideStock("raven_remove_guard")
         Audio.PlaySound("SND_UX_Pause_Menu_Map_RemoveFromCompass")
+        pcall(function() self:UpdateMapMarkerHighlights() end)
+        updateHighlights(self)
         refreshPrompt(self, selected)
         log("REMOVE", "name=" .. selected.Name .. " uid=" .. selected.IdString)
       end
-      return
+      return true
     end
     local customOK, customCount = hideCustom(selected.IdString, "raven_replace")
     local stockOK, stockCount = hideStockExcept(selected.IdString, "raven_replace")
@@ -1547,10 +1596,19 @@ do
     promptSettleFrames = 0
     promptSettleBucket = -1
     Audio.PlaySound("SND_UX_Pause_Menu_Map_AddToCompass")
+    pcall(function() self:UpdateMapMarkerHighlights() end)
+    updateHighlights(self)
     refreshPrompt(self, selected)
     log("SHOW", "name=" .. selected.Name .. " uid=" .. selected.IdString ..
         " replacedCustomCount=" .. tostring(customCount) ..
         " replacedStockCount=" .. tostring(stockCount))
+    return true
+  end
+
+  local previousHighlights = MapOn.UpdateMapMarkerHighlights
+  function MapOn:UpdateMapMarkerHighlights(...)
+    if previousHighlights then previousHighlights(self, ...) end
+    updateHighlights(self)
   end
 
   function MapOn:Update(...)

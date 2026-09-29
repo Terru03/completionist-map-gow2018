@@ -375,6 +375,59 @@ class CompletionIntegrationTest(unittest.TestCase):
         self.assertEqual(g.ravenReleases, 1)
         self.assertEqual(g.nornirReleases, 1)
 
+    def test_ring_glow_highlights_nornir_and_raven_and_locations(self):
+        lua = self.runtime(production=True)
+        g = lua.globals()
+        g.CompletionistMapV105LocationAuthorityReady(1)
+        ui = g.makeMap("Midgard")
+        g.MapOn.UpdateFilterButtonMapping(ui)
+        g.CompletionistMapV100_CreateMapPin(ui)
+        menu_state = lua.table_from({"menu": lua.table()})
+        row0 = self.midgard_rows()[0]
+        icon0 = ui.completionistMapV105LocationIcons[row0["marker"]["name"]]
+
+        nornir_icon = g.Map.CreateMarkerIcon("nornir_chest_1")
+        raven_icon = g.Map.CreateMarkerIcon("raven_1")
+        ui.completionistMapV105NornirIdTestIcons = lua.table_from({"nornir_chest_1": nornir_icon})
+        ui.completionistMapV105RavenIcons = lua.table_from({"raven_1": raven_icon})
+
+        # 1. Location tracked: location pulses (10), Nornir and Raven static (0)
+        g.selectIcon(ui, row0["marker"]["name"])
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertEqual(icon0.anim.mode, 10)
+        self.assertEqual(nornir_icon.anim.mode, 0)
+        self.assertEqual(raven_icon.anim.mode, 0)
+
+        # 2. Nornir chest tracked: Nornir pulses (10), location and Raven static (0)
+        lua.execute('''
+          CompletionistMapV105ReleaseLocationCompass()
+          CompletionistMapV105GetNornirTargetName = function() return "nornir_chest_1" end
+          CompletionistMapV105GetRavenTargetName = function() return nil end
+        ''')
+        g.MapOn.UpdateMapMarkerHighlights(ui)
+        self.assertEqual(icon0.anim.mode, 0)
+        self.assertEqual(nornir_icon.anim.mode, 10)
+        self.assertEqual(raven_icon.anim.mode, 0)
+
+        # 3. Raven tracked: Raven pulses (10), location and Nornir static (0)
+        lua.execute('''
+          CompletionistMapV105GetNornirTargetName = function() return nil end
+          CompletionistMapV105GetRavenTargetName = function() return "raven_1" end
+        ''')
+        g.MapOn.UpdateMapMarkerHighlights(ui)
+        self.assertEqual(icon0.anim.mode, 0)
+        self.assertEqual(nornir_icon.anim.mode, 0)
+        self.assertEqual(raven_icon.anim.mode, 10)
+
+        # 4. Untracked: all static (0)
+        lua.execute('''
+          CompletionistMapV105GetRavenTargetName = function() return nil end
+        ''')
+        g.MapOn.UpdateMapMarkerHighlights(ui)
+        self.assertEqual(icon0.anim.mode, 0)
+        self.assertEqual(nornir_icon.anim.mode, 0)
+        self.assertEqual(raven_icon.anim.mode, 0)
+
     def test_background_tick_restores_authority_without_opening_map(self):
         lua = self.runtime(production=True)
         g = lua.globals()

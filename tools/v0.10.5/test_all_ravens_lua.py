@@ -116,6 +116,10 @@ UI={
   SetText=function(handle,text)
     if handle==cursorHandle then calls.cursorPrompt=text end
   end,
+  Anim=function(icon,mode,...)
+    if type(icon)=="table" then icon.animMode=mode end
+    calls.animMode=mode
+  end,
 }
 Audio={PlaySound=function(x) calls.sound=x end}
 MapOn={}
@@ -283,6 +287,10 @@ function probe.injectStock(value) stockIds={value} end
 function probe.customAt(i) return customIds[i] end
 function probe.markerId(name) return markerId(name) end
 function probe.tracked() return CompletionistMapV105TrackedCatalogueId end
+function probe.animMode(name)
+  local go = probe.icon(name)
+  return go and go.animMode or nil
+end
 function probe.reticleTitle() return calls.reticleTitle end
 function probe.reticleDescription() return calls.reticleDescription end
 function probe.cursorPrompt() return calls.cursorPrompt end
@@ -871,22 +879,25 @@ class AllRavensMapLuaTests(unittest.TestCase):
         name = self.a["marker"]["name"]
         self.lua.execute(f'MapOn.MapCollisionChangeHandler(self, {{}}, {{probe.icon("{name}")}}, self.currRealmName)')
 
-        # 1. First Advance: Add to Compass -> custom count 1, shown class CompletionistRaven
+        # 1. First Advance: Add to Compass -> custom count 1, shown class CompletionistRaven, pulsing ring glow (10)
         self.assertEqual(self.lua.execute('local s, t = MapOn.GetShowOnCompassPrompt(self, nil); return t'), '[AdvanceButton] add')
         self.lua.execute('MapOn.ShowOnCompass(self, {})')
         self.assertEqual(self.probe.customCount(), 1)
         self.assertEqual(self.probe.shownClass(), 'CompletionistRaven')
+        self.assertEqual(self.probe.animMode(name), 10)
 
-        # 2. Second Advance without reticle move: Remove from Compass -> custom count 0
+        # 2. Second Advance without reticle move: Remove from Compass -> custom count 0, stopped animation (0)
         self.assertEqual(self.lua.execute('local s, t = MapOn.GetShowOnCompassPrompt(self, nil); return t'), '[AdvanceButton] remove')
         self.lua.execute('MapOn.ShowOnCompass(self, {})')
         self.assertEqual(self.probe.customCount(), 0)
+        self.assertEqual(self.probe.animMode(name), 0)
 
-        # 3. Third Advance without reticle move: Add to Compass -> custom count 1, STILL CompletionistRaven
+        # 3. Third Advance without reticle move: Add to Compass -> custom count 1, STILL CompletionistRaven, pulsing (10)
         self.assertEqual(self.lua.execute('local s, t = MapOn.GetShowOnCompassPrompt(self, nil); return t'), '[AdvanceButton] add')
         self.lua.execute('MapOn.ShowOnCompass(self, {})')
         self.assertEqual(self.probe.customCount(), 1)
         self.assertEqual(self.probe.shownClass(), 'CompletionistRaven')
+        self.assertEqual(self.probe.animMode(name), 10)
         self.assertEqual(self.lua.execute('return calls.previousShow'), 0)
 
     def test_map_exit_reasserts_custom_raven_after_base_boat_reclaim(self):

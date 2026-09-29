@@ -221,6 +221,24 @@ do
         pcall(UI.Anim, icon, AS_Forward, "", 0, 0)
       end
     end
+    local nornirTargetName = (type(_G.CompletionistMapV105GetNornirTargetName) == "function") and
+      _G.CompletionistMapV105GetNornirTargetName() or nil
+    for name, icon in pairs(target.completionistMapV105NornirIdTestIcons or {}) do
+      if nornirTargetName ~= nil and nornirTargetName == name then
+        pcall(UI.Anim, icon, AS_ForwardCycle_NoReset, "", 1)
+      else
+        pcall(UI.Anim, icon, AS_Forward, "", 0, 0)
+      end
+    end
+    local ravenTargetName = (type(_G.CompletionistMapV105GetRavenTargetName) == "function") and
+      _G.CompletionistMapV105GetRavenTargetName() or nil
+    for name, icon in pairs(target.completionistMapV105RavenIcons or {}) do
+      if ravenTargetName ~= nil and ravenTargetName == name then
+        pcall(UI.Anim, icon, AS_ForwardCycle_NoReset, "", 1)
+      else
+        pcall(UI.Anim, icon, AS_Forward, "", 0, 0)
+      end
+    end
   end
 
   local function hideTarget()
@@ -243,6 +261,10 @@ do
   _G.CompletionistMapV105HasLocationCompassTarget = function()
     return targetRow ~= nil
   end
+  _G.CompletionistMapV105GetLocationTargetName = function()
+    return targetRow and targetRow.Name or nil
+  end
+  _G.CompletionistMapV105UpdateHighlights = updateHighlights
 
 
   local function hideCollectedTarget()
@@ -738,6 +760,10 @@ do
       if not hideTarget() then return false end
       local res = previousShow and previousShow(self, ...)
       updateHighlights(self)
+      local currState = select(1, ...)
+      if refreshCompassPromptUI then
+        refreshCompassPromptUI(self, currState and currState.menu)
+      end
       return res
     end
     if self.isOpenedForFastTravel or not game.Compass.HaveCompass() or
