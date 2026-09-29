@@ -725,11 +725,15 @@ do
   MapOn.ShowOnCompass = function(self, ...)
     local row = selection(self)
     if row == nil then
-      if type(_G.CompletionistMapV105ReleaseRavenCompass) == "function" then
-        pcall(_G.CompletionistMapV105ReleaseRavenCompass)
-      end
-      if type(_G.CompletionistMapV105ReleaseNornirCompass) == "function" then
-        pcall(_G.CompletionistMapV105ReleaseNornirCompass)
+      local isNornir = (self.completionistMapV105NornirSelected ~= nil)
+      local isRaven = (self.completionistMapV105SelectedRaven ~= nil)
+      if not isNornir and not isRaven then
+        if type(_G.CompletionistMapV105ReleaseRavenCompass) == "function" then
+          pcall(_G.CompletionistMapV105ReleaseRavenCompass)
+        end
+        if type(_G.CompletionistMapV105ReleaseNornirCompass) == "function" then
+          pcall(_G.CompletionistMapV105ReleaseNornirCompass)
+        end
       end
       if not hideTarget() then return false end
       local res = previousShow and previousShow(self, ...)

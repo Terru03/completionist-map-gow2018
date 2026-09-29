@@ -452,12 +452,24 @@ do
       else
         if type(_G.CompletionistMapV105ReleaseRavenCompass) == "function" and
             _G.CompletionistMapV105ReleaseRavenCompass() == false then return false end
+        if type(_G.CompletionistMapV105ReleaseLocationCompass) == "function" and
+            _G.CompletionistMapV105ReleaseLocationCompass() == false then return false end
         if self.currShownMarkerID ~= nil then
           pcall(function() game.Compass.HideMarker(self.currShownMarkerID) end)
           self.currShownMarkerID = nil
         end
         hideTarget()
-        local ok, shown = pcall(game.Compass.ShowMarker, row.Name, row.Class)
+        local nornirClasses = {
+          ["nornir_chest"] = "CompletionistNornirChest",
+          ["nornir_seal"] = "CompletionistNornirSeal",
+          ["nornir_bell"] = "CompletionistNornirBell",
+          ["nornir_mechanism"] = "CompletionistNornirMechanism",
+        }
+        local compassClass = (row.Family and nornirClasses[row.Family]) or row.Class or "CompletionistNornirChest"
+        local ok, shown = pcall(game.Compass.ShowMarker, row.Name, compassClass)
+        if not ok or shown == false then
+          ok, shown = pcall(game.Compass.ShowMarker, row.Name, "SIDE")
+        end
         if not ok or shown == false then return false end
         targetRow = row
         local legacy = _G.CompletionistMapV100Target

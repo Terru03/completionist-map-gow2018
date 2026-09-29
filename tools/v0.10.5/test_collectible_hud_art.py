@@ -68,6 +68,17 @@ class CollectibleHudArtTests(unittest.TestCase):
             icon_hash = struct.unpack_from("<Q", rec, 0)[0]
             self.assertEqual(icon_hash, p.name_hash(spec["hud_resource"]))
 
+        # Verify CompletionistRaven has custom HUD and matches side_inworld carrier
+        self.assertIn("CompletionistRaven", by_name)
+        raven_exp = by_name["CompletionistRaven"]
+        raven_rec = out_data[raven_exp["root"]:raven_exp["root"] + 0x20]
+        r_hud, _, r_inworld, _ = struct.unpack("<QQQI", raven_rec[:28])
+        self.assertEqual(r_hud, p.name_hash("goCompletionistRavenHUD"))
+        side_exp = by_name["SIDE"]
+        side_rec = out_data[side_exp["root"]:side_exp["root"] + 0x20]
+        _, _, s_inworld, _ = struct.unpack("<QQQI", side_rec[:28])
+        self.assertEqual(r_inworld, s_inworld)
+
     def test_lua_has_exact_mapping_for_all_15_families(self):
         lua_text = (HERE / "collectible-location-map.lua").read_text(encoding="utf-8")
         for fam in self.families:

@@ -341,6 +341,40 @@ class CompletionIntegrationTest(unittest.TestCase):
         self.assertEqual(g.activeTargets[row0["marker"]["name"]], "CompletionistArtefact")
         self.assertEqual(icon0.anim.mode, 10)
 
+    def test_show_on_compass_preserves_raven_and_nornir_selection(self):
+        lua = self.runtime(production=True)
+        g = lua.globals()
+        g.CompletionistMapV105LocationAuthorityReady(1)
+        ui = g.makeMap("Midgard")
+        menu_state = lua.table_from({"menu": lua.table()})
+
+        lua.execute('''
+          ravenReleases = 0
+          nornirReleases = 0
+          CompletionistMapV105ReleaseRavenCompass = function() ravenReleases = ravenReleases + 1 return true end
+          CompletionistMapV105ReleaseNornirCompass = function() nornirReleases = nornirReleases + 1 return true end
+        ''')
+
+        # 1. Raven selected: location layer does not release Raven
+        ui.completionistMapV105SelectedRaven = lua.table_from({"Name": "test_raven"})
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertEqual(g.ravenReleases, 0)
+
+        # 2. Nornir selected: location layer does not release Nornir, while Nornir releases Raven
+        ui.completionistMapV105SelectedRaven = None
+        ui.completionistMapV105NornirSelected = lua.table_from({"Name": "test_nornir", "Family": "nornir_chest"})
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertEqual(g.nornirReleases, 0)
+        self.assertEqual(g.ravenReleases, 1)
+
+        # 3. Neither selected (stock): location layer releases both Raven and Nornir
+        ui.completionistMapV105NornirSelected = None
+        g.ravenReleases = 0
+        g.nornirReleases = 0
+        g.MapOn.ShowOnCompass(ui, menu_state)
+        self.assertEqual(g.ravenReleases, 1)
+        self.assertEqual(g.nornirReleases, 1)
+
     def test_background_tick_restores_authority_without_opening_map(self):
         lua = self.runtime(production=True)
         g = lua.globals()

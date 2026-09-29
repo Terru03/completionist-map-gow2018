@@ -1522,6 +1522,12 @@ do
     local stockOK, stockCount = hideStockExcept(selected.IdString, "raven_replace")
     if not customOK or not stockOK then return end
     suppressLegacyRavenHud()
+    if type(_G.CompletionistMapV105ReleaseLocationCompass) == "function" then
+      pcall(_G.CompletionistMapV105ReleaseLocationCompass)
+    end
+    if type(_G.CompletionistMapV105ReleaseNornirCompass) == "function" then
+      pcall(_G.CompletionistMapV105ReleaseNornirCompass)
+    end
     local showOK, showErr = pcall(function()
       game.Compass.ShowMarker(selected.Name, ravenClass)
     end)

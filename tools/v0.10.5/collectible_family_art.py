@@ -334,9 +334,9 @@ def build_pool(raw, resources, hud_resources=None):
 
 def build_perm(raw, specs):
     chunks = packed.parse_chunks(raw)
-    data = bytes(packed.one(chunks, 12)["payload"])
+    data = bytearray(packed.one(chunks, 12)["payload"])
     header8, exports, tail = packed.parse_exports(packed.one(chunks, 13)["payload"])
-    relocs = packed.parse_relocations(packed.one(chunks, 15)["payload"], data)
+    relocs = packed.parse_relocations(packed.one(chunks, 15)["payload"], bytes(data))
 
     by_name = {e["name"]: e for e in exports}
     globals_row = by_name["COMPASS_GLOBALS"]
@@ -345,6 +345,10 @@ def build_perm(raw, specs):
 
     side_rc = data[side_row["root"]:side_row["root"] + 0x20]
     _, _, side_inworld, _ = struct.unpack("<QQQI", side_rc[:28])
+
+    raven_root = int(raven_row["root"])
+    orig_raven_inworld = struct.unpack_from("<Q", data, raven_root + 16)[0]
+    struct.pack_into("<Q", data, raven_root + 16, side_inworld)
 
     insert_class = int(globals_row["root"])
     need(int(raven_row["root"]) + 0x20 == insert_class, "class block does not end at COMPASS_GLOBALS")
@@ -425,6 +429,7 @@ def build_perm(raw, specs):
     inv_relocs = packed.parse_relocations(packed.one(inv_chunks, 15)["payload"], bytes(inv_data))
 
     orig_data = bytearray(inv_data[:insert_class] + inv_data[insert_class + total_size:])
+    struct.pack_into("<Q", orig_data, raven_root + 16, orig_raven_inworld)
     orig_relocs = []
     for r in inv_relocs:
         field = int(r["field"])
