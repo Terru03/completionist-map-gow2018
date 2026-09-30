@@ -1,32 +1,120 @@
 # Completionist Map for God of War (2018)
 
-Work-in-progress PC mod for God of War (2018). It adds markers for remaining collectibles to the game's native map and compass.
+A PC mod for **God of War (2018)** that adds custom collectible markers to the game's world map and compass, with completion-aware behaviour designed for a full completionist playthrough.
 
-## Status
+The production build now covers the mod's full **15-family collectible catalogue** and is being prepared for its public Nexus Mods release.
 
-This project is still in development. A native marker for one remaining Odin's Raven has passed in-game testing. Wider collectible support, full completion tracking, and a public install package remain in progress. No download is ready yet.
+## What it does
 
-## Tested now
+Completionist Map extends the native map and compass with custom markers for collectible and completion content, including:
 
-- The Raven has custom map, compass, and in-world art.
-- The game supplies marker distance and compass route behavior.
-- Add, replace, and remove behavior works for the active compass target.
+- Odin's Ravens
+- Nornir Chests and their puzzle elements
+- Legendary Chests
+- Wooden and Coffin Chests
+- Artefacts
+- Jötnar Shrines
+- Lore Markers and Lore Scrolls
+- Realm Tears
+- Treasure Maps and buried treasures
+- Valkyries
+- the remaining supported completionist marker families in the production catalogue
 
-This test used one Raven and Steam game Build ID 11168363. Other game builds and collectible types need more testing.
+Markers use original, category-specific artwork designed to fit the God of War UI rather than reusing unrelated stock icons.
 
-## Requirements for current test setup
+## Features
 
-- PC Steam version of God of War (2018).
-- GoW Script Loader & Gameplay Tweaks 0.22.
+- Custom world-map markers across the production collectible catalogue
+- Custom compass HUD icons with native-feeling direction and distance tracking
+- Add, replace and remove compass-target behaviour
+- Completion-aware marker handling so completed content can be hidden correctly
+- Native/read-only authority paths for progression-sensitive collectible state
+- Map filtering and marker visibility integration
+- In-map marker show/hide control
+- State handling across map reopen, reload and realm transitions
+- Original marker artwork and texture-pack pipeline
+- Automated installer and uninstaller with stock-file backup support
 
-## Get the mod
+The mod does **not** manufacture quest progress or mark collectibles complete for the player.
 
-No public file or install guide is ready. Do not install files from this research repo. A tested package will go on Nexus Mods when ready.
+## Release status
 
-## Repo files
+The gameplay implementation is complete and working in the current production build.
 
-This repo holds source patches, build tools, original marker art, research notes, and test records. It does not hold game files.
+The remaining public-release work is presentation: final in-game screenshots and the Nexus Mods upload.
+
+Older issues, research notes and archived probes remain in the repository as development history. They should not be interpreted as current release blockers.
+
+## Installation
+
+The Nexus package is built around the included one-click installer:
+
+1. Extract the release archive.
+2. Close God of War.
+3. Run `Install.bat`.
+4. The installer locates the game, backs up affected stock files and installs the mod.
+5. Launch God of War and open the map.
+
+`Uninstall.bat` restores the backed-up stock files and removes the mod-added files.
+
+Manual and mod-manager installation layouts are also supported by the release package.
+
+## Compatibility
+
+Primary development and field testing has been performed on the PC Steam version of **God of War (2018)**, including Steam Build ID **11168363**.
+
+The release packager also includes Steam and Epic Games installation discovery. Compatibility can depend on game-file revisions, loader setup and other mods that replace the same resources.
+
+## Requirements
+
+- God of War (2018) for PC
+- GoW Script Loader & Gameplay Tweaks 0.22 or a compatible loader setup
+- Windows 10 or Windows 11 for the bundled one-click PowerShell installer
+
+## Using the mod
+
+Open the world map normally. Completionist markers participate in the map UI alongside the game's own markers.
+
+A collectible marker can be selected and tracked on the compass. The mod keeps the stock single-target behaviour: adding another destination replaces the active target, and the selected destination can be removed again from the map.
+
+Completed collectibles are handled by the appropriate production completion source rather than by synthetic save/progression writes.
+
+## Repository layout
+
+This repository contains the mod's source patches, native bridge code, Lua runtime code, collectible catalogues, build and packaging tools, original marker artwork, tests, and the research trail used to reach the production implementation.
+
+Important areas include:
+
+- `native/` - native completion-state and runtime bridge code
+- `tools/` - runtime, validation, packaging and installer tooling
+- `catalogue/` - collectible catalogues and identity data
+- `config/` - production collectible configuration
+- `assets/` - original marker artwork and design sources
+- `docs/` - implementation and research documentation
+- `archive/` - historical field logs, probes and evidence
+
+The large research archive is intentionally retained as provenance for the reverse-engineering and validation work behind the mod.
+
+## Development history
+
+The project began with a single Odin's Raven proof of concept, then expanded through full Raven tracking, Nornir support, individual collectible-family research and finally the unified production Completionist Map.
+
+The current `main` branch represents the integrated production implementation. Historical prototype documents and closed issues may describe approaches that were later replaced.
+
+## Safety philosophy
+
+The mod was developed around a few strict rules:
+
+- do not fabricate collectible completion
+- do not write fake quest or region-summary progress
+- prefer read-only observation of native game state
+- fail closed when a progression state cannot be trusted
+- preserve stock files through reversible installation and backup paths
+
+## Nexus Mods
+
+The public Nexus Mods release is the next distribution step. The mod itself is release-ready; final screenshots and the Nexus page are being prepared.
 
 ## License
 
-No license or reuse terms are set yet. Ask before using source or art.
+No separate open-source or artwork reuse licence has been granted yet. Please ask before redistributing or reusing source code or original marker artwork.
