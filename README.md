@@ -2,25 +2,33 @@
 
 A PC mod for **God of War (2018)** that adds custom collectible markers to the game's world map and compass, with completion-aware behaviour designed for a full completionist playthrough.
 
-The production build now covers the mod's full **15-family collectible catalogue** and is being prepared for its public Nexus Mods release.
+The production build contains **498 non-Raven marker records across 15 custom marker families**, plus the separate Odin's Raven system, and is being prepared for its public Nexus Mods release.
 
 ## What it does
 
-Completionist Map extends the native map and compass with custom markers for collectible and completion content, including:
+Completionist Map extends the native map and compass with custom markers for **15 non-Raven marker families**:
 
-- Odin's Ravens
-- Nornir Chests and their puzzle elements
+- Nornir Chests
+- Nornir Seals
+- Nornir Bells
+- Nornir Mechanisms
 - Legendary Chests
-- Wooden and Coffin Chests
+- Cipher Chests
+- Wooden Chests
+- Red / Coffin Chests
 - Artefacts
 - Jötnar Shrines
-- Lore Markers and Lore Scrolls
+- Lore Markers
+- Lore Scrolls
 - Realm Tears
-- Treasure Maps and buried treasures
-- Valkyries
-- the remaining supported completionist marker families in the production catalogue
+- Treasure Maps
+- Treasure Dig Sites
 
-Markers use original, category-specific artwork designed to fit the God of War UI rather than reusing unrelated stock icons.
+**Odin's Ravens are handled separately** by the proven Raven authority and marker system.
+
+The mod follows a strict **no-duplicate-native-marker** policy. It does not add redundant Completionist Map pins for content that already has adequate native map and compass support, including **Valkyries, the Valkyrie Queen, Mystic Gateways and Shops**. Artwork for some native-only categories may exist in the repository's design/research asset pool, but those assets are not active custom marker families.
+
+Markers added by Completionist Map use original, category-specific artwork designed to fit the God of War UI rather than reusing unrelated stock icons.
 
 ## Features
 
