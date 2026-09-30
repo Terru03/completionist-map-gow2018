@@ -289,8 +289,8 @@ Write-Host "========================================================" -Foregroun
 Write-Host "           INSTALLATION COMPLETED SUCCESSFULLY!         " -ForegroundColor Green
 Write-Host "========================================================" -ForegroundColor Green
 Write-Host " Features active:" -ForegroundColor Cyan
-Write-Host "  * 498 collectibles across all 15 families on map"
-Write-Host "  * All 54 Odin's Ravens with native authority & tracking"
+Write-Host "  * 498 non-Raven markers across 15 custom marker families"
+Write-Host "  * Odin's Ravens with native authority & tracking"
 Write-Host "  * Chest state persistence across restarts (wooden chests, etc.)"
 Write-Host "  * Custom map markers & compass HUD icons with distance meters"
 Write-Host "  * In-map [Down Arrow] toggle button (Hide / Show Markers)"
@@ -503,24 +503,31 @@ README_TXT = r"""===============================================================
            GOD OF WAR (2018) PC - COMPLETIONIST MAP MOD v1.0.0
 ================================================================================
 
-All 498 collectibles across all 15 families tracked on your in-game Map & Compass.
+498 non-Raven marker records across 15 custom families, plus Odin's Raven tracking,
+integrated with your in-game Map & Compass.
 
 --------------------------------------------------------------------------------
 1. FEATURES
 --------------------------------------------------------------------------------
-- Full 15-Family Collectible Coverage (498 markers total across all realms):
-    * Odin's Ravens (all 54 in Midgard & realms with live dead-state authority)
-    * Nornir Chests (all 22)
-    * Legendary Chests (all 26)
-    * Wooden / Coffin Chests (259 locations with permanent saved-state tracking)
-    * Artefacts (all 45 across 7 sets)
-    * Jötnar Shrines (all 11)
-    * Lore Markers (all 39)
-    * Lore Scrolls (all 33)
-    * Realm Tears (all 18)
-    * Treasure Maps & Buried Treasures (all 12 pairs)
-    * Valkyries (all 9)
-    * Nornir Bells, Mechanisms & Rune Seals
+- 15 custom non-Raven marker families (498 marker records total):
+    * Nornir Chests
+    * Nornir Seals
+    * Nornir Bells
+    * Nornir Mechanisms
+    * Legendary Chests
+    * Cipher Chests
+    * Wooden Chests
+    * Red / Coffin Chests
+    * Artefacts
+    * Jotnar Shrines
+    * Lore Markers
+    * Lore Scrolls
+    * Realm Tears
+    * Treasure Maps
+    * Treasure Dig Sites
+- Odin's Ravens use the separate native-authority Raven marker system.
+- No duplicate native markers: Valkyries, the Valkyrie Queen, Mystic Gateways
+  and Shops remain handled by the base game's own map/compass systems.
 - Custom Map Marker Artwork: Unique, lore-friendly icon for every collectible type.
 - Custom Compass HUD Artwork: Full compass icons and distance tracking in 3D world.
 - On-Screen Toggle: Press [Down Arrow] anytime on the map to Show/Hide markers.
