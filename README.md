@@ -2,12 +2,13 @@
 
 A PC mod for **God of War (2018)** that adds custom collectible markers to the game's world map and compass, with completion-aware behaviour designed for a full completionist playthrough.
 
-The production build contains **498 non-Raven marker records across 15 custom marker families**, plus the separate Odin's Raven system, and is being prepared for its public Nexus Mods release.
+The production build contains **551 marker records across 16 custom collectible families** and is being prepared for its public Nexus Mods release.
 
 ## What it does
 
-Completionist Map extends the native map and compass with custom markers for **15 non-Raven marker families**:
+Completionist Map extends the native map and compass with custom markers for **16 collectible families**:
 
+- Odin's Ravens
 - Nornir Chests
 - Nornir Seals
 - Nornir Bells
@@ -24,7 +25,7 @@ Completionist Map extends the native map and compass with custom markers for **1
 - Treasure Maps
 - Treasure Dig Sites
 
-**Odin's Ravens are handled separately** by the proven Raven authority and marker system.
+All 16 families are part of Completionist Map. Some families use different internal completion-state sources where required by the game. For example, Odin's Ravens use their proven native authority path internally, but they are part of the same mod and the same completionist marker experience.
 
 The mod follows a strict **no-duplicate-native-marker** policy. It does not add redundant Completionist Map pins for content that already has adequate native map and compass support, including **Valkyries, the Valkyrie Queen, Mystic Gateways and Shops**. Artwork for some native-only categories may exist in the repository's design/research asset pool, but those assets are not active custom marker families.
 
@@ -32,6 +33,7 @@ Markers added by Completionist Map use original, category-specific artwork desig
 
 ## Features
 
+- 551 marker records across 16 custom collectible families
 - Custom world-map markers across the production collectible catalogue
 - Custom compass HUD icons with native-feeling direction and distance tracking
 - Add, replace and remove compass-target behaviour
