@@ -25,7 +25,10 @@ aa8985e031944d8971a4075a650b8c5de1f9a66a012fe2a0cb89b5d2aa4e985c
 - Nexus shared startup thread reply `176731080` and SaneKRIEG crash thread reply `176731128` sent: "Uploaded v1.0.1. Nexus review pending; please test once download live."
 - Same short reply sent on bug `1143859`, reply ID `5628021`. Bug left open as `New issue` for player retest.
 - Each reply verified in rendered page. Release and reply screenshots in `build/startup-evidence`.
-- User approved public source push and Nexus support review email on 2026-10-04. Source push and email in progress; not yet confirmed sent.
+- User approved public source push and Yahoo Mail review request on 2026-10-04.
+- Fix source pushed to public branch `codex/startup-compatibility`, [commit 70edf51](https://github.com/Terru03/completionist-map-gow2018/commit/70edf51a242a1aba07d7d2420b555f7ba9be04b5). GitHub API verified commit and build guide. Only fix and release docs committed; pre-existing user v1.0.0 changelog edits kept local.
+- Yahoo Mail sent review request to `support@nexusmods.com`. Subject: `Quarantine review: God of War Completionist Map v1.0.1 (file 878)`. Yahoo Sent timestamp: 04 Oct 2026, 01:42. Sent view verified recipient, full body, source commit/build links, ZIP and DLL hashes, and test gaps. Proof: `build/startup-evidence/yahoo-nexus-review-sent.jpg`.
+- Request includes prior v1.0.0 ticket `268762` and current `Some suspicious files` label. No claim scan flag false; asks Nexus to analyze and clear only if review passes. No new safety approval received yet. Download still quarantined at last check.
 - [Native build guide](v1.0.1-native-build.md) gives pinned release dependency, DLL build order, companion hash pin, package steps, and uploaded file hashes.
 
 ## Proven Bugs
