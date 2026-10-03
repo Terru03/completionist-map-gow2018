@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <array>
 #include <cwctype>
+#include <cstring>
 #include <iostream>
 #include <string>
 
@@ -14,6 +15,45 @@ namespace {
 
 using CreateFactoryFn = HRESULT(WINAPI*)(REFIID, void**);
 using CreateFactory2Fn = HRESULT(WINAPI*)(UINT, REFIID, void**);
+
+FARPROC WINAPI Windows10Lookup(HMODULE module, LPCSTR name) {
+  const auto ordinal = reinterpret_cast<std::uintptr_t>(name);
+  if (ordinal <= 0xffff) {
+    if (ordinal == 18) return GetProcAddress(module, "DXGIGetDebugInterface1");
+    if (ordinal == 19) return GetProcAddress(module, "DXGIReportAdapterConfiguration");
+    if (ordinal == 20) return nullptr;
+  } else if (std::strcmp(name, "DXGIDisableVBlankVirtualization") == 0) {
+    return nullptr;
+  }
+  return GetProcAddress(module, name);
+}
+
+bool UseWindows10Lookup(HMODULE module) {
+  auto* base = reinterpret_cast<std::uint8_t*>(module);
+  const auto* dos = reinterpret_cast<const IMAGE_DOS_HEADER*>(base);
+  const auto* nt = reinterpret_cast<const IMAGE_NT_HEADERS64*>(base + dos->e_lfanew);
+  const auto imports = nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
+  if (imports.VirtualAddress == 0) return false;
+  auto* descriptor = reinterpret_cast<IMAGE_IMPORT_DESCRIPTOR*>(base + imports.VirtualAddress);
+  for (; descriptor->Name != 0; ++descriptor) {
+    if (descriptor->OriginalFirstThunk == 0) continue;
+    auto* names = reinterpret_cast<IMAGE_THUNK_DATA64*>(base + descriptor->OriginalFirstThunk);
+    auto* addresses = reinterpret_cast<IMAGE_THUNK_DATA64*>(base + descriptor->FirstThunk);
+    for (; names->u1.AddressOfData != 0; ++names, ++addresses) {
+      if (IMAGE_SNAP_BY_ORDINAL64(names->u1.Ordinal)) continue;
+      const auto* import = reinterpret_cast<const IMAGE_IMPORT_BY_NAME*>(base + names->u1.AddressOfData);
+      if (std::strcmp(import->Name, "GetProcAddress") != 0) continue;
+      DWORD protection = 0;
+      if (!VirtualProtect(&addresses->u1.Function, sizeof(addresses->u1.Function),
+                          PAGE_READWRITE, &protection)) return false;
+      addresses->u1.Function = reinterpret_cast<ULONG_PTR>(&Windows10Lookup);
+      DWORD ignored = 0;
+      return VirtualProtect(&addresses->u1.Function, sizeof(addresses->u1.Function),
+                            protection, &ignored) != FALSE;
+    }
+  }
+  return false;
+}
 
 int Fail(const char* message) {
   std::cerr << "FAIL: " << message << '\n';
@@ -47,7 +87,9 @@ bool CallFactory2(FARPROC address) {
 }  // namespace
 
 int wmain(int argc, wchar_t** argv) {
-  if (argc != 2) return Fail("expected proxy DLL path");
+  if (argc != 2 && argc != 3) return Fail("expected proxy DLL path and optional --simulate-windows10");
+  const bool windows10 = argc == 3 && std::wstring(argv[2]) == L"--simulate-windows10";
+  if (argc == 3 && !windows10) return Fail("unknown test option");
 
   std::array<wchar_t, MAX_PATH> temp_root{};
   if (GetTempPathW(static_cast<DWORD>(temp_root.size()), temp_root.data()) == 0) {
@@ -68,6 +110,7 @@ int wmain(int argc, wchar_t** argv) {
   HMODULE proxy = LoadLibraryExW(proxy_path.c_str(), nullptr,
                                  LOAD_WITH_ALTERED_SEARCH_PATH);
   if (proxy == nullptr) return Fail("proxy DLL did not load from test directory");
+  if (windows10 && !UseWindows10Lookup(proxy)) return Fail("Windows 10 lookup setup failed");
 
   for (const auto& spec : completionist::kDxgiExports) {
     const std::string name(spec.name);
@@ -108,6 +151,15 @@ int wmain(int argc, wchar_t** argv) {
       !CallFactory2(addresses[2])) {
     return Fail("safe factory forwarding failed");
   }
+  if (windows10) {
+    using OptionalFn = HRESULT(WINAPI*)();
+    const auto optional = reinterpret_cast<OptionalFn>(
+        GetProcAddress(proxy, "DXGIDisableVBlankVirtualization"));
+    if (optional == nullptr || optional() != HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND))
+      return Fail("missing optional export did not fail locally");
+    if (!CallFactory(addresses[1], __uuidof(IDXGIFactory1)))
+      return Fail("optional export failure poisoned factory forwarding");
+  }
 
   std::array<wchar_t, MAX_PATH> system_directory{};
   if (GetSystemDirectoryW(system_directory.data(),
@@ -146,6 +198,7 @@ int wmain(int argc, wchar_t** argv) {
   DeleteFileW(proxy_path.c_str());
   RemoveDirectoryW(test_directory.c_str());
   std::cout << "RAVEN_BRIDGE_FORWARDING_TEST_PASSED target=dxgi.dll "
-               "factories=3 system32_loaded=true recursion=false\n";
+               "factories=3 system32_loaded=true recursion=false windows10="
+            << (windows10 ? "true" : "false") << '\n';
   return 0;
 }

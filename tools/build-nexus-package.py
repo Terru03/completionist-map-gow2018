@@ -1,10 +1,5 @@
-"""Build production-ready, universal Nexus Mods distribution package for Completionist Map.
-
-Creates a standalone, 1-click installer and zip package compatible with:
-1. Automated 1-click Install.bat / Uninstall.bat (PowerShell 5.1+ built into Windows 10/11)
-2. Vortex / Mod Organizer 2 mod managers (standard archive root layout)
-3. Manual drag-and-drop into God of War root folder
-"""
+"""Build Completionist Map package with pinned native DLLs and install checks."""
+import argparse
 import hashlib
 import json
 import os
@@ -14,7 +9,9 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist/nexus"
-PKG_DIR = DIST / "CompletionistMap-v1.0.0"
+VERSION = "1.0.1"
+SUPPORTED_EXE_SHA256 = "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452"
+PKG_DIR = DIST / f"CompletionistMap-v{VERSION}"
 SCREENSHOTS_SRC = Path(os.environ.get("GOW_SCREENSHOTS_DIR", Path.home() / "Pictures" / "Screenshots"))
 _default_game = next(
     (p for p in [
@@ -206,7 +203,57 @@ if (-not (Test-Path $manifestPath)) {
 }
 $manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
 
-# Prepare Backup directory
+# Check all inputs before game files change.
+if ($manifest.supported_exe_sha256 -notmatch '^[0-9a-f]{64}$') {
+    Write-Host "ERROR: Package has no valid supported EXE hash." -ForegroundColor Red
+    exit 1
+}
+$exeHash = (Get-FileHash -LiteralPath (Join-Path $game "GoW.exe") -Algorithm SHA256).Hash.ToLowerInvariant()
+if ($exeHash -ne $manifest.supported_exe_sha256) {
+    Write-Host "ERROR: Unsupported GoW.exe. No game files changed." -ForegroundColor Red
+    Write-Host "Supported: Steam 1.0.13 (1.0.475.7534), SHA256 $($manifest.supported_exe_sha256)"
+    Write-Host "Found SHA256: $exeHash"
+    exit 1
+}
+if (-not $manifest.files -or @($manifest.files.PSObject.Properties).Count -eq 0) {
+    Write-Host "ERROR: Package file list empty." -ForegroundColor Red
+    exit 1
+}
+foreach ($file in $manifest.files.PSObject.Properties) {
+    $rel = $file.Name
+    if ([IO.Path]::IsPathRooted($rel) -or $rel -match '(^|[\\/])\.\.([\\/]|$)|:') {
+        Write-Host "ERROR: Invalid package path: $rel" -ForegroundColor Red
+        exit 1
+    }
+    $src = Join-Path $sourceRoot $rel
+    if (-not (Test-Path -LiteralPath $src -PathType Leaf)) {
+        Write-Host "ERROR: Package file missing: $rel. No game files changed." -ForegroundColor Red
+        exit 1
+    }
+    $expected = $file.Value.sha256
+    $actual = (Get-FileHash -LiteralPath $src -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($expected -notmatch '^[0-9a-f]{64}$' -or $actual -ne $expected) {
+        Write-Host "ERROR: Package hash mismatch: $rel. Extract fresh ZIP; no game files changed." -ForegroundColor Red
+        exit 1
+    }
+}
+$bootPath = Join-Path $game "exec\boot-options.json"
+$preparedBoot = $null
+try {
+    $boot = Get-Content -LiteralPath $bootPath -Raw | ConvertFrom-Json
+    if ($boot -isnot [PSCustomObject]) { throw "Expected JSON object." }
+    $entry = "../../patch/pc_le/completionist_v105_family_art"
+    $packs = @($boot.'patch-texpacks' | Where-Object { $_ })
+    if ($entry -notin $packs) {
+        $boot | Add-Member -MemberType NoteProperty -Name 'patch-texpacks' -Value @($packs + $entry) -Force
+        $preparedBoot = $boot | ConvertTo-Json -Depth 32
+    }
+} catch {
+    Write-Host "ERROR: Cannot read boot-options.json: $_. No game files changed." -ForegroundColor Red
+    exit 1
+}
+
+# Keep stock backup.
 $backupDir = Join-Path $game "completionist_backup"
 $backupManifest = Join-Path $backupDir "backup_manifest.json"
 if (-not (Test-Path $backupDir)) {
@@ -266,22 +313,10 @@ foreach ($rel in $manifest.files.PSObject.Properties.Name) {
     $installCount++
 }
 
-# Update boot-options.json for family art texpack
-$bootPath = Join-Path $game "exec\boot-options.json"
-if (Test-Path $bootPath) {
-    try {
-        $boot = Get-Content $bootPath -Raw | ConvertFrom-Json
-        $entry = "../../patch/pc_le/completionist_v105_family_art"
-        $packs = [System.Collections.ArrayList]@($boot.'patch-texpacks')
-        if (-not $packs.Contains($entry)) {
-            $packs.Add($entry) | Out-Null
-            $boot.'patch-texpacks' = $packs
-            $boot | ConvertTo-Json -Depth 5 | Set-Content -Path $bootPath -Encoding UTF8
-            Write-Host "[+] Registered artwork patch texpack in boot-options.json" -ForegroundColor Green
-        }
-    } catch {
-        Write-Host "WARNING: Could not update boot-options.json automatically: $_" -ForegroundColor Yellow
-    }
+# Add art pack with no UTF-8 BOM.
+if ($null -ne $preparedBoot) {
+    [IO.File]::WriteAllText($bootPath, $preparedBoot, (New-Object Text.UTF8Encoding($false)))
+    Write-Host "[+] Artwork patch texpack registered in boot-options.json" -ForegroundColor Green
 }
 
 Write-Host ""
@@ -500,7 +535,7 @@ pause
 """
 
 README_TXT = r"""================================================================================
-           GOD OF WAR (2018) PC - COMPLETIONIST MAP MOD v1.0.0
+           GOD OF WAR (2018) PC - COMPLETIONIST MAP MOD v1.0.1
 ================================================================================
 
 498 non-Raven marker records across 15 custom families, plus Odin's Raven tracking,
@@ -538,8 +573,12 @@ integrated with your in-game Map & Compass.
 --------------------------------------------------------------------------------
 2. REQUIREMENTS
 --------------------------------------------------------------------------------
-- God of War (2018) on PC (Steam or Epic Games Store, patch 1.0.12 or newer).
-- GoW Script Loader & Gameplay Tweaks 0.22 (or compatible dinput8/dxgi loader).
+- Windows 10 or Windows 11, 64-bit.
+- Supported GoW.exe: Steam 1.0.13, file version 1.0.475.7534.
+  SHA256: caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
+  Other EXE builds not supported. Installer checks hash before any game write.
+- GoW Script Loader & Gameplay Tweaks 0.22 (version.dll) installed first.
+- No other mod may replace dxgi.dll or these map files.
 
 --------------------------------------------------------------------------------
 3. INSTALLATION
@@ -554,11 +593,17 @@ OPTION A: Automated 1-Click Installer (Recommended)
 OPTION B: Mod Managers (Vortex / MO2)
 1. Drag and drop this zip file into Vortex / Mod Organizer 2.
 2. Enable and Deploy.
+3. In exec/boot-options.json, add this string to existing "patch-texpacks" array:
+   "../../patch/pc_le/completionist_v105_family_art"
+   Keep all other entries. Back up JSON before edit.
+4. Vortex/MO2 bypass installer checks. Use only supported EXE hash above.
 
 OPTION C: Manual Installation
 1. Copy the contents of this zip (dxgi.dll, exec\, mods\) into your God of War
    game folder (where GoW.exe is located).
 2. Ensure GoW Script Loader 0.22 is installed.
+3. Register art texpack in boot-options.json as in Option B.
+4. Manual copy bypasses installer checks. Use only supported EXE hash above.
 
 --------------------------------------------------------------------------------
 4. UNINSTALLATION
@@ -567,6 +612,19 @@ OPTION C: Manual Installation
   It will restore your original stock files from backup and clean up mod files.
 - If you installed via Vortex / MO2: Disable and Undeploy in your mod manager.
 - If manual: Restore your backed-up files or verify file integrity via Steam/Epic.
+- Vortex/manual: remove only mod's art texpack entry from boot-options.json.
+
+--------------------------------------------------------------------------------
+5. STARTUP FIX IN v1.0.1
+--------------------------------------------------------------------------------
+- DXGI functions resolved by name, not Windows-version-dependent ordinals.
+- Missing optional Windows 11 export no longer blocks graphics factories.
+- Unsupported EXE or bad native DLL pair logged; native patches stay disabled.
+  This fallback keeps graphics alive, but cannot make unsupported mod data safe.
+  Do not use full mod on unsupported EXE.
+- Installer checks EXE, all payload hashes, and boot JSON before any write.
+- For crash report, include GoW.exe SHA256, Windows version, loader_log.txt,
+  and mods/completionist-map/native/raven-native-bridge.log.
 
 ================================================================================
 Created with care for the God of War PC community. Enjoy your 100% journey!
@@ -574,8 +632,33 @@ Created with care for the God of War PC community. Enjoy your 100% journey!
 """
 
 
-def build():
+def build(source=GAME_DIR, capacity_dll=None, bridge_dll=None):
     print(f"[*] Packaging Completionist Map for Nexus Mods...")
+    source = Path(source)
+    if (capacity_dll is None) != (bridge_dll is None):
+        raise ValueError("Supply both native DLLs, not just one.")
+    inputs = {rel: source / rel for rel in MOD_FILES}
+    if capacity_dll is not None:
+        inputs["dxgi.dll"] = Path(capacity_dll)
+        inputs["mods/completionist-map/native/collectible-base-dxgi.dll"] = Path(bridge_dll)
+    package_path = PKG_DIR.resolve()
+    if package_path.parent != DIST.resolve():
+        raise ValueError("Package output must stay inside dist/nexus.")
+    for path in (source, *inputs.values()):
+        resolved = path.resolve()
+        if resolved == package_path or package_path in resolved.parents:
+            raise ValueError(f"Input is inside package output: {path}")
+    for src in inputs.values():
+        if not src.is_file():
+            raise FileNotFoundError(f"Required mod file missing: {src}")
+    upstream_hash = sha256(inputs["mods/completionist-map/native/collectible-base-dxgi.dll"])
+    if upstream_hash.encode("ascii") not in inputs["dxgi.dll"].read_bytes():
+        raise ValueError("Capacity DLL does not pin this bridge DLL hash.")
+    native_manifest_rel = "mods/completionist-map/native/raven-native-bridge-manifest.json"
+    native_manifest = json.loads(inputs[native_manifest_rel].read_text(encoding="utf-8"))
+    native_manifest["installed_sha256"] = sha256(inputs["dxgi.dll"])
+    native_manifest["upstream_sha256"] = upstream_hash
+    native_manifest["supported_exe_sha256"] = SUPPORTED_EXE_SHA256
     if PKG_DIR.exists():
         shutil.rmtree(PKG_DIR)
     PKG_DIR.mkdir(parents=True)
@@ -583,12 +666,12 @@ def build():
     files_manifest = {}
 
     for rel in MOD_FILES:
-        src = GAME_DIR / rel
-        if not src.is_file():
-            raise FileNotFoundError(f"Required mod file missing from game: {src}")
+        src = inputs[rel]
         dest = PKG_DIR / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dest)
+        if rel == native_manifest_rel:
+            dest.write_text(json.dumps(native_manifest, indent=2) + "\n", encoding="utf-8")
         files_manifest[rel] = {
             "size": dest.stat().st_size,
             "sha256": sha256(dest)
@@ -607,9 +690,10 @@ def build():
     # Manifest
     manifest_data = {
         "name": "God of War Completionist Map",
-        "version": "1.0.0",
+        "version": VERSION,
         "author": "Terru03",
         "nexus_mod_id": 396,
+        "supported_exe_sha256": SUPPORTED_EXE_SHA256,
         "files": files_manifest
     }
     (PKG_DIR / "manifest.json").write_text(json.dumps(manifest_data, indent=2), encoding="utf-8")
@@ -624,7 +708,7 @@ def build():
             print(f"  [+] Screenshot: {dst_name}")
 
     # Create ZIP archive
-    zip_path = DIST / "CompletionistMap-v1.0.0.zip"
+    zip_path = DIST / f"CompletionistMap-v{VERSION}.zip"
     print(f"[*] Compressing into {zip_path}...")
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
         for file in PKG_DIR.rglob("*"):
@@ -640,4 +724,9 @@ def build():
 
 
 if __name__ == "__main__":
-    build()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source", type=Path, default=GAME_DIR)
+    parser.add_argument("--capacity-dll", type=Path)
+    parser.add_argument("--bridge-dll", type=Path)
+    args = parser.parse_args()
+    build(args.source, args.capacity_dll, args.bridge_dll)

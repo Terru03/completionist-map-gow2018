@@ -2,6 +2,15 @@
 
 For the exhaustive numbered prototype list, including superseded and failed test builds, see [`docs/VERSION_HISTORY.md`](docs/VERSION_HISTORY.md).
 
+## v1.0.1 - Startup Compatibility Fix (2026-10-04)
+
+- Fix DXGI startup when optional Windows 11 export absent or export ordinals differ. Resolve system exports by name; optional exports no longer block graphics factories.
+- Keep system graphics fallback when EXE or native DLL pair fails checks. Native patches stay disabled on unsupported builds; full mod still needs supported EXE.
+- Installer checks EXE hash, all payload hashes, and boot JSON before backup or copy. Keep original backup and one art texpack entry on repeat install.
+- Support pinned Steam 1.0.13 / GoW.exe 1.0.475.7534 only. Keep native hash and instruction guards. No change to Lua, map records, or art payloads from v1.0.0.
+- Verified: 22 automated checks, Windows 10 export simulation, clean installer test, and two Windows 11 game launches with save loads. Save hash unchanged.
+- Still needs player test: real Windows 10 launch and full map/compass controls. Reported PCs not yet retested; this release fixes reproduced startup defects, not proof every crash gone.
+
 ## v0.9.6.1-installer-fix
 
 - Fixes an installer validation-order regression in v0.9.6.

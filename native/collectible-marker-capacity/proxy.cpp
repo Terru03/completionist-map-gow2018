@@ -4,6 +4,7 @@
 #include <string>
 #include "capacity.h"
 #include "dxgi_contract.generated.h"
+#include "dxgi_forwarding.h"
 #include "hash.h"
 #include "platform.h"
 
@@ -189,14 +190,36 @@ bool ExpandUiPhysics(std::uintptr_t base) {
 }
 
 BOOL CALLBACK Initialize(PINIT_ONCE, PVOID, PVOID*) {
+  std::wstring system_path;
+  if (!completionist::BuildSystemDxgiPath(&system_path, &failure)) return TRUE;
+  HMODULE system = LoadLibraryExW(system_path.c_str(), nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+  if (system == nullptr) {
+    failure = GetLastError();
+    completionist::AppendBridgeLog("COLLECTIBLE_DXGI_REJECTED reason=system_load error=" +
+                                  std::to_string(failure));
+    return TRUE;
+  }
+  if (!completionist::ResolveDxgiExportsByName(system, &exports, &failure)) return TRUE;
+  // Native checks must not break graphics. Keep System32 fallback ready.
   std::wstring exe, root;
   DWORD error = 0;
   completionist::Sha256 digest{};
   std::string reason;
   if (!completionist::BuildModulePath(&exe, &error) ||
-      !completionist::Sha256File(exe, &digest, &reason) ||
-      !completionist::IsSupportedExecutableHash(digest) ||
-      !completionist::BuildModuleDirectory(&root, &error)) return TRUE;
+      !completionist::BuildModuleDirectory(&root, &error)) {
+    completionist::AppendBridgeLog("COLLECTIBLE_CAPACITY_REJECTED reason=exe_path error=" +
+                                  std::to_string(error));
+    return TRUE;
+  }
+  if (!completionist::Sha256File(exe, &digest, &reason)) {
+    completionist::AppendBridgeLog("COLLECTIBLE_CAPACITY_REJECTED reason=" + reason);
+    return TRUE;
+  }
+  if (!completionist::IsSupportedExecutableHash(digest)) {
+    completionist::AppendBridgeLog("COLLECTIBLE_CAPACITY_REJECTED reason=unsupported_exe sha256=" +
+                                  completionist::Sha256Hex(digest) + " native_patches=false graphics_forwarded=true");
+    return TRUE;
+  }
   const std::wstring upstream = root + L"\\mods\\completionist-map\\native\\collectible-base-dxgi.dll";
   if (!completionist::Sha256File(upstream, &digest, &reason) ||
       completionist::Sha256Hex(digest) != kUpstreamHash) {
@@ -205,18 +228,28 @@ BOOL CALLBACK Initialize(PINIT_ONCE, PVOID, PVOID*) {
   }
   HMODULE module = LoadLibraryExW(upstream.c_str(), nullptr,
                                 LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);
-  if (module == nullptr) return TRUE;
+  if (module == nullptr) {
+    completionist::AppendBridgeLog("COLLECTIBLE_CAPACITY_REJECTED reason=upstream_load error=" +
+                                  std::to_string(GetLastError()));
+    return TRUE;
+  }
   std::array<FARPROC, completionist::kDxgiExports.size()> resolved{};
   for (std::size_t i=0; i<resolved.size(); ++i) {
     const auto& item = completionist::kDxgiExports[i];
     resolved[i] = GetProcAddress(module, MAKEINTRESOURCEA(item.ordinal));
-    if (resolved[i] == nullptr || resolved[i] != GetProcAddress(module, std::string(item.name).c_str())) return TRUE;
+    if (resolved[i] == nullptr || resolved[i] != GetProcAddress(module, std::string(item.name).c_str())) {
+      completionist::AppendBridgeLog("COLLECTIBLE_CAPACITY_REJECTED reason=upstream_exports");
+      return TRUE;
+    }
   }
   FARPROC snapshot_export = GetProcAddress(module, "CompletionistMapGetRavenSnapshotV1");
   if (snapshot_export == nullptr ||
       !ExpandCapacity(reinterpret_cast<std::uintptr_t>(GetModuleHandleW(nullptr))) ||
       !ExpandEntityArray(reinterpret_cast<std::uintptr_t>(GetModuleHandleW(nullptr))) ||
-      !ExpandUiPhysics(reinterpret_cast<std::uintptr_t>(GetModuleHandleW(nullptr)))) return TRUE;
+      !ExpandUiPhysics(reinterpret_cast<std::uintptr_t>(GetModuleHandleW(nullptr)))) {
+    completionist::AppendBridgeLog("COLLECTIBLE_CAPACITY_REJECTED reason=native_setup graphics_forwarded=true");
+    return TRUE;
+  }
   exports = resolved;
   snapshot = snapshot_export;
   failure = ERROR_SUCCESS;
@@ -224,14 +257,16 @@ BOOL CALLBACK Initialize(PINIT_ONCE, PVOID, PVOID*) {
   return TRUE;
 }
 
-extern "C" HRESULT WINAPI ForwardingFailure() { return HRESULT_FROM_WIN32(failure); }
+extern "C" HRESULT WINAPI ForwardingFailure() {
+  return HRESULT_FROM_WIN32(failure == ERROR_SUCCESS ? ERROR_PROC_NOT_FOUND : failure);
+}
 }
 
 extern "C" FARPROC CompletionistResolveDxgiExport(unsigned int ordinal) {
   InitOnceExecuteOnce(&once, Initialize, nullptr, nullptr);
   if (failure == ERROR_SUCCESS) {
     for (std::size_t i=0; i<exports.size(); ++i)
-      if (completionist::kDxgiExports[i].ordinal == ordinal) return exports[i];
+      if (completionist::kDxgiExports[i].ordinal == ordinal && exports[i] != nullptr) return exports[i];
   }
   return reinterpret_cast<FARPROC>(&ForwardingFailure);
 }

@@ -2,7 +2,7 @@
 
 A PC mod for **God of War (2018)** that adds custom collectible markers to the game's world map and compass, with completion-aware behaviour designed for a full completionist playthrough.
 
-The production build contains **551 marker records across 16 custom collectible families** and is being prepared for its public Nexus Mods release.
+Production build contains **551 marker records across 16 custom collectible families**. v1.0.1 uploaded to [Nexus Mods](https://www.nexusmods.com/godofwar/mods/396?tab=files); download held for Nexus safety review.
 
 ## What it does
 
@@ -49,9 +49,9 @@ The mod does **not** manufacture quest progress or mark collectibles complete fo
 
 ## Release status
 
-The gameplay implementation is complete and working in the current production build.
+v1.0.1 fixes reproduced DXGI startup faults and adds installer preflight checks. 22 automated checks pass; two Windows 11 launches and save loads passed with save hash unchanged.
 
-The remaining public-release work is presentation: final in-game screenshots and the Nexus Mods upload.
+Real Windows 10 launch, full manual map/compass control test, and affected-player retests remain open. See [startup report](docs/builds/startup-compatibility.md) and [native build steps](docs/builds/v1.0.1-native-build.md).
 
 Older issues, research notes and archived probes remain in the repository as development history. They should not be interpreted as current release blockers.
 
@@ -67,19 +67,19 @@ The Nexus package is built around the included one-click installer:
 
 `Uninstall.bat` restores the backed-up stock files and removes the mod-added files.
 
-Manual and mod-manager installation layouts are also supported by the release package.
+Manual and mod-manager installs must register `../../patch/pc_le/completionist_v105_family_art` in existing `patch-texpacks` array in `exec/boot-options.json`, keeping all other entries. These paths bypass installer hash checks; follow package README and supported EXE hash below.
 
 ## Compatibility
 
-Primary development and field testing has been performed on the PC Steam version of **God of War (2018)**, including Steam Build ID **11168363**.
+Supported EXE only: Steam **1.0.13**, file version **1.0.475.7534**, SHA256 `caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452`.
 
-The release packager also includes Steam and Epic Games installation discovery. Compatibility can depend on game-file revisions, loader setup and other mods that replace the same resources.
+No Epic or modified-EXE support claim. Installer discovers several game paths but rejects unsupported EXE before changes. Other mods must not replace `dxgi.dll` or same patched resources.
 
 ## Requirements
 
 - God of War (2018) for PC
-- GoW Script Loader & Gameplay Tweaks 0.22 or a compatible loader setup
-- Windows 10 or Windows 11 for the bundled one-click PowerShell installer
+- GoW Script Loader & Gameplay Tweaks 0.22 (`version.dll`), installed first
+- Windows 10 or Windows 11 x64. Windows 10 DXGI export layout tested by simulation only; real Windows 10 game launch not yet tested.
 
 ## Using the mod
 
@@ -123,7 +123,7 @@ The mod was developed around a few strict rules:
 
 ## Nexus Mods
 
-The public Nexus Mods release is the next distribution step. The mod itself is release-ready; final screenshots and the Nexus page are being prepared.
+[Completionist Map on Nexus Mods](https://www.nexusmods.com/godofwar/mods/396). v1.0.1 uploaded with changelog; Nexus quarantined ZIP pending safety review. Download not yet live.
 
 ## License
 

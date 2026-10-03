@@ -9,6 +9,7 @@
 
 #include "authority_runtime.h"
 #include "dxgi_contract.generated.h"
+#include "dxgi_forwarding.h"
 #include "platform.h"
 
 namespace {
@@ -44,21 +45,7 @@ BOOL CALLBACK ResolveRealDxgi(PINIT_ONCE, PVOID, PVOID*) {
     g_dxgi_error = GetLastError();
     return TRUE;
   }
-  for (std::size_t index = 0; index < completionist::kDxgiExports.size();
-       ++index) {
-    const auto& spec = completionist::kDxgiExports[index];
-    FARPROC by_ordinal = GetProcAddress(
-        g_real_dxgi, MAKEINTRESOURCEA(static_cast<WORD>(spec.ordinal)));
-    const std::string name(spec.name);
-    FARPROC by_name = GetProcAddress(g_real_dxgi, name.c_str());
-    if (by_ordinal == nullptr || by_name == nullptr || by_name != by_ordinal) {
-      g_dxgi_error = ERROR_PROC_NOT_FOUND;
-      g_exports.fill(nullptr);
-      return TRUE;
-    }
-    g_exports[index] = by_ordinal;
-  }
-  g_dxgi_error = ERROR_SUCCESS;
+  completionist::ResolveDxgiExportsByName(g_real_dxgi, &g_exports, &g_dxgi_error);
   return TRUE;
 }
 
@@ -90,11 +77,11 @@ extern "C" FARPROC CompletionistResolveDxgiExport(unsigned int ordinal) {
   for (std::size_t index = 0; index < completionist::kDxgiExports.size();
        ++index) {
     if (completionist::kDxgiExports[index].ordinal == ordinal) {
+      if (g_exports[index] == nullptr) return FailureAddress();
       StartWorkerOnce();
       return g_exports[index];
     }
   }
-  g_dxgi_error = ERROR_PROC_NOT_FOUND;
   return FailureAddress();
 }
 
