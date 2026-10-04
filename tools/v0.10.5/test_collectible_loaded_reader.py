@@ -267,6 +267,52 @@ class LoadedReaderTest(unittest.TestCase):
         self.lua.execute('loaded:Poll()')
         self.assertEqual(self.lua.execute('return store:Get("rift_direct")'), "collected")
 
+    def test_artefact_observe_collected_via_get_state(self):
+        self.lua.execute('''
+          store=State.New({"art_col"}); store:BeginEpoch(1)
+          runtime=Runtime.New(store,{Reset=function() end})
+          root=node("goroot", nil)
+          placement=node("goartifactalfheim06", root)
+          owner=node("goartifactscript", placement)
+          owner.LuaObjectScript={GetState=function() return 3 end}
+          placement.matches={owner}
+          level={matches={placement}}
+          function level:FindGameObjects(query) return self.matches end
+          function level:FindSingleGameObject(query) return self.matches[1] end
+          game={FindLevel=function() return level end}
+          rows={{id="art_col", level="alf325",
+                 placement={"goartifactalfheim06", "goroot"},
+                 owner={"goartifactscript", "goartifactalfheim06", "goroot"},
+                 adapter="artefact"}}
+          loaded=Loaded.New(rows, runtime)
+          runtime.loaded = loaded
+        ''')
+        self.lua.execute('loaded:Poll()')
+        self.assertEqual(self.lua.execute('return store:Get("art_col")'), "collected")
+
+    def test_artefact_observe_collected_via_is_acquired(self):
+        self.lua.execute('''
+          store=State.New({"art_acq"}); store:BeginEpoch(1)
+          runtime=Runtime.New(store,{Reset=function() end})
+          root=node("goroot", nil)
+          placement=node("goartifactalfheim06", root)
+          owner=node("goartifactscript", placement)
+          owner.LuaObjectScript={IsAcquired=function() return true end}
+          placement.matches={owner}
+          level={matches={placement}}
+          function level:FindGameObjects(query) return self.matches end
+          function level:FindSingleGameObject(query) return self.matches[1] end
+          game={FindLevel=function() return level end}
+          rows={{id="art_acq", level="alf325",
+                 placement={"goartifactalfheim06", "goroot"},
+                 owner={"goartifactscript", "goartifactalfheim06", "goroot"},
+                 adapter="artefact"}}
+          loaded=Loaded.New(rows, runtime)
+          runtime.loaded = loaded
+        ''')
+        self.lua.execute('loaded:Poll()')
+        self.assertEqual(self.lua.execute('return store:Get("art_acq")'), "collected")
+
 if __name__ == "__main__": unittest.main()
 
 

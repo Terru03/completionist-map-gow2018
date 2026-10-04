@@ -59,7 +59,7 @@ class NornirStaticGateTests(unittest.TestCase):
         self.assertEqual(audit["result"], "NORNIR_INSTALLED_MARKER_IDS_CLEAR_READ_ONLY")
         self.assertEqual(audit["collision_count"], 0)
         self.assertEqual(audit["namespace_manifest_sha256"],
-                         hashlib.sha256(manifest_bytes).hexdigest())
+                         hashlib.sha256(manifest_bytes.replace(b"\r\n", b"\n")).hexdigest())
 
     def test_raven_marker_uid_cannot_be_assigned_to_nornir(self):
         def collide(cat, _audit):

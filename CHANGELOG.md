@@ -2,6 +2,16 @@
 
 For the exhaustive numbered prototype list, including superseded and failed test builds, see [`docs/VERSION_HISTORY.md`](docs/VERSION_HISTORY.md).
 
+## v1.0.3 - Real-Time In-World Compass Clearing & Full Artefact Authority Fix
+
+- **Real-Time 3D In-World Compass Clearing**: Fixed player-tracked waypoint pins remaining active on the Compass HUD after collection/completion during live gameplay across all collectible families without requiring a save reload or reopening the map menu.
+  - When collecting or completing an Artefact (`LuaHook_GiveLoot`), Realm Tear (`OnInteractFinish`), Chest (`OnOpened`), Jötnar Shrine (`UpdateJournal`), Treasure Dig (`UpdateQuest`), Lore Marker (`UpdateJournal`), or Lore/Treasure Scroll (`InteractComplete`), safely hides any active `"SIDE"` waypoint marker from `game.Compass` immediately.
+  - Sends immediate `COMPLETIONIST_COLLECTIBLE_DIRTY_V1` hook dispatch to the UI VM, invoking `runtime:Poll()` to clean up tracked targets and synchronize direct observations in memory.
+- **Full Artefact Direct Authority & Loaded Observation**: Fixed Artefact pins remaining visible on the 3D map menu after being collected.
+  - Added native wallet resource tracking across all 45 Artefacts in `isDirectlyCollected()` (`collectible-location-map.lua`), handling multi-instance thresholds (e.g. `HornUShape`, `BroochRuby`, `HornHorse`, `ShipHook`) and category quest completion fallbacks (`Quest_Artifacts_*`).
+  - Added `adapter == 'artefact'` support, owner fallback, and fast direct script lookup (`goartifactscript`) in `Loaded` reader (`collectible-loaded-reader.lua`).
+  - Exported `GetState()` and `IsAcquired()` in `interact_loot_artifact.lua` to allow live loaded state extraction.
+
 ## v1.0.2 - Realm Tear Completion Authority Fix
 
 - **Dual-Layer Realm Tear Completion Tracking**: Fixed Realm Tear markers not disappearing from the map after being completed and looted.

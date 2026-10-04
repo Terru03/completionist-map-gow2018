@@ -148,6 +148,54 @@ do
     ["realm_tear_b24fe2ba5298d202f41bda97b2a00845"] = "RegionSummary_MID_PocketRift_Parent",
   }
 
+  local artefactResources = {
+    ["artefact_707ae0e24dc7bc9a56c19eb7ce17b351"] = "AlfheimSHook",
+    ["artefact_0d53040849957335c6db68809206f5d1"] = "AlfheimCurvy",
+    ["artefact_56c4354a4141de7afc7f2e8447ab8767"] = "AlfheimHook",
+    ["artefact_5bf15dbc48613f5b548fd2a673d8f7bc"] = "AlfheimInsect",
+    ["artefact_48edaa8b407e24bed474bebea8ea3821"] = "AlfheimMedallion",
+    ["artefact_6e3739ea4ac8107c495a61af774a9b03"] = "AlfheimPendant",
+    ["artefact_eb672a1647b1f7e64595e48f821670f5"] = "BroochRay",
+    ["artefact_hel300mainbridgewad00c124ebae0bc24f8b64cc6305246b22"] = "BroochRuby",
+    ["artefact_hel300mainbridgewadb5b33ffb0d723f44a135047d5a839e32"] = "BroochRuby",
+    ["artefact_hel300mainbridgewade4b6326ae64d514490a45593d471478f"] = "BroochRuby",
+    ["artefact_c7f91ac1447cff68599696bbbb58e7b7"] = "BroochAnimal",
+    ["artefact_7d8a35dc4d6aabf8065e1ead0c470fcc"] = "ShipGoldHook2",
+    ["artefact_5bb11ed5419b42caba813598d29ca473"] = "ShipTongue",
+    ["artefact_01a8ba24409b5fb49a1c18b43669fe44"] = "ShipSeaHorse",
+    ["artefact_379728fc47e4a966be1fc9926011184b"] = "ShipHook",
+    ["artefact_6cffc9884efa77b424baf987adfdba6a"] = "ShipHook",
+    ["artefact_4a3d314942f187f69ee5b78302e118fe"] = "ShipHook2",
+    ["artefact_f7fbfc3f44991b3da37871879e6de737"] = "ShipHook2",
+    ["artefact_989065ff4bde64f5ec957da2759037cb"] = "LostToyTroll",
+    ["artefact_c9b7e23040c21e2da5fe8ba4be8ad415"] = "NorseMaskGoat",
+    ["artefact_bd9a46a34b8fd4660be2129e27fa4004"] = "ShipGoldHook",
+    ["artefact_a0588a9442f0118bdce0cda751b8605d"] = "LostToyBoat",
+    ["artefact_ab662cc14c4a21327111dea1a34b96c3"] = "LostToyHorse",
+    ["artefact_8916f55c4511b74ba8601ba7ef3d86bb"] = "LostToySpearGuy",
+    ["artefact_fda837834b361579d4a29194810c3d09"] = "ShipDragon",
+    ["artefact_fae85e594ef79ee2e204719767dd5287"] = "CupDragon",
+    ["artefact_6f83c0ef48eda412050135a827d51a7a"] = "CupPintGlass",
+    ["artefact_33f59ee746f63f40199e5f90cad3c236"] = "CupHandle",
+    ["artefact_b52df62545c16741e6f2278f9e2ccc32"] = "CupGoblet",
+    ["artefact_b18794364cc6b6a5c08596ab8699f35b"] = "CupFeet",
+    ["artefact_f5bd8953457f9662d074d798a111abfc"] = "CupHolyGrail",
+    ["artefact_0a43e4954d4fff46abb9ca8e34d875c0"] = "NorseMaskFlatBeard",
+    ["artefact_85c29c2b420306564c28b5b09e22532c"] = "NorseMaskReptile",
+    ["artefact_0da7cb9744da59cb80fe319d95cada55"] = "NorseMaskCurlyBeard",
+    ["artefact_6fa420df406be3d033b7eea35a4d10fe"] = "NorseMaskTiki",
+    ["artefact_468c195b480889e354742b876aef3a11"] = "NorseMaskMustache",
+    ["artefact_28b7fe1349cdc49da573c6a0657f0a9d"] = "NorseMaskStoneFace",
+    ["artefact_cf7627ad486711d9eab3339782e5a147"] = "NorseMaskStraightBeard",
+    ["artefact_fa511e0a422421b7acc01fa5829c4fe3"] = "NorseMaskGhoul",
+    ["artefact_xpl200funeralwad2768cb29f445634bb075f7a858cabcc3"] = "HornUShape",
+    ["artefact_xpl200funeralwad52e9ebf8ef1b3343b5d025a73ad6fa91"] = "HornUShape",
+    ["artefact_xpl200funeralwadb6e2b2a41a1b3e4c9ff1f8e5f877039a"] = "HornUShape",
+    ["artefact_xpl200funeralwadbb9465a7407c9849bf891e0205dac801"] = "HornUShape",
+    ["artefact_xpl250funeralinteriorwad3f176e49e0a0cd4f8cf59ada5fe9c2d8"] = "HornHorse",
+    ["artefact_xpl250funeralinteriorwad4813767722fa414b9a3d4972dc8874e7"] = "HornHorse",
+  }
+
   local function isDirectlyCollected(row)
     if type(game) ~= "table" then return false end
     local cid = row.CatalogueId
@@ -241,6 +289,48 @@ do
           if ok and res == true then return true end
           local ok2, res2 = pcall(game.Wallets.HasResource, "HERO_SAVEONLY", "NiflheimTrophyTracker")
           if ok2 and res2 == true then return true end
+        end
+      end
+    elseif fam == "artefact" then
+      local ar = artefactResources[cid]
+      if ar and type(game.Wallets) == "table" then
+        local threshold = 1
+        if ar == "HornUShape" then threshold = 4
+        elseif ar == "BroochRuby" then threshold = 3
+        elseif ar == "HornHorse" or ar == "ShipHook" or ar == "ShipHook2" then threshold = 2 end
+
+        if type(game.Wallets.GetResourceValue) == "function" then
+          local ok, val = pcall(game.Wallets.GetResourceValue, "HERO", ar)
+          if ok and type(val) == "number" and val >= threshold then return true end
+          local ok2, val2 = pcall(game.Wallets.GetResourceValue, "HERO_SAVEONLY", ar)
+          if ok2 and type(val2) == "number" and val2 >= threshold then return true end
+        end
+        if threshold == 1 and type(game.Wallets.HasResource) == "function" then
+          local ok, res = pcall(game.Wallets.HasResource, "HERO", ar)
+          if ok and res == true then return true end
+          local ok2, res2 = pcall(game.Wallets.HasResource, "HERO_SAVEONLY", ar)
+          if ok2 and res2 == true then return true end
+        end
+      end
+      if type(game.QuestManager) == "table" and type(game.QuestManager.GetQuestState) == "function" then
+        local questMap = {
+          Alfheim = "Quest_Artifacts_Alfheim",
+          Brooch = "Quest_Artifacts_Brooches",
+          Cup = "Quest_Artifacts_OrnateCups",
+          Horn = "Quest_Artifacts_VikingHorns",
+          Mask = "Quest_Artifacts_NorseMasks",
+          Ship = "Quest_Artifacts_ShipHeads",
+          Toy = "Quest_Artifacts_LostToys",
+        }
+        if ar then
+          for prefix, qName in pairs(questMap) do
+            if ar:find("^" .. prefix) or (prefix == "Ship" and ar:find("^Ship")) or (prefix == "Toy" and ar:find("^LostToy")) or (prefix == "Mask" and ar:find("^NorseMask")) then
+              local ok, st = pcall(game.QuestManager.GetQuestState, qName)
+              if ok and st == "Complete" then return true end
+              local ok2, st2 = pcall(game.QuestManager.GetQuestState, qName .. "_Parent")
+              if ok2 and st2 == "Complete" then return true end
+            end
+          end
         end
       end
     end

@@ -68,6 +68,12 @@ local function observeScript(obj, adapter)
         return st == 3 and 'collected' or 'remaining'
       end
     end
+    if type(script.IsAcquired) == 'function' then
+      local ok, acq = pcall(script.IsAcquired)
+      if ok and type(acq) == 'boolean' then
+        return acq and 'collected' or 'remaining'
+      end
+    end
   elseif adapter == 'dig' then
     if type(script.GetState) == 'function' then
       local ok, st = pcall(script.GetState)
@@ -164,7 +170,7 @@ local function read(row)
       owner = oMatches[1]
     end
     if owner == nil then
-      if (row.adapter == 'chest' or row.adapter == 'rift') and #oMatches == 0 then
+      if (row.adapter == 'chest' or row.adapter == 'rift' or row.adapter == 'artefact') and #oMatches == 0 then
         owner = placement
       else
         return nil
@@ -260,6 +266,47 @@ local function read(row)
       end
       if container ~= nil and type(container.FindGOsByName) == 'function' then
         for _, q in ipairs({'gopocketrift_interact_loot', 'pocketrift_interact_loot', '*interact_loot*'}) do
+          local ok, nodes = pcall(container.FindGOsByName, container, q)
+          if ok and type(nodes) == 'table' then
+            for _, node in ipairs(nodes) do
+              local st = observeScript(node, row.adapter)
+              if st ~= nil then return st end
+              if node.Child then
+                st = observeScript(node.Child, row.adapter)
+                if st ~= nil then return st end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+
+  -- 6. Fast direct lookup for artefact scripts under placement or owner
+  if row.adapter == 'artefact' then
+    local containers = {owner, placement}
+    if owner ~= nil and owner.Parent ~= nil then
+      containers[#containers + 1] = owner.Parent
+    end
+    if placement ~= nil and placement.Parent ~= nil then
+      containers[#containers + 1] = placement.Parent
+    end
+    for _, container in ipairs(containers) do
+      if container ~= nil and type(container.FindSingleGOByName) == 'function' then
+        for _, q in ipairs({'goartifactscript', 'artifactscript', '*artifact*'}) do
+          local ok, node = pcall(container.FindSingleGOByName, container, q)
+          if ok and node ~= nil then
+            local st = observeScript(node, row.adapter)
+            if st ~= nil then return st end
+            if node.Child then
+              st = observeScript(node.Child, row.adapter)
+              if st ~= nil then return st end
+            end
+          end
+        end
+      end
+      if container ~= nil and type(container.FindGOsByName) == 'function' then
+        for _, q in ipairs({'goartifactscript', 'artifactscript', '*artifact*'}) do
           local ok, nodes = pcall(container.FindGOsByName, container, q)
           if ok and type(nodes) == 'table' then
             for _, node in ipairs(nodes) do
