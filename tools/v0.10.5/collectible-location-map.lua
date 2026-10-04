@@ -124,6 +124,30 @@ do
     ["lore_marker_nid150calderabridgewad2eabc6ebc9dafd40b34cb41a6ffcd2d4"] = "NIF_150_Lore_01",
   }
 
+  local riftQuests = {
+    ["realm_tear_10374be1dacc7b5afc9b38ff1c50b3f5"] = "RegionSummary_NID_PocketRift_Parent",
+    ["realm_tear_80a81219135f07ea1c0eb1948748fc58"] = "RegionSummary_NID_PocketRift_Parent",
+    ["realm_tear_ad3009f9f80b31ab80419fd380e60c1c"] = "RegionSummary_NID_PocketRift_Parent",
+    ["realm_tear_885f79d8699b58e655739f1b924bf442"] = "RegionSummary_ALF_PocketRift_Parent",
+    ["realm_tear_d9d5fe53b4d7bd0c88376c7647f5537e"] = "RegionSummary_ALF_PocketRift_Parent",
+    ["realm_tear_c3d17070f981647e7189e2076fbcc55c"] = "RegionSummary_HTTK_PocketRift_Parent",
+    ["realm_tear_75c3365cbb3042f761a82660c314147e"] = "RegionSummary_CALT_PocketRift_Parent",
+    ["realm_tear_12672293750dfc6b1381cf5159ad0615"] = "RegionSummary_ISL_PocketRift_Parent",
+    ["realm_tear_cb9a35e72a6bd571c820349c901762a9"] = "RegionSummary_ISL_PocketRift_Parent",
+    ["realm_tear_1c939364d61323b0c9db30a25da5b0f0"] = "RegionSummary_FOO_PocketRift_Parent",
+    ["realm_tear_a3857496e778be84cdb14938feb3885d"] = "RegionSummary_FOO_PocketRift_Parent",
+    ["realm_tear_64256db4dca56cbedc9c2ad1bb454bef"] = "RegionSummary_RP_PocketRift_Parent",
+    ["realm_tear_f4600a74cbfaceabd4ba6d80a59a66bc"] = "RegionSummary_RP_PocketRift_Parent",
+    ["realm_tear_64b7ac07cbf1db2d7956e3298e23970f"] = "RegionSummary_CALS_PocketRift_Parent",
+    ["realm_tear_664c0fd312a6e88d8739f7d5af968fe3"] = "RegionSummary_CALS_PocketRift_Parent",
+    ["realm_tear_6f5037ce091595b1bc2b0ab31cfaf05b"] = "RegionSummary_CALS_PocketRift_Parent",
+    ["realm_tear_71588ab9681c6184279e7384fdafbbdd"] = "RegionSummary_CALS_PocketRift_Parent",
+    ["realm_tear_ae12a2c33fd8e441bf159a5fd7ac3c22"] = "RegionSummary_CALS_PocketRift_Parent",
+    ["realm_tear_af0e22716b928bcf52889387ffc91c4f"] = "RegionSummary_CALS_PocketRift_Parent",
+    ["realm_tear_2b6da4fe76312741d21ade4905d66ff4"] = "RegionSummary_MID_PocketRift_Parent",
+    ["realm_tear_b24fe2ba5298d202f41bda97b2a00845"] = "RegionSummary_MID_PocketRift_Parent",
+  }
+
   local function isDirectlyCollected(row)
     if type(game) ~= "table" then return false end
     local cid = row.CatalogueId
@@ -190,6 +214,33 @@ do
           if ok and type(val) == "number" and val > 0 then return true end
           local ok2, val2 = pcall(game.Wallets.GetResourceValue, "HERO_SAVEONLY", scr)
           if ok2 and type(val2) == "number" and val2 > 0 then return true end
+        end
+      end
+    elseif fam == "realm_tear" then
+      local rq = riftQuests[cid]
+      if rq and type(game.QuestManager) == "table" and type(game.QuestManager.GetQuestState) == "function" then
+        local ok, st = pcall(game.QuestManager.GetQuestState, rq)
+        if ok and st == "Complete" then return true end
+      end
+      if type(game.QuestManager) == "table" and type(game.QuestManager.GetQuestState) == "function" then
+        local ok, lst = pcall(game.QuestManager.GetQuestState, "Quest_Labor_RiftPockets_Silver")
+        if ok and lst == "Complete" then return true end
+      end
+      if (cid == "realm_tear_10374be1dacc7b5afc9b38ff1c50b3f5" or
+          cid == "realm_tear_80a81219135f07ea1c0eb1948748fc58" or
+          cid == "realm_tear_ad3009f9f80b31ab80419fd380e60c1c") and
+         type(game.Wallets) == "table" then
+        if type(game.Wallets.GetResourceValue) == "function" then
+          local ok, val = pcall(game.Wallets.GetResourceValue, "HERO", "NiflheimTrophyTracker")
+          if ok and type(val) == "number" and val > 0 then return true end
+          local ok2, val2 = pcall(game.Wallets.GetResourceValue, "HERO_SAVEONLY", "NiflheimTrophyTracker")
+          if ok2 and type(val2) == "number" and val2 > 0 then return true end
+        end
+        if type(game.Wallets.HasResource) == "function" then
+          local ok, res = pcall(game.Wallets.HasResource, "HERO", "NiflheimTrophyTracker")
+          if ok and res == true then return true end
+          local ok2, res2 = pcall(game.Wallets.HasResource, "HERO_SAVEONLY", "NiflheimTrophyTracker")
+          if ok2 and res2 == true then return true end
         end
       end
     end

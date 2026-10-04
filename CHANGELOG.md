@@ -2,6 +2,13 @@
 
 For the exhaustive numbered prototype list, including superseded and failed test builds, see [`docs/VERSION_HISTORY.md`](docs/VERSION_HISTORY.md).
 
+## v1.0.2 - Realm Tear Completion Authority Fix
+
+- **Dual-Layer Realm Tear Completion Tracking**: Fixed Realm Tear markers not disappearing from the map after being completed and looted.
+  - **Live Loaded Hierarchy & Adapter**: Updated `Loaded` module in `collectible-loaded-reader.lua` to recognize `adapter == 'rift'` (`hasOpened == true` / `GetState() == 4`), resolve rift interactive scripts (`gopocketrift_interact_loot`, `pocketrift_interact_loot`) through container parent hierarchies, and fall back to placement when owner matches are empty.
+  - **Persistent Unloaded Authority**: Added `realm_tear` family handling in `isDirectlyCollected()` (`collectible-location-map.lua`) across all 21 Realm Tears mapping to their respective `RegionSummary_*_PocketRift_Parent` quests, silver rift labor quests, and Niflheim Trophy Tracker resources, ensuring completed tears stay hidden across map reopens, fast travels, and game restarts even when unloaded.
+  - **Strict Read-Only Guarantee**: Maintained fail-closed observation architecture without progression writes or quest state modification.
+
 ## v1.0.1 - Startup Compatibility Fix (2026-10-04)
 
 - Fix DXGI startup when optional Windows 11 export absent or export ordinals differ. Resolve system exports by name; optional exports no longer block graphics factories.
@@ -10,6 +17,22 @@ For the exhaustive numbered prototype list, including superseded and failed test
 - Support pinned Steam 1.0.13 / GoW.exe 1.0.475.7534 only. Keep native hash and instruction guards. No change to Lua, map records, or art payloads from v1.0.0.
 - Verified: 22 automated checks, Windows 10 export simulation, clean installer test, and two Windows 11 game launches with save loads. Save hash unchanged.
 - Still needs player test: real Windows 10 launch and full map/compass controls. Reported PCs not yet retested; this release fixes reproduced startup defects, not proof every crash gone.
+
+## v1.0.0 - Production Release
+
+- **551 marker records across 16 custom collectible families**:
+  - Odin's Ravens (53/54) with live native authority memory tracking (killed ravens never resurrect).
+  - Nornir Chests (22) and Nornir puzzle sub-markers (66 seals, bells, mechanisms).
+  - Legendary Chests (37 locations) with native read-only saved-state decoding.
+  - Cipher Chests (14), Wooden Chests (99), Red / Coffin Chests (109).
+  - Artefacts (45 across 7 sets), Jötnar Shrines (13), Lore Markers (43), Lore Scrolls (5).
+  - Realm Tears (21), Treasure Maps (12), Treasure Dig Sites (12).
+- **Strict No-Duplicate-Native-Marker Policy**: Preserves native handling for Valkyries, Valkyrie Queen, Mystic Gateways, and Shops to avoid duplicate pins.
+- **Dedicated Compass HUD Art Pipeline**: 15 new `CompassIconClass` engine exports registered in `wad_r_perm.dcb` and `r_ui.wad`. Custom 2D HUD icons with live 3D bearing and distance readout in meters.
+- **Map Controls**: On-screen `[Down Arrow]` show/hide toggle (persists across map reopens) and single-reticle `[Enter]` / `[E]` compass tracking with strict mutual exclusion.
+- **Fog of War Support**: Custom markers render cleanly even in uncharted territory.
+- **Read-Only Safety**: Fail-closed architecture without synthetic quest/save progression writes; save-epoch boundary resets prevent desyncs.
+- **Universal 1-Click Installer**: Automated `Install.bat` / `Uninstall.bat` with multi-drive Steam/Epic auto-detection and stock backup support; Vortex/MO2 ready.
 
 ## v0.9.6.1-installer-fix
 

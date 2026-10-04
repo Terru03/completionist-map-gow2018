@@ -170,6 +170,103 @@ class LoadedReaderTest(unittest.TestCase):
         self.lua.execute('loaded:Poll()')
         self.assertEqual(self.lua.execute('return store:Get("d")'), "collected")
 
+    def test_rift_observe_collected_via_has_opened(self):
+        self.lua.execute('''
+          store=State.New({"rift_col"}); store:BeginEpoch(1)
+          runtime=Runtime.New(store,{Reset=function() end})
+          root=node("goroot", nil)
+          placement=node("gomisc_legendary_tier4_nid400_1", root)
+          owner=node("golootpocketgeo", placement)
+          script_node=node("gopocketrift_interact_loot", placement)
+          script_node.LuaObjectScript={hasOpened=true}
+          placement.matches={owner, script_node}
+          level={matches={placement}}
+          function level:FindGameObjects(query) return self.matches end
+          function level:FindSingleGameObject(query) return self.matches[1] end
+          game={FindLevel=function() return level end}
+          rows={{id="rift_col", level="nid400_center",
+                 placement={"gomisc_legendary_tier4_nid400_1", "goroot"},
+                 owner={"golootpocketgeo", "gomisc_legendary_tier4_nid400_1", "goroot"},
+                 adapter="rift"}}
+          loaded=Loaded.New(rows, runtime)
+          runtime.loaded = loaded
+        ''')
+        self.lua.execute('loaded:Poll()')
+        self.assertEqual(self.lua.execute('return store:Get("rift_col")'), "collected")
+
+    def test_rift_observe_remaining_when_unopened(self):
+        self.lua.execute('''
+          store=State.New({"rift_rem"}); store:BeginEpoch(1)
+          runtime=Runtime.New(store,{Reset=function() end})
+          root=node("goroot", nil)
+          placement=node("gomisc_legendary_tier4_nid400_1", root)
+          owner=node("golootpocketgeo", placement)
+          script_node=node("gopocketrift_interact_loot", placement)
+          script_node.LuaObjectScript={hasOpened=false}
+          placement.matches={owner, script_node}
+          level={matches={placement}}
+          function level:FindGameObjects(query) return self.matches end
+          function level:FindSingleGameObject(query) return self.matches[1] end
+          game={FindLevel=function() return level end}
+          rows={{id="rift_rem", level="nid400_center",
+                 placement={"gomisc_legendary_tier4_nid400_1", "goroot"},
+                 owner={"golootpocketgeo", "gomisc_legendary_tier4_nid400_1", "goroot"},
+                 adapter="rift"}}
+          loaded=Loaded.New(rows, runtime)
+          runtime.loaded = loaded
+        ''')
+        self.lua.execute('loaded:Poll()')
+        self.assertEqual(self.lua.execute('return store:Get("rift_rem")'), "remaining")
+
+    def test_rift_observe_probe_function(self):
+        self.lua.execute('''
+          store=State.New({"rift_probe"}); store:BeginEpoch(1)
+          runtime=Runtime.New(store,{Reset=function() end})
+          root=node("goroot", nil)
+          placement=node("golootpocketrift920", root)
+          owner=node("golootpocketgeo", placement)
+          script_node=node("gopocketrift_interact_loot", placement)
+          script_node.LuaObjectScript={
+            CompletionistCollectibleObserve=function() return "rift", "collected" end
+          }
+          placement.matches={owner, script_node}
+          level={matches={placement}}
+          function level:FindGameObjects(query) return self.matches end
+          function level:FindSingleGameObject(query) return self.matches[1] end
+          game={FindLevel=function() return level end}
+          rows={{id="rift_probe", level="xpl920",
+                 placement={"golootpocketrift920", "goroot"},
+                 owner={"golootpocketgeo", "golootpocketrift920", "goroot"},
+                 adapter="rift"}}
+          loaded=Loaded.New(rows, runtime)
+          runtime.loaded = loaded
+        ''')
+        self.lua.execute('loaded:Poll()')
+        self.assertEqual(self.lua.execute('return store:Get("rift_probe")'), "collected")
+
+    def test_rift_script_on_placement_directly(self):
+        self.lua.execute('''
+          store=State.New({"rift_direct"}); store:BeginEpoch(1)
+          runtime=Runtime.New(store,{Reset=function() end})
+          root=node("goroot", nil)
+          placement=node("gomisc_legendary_tier4_nid400_1", root)
+          owner=node("golootpocketgeo", placement)
+          placement.LuaObjectScript={hasOpened=true}
+          placement.matches={owner}
+          level={matches={placement}}
+          function level:FindGameObjects(query) return self.matches end
+          function level:FindSingleGameObject(query) return self.matches[1] end
+          game={FindLevel=function() return level end}
+          rows={{id="rift_direct", level="nid400_center",
+                 placement={"gomisc_legendary_tier4_nid400_1", "goroot"},
+                 owner={"golootpocketgeo", "gomisc_legendary_tier4_nid400_1", "goroot"},
+                 adapter="rift"}}
+          loaded=Loaded.New(rows, runtime)
+          runtime.loaded = loaded
+        ''')
+        self.lua.execute('loaded:Poll()')
+        self.assertEqual(self.lua.execute('return store:Get("rift_direct")'), "collected")
+
 if __name__ == "__main__": unittest.main()
 
 

@@ -91,6 +91,16 @@ local function observeScript(obj, adapter)
         return done and 'collected' or 'remaining'
       end
     end
+  elseif adapter == 'rift' then
+    if type(script.hasOpened) == 'boolean' then
+      return script.hasOpened and 'collected' or 'remaining'
+    end
+    if type(script.GetState) == 'function' then
+      local ok, st = pcall(script.GetState)
+      if ok and type(st) == 'number' then
+        return st == 4 and 'collected' or 'remaining'
+      end
+    end
   end
   return nil
 end
@@ -154,7 +164,7 @@ local function read(row)
       owner = oMatches[1]
     end
     if owner == nil then
-      if row.adapter == 'chest' and #oMatches == 0 then
+      if (row.adapter == 'chest' or row.adapter == 'rift') and #oMatches == 0 then
         owner = placement
       else
         return nil
@@ -171,6 +181,10 @@ local function read(row)
   -- 1. Check owner directly
   local state = observeScript(owner, row.adapter)
   if state ~= nil then return state end
+  if placement ~= nil and placement ~= owner then
+    state = observeScript(placement, row.adapter)
+    if state ~= nil then return state end
+  end
 
   -- 2. If extra is specified, search inside owner
   if row.extra then
@@ -214,6 +228,47 @@ local function read(row)
             if node.Child then
               st = observeScript(node.Child, row.adapter)
               if st ~= nil then return st end
+            end
+          end
+        end
+      end
+    end
+  end
+
+  -- 5. Fast direct lookup for rift scripts under placement or owner
+  if row.adapter == 'rift' then
+    local containers = {owner, placement}
+    if owner ~= nil and owner.Parent ~= nil then
+      containers[#containers + 1] = owner.Parent
+    end
+    if placement ~= nil and placement.Parent ~= nil then
+      containers[#containers + 1] = placement.Parent
+    end
+    for _, container in ipairs(containers) do
+      if container ~= nil and type(container.FindSingleGOByName) == 'function' then
+        for _, q in ipairs({'gopocketrift_interact_loot', 'pocketrift_interact_loot', '*interact_loot*', '*pocketrift*'}) do
+          local ok, node = pcall(container.FindSingleGOByName, container, q)
+          if ok and node ~= nil then
+            local st = observeScript(node, row.adapter)
+            if st ~= nil then return st end
+            if node.Child then
+              st = observeScript(node.Child, row.adapter)
+              if st ~= nil then return st end
+            end
+          end
+        end
+      end
+      if container ~= nil and type(container.FindGOsByName) == 'function' then
+        for _, q in ipairs({'gopocketrift_interact_loot', 'pocketrift_interact_loot', '*interact_loot*'}) do
+          local ok, nodes = pcall(container.FindGOsByName, container, q)
+          if ok and type(nodes) == 'table' then
+            for _, node in ipairs(nodes) do
+              local st = observeScript(node, row.adapter)
+              if st ~= nil then return st end
+              if node.Child then
+                st = observeScript(node.Child, row.adapter)
+                if st ~= nil then return st end
+              end
             end
           end
         end
