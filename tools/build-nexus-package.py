@@ -9,7 +9,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist/nexus"
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 SUPPORTED_EXE_SHA256 = "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452"
 PKG_DIR = DIST / f"CompletionistMap-v{VERSION}"
 SCREENSHOTS_SRC = Path(os.environ.get("GOW_SCREENSHOTS_DIR", Path.home() / "Pictures" / "Screenshots"))
@@ -535,7 +535,7 @@ pause
 """
 
 README_TXT = r"""================================================================================
-           GOD OF WAR (2018) PC - COMPLETIONIST MAP MOD v1.0.1
+           GOD OF WAR (2018) PC - COMPLETIONIST MAP MOD v1.0.2
 ================================================================================
 
 498 non-Raven marker records across 15 custom families, plus Odin's Raven tracking,
@@ -615,8 +615,16 @@ OPTION C: Manual Installation
 - Vortex/manual: remove only mod's art texpack entry from boot-options.json.
 
 --------------------------------------------------------------------------------
-5. STARTUP FIX IN v1.0.1
+5. UPDATES IN v1.0.2
 --------------------------------------------------------------------------------
+- Real-Time 3D In-World Compass Clearing: Collecting any tracked collectible
+  (Artefacts, Realm Tears, Chests, Shrines, Digs, Lore Runes/Scrolls) now
+  instantly clears the active waypoint pin from the Compass HUD in 3D gameplay
+  without requiring a save reload or reopening the map.
+- Full Artefact Direct Authority: Mapped all 45 Artefacts to native wallet resources
+  and set quests, ensuring collected artefacts disappear from the map immediately.
+- Realm Tear Completion Authority: Dual-layer live loaded observation and
+  persistent unloaded authority for all 21 Realm Tears.
 - DXGI functions resolved by name, not Windows-version-dependent ordinals.
 - Missing optional Windows 11 export no longer blocks graphics factories.
 - Unsupported EXE or bad native DLL pair logged; native patches stay disabled.
