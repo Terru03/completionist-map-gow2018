@@ -2,7 +2,7 @@
 
 A PC mod for **God of War (2018)** that adds custom collectible markers to the game's world map and compass, with completion-aware behaviour designed for a full completionist playthrough.
 
-Production build contains **551 marker records across 16 custom collectible families**. The current package is **v1.0.4**, including the player-tested chest-tracking fix and Windows 10 startup fix. [Nexus Mods](https://www.nexusmods.com/godofwar/mods/396?tab=files) remains the release page; scan and manual-review status are recorded in the [v1.0.4 release record](docs/releases/v1.0.4-release.md).
+Production build contains **551 marker records across 16 custom collectible families**. The current package is **[v1.0.4](https://github.com/Terru03/completionist-map-gow2018/releases/tag/v1.0.4)**, including the player-tested chest-tracking fix and Windows 10 startup fix. [Download the release ZIP](https://github.com/Terru03/completionist-map-gow2018/releases/download/v1.0.4/CompletionistMap-v1.0.4.zip). [Nexus Mods](https://www.nexusmods.com/godofwar/mods/396?tab=files) is the mod page; scan and manual-review status are recorded in the [v1.0.4 release record](docs/releases/v1.0.4-release.md).
 
 ## What it does
 
