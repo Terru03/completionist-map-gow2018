@@ -15,9 +15,25 @@ namespace {
 
 using CreateFactoryFn = HRESULT(WINAPI*)(REFIID, void**);
 using CreateFactory2Fn = HRESULT(WINAPI*)(UINT, REFIID, void**);
+bool simulate_windows10 = false;
+bool observe_appcompat = false;
+unsigned int appcompat_calls = 0;
+SIZE_T appcompat_size = 0;
+const char* appcompat_data = nullptr;
+
+void WINAPI ObserveAppCompat(SIZE_T size, const char* data) {
+  ++appcompat_calls;
+  appcompat_size = size;
+  appcompat_data = data;
+}
 
 FARPROC WINAPI Windows10Lookup(HMODULE module, LPCSTR name) {
   const auto ordinal = reinterpret_cast<std::uintptr_t>(name);
+  if (ordinal > 0xffff && observe_appcompat &&
+      std::strcmp(name, "SetAppCompatStringPointer") == 0) {
+    return reinterpret_cast<FARPROC>(&ObserveAppCompat);
+  }
+  if (!simulate_windows10) return GetProcAddress(module, name);
   if (ordinal <= 0xffff) {
     if (ordinal == 18) return GetProcAddress(module, "DXGIGetDebugInterface1");
     if (ordinal == 19) return GetProcAddress(module, "DXGIReportAdapterConfiguration");
@@ -87,9 +103,12 @@ bool CallFactory2(FARPROC address) {
 }  // namespace
 
 int wmain(int argc, wchar_t** argv) {
-  if (argc != 2 && argc != 3) return Fail("expected proxy DLL path and optional --simulate-windows10");
+  if (argc != 2 && argc != 3) return Fail("expected proxy DLL path and optional test mode");
   const bool windows10 = argc == 3 && std::wstring(argv[2]) == L"--simulate-windows10";
-  if (argc == 3 && !windows10) return Fail("unknown test option");
+  const bool replay = argc == 3 && std::wstring(argv[2]) == L"--appcompat-replay";
+  if (argc == 3 && !windows10 && !replay) return Fail("unknown test option");
+  simulate_windows10 = windows10;
+  observe_appcompat = replay;
 
   std::array<wchar_t, MAX_PATH> temp_root{};
   if (GetTempPathW(static_cast<DWORD>(temp_root.size()), temp_root.data()) == 0) {
@@ -110,7 +129,17 @@ int wmain(int argc, wchar_t** argv) {
   HMODULE proxy = LoadLibraryExW(proxy_path.c_str(), nullptr,
                                  LOAD_WITH_ALTERED_SEARCH_PATH);
   if (proxy == nullptr) return Fail("proxy DLL did not load from test directory");
-  if (windows10 && !UseWindows10Lookup(proxy)) return Fail("Windows 10 lookup setup failed");
+  if ((windows10 || replay) && !UseWindows10Lookup(proxy)) return Fail("simulated lookup setup failed");
+  using SetAppCompat = void(WINAPI*)(SIZE_T, const char*);
+  const auto set_appcompat = reinterpret_cast<SetAppCompat>(GetProcAddress(proxy, "SetAppCompatStringPointer"));
+  const char first_compat[] = "first";
+  const char last_compat[] = "last";
+  if (replay) {
+    if (set_appcompat == nullptr) return Fail("AppCompat export missing");
+    set_appcompat(sizeof(first_compat), first_compat);
+    set_appcompat(sizeof(last_compat), last_compat);
+    if (appcompat_calls != 0) return Fail("AppCompat call initialized DXGI before graphics");
+  }
 
   for (const auto& spec : completionist::kDxgiExports) {
     const std::string name(spec.name);
@@ -159,6 +188,13 @@ int wmain(int argc, wchar_t** argv) {
       return Fail("missing optional export did not fail locally");
     if (!CallFactory(addresses[1], __uuidof(IDXGIFactory1)))
       return Fail("optional export failure poisoned factory forwarding");
+  }
+  if (replay) {
+    if (appcompat_calls != 1 || appcompat_size != sizeof(last_compat) || appcompat_data != last_compat)
+      return Fail("deferred AppCompat arguments were not replayed exactly once");
+    set_appcompat(sizeof(first_compat), first_compat);
+    if (appcompat_calls != 2 || appcompat_size != sizeof(first_compat) || appcompat_data != first_compat)
+      return Fail("AppCompat update was not forwarded after initialization");
   }
 
   std::array<wchar_t, MAX_PATH> system_directory{};

@@ -4,12 +4,14 @@
 #include <string>
 #include "capacity.h"
 #include "dxgi_contract.generated.h"
+#include "dxgi_appcompat.h"
 #include "dxgi_forwarding.h"
 #include "hash.h"
 #include "platform.h"
 
 namespace {
 INIT_ONCE once = INIT_ONCE_STATIC_INIT;
+constinit completionist::DxgiAppCompat appcompat;
 std::array<FARPROC, completionist::kDxgiExports.size()> exports{};
 FARPROC snapshot = nullptr;
 DWORD failure = ERROR_DLL_INIT_FAILED;
@@ -200,6 +202,9 @@ BOOL CALLBACK Initialize(PINIT_ONCE, PVOID, PVOID*) {
     return TRUE;
   }
   if (!completionist::ResolveDxgiExportsByName(system, &exports, &failure)) return TRUE;
+  if (appcompat.Bind(GetProcAddress(system, "SetAppCompatStringPointer"))) {
+    completionist::AppendBridgeLog("COLLECTIBLE_DXGI_APPCOMPAT_REPLAYED phase=graphics_initialization");
+  }
   // Native checks must not break graphics. Keep System32 fallback ready.
   std::wstring exe, root;
   DWORD error = 0;
@@ -263,6 +268,13 @@ extern "C" HRESULT WINAPI ForwardingFailure() {
 }
 
 extern "C" FARPROC CompletionistResolveDxgiExport(unsigned int ordinal) {
+  // The Windows compatibility layer can enter here before this DLL's CRT.
+  // Do not enter InitOnce, allocate, log, hash files, or load another DLL.
+  if (ordinal == completionist::kDxgiAppCompatOrdinal) {
+    return reinterpret_cast<FARPROC>(+[](SIZE_T size, const char* data) {
+      appcompat.Set(size, data);
+    });
+  }
   InitOnceExecuteOnce(&once, Initialize, nullptr, nullptr);
   if (failure == ERROR_SUCCESS) {
     for (std::size_t i=0; i<exports.size(); ++i)

@@ -48,3 +48,5 @@ add_dependencies(capacity_forwarding_tests collectible_capacity)
 add_test(NAME capacity_forwarding_tests COMMAND capacity_forwarding_tests $<TARGET_FILE:collectible_capacity>)
 add_test(NAME capacity_windows10_forwarding_tests
   COMMAND capacity_forwarding_tests $<TARGET_FILE:collectible_capacity> --simulate-windows10)
+include("${BRIDGE}/tests/startup_tests.cmake")
+add_dxgi_startup_tests(collectible_capacity capacity_forwarding_tests)

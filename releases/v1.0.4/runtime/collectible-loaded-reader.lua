@@ -68,12 +68,6 @@ local function observeScript(obj, adapter)
         return st == 3 and 'collected' or 'remaining'
       end
     end
-    if type(script.IsAcquired) == 'function' then
-      local ok, acq = pcall(script.IsAcquired)
-      if ok and type(acq) == 'boolean' then
-        return acq and 'collected' or 'remaining'
-      end
-    end
   elseif adapter == 'dig' then
     if type(script.GetState) == 'function' then
       local ok, st = pcall(script.GetState)

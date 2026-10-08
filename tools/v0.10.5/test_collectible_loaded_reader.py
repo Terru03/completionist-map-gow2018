@@ -170,6 +170,58 @@ class LoadedReaderTest(unittest.TestCase):
         self.lua.execute('loaded:Poll()')
         self.assertEqual(self.lua.execute('return store:Get("d")'), "collected")
 
+    def test_collapsed_placement_ancestry_with_exact_chest_owner(self):
+        self.lua.execute('''
+          store=State.New({"collapsed_chest"}); store:BeginEpoch(1)
+          runtime=Runtime.New(store,{Reset=function() end})
+          chestState=1
+          placement=node("gochest_common_tier3_xpl980_1", nil)
+          common_parent=node("gochest_common_parent", placement)
+          script_node=node("gochestscript", common_parent)
+          script_node.LuaObjectScript={
+            IsOpen=function() return chestState == 4 end,
+            GetState=function() return chestState end}
+          placement.matches={common_parent}
+          common_parent.matches={script_node}
+          level={matches={placement}}
+          function level:FindGameObjects(query) return self.matches end
+          function level:FindSingleGameObject(query) return self.matches[1] end
+          game={FindLevel=function() return level end}
+          rows={{id="collapsed_chest",level="level",
+                 placement={"gochest_common_tier3_xpl980_1", "go____loot", "goxpl980_ents_nooffset", "goxpl980_ents"},
+                 owner={"gochest_common_parent", "gochest_common_tier3_xpl980_1", "go____loot", "goxpl980_ents_nooffset", "goxpl980_ents"},
+                 extra="gochestscript",adapter="chest"}}
+          loaded=Loaded.New(rows,runtime)
+          store:Observe("collapsed_chest", "remaining", 1)
+          chestState=4
+          loaded:Poll()
+        ''')
+        self.assertEqual(self.lua.execute('return store:Get("collapsed_chest")'), "collected")
+        self.lua.execute('runtime:BeginEpoch(2); chestState=1; loaded:Poll()')
+        self.assertEqual(self.lua.execute('return store:Get("collapsed_chest")'), "remaining")
+
+    def test_collapsed_placement_cannot_accept_owner_with_wrong_inner_path(self):
+        self.lua.execute('''
+          store=State.New({"wrong_inner_path"}); store:BeginEpoch(1)
+          runtime=Runtime.New(store,{Reset=function() end})
+          placement=node("gochest_common_tier3_xpl980_1", nil)
+          wrong_parent=node("goother_parent", placement)
+          owner=node("gochestscript", wrong_parent)
+          owner.LuaObjectScript={IsOpen=function() return true end}
+          placement.matches={owner}
+          level={matches={placement}}
+          function level:FindGameObjects(query) return self.matches end
+          function level:FindSingleGameObject(query) return self.matches[1] end
+          game={FindLevel=function() return level end}
+          rows={{id="wrong_inner_path",level="level",
+                 placement={"gochest_common_tier3_xpl980_1", "goxpl980_ents"},
+                 owner={"gochestscript", "gochest_common_parent", "gochest_common_tier3_xpl980_1", "goxpl980_ents"},
+                 adapter="chest"}}
+          loaded=Loaded.New(rows,runtime)
+          loaded:Poll()
+        ''')
+        self.assertEqual(self.lua.execute('return store:Get("wrong_inner_path")'), "unknown")
+
     def test_rift_observe_collected_via_has_opened(self):
         self.lua.execute('''
           store=State.New({"rift_col"}); store:BeginEpoch(1)

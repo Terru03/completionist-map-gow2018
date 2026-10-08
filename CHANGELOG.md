@@ -2,6 +2,18 @@
 
 For the exhaustive numbered prototype list, including superseded and failed test builds, see [`docs/VERSION_HISTORY.md`](docs/VERSION_HISTORY.md).
 
+## v1.0.4 - Chest Tracking and Windows 10 Startup Fix (updated 2026-10-08)
+
+- Promote the Discord chest-tracking test to the production package while retaining version **1.0.4**. All 20 installed payloads and all four installer files are byte-for-byte identical to the tested ZIP.
+- Fix opened wooden and red/coffin chests staying marked **Not collected** when the loaded scene collapses catalogue ancestors outside the accepted chest placement. Validate the complete inner owner path against that exact placement so the opened state reaches map and compass tracking.
+- Preserve duplicate-placement, duplicate-owner, wrong-inner-path and save-epoch checks; loading an older save with an unopened chest can restore its uncollected state.
+- On 2026-10-08 the author reported successful feedback from the Discord tester. The tester confirmed that opened red/common chests disappear and killed Ravens are tracked correctly. This is one player's field result, alongside the offline regressions below.
+- Retain the 2026-10-06 Windows 10 startup fix and the earlier Realm Tear, Artefact and live compass-clearing fixes:
+
+- Handle `SetAppCompatStringPointer` before either proxy's static CRT initialization without allocating, loading DLLs, or starting native workers. Replay the original compatibility arguments when graphics initialization begins.
+- Fix the reproduced `ntdll` access violation from this early call. The supplied Windows 10 LTSC report has matching v1.0.1 DLL hashes and compatibility shims, but no crash stack; the reporting player confirmed successful startup on 2026-10-06.
+- Add regressions for calls before CRT initialization and deferred compatibility argument replay in both native layers. Keep the supported EXE, companion hash, native instruction guards, and existing marker capacities.
+
 ## v1.0.3 - Real-Time In-World Compass Clearing & Full Artefact Authority Fix
 
 - **Real-Time 3D In-World Compass Clearing**: Fixed player-tracked waypoint pins remaining active on the Compass HUD after collection/completion during live gameplay across all collectible families without requiring a save reload or reopening the map menu.

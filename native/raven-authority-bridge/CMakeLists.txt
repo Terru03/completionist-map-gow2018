@@ -226,6 +226,8 @@ if(BUILD_TESTING)
   add_test(NAME raven_bridge_windows10_forwarding_tests
     COMMAND raven_bridge_forwarding_tests $<TARGET_FILE:raven_authority_bridge> --simulate-windows10
   )
+  include(tests/startup_tests.cmake)
+  add_dxgi_startup_tests(raven_authority_bridge raven_bridge_forwarding_tests)
 
   add_executable(raven_bridge_export_contract_tests
     tests/export_contract_tests.cpp

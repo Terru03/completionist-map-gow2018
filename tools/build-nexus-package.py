@@ -9,7 +9,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist/nexus"
-VERSION = "1.0.2"
+VERSION = "1.0.4"
 SUPPORTED_EXE_SHA256 = "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452"
 PKG_DIR = DIST / f"CompletionistMap-v{VERSION}"
 SCREENSHOTS_SRC = Path(os.environ.get("GOW_SCREENSHOTS_DIR", Path.home() / "Pictures" / "Screenshots"))
@@ -535,16 +535,17 @@ pause
 """
 
 README_TXT = r"""================================================================================
-           GOD OF WAR (2018) PC - COMPLETIONIST MAP MOD v1.0.2
+           GOD OF WAR (2018) PC - COMPLETIONIST MAP MOD v1.0.4
 ================================================================================
 
-498 non-Raven marker records across 15 custom families, plus Odin's Raven tracking,
+551 marker records across 16 custom collectible families, including Odin's Ravens,
 integrated with your in-game Map & Compass.
 
 --------------------------------------------------------------------------------
 1. FEATURES
 --------------------------------------------------------------------------------
-- 15 custom non-Raven marker families (498 marker records total):
+- 16 custom collectible families (551 marker records total):
+    * Odin's Ravens
     * Nornir Chests
     * Nornir Seals
     * Nornir Bells
@@ -560,7 +561,7 @@ integrated with your in-game Map & Compass.
     * Realm Tears
     * Treasure Maps
     * Treasure Dig Sites
-- Odin's Ravens use the separate native-authority Raven marker system.
+- Odin's Ravens use native completion authority within the same mod.
 - No duplicate native markers: Valkyries, the Valkyrie Queen, Mystic Gateways
   and Shops remain handled by the base game's own map/compass systems.
 - Custom Map Marker Artwork: Unique, lore-friendly icon for every collectible type.
@@ -568,7 +569,7 @@ integrated with your in-game Map & Compass.
 - On-Screen Toggle: Press [Down Arrow] anytime on the map to Show/Hide markers.
   Your choice persists across map opens.
 - Single Reticle Lock: Press [Enter] / [E] to pin any marker to the compass HUD.
-- Zero Desync: Native C++ authority bridge prevents marker revival on load.
+- Read-only completion checks use live objects and native saved-state authority.
 
 --------------------------------------------------------------------------------
 2. REQUIREMENTS
@@ -615,8 +616,20 @@ OPTION C: Manual Installation
 - Vortex/manual: remove only mod's art texpack entry from boot-options.json.
 
 --------------------------------------------------------------------------------
-5. UPDATES IN v1.0.2
+5. UPDATES IN v1.0.4
 --------------------------------------------------------------------------------
+- Fixes opened wooden and red/coffin chest pins staying Not collected when
+  the live scene omits outer catalogue ancestors. Checks the full inner owner
+  path against the exact accepted placement before reading the opened state.
+- The Discord tester confirmed red/common chest pins disappear after opening
+  and killed Ravens are tracked correctly. The author relayed success on Oct 8.
+- Promotes the tested chest fix as v1.0.4 with the same runtime and installer
+  files. See CHANGELOG.txt for the explicit release changes and test scope.
+- Fixes an early Windows compatibility-layer call that could crash in ntdll
+  before the game window, loader log, or native bridge log appeared.
+- Keeps compatibility arguments until normal graphics initialization, then
+  forwards them to Windows DXGI. Includes the v1.0.1/v1.0.2 gameplay fixes below.
+- The reporting player confirmed that the game now starts successfully.
 - Real-Time 3D In-World Compass Clearing: Collecting any tracked collectible
   (Artefacts, Realm Tears, Chests, Shrines, Digs, Lore Runes/Scrolls) now
   instantly clears the active waypoint pin from the Compass HUD in 3D gameplay
@@ -694,6 +707,9 @@ def build(source=GAME_DIR, capacity_dll=None, bridge_dll=None):
     (PKG_DIR / "Install.bat").write_text(INSTALL_BAT.strip() + "\r\n", encoding="utf-8")
     (PKG_DIR / "Uninstall.bat").write_text(UNINSTALL_BAT.strip() + "\r\n", encoding="utf-8")
     (PKG_DIR / "README.txt").write_text(README_TXT.strip() + "\r\n", encoding="utf-8")
+    release_notes = ROOT / "docs/releases" / f"v{VERSION}-release-notes.txt"
+    if release_notes.is_file():
+        shutil.copy2(release_notes, PKG_DIR / "CHANGELOG.txt")
 
     # Manifest
     manifest_data = {

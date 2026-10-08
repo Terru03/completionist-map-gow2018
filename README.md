@@ -2,7 +2,7 @@
 
 A PC mod for **God of War (2018)** that adds custom collectible markers to the game's world map and compass, with completion-aware behaviour designed for a full completionist playthrough.
 
-Production build contains **551 marker records across 16 custom collectible families**. v1.0.1 uploaded to [Nexus Mods](https://www.nexusmods.com/godofwar/mods/396?tab=files); download held for Nexus safety review.
+Production build contains **551 marker records across 16 custom collectible families**. The current package is **v1.0.4**, including the player-tested chest-tracking fix and Windows 10 startup fix. [Nexus Mods](https://www.nexusmods.com/godofwar/mods/396?tab=files) remains the release page; scan and manual-review status are recorded in the [v1.0.4 release record](docs/releases/v1.0.4-release.md).
 
 ## What it does
 
@@ -49,9 +49,9 @@ The mod does **not** manufacture quest progress or mark collectibles complete fo
 
 ## Release status
 
-v1.0.1 fixes reproduced DXGI startup faults and adds installer preflight checks. 22 automated checks pass; two Windows 11 launches and save loads passed with save hash unchanged.
+v1.0.4 fixes opened chest markers when the live scene collapses outer catalogue ancestors, and fixes the early Windows compatibility call involved in a reproduced startup crash. It includes the earlier Realm Tear, Artefact and live compass-clearing fixes.
 
-Real Windows 10 launch, full manual map/compass control test, and affected-player retests remain open. See [startup report](docs/builds/startup-compatibility.md) and [native build steps](docs/builds/v1.0.1-native-build.md).
+The startup reporter confirmed successful launch on 2026-10-06. On 2026-10-08 the author relayed successful Discord feedback for the chest-test package; the tester confirmed opened red/common chest pins disappear and killed Ravens are tracked correctly. This release preserves all tested runtime and installer bytes. See the [release record](docs/releases/v1.0.4-release.md), [chest regression](docs/builds/2026-10-06-chest-state-feedback.md), and [native startup analysis](docs/builds/2026-10-06-windows10-startup.md) for evidence and remaining test limits.
 
 Older issues, research notes and archived probes remain in the repository as development history. They should not be interpreted as current release blockers.
 
@@ -79,7 +79,7 @@ No Epic or modified-EXE support claim. Installer discovers several game paths bu
 
 - God of War (2018) for PC
 - GoW Script Loader & Gameplay Tweaks 0.22 (`version.dll`), installed first
-- Windows 10 or Windows 11 x64. Windows 10 DXGI export layout tested by simulation only; real Windows 10 game launch not yet tested.
+- Windows 10 or Windows 11 x64. The affected Windows 10 startup reporter confirmed launch with the v1.0.4 native fix.
 
 ## Using the mod
 
@@ -123,7 +123,7 @@ The mod was developed around a few strict rules:
 
 ## Nexus Mods
 
-[Completionist Map on Nexus Mods](https://www.nexusmods.com/godofwar/mods/396). v1.0.1 uploaded with changelog; Nexus quarantined ZIP pending safety review. Download not yet live.
+[Completionist Map on Nexus Mods](https://www.nexusmods.com/godofwar/mods/396). See the [v1.0.4 release record](docs/releases/v1.0.4-release.md) for the current file, scan result and manual-review request. A successful player test does not establish Nexus malware verification or download availability.
 
 ## License
 

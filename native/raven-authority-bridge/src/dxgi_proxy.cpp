@@ -9,12 +9,14 @@
 
 #include "authority_runtime.h"
 #include "dxgi_contract.generated.h"
+#include "dxgi_appcompat.h"
 #include "dxgi_forwarding.h"
 #include "platform.h"
 
 namespace {
 
 INIT_ONCE g_dxgi_once = INIT_ONCE_STATIC_INIT;
+constinit completionist::DxgiAppCompat g_appcompat;
 HMODULE g_real_dxgi = nullptr;
 std::array<FARPROC, completionist::kDxgiExports.size()> g_exports{};
 DWORD g_dxgi_error = ERROR_SUCCESS;
@@ -46,6 +48,10 @@ BOOL CALLBACK ResolveRealDxgi(PINIT_ONCE, PVOID, PVOID*) {
     return TRUE;
   }
   completionist::ResolveDxgiExportsByName(g_real_dxgi, &g_exports, &g_dxgi_error);
+  if (g_dxgi_error == ERROR_SUCCESS &&
+      g_appcompat.Bind(GetProcAddress(g_real_dxgi, "SetAppCompatStringPointer"))) {
+    completionist::AppendBridgeLog("RAVEN_DXGI_APPCOMPAT_REPLAYED phase=graphics_initialization");
+  }
   return TRUE;
 }
 
@@ -70,6 +76,11 @@ void StartWorkerOnce() {
 }  // namespace
 
 extern "C" FARPROC CompletionistResolveDxgiExport(unsigned int ordinal) {
+  if (ordinal == completionist::kDxgiAppCompatOrdinal) {
+    return reinterpret_cast<FARPROC>(+[](SIZE_T size, const char* data) {
+      g_appcompat.Set(size, data);
+    });
+  }
   InitOnceExecuteOnce(&g_dxgi_once, ResolveRealDxgi, nullptr, nullptr);
   if (g_dxgi_error != ERROR_SUCCESS) {
     return FailureAddress();
