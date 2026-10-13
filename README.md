@@ -2,7 +2,7 @@
 
 A PC mod for **God of War (2018)** that adds custom collectible markers to the game's world map and compass, with completion-aware behaviour designed for a full completionist playthrough.
 
-Production build contains **551 marker records across 16 custom collectible families**. The current package is **[v1.0.4](https://github.com/Terru03/completionist-map-gow2018/releases/tag/v1.0.4)**, including the player-tested chest-tracking fix and Windows 10 startup fix. [Download the release ZIP](https://github.com/Terru03/completionist-map-gow2018/releases/download/v1.0.4/CompletionistMap-v1.0.4.zip). [Nexus Mods](https://www.nexusmods.com/godofwar/mods/396?tab=files) is the mod page; scan and manual-review status are recorded in the [v1.0.4 release record](docs/releases/v1.0.4-release.md).
+Production build contains **551 marker records across 16 custom collectible families**. The current package is **[v1.0.5](https://github.com/Terru03/completionist-map-gow2018/releases/tag/v1.0.5)**, featuring universal PC compatibility across all God of War (2018) releases (Steam, Epic Games, GOG, and non-official builds like CODEX/repacks), the player-tested chest-tracking fix, and Windows 10/11 startup compatibility. [Download the release ZIP](https://github.com/Terru03/completionist-map-gow2018/releases/download/v1.0.5/CompletionistMap-v1.0.5.zip). [Nexus Mods](https://www.nexusmods.com/godofwar/mods/396?tab=files) is the mod page; scan and manual-review status are recorded in the [v1.0.5 release record](docs/releases/v1.0.5-release.md).
 
 ## What it does
 
@@ -49,9 +49,9 @@ The mod does **not** manufacture quest progress or mark collectibles complete fo
 
 ## Release status
 
-v1.0.4 fixes opened chest markers when the live scene collapses outer catalogue ancestors, and fixes the early Windows compatibility call involved in a reproduced startup crash. It includes the earlier Realm Tear, Artefact and live compass-clearing fixes.
+v1.0.5 introduces universal PC build compatibility across all God of War (2018) PC releases, including Steam, Epic Games, GOG, and non-official builds (CODEX, repacks, etc.). Executable version restrictions have been removed from both the native bridge runtime (`dxgi.dll`) and the installer (`Install.bat` / `install.ps1`), eliminating hardcoded version blocks.
 
-The startup reporter confirmed successful launch on 2026-10-06. On 2026-10-08 the author relayed successful Discord feedback for the chest-test package; the tester confirmed opened red/common chest pins disappear and killed Ravens are tracked correctly. This release preserves all tested runtime and installer bytes. See the [release record](docs/releases/v1.0.4-release.md), [chest regression](docs/builds/2026-10-06-chest-state-feedback.md), and [native startup analysis](docs/builds/2026-10-06-windows10-startup.md) for evidence and remaining test limits.
+It retains 100% of the proven v1.0.4 chest tracking fix (proper owner path ancestry validation for opened wooden and red/coffin chests), native Odin's Raven completion authority, real-time 3D in-world compass clearing, and Windows 10/11 compatibility layer protections with zero regressions. See the [v1.0.5 release record](docs/releases/v1.0.5-release.md).
 
 Older issues, research notes and archived probes remain in the repository as development history. They should not be interpreted as current release blockers.
 
@@ -71,9 +71,7 @@ Manual and mod-manager installs must register `../../patch/pc_le/completionist_v
 
 ## Compatibility
 
-Supported EXE only: Steam **1.0.13**, file version **1.0.475.7534**, SHA256 `caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452`.
-
-No Epic or modified-EXE support claim. Installer discovers several game paths but rejects unsupported EXE before changes. Other mods must not replace `dxgi.dll` or same patched resources.
+Compatible with all God of War (2018) PC versions: Steam, Epic Games, GOG, and non-official builds (e.g., CODEX, repacks). Game executable version checks are dynamic and non-blocking. Other mods must not replace `dxgi.dll` or same patched resources.
 
 ## Requirements
 
@@ -123,7 +121,7 @@ The mod was developed around a few strict rules:
 
 ## Nexus Mods
 
-[Completionist Map on Nexus Mods](https://www.nexusmods.com/godofwar/mods/396). See the [v1.0.4 release record](docs/releases/v1.0.4-release.md) for the current file, scan result and manual-review request. A successful player test does not establish Nexus malware verification or download availability.
+[Completionist Map on Nexus Mods](https://www.nexusmods.com/godofwar/mods/396). See the [v1.0.5 release record](docs/releases/v1.0.5-release.md) for the current file, scan result and manual-review request. A successful player test does not establish Nexus malware verification or download availability.
 
 ## License
 

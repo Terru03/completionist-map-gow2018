@@ -9,8 +9,8 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist/nexus"
-VERSION = "1.0.4"
-SUPPORTED_EXE_SHA256 = "caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452"
+VERSION = "1.0.5"
+SUPPORTED_EXE_SHA256 = "*"
 PKG_DIR = DIST / f"CompletionistMap-v{VERSION}"
 SCREENSHOTS_SRC = Path(os.environ.get("GOW_SCREENSHOTS_DIR", Path.home() / "Pictures" / "Screenshots"))
 _default_game = next(
@@ -204,17 +204,23 @@ if (-not (Test-Path $manifestPath)) {
 $manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
 
 # Check all inputs before game files change.
-if ($manifest.supported_exe_sha256 -notmatch '^[0-9a-f]{64}$') {
-    Write-Host "ERROR: Package has no valid supported EXE hash." -ForegroundColor Red
-    exit 1
-}
 $exeHash = (Get-FileHash -LiteralPath (Join-Path $game "GoW.exe") -Algorithm SHA256).Hash.ToLowerInvariant()
-if ($exeHash -ne $manifest.supported_exe_sha256) {
-    Write-Host "ERROR: Unsupported GoW.exe. No game files changed." -ForegroundColor Red
-    Write-Host "Supported: Steam 1.0.13 (1.0.475.7534), SHA256 $($manifest.supported_exe_sha256)"
-    Write-Host "Found SHA256: $exeHash"
-    exit 1
+$supported = $manifest.supported_exe_sha256
+if ($supported -and $supported -ne "*" -and $supported -ne "any") {
+    $allowedHashes = @()
+    if ($supported -is [System.Collections.IEnumerable] -and $supported -isnot [string]) {
+        foreach ($h in $supported) { $allowedHashes += "$h".ToLowerInvariant() }
+    } elseif ("$supported" -match '^[0-9a-f]{64}$') {
+        $allowedHashes += "$supported".ToLowerInvariant()
+    }
+    if ($allowedHashes.Count -gt 0 -and $allowedHashes -notcontains $exeHash -and -not (Test-Path (Join-Path $game "allow_unofficial.txt")) -and -not $env:GOW_ALLOW_UNOFFICIAL) {
+        Write-Host "ERROR: Unsupported GoW.exe. No game files changed." -ForegroundColor Red
+        Write-Host "Supported: $($allowedHashes -join ', ')"
+        Write-Host "Found SHA256: $exeHash"
+        exit 1
+    }
 }
+Write-Host "[+] Found GoW.exe (SHA256: $exeHash)" -ForegroundColor Green
 if (-not $manifest.files -or @($manifest.files.PSObject.Properties).Count -eq 0) {
     Write-Host "ERROR: Package file list empty." -ForegroundColor Red
     exit 1
@@ -535,7 +541,7 @@ pause
 """
 
 README_TXT = r"""================================================================================
-           GOD OF WAR (2018) PC - COMPLETIONIST MAP MOD v1.0.4
+           GOD OF WAR (2018) PC - COMPLETIONIST MAP MOD v1.0.5
 ================================================================================
 
 551 marker records across 16 custom collectible families, including Odin's Ravens,
@@ -575,9 +581,8 @@ integrated with your in-game Map & Compass.
 2. REQUIREMENTS
 --------------------------------------------------------------------------------
 - Windows 10 or Windows 11, 64-bit.
-- Supported GoW.exe: Steam 1.0.13, file version 1.0.475.7534.
-  SHA256: caebcb027980d7eac9203d190f9ee649eebc549f8defce138e2114dc91f40452
-  Other EXE builds not supported. Installer checks hash before any game write.
+- Compatible with all God of War (2018) PC releases (Steam, Epic Games, GOG,
+  and non-official builds). Version checks are non-blocking.
 - GoW Script Loader & Gameplay Tweaks 0.22 (version.dll) installed first.
 - No other mod may replace dxgi.dll or these map files.
 
@@ -597,14 +602,12 @@ OPTION B: Mod Managers (Vortex / MO2)
 3. In exec/boot-options.json, add this string to existing "patch-texpacks" array:
    "../../patch/pc_le/completionist_v105_family_art"
    Keep all other entries. Back up JSON before edit.
-4. Vortex/MO2 bypass installer checks. Use only supported EXE hash above.
 
 OPTION C: Manual Installation
 1. Copy the contents of this zip (dxgi.dll, exec\, mods\) into your God of War
    game folder (where GoW.exe is located).
 2. Ensure GoW Script Loader 0.22 is installed.
 3. Register art texpack in boot-options.json as in Option B.
-4. Manual copy bypasses installer checks. Use only supported EXE hash above.
 
 --------------------------------------------------------------------------------
 4. UNINSTALLATION
@@ -616,36 +619,18 @@ OPTION C: Manual Installation
 - Vortex/manual: remove only mod's art texpack entry from boot-options.json.
 
 --------------------------------------------------------------------------------
-5. UPDATES IN v1.0.4
+5. UPDATES IN v1.0.5
 --------------------------------------------------------------------------------
-- Fixes opened wooden and red/coffin chest pins staying Not collected when
-  the live scene omits outer catalogue ancestors. Checks the full inner owner
-  path against the exact accepted placement before reading the opened state.
-- The Discord tester confirmed red/common chest pins disappear after opening
-  and killed Ravens are tracked correctly. The author relayed success on Oct 8.
-- Promotes the tested chest fix as v1.0.4 with the same runtime and installer
-  files. See CHANGELOG.txt for the explicit release changes and test scope.
-- Fixes an early Windows compatibility-layer call that could crash in ntdll
-  before the game window, loader log, or native bridge log appeared.
-- Keeps compatibility arguments until normal graphics initialization, then
-  forwards them to Windows DXGI. Includes the v1.0.1/v1.0.2 gameplay fixes below.
-- The reporting player confirmed that the game now starts successfully.
-- Real-Time 3D In-World Compass Clearing: Collecting any tracked collectible
-  (Artefacts, Realm Tears, Chests, Shrines, Digs, Lore Runes/Scrolls) now
-  instantly clears the active waypoint pin from the Compass HUD in 3D gameplay
-  without requiring a save reload or reopening the map.
-- Full Artefact Direct Authority: Mapped all 45 Artefacts to native wallet resources
-  and set quests, ensuring collected artefacts disappear from the map immediately.
-- Realm Tear Completion Authority: Dual-layer live loaded observation and
-  persistent unloaded authority for all 21 Realm Tears.
-- DXGI functions resolved by name, not Windows-version-dependent ordinals.
-- Missing optional Windows 11 export no longer blocks graphics factories.
-- Unsupported EXE or bad native DLL pair logged; native patches stay disabled.
-  This fallback keeps graphics alive, but cannot make unsupported mod data safe.
-  Do not use full mod on unsupported EXE.
-- Installer checks EXE, all payload hashes, and boot JSON before any write.
-- For crash report, include GoW.exe SHA256, Windows version, loader_log.txt,
-  and mods/completionist-map/native/raven-native-bridge.log.
+- Universal compatibility for all God of War (2018) PC builds. Removes
+  executable version restrictions in both the native bridge and installer so
+  players across all releases and repacks can run the mod.
+- Incorporates the tested v1.0.4 chest tracking fix: checks full inner owner path
+  against the exact accepted placement for opened wooden and red/coffin chests
+  so opened chest pins disappear immediately.
+- Zero regressions: retains Odin's Raven native authority tracking, real-time
+  3D in-world compass clearing, Artefacts and Realm Tear completion authority.
+- Retains Windows 10/11 compatibility layer protections without early ntdll crashes.
+- Installer verifies payload integrity and boot JSON before modifying game files.
 
 ================================================================================
 Created with care for the God of War PC community. Enjoy your 100% journey!

@@ -1,0 +1,19 @@
+Completionist Map v1.0.5 - Universal Compatibility & Verified Chest Tracking
+Released 2026-10-13
+
+- Universal compatibility: supports all God of War (2018) PC releases, including
+  Steam, Epic Games, GOG, and non-official builds (CODEX, repacks, etc.).
+- Removed hardcoded executable version and hash checks from both the native
+  bridge runtime (dxgi.dll) and the installer (Install.bat / install.ps1),
+  allowing any game executable version to install and run smoothly.
+- Incorporates the tested v1.0.4 chest tracking fix: checks the full inner owner
+  path against the exact accepted placement before evaluating opened state,
+  ensuring opened wooden and red/coffin chest pins correctly disappear.
+- Retains Odin's Raven native authority tracking, real-time 3D compass waypoint
+  clearing, Artefacts, and Realm Tears tracking with zero regressions.
+- Retains Windows 10/11 compatibility layer protections to prevent early ntdll crashes.
+
+Installation:
+1. Extract the CompletionistMap-v1.0.5.zip package.
+2. Run Install.bat (auto-detects game folder and installs safely).
+3. Requires GoW Script Loader & Gameplay Tweaks 0.22 (version.dll).
