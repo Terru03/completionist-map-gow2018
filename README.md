@@ -45,6 +45,10 @@ Markers added by Completionist Map use original, category-specific artwork desig
 - Original marker artwork and texture-pack pipeline
 - Automated installer and uninstaller with stock-file backup support
 
+### Native map filters
+
+All custom markers are organized into dedicated collectible-category filters integrated with the game's native map filters. Use the normal map filter controls to focus on the marker types you want to see, such as Ravens, chests or Artefacts. Related Nornir puzzle markers are grouped under the Nornir Puzzle filter.
+
 The mod does **not** manufacture quest progress or mark collectibles complete for the player.
 
 ## Release status
@@ -126,3 +130,4 @@ The mod was developed around a few strict rules:
 ## License
 
 No separate open-source or artwork reuse licence has been granted yet. Please ask before redistributing or reusing source code or original marker artwork.
+

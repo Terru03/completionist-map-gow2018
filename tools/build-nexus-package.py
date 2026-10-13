@@ -577,6 +577,13 @@ integrated with your in-game Map & Compass.
 - Single Reticle Lock: Press [Enter] / [E] to pin any marker to the compass HUD.
 - Read-only completion checks use live objects and native saved-state authority.
 
+Native map filters
+All custom markers are organized into dedicated collectible-category filters
+integrated with the game's native map filters. Use the normal map filter
+controls to focus on the marker types you want to see, such as Ravens,
+chests or Artefacts. Related Nornir puzzle markers are grouped under the
+Nornir Puzzle filter.
+
 --------------------------------------------------------------------------------
 2. REQUIREMENTS
 --------------------------------------------------------------------------------
@@ -739,3 +746,4 @@ if __name__ == "__main__":
     parser.add_argument("--bridge-dll", type=Path)
     args = parser.parse_args()
     build(args.source, args.capacity_dll, args.bridge_dll)
+
